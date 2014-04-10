@@ -1,0 +1,130 @@
+KQ SOURCE FORMATTING:
+=====================
+
+Incase there are questions raised regarding the formatting of the C or LUA
+source code available for the KQ/kqlives game, this guide should help.  This
+first section will discuss the C code; the second section will discuss the LUA
+script formatting.
+
+We have created a standard formatting code as used by the GNU Indent program,
+and saved our preferred style in other/indent.pro.  If you do not have this
+file, here is a summary below:
+
+C SOURCE FORMAT GUIDELINES:
+===========================
+
+About indenting rules:
+ 1. Indenting to 3 spaces.
+
+ 2. No tabulations!  Replace all tabs with 3 spaces.
+
+ 3. Lines should not be longer than 80 characters; break it somewhere if this
+    becomes the case.
+
+ 4. 3 empty lines between each function.
+
+ 5. Each function begins with the following comment:
+    /*! \brief (brief description)
+     *
+     * (Detailed description, special notes)
+     *
+     * \param   ... description of parameter passed into the function
+     * \returns ... value(s) that will be returned
+     */
+
+ 6. Comments inside functions should come before, and be indented to, the
+    line(s) for which they make reference.
+
+ 7. Put an open space between the function name and the brackets:
+    if (...)
+    blit2screen (...)
+    show_help ()
+
+ 8a. Put opening curly brackets on the same line of the keyword for function
+     calls:
+     if (...) {
+     } else if (...) {
+     } else {
+     while (...) {
+     do {
+
+ 8b. For functions declarations themselves, put the opening curly bracket on
+     the following line:
+
+     int myfunction(...)
+     {
+
+     void main (...)
+     {
+
+ 9. Definitions and enums should be UPPERCASE, variable names in allegro-style
+    (with under_scores, no mixedCamelCase).
+
+ 10. If you will comment out large blocks of code, surround the old code with:
+     #if 0
+     ...
+     #endif
+
+ 11. Put spaces between operators:
+     a = 1;
+     int main (int argc, char *argv[])
+     my_function (a, my_variable);
+     if (a == 7 || b <= c + d) {
+     for (i = 0; i <= SCREEN_WIDTH; i++) {
+
+ 12. In most cases where you use single-line functions, you do not have to use
+     brackets, but use judgement for clarity purposes:
+     if (...)
+        function1 (...);
+     else
+        function2 (...)
+
+     for (...)
+        a++;
+
+     However, if it may be hard to read, feel free to use brackets:
+     for (...) {
+        if (...)
+           ...
+        else {
+           for (...)
+              if (!...)
+                 ...
+        }
+     }
+
+LUA SOURCE FORMAT GUIDELINES:
+=============================
+
+About indenting rules:
+ 1. Indenting to 2 spaces.
+
+ 2. No tabulations!  Replace all tabs with 2 spaces.
+
+ 3. Lines MAY be longer than 80 characters, especially for strings of text.
+
+ 4. 2 empty lines between each function.
+
+ 5. Comments before functions are not required, but in many cases, useful.
+
+ 6. Comments should come before, and be indented to, the line(s) for which they
+    make reference.
+
+ 7a. Only put open spaces between built-in function names and brackets:
+     if (...)
+     while (...)
+ 7b. However, not between custom function names and the brackets:
+     door_in(...)
+     bubble(...)
+     get_gp()
+
+ 8. If you will comment out large blocks of code, surround the old code with:
+    -- /*
+    -- {
+    ...
+    -- }
+    -- */
+
+ 9. Put spaces between operators:
+    a = 1
+    change_map("...", 20, 40, 20, 40)

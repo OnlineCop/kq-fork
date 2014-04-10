@@ -1,0 +1,31 @@
+20070812: TT
+As discussed by Z (author of KQ: The Lost Lanerion), the "door_in()" and
+"door_out()" functions act differently, in that they do not require coordinates
+for "view_range()" any more.  This is because the maps are now utilizing Bounding Boxes.  These allow the map to display ONLY the areas within the box, whenever the Player is standing inside the area, or else ALL the map when the player moves outside of that area.
+
+Here are instructions on how this is to be accomplished:
+
+Open an existing map (or a new one can be created).  Notice that any "rooms" that the player can walk into are drawn off to the right side of the map.  This is not a requirement for maps, but has been an adopted practice.
+
+Hit "B" key to turn on BoundingBox mode, then surround one of the "rooms" with the Bounding Box.  When you play through the game and enter the room, no call to "view_range()" is necessary; all tiles/entities outside of the Bounding Box will not be drawn.
+
+If you left-click on a Bounding Box once it's been placed on the map, you can select the default tile to draw on the OUTSIDE of the box.  The default is Tile 0, or black (nothingness).  This can be changed to a water tile if you want the player to feel as though they are surrounded by water, or a sand tile to be surrounded by desert.  Any tiles that are automatically animated, like water, will still animate.
+
+When the Player moves outside of the range of the BoundingBox during gameplay, normal view will return.
+
+
+20060422: TT
+If a number can be input, the map editor now checks if it is preceeded with a sign (+/-).
+If a sign is found, we will offset the original number instead of replacing it:
+   22 (current value)
+   +1 (user input)
+   23 (resulting value, if map is large enough)
+
+   19 (current value)
+   -3 (user input)
+   16 (resulting value)
+
+    3 (current value)
+   -4 (user input)
+    3 (error: nothing changed, since map was not large enough)
+

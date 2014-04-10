@@ -1,0 +1,221 @@
+# -*- makefile -*-
+###############################################################################
+#                                                                             #
+#  This file is included by all the other Makefile types. Note that I do a    #
+#  very simple check to know if upx or djp are in your path, but none for     #
+#  tgz or zip...                                                              #
+#                                                                             #
+#  make clean      : Deletes the generated .o and .exe files (you need RM     #
+#                    from fileutils).                                         #
+#  make distclean  : Deletes the same files the clean target does, plus the   #
+#                    possible packages made with the last two targets.        #
+#  make tgz        : Creates a package which can be used to send by mail,     #
+#                    though it is not as good as the original one ;) You      #
+#                    need the tar compressor.                                 #
+#  make zip        : Same as tgz, but now creates it using zip compressor.    #
+#  make compress   : Compresses the generated executable. You need the upx    #
+#                    executable compressor somewhere in your path.            #
+#                                                                             #
+#  ReyBrujo, 2002                                                             #
+#                                                                             #
+#  23-Sep-2002:                                                               #
+#     (RB): Fixed clean target.                                               #
+#                                                                             #
+###############################################################################
+
+
+.PHONY: clean distclean veryclean tgz zip compress game scripting editor all
+
+#                                                                             #
+#  The default name of the executable to generate. By default, it should      #
+#  always be prefixed with $(BIN_DIR) (so that it is placed in the binary     #
+#  directory), and suffixed with the $(EXE_SUFFIX) variable. However, the     #
+#  name of the executable might not be the same of $(ID_SHORT).               #
+#                                                                             #
+#  EXEC := $(BIN_DIR)/mybinary$(EXE_SUFFIX)                                   #
+#                                                                             #
+EXEC := $(BIN_DIR)/$(ID_SHORT)$(EXE_SUFFIX)
+
+#                                                                             #
+#  The PACKAGE_TGZ and PACKAGE_ZIP declare the names of the final package.    #
+#  It uses ID_LONG by default, so make sure your file system allows for long  #
+#  names. This will create something like 'mypackage-0.1.2.tgz' (or .zip),    #
+#  which you can deliver as a source release of your game, or as a backup.    #
+#  Finally, the PACKAGE_OBJ defines the objects that will be included into    #
+#  the final package.                                                         #
+#                                                                             #
+PACKAGE_TGZ = $(addsuffix .tgz, $(ID_LONG))
+PACKAGE_ZIP = $(addsuffix .zip, $(ID_LONG))
+PACKAGE_OBJ = fix.bat    \
+              makefile.* \
+              $(SRC_DIR) \
+              $(OBJ_DIR) \
+              $(INC_DIR) \
+              $(DOC_DIR) \
+              $(BIN_DIR)
+
+
+
+###############################################################################
+#                                                                             #
+#                        END OF CONFIGURATION SECTION                         #
+#                                                                             #
+###############################################################################
+
+RES_C=src/res.c
+FILES := bounds.c combat.c console.c credits.c disk.c draw.c effects.c enemyc.c \
+	entity.c eqpmenu.c eskill.c fade.c heroc.c hskill.c intrface.c itemmenu.c \
+	kq.c magic.c masmenu.c menu.c movement.c music.c res.c scrnshot.c \
+	selector.c setup.c sgame.c shopmenu.c timing.c $(EXTRAFILES)
+
+
+#                                                                             #
+#  Find out the objects we must generate.                                     #
+#                                                                             #
+OBJECTS = $(addprefix $(OBJDIR)/, $(addsuffix .$(OBJ_SUFFIX), $(basename $(FILES))))
+
+# export all our vars to sub-makes
+export
+
+game: $(EXEC)
+
+$(EXEC) : $(OBJECTS)
+	$(LINK.o) $^ -o $@ $(LDLIBS)
+
+$(OBJDIR)/%.$(OBJ_SUFFIX) : $(SRC_DIR)/%.c
+	$(COMPILE.c) -o $@ $<
+
+$(OBJDIR)/%.$(OBJ_SUFFIX) : $(SRC_DIR)/%.m
+	$(COMPILE.m) -o $@ $<
+
+# Just go into the scripts directory and run the script there                 #
+scripting:
+	$(MAKE) -C scripts
+
+editor:
+#	@echo This could take a long time, please wait.
+	$(MAKE) -C maps
+
+# Special target for OSX - make the application bundle
+BUNDLE:=$(ID_SHORT).app
+APPR:=$(BUNDLE)/Contents/Resources
+bundle: $(EXEC)
+	install -d $(BUNDLE)/Contents/MacOS
+	install -d $(APPR)/data $(APPR)/music $(APPR)/scripts $(APPR)/maps
+	install -C Mac/Info.plist $(BUNDLE)/Contents
+	install -C bin/kq $(BUNDLE)/Contents/MacOS
+	install -C data/*.dat data/*.kq data/*.mon $(APPR)/data
+	install -C maps/*.map $(APPR)/maps
+	install -C music/*.s3m music/*.mod music/*.xm $(APPR)/music
+	install -C scripts/*.lob $(APPR)/scripts
+	install Mac/KQ-icon.icns $(APPR)/KQ.icns
+
+
+# $(RES_C): other/items.csv other/spells.csv other/effects.csv other/encount.csv other/battles.csv
+# 	cat other/res-skel.1.c > $(RES_C)
+# 	other/kq2h.pl other/items.csv >> $(RES_C)
+# 	cat other/res-skel.2.c >> $(RES_C)
+# 	other/kq2h.pl other/spells.csv >> $(RES_C)
+# 	cat other/res-skel.3.c >> $(RES_C)
+# 	other/kq2h.pl other/effects.csv >> $(RES_C)
+# 	cat other/res-skel.4.c >> $(RES_C)
+# 	other/kq2h.pl other/encount.csv >> $(RES_C)
+# 	cat other/res-skel.5.c >> $(RES_C)
+# 	other/kq2h.pl other/battles.csv>> $(RES_C)
+# 	cat other/res-skel.6.c >> $(RES_C)
+
+
+#                                                                             #
+#  The clean target deletes the executable, the object files and the runner,  #
+#  if it was created. If you have added more directories to the object one,   #
+#  in example to separate objects, you will have to add those directories     #
+#  manually like $(OBJ_DIR)/*/*.o* for the second level, $(OBJ_DIR)/*/*/*.o*  #
+#  for the third level of depth, etc.                                         #
+#                                                                             #
+clean:
+	$(RM) $(RMFLAGS) $(EXEC) $(OBJDIR)/*.o* $(RUNNER)
+	$(RM) $(RMFLAGS) $(SCR_DIR)/*.lob
+
+
+
+#                                                                             #
+#  The distclean target lets the package with just the files that came with   #
+#  the distribution. It deletes all the files 'clean' does, but also ALL the  #
+#  backup copies! So be careful when using it!                                #
+#                                                                             #
+distclean: clean
+	$(RM) $(RMFLAGS) $(PACKAGE_TGZ) $(PACKAGE_ZIP)
+
+
+
+#                                                                             #
+#  The veryclean target calls distclean to delete the above files, plus       #
+#  deleting all dependencies files.                                           #
+#                                                                             #
+veryclean: distclean
+	$(RM) $(RMFLAGS) $(OBJ_DIR)/*/makefile.dep
+
+
+
+#                                                                             #
+#  Build a tar & gzipped package (or whatever you have configured).           #
+#                                                                             #
+tgz: clean
+	$(TGZ) $(TGZFLAGS) $(PACKAGE_TGZ) $(PACKAGE_OBJ)
+	@echo
+	@echo The package $(PACKAGE_TGZ) has been created. Just to be sure, it
+	@echo is not as good as the original package, but still works *grin*
+
+
+
+#                                                                             #
+#  Build a zip package (or whatever you have configured).                     #
+#                                                                             #
+zip: clean
+	$(ZIP) $(ZIPFLAGS) $(PACKAGE_ZIP) $(PACKAGE_OBJ)
+	@echo
+	@echo The package $(PACKAGE_ZIP) has been created. Just to be sure, it
+	@echo is not as good as the original package, but still works *grin*
+
+
+
+#                                                                             #
+#  Oh, this target is a bit complex. I would have done it manually ;) I try   #
+#  to find an executable compressor (upx or djp) in the current path.         #
+#                                                                             #
+MPATH  := $(subst ;, ,$(subst \,/,$(PATH)))
+UPXPRG := $(foreach GUESS, $(MPATH), $(wildcard $(GUESS)/upx.exe))
+DJPPRG := $(foreach GUESS, $(MPATH), $(wildcard $(GUESS)/djp.exe))
+
+ifneq ($(UPXPRG),)
+	COMPRESSOR := $(UPXPRG)
+	COMP_FLAGS := --best
+else
+	ifneq ($(DJPPRG),)
+		COMPRESSOR := $(DJPPRG)
+		COMP_FLAGS := -s
+	endif
+endif
+
+compress:
+ifdef COMPRESSOR
+	$(COMPRESSOR) $(COMP_FLAGS) $(EXEC)
+else
+	@echo Could not guess upx or djp compressor location. If you have
+	@echo another installed, configure it manually.
+endif
+
+
+
+#                                                                             #
+#  The depend target builds the different dependencies between source files   #
+#  and headers.                                                               #
+#                                                                             #
+depend:
+	$(GCC) $(DEPFLAGS) $(SRC_DIR)/*.$(SRC_SUFFIX) > _depend.tmp
+ifdef SLASHFLIP
+	sed -e "s/^\([a-zA-Z0-9_]*\)\.o:/$(subst /,\/,$(OBJDIR))\/\1\.$(OBJ_SUFFIX):/" _depend.tmp > $(subst /,\, $(OBJDIR)/makefile.dep)
+else
+	sed -e "s/^\([a-zA-Z0-9_]*\)\.o:/$(subst /,\/,$(OBJDIR))\/\1\.$(OBJ_SUFFIX):/" _depend.tmp > $(OBJDIR)/makefile.dep
+endif
+	$(RM) $(RMFLAGS) _depend.tmp

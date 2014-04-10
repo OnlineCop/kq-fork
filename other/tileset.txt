@@ -1,0 +1,53 @@
+# Default value dump by ./rescmp
+tileset
+name: LAND_PCX
+anim: 2 5 25
+
+name: NEWTOWN_PCX
+anim: 158 159 50
+anim: 160 163 25
+anim: 176 179 25
+anim: 257 258 50
+anim: 262 263 25
+
+name: CASTLE_PCX
+anim: 0 0 0
+anim: 57 58 50
+anim: 62 63 25
+anim: 205 206 50
+anim: 250 253 25
+
+name: INCAVE_PCX
+anim: 0 0 0
+anim: 30 35 30
+anim: 176 179 25
+anim: 323 328 40
+anim: 380 385 40
+
+name: VILLAGE_PCX
+anim: 0 0 0
+anim: 0 0 0
+anim: 0 0 0
+anim: 38 39 25
+anim: 80 83 25
+
+name: MOUNT_PCX
+anim: 0 0 0
+anim: 0 0 0
+anim: 0 0 0
+anim: 40 42 50
+anim: 58 59 50
+
+name: SHRINE_PCX
+anim: 0 0 0
+anim: 0 0 0
+anim: 0 0 0
+anim: 0 0 0
+anim: 0 0 0
+
+name: FORTRESS_PCX
+anim: 120 123 30
+anim: 124 129 25
+anim: 130 133 30
+anim: 134 137 25
+anim: 138 139 30

@@ -1,0 +1,108 @@
+# Project: KQ
+# Makefile created by Dev-C++ 4.9.9.0
+
+CPP  = D:\Compiler\MinGW\bin\g++.exe
+CC   = D:\Compiler\MinGW\bin\gcc.exe
+WINDRES = D:\Compiler\MinGW\bin\windres.exe
+RES  = 
+OBJ  = ../../obj/mingw/combat.o ../../obj/mingw/credits.o ../../obj/mingw/disk.o ../../obj/mingw/draw.o ../../obj/mingw/effects.o ../../obj/mingw/enemyc.o ../../obj/mingw/entity.o ../../obj/mingw/eqpmenu.o ../../obj/mingw/eskill.o ../../obj/mingw/fade.o ../../obj/mingw/heroc.o ../../obj/mingw/hskill.o ../../obj/mingw/intrface.o ../../obj/mingw/itemmenu.o ../../obj/mingw/kq.o ../../obj/mingw/magic.o ../../obj/mingw/masmenu.o ../../obj/mingw/menu.o ../../obj/mingw/music.o ../../obj/mingw/res.o ../../obj/mingw/scrnshot.o ../../obj/mingw/selector.o ../../obj/mingw/setup.o ../../obj/mingw/sgame.o ../../obj/mingw/shopmenu.o ../../obj/mingw/timing.o ../../obj/mingw/win.o $(RES)
+LINKOBJ  = ../../obj/mingw/combat.o ../../obj/mingw/credits.o ../../obj/mingw/disk.o ../../obj/mingw/draw.o ../../obj/mingw/effects.o ../../obj/mingw/enemyc.o ../../obj/mingw/entity.o ../../obj/mingw/eqpmenu.o ../../obj/mingw/eskill.o ../../obj/mingw/fade.o ../../obj/mingw/heroc.o ../../obj/mingw/hskill.o ../../obj/mingw/intrface.o ../../obj/mingw/itemmenu.o ../../obj/mingw/kq.o ../../obj/mingw/magic.o ../../obj/mingw/masmenu.o ../../obj/mingw/menu.o ../../obj/mingw/music.o ../../obj/mingw/res.o ../../obj/mingw/scrnshot.o ../../obj/mingw/selector.o ../../obj/mingw/setup.o ../../obj/mingw/sgame.o ../../obj/mingw/shopmenu.o ../../obj/mingw/timing.o ../../obj/mingw/win.o $(RES)
+LIBS =  -L"D:/Compiler/GUI/Dev-Cpp/lib" -mwindows -llua -laldmb -ldumb -lalleg  
+INCS =  -I"D:/Compiler/GUI/Dev-Cpp/include"  -I"../../include" 
+CXXINCS =  -I"D:/Compiler/GUI/Dev-Cpp/include/c++/3.3.1"  -I"D:/Compiler/GUI/Dev-Cpp/include/c++/3.3.1/mingw32"  -I"D:/Compiler/GUI/Dev-Cpp/include/c++/3.3.1/backward"  -I"D:/Compiler/GUI/Dev-Cpp/lib/gcc-lib/mingw32/3.3.1/include"  -I"D:/Compiler/GUI/Dev-Cpp/include"  -I"../../include" 
+BIN  = ../../KQ.exe
+CXXFLAGS = $(CXXINCS)  
+CFLAGS = $(INCS)  
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before ../../KQ.exe all-after
+
+include lua.mak
+
+clean: clean-custom
+	rm -f $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o "..\..\KQ.exe" $(LIBS)
+
+../../obj/mingw/combat.o: ../../src/combat.c
+	$(CC) -c ../../src/combat.c -o ../../obj/mingw/combat.o $(CFLAGS)
+
+../../obj/mingw/credits.o: ../../src/credits.c
+	$(CC) -c ../../src/credits.c -o ../../obj/mingw/credits.o $(CFLAGS)
+
+../../obj/mingw/disk.o: ../../src/disk.c
+	$(CC) -c ../../src/disk.c -o ../../obj/mingw/disk.o $(CFLAGS)
+
+../../obj/mingw/draw.o: ../../src/draw.c
+	$(CC) -c ../../src/draw.c -o ../../obj/mingw/draw.o $(CFLAGS)
+
+../../obj/mingw/effects.o: ../../src/effects.c
+	$(CC) -c ../../src/effects.c -o ../../obj/mingw/effects.o $(CFLAGS)
+
+../../obj/mingw/enemyc.o: ../../src/enemyc.c
+	$(CC) -c ../../src/enemyc.c -o ../../obj/mingw/enemyc.o $(CFLAGS)
+
+../../obj/mingw/entity.o: ../../src/entity.c
+	$(CC) -c ../../src/entity.c -o ../../obj/mingw/entity.o $(CFLAGS)
+
+../../obj/mingw/eqpmenu.o: ../../src/eqpmenu.c
+	$(CC) -c ../../src/eqpmenu.c -o ../../obj/mingw/eqpmenu.o $(CFLAGS)
+
+../../obj/mingw/eskill.o: ../../src/eskill.c
+	$(CC) -c ../../src/eskill.c -o ../../obj/mingw/eskill.o $(CFLAGS)
+
+../../obj/mingw/fade.o: ../../src/fade.c
+	$(CC) -c ../../src/fade.c -o ../../obj/mingw/fade.o $(CFLAGS)
+
+../../obj/mingw/heroc.o: ../../src/heroc.c
+	$(CC) -c ../../src/heroc.c -o ../../obj/mingw/heroc.o $(CFLAGS)
+
+../../obj/mingw/hskill.o: ../../src/hskill.c
+	$(CC) -c ../../src/hskill.c -o ../../obj/mingw/hskill.o $(CFLAGS)
+
+../../obj/mingw/intrface.o: ../../src/intrface.c
+	$(CC) -c ../../src/intrface.c -o ../../obj/mingw/intrface.o $(CFLAGS)
+
+../../obj/mingw/itemmenu.o: ../../src/itemmenu.c
+	$(CC) -c ../../src/itemmenu.c -o ../../obj/mingw/itemmenu.o $(CFLAGS)
+
+../../obj/mingw/kq.o: ../../src/kq.c
+	$(CC) -c ../../src/kq.c -o ../../obj/mingw/kq.o $(CFLAGS)
+
+../../obj/mingw/magic.o: ../../src/magic.c
+	$(CC) -c ../../src/magic.c -o ../../obj/mingw/magic.o $(CFLAGS)
+
+../../obj/mingw/masmenu.o: ../../src/masmenu.c
+	$(CC) -c ../../src/masmenu.c -o ../../obj/mingw/masmenu.o $(CFLAGS)
+
+../../obj/mingw/menu.o: ../../src/menu.c
+	$(CC) -c ../../src/menu.c -o ../../obj/mingw/menu.o $(CFLAGS)
+
+../../obj/mingw/music.o: ../../src/music.c
+	$(CC) -c ../../src/music.c -o ../../obj/mingw/music.o $(CFLAGS)
+
+../../obj/mingw/res.o: ../../src/res.c
+	$(CC) -c ../../src/res.c -o ../../obj/mingw/res.o $(CFLAGS)
+
+../../obj/mingw/scrnshot.o: ../../src/scrnshot.c
+	$(CC) -c ../../src/scrnshot.c -o ../../obj/mingw/scrnshot.o $(CFLAGS)
+
+../../obj/mingw/selector.o: ../../src/selector.c
+	$(CC) -c ../../src/selector.c -o ../../obj/mingw/selector.o $(CFLAGS)
+
+../../obj/mingw/setup.o: ../../src/setup.c
+	$(CC) -c ../../src/setup.c -o ../../obj/mingw/setup.o $(CFLAGS)
+
+../../obj/mingw/sgame.o: ../../src/sgame.c
+	$(CC) -c ../../src/sgame.c -o ../../obj/mingw/sgame.o $(CFLAGS)
+
+../../obj/mingw/shopmenu.o: ../../src/shopmenu.c
+	$(CC) -c ../../src/shopmenu.c -o ../../obj/mingw/shopmenu.o $(CFLAGS)
+
+../../obj/mingw/timing.o: ../../src/timing.c
+	$(CC) -c ../../src/timing.c -o ../../obj/mingw/timing.o $(CFLAGS)
+
+../../obj/mingw/win.o: ../../src/win.c
+	$(CC) -c ../../src/win.c -o ../../obj/mingw/win.o $(CFLAGS)

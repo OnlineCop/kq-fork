@@ -1,0 +1,36 @@
+
+LUAXGETTEXT = $(top_srcdir)/other/luaxgettext
+
+DISTFILES.common.extra2 = POTFILES.lua Rules-Lua
+
+# This target rebuilds $(DOMAIN).pot; it is an expensive operation.
+# Note that $(DOMAIN).pot is not touched if it doesn't need to be changed.
+$(DOMAIN).pot-update: $(POTFILES) $(srcdir)/POTFILES.in $(srcdir)/POTFILES.lua remove-potcdate.sed
+	$(LUAXGETTEXT) --directory=$(top_srcdir) --domain=$(DOMAIN) \
+	  `cat $(srcdir)/POTFILES.lua` \
+	  > $(DOMAIN).po
+	if test -n '$(MSGID_BUGS_ADDRESS)' || test '$(PACKAGE_BUGREPORT)' = '@'PACKAGE_BUGREPORT'@'; then \
+	  msgid_bugs_address='$(MSGID_BUGS_ADDRESS)'; \
+	else \
+	  msgid_bugs_address='$(PACKAGE_BUGREPORT)'; \
+	fi; \
+	$(XGETTEXT) --default-domain=$(DOMAIN) --directory=$(top_srcdir) \
+	  --add-comments=TRANSLATORS: $(XGETTEXT_OPTIONS) \
+	  --files-from=$(srcdir)/POTFILES.in \
+	  --copyright-holder='$(COPYRIGHT_HOLDER)' \
+	  --msgid-bugs-address="$$msgid_bugs_address" \
+	  --join-existing
+	test ! -f $(DOMAIN).po || { \
+	  if test -f $(srcdir)/$(DOMAIN).pot; then \
+	    sed -f remove-potcdate.sed < $(srcdir)/$(DOMAIN).pot > $(DOMAIN).1po && \
+	    sed -f remove-potcdate.sed < $(DOMAIN).po > $(DOMAIN).2po && \
+	    if cmp $(DOMAIN).1po $(DOMAIN).2po >/dev/null 2>&1; then \
+	      rm -f $(DOMAIN).1po $(DOMAIN).2po $(DOMAIN).po; \
+	    else \
+	      rm -f $(DOMAIN).1po $(DOMAIN).2po $(srcdir)/$(DOMAIN).pot && \
+	      mv $(DOMAIN).po $(srcdir)/$(DOMAIN).pot; \
+	    fi; \
+	  else \
+	    mv $(DOMAIN).po $(srcdir)/$(DOMAIN).pot; \
+	  fi; \
+	}

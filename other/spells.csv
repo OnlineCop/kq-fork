@@ -1,0 +1,62 @@
+spell,Icn,Description,st,mpc,use,tgt,dmg,bonu,hit,ele,def,eff,Sen,Sar,Cor,Aja,Cas,Tem,Ayl,Nos
+,0,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Cure1,45,Light cure,1,4,2,2,30,100,0,16,1,15,0,0,0,1,0,3,0,1
+Hold,48,Paralyze an opponent,1,5,6,4,0,0,85,11,1,24,0,0,0,1,0,0,0,0
+Shield,47,Defense boost,1,6,6,1,0,0,0,16,1,38,0,0,0,0,0,5,0,0
+Silence,48,Prevent spellcasting,1,7,6,4,0,0,80,13,2,22,0,0,0,2,0,0,0,0
+Sleep,48,Put opponent to sleep,1,8,6,4,0,0,80,14,2,39,0,0,0,4,0,0,0,0
+Bless,47,Empower allies,1,12,6,3,0,0,0,16,3,7,0,0,0,0,0,7,0,0
+Vision,40,See enemy power,1,9,6,6,0,0,0,16,4,22,0,0,0,0,0,0,0,0
+Cure2,45,Mild cure,1,12,2,2,90,200,0,16,5,15,0,0,0,6,0,10,0,6
+Holy Might,47,Power increase,1,10,6,1,0,0,0,16,6,23,10,0,0,0,0,0,0,0
+Restore,46,Heal blind and poison,1,6,2,1,0,0,0,16,7,31,0,0,0,8,0,12,0,10
+Fade,44,Positive energy attack,1,9,6,5,45,150,0,5,8,44,0,0,0,10,0,0,0,0
+Hasten,47,Speed boost,1,12,6,1,0,0,0,15,9,30,0,10,0,0,0,0,0,0
+Life,46,Return to life,1,18,2,1,0,0,0,16,10,28,0,0,0,12,0,15,0,12
+Shell,47,Magic defense up,1,8,6,1,0,0,0,16,11,37,0,0,0,0,0,0,0,11
+Whirlwind,44,Whirlwind attack,1,14,6,5,60,100,0,4,12,43,0,0,13,0,0,0,0,0
+Flood,44,Waves of water,1,20,6,6,80,200,0,6,13,21,0,0,19,0,0,0,0,0
+Recovery,46,Recover all status,1,20,2,1,0,0,0,16,14,31,0,0,0,15,0,0,0,0
+Shield All,47,Defense boost to all,1,25,6,3,0,0,0,16,15,38,0,0,0,0,0,18,0,0
+Sleep All,48,Put all to sleep,1,15,6,6,0,0,0,14,16,39,0,0,0,16,0,0,0,0
+Cure3,45,Strong cure,1,24,2,2,360,400,0,16,17,15,0,0,0,17,0,0,0,18
+Regenerate,47,Regenerate hp,1,11,6,1,0,0,0,16,18,15,0,0,0,0,0,0,0,0
+Repulse,40,Repel monsters,1,15,4,3,0,0,0,16,18,23,0,0,0,19,0,0,0,0
+Through,47,Etherealness,1,24,6,1,0,0,0,16,19,19,0,0,0,0,0,21,0,0
+Quicken,47,Speed boost for all,1,22,6,3,0,0,0,15,20,30,0,21,0,0,0,0,0,0
+True Aim,47,Can't miss,1,16,6,1,0,0,0,16,21,22,25,0,0,21,0,0,0,0
+Wall,47,Improved magic defense,1,30,6,1,0,0,0,16,22,37,0,0,0,0,0,0,0,22
+Divine Guard,47,Shield and Shell,1,28,6,3,0,0,0,5,24,44,0,0,0,24,0,0,0,0
+Tornado,44,Twister,1,32,6,5,100,150,0,4,25,43,0,0,26,0,0,0,0,0
+Full Life,46,Return to full life,1,48,2,1,0,0,0,16,26,28,0,0,0,26,0,0,0,0
+Cure4,45,Full cure,1,40,2,2,999,800,0,16,27,15,0,0,0,28,0,0,0,0
+Lumine,44,Holy blast,1,50,6,5,125,250,0,5,30,44,0,0,0,32,0,0,0,30
+Tsunami,44,Tidal waves,1,40,6,6,115,200,0,6,35,21,0,0,36,0,0,0,0,0
+Venom,49,Poison attack,0,4,6,4,15,100,75,8,1,42,0,0,0,0,1,0,4,2
+Scorch,49,Weak fire attack,0,5,6,5,25,100,0,2,1,36,0,4,1,0,1,0,0,4
+Blind,43,Blind one opponent,0,6,6,4,0,0,80,9,2,8,0,0,0,0,0,0,7,0
+Confuse,43,Confuse one opponent,0,10,6,4,0,0,85,10,3,14,0,0,0,0,0,0,10,0
+Shock,49,Shocking strike,0,8,6,5,35,100,0,3,5,11,0,8,5,0,5,0,0,7
+Gloom,49,Negative energy attack,0,10,6,5,45,150,0,1,6,6,0,0,0,0,7,0,0,8
+Nausea,43,Sicken opponents,0,9,6,4,0,0,85,16,7,22,0,0,0,0,0,0,12,0
+Frost,49,Snow and ice attack,0,10,6,5,50,150,0,7,8,9,0,0,8,0,8,0,0,0
+Slow,43,Slow enemy reactions,0,15,6,6,0,0,85,15,9,40,0,0,0,0,0,0,15,0
+Drain,43,Steal hit points,0,13,6,4,25,75,75,16,10,18,0,0,0,0,10,0,0,0
+Fire Blast,49,Mild fire attack,0,12,6,5,60,150,0,2,11,20,0,14,11,0,11,0,0,13
+Warp,41,Warp out of danger,0,10,2,3,0,0,0,16,12,51,0,0,0,0,0,0,0,0
+Stone,43,Petrify one enemy,0,12,6,4,0,0,60,12,12,41,0,0,0,0,12,0,0,14
+Lightning,49,Lightning attack,0,18,6,5,75,200,0,3,13,12,0,16,17,0,13,0,0,16
+Virus,49,Viral infection,0,16,6,5,65,150,75,8,14,42,0,0,0,0,0,0,18,0
+Tremor,49,Shake it up,0,20,6,6,70,150,0,0,15,29,0,0,15,0,15,0,0,0
+Absorb,43,Steal magic points,0,1,6,4,20,50,75,16,16,3,0,0,0,0,16,0,0,0
+Diffuse,43,Remove defenses,0,16,6,4,0,0,0,16,17,16,0,0,0,0,0,0,0,17
+Doom,43,Drain life,0,18,6,4,0,0,75,1,18,17,0,0,0,0,0,0,0,20
+Malison,43,Dehabilitate opponents,0,24,6,6,0,0,80,16,20,22,0,0,0,0,0,0,24,0
+Flame Wall,49,Strong fire attack,0,27,6,5,90,200,0,2,24,20,0,27,24,0,24,0,0,0
+Blizzard,49,Snow and ice attack,0,30,6,6,95,200,0,7,25,10,0,0,28,0,25,0,0,0
+Death,43,Eliminate life,0,20,6,4,0,0,50,1,28,17,0,0,0,0,0,0,0,28
+Thunder Storm,49,Thunderstorm,0,45,6,5,120,200,0,3,30,13,0,33,30,0,30,0,0,0
+Negatis,49,The Void,0,50,6,5,125,250,0,1,30,6,0,0,0,0,36,0,0,32
+Earthquake,49,Earthquake attack,0,36,6,6,110,200,0,0,32,29,0,0,32,0,32,0,0,0
+Plague,49,Disease attack,0,60,6,5,140,300,75,8,35,42,0,0,0,0,35,0,36,0
+X-Surge,49,Non-elemental attack,0,75,6,5,200,500,0,16,45,45,0,0,0,0,45,0,0,0

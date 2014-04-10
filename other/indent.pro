@@ -1,0 +1,10 @@
+--braces-on-if-line
+--cuddle-else
+--dont-break-procedure-type
+--indent-level3
+--line-length79
+--no-tabs
+--verbose
+-T lua_State
+-T PACKFILE
+-T size_t

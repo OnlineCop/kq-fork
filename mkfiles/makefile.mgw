@@ -1,0 +1,78 @@
+# -*- makefile -*- ############################################################
+#                                                                             #
+#  This is the MingW32 Makefile for compiling this package. Check also the    #
+#  base makefile for more options.                                            #
+#                                                                             #
+#  Also, you can define STATICLINK (make STATICLINK=1) to obtain a static     #
+#  linked example (which will increase the size of it, but will work without  #
+#  needing ALL400.DLL).                                                       #
+#                                                                             #
+#  Just as a sidenote, people whine because DJGPP executables are fairly big  #
+#  ones. However, these statically linked examples are even bigger ;)         #
+#                                                                             #
+#  ReyBrujo, 2002                                                             #
+#                                                                             #
+#  23-Sep-2002:                                                               #
+#     (RB) Added PREPROCESSOR variable.                                       #
+#                                                                             #
+###############################################################################
+
+
+
+#                                                                             #
+#  Define the name of the programs we need to use. Usually, you don't need    #
+#  to modify them.                                                            #
+#                                                                             #
+COMPILER       := $(GCC)
+PREPROCESSOR   := $(GPP) -P -undef
+LINKER         := $(GCC)
+COMPILER_FLAGS := $(CFLAGS) -DHAVE_LOADLIBRARY
+OBJDIR         := $(OBJ_DIR)/mingw
+SLASHFLIP      := 1
+
+
+###############################################################################
+#                                                                             #
+#                        END OF CONFIGURATION SECTION                         #
+#                                                                             #
+###############################################################################
+
+
+
+#                                                                             #
+#  If the user wants a statically linked version, we need to define prior to  #
+#  compilation ALLEGRO_STATICLINK. Also, we need to specify ALL libraries it  #
+#  needs. kernel32 isn't needed (at least for me). If the link step fails     #
+#  try adding it to the ALLEGRO list (only if you are linking statically).    #
+#                                                                             #
+ifdef STATICLINK
+	COMPILER_FLAGS += -DALLEGRO_STATICLINK
+	LIBRARY += alleg_s gdi32 user32 ole32 dinput ddraw dxguid winmm dsound
+else
+	LIBRARY += $(ALLEGRO)
+endif
+
+
+
+#                                                                             #
+#  Setup program flags. Note that we add -l to each library specified in the  #
+#  ALLEGRO variable. The -mwindows switch makes the program do not show the   #
+#  console when running the game.                                             #
+#                                                                             #
+COMPILER_FLAGS += -mwindows
+LDFLAGS += -mwindows
+LDLIBS += $(addprefix -l,$(LIBRARY))
+EXTRAFILES = win.c winres.rc
+
+#                                                                             #
+#  Generate the object files.                                                 #
+#                                                                             #
+OBJECTS  := $(addprefix $(OBJDIR)/, $(addsuffix .$(OBJ_SUFFIX), $(FILES)))
+
+$(OBJDIR)/%.o: $(SRC_DIR)/%.rc
+	windres $< -o $@
+
+
+
+
+

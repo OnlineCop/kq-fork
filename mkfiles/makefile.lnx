@@ -1,0 +1,48 @@
+# -*- makefile -*- ############################################################
+#                                                                             #
+#  This is the Linux Makefile for compiling this package. Check also the      #
+#  base makefile for more options.                                            #
+#  Need some work on this one, though :(                                      #
+#                                                                             #
+#  ReyBrujo, 2002                                                             #
+#  PH: I think this is obsolete, fixunix.sh uses makefile.unx instead         #
+###############################################################################
+
+
+
+#                                                                             #
+#  Set the compiler and linker. Usually, they are both gcc, gpp or gxx. By    #
+#  default, we will compile a C project. If you want to compile C++ sources,  #
+#  set COMPILER and LINKER to $(GPP), and the COMPILER_FLAGS to CXXFLAGS.     #
+#                                                                             #
+COMPILER       := $(GCC)
+LINKER         := $(GCC)
+COMPILER_FLAGS := $(CFLAGS)
+EXE_SUFFIX     :=
+EXEC           := $(BIN_DIR)/$(ID_SHORT)
+OBJDIR         := $(OBJ_DIR)/linux
+
+
+
+###############################################################################
+#                                                                             #
+#                        END OF CONFIGURATION SECTION                         #
+#                                                                             #
+###############################################################################
+
+
+
+#                                                                             #
+#  Convert all libraries needed so that GCC can understand them. Add allegro  #
+#  library to the flags as well.                                              #
+#                                                                             #
+LDFLAGS += $(addprefix -l, $(LIBRARY))
+ifdef DEBUG
+LDFLAGS += `allegro-config --libs debug`
+else
+ifdef PROFILE
+LDFLAGS += `allegro-config --libs profile`
+else
+LDFLAGS += `allegro-config --libs release`
+endif
+endif

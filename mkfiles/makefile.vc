@@ -1,0 +1,63 @@
+# -*- makefile -*- ############################################################
+#                                                                             #
+#  Makefile to build this package using MSVC. Check Makefile.all for a list   #
+#  of common targets.                                                         #
+#                                                                             #
+#  ReyBrujo, 2002                                                             #
+#                                                                             #
+#  23-Sep-2002:                                                               #
+#     (RB) Added PREPROCESSOR variable.                                       #
+#                                                                             #
+###############################################################################
+
+
+COMPILER := cl
+PREPROCESSOR := cl -nologo -EP
+LINKER   := link
+LFLAGS   := /NOLOGO /RELEASE /MACHINE:IX86 /SUBSYSTEM:WINDOWS /NODEFAULTLIB:LIBCMT
+RUNNER   := runner.exe
+RFLAGS   := @
+OBJDIR   := $(OBJ_DIR)/msvc
+OBJ_SUFFIX := obj
+
+
+ifndef MSVCDIR
+ifndef MSDEVDIR
+badinstall:
+	@echo Your MSVCDIR or MSDEVDIR environment variable is not set!
+	@echo Run vcvars32.bat first to set them, and try later.
+endif
+endif
+
+
+#                                                                             #
+#  Need to redefine all CXXFLAGS, because MSVC isn't GCC *grin*  Don't even   #
+#  try warning level 4, because it gives SO MANY stupid inline warnings that  #
+#  you will cry.                                                              #
+#  Just noticed that I needed to define -GR because MSVC get confused with a  #
+#  dynamic_cast ;)                                                            #
+#                                                                             #
+CXXFLAGS := -nologo -TP -W3 -GX -GA -GR -WX -Ox -D "HAVE_LOADLIBRARY" -I $(INC_DIR)
+OBJECTS  := $(addprefix $(OBJDIR)/, $(addsuffix .$(OBJ_SUFFIX), $(FILES)))
+
+
+#                                                                             #
+#  Sorry, for now I cannot make MSVC compile the examples as statically       #
+#  linked executables.                                                        #
+#                                                                             #
+ALLEGRO := $(addsuffix .lib, $(LIBRARY) $(ALLEGRO))
+
+
+#                                                                             #
+#  By default build the example.                                              #
+#                                                                             #
+default : $(RUNNER) $(EXEC) scripting editor
+
+$(RUNNER) : $(SRC_DIR)/misc/runner.$(SRC_SUFFIX)
+	$(GCC) $< -o $@
+
+$(EXEC) : $(OBJECTS)
+	$(RUNNER) $(LINKER) $(RFLAGS) $(LFLAGS) /OUT:$@ $^ $(ALLEGRO)
+
+$(OBJDIR)/%.$(OBJ_SUFFIX) : $(SRC_DIR)/%.$(SRC_SUFFIX)
+	$(COMPILER) $(CXXFLAGS) $< -c -Fo$@

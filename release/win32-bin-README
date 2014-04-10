@@ -1,0 +1,18 @@
+KQ Beta
+Release Date: 2007 Oct 26
+
+This is the KQ Role Playing Game. It is a game in the spirit of Final Fantasy. It is not
+finished. See COPYING for license info. See http://kqlives.sourceforge.net for more info.
+
+If you find bugs in this game, please file a bug report at
+http://sourceforge.net/tracker/?group_id=61344. You can find the source code here:
+http://sourceforge.net/project/showfiles.php?group_id=61344
+
+This game requires the following libraries (included):
+
+Allegro Game Library 4.2
+Lua 5.0
+The Dumb library is compiled statically in the Windows release?
+
+Older or newer versions of these libraries will probably not work. Allegro usually breaks ABI
+compatability at point releases. Lua 5.1 will not work with this binary.

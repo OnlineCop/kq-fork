@@ -1,0 +1,50 @@
+# -*- makefile -*- ############################################################
+#                                                                             #
+#  This is the Unix  Makefile for compiling this package. Check also the      #
+#  base makefile for more options.                                            #
+#                                                                             #
+#  ReyBrujo, 2002 (modified from DJGPP version by Peter Hull)                 #
+#                                                                             #
+#  23-Sep-2002:                                                               #
+#     (RB) Added PREPROCESSOR variable.                                       #
+#                                                                             #
+###############################################################################
+
+
+
+#                                                                             #
+#  Set the compiler and linker. Usually, they are both gcc, gpp or gxx. By    #
+#  default, we will compile a C project. If you want to compile C++ sources,  #
+#  set COMPILER and LINKER to $(GPP), and the COMPILER_FLAGS to CXXFLAGS.     #
+#                                                                             #
+COMPILER       := $(GCC)
+PREPROCESSOR   := $(GPP) -P -undef
+LINKER         := $(GCC)
+COMPILER_FLAGS := $(CFLAGS) -DHAVE_GETPWUID
+OBJDIR         := $(OBJ_DIR)/unix
+EXE_SUFFIX     :=
+EXEC           := $(BIN_DIR)/$(ID_SHORT)
+
+###############################################################################
+#                                                                             #
+#                        END OF CONFIGURATION SECTION                         #
+#                                                                             #
+###############################################################################
+
+# Unix uses allegro-config rather than -lalleg (or whatever)
+ifdef DEBUG
+ALLEGRO = `allegro-config --shared debug`
+else
+ifdef PROFILE
+ALLEGRO  = `allegro-config --shared profile`
+else
+ALLEGRO  = `allegro-config --shared release`
+endif
+endif
+
+#                                                                             #
+#  Convert all libraries needed so that GCC can understand them.              #
+#                                                                             #
+LDFLAGS += $(addprefix -l, $(LIBRARY)) $(ALLEGRO)
+FILES+=unix.c
+
