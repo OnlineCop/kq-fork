@@ -30,8 +30,9 @@ fix.bat mingw
 make depend
 make
 
-On Windows in cygwin environment:
+On UNIX or Windows in cygwin environment:
 ----------
+autoreconf -i
 ./configure
 make
 
@@ -40,21 +41,6 @@ On DOS:
 fix.bat djgpp
 make depend
 make
-
-On Mac OS X:
-------------
-./configure
-make
-
-On Linux:
----------
-./configure
-make
-
-If you have the CVS version, you'll need to do some preparatory work
-on Linux and OSX. Type
-autoreconf -i
-Then ./configure, make as above.
 
 
 Cheating and Debugging:
