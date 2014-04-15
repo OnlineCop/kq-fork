@@ -427,7 +427,7 @@ static gboolean on_map_button_release_event(GtkWidget *widget, GdkEventButton *e
          x1 = temp_bound.left;
          y1 = temp_bound.top;
 
-         set_bounds (&temp_bound, x1, y1, x, y);
+         set_bounds (&temp_bound, x1, y1, x, y, 0);
 
          if (is_bound(&gmap.bounds, temp_bound.left, temp_bound.top, temp_bound.right, temp_bound.bottom) == 0) {
 //         if (!bound_in_bound2(&temp_bound, gmap.bounds.array, gmap.bounds.size)) {
@@ -438,7 +438,7 @@ static gboolean on_map_button_release_event(GtkWidget *widget, GdkEventButton *e
                gtk_main_quit();
             }
 
-            set_bounds (&gmap.bounds.array[i], x1, y1, x, y);
+            set_bounds (&gmap.bounds.array[i], x1, y1, x, y, 0);
             gmap.bounds.array[i].btile = 0;        // User should be able to choose this.
             update_window ();   // Poor clipping. TODO.
             gmap.bounds.size++;
