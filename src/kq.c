@@ -187,7 +187,7 @@ unsigned char cansave = 0;
 unsigned char skip_intro = 0;
 
 /*! Graphics mode settings */
-unsigned char wait_retrace = 0, windowed = 0, stretch_view = 0, cpu_usage = 1;
+unsigned char wait_retrace = 0, windowed = 1, stretch_view = 0, cpu_usage = 1;
 
 /*! Current sequence position of animated tiles */
 unsigned short tilex[MAX_TILES];
