@@ -14,7 +14,7 @@ Then, you can compile the project using the following commands:
 ```
 autoreconf -i
 ./configure
-make
+make kq
 ```
 
 Roadmap
