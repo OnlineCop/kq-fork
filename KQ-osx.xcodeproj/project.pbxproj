@@ -938,7 +938,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd scripts\nLUAC=/opt/local/bin/luac\nCPP=\"cpp -P -undef\"\nfor sc in *.lua \ndo\n sl=`basename $sc .lua`.lob\n $CPP -include ../include/itemdefs.h $sc tmpfile\n $LUAC -o $sl tmpfile \ndone\n";
+			shellScript = "cd scripts\nLUAC=/opt/local/bin/luac5.1\nCPP=\"cpp -P -undef\"\nfor sc in *.lua \ndo\n sl=`basename $sc .lua`.lob\n $CPP -include ../include/itemdefs.h $sc tmpfile\n $LUAC -o $sl tmpfile \ndone\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

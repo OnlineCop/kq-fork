@@ -23,7 +23,7 @@ make CC=i586-mingw32msvc-gcc RANLIB=i586-mingw32msvc-ranlib \
 mingw
 make INSTALL_TOP=/usr/local/i586-mingw32msvc \
 'INSTALL_EXEC= $(INSTALL) -m 0755' 'INSTALL_DATA= $(INSTALL) -m 0644' \
-"TO_LIB=lua51.dll" "TO_BIN=lua.exe luac.exe" \
+"TO_LIB=lua51.dll" "TO_BIN=lua.exe luac5.1.exe" \
 install
 
 4. Allegro

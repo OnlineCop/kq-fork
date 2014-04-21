@@ -1,13 +1,13 @@
 # Makefile to compile all .lua into .lob
 # They are preprocessed first into .plua and then compiled.  This
-# two-step process allows luac to give better error messages, though
+# two-step process allows luac5.1 to give better error messages, though
 # the line numbers will refer to the versions in pscripts rather than
 # the original scripts
 
 CPP=cpp -P -undef
 
 .plua.lob:
-	luac -o $@ $<
+	luac5.1 -o $@ $<
 
 .lua.plua: $(top_srcdir)/include/itemdefs.h
 	$(CPP) -include $(top_srcdir)/include/itemdefs.h $< > $@
