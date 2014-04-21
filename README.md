@@ -30,6 +30,6 @@ This fork aims to modernize KQ by doing the following:
 How to reach us
 ---------------
 
-grrk-bzzt and OnlineCop are the maintainers of this project.
+**grrk-bzzt** and **OnlineCop** are the maintainers of this project.
 
 You can get in touch with us on IRC at **#kqfork** on ***irc.freenode.net***
