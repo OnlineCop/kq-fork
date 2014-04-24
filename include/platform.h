@@ -53,6 +53,9 @@ typedef enum eDirectories
  */
 const char *kqres (enum eDirectories, const char *);
 
+const char *get_lua_file_path (const char *, const char *);
+const char *get_resource_file_path (const char *, const char *, const char *);
+
 
 #ifdef ALLEGRO_BEOS
 inline long long gettime ();

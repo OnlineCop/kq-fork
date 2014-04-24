@@ -401,8 +401,10 @@ s_progress progresses[120] = {      // 120 progress
  */
 void activate (void)
 {
-   int zx, zy, looking_at_x = 0, looking_at_y = 0, p, q,
+   int zx, zy, looking_at_x = 0, looking_at_y = 0, q,
       target_char_facing = 0, tf;
+
+   unsigned int p;
 
    unpress ();
 
