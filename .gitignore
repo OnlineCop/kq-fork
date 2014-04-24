@@ -24,3 +24,28 @@
 
 # Compiled lua files
 *.lob
+
+# Auto-generated directories and files, created from 'autoreconf -i'
+ABOUT-NLS
+aclocal.m4
+compile
+config.guess
+config.h.in
+config.rpath
+config.sub
+configure
+depcomp
+install-sh
+missing
+po/Makefile.in.in
+po/Makevars.template
+po/Rules-quot
+po/boldquot.sed
+po/en@boldquot.header
+po/en@quot.header
+po/insert-header.sin
+po/quot.sed
+po/remove-potcdate.sin
+autom4te.cache/
+intl/
+m4/
