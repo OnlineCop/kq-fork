@@ -31,15 +31,15 @@
 /*! \name Hero identifiers */
 typedef enum ePIDX
 {
-	PIDX_UNDEFINED   = -1,
-	SENSAR            = 0,
-	SARINA            = 1,
-	CORIN             = 2,
-	AJATHAR           = 3,
-	CASANDRA          = 4,
-	TEMMIN            = 5,
-	AYLA              = 6,
-	NOSLOM            = 7,
+   PIDX_UNDEFINED   = -1,
+   SENSAR            = 0,
+   SARINA            = 1,
+   CORIN             = 2,
+   AJATHAR           = 3,
+   CASANDRA          = 4,
+   TEMMIN            = 5,
+   AYLA              = 6,
+   NOSLOM            = 7,
 } ePIDX;
 
 extern int can_use_item;        /* intrface.c */

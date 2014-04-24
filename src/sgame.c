@@ -1260,7 +1260,7 @@ int start_menu (int skip_splash)
          destroy_bitmap (staff);
          destroy_bitmap (dudes);
          destroy_bitmap (tdudes);
-		 unload_datafile_object(bg);
+         unload_datafile_object(bg);
          /*
             TODO: this fade should actually be to white
             if (_color_depth == 8)

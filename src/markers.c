@@ -38,22 +38,22 @@
 
 unsigned int find_marker(const s_marker_array *marray, const char *name)
 {
-	unsigned int i;
+   unsigned int i;
 
-	assert(marray && "s_marker_array is NULL");
+   assert(marray && "s_marker_array is NULL");
 
-	if (name == NULL)
-		return -1;  // An empty name is not an error; it is simply not found
+   if (name == NULL)
+      return -1;  // An empty name is not an error; it is simply not found
 
-	for (i = 0; i < marray->size; ++i)
-	{
-		if (strcmp(name, marray->array[i].name)) // no match; keep going
-			continue;
+   for (i = 0; i < marray->size; ++i)
+   {
+      if (strcmp(name, marray->array[i].name)) // no match; keep going
+         continue;
 
-		return i; // return index of matching marker
-	}
+      return i; // return index of matching marker
+   }
 
-	return -1; // no match
+   return -1; // no match
 }
 
 

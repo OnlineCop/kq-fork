@@ -40,12 +40,12 @@
 
 typedef enum eSizes
 {
-	TILE_H = 16U,
-	TILE_W = 16U,
-	ENT_W  = 16U,
-	ENT_H  = 16U,
-	NUM_SPELLS_PER_PAGE = 12U,
-	NUM_ITEMS_PER_PAGE = 16U,
+   TILE_H = 16U,
+   TILE_W = 16U,
+   ENT_W  = 16U,
+   ENT_H  = 16U,
+   NUM_SPELLS_PER_PAGE = 12U,
+   NUM_ITEMS_PER_PAGE = 16U,
 } eSizes;
 
 #define MAX_TILES        1024
@@ -258,27 +258,27 @@ typedef enum eMapMode
 
 typedef enum eObstacles
 {
-	BLOCK_NONE = 0,
-	BLOCK_ALL  = 1,
-	BLOCK_U    = 2,
-	BLOCK_R    = 3,
-	BLOCK_D    = 4,
-	BLOCK_L    = 5,
+   BLOCK_NONE = 0,
+   BLOCK_ALL  = 1,
+   BLOCK_U    = 2,
+   BLOCK_R    = 3,
+   BLOCK_D    = 4,
+   BLOCK_L    = 5,
 
-	NUM_OBSTACLES        // always last
+   NUM_OBSTACLES        // always last
 } eObstacles;
 
 
 typedef enum eEquipment
 {
-	EQP_WEAPON  = 0,
-	EQP_SHIELD  = 1,
-	EQP_HELMET  = 2,
-	EQP_ARMOR   = 3,
-	EQP_HAND    = 4,
-	EQP_SPECIAL = 5,
+   EQP_WEAPON  = 0,
+   EQP_SHIELD  = 1,
+   EQP_HELMET  = 2,
+   EQP_ARMOR   = 3,
+   EQP_HAND    = 4,
+   EQP_SPECIAL = 5,
 
-	NUM_EQUIPMENT        // always last
+   NUM_EQUIPMENT        // always last
 } eEquipment;
 
 

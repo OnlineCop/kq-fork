@@ -1912,8 +1912,8 @@ unsigned int get_line (const int line_x, const int line_y, char *buffer,
  */
 void get_tile (void)
 {
-	unsigned int xx = window_x + x;
-	unsigned int yy = window_y + y;
+   unsigned int xx = window_x + x;
+   unsigned int yy = window_y + y;
 
    unsigned int tile = yy * gmap.xsize + xx;
    unsigned int i;

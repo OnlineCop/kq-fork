@@ -25,8 +25,8 @@
 
 
 /* ML: include aldumb.h here, because other modules really don't know that
-	we are using dumb, and it doesn't make sense to have to include aldumb
-	individually */
+   we are using dumb, and it doesn't make sense to have to include aldumb
+   individually */
 
 //#include <aldumb.h>
 
