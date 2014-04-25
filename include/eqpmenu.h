@@ -28,3 +28,10 @@ void equip_menu (unsigned int);          /*  menu.c  */
 
 
 #endif  /* __EQPMENU_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

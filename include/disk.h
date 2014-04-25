@@ -39,3 +39,10 @@ int save_s_tileset (s_tileset *, PACKFILE *);
 
 
 #endif  /* __DISK_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

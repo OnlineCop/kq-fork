@@ -54,21 +54,21 @@ static int frate;
  */
 void kq_wait (long ms)
 {
-   /* dumb's doc says to call poll_music each bufsize / freq seconds */
-   static const int delay = 1000 * 4096 * 2 / 44100;
-   struct timeval timeout = { 0, 0 };
-   while (ms > 0) {
-      if (ms > delay) {
-         timeout.tv_usec = delay * 1000;
-         ms -= delay;
-      } else {
-         timeout.tv_usec = ms * 1000;
-         ms = 0;
-      }
-      select (0, NULL, NULL, NULL, &timeout);
+    /* dumb's doc says to call poll_music each bufsize / freq seconds */
+    static const int delay = 1000 * 4096 * 2 / 44100;
+    struct timeval timeout = { 0, 0 };
+    while (ms > 0) {
+        if (ms > delay) {
+            timeout.tv_usec = delay * 1000;
+            ms -= delay;
+        } else {
+            timeout.tv_usec = ms * 1000;
+            ms = 0;
+        }
+        select (0, NULL, NULL, NULL, &timeout);
 
-      poll_music ();
-   }
+        poll_music ();
+    }
 }
 
 
@@ -84,77 +84,77 @@ void kq_wait (long ms)
  */
 int limit_frame_rate (int fps)
 {
-   static struct timeval last_exec = { 0, 0 };
-   struct timeval tv = { 0, 0 };
-   struct timeval timeout = { 0, 0 };
-   time_t seconds;
+    static struct timeval last_exec = { 0, 0 };
+    struct timeval tv = { 0, 0 };
+    struct timeval timeout = { 0, 0 };
+    time_t seconds;
 
-   gettimeofday (&tv, 0);
-   /* The time between now and (last exec + delay) */
-   timeout.tv_usec = last_exec.tv_usec - tv.tv_usec + (1000000 / fps)
-      + 1000000 * (last_exec.tv_sec - tv.tv_sec);
-   seconds = last_exec.tv_sec;
-   /* Negative waits are not yet possible */
-   if (timeout.tv_usec < 0 || !last_exec.tv_sec) {
-      last_exec.tv_usec = tv.tv_usec;
-      last_exec.tv_sec = tv.tv_sec;
-   } else {
-      select (0, NULL, NULL, NULL, &timeout);
-      last_exec.tv_usec += (1000000 / fps);
-      if (last_exec.tv_usec > 1000000) {
-         ++last_exec.tv_sec;
-         last_exec.tv_usec -= 1000000;
-      }
-   }
-   if (seconds != last_exec.tv_sec) {
-      mfrate = frate;
-      frate = 0;
-   }
-   ++frate;
-   return mfrate;
+    gettimeofday (&tv, 0);
+    /* The time between now and (last exec + delay) */
+    timeout.tv_usec = last_exec.tv_usec - tv.tv_usec + (1000000 / fps)
+        + 1000000 * (last_exec.tv_sec - tv.tv_sec);
+    seconds = last_exec.tv_sec;
+    /* Negative waits are not yet possible */
+    if (timeout.tv_usec < 0 || !last_exec.tv_sec) {
+        last_exec.tv_usec = tv.tv_usec;
+        last_exec.tv_sec = tv.tv_sec;
+    } else {
+        select (0, NULL, NULL, NULL, &timeout);
+        last_exec.tv_usec += (1000000 / fps);
+        if (last_exec.tv_usec > 1000000) {
+            ++last_exec.tv_sec;
+            last_exec.tv_usec -= 1000000;
+        }
+    }
+    if (seconds != last_exec.tv_sec) {
+        mfrate = frate;
+        frate = 0;
+    }
+    ++frate;
+    return mfrate;
 }
 
 #elif defined(_WIN32)
 
 void kq_wait (long ms)
 {
-   /* dumb's doc says to call poll_music each bufsize / freq seconds */
-   static const int delay = 1000 * 4096 * 4 / 44100;
+    /* dumb's doc says to call poll_music each bufsize / freq seconds */
+    static const int delay = 1000 * 4096 * 4 / 44100;
 
-   while (ms > 0) {
-      if (ms > delay) {
-         Sleep (delay);
-         ms -= delay;
-      } else {
-         Sleep (ms);
-         ms = 0;
-      }
-      poll_music ();
-   }
+    while (ms > 0) {
+        if (ms > delay) {
+            Sleep (delay);
+            ms -= delay;
+        } else {
+            Sleep (ms);
+            ms = 0;
+        }
+        poll_music ();
+    }
 }
 
 
 
 int limit_frame_rate (int fps)
 {
-   static long last_exec = 0;
-   long now, delay;
+    static long last_exec = 0;
+    long now, delay;
 
-   now = GetTickCount ();
-   delay = last_exec - now + 1000 / fps;
+    now = GetTickCount ();
+    delay = last_exec - now + 1000 / fps;
 //   skips = delay;
-   if (delay < 0) {
-      last_exec = now;
-   } else {
-      last_exec += 1000 / fps;
-      Sleep (delay);
-   }
-   if (now / 1000 != last_exec / 1000) {
-      mfrate = frate;
-      frate = 0;
-   }
-   ++frate;
-   return mfrate;
+    if (delay < 0) {
+        last_exec = now;
+    } else {
+        last_exec += 1000 / fps;
+        Sleep (delay);
+    }
+    if (now / 1000 != last_exec / 1000) {
+        mfrate = frate;
+        frate = 0;
+    }
+    ++frate;
+    return mfrate;
 }
 #else
 
@@ -169,32 +169,39 @@ int limit_frame_rate (int fps)
  */
 static void _kq_rest_callback (void)
 {
-   poll_music ();
+    poll_music ();
 }
 
 
 
 void kq_wait (long ms)
 {
-   rest_callback (ms, _kq_rest_callback);
+    rest_callback (ms, _kq_rest_callback);
 }
 
 
 
 int limit_frame_rate (int fps)
 {
-   static int last_ksec = 0;
+    static int last_ksec = 0;
 
-   vsync ();
-   ++frate;
-   if (last_ksec != ksec) {
-      last_ksec = ksec;
-      mfrate = frate;
-      frate = 0;
-   }
-   return mfrate;
+    vsync ();
+    ++frate;
+    if (last_ksec != ksec) {
+        last_ksec = ksec;
+        mfrate = frate;
+        frate = 0;
+    }
+    return mfrate;
 }
 
 
 
 #endif  // HAVE_SYS_SELECT_H
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

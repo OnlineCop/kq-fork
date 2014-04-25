@@ -115,3 +115,10 @@ s_fighter status_adjust (int);  /*  combat.c, [he]skill.c  */
 
 
 #endif  /* __MAGIC_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

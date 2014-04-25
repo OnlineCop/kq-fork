@@ -52,18 +52,18 @@ void count_entities (void);     /*  kq.c  */
 
 typedef enum eCommands
 {
-   COMMAND_NONE            = 0,
-   COMMAND_MOVE_UP         = 1,
-   COMMAND_MOVE_DOWN       = 2,
-   COMMAND_MOVE_LEFT       = 3,
-   COMMAND_MOVE_RIGHT      = 4,
-   COMMAND_WAIT            = 5,
-   COMMAND_FINISH_COMMANDS = 6,
-   COMMAND_REPEAT          = 7,
-   COMMAND_MOVETO_X        = 8,
-   COMMAND_MOVETO_Y        = 9,
-   COMMAND_FACE            = 10,
-   COMMAND_KILL            = 11,
+    COMMAND_NONE            = 0,
+    COMMAND_MOVE_UP         = 1,
+    COMMAND_MOVE_DOWN       = 2,
+    COMMAND_MOVE_LEFT       = 3,
+    COMMAND_MOVE_RIGHT      = 4,
+    COMMAND_WAIT            = 5,
+    COMMAND_FINISH_COMMANDS = 6,
+    COMMAND_REPEAT          = 7,
+    COMMAND_MOVETO_X        = 8,
+    COMMAND_MOVETO_Y        = 9,
+    COMMAND_FACE            = 10,
+    COMMAND_KILL            = 11,
 } eCommands;
 
 
@@ -71,3 +71,10 @@ typedef enum eCommands
 
 
 #endif  /* __ENTITY_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

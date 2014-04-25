@@ -45,15 +45,15 @@
 /*! \brief An item */
 typedef struct
 {
-   char name[17];               /*!< Name of the item */
-   unsigned char icon;          /*!< Small icon */
-   unsigned char kol;           /*!< Colour to draw?? See hero_init() */
-   char desc[40];               /*!< One line description */
-   unsigned char tgt;           /*!< Targetting type for combat items. See TGT_* constants in kq.h */
-   unsigned char type;          /*!< Relates to which slot (hand, etc.) this item goes into */
-   unsigned char use;           /*!< Usage mode  (see USE_* constants in kq.h) */
-   unsigned char ilvl;          /*!< What level this item is */
-   unsigned char hnds;          /*!< This is used to index into the ::magic[] array */
+    char name[17];               /*!< Name of the item */
+    unsigned char icon;          /*!< Small icon */
+    unsigned char kol;           /*!< Colour to draw?? See hero_init() */
+    char desc[40];               /*!< One line description */
+    unsigned char tgt;           /*!< Targetting type for combat items. See TGT_* constants in kq.h */
+    unsigned char type;          /*!< Relates to which slot (hand, etc.) this item goes into */
+    unsigned char use;           /*!< Usage mode  (see USE_* constants in kq.h) */
+    unsigned char ilvl;          /*!< What level this item is */
+    unsigned char hnds;          /*!< This is used to index into the ::magic[] array */
 
 /*! For seeds, determines what attribute is affected.
  * - 0 Strength
@@ -64,72 +64,72 @@ typedef struct
  *
  * See item_effects()
  */
-   unsigned char bst;
-   unsigned char elem;          /*!< For runes, what element will it affect (see rs parameter of res_adjust() ) */
-   unsigned char imb;           /*!< imbued - What spell is cast when you "use" this item in combat */
-   unsigned char eff;           /*!< Effect ?? */
-   int bon;                     /*!< Bonus ?? */
-   int price;                   /*!< Default price of this item, in gp */
-   unsigned char eq[8];         /*!< Who can equip this item. See heroc.h */
-   int stats[13];               /*!< Stat bonuses for equipping this item See A_ constants in kq.h */
-   char res[16];                /*!< Resistances. See R_ constants in kq.h */
+    unsigned char bst;
+    unsigned char elem;          /*!< For runes, what element will it affect (see rs parameter of res_adjust() ) */
+    unsigned char imb;           /*!< imbued - What spell is cast when you "use" this item in combat */
+    unsigned char eff;           /*!< Effect ?? */
+    int bon;                     /*!< Bonus ?? */
+    int price;                   /*!< Default price of this item, in gp */
+    unsigned char eq[8];         /*!< Who can equip this item. See heroc.h */
+    int stats[13];               /*!< Stat bonuses for equipping this item See A_ constants in kq.h */
+    char res[16];                /*!< Resistances. See R_ constants in kq.h */
 } s_item;
 
 
 /*! \brief A spell */
 typedef struct
 {
-   char name[14];               /*!< Name of the spell being used */
-   unsigned char icon;          /*!< Picture used in the spell list (which type of spell) */
-   char desc[26];               /*!< Description of what the spell is intended to do */
-   unsigned char stat;
-   unsigned char mpc;
-   unsigned char use;
-   unsigned char tgt;
-   int dmg;
-   int bon;                     /*!< Bonus for */
-   int hit;
-   unsigned char elem;
-   unsigned char dlvl;
-   unsigned char eff;
-   int clvl[8];
+    char name[14];               /*!< Name of the spell being used */
+    unsigned char icon;          /*!< Picture used in the spell list (which type of spell) */
+    char desc[26];               /*!< Description of what the spell is intended to do */
+    unsigned char stat;
+    unsigned char mpc;
+    unsigned char use;
+    unsigned char tgt;
+    int dmg;
+    int bon;                     /*!< Bonus for */
+    int hit;
+    unsigned char elem;
+    unsigned char dlvl;
+    unsigned char eff;
+    int clvl[8];
 } s_spell;
 
 
 /*! \brief A special effect */
 typedef struct
 {
-   unsigned char numf;
-   unsigned short xsize;
-   unsigned short ysize;
-   unsigned char orient;
-   unsigned short delay;
-   unsigned char kolor;
-   unsigned char snd;
-   char ename[16];
+    unsigned char numf;
+    unsigned short xsize;
+    unsigned short ysize;
+    unsigned char orient;
+    unsigned short delay;
+    unsigned char kolor;
+    unsigned char snd;
+    char ename[16];
 } s_effect;
 
 
 /*! \brief An encounter */
 typedef struct
 {
-   unsigned char tnum;          /*!< Encounter number in the Encounter table */
-   unsigned char lvl;           /*!< Level of monsters */
-   unsigned char per;           /*!< When random encounters are specified, this is the cumulative percentage that this one will be selected */
-   unsigned char idx[5];        /*!< Index of enemies */
+    unsigned char tnum;          /*!< Encounter number in the Encounter table */
+    unsigned char lvl;           /*!< Level of monsters */
+    unsigned char per;           /*!< When random encounters are specified, this is the cumulative percentage that this one will be selected */
+    unsigned char idx[5];        /*!< Index of enemies */
 } s_erow;
 
 
 /*! \brief An actual battle */
 typedef struct
 {
-   unsigned char extra_byte;    /*!< Map where this battle occurs */
-   unsigned char extra_byte2;   /*!< Zone that triggers this battle */
-   unsigned char enc;           /*!< For random encounters, a 1 in enc chance there will not be combat */
-   unsigned char etnum;         /*!< Select rows in the encounter table */
-   unsigned char eidx;          /*!< Select a specific row, or 99 to pick a random one */
-   char bmusic[16];             /*!< music file to play */
-   char backimg[20];            /*!< Background image */
+    unsigned char extra_byte;    /*!< Map where this battle occurs */
+    unsigned char extra_byte2;   /*!< Zone that triggers this battle */
+    unsigned char enc;           /*!< For random encounters, a 1 in enc chance there will not be combat */
+    unsigned char etnum;         /*!< Select rows in the encounter table */
+    unsigned char eidx;          /*!< Select a specific row, or 99 to pick a random one */
+    char bmusic[16];             /*!< music file to play */
+    char backimg[20];            /*!< Background image */
 } s_encounter;
 
 
@@ -183,3 +183,10 @@ extern s_encounter battles[NUM_BATTLES];    /*  only in combat.c  */
 
 
 #endif  /* __RES_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

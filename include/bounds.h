@@ -47,11 +47,11 @@
  */
 typedef struct
 {
-   short left;                  /*!< Left edge of the bounding box */
-   short top;                   /*!< Top edge of the bounding box */
-   short right;                 /*!< Right edge of the bounding box */
-   short bottom;                /*!< Bottom edge of the bounding box */
-   short btile;                 /*!< Index of the tile to draw everywhere BUT here */
+    short left;                  /*!< Left edge of the bounding box */
+    short top;                   /*!< Top edge of the bounding box */
+    short right;                 /*!< Right edge of the bounding box */
+    short bottom;                /*!< Bottom edge of the bounding box */
+    short btile;                 /*!< Index of the tile to draw everywhere BUT here */
 } s_bound;
 
 
@@ -66,8 +66,8 @@ typedef struct
  */
 typedef struct _bound_array
 {
-   s_bound *array;
-   size_t size;
+    s_bound *array;
+    size_t size;
 } s_bound_array;
 
 
@@ -88,3 +88,10 @@ size_t       save_bounds (s_bound_array *, PACKFILE *);
 
 
 #endif  /* __BOUNDS_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

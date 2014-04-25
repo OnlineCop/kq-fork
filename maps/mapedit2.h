@@ -27,24 +27,24 @@
 
 enum
 {
-   LAYER_1_FLAG = 1 << 0,
-   LAYER_2_FLAG = 1 << 1,
-   LAYER_3_FLAG = 1 << 2,
-   SHADOW_FLAG = 1 << 3,
-   OBSTACLES_FLAG = 1 << 4,
-   ZONES_FLAG = 1 << 5,
-   MARKERS_FLAG = 1 << 6,
-   ENTITIES_FLAG = 1 << 7,
-   MAGIC_PINK_FLAG = 1 << 8,
-   BOUNDING_FLAG = 1 << 9,
+    LAYER_1_FLAG = 1 << 0,
+    LAYER_2_FLAG = 1 << 1,
+    LAYER_3_FLAG = 1 << 2,
+    SHADOW_FLAG = 1 << 3,
+    OBSTACLES_FLAG = 1 << 4,
+    ZONES_FLAG = 1 << 5,
+    MARKERS_FLAG = 1 << 6,
+    ENTITIES_FLAG = 1 << 7,
+    MAGIC_PINK_FLAG = 1 << 8,
+    BOUNDING_FLAG = 1 << 9,
 };
 enum
 {
-   ENTITY_PROP_COLUMN,
-   ENTITY_VALUE_COLUMN,
-   ENTITY_REF_COLUMN,
-   ENTITY_SIZEOF_COLUMN,
-   ENTITY_N_COLUMNS
+    ENTITY_PROP_COLUMN,
+    ENTITY_VALUE_COLUMN,
+    ENTITY_REF_COLUMN,
+    ENTITY_SIZEOF_COLUMN,
+    ENTITY_N_COLUMNS
 };
 
 #define OBSTACLES_CYCLE 6       /* MAX_OBSTACLES + 1 */
@@ -73,3 +73,10 @@ void set_zone_at (unsigned int, unsigned int, unsigned int);
 
 
 #endif  // MAPEDIT2_H_INC
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

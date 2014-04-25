@@ -46,59 +46,66 @@
  */
 const char *kqres (enum eDirectories dir, const char *file)
 {
-   FILE *fp;
-   static char ans[PATH_MAX];
+    FILE *fp;
+    static char ans[PATH_MAX];
 
-   switch (dir) {
-   case DATA_DIR:
-      sprintf (ans, "data/%s", file);
-      break;
-   case MUSIC_DIR:
-      sprintf (ans, "music/%s", file);
-      break;
-   case MAP_DIR:
-      sprintf (ans, "maps/%s", file);
-      break;
-   case SAVE_DIR:
-      sprintf (ans, "saves/%s", file);
-      break;
-   case SETTINGS_DIR:
-      sprintf (ans, "./%s", file);
-      break;
-   case SCRIPT_DIR:
-      sprintf (ans, "scripts/%s.lob", file);
-      fp = fopen (ans, "r");
-      if (fp == NULL)
-         sprintf (ans, "scripts/%s.lua", file);
-      else
-         fclose (ans);
-      break;
-   default:
-      return NULL;
-   }
-   return ans;
+    switch (dir) {
+    case DATA_DIR:
+        sprintf (ans, "data/%s", file);
+        break;
+    case MUSIC_DIR:
+        sprintf (ans, "music/%s", file);
+        break;
+    case MAP_DIR:
+        sprintf (ans, "maps/%s", file);
+        break;
+    case SAVE_DIR:
+        sprintf (ans, "saves/%s", file);
+        break;
+    case SETTINGS_DIR:
+        sprintf (ans, "./%s", file);
+        break;
+    case SCRIPT_DIR:
+        sprintf (ans, "scripts/%s.lob", file);
+        fp = fopen (ans, "r");
+        if (fp == NULL)
+            sprintf (ans, "scripts/%s.lua", file);
+        else
+            fclose (ans);
+        break;
+    default:
+        return NULL;
+    }
+    return ans;
 }
 
 
 /* Timing specific to the beos OS */
 inline long long gettime ()
 {
-   struct timeval tv;
+    struct timeval tv;
 
-   gettimeofday (&tv, 0);
-   return (tv.tv_sec * 1000000) + (tv.tv_usec);
+    gettimeofday (&tv, 0);
+    return (tv.tv_sec * 1000000) + (tv.tv_usec);
 }
 
 
 
 int maybe_poll_joystick ()
 {
-   long long lasttime = 0;
-   long long nowtime = gettime ();
+    long long lasttime = 0;
+    long long nowtime = gettime ();
 
-   if ((unsigned long long) nowtime > (unsigned long long) lasttime) {
-      lasttime = nowtime + 150000;
-      return poll_joystick ();
-   } else
-      return -1;
+    if ((unsigned long long) nowtime > (unsigned long long) lasttime) {
+        lasttime = nowtime + 150000;
+        return poll_joystick ();
+    } else
+        return -1;
 }
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */
