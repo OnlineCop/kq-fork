@@ -4,7 +4,7 @@
       Copyright (C) 2002 Josh Bolduc
       Copyright (C) 2003-2005 Peter Hull
       Copyright (C) 2003-2005 Team Terradactyl
-      Copyright (C) 2006 Günther Brammer
+      Copyright (C) 2006 GÃ¼nther Brammer
 
     KQ is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
