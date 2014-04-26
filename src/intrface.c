@@ -38,16 +38,9 @@
 #ifndef KQ_SCAN_DEPEND
 # include <stdio.h>
 # include <string.h>
-# ifdef HAVE_LUA50_LUA_H
-#  include <lua50/lua.h>
-#  include <lua50/lauxlib.h>
-# elif defined HAVE_LUA5_1_LUA_H
-#  include <lua5.1/lualib.h>
-#  include <lua5.1/lauxlib.h>
-# else
-#  include <lualib.h>
-#  include <lauxlib.h>
-# endif /* HAVE_LUA50_LUA_H */
+# include <lua.h>
+# include <lualib.h>
+# include <lauxlib.h>
 #endif /* KQ_SCAN_DEPEND */
 
 #include "combat.h"
@@ -674,7 +667,8 @@ void do_luainit (const char *fname, int global)
       do_luakill ();
    }
    /* In Lua 5.1, this is a compatibility #define to luaL_newstate */
-   theL = lua_open ();
+   /* In Lua 5.2, this #define doesn't exist anymode. Switching to luaL_newstate */
+   theL = luaL_newstate ();
    if (theL == NULL)
       program_death (_("Could not initialise scripting engine"));
    /* This line breaks compatibility with Lua 5.0. Hopefully, we can do a full

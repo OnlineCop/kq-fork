@@ -14,7 +14,7 @@ Download and install MSYS-1.0.10.exe. If you build KQ from CVS, also get msysDTK
 Make sure that you have "mounted" /mingw in /etc/fstab
 
 3. Lua
-Download and extract lua-5.0.x.tar.gz. Edit the file "config",
+Download and extract lua-5.x.tar.gz. Edit the file "config",
 change "INSTALL_ROOT= /usr/local" to "INSTALL_ROOT= /mingw"
 and run "make && make install" (in MSYS).
 
@@ -23,7 +23,7 @@ make CC=i586-mingw32msvc-gcc RANLIB=i586-mingw32msvc-ranlib \
 mingw
 make INSTALL_TOP=/usr/local/i586-mingw32msvc \
 'INSTALL_EXEC= $(INSTALL) -m 0755' 'INSTALL_DATA= $(INSTALL) -m 0644' \
-"TO_LIB=lua51.dll" "TO_BIN=lua.exe luac5.1.exe" \
+"TO_LIB=lua.dll" "TO_BIN=lua.exe luac.exe" \
 install
 
 4. Allegro

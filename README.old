@@ -133,7 +133,7 @@ perl script called prep.pl that will do this. To compile a .lua
 script into a .lob file, do the following if you have perl:
 
 perl prep.pl < filename.lua > temp.tmp
-luac5.1 -o filename.lob temp.tmp
+luac -o filename.lob temp.tmp
 
 I tried piping under DOS, but it wasn't working quite right.  Just
 try it yourself if you like.
@@ -142,7 +142,7 @@ If you don't have perl, there is a 'pscripts' directory under the
 'scripts' directory that contains all of the .lua files, but without
 macros in them.  Then you can compile these by just doing this:
 
-luac5.1 -o filename.lob filename.lua
+luac -o filename.lob filename.lua
 
 If you don't use DOS for doing this, things might be slightly
 different for you.
