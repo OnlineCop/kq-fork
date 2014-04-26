@@ -49,3 +49,5 @@ po/remove-potcdate.sin
 autom4te.cache/
 intl/
 m4/
+scripts/Makefile.in
+Makefile.in
