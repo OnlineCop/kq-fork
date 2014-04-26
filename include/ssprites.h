@@ -53,3 +53,10 @@
 #define WHIRL_PCX                        47     /* BMP  */
 #define WHITE_PCX                        48     /* BMP  */
 #define XSURGE_PCX                       49     /* BMP  */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

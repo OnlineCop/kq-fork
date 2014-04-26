@@ -37,3 +37,9 @@
 #define VILLAGE_PCX                      31       /* BMP  */
 #define X_KQ_PAL                         32       /* PAL  */
 
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

@@ -31,3 +31,10 @@ void infusion (int, int);       /*  hskill.c  */
 
 
 #endif  /* __SKILLS_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

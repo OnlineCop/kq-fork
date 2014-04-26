@@ -51,8 +51,8 @@ s_fighter *player2fighter (int, s_fighter *);   /*  combat.c  */
  */
 typedef struct info_item
 {
-   char *key;                   /*!< The identifying title */
-   char *text;                  /*!< The actual info */
+    char *key;                   /*!< The identifying title */
+    char *text;                  /*!< The actual info */
 } IITEM;
 
 
@@ -60,10 +60,17 @@ typedef struct info_item
 /* Dynamic array for the hints/reminders */
 typedef struct info_list
 {
-   IITEM *root;                 /*!< The array of active info items */
-   int count;                   /*!< The number of items currently in the array */
-   int capacity;                /*!< The total capacity of the array */
+    IITEM *root;                 /*!< The array of active info items */
+    int count;                   /*!< The number of items currently in the array */
+    int capacity;                /*!< The total capacity of the array */
 } ILIST;
 
 
 #endif  /* __MENU_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

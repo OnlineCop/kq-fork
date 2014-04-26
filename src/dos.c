@@ -44,35 +44,42 @@
  */
 const char *kqres (enum eDirectories dir, const char *file)
 {
-   FILE *fp;
-   static char ans[PATH_MAX];
+    FILE *fp;
+    static char ans[PATH_MAX];
 
-   switch (dir) {
-   case DATA_DIR:
-      sprintf (ans, "data/%s", file);
-      break;
-   case MUSIC_DIR:
-      sprintf (ans, "music/%s", file);
-      break;
-   case MAP_DIR:
-      sprintf (ans, "maps/%s", file);
-      break;
-   case SAVE_DIR:
-      sprintf (ans, "saves/%s", file);
-      break;
-   case SETTINGS_DIR:
-      sprintf (ans, "./%s", file);
-      break;
-   case SCRIPT_DIR:
-      sprintf (ans, "scripts/%s.lob", file);
-      fp = fopen (ans, "r");
-      if (fp == NULL)
-         sprintf (ans, "scripts/%s.lua", file);
-      else
-         fclose (ans);
-      break;
-   default:
-      return NULL;
-   }
-   return ans;
+    switch (dir) {
+    case DATA_DIR:
+        sprintf (ans, "data/%s", file);
+        break;
+    case MUSIC_DIR:
+        sprintf (ans, "music/%s", file);
+        break;
+    case MAP_DIR:
+        sprintf (ans, "maps/%s", file);
+        break;
+    case SAVE_DIR:
+        sprintf (ans, "saves/%s", file);
+        break;
+    case SETTINGS_DIR:
+        sprintf (ans, "./%s", file);
+        break;
+    case SCRIPT_DIR:
+        sprintf (ans, "scripts/%s.lob", file);
+        fp = fopen (ans, "r");
+        if (fp == NULL)
+            sprintf (ans, "scripts/%s.lua", file);
+        else
+            fclose (ans);
+        break;
+    default:
+        return NULL;
+    }
+    return ans;
 }
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

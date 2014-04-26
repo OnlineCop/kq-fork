@@ -45,9 +45,9 @@
  */
 typedef struct _marker
 {
-   char name[32];               /*!< The name of this marker */
-   short x;                     /*!< The X position it refers to */
-   short y;                     /*!< The Y position it refers to */
+    char name[32];               /*!< The name of this marker */
+    short x;                     /*!< The X position it refers to */
+    short y;                     /*!< The Y position it refers to */
 } s_marker;
 
 
@@ -62,8 +62,8 @@ typedef struct _marker
  */
 typedef struct _marker_array
 {
-   s_marker *array;
-   size_t size;
+    s_marker *array;
+    size_t size;
 } s_marker_array;
 
 
@@ -73,3 +73,10 @@ size_t save_markers (s_marker_array *, PACKFILE *);
 
 
 #endif  /* __MARKERS_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

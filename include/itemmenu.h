@@ -35,3 +35,10 @@ int useup_item (int);
 
 
 #endif  /* __ITEMMENU_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

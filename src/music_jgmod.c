@@ -47,7 +47,7 @@ static JGMOD *gsong;
  */
 void init_music ()
 {
-   install_mod (6);
+    install_mod (6);
 }
 
 
@@ -60,7 +60,7 @@ void init_music ()
  */
 void pause_music ()
 {
-   pause_mod ();
+    pause_mod ();
 }
 
 
@@ -76,20 +76,20 @@ void pause_music ()
  */
 void play_music (const char *sngnme, long start_track)
 {
-   if (is_sound == 0)
-      return;
-   if (is_mod_playing ())
-      stop_mod ();
-   if (gsong)
-      destroy_mod (gsong);
-   if (!(gsong = load_mod (kqres (MUSIC_DIR, sngname)))) {
-      sprintf (strbuf, _("Could not load %s!"), sngnme);
-      klog (strbuf);
-   } else {
-      if (start_track > 0)
-         goto_mod_track (start_track);
-      play_mod (gsong, 1);
-   }
+    if (is_sound == 0)
+        return;
+    if (is_mod_playing ())
+        stop_mod ();
+    if (gsong)
+        destroy_mod (gsong);
+    if (!(gsong = load_mod (kqres (MUSIC_DIR, sngname)))) {
+        sprintf (strbuf, _("Could not load %s!"), sngnme);
+        klog (strbuf);
+    } else {
+        if (start_track > 0)
+            goto_mod_track (start_track);
+        play_mod (gsong, 1);
+    }
 }
 
 
@@ -101,7 +101,7 @@ void play_music (const char *sngnme, long start_track)
  */
 void poll_music ()
 {
-   /* JGMOD doesn't need polling */
+    /* JGMOD doesn't need polling */
 }
 
 
@@ -113,7 +113,7 @@ void poll_music ()
  */
 void resume_music ()
 {
-   resume_mod ();
+    resume_mod ();
 }
 
 
@@ -126,7 +126,7 @@ void resume_music ()
  */
 void set_music_volume (float vol)
 {
-   set_mod_volume ((int) (vol * 255.0));
+    set_mod_volume ((int) (vol * 255.0));
 }
 
 
@@ -137,8 +137,8 @@ void set_music_volume (float vol)
  */
 void shutdown_music ()
 {
-   stop_music ();
-   remove_mod ();
+    stop_music ();
+    remove_mod ();
 }
 
 
@@ -151,11 +151,18 @@ void shutdown_music ()
  */
 void stop_music ()
 {
-   if (is_sound == 0)
-      return;
-   if (is_mod_playing ())
-      stop_mod ();
+    if (is_sound == 0)
+        return;
+    if (is_mod_playing ())
+        stop_mod ();
 }
 
 
 #endif // KQ_USE_JGMOD
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

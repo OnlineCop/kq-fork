@@ -45,3 +45,10 @@ void cleanup (void);
 #endif // __MAPDRAW_H
 
 #endif // MAPDRAW2_H_INC
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

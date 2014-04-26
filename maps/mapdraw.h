@@ -87,11 +87,11 @@
 
 typedef struct
 {
-   int entities, obstacles, shadows, zones;
-   int markers;                 /* Markers */
-   int boundaries;              /* Bounding boxes */
-   int last_layer;              /* Tracks last-used layer */
-   int layer[3];                /* Back, Mid, Fore */
+    int entities, obstacles, shadows, zones;
+    int markers;                 /* Markers */
+    int boundaries;              /* Bounding boxes */
+    int last_layer;              /* Tracks last-used layer */
+    int layer[3];                /* Back, Mid, Fore */
 } s_show;
 
 
@@ -164,9 +164,9 @@ void error_load (const char *);
 
 
 extern BITMAP *double_buffer, *pcx_buffer, *icons[MAX_TILES],
-   *eframes[MAX_EPICS][NUM_FACING_DIRECTIONS * ENT_FRAMES_PER_DIR];
+    *eframes[MAX_EPICS][NUM_FACING_DIRECTIONS * ENT_FRAMES_PER_DIR];
 extern BITMAP *font6, *mesh1[MAX_OBSTACLES], *mesh2, *mesh3,
-   *shadow[MAX_SHADOWS], *marker_image, *marker_image_active;
+    *shadow[MAX_SHADOWS], *marker_image, *marker_image_active;
 extern PALETTE pal;
 
 extern char map_fname[40], map_path[MAX_PATH], *strbuf;
@@ -198,3 +198,10 @@ extern short active_bound;
 
 
 #endif  /* __MAPDRAW_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

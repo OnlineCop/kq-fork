@@ -40,12 +40,12 @@
 
 typedef enum eSizes
 {
-   TILE_H = 16U,
-   TILE_W = 16U,
-   ENT_W  = 16U,
-   ENT_H  = 16U,
-   NUM_SPELLS_PER_PAGE = 12U,
-   NUM_ITEMS_PER_PAGE = 16U,
+    TILE_H = 16U,
+    TILE_W = 16U,
+    ENT_W  = 16U,
+    ENT_H  = 16U,
+    NUM_SPELLS_PER_PAGE = 12U,
+    NUM_ITEMS_PER_PAGE = 16U,
 } eSizes;
 
 #define MAX_TILES        1024
@@ -220,12 +220,12 @@ typedef enum eSizes
 /*\{*/
 typedef enum eDirections
 {
-   FACE_DOWN   = 0,
-   FACE_UP     = 1,
-   FACE_LEFT   = 2,
-   FACE_RIGHT  = 3,
+    FACE_DOWN   = 0,
+    FACE_UP     = 1,
+    FACE_LEFT   = 2,
+    FACE_RIGHT  = 3,
 
-   NUM_FACING_DIRECTIONS // always last
+    NUM_FACING_DIRECTIONS // always last
 } eDirections;
 /*\}*/
 
@@ -236,14 +236,14 @@ typedef enum eDirections
  */
 typedef enum eMapMode
 {
-   MAPMODE_12E3S    = 0,   // "12E3S "
-   MAPMODE_1E23S    = 1,   // "1E23S "
-   MAPMODE_1p2E3S   = 2,   // "1)2E3S"
-   MAPMODE_1E2p3S   = 3,   // "1E2)3S"
-   MAPMODE_1P2E3S   = 4,   // "1(2E3S"
-   MAPMODE_12EP3S   = 5,   // "12E(3S"
+    MAPMODE_12E3S    = 0,   // "12E3S "
+    MAPMODE_1E23S    = 1,   // "1E23S "
+    MAPMODE_1p2E3S   = 2,   // "1)2E3S"
+    MAPMODE_1E2p3S   = 3,   // "1E2)3S"
+    MAPMODE_1P2E3S   = 4,   // "1(2E3S"
+    MAPMODE_12EP3S   = 5,   // "12E(3S"
 
-   NUM_MAPMODES            // always last
+    NUM_MAPMODES            // always last
 } eMapMode;
 
 
@@ -258,28 +258,35 @@ typedef enum eMapMode
 
 typedef enum eObstacles
 {
-   BLOCK_NONE = 0,
-   BLOCK_ALL  = 1,
-   BLOCK_U    = 2,
-   BLOCK_R    = 3,
-   BLOCK_D    = 4,
-   BLOCK_L    = 5,
+    BLOCK_NONE = 0,
+    BLOCK_ALL  = 1,
+    BLOCK_U    = 2,
+    BLOCK_R    = 3,
+    BLOCK_D    = 4,
+    BLOCK_L    = 5,
 
-   NUM_OBSTACLES        // always last
+    NUM_OBSTACLES        // always last
 } eObstacles;
 
 
 typedef enum eEquipment
 {
-   EQP_WEAPON  = 0,
-   EQP_SHIELD  = 1,
-   EQP_HELMET  = 2,
-   EQP_ARMOR   = 3,
-   EQP_HAND    = 4,
-   EQP_SPECIAL = 5,
+    EQP_WEAPON  = 0,
+    EQP_SHIELD  = 1,
+    EQP_HELMET  = 2,
+    EQP_ARMOR   = 3,
+    EQP_HAND    = 4,
+    EQP_SPECIAL = 5,
 
-   NUM_EQUIPMENT        // always last
+    NUM_EQUIPMENT        // always last
 } eEquipment;
 
 
 #endif  /* __ENUMS_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

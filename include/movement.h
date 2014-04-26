@@ -28,3 +28,10 @@ int find_path (int, int, int, int, int, char *, int);
 
 
 #endif  /* __MOVEMENT_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

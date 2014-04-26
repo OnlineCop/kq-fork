@@ -33,12 +33,12 @@
 
 typedef enum eDirectories
 {
-   DATA_DIR        = 0,
-   MAP_DIR         = 1,
-   SAVE_DIR        = 2,
-   MUSIC_DIR       = 3,
-   SCRIPT_DIR      = 4,
-   SETTINGS_DIR    = 5,
+    DATA_DIR        = 0,
+    MAP_DIR         = 1,
+    SAVE_DIR        = 2,
+    MUSIC_DIR       = 3,
+    SCRIPT_DIR      = 4,
+    SETTINGS_DIR    = 5,
 } eDirectories;
 
 
@@ -66,3 +66,10 @@ int maybe_poll_joystick ();
 
 
 #endif  /* __PLATFORM_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

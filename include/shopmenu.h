@@ -35,13 +35,13 @@ int shop (int);                 /*  only in intrface.c  */
 
 typedef struct
 {
-   char name[40];                            /* Name of this shop */
-   unsigned short items[SHOPITEMS];          /* A list of items in this shop */
-   unsigned short items_current[SHOPITEMS];  /* Quantity of this type of item */
-   unsigned short items_max[SHOPITEMS];      /* Maximum quantity of this type of item */
+    char name[40];                            /* Name of this shop */
+    unsigned short items[SHOPITEMS];          /* A list of items in this shop */
+    unsigned short items_current[SHOPITEMS];  /* Quantity of this type of item */
+    unsigned short items_max[SHOPITEMS];      /* Maximum quantity of this type of item */
 
-   /* Amount of time, in minutes, it takes for this shop to replenish this item */
-   unsigned short items_replenish_time[SHOPITEMS];
+    /* Amount of time, in minutes, it takes for this shop to replenish this item */
+    unsigned short items_replenish_time[SHOPITEMS];
 } s_shop;
 
 
@@ -51,3 +51,10 @@ extern unsigned short shop_time[NUMSHOPS];
 
 
 #endif  /* __SHOPMENU_H */
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */

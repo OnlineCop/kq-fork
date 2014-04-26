@@ -50,17 +50,17 @@ static int current_music_player;
  */
 void init_music ()
 {
-   atexit (&dumb_exit);
-   dumb_register_stdfiles ();
-   dumb_resampling_quality = 2;
+    atexit (&dumb_exit);
+    dumb_register_stdfiles ();
+    dumb_resampling_quality = 2;
 
-   /* initialize all music players */
-   current_music_player = MAX_MUSIC_PLAYERS;
-   while (current_music_player--) {
-      mod_song[current_music_player] = NULL;
-      mod_player[current_music_player] = NULL;
-   }
-   current_music_player = 0;
+    /* initialize all music players */
+    current_music_player = MAX_MUSIC_PLAYERS;
+    while (current_music_player--) {
+        mod_song[current_music_player] = NULL;
+        mod_player[current_music_player] = NULL;
+    }
+    current_music_player = 0;
 }
 
 
@@ -73,14 +73,14 @@ void init_music ()
  */
 void pause_music (void)
 {
-   if (is_sound != 0) {
-      if (current_music_player < MAX_MUSIC_PLAYERS - 1) {
-         al_pause_duh (mod_player[current_music_player]);
-         current_music_player++;
-      } else {
-         TRACE (_("reached maximum levels of music pauses!\n"));
-      }
-   }
+    if (is_sound != 0) {
+        if (current_music_player < MAX_MUSIC_PLAYERS - 1) {
+            al_pause_duh (mod_player[current_music_player]);
+            current_music_player++;
+        } else {
+            TRACE (_("reached maximum levels of music pauses!\n"));
+        }
+    }
 }
 
 
@@ -96,31 +96,31 @@ void pause_music (void)
  */
 void play_music (const char *music_name, long position)
 {
-   if (is_sound != 0) {
-      char filename[PATH_MAX];
+    if (is_sound != 0) {
+        char filename[PATH_MAX];
 
-      stop_music ();
-      strcpy (filename, kqres (MUSIC_DIR, music_name));
-      if (strstr (filename, ".mod"))
-         mod_song[current_music_player] = dumb_load_mod (filename);
+        stop_music ();
+        strcpy (filename, kqres (MUSIC_DIR, music_name));
+        if (strstr (filename, ".mod"))
+            mod_song[current_music_player] = dumb_load_mod (filename);
 
-      else if (strstr (filename, ".xm"))
-         mod_song[current_music_player] = dumb_load_xm (filename);
+        else if (strstr (filename, ".xm"))
+            mod_song[current_music_player] = dumb_load_xm (filename);
 
-      else if (strstr (filename, ".s3m"))
-         mod_song[current_music_player] = dumb_load_s3m (filename);
+        else if (strstr (filename, ".s3m"))
+            mod_song[current_music_player] = dumb_load_s3m (filename);
 
-      else
-         mod_song[current_music_player] = NULL;
-      if (mod_song[current_music_player]) {
-         /* ML: we should (?) adjust the buffer size after everything is running smooth */
-         mod_player[current_music_player] =
-            al_start_duh (mod_song[current_music_player], 2, position, 1.0,
-                          4096 * 4, 44100);
-      } else {
-         TRACE (_("Could not load %s!\n"), filename);
-      }
-   }
+        else
+            mod_song[current_music_player] = NULL;
+        if (mod_song[current_music_player]) {
+            /* ML: we should (?) adjust the buffer size after everything is running smooth */
+            mod_player[current_music_player] =
+                al_start_duh (mod_song[current_music_player], 2, position, 1.0,
+                              4096 * 4, 44100);
+        } else {
+            TRACE (_("Could not load %s!\n"), filename);
+        }
+    }
 }
 
 
@@ -132,9 +132,9 @@ void play_music (const char *music_name, long position)
  */
 void poll_music ()
 {
-   if (is_sound != 0) {
-      al_poll_duh (mod_player[current_music_player]);
-   }
+    if (is_sound != 0) {
+        al_poll_duh (mod_player[current_music_player]);
+    }
 }
 
 
@@ -146,11 +146,11 @@ void poll_music ()
  */
 void resume_music (void)
 {
-   if (is_sound != 0 && current_music_player > 0) {
-      stop_music ();
-      current_music_player--;
-      al_resume_duh (mod_player[current_music_player]);
-   }
+    if (is_sound != 0 && current_music_player > 0) {
+        stop_music ();
+        current_music_player--;
+        al_resume_duh (mod_player[current_music_player]);
+    }
 }
 
 
@@ -163,9 +163,9 @@ void resume_music (void)
  */
 void set_music_volume (float volume)
 {
-   if (is_sound != 0 && mod_player[current_music_player]) {
-      al_duh_set_volume (mod_player[current_music_player], volume);
-   }
+    if (is_sound != 0 && mod_player[current_music_player]) {
+        al_duh_set_volume (mod_player[current_music_player], volume);
+    }
 }
 
 
@@ -176,12 +176,12 @@ void set_music_volume (float volume)
  */
 void shutdown_music (void)
 {
-   if (is_sound != 0) {
-      do {
-         stop_music ();
-      }
-      while (current_music_player--);
-   }
+    if (is_sound != 0) {
+        do {
+            stop_music ();
+        }
+        while (current_music_player--);
+    }
 }
 
 
@@ -194,13 +194,20 @@ void shutdown_music (void)
  */
 void stop_music (void)
 {
-   if (is_sound != 0 && mod_player[current_music_player]) {
-      al_stop_duh (mod_player[current_music_player]);
-      unload_duh (mod_song[current_music_player]);
-      mod_player[current_music_player] = NULL;
-      mod_song[current_music_player] = NULL;
-   }
+    if (is_sound != 0 && mod_player[current_music_player]) {
+        al_stop_duh (mod_player[current_music_player]);
+        unload_duh (mod_song[current_music_player]);
+        mod_player[current_music_player] = NULL;
+        mod_song[current_music_player] = NULL;
+    }
 }
 
 
 #endif // KQ_USE_JGMOD
+
+/* Local Variables:     */
+/* mode: c              */
+/* comment-column: 0    */
+/* indent-tabs-mode nil */
+/* tab-width: 4         */
+/* End:                 */
