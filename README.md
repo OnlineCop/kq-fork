@@ -21,10 +21,10 @@ Roadmap
 -------
 
 This fork aims to modernize KQ by doing the following:
-* ~~Port Lua v5.1 code to Lua v5.2.~~***DONE!***
+* ~~Port Lua v5.1 code to Lua v5.2.~~ ***DONE!***
 * Get rid of all the old DOS and BeOS dependencies.
 * Port Allegro v4 code to SDL v2.
-* Get rig of DUMB.
+* Get rid of DUMB.
 * Finish the KQ story. **You can contribute!**
 * Brand new pixel art. **You can contribute!**
 
