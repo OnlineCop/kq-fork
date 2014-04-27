@@ -3,6 +3,10 @@ KQ Lives Again!
 
 Just a tentative to continue and modernize **[KQ Lives](http://sourceforge.net/projects/kqlives/)**.
 
+**grrk-bzzt** and **OnlineCop** are the maintainers of this project.
+
+You can get in touch with us on IRC at **#kqfork** on ***irc.freenode.net***
+
 How to install KQ
 -----------------
 
@@ -28,9 +32,8 @@ This fork aims to modernize KQ by doing the following:
 * Finish the KQ story. **You can contribute!**
 * Brand new pixel art. **You can contribute!**
 
-How to reach us
----------------
+Known bugs
+----------
 
-**grrk-bzzt** and **OnlineCop** are the maintainers of this project.
+* If you use PulseAudio, the game may not play any sounds. If you commit a patch for that problem, we'll gladly accept it, but in the meantime, we are just focusing on getting the game ported to SDL2.
 
-You can get in touch with us on IRC at **#kqfork** on ***irc.freenode.net***
