@@ -138,7 +138,7 @@ for i, quest in ipairs(quest_list) do
 end
 
 
---An interface to the engine's progress storage so we can store progress values
+--An interface to the progress of the engine storage so we can store progress values
 --in savegames. Indices are quest names given in quest_list. Values are
 --integers.
 progress = {}
@@ -258,16 +258,22 @@ function add_to_manor(hero)
 end
 
 
+function table.pack(...)
+  return { n = select("#", ...), ... }
+end
+
+
 -- Display bubble text; just concatenate all the args and call the _ex function
 -- Args ent  Entity number
 --      ...  Variable number of arguments - text to show
 function bubble(ent, ...)
   s = ""
-  for i = 1, arg.n do
+  local args = table.pack(...)
+  for i = 1, args.n do
     if (i ~= 1) then
       s = s.."\n"
     end
-    s = s..arg[i]
+    s = s..args[i]
   end
   bubble_ex(ent, s)
 end
@@ -275,11 +281,12 @@ end
 
 function portbubble(ent, ...)
   s = ""
-  for i = 1, arg.n do
+  local args = table.pack(...)
+  for i = 1, args.n do
     if (i ~= 1) then
       s = s.."\n"
     end
-    s = s..arg[i]
+    s = s..args[i]
   end
   portbubble_ex(ent, s)
 end
@@ -288,11 +295,12 @@ end
 -- See function bubble()
 function thought(ent, ...)
   s = ""
-  for i = 1, arg.n do
+  local args = table.pack(...)
+  for i = 1, args.n do
     if (i ~= 1) then
-      s = s.."\n"..arg[i]
+      s = s.."\n"..args[i]
     else
-      s = s..arg[i]
+      s = s..args[i]
     end
   end
   thought_ex(ent, s)
@@ -301,11 +309,12 @@ end
 
 function portthought(ent, ...)
   s = ""
-  for i = 1, arg.n do
+  local args = table.pack(...)
+  for i = 1, args.n do
     if (i ~= 1) then
-      s = s.."\n"..arg[i]
+      s = s.."\n"..args[i]
     else
-      s = s..arg[i]
+      s = s..args[i]
     end
   end
   portthought_ex(ent, s)
@@ -314,11 +323,12 @@ end
 
 function gameover(ent, ...)
   s = ""
-  for i = 1, arg.n do
+  local args = table.pack(...)
+  for i = 1, args.n do
     if (i ~= 1) then
-      s = s.."\n"..arg[i]
+      s = s.."\n"..args[i]
     else
-      s = s..arg[i]
+      s = s..args[i]
     end
   end
   portbubble(ent, s)
@@ -365,16 +375,17 @@ end
 
 
 -- Pick one of the args
--- If arg is a table it can have a pr field which gives
+-- If args is a table it can have a pr field which gives
 -- its probability of being picked
 -- e.g. print(pick(1,2,3))
 --      pick({pr = 5, name = "Rare"}, {pr = 95, name = "Common"}).name
 function pick(...)
   cumprob = 0
 
-  for i = 1, arg.n do
-    if (istable(arg[i]) ) then
-      prob = arg[i].pr or 1
+  local args = table.pack(...)
+  for i = 1, args.n do
+    if (istable(args[i]) ) then
+      prob = args[i].pr or 1
     else
       prob = 1
     end
@@ -384,9 +395,9 @@ function pick(...)
 
   cumprob = krnd(cumprob)
 
-  for i = 1, arg.n do
-    if (istable(arg[i]) ) then
-      prob = arg[i].pr or 1
+  for i = 1, args.n do
+    if (istable(args[i]) ) then
+      prob = args[i].pr or 1
     else
       prob = 1
     end
@@ -394,7 +405,7 @@ function pick(...)
     cumprob = cumprob - prob
 
     if (cumprob < 0) then
-      return arg[i]
+      return args[i]
     end
   end
 end
