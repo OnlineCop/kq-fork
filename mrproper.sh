@@ -2,6 +2,8 @@
 
 # Dumb and ugly cleaning script
 
+make clean
+
 rm -rf ABOUT-NLS
 rm -rf aclocal.m4
 rm -rf autom4te.cache/
