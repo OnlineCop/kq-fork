@@ -49,16 +49,7 @@ AC_SUBST(ALLEGRO_LIBS)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([stdlib.h string.h sys/time.h unistd.h sys/select.h])
-AC_CHECK_HEADERS(
-  [lua50/lua.h], , [AC_CHECK_HEADERS(
-    [lua5.1/lua.h], , [AC_CHECK_HEADERS(
-      [lua.h], , [AC_MSG_ERROR(
-        [Lua not found]
-      )]
-    )]
-  )]
-)
+AC_CHECK_HEADERS([lua.h lualib.h stdlib.h string.h sys/time.h unistd.h sys/select.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -85,7 +76,7 @@ AC_CHECK_FUNCS([atexit gettimeofday memmove memset mkdir pow strchr strstr])
 AC_CHECK_LIB(dumb, dumb_exit, [ALLEGRO_LIBS="-ldumb $ALLEGRO_LIBS"], [AC_MSG_ERROR([Dumb not found])])
 AX_CHECK_ALDUMB([ALLEGRO_LIBS="-laldmb $ALLEGRO_LIBS"], [AC_MSG_ERROR([Aldumb not found])], [$ALLEGRO_LIBS])
 AC_SEARCH_LIBS(sqrt, m)
-AC_SEARCH_LIBS(lua_gettop, lua50 lua5.1 lua, [], [AC_MSG_ERROR([Lua not found])])
+AC_SEARCH_LIBS(lua_gettop, lua, [], [AC_MSG_ERROR([Lua not found])])
 
 PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.8.0 libglade-2.0 >= 2.4.0],
   [AC_SUBST(GTK_LIBS)

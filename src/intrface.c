@@ -38,16 +38,9 @@
 #ifndef KQ_SCAN_DEPEND
 # include <stdio.h>
 # include <string.h>
-# ifdef HAVE_LUA50_LUA_H
-#  include <lua50/lua.h>
-#  include <lua50/lauxlib.h>
-# elif defined HAVE_LUA5_1_LUA_H
-#  include <lua5.1/lualib.h>
-#  include <lua5.1/lauxlib.h>
-# else
-#  include <lualib.h>
-#  include <lauxlib.h>
-# endif /* HAVE_LUA50_LUA_H */
+# include <lua.h>
+# include <lualib.h>
+# include <lauxlib.h>
 #endif /* KQ_SCAN_DEPEND */
 
 #include "combat.h"
@@ -79,6 +72,7 @@
 #define LUA_PLR_KEY "_obj"
 
 
+<<<<<<< HEAD
 /*struct luaL_reg
 {
     const char *name;
@@ -87,10 +81,12 @@
 
 
 
+=======
+>>>>>>> origin/lua52
 /* Internal functions */
 static void fieldsort (void);
-static const char *filereader (lua_State *, PACKFILE *, size_t *);
-static const char *stringreader (lua_State *, char **, size_t *);
+static const char *filereader (lua_State *, void *, size_t *);
+static const char *stringreader (lua_State *, void *, size_t *);
 static void init_markers (lua_State *);
 static void init_obj (lua_State *);
 int lua_dofile (lua_State *, const char *);
@@ -98,9 +94,9 @@ static int real_entity_num (lua_State *, int);
 
 // void remove_special_item (int index);
 
-static int KQ_char_getter (lua_State *);
-static int KQ_char_setter (lua_State *);
-static int KQ_party_setter (lua_State *);
+/* Functions that match the lua_CFunction format:
+ *  int (*lua_CFunction) (lua_State *L)
+ */
 static int KQ_add_chr (lua_State *);
 static int KQ_add_quest_item (lua_State *);
 static int KQ_add_special_item (lua_State *);
@@ -108,11 +104,9 @@ static int KQ_add_timer (lua_State *);
 static int KQ_battle (lua_State *);
 static int KQ_blit (lua_State *);
 static int KQ_bubble_ex (lua_State *);
-static int KQ_portbubble_ex (lua_State *);
 static int KQ_calc_viewport (lua_State *);
 static int KQ_change_map (lua_State *);
 static int KQ_check_key (lua_State *);
-static int KQ_check_map_change (void);
 static int KQ_chest (lua_State *);
 static int KQ_clear_buffer (lua_State *);
 static int KQ_combat (lua_State *);
@@ -193,12 +187,13 @@ static int KQ_move_camera (lua_State *);
 static int KQ_move_entity (lua_State *);
 static int KQ_msg (lua_State *);
 static int KQ_orient_heroes (lua_State *);
-static int KQ_party_getter (lua_State *);
 static int KQ_pause_song (lua_State *);
 static int KQ_place_ent (lua_State *);
 static int KQ_play_map_song (lua_State *);
 static int KQ_play_song (lua_State *);
 static int KQ_pnum (lua_State *);
+static int KQ_portbubble_ex (lua_State *);
+static int KQ_portthought_ex (lua_State *);
 static int KQ_print (lua_State *);
 static int KQ_prompt (lua_State *);
 static int KQ_ptext (lua_State *);
@@ -269,11 +264,6 @@ static int KQ_shop_add_item (lua_State *);
 static int KQ_shop_create (lua_State *);
 static int KQ_stop_song (lua_State *);
 static int KQ_thought_ex (lua_State *);
-static int KQ_portthought_ex (lua_State *);
-
-#ifdef DEBUGMODE
-static int KQ_traceback (lua_State *);
-#endif
 static int KQ_unpause_map_song (lua_State *);
 static int KQ_use_up (lua_State *);
 static int KQ_view_range (lua_State *);
@@ -281,6 +271,15 @@ static int KQ_wait (lua_State *);
 static int KQ_wait_enter (lua_State *);
 static int KQ_wait_for_entity (lua_State *);
 static int KQ_warp (lua_State *);
+
+static int KQ_char_getter (lua_State *);
+static int KQ_char_setter (lua_State *);
+static int KQ_check_map_change (void);
+static int KQ_party_getter (lua_State *);
+static int KQ_party_setter (lua_State *);
+#ifdef DEBUGMODE
+static int KQ_traceback (lua_State *);
+#endif
 
 
 static void set_btile (int, int, int);
@@ -291,7 +290,19 @@ static void set_obs (int, int, int);
 static void set_shadow (int, int, int);
 
 
+<<<<<<< HEAD
 static const struct luaL_reg lrs[] = {
+=======
+/* The 'luaL_Reg' struct is defined as:
+ * struct luaL_Reg
+ * {
+ *   const char *name;
+ *   lua_CFunction func;
+ * }
+ */
+
+static const struct luaL_Reg lrs[] = {
+>>>>>>> origin/lua52
     {"add_chr",          KQ_add_chr},
     {"add_quest_item",   KQ_add_quest_item},
     {"add_special_item", KQ_add_special_item},
@@ -668,13 +679,22 @@ void do_luacheat (void)
 void do_luainit (const char *fname, int global)
 {
     int oldtop;
+<<<<<<< HEAD
     const struct luaL_reg *rg = lrs;
+=======
+    const struct luaL_Reg *rg = lrs;
+>>>>>>> origin/lua52
 
     if (theL != NULL) {
         do_luakill ();
     }
     /* In Lua 5.1, this is a compatibility #define to luaL_newstate */
+<<<<<<< HEAD
     theL = lua_open ();
+=======
+    /* In Lua 5.2, this #define doesn't exist anymode. Switching to luaL_newstate */
+    theL = luaL_newstate ();
+>>>>>>> origin/lua52
     if (theL == NULL)
         program_death (_("Could not initialise scripting engine"));
     /* This line breaks compatibility with Lua 5.0. Hopefully, we can do a full
@@ -868,9 +888,13 @@ static void fieldsort (void)
  * \param f an Allegro packfile to read from
  * \param size [out] the number of bytes read
  */
-static const char *filereader (lua_State *L, PACKFILE *f, size_t *size)
+static const char *filereader (lua_State *L, void *data, size_t *size)
 {
     static char buf[1024];
+<<<<<<< HEAD
+=======
+    PACKFILE *f = (PACKFILE *) data;
+>>>>>>> origin/lua52
 
     /* Avoid 'unused' warning */
     (void) L;
@@ -888,8 +912,12 @@ static const char *filereader (lua_State *L, PACKFILE *f, size_t *size)
  * \param f a pointer to a pointer to the string
  * \param size [out] the number of bytes in the string
  */
-static const char *stringreader (lua_State *L, char **f, size_t *size)
+static const char *stringreader (lua_State *L, void *data, size_t *size)
 {
+<<<<<<< HEAD
+=======
+    char **f = (char **)data;
+>>>>>>> origin/lua52
     char *ans = *f;
 
     /* Avoid 'unused' warning */
@@ -3496,7 +3524,11 @@ static int KQ_set_marker (lua_State *L)
         /* Need to add a new marker */
         g_map.markers.array =
             (s_marker *) realloc (g_map.markers.array, sizeof (s_marker) *
+<<<<<<< HEAD
                                          (g_map.markers.size + 1));
+=======
+                                  (g_map.markers.size + 1));
+>>>>>>> origin/lua52
         m = &g_map.markers.array[g_map.markers.size++];
         strcpy (m->name, marker_name);
     }
@@ -3827,7 +3859,11 @@ static int KQ_set_progress (lua_State *L)
             return 0;
         } else
             return luaL_error (L, "%s: Expected integer from 0 to %d. Got %d.",
+<<<<<<< HEAD
                error_prefix, SIZE_PROGRESS - 1, a);
+=======
+                               error_prefix, SIZE_PROGRESS - 1, a);
+>>>>>>> origin/lua52
 
     }
 
@@ -4153,10 +4189,17 @@ static int KQ_traceback (lua_State *theL)
     /* Function at index 0 is always KQ_traceback; don't show it */
     int level = 1;
 
+<<<<<<< HEAD
     TRACE (_("%s\nStack trace:\n"), lua_tostring (theL, -1));
     while (lua_getstack (theL, level, &ar) != 0) {
         lua_getinfo (theL, "Sln", &ar);
         TRACE (_("#%d Line %d in (%s %s) %s\n"), level, ar.currentline, ar.what,
+=======
+    printf (_("%s\nStack trace:\n"), lua_tostring (theL, -1));
+    while (lua_getstack (theL, level, &ar) != 0) {
+        lua_getinfo (theL, "Sln", &ar);
+        printf (_("#%d Line %d in (%s %s) %s\n"), level, ar.currentline, ar.what,
+>>>>>>> origin/lua52
                ar.namewhat, ar.name);
         ++level;
     }
@@ -4282,13 +4325,22 @@ static int KQ_warp (lua_State *L)
 int lua_dofile (lua_State *L, const char *filename)
 {
     PACKFILE *f = (filename ? pack_fopen (filename, F_READ) : NULL);
+<<<<<<< HEAD
     int ret;
+=======
+    int ret = 0;
+    lua_Reader reader = filereader;
+>>>>>>> origin/lua52
 
     if (f == NULL) {
             printf (_("Could not open script %s!"), get_filename(filename));
             return 1;
     }
+<<<<<<< HEAD
     ret = lua_load (L, (lua_Chunkreader) filereader, f, filename);
+=======
+    ret = lua_load (L, reader, f, filename, NULL);
+>>>>>>> origin/lua52
     pack_fclose (f);
     if (ret != 0) {
         printf (_("Could not parse script %s!"), get_filename(filename));
@@ -4320,7 +4372,11 @@ static int kq_dostring (lua_State *L, const char *cmd)
     size_t i;
 
     nrets = lua_gettop (L);
+<<<<<<< HEAD
     retval = lua_load (L, (lua_Chunkreader) stringreader, &cmd, "<console>");
+=======
+    retval = lua_load (L, (lua_Reader) stringreader, &cmd, "<console>", NULL);
+>>>>>>> origin/lua52
     if (retval != 0) {
         scroll_console ("Parse error");
         return retval;
