@@ -36,7 +36,6 @@ src/movement.c
 src/music.c
 src/osx.m
 src/res.c
-src/scrnshot.c
 src/selector.c
 src/setup.c
 src/sgame.c

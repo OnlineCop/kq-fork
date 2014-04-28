@@ -28,7 +28,6 @@
 		8808A7B30A62F1AC00EBA666 /* menu.c in Sources */ = {isa = PBXBuildFile; fileRef = 8816BD0704D053D000000002 /* menu.c */; };
 		8808A7B40A62F1AC00EBA666 /* music.c in Sources */ = {isa = PBXBuildFile; fileRef = 8816BD0804D053D000000002 /* music.c */; };
 		8808A7B50A62F1AC00EBA666 /* res.c in Sources */ = {isa = PBXBuildFile; fileRef = 8816BD0904D053D000000002 /* res.c */; };
-		8808A7B60A62F1AC00EBA666 /* scrnshot.c in Sources */ = {isa = PBXBuildFile; fileRef = 8816BD0A04D053D000000002 /* scrnshot.c */; };
 		8808A7B70A62F1AC00EBA666 /* selector.c in Sources */ = {isa = PBXBuildFile; fileRef = 8816BD0B04D053D000000002 /* selector.c */; };
 		8808A7B80A62F1AC00EBA666 /* setup.c in Sources */ = {isa = PBXBuildFile; fileRef = 8816BD0C04D053D000000002 /* setup.c */; };
 		8808A7B90A62F1AC00EBA666 /* sgame.c in Sources */ = {isa = PBXBuildFile; fileRef = 8816BD0D04D053D000000002 /* sgame.c */; };
@@ -333,7 +332,6 @@
 		8816BD0704D053D000000002 /* menu.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = menu.c; path = src/menu.c; sourceTree = "<group>"; };
 		8816BD0804D053D000000002 /* music.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = music.c; path = src/music.c; sourceTree = "<group>"; };
 		8816BD0904D053D000000002 /* res.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = res.c; path = src/res.c; sourceTree = "<group>"; };
-		8816BD0A04D053D000000002 /* scrnshot.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = scrnshot.c; path = src/scrnshot.c; sourceTree = "<group>"; };
 		8816BD0B04D053D000000002 /* selector.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = selector.c; path = src/selector.c; sourceTree = "<group>"; };
 		8816BD0C04D053D000000002 /* setup.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = setup.c; path = src/setup.c; sourceTree = "<group>"; };
 		8816BD0D04D053D000000002 /* sgame.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = sgame.c; path = src/sgame.c; sourceTree = "<group>"; };
@@ -362,7 +360,6 @@
 		8816BD3F04D0542800000002 /* mpcx.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = mpcx.h; path = include/mpcx.h; sourceTree = "<group>"; };
 		8816BD4004D0542800000002 /* music.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = music.h; path = include/music.h; sourceTree = "<group>"; };
 		8816BD4204D0542800000002 /* res.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = res.h; path = include/res.h; sourceTree = "<group>"; };
-		8816BD4304D0542800000002 /* scrnshot.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = scrnshot.h; path = include/scrnshot.h; sourceTree = "<group>"; };
 		8816BD4404D0542800000002 /* selector.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = selector.h; path = include/selector.h; sourceTree = "<group>"; };
 		8816BD4504D0542800000002 /* setup.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = setup.h; path = include/setup.h; sourceTree = "<group>"; };
 		8816BD4604D0542800000002 /* sgame.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sgame.h; path = include/sgame.h; sourceTree = "<group>"; };
@@ -606,7 +603,6 @@
 				8808AA100A62F6E700EBA666 /* movement.c */,
 				8816BD0804D053D000000002 /* music.c */,
 				8816BD0904D053D000000002 /* res.c */,
-				8816BD0A04D053D000000002 /* scrnshot.c */,
 				8816BD0B04D053D000000002 /* selector.c */,
 				8816BD0C04D053D000000002 /* setup.c */,
 				8816BD0D04D053D000000002 /* sgame.c */,
@@ -676,7 +672,6 @@
 				8816BD4004D0542800000002 /* music.h */,
 				A02F886F13B416880090CA49 /* platform.h */,
 				8816BD4204D0542800000002 /* res.h */,
-				8816BD4304D0542800000002 /* scrnshot.h */,
 				8816BD4404D0542800000002 /* selector.h */,
 				8816BD4504D0542800000002 /* setup.h */,
 				8816BD4604D0542800000002 /* sgame.h */,
@@ -972,7 +967,6 @@
 				8808A7B40A62F1AC00EBA666 /* music.c in Sources */,
 				8808A7DC0A62F1AC00EBA666 /* osx.m in Sources */,
 				8808A7B50A62F1AC00EBA666 /* res.c in Sources */,
-				8808A7B60A62F1AC00EBA666 /* scrnshot.c in Sources */,
 				8808A7B70A62F1AC00EBA666 /* selector.c in Sources */,
 				8808A7B80A62F1AC00EBA666 /* setup.c in Sources */,
 				8808A7B90A62F1AC00EBA666 /* sgame.c in Sources */,

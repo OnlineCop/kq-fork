@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-O3 -W -Wall
 LDFLAGS=-s
-LDLIBS=`allegro-config --shared` -ljgmod -llua
+LDLIBS=`allegro-config --shared` -laldmb -llua
 
 OBJS=kq.o combat.o draw.o effects.o enemyc.o entity.o eqpmenu.o \
 eskill.o heroc.o hskill.o intrface.o itemmenu.o \
@@ -10,6 +10,4 @@ sgame.o shopmenu.o \
 
 kq: $(OBJS)
 	$(LINK.o) $^ -o $@ $(LDLIBS)
-
-
 

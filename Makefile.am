@@ -9,14 +9,14 @@ kq_SOURCES = include/bounds.h include/combat.h include/console.h \
 	include/hskill.h include/intrface.h include/itemdefs.h include/itemmenu.h \
 	include/kq.h include/kqsnd.h include/magic.h include/markers.h \
 	include/masmenu.h include/menu.h include/movement.h include/mpcx.h \
-	include/music.h include/platform.h include/res.h include/scrnshot.h \
+	include/music.h include/platform.h include/res.h \
 	include/selector.h include/setup.h include/sgame.h include/shopmenu.h \
 	include/skills.h include/ssprites.h include/structs.h include/timing.h \
 	src/bounds.c src/combat.c src/console.c src/credits.c src/disk.c \
 	src/draw.c src/effects.c src/enemyc.c src/entity.c src/eqpmenu.c \
 	src/eskill.c src/fade.c src/heroc.c src/hskill.c src/intrface.c \
 	src/itemmenu.c src/kq.c src/magic.c src/markers.c src/masmenu.c src/menu.c \
-	src/movement.c src/music.c src/res.c src/scrnshot.c src/selector.c \
+	src/movement.c src/music.c src/res.c src/selector.c \
 	src/setup.c src/sgame.c src/shopmenu.c src/timing.c
 
 EXTRA_kq_SOURCES = src/beos.c src/dos.c src/osx.m src/unix.c src/win.c \

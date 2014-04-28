@@ -67,7 +67,6 @@
 #include "music.h"
 #include "platform.h"
 #include "res.h"
-#include "scrnshot.h"
 #include "setup.h"
 #include "sgame.h"
 #include "shopmenu.h"
@@ -1543,18 +1542,6 @@ void readcontrols (void)
             alldead = 1;
     }
 #endif
-
-    /* ML,2002.09.21: Saves sequential screen captures to disk. See scrnshot.c/h for more info. */
-    if (key[KEY_F12]) {
-        save_screenshot (screen, "kq");
-        play_effect (SND_TWINKLE, 128);
-        /* Wait for key to be released before continuing */
-        /* PH 2002.09.21 n.b. keyboard not necessarily in polling mode */
-        while (key[KEY_F12]) {
-            if (keyboard_needs_poll ())
-                poll_keyboard ();
-        }
-    }
 
     if (use_joy > 0 && maybe_poll_joystick () == 0) {
         stk = &joy[use_joy - 1];

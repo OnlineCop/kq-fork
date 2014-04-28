@@ -269,16 +269,6 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit25]
-FileName=..\..\include\scrnshot.h
-CompileCpp=0
-Folder=Include
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
 [Unit26]
 FileName=..\..\include\selector.h
 CompileCpp=0
@@ -551,16 +541,6 @@ BuildCmd=
 
 [Unit53]
 FileName=..\..\src\res.c
-CompileCpp=0
-Folder=Source
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit54]
-FileName=..\..\src\scrnshot.c
 CompileCpp=0
 Folder=Source
 Compile=1

@@ -605,13 +605,6 @@
 			path = src/res.c;
 			refType = 4;
 		};
-		8816BD0A04D053D000000002 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			name = scrnshot.c;
-			path = src/scrnshot.c;
-			refType = 4;
-		};
 		8816BD0B04D053D000000002 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1008,13 +1001,6 @@
 			isa = PBXFileReference;
 			name = res.h;
 			path = include/res.h;
-			refType = 4;
-		};
-		8816BD4304D0542800000002 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			name = scrnshot.h;
-			path = include/scrnshot.h;
 			refType = 4;
 		};
 		8816BD4404D0542800000002 = {

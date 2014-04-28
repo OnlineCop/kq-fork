@@ -7881,27 +7881,6 @@ msgstr "alcanzado el máximo nivel de pausas de musica!\n"
 msgid "Could not load %s!"
 msgstr "Imposible cargar %s!"
 
-#: src/scrnshot.c:121
-#, c-format
-msgid "the bitmap [0x%p] is invalid (or unable to create sub bitmap)\n"
-msgstr ""
-"el mapa de bits [0x%p] es invalido(o inhabilitado para crear el sub mapa de "
-"bits)\n"
-
-#: src/scrnshot.c:126 src/scrnshot.c:127
-msgid "no more room for screenshot\n"
-msgstr "no hay mas espacio para el pantallazo\n"
-
-#: src/scrnshot.c:131
-#, c-format
-msgid "the prefix '%s' is too long\n"
-msgstr "el prefijo '%s' es muy largo\n"
-
-#: src/scrnshot.c:135
-#, c-format
-msgid "save path '%s' does not exist.\n"
-msgstr "la ruta de guardar '%s' no existe.\n"
-
 #: src/selector.c:189 src/selector.c:208
 msgid "Join"
 msgstr "Unir"

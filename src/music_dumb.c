@@ -24,10 +24,8 @@
  * \brief In-game music routines
  *
  * Handles playing and pausing music in the game.
- * Interfaces to either JGMOD or DUMB, depending on #defines
+ * Interfaces to DUMB
  */
-
-#ifndef KQ_USE_JGMOD
 
 #include <aldumb.h>
 #include <string.h>
@@ -201,9 +199,6 @@ void stop_music (void)
         mod_song[current_music_player] = NULL;
     }
 }
-
-
-#endif // KQ_USE_JGMOD
 
 /* Local Variables:     */
 /* mode: c              */

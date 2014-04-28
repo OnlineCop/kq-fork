@@ -7578,25 +7578,6 @@ msgstr ""
 msgid "Could not load %s!"
 msgstr ""
 
-#: src/scrnshot.c:121
-#, c-format
-msgid "the bitmap [0x%p] is invalid (or unable to create sub bitmap)\n"
-msgstr ""
-
-#: src/scrnshot.c:126 src/scrnshot.c:127
-msgid "no more room for screenshot\n"
-msgstr ""
-
-#: src/scrnshot.c:131
-#, c-format
-msgid "the prefix '%s' is too long\n"
-msgstr ""
-
-#: src/scrnshot.c:135
-#, c-format
-msgid "save path '%s' does not exist.\n"
-msgstr ""
-
 #: src/selector.c:189 src/selector.c:208
 msgid "Join"
 msgstr ""
