@@ -114,5 +114,5 @@ case ${host} in
      ;;
 esac
 AM_CONDITIONAL(BUNDLE, test x$bundle = xyes)
-AC_CONFIG_FILES([intl/Makefile po/Makefile.in scripts/Makefile Makefile])
+AC_CONFIG_FILES([intl/Makefile po/Makefile.in Makefile])
 AC_OUTPUT

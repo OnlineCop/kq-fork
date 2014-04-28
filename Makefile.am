@@ -1,4 +1,4 @@
-SUBDIRS = intl po scripts
+SUBDIRS = intl po
 bin_PROGRAMS = kq mapdraw mapdiff mapdump $(MAPDRAW2)
 EXTRA_PROGRAMS = mapdraw2
 
@@ -54,7 +54,6 @@ KQ.app: kq
 	install -C $(addprefix $(top_srcdir)/,$(dist_map_DATA)) $(APPR)/maps
 	install -C $(addprefix $(top_srcdir)/,$(dist_music_DATA)) $(APPR)/music
 	install -C $(top_srcdir)/Mac/KQ-icon.icns $(APPR)/KQ.icns
-	$(MAKE) -C scripts $@
 	touch KQ.app
 
 winres.o: winres.rc

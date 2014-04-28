@@ -107,7 +107,7 @@ bundle: $(EXEC)
 	install -C data/*.dat data/*.kq data/*.mon $(APPR)/data
 	install -C maps/*.map $(APPR)/maps
 	install -C music/*.s3m music/*.mod music/*.xm $(APPR)/music
-	install -C scripts/*.lob $(APPR)/scripts
+	install -C scripts/*.lua $(APPR)/scripts
 	install Mac/KQ-icon.icns $(APPR)/KQ.icns
 
 
@@ -134,7 +134,6 @@ bundle: $(EXEC)
 #                                                                             #
 clean:
 	$(RM) $(RMFLAGS) $(EXEC) $(OBJDIR)/*.o* $(RUNNER)
-	$(RM) $(RMFLAGS) $(SCR_DIR)/*.lob
 
 
 
