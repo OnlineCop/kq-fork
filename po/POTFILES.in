@@ -1,22 +1,16 @@
 # List of source files which contain translatable strings.
-maps/mainwindow.c
 maps/mapdata.c
 maps/mapdiff.c
-maps/mapdraw2.c
-maps/mapdraw2.glade
 maps/mapdump.c
-maps/mapedit2.c
 maps/mapedit.c
 maps/mapent.c
 maps/mapfile.c
 maps/mapshared.c
 maps/mapstructs.c
-src/beos.c
 src/bounds.c
 src/combat.c
 src/credits.c
 src/disk.c
-src/dos.c
 src/draw.c
 src/effects.c
 src/enemyc.c
@@ -43,4 +37,3 @@ src/shopmenu.c
 src/timing.c
 src/unix.c
 src/win.c
-

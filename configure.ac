@@ -78,13 +78,6 @@ AX_CHECK_ALDUMB([ALLEGRO_LIBS="-laldmb $ALLEGRO_LIBS"], [AC_MSG_ERROR([Aldumb no
 AC_SEARCH_LIBS(sqrt, m)
 AC_SEARCH_LIBS(lua_gettop, lua, [], [AC_MSG_ERROR([Lua not found])])
 
-PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.8.0 libglade-2.0 >= 2.4.0],
-  [AC_SUBST(GTK_LIBS)
-  AC_SUBST(GTK_CFLAGS)
-  MAPDRAW2="mapdraw2${EXEEXT}"],
-  [MAPDRAW2=""])
-AC_SUBST(MAPDRAW2)
-
 m4_ifdef([AS_HELP_STRING], , [m4_define([AS_HELP_STRING], m4_defn([AS_HELP_STRING]))])
 AC_ARG_WITH(2xsai, AS_HELP_STRING([--with-2xsai], [Use the 2xSAI library (default NO)]), AC_SUBST(kq_use_2xsai,1))
 AC_ARG_ENABLE(debug, AS_HELP_STRING([--enable-debug], [Enable debug mode]),

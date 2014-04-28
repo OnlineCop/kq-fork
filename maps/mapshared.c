@@ -187,6 +187,7 @@ void load_map (const char *path)
         return;
     }
 
+    printf("\nLoading map \"%s\":\n", load_fname);
     strcpy (map_path, load_fname);
     strcpy (map_fname, get_filename (load_fname));
 
@@ -202,20 +203,29 @@ void load_map (const char *path)
 
     bufferize ();
 
+    printf("\nmap:\n");
     for (q = 0; q < gmap.ysize; ++q) {
         for (p = 0; p < gmap.xsize; ++p) {
             map[q * gmap.xsize + p] = pack_igetw (pf);
+            printf("%d,", map[q * gmap.xsize + p]);
         }
+        printf("\n");
     }
+    printf("\nb_map:\n");
     for (q = 0; q < gmap.ysize; ++q) {
         for (p = 0; p < gmap.xsize; ++p) {
             b_map[q * gmap.xsize + p] = pack_igetw (pf);
+            printf("%d,", b_map[q * gmap.xsize + p]);
         }
+        printf("\n");
     }
+    printf("\nf_map:\n");
     for (q = 0; q < gmap.ysize; ++q) {
         for (p = 0; p < gmap.xsize; ++p) {
             f_map[q * gmap.xsize + p] = pack_igetw (pf);
+            printf("%d,", f_map[q * gmap.xsize + p]);
         }
+        printf("\n");
     }
 
     pack_fread (z_map, (gmap.xsize * gmap.ysize), pf);

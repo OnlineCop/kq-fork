@@ -48,46 +48,35 @@ unsigned char *o_map1, *o_map2, *s_map1, *s_map2, *z_map1, *z_map2;
  */
 static void bufferize_ex (const int which_map)
 {
+    size_t csize = sizeof(unsigned char);
+    size_t ssize = sizeof(unsigned short);
+
     if (which_map == 1) {
         free (map1);
-        map1 = (unsigned short *) malloc (gmap1.xsize * gmap1.ysize * 2);
+        map1 = (unsigned short *) calloc (gmap1.xsize * gmap1.ysize, ssize);
         free (b_map1);
-        b_map1 = (unsigned short *) malloc (gmap1.xsize * gmap1.ysize * 2);
+        b_map1 = (unsigned short *) calloc (gmap1.xsize * gmap1.ysize, ssize);
         free (f_map1);
-        f_map1 = (unsigned short *) malloc (gmap1.xsize * gmap1.ysize * 2);
+        f_map1 = (unsigned short *) calloc (gmap1.xsize * gmap1.ysize, ssize);
         free (o_map1);
-        o_map1 = (unsigned char *) malloc (gmap1.xsize * gmap1.ysize);
+        o_map1 = (unsigned char *) calloc (gmap1.xsize * gmap1.ysize, csize);
         free (s_map1);
-        s_map1 = (unsigned char *) malloc (gmap1.xsize * gmap1.ysize);
+        s_map1 = (unsigned char *) calloc (gmap1.xsize * gmap1.ysize, csize);
         free (z_map1);
-        z_map1 = (unsigned char *) malloc (gmap1.xsize * gmap1.ysize);
-
-        memset (map1, 0, gmap1.xsize * gmap1.ysize * 2);
-        memset (b_map1, 0, gmap1.xsize * gmap1.ysize * 2);
-        memset (f_map1, 0, gmap1.xsize * gmap1.ysize * 2);
-        memset (o_map1, 0, gmap1.xsize * gmap1.ysize);
-        memset (s_map1, 0, gmap1.xsize * gmap1.ysize);
-        memset (z_map1, 0, gmap1.xsize * gmap1.ysize);
+        z_map1 = (unsigned char *) calloc (gmap1.xsize * gmap1.ysize, csize);
     } else if (which_map == 2) {
         free (map2);
-        map2 = (unsigned short *) malloc (gmap2.xsize * gmap2.ysize * 2);
+        map2 = (unsigned short *) calloc (gmap2.xsize * gmap2.ysize, ssize);
         free (b_map2);
-        b_map2 = (unsigned short *) malloc (gmap2.xsize * gmap2.ysize * 2);
+        b_map2 = (unsigned short *) calloc (gmap2.xsize * gmap2.ysize, ssize);
         free (f_map2);
-        f_map2 = (unsigned short *) malloc (gmap2.xsize * gmap2.ysize * 2);
+        f_map2 = (unsigned short *) calloc (gmap2.xsize * gmap2.ysize, ssize);
         free (o_map2);
-        o_map2 = (unsigned char *) malloc (gmap2.xsize * gmap2.ysize);
+        o_map2 = (unsigned char *) calloc (gmap2.xsize * gmap2.ysize, csize);
         free (s_map2);
-        s_map2 = (unsigned char *) malloc (gmap2.xsize * gmap2.ysize);
+        s_map2 = (unsigned char *) calloc (gmap2.xsize * gmap2.ysize, csize);
         free (z_map2);
-        z_map2 = (unsigned char *) malloc (gmap2.xsize * gmap2.ysize);
-
-        memset (map2, 0, gmap2.xsize * gmap2.ysize * 2);
-        memset (b_map2, 0, gmap2.xsize * gmap2.ysize * 2);
-        memset (f_map2, 0, gmap2.xsize * gmap2.ysize * 2);
-        memset (o_map2, 0, gmap2.xsize * gmap2.ysize);
-        memset (s_map2, 0, gmap2.xsize * gmap2.ysize);
-        memset (z_map2, 0, gmap2.xsize * gmap2.ysize);
+        z_map2 = (unsigned char *) calloc (gmap2.xsize * gmap2.ysize, csize);
     }
 }                               /* bufferize_ex () */
 
@@ -804,7 +793,7 @@ int startup (void)
     allegro_init ();
 
     /* Buffer for all strings */
-    strbuf = (char *) malloc (256);
+    strbuf = (char *) calloc (256, sizeof(char));
     if (!strbuf)
         return 0;
     return 1;

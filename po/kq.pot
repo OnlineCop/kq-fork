@@ -6654,66 +6654,6 @@ msgstr ""
 msgid "This spa is relaxing."
 msgstr ""
 
-#: maps/mapdraw2.glade:8
-msgid "Mapdraw"
-msgstr ""
-
-#: maps/mapdraw2.glade:22
-msgid "_Map"
-msgstr ""
-
-#: maps/mapdraw2.glade:83
-msgid "_Edit"
-msgstr ""
-
-#: maps/mapdraw2.glade:129
-msgid "_View"
-msgstr ""
-
-#: maps/mapdraw2.glade:136
-msgid "_Help"
-msgstr ""
-
-#: maps/mapdraw2.glade:198
-msgid "Current Value:   "
-msgstr ""
-
-#: maps/mapdraw2.glade:382
-msgid "Homepage"
-msgstr ""
-
-#: maps/mapdraw2.glade:383
-msgid "translator-credits"
-msgstr ""
-
-#: maps/mapdraw2.glade:399
-msgid "Entity"
-msgstr ""
-
-#: maps/mapdraw2.glade:441
-msgid "<b>Entity</b>"
-msgstr ""
-
-#: maps/mapdraw2.glade:543
-msgid "iconset:"
-msgstr ""
-
-#: maps/mapdraw2.glade:554
-msgid "height:"
-msgstr ""
-
-#: maps/mapdraw2.glade:565
-msgid "width:"
-msgstr ""
-
-#: maps/mapdraw2.glade:585
-msgid "gtk-cancel"
-msgstr ""
-
-#: maps/mapdraw2.glade:597
-msgid "gtk-ok"
-msgstr ""
-
 #: src/combat.c:294
 #, c-format
 msgid "HP:%d (%d)"

@@ -46,24 +46,21 @@ const char OPTION_HELP_LONG[]      = "--help";
  */
 void bufferize (void)
 {
+    size_t csize = sizeof(unsigned char);
+    size_t ssize = sizeof(unsigned short);
+
     free (map);
-    map = (unsigned short *) malloc (gmap.xsize * gmap.ysize * 2);
+    map = (unsigned short *) calloc (gmap.xsize * gmap.ysize, ssize);
     free (b_map);
-    b_map = (unsigned short *) malloc (gmap.xsize * gmap.ysize * 2);
+    b_map = (unsigned short *) calloc (gmap.xsize * gmap.ysize, ssize);
     free (f_map);
-    f_map = (unsigned short *) malloc (gmap.xsize * gmap.ysize * 2);
+    f_map = (unsigned short *) calloc (gmap.xsize * gmap.ysize, ssize);
     free (z_map);
-    z_map = (unsigned char *) malloc (gmap.xsize * gmap.ysize);
+    z_map = (unsigned char *) calloc (gmap.xsize * gmap.ysize, csize);
     free (sh_map);
-    sh_map = (unsigned char *) malloc (gmap.xsize * gmap.ysize);
+    sh_map = (unsigned char *) calloc (gmap.xsize * gmap.ysize, csize);
     free (o_map);
-    o_map = (unsigned char *) malloc (gmap.xsize * gmap.ysize);
-    memset (map, 0, gmap.xsize * gmap.ysize * 2);
-    memset (b_map, 0, gmap.xsize * gmap.ysize * 2);
-    memset (f_map, 0, gmap.xsize * gmap.ysize * 2);
-    memset (z_map, 0, gmap.xsize * gmap.ysize);
-    memset (sh_map, 0, gmap.xsize * gmap.ysize);
-    memset (o_map, 0, gmap.xsize * gmap.ysize);
+    o_map = (unsigned char *) calloc (gmap.xsize * gmap.ysize, csize);
 }                               /* bufferize () */
 
 

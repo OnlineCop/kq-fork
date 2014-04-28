@@ -221,58 +221,47 @@ void bufferize (void)
 {
     unsigned int size1 = gmap.xsize * gmap.ysize * sizeof (unsigned char);
     unsigned int size2 = gmap.xsize * gmap.ysize * sizeof (unsigned short);
+    size_t csize = sizeof(unsigned char);
+    size_t ssize = sizeof(unsigned short);
 
     free (map);
-    map = (unsigned short *) malloc (size2);
+    map = (unsigned short *) calloc (size2, ssize);
 
     free (b_map);
-    b_map = (unsigned short *) malloc (size2);
+    b_map = (unsigned short *) calloc (size2, ssize);
 
     free (f_map);
-    f_map = (unsigned short *) malloc (size2);
+    f_map = (unsigned short *) calloc (size2, ssize);
 
     free (o_map);
-    o_map = (unsigned char *) malloc (size1);
+    o_map = (unsigned char *) calloc (size1, csize);
 
     free (sh_map);
-    sh_map = (unsigned char *) malloc (size1);
+    sh_map = (unsigned char *) calloc (size1, csize);
 
     free (z_map);
-    z_map = (unsigned char *) malloc (size1);
+    z_map = (unsigned char *) calloc (size1, csize);
 
     free (c_map);
-    c_map = (unsigned short *) malloc (size2);
+    c_map = (unsigned short *) calloc (size2, ssize);
 
     free (cb_map);
-    cb_map = (unsigned short *) malloc (size2);
+    cb_map = (unsigned short *) calloc (size2, ssize);
 
     free (co_map);
-    co_map = (unsigned char *) malloc (size1);
+    co_map = (unsigned char *) calloc (size1, csize);
 
     free (cf_map);
-    cf_map = (unsigned short *) malloc (size2);
+    cf_map = (unsigned short *) calloc (size2, ssize);
 
     free (csh_map);
-    csh_map = (unsigned char *) malloc (size1);
+    csh_map = (unsigned char *) calloc (size1, csize);
 
     free (cz_map);
-    cz_map = (unsigned char *) malloc (size1);
+    cz_map = (unsigned char *) calloc (size1, csize);
 
     free (search_map);
-    search_map = (unsigned char *) malloc (size1);
-
-    memset (map, 0, size2);
-    memset (b_map, 0, size2);
-    memset (f_map, 0, size2);
-    memset (o_map, 0, size1);
-    memset (sh_map, 0, size1);
-    memset (z_map, 0, size1);
-    memset (c_map, 0, size2);
-    memset (cb_map, 0, size2);
-    memset (cf_map, 0, size2);
-    memset (co_map, 0, size1);
-    memset (csh_map, 0, size1);
-    memset (cz_map, 0, size1);
+    search_map = (unsigned char *) calloc (size1, csize);
 
     clipb = 0;
 }                               /* bufferize () */
@@ -4069,6 +4058,8 @@ void resize_map (const int selection)
     int old_height, old_width, new_height, new_width;
     int i, ix, iy, coord1, coord2;
     s_marker *m;
+    size_t ssize = sizeof(unsigned short);
+    size_t csize = sizeof(unsigned char);
 
     /* Set current and old map sizes, incase one will not change */
     new_width = old_width = gmap.xsize;
@@ -4193,27 +4184,19 @@ void resize_map (const int selection)
 
     /* Set memory for new map size */
     free (map);
-    map = (unsigned short *) malloc (size_both * 2);
+    map = (unsigned short *) calloc (size_both, ssize);
     free (b_map);
-    b_map = (unsigned short *) malloc (size_both * 2);
+    b_map = (unsigned short *) calloc (size_both, ssize);
     free (f_map);
-    f_map = (unsigned short *) malloc (size_both * 2);
+    f_map = (unsigned short *) calloc (size_both, ssize);
     free (o_map);
-    o_map = (unsigned char *) malloc (size_both);
+    o_map = (unsigned char *) calloc (size_both, csize);
     free (sh_map);
-    sh_map = (unsigned char *) malloc (size_both);
+    sh_map = (unsigned char *) calloc (size_both, csize);
     free (z_map);
-    z_map = (unsigned char *) malloc (size_both);
+    z_map = (unsigned char *) calloc (size_both, csize);
     free (search_map);
-    search_map = (unsigned char *) malloc (size_both);
-
-    memset (map, 0, size_both * 2);
-    memset (b_map, 0, size_both * 2);
-    memset (f_map, 0, size_both * 2);
-    memset (o_map, 0, size_both);
-    memset (sh_map, 0, size_both);
-    memset (z_map, 0, size_both);
-    memset (search_map, 0, size_both);
+    search_map = (unsigned char *) calloc (size_both, csize);
 
     /* Draw all the old map data into the new map size */
     for (iy = 0; iy < old_height; iy++) {
@@ -4234,25 +4217,17 @@ void resize_map (const int selection)
 
     /* Free the 'old-map copy' memory */
     free (c_map);
-    c_map = (unsigned short *) malloc (size_both * 2);
+    c_map = (unsigned short *) calloc (size_both, ssize);
     free (cb_map);
-    cb_map = (unsigned short *) malloc (size_both * 2);
+    cb_map = (unsigned short *) calloc (size_both, ssize);
     free (cf_map);
-    cf_map = (unsigned short *) malloc (size_both * 2);
+    cf_map = (unsigned short *) calloc (size_both, ssize);
     free (co_map);
-    co_map = (unsigned char *) malloc (size_both);
+    co_map = (unsigned char *) calloc (size_both, csize);
     free (csh_map);
-    csh_map = (unsigned char *) malloc (size_both);
+    csh_map = (unsigned char *) calloc (size_both, csize);
     free (cz_map);
-    cz_map = (unsigned char *) malloc (size_both);
-
-    /* Re-allocate memory for the 'old-map copy' for next use */
-    memset (c_map, 0, size_both * 2);
-    memset (cb_map, 0, size_both * 2);
-    memset (cf_map, 0, size_both * 2);
-    memset (co_map, 0, size_both);
-    memset (csh_map, 0, size_both);
-    memset (cz_map, 0, size_both);
+    cz_map = (unsigned char *) calloc (size_both, csize);
 
     /* Empty the clipboard */
     clipb = 0;
@@ -4585,7 +4560,7 @@ int startup (void)
         return 0;
 
     /* Buffer for all strings */
-    strbuf = (char *) malloc (256);
+    strbuf = (char *) calloc (256, sizeof(char));
 
     install_keyboard ();
     install_timer ();

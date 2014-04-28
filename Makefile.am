@@ -1,6 +1,5 @@
 SUBDIRS = intl po
-bin_PROGRAMS = kq mapdraw mapdiff mapdump $(MAPDRAW2)
-EXTRA_PROGRAMS = mapdraw2
+bin_PROGRAMS = kq mapdraw mapdiff mapdump
 
 kq_SOURCES = include/bounds.h include/combat.h include/console.h \
 	include/credits.h include/disk.h include/draw.h include/effects.h \
@@ -28,12 +27,6 @@ mapdraw_SOURCES = include/disk.h include/structs.h maps/mapdata.c \
 	maps/mapdraw.h maps/mapedit.c maps/mapent.c maps/mapfile.c \
 	maps/mapshared.c maps/mapstructs.c src/bounds.c src/disk.c src/markers.c
 mapdraw_LDADD = $(ALLEGRO_LIBS) $(LIBINTL)
-
-mapdraw2_SOURCES = include/disk.h include/structs.h maps/mainwindow.c \
-	maps/mapdraw.h maps/mapdraw2.c maps/mapdraw2.h maps/mapedit2.c \
-	maps/mapedit2.h maps/mapshared.c src/bounds.c src/disk.c src/markers.c
-mapdraw2_LDADD = $(GTK_LIBS) $(ALLEGRO_LIBS) $(LIBINTL)
-mapdraw2_CPPFLAGS = $(AM_CPPFLAGS) $(GTK_CFLAGS)
 
 mapdiff_SOURCES = include/bounds.h include/disk.h include/structs.h \
 	maps/mapdiff.c maps/mapdraw.h src/bounds.c src/disk.c src/markers.c
@@ -72,7 +65,7 @@ dist_map_DATA = maps/bridge.map maps/bridge2.map maps/camp.map maps/cave1.map \
 mapdir = $(pkgdatadir)/maps
 
 EXTRA_DIST = config.rpath Mac/Info.plist Mac/KQ-icon.icns \
-	maps/mapdraw2.glade other/kq.ico other/luaxgettext
+	other/kq.ico other/luaxgettext
 
 dist_gfx_DATA = data/allstat.mon data/hero.kq data/kqsnd.dat \
 	data/mpcx.dat data/resabil.mon data/ssprites.dat data/tileset.kq

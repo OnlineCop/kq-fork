@@ -96,7 +96,6 @@ cd kq-src-$VERSION
 make clean
 ./configure
 make mapdraw
-make mapdraw2
 make mapdump
 make mapdiff
 
@@ -105,11 +104,9 @@ mkdir kq-mapeditor-$VERSION
 cd kq-mapeditor-$VERSION
 
 cp ../kq-src-$VERSION/mapdraw .
-cp ../kq-src-$VERSION/mapdraw2 .
 cp ../kq-src-$VERSION/mapdump .
 cp ../kq-src-$VERSION/mapdiff .
 cp ../kq-src-$VERSION/maps/*.pcx .
-cp ../kq-src-$VERSION/maps/mapdraw2.glade .
 
 cp ../kq-src-$VERSION/COPYING .
 # should copy other files, such as README and install.sh
