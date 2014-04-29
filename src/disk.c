@@ -39,36 +39,36 @@
 
 int load_s_entity (s_entity *s, PACKFILE *f)
 {
-    printf("\nEntity:\n");
-    s->chrx = pack_getc (f);                        printf("\tchrx: %d\n", s->chrx);
+    /*printf("\nEntity:\n");*/
+    s->chrx = pack_getc (f);                        /*printf("\tchrx: %d\n", s->chrx);*/
     pack_getc (f);               /* alignment */
-    s->x = pack_igetw (f);                          printf("\tx: %d\n", s->x);
-    s->y = pack_igetw (f);                          printf("\ty: %d\n", s->y);
-    s->tilex = pack_igetw (f);                      printf("\ttilex: %d\n", s->tilex);
-    s->tiley = pack_igetw (f);                      printf("\ttiley: %d\n", s->tiley);
-    s->eid = pack_getc (f);                         printf("\teid: %d\n", s->eid);
-    s->active = pack_getc (f);                      printf("\tactive: %d\n", s->active);
-    s->facing = pack_getc (f);                      printf("\tfacing: %d\n", s->facing);
-    s->moving = pack_getc (f);                      printf("\tmoving: %d\n", s->moving);
-    s->movcnt = pack_getc (f);                      printf("\tmovcnt: %d\n", s->movcnt);
-    s->framectr = pack_getc (f);                    printf("\tframectr: %d\n", s->framectr);
-    s->movemode = pack_getc (f);                    printf("\tmovemode: %d\n", s->movemode);
-    s->obsmode = pack_getc (f);                     printf("\tobsmode: %d\n", s->obsmode);
-    s->delay = pack_getc (f);                       printf("\tdelay: %d\n", s->delay);
-    s->delayctr = pack_getc (f);                    printf("\tdelayctr: %d\n", s->delayctr);
-    s->speed = pack_getc (f);                       printf("\tspeed: %d\n", s->speed);
-    s->scount = pack_getc (f);                      printf("\tscount: %d\n", s->scount);
-    s->cmd = pack_getc (f);                         printf("\tcmd: %d\n", s->cmd);
-    s->sidx = pack_getc (f);                        printf("\tsidx: %d\n", s->sidx);
-    s->extra = pack_getc (f);                       printf("\textra: %d\n", s->extra);
-    s->chasing = pack_getc (f);                     printf("\tchasing: %d\n", s->chasing);
+    s->x = pack_igetw (f);                          /*printf("\tx: %d\n", s->x);*/
+    s->y = pack_igetw (f);                          /*printf("\ty: %d\n", s->y);*/
+    s->tilex = pack_igetw (f);                      /*printf("\ttilex: %d\n", s->tilex);*/
+    s->tiley = pack_igetw (f);                      /*printf("\ttiley: %d\n", s->tiley);*/
+    s->eid = pack_getc (f);                         /*printf("\teid: %d\n", s->eid);*/
+    s->active = pack_getc (f);                      /*printf("\tactive: %d\n", s->active);*/
+    s->facing = pack_getc (f);                      /*printf("\tfacing: %d\n", s->facing);*/
+    s->moving = pack_getc (f);                      /*printf("\tmoving: %d\n", s->moving);*/
+    s->movcnt = pack_getc (f);                      /*printf("\tmovcnt: %d\n", s->movcnt);*/
+    s->framectr = pack_getc (f);                    /*printf("\tframectr: %d\n", s->framectr);*/
+    s->movemode = pack_getc (f);                    /*printf("\tmovemode: %d\n", s->movemode);*/
+    s->obsmode = pack_getc (f);                     /*printf("\tobsmode: %d\n", s->obsmode);*/
+    s->delay = pack_getc (f);                       /*printf("\tdelay: %d\n", s->delay);*/
+    s->delayctr = pack_getc (f);                    /*printf("\tdelayctr: %d\n", s->delayctr);*/
+    s->speed = pack_getc (f);                       /*printf("\tspeed: %d\n", s->speed);*/
+    s->scount = pack_getc (f);                      /*printf("\tscount: %d\n", s->scount);*/
+    s->cmd = pack_getc (f);                         /*printf("\tcmd: %d\n", s->cmd);*/
+    s->sidx = pack_getc (f);                        /*printf("\tsidx: %d\n", s->sidx);*/
+    s->extra = pack_getc (f);                       /*printf("\textra: %d\n", s->extra);*/
+    s->chasing = pack_getc (f);                     /*printf("\tchasing: %d\n", s->chasing);*/
     pack_igetw (f);              /* alignment */
-    s->cmdnum = pack_igetl (f);                     printf("\tcmdnum: %d\n", s->cmdnum);
-    s->atype = pack_getc (f);                       printf("\tatype: %d\n", s->atype);
-    s->snapback = pack_getc (f);                    printf("\tsnapback: %d\n", s->snapback);
-    s->facehero = pack_getc (f);                    printf("\tfacehero: %d\n", s->facehero);
-    s->transl = pack_getc (f);                      printf("\ttransl: %d\n", s->transl);
-    pack_fread (s->script, sizeof (s->script), f);  printf("\tscript: \"%s\"\n", s->script);
+    s->cmdnum = pack_igetl (f);                     /*printf("\tcmdnum: %d\n", s->cmdnum);*/
+    s->atype = pack_getc (f);                       /*printf("\tatype: %d\n", s->atype);*/
+    s->snapback = pack_getc (f);                    /*printf("\tsnapback: %d\n", s->snapback);*/
+    s->facehero = pack_getc (f);                    /*printf("\tfacehero: %d\n", s->facehero);*/
+    s->transl = pack_getc (f);                      /*printf("\ttransl: %d\n", s->transl);*/
+    pack_fread (s->script, sizeof (s->script), f);  /*printf("\tscript: \"%s\"\n", s->script);*/
     return 0;
 }
 
@@ -112,27 +112,27 @@ int save_s_entity (s_entity *s, PACKFILE *f)
 
 int load_s_map (s_map *sm, PACKFILE *f)
 {
-    printf("\nMap:\n");
-    sm->map_no = pack_getc (f);                             printf("\tmap_no: %d\n", sm->map_no);
-    sm->zero_zone = pack_getc (f);                          printf("\tzero_zone: %d\n", sm->zero_zone);
-    sm->map_mode = pack_getc (f);                           printf("\tmap_mode: %d\n", sm->map_mode);
-    sm->can_save = pack_getc (f);                           printf("\tcan_save: %d\n", sm->can_save);
-    sm->tileset = pack_getc (f);                            printf("\ttileset: %d\n", sm->tileset);
-    sm->use_sstone = pack_getc (f);                         printf("\tuse_sstone: %d\n", sm->use_sstone);
-    sm->can_warp = pack_getc (f);                           printf("\tcan_warp: %d\n", sm->can_warp);
-    sm->extra_byte = pack_getc (f);                         printf("\textra_byte: %d\n", sm->extra_byte);
-    sm->xsize = pack_igetl (f);                             printf("\txsize: %d\n", sm->xsize);
-    sm->ysize = pack_igetl (f);                             printf("\tysize: %d\n", sm->ysize);
-    sm->pmult = pack_igetl (f);                             printf("\tpmult: %d\n", sm->pmult);
-    sm->pdiv = pack_igetl (f);                              printf("\tpdiv: %d\n", sm->pdiv);
-    sm->stx = pack_igetl (f);                               printf("\tstx: %d\n", sm->stx);
-    sm->sty = pack_igetl (f);                               printf("\tsty: %d\n", sm->sty);
-    sm->warpx = pack_igetl (f);                             printf("\twarpx: %d\n", sm->warpx);
-    sm->warpy = pack_igetl (f);                             printf("\twarpy: %d\n", sm->warpy);
-    sm->revision = pack_igetl (f);                          printf("\trevision: %d\n", sm->revision);
-    sm->extra_sdword2 = pack_igetl (f);                     printf("\textra_sdword2: %d\n", sm->extra_sdword2);
-    pack_fread (sm->song_file, sizeof (sm->song_file), f);  printf("\tsong_file: \"%s\"\n", sm->song_file);
-    pack_fread (sm->map_desc, sizeof (sm->map_desc), f);    printf("\tmap_desc: \"%s\"\n", sm->map_desc);
+    /*printf("\nMap:\n");*/
+    sm->map_no = pack_getc (f);                             /*printf("\tmap_no: %d\n", sm->map_no);*/
+    sm->zero_zone = pack_getc (f);                          /*printf("\tzero_zone: %d\n", sm->zero_zone);*/
+    sm->map_mode = pack_getc (f);                           /*printf("\tmap_mode: %d\n", sm->map_mode);*/
+    sm->can_save = pack_getc (f);                           /*printf("\tcan_save: %d\n", sm->can_save);*/
+    sm->tileset = pack_getc (f);                            /*printf("\ttileset: %d\n", sm->tileset);*/
+    sm->use_sstone = pack_getc (f);                         /*printf("\tuse_sstone: %d\n", sm->use_sstone);*/
+    sm->can_warp = pack_getc (f);                           /*printf("\tcan_warp: %d\n", sm->can_warp);*/
+    sm->extra_byte = pack_getc (f);                         /*printf("\textra_byte: %d\n", sm->extra_byte);*/
+    sm->xsize = pack_igetl (f);                             /*printf("\txsize: %d\n", sm->xsize);*/
+    sm->ysize = pack_igetl (f);                             /*printf("\tysize: %d\n", sm->ysize);*/
+    sm->pmult = pack_igetl (f);                             /*printf("\tpmult: %d\n", sm->pmult);*/
+    sm->pdiv = pack_igetl (f);                              /*printf("\tpdiv: %d\n", sm->pdiv);*/
+    sm->stx = pack_igetl (f);                               /*printf("\tstx: %d\n", sm->stx);*/
+    sm->sty = pack_igetl (f);                               /*printf("\tsty: %d\n", sm->sty);*/
+    sm->warpx = pack_igetl (f);                             /*printf("\twarpx: %d\n", sm->warpx);*/
+    sm->warpy = pack_igetl (f);                             /*printf("\twarpy: %d\n", sm->warpy);*/
+    sm->revision = pack_igetl (f);                          /*printf("\trevision: %d\n", sm->revision);*/
+    sm->extra_sdword2 = pack_igetl (f);                     /*printf("\textra_sdword2: %d\n", sm->extra_sdword2);*/
+    pack_fread (sm->song_file, sizeof (sm->song_file), f);  /*printf("\tsong_file: \"%s\"\n", sm->song_file);*/
+    pack_fread (sm->map_desc, sizeof (sm->map_desc), f);    /*printf("\tmap_desc: \"%s\"\n", sm->map_desc);*/
 
     if (sm->revision >= 1) {
         /* Markers stuff */
@@ -201,38 +201,38 @@ int load_s_player (s_player *s, PACKFILE *f)
 {
     size_t i;
 
-    printf("\nPlayer:\n");
-    pack_fread (s->name, sizeof (s->name), f);	printf("\tname: \"%s\"\n", s->name);
+    /*printf("\nPlayer:\n");*/
+    pack_fread (s->name, sizeof (s->name), f);              /*printf("\tname: \"%s\"\n", s->name);*/
     pack_getc (f);               /* alignment */
     pack_getc (f);               /* alignment */
     pack_getc (f);               /* alignment */
-    s->xp = pack_igetl (f);	printf("\txp: %d\n", s->xp);
-    s->next = pack_igetl (f);	printf("\tnext: %d\n", s->next);
-    s->lvl = pack_igetl (f);	printf("\tlvl: %d\n", s->lvl);
-    s->mrp = pack_igetl (f);	printf("\tmrp: %d\n", s->mrp);
-    s->hp = pack_igetl (f);	printf("\thp: %d\n", s->hp);
-    s->mhp = pack_igetl (f);	printf("\tmhp: %d\n", s->mhp);
-    s->mp = pack_igetl (f);	printf("\tmp: %d\n", s->mp);
-    s->mmp = pack_igetl (f);	printf("\tmmp: %d\n", s->mmp);
-    printf("\tStats:\n");
+    s->xp = pack_igetl (f);                                 /*printf("\txp: %d\n", s->xp);*/
+    s->next = pack_igetl (f);                               /*printf("\tnext: %d\n", s->next);*/
+    s->lvl = pack_igetl (f);                                /*printf("\tlvl: %d\n", s->lvl);*/
+    s->mrp = pack_igetl (f);                                /*printf("\tmrp: %d\n", s->mrp);*/
+    s->hp = pack_igetl (f);                                 /*printf("\thp: %d\n", s->hp);*/
+    s->mhp = pack_igetl (f);                                /*printf("\tmhp: %d\n", s->mhp);*/
+    s->mp = pack_igetl (f);                                 /*printf("\tmp: %d\n", s->mp);*/
+    s->mmp = pack_igetl (f);                                /*printf("\tmmp: %d\n", s->mmp);*/
+    /*printf("\tStats:\n");*/
     for (i = 0; i < NUM_STATS; ++i) {
-        s->stats[i] = pack_igetl (f);	printf("\t\tstats[%d]: %d\n", i, s->stats);
+        s->stats[i] = pack_igetl (f);                       /*printf("\t\tstats[%d]: %d\n", i, s->stats);*/
     }
-    printf("\tRes:\n");
+    /*printf("\tRes:\n");*/
     for (i = 0; i < R_TOTAL_RES; ++i) {
-        s->res[i] = pack_getc (f);	printf("\t\tres[%d]: %d\n", i, s->res);
+        s->res[i] = pack_getc (f);                          /*printf("\t\tres[%d]: %d\n", i, s->res);*/
     }
-    printf("\tSts:\n");
+    /*printf("\tSts:\n");*/
     for (i = 0; i < 24; ++i) {
-        s->sts[i] = pack_getc (f);	printf("\t\tsts[%d]: %d\n", i, s->sts);
+        s->sts[i] = pack_getc (f);                          /*printf("\t\tsts[%d]: %d\n", i, s->sts);*/
     }
-    printf("\tEqp:\n");
+    /*printf("\tEqp:\n");*/
     for (i = 0; i < NUM_EQUIPMENT; ++i) {
-        s->eqp[i] = pack_getc (f);	printf("\t\teqp[%d]: %d\n", i, s->eqp);
+        s->eqp[i] = pack_getc (f);                          /*printf("\t\teqp[%d]: %d\n", i, s->eqp);*/
     }
-    printf("\tSpells:\n");
+    /*printf("\tSpells:\n");*/
     for (i = 0; i < 60; ++i) {
-        s->spells[i] = pack_getc (f);	printf("\t\tspells[%d]: %d\n", i, s->spells);
+        s->spells[i] = pack_getc (f);                       /*printf("\t\tspells[%d]: %d\n", i, s->spells);*/
     }
     pack_getc (f);               /* alignment */
     pack_getc (f);               /* alignment */
@@ -283,13 +283,13 @@ int load_s_tileset (s_tileset *s, PACKFILE *f)
 {
     int i;
 
-    printf("\nTileset:\n");
-    pack_fread (s->icon_set, sizeof (s->icon_set), f);	printf("\ticon_set: \"%s\"\n", s->icon_set);
+    /*printf("\nTileset:\n");*/
+    pack_fread (s->icon_set, sizeof (s->icon_set), f);      /*printf("\ticon_set: \"%s\"\n", s->icon_set);*/
     for (i = 0; i < MAX_ANIM; ++i) {
         s->tanim[i].start = pack_igetw (f);
         s->tanim[i].end = pack_igetw (f);
         s->tanim[i].delay = pack_igetw (f);
-        printf("\tTanim[%d]: %d, %d, %d\n", i, s->tanim[i].start, s->tanim[i].end, s->tanim[i].delay);
+        /*printf("\tTanim[%d]: %d, %d, %d\n", i, s->tanim[i].start, s->tanim[i].end, s->tanim[i].delay);*/
     }
     return 0;
 }

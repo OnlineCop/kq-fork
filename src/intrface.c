@@ -4089,6 +4089,7 @@ static int KQ_shop_add_item (lua_State *L)
     shops[index].items[i] = (int) lua_tonumber (L, 2);
     shops[index].items_max[i] = (int) lua_tonumber (L, 3);
     shops[index].items_replenish_time[i] = (int) lua_tonumber (L, 4);
+    printf("Adding to shops[%d] item %d: items(%d), items_max(%d), items_replenish_time(%d).\n", index, i, shops[index].items[i], shops[index].items_max[i], shops[index].items_replenish_time[i]);
     return 0;
 }
 
@@ -4281,18 +4282,18 @@ int lua_dofile (lua_State *L, const char *filename)
     lua_Reader reader = filereader;
 
     if (f == NULL) {
-            printf (_("Could not open script %s!"), get_filename(filename));
+            /*printf (_("Could not open script %s!"), get_filename(filename));*/
             return 1;
     }
     ret = lua_load (L, reader, f, filename, NULL);
     pack_fclose (f);
     if (ret != 0) {
-        printf (_("Could not parse script %s!"), get_filename(filename));
+        /*printf (_("Could not parse script %s!"), get_filename(filename));*/
         return 1;
     }
 
     if (lua_pcall (L, 0, LUA_MULTRET, 0) != 0) {
-        printf (_("lua_pcall failed while calling script %s!"), get_filename(filename));
+        /*printf (_("lua_pcall failed while calling script %s!"), get_filename(filename));*/
         KQ_traceback(L);
         return 1;
     }

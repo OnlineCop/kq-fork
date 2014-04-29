@@ -1164,7 +1164,7 @@ static void load_map (const char *map_name)
 
     load_s_map (&g_map, pf);
     for (i = 0; i < MAX_ENT; ++i) {
-        printf("\nEntity %d:\n", i);
+        /*printf("\nEntity %d:\n", i);*/
         load_s_entity (&g_ent[PSIZE + i], pf);
     }
     map_alloc ();

@@ -88,7 +88,7 @@ size_t load_markers (s_marker_array *marray, PACKFILE *pf)
         return 0; // Success: okay to have 0 markers in a map
     }
 
-    printf("\nLoading Markers:\n");
+    /*printf("\nLoading Markers:\n");*/
     marray->array = (s_marker *) realloc
         (marray->array, marray->size * sizeof (s_marker));
     for (i = 0; i < marray->size; ++i) {
@@ -97,7 +97,7 @@ size_t load_markers (s_marker_array *marray, PACKFILE *pf)
         pack_fread (mmarker->name, sizeof (mmarker->name), pf);
         mmarker->x = pack_igetw (pf);
         mmarker->y = pack_igetw (pf);
-        printf("\t\"%s\": (%d,%d)\n", mmarker->name, mmarker->x, mmarker->y);
+        /*printf("\t\"%s\": (%d,%d)\n", mmarker->name, mmarker->x, mmarker->y);*/
 
         if (pack_feof (pf)) {
             assert (0 && "pack_igetw() for marker->[xy] received EOF signal.");
