@@ -18,8 +18,7 @@ kq_SOURCES = include/bounds.h include/combat.h include/console.h \
 	src/movement.c src/music.c src/res.c src/selector.c \
 	src/setup.c src/sgame.c src/shopmenu.c src/timing.c
 
-EXTRA_kq_SOURCES = src/beos.c src/dos.c src/osx.m src/unix.c src/win.c \
-	src/winres.rc
+EXTRA_kq_SOURCES = src/osx.m src/unix.c src/win.c src/winres.rc
 kq_LDADD = $(kq_extra_files) $(ALLEGRO_LIBS) $(LIBINTL)
 kq_DEPENDENCIES = $(kq_extra_files)
 

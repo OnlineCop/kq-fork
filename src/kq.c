@@ -44,9 +44,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#ifdef ALLEGRO_BEOS
-# include <sys/time.h>
-#endif
 
 
 #include "console.h"

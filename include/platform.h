@@ -57,12 +57,7 @@ const char *get_lua_file_path (const char *, const char *);
 const char *get_resource_file_path (const char *, const char *, const char *);
 
 
-#ifdef ALLEGRO_BEOS
-inline long long gettime ();
-int maybe_poll_joystick ();
-#else
 #define maybe_poll_joystick poll_joystick
-#endif
 
 
 #endif  /* __PLATFORM_H */
