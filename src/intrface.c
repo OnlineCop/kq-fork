@@ -293,7 +293,6 @@ static const struct luaL_Reg lrs[] = {
     {"battle",           KQ_battle},
     {"blit",             KQ_blit},
     {"bubble_ex",        KQ_bubble_ex},
-    {"portbubble_ex",    KQ_portbubble_ex},
     {"calc_viewport",    KQ_calc_viewport},
     {"change_map",       KQ_change_map},
     {"check_key",        KQ_check_key},
@@ -382,6 +381,8 @@ static const struct luaL_Reg lrs[] = {
     {"play_map_song",    KQ_play_map_song},
     {"play_song",        KQ_play_song},
     {"pnum",             KQ_pnum},
+    {"portbubble_ex",    KQ_portbubble_ex},
+    {"portthought_ex",   KQ_portthought_ex},
     {"print",            KQ_print},
     {"prompt",           KQ_prompt},
     {"ptext",            KQ_ptext},
@@ -446,19 +447,18 @@ static const struct luaL_Reg lrs[] = {
     {"set_vy",           KQ_set_vy},
     {"set_warp",         KQ_set_warp},
     {"set_zone",         KQ_set_zone},
+    {"sfx",              KQ_sfx},
     {"shop_add_item",    KQ_shop_add_item},
     {"shop_create",      KQ_shop_create},
-    {"sfx",              KQ_sfx},
     {"shop",             KQ_shop},
     {"stop_song",        KQ_stop_song},
     {"thought_ex",       KQ_thought_ex},
-    {"portthought_ex",   KQ_portthought_ex},
     {"unpause_map_song", KQ_unpause_map_song},
     {"use_up",           KQ_use_up},
     {"view_range",       KQ_view_range},
-    {"wait",             KQ_wait},
     {"wait_enter",       KQ_wait_enter},
     {"wait_for_entity",  KQ_wait_for_entity},
+    {"wait",             KQ_wait},
     {"warp",             KQ_warp},
     /*   {"get_tile_all", KQ_get_tile_all}, */
     {NULL, NULL}         /* Must always be the LAST entry */
@@ -4021,7 +4021,7 @@ static int KQ_sfx (lua_State *L)
     }
     else
     {
-        allegro_message ("KQ_sfx L::1 is NaN");
+        printf ("KQ_sfx L::1 is NaN");
     }
     return 0;
 }
@@ -4037,7 +4037,7 @@ static int KQ_shop (lua_State *L)
     }
     else
     {
-        allegro_message ("KQ_shop L::1 is NaN");
+        printf ("KQ_shop L::1 is NaN");
     }
     return 0;
 }
@@ -4282,18 +4282,18 @@ int lua_dofile (lua_State *L, const char *filename)
     lua_Reader reader = filereader;
 
     if (f == NULL) {
-            /*printf (_("Could not open script %s!"), get_filename(filename));*/
+            printf (_("Could not open script %s!"), get_filename(filename));
             return 1;
     }
     ret = lua_load (L, reader, f, filename, NULL);
     pack_fclose (f);
     if (ret != 0) {
-        /*printf (_("Could not parse script %s!"), get_filename(filename));*/
+        printf (_("Could not parse script %s!"), get_filename(filename));
         return 1;
     }
 
     if (lua_pcall (L, 0, LUA_MULTRET, 0) != 0) {
-        /*printf (_("lua_pcall failed while calling script %s!"), get_filename(filename));*/
+        printf (_("lua_pcall failed while calling script %s!"), get_filename(filename));
         KQ_traceback(L);
         return 1;
     }

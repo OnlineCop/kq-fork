@@ -272,7 +272,6 @@ size_t load_bounds (
         return 2;
     }
 
-    /*printf("\nBounds:\n");*/
     if (barray->size > 0) {
         barray->array = (s_bound *) realloc
             (barray->array, barray->size * sizeof (s_bound));
@@ -284,8 +283,6 @@ size_t load_bounds (
             mbound->right   = pack_igetw (pf);
             mbound->bottom  = pack_igetw (pf);
             mbound->btile   = pack_igetw (pf);
-
-            /*printf("\t%d: (%d,%d),(%d,%d): %d\n", i, mbound->left, mbound->top, mbound->right, mbound->bottom, mbound->btile);*/
 
             if (pack_feof (pf)) {
                 /*printf ("Encountered EOF during bound #%d read.\n", i);*/

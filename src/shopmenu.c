@@ -76,7 +76,6 @@ static void sell_item (int, int);
  */
 static void buy_item (int how_many, int item_no)
 {
-    /*printf("buy_item(%d, %d)\n", how_many, item_no);*/
     int z = 0, l, stop = 0, cost;
 
     l = shops[shop_no].items[item_no];
@@ -124,7 +123,6 @@ static void buy_item (int how_many, int item_no)
  */
 static void buy_menu (void)
 {
-    /*printf("buy_menu()\n");*/
     int stop = 0, cost;
     size_t a, i, j, xptr = 1, yptr = 0;
     int k, max, max_x = 0;
@@ -132,11 +130,7 @@ static void buy_menu (void)
 
     for (a = 0; a < noi; a++) {
         if (shops[shop_no].items_current[a] > max_x) {
-            /*printf("shops[shop_no].items_current[%d] > %d\n", a, max_x);*/
             max_x = shops[shop_no].items_current[a];
-        }
-        else {
-            /*printf("shops[shop_no].items_current[%d] <= %d\n", a, max_x);*/
         }
     }
 
@@ -154,7 +148,6 @@ static void buy_menu (void)
         menubox (double_buffer, 32 + xofs, 24 + yofs, 30, 16, BLUE);
         menubox (double_buffer, 32 + xofs, 168 + yofs, 30, 1, BLUE);
         draw_shopgold ();
-        /*printf("noi: %d\n", noi);*/
         for (i = 0; i < noi; i++) {
             j = shops[shop_no].items[i];
             max = shops[shop_no].items_current[i];
@@ -725,16 +718,13 @@ static void sell_menu (void)
  */
 int shop (int shop_num)
 {
-    /*printf("shop(%d)\n", shop_num);*/
     int ptr = 0, stop = 0, a;
 
     shop_no = shop_num;
     strcpy (sname, shops[shop_no].name);
-    /*printf("sname: %s\n", sname);*/
 
     /* If enough time has passed, fully replenish this shop's stock of an item */
     for (a = 0; a < SHOPITEMS; a++) {
-        /*printf("a: %d\n", a);*/
         if (shops[shop_no].items_replenish_time[a] > 0) {
             if ((khr * 60) + kmin - shop_time[shop_no] > shops[shop_no].items_replenish_time[a]) {
                 shops[shop_no].items_current[a] = shops[shop_no].items_max[a];
@@ -744,16 +734,12 @@ int shop (int shop_num)
 
     /* Return 1 if shop has no items to sell */
     noi = SHOPITEMS - 1;
-    /*printf("noi: %d\n", noi);*/
     for (a = SHOPITEMS - 1; a >= 0; a--) {
-        /*printf("a: %d\n", a);*/
         if (shops[shop_no].items[a] == 0) {
-            /*printf("Setting noi (%d) to %d\n", noi, a);*/
             noi = a;
         }
     }
     if (noi == 0) {
-        /*printf("noi == 0, so returning\n");*/
         return 1;
     }
 
