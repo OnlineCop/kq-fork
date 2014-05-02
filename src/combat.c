@@ -237,7 +237,7 @@ static unsigned int attack_result (int ar, int dr)
  *
  * Draw the battle screen.
  *
- * \param   plyr Player
+ * \param   plyr Player: -1 means "no one is selected" (roll_initiative()), else index of fighter
  * \param   hl Highlighted
  * \param   sall Select all
  */
