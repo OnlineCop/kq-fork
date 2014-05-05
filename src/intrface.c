@@ -4089,7 +4089,6 @@ static int KQ_shop_add_item (lua_State *L)
     shops[index].items[i] = (int) lua_tonumber (L, 2);
     shops[index].items_max[i] = (int) lua_tonumber (L, 3);
     shops[index].items_replenish_time[i] = (int) lua_tonumber (L, 4);
-    printf("Adding to shops[%d] item %d: items(%d), items_max(%d), items_replenish_time(%d).\n", index, i, shops[index].items[i], shops[index].items_max[i], shops[index].items_replenish_time[i]);
     return 0;
 }
 

@@ -34,6 +34,8 @@ const char OPTION_BMP[]            = "-B";
 const char OPTION_BMP_LONG[]       = "--bmp";
 const char OPTION_OVERWRITE[]      = "-F";
 const char OPTION_OVERWRITE_LONG[] = "--force-overwrite";
+const char OPTION_TEXT[]            = "-T";
+const char OPTION_TEXT_LONG[]       = "--text";
 const char OPTION_VERBOSE[]        = "-V";
 const char OPTION_VERBOSE_LONG[]   = "--verbose";
 const char OPTION_HELP[]           = "-H";
@@ -106,6 +108,7 @@ void usage (const char *argv)
     fprintf (stdout, "  %s, %s\t\tshows this help dialog\n", OPTION_HELP, OPTION_HELP_LONG);
     fprintf (stdout, "\n");
     fprintf (stdout, "  %s, %s\t\toutput as Windows bitmap instead of PCX\n", OPTION_BMP, OPTION_BMP_LONG);
+    fprintf (stdout, "  %s, %s\t\toutput as comma-separated text file instead of image\n", OPTION_TEXT, OPTION_TEXT_LONG);
     fprintf (stdout, "  %s, %s\toverwrite image, even if it already exists\n", OPTION_OVERWRITE, OPTION_OVERWRITE_LONG);
     fprintf (stdout, "  %s, %s\t\tdisplays %s output in verbose mode\n", OPTION_VERBOSE, OPTION_VERBOSE_LONG, argv);
     fprintf (stdout, "\n");
@@ -136,7 +139,7 @@ int main (int argc, char *argv[])
     char fn[PATH_MAX], *filenames[PATH_MAX];
     int i, number_of_files = 0, verbose = 0;
     int force_overwrite = 0;
-    const char *extensions[] = { "pcx", "bmp" };
+    const char *extensions[] = { "pcx", "bmp", "txt" };
     const char *output_ext = extensions[0]; // default to "pcx"
     COLOR_MAP cmap;
 
@@ -194,6 +197,8 @@ int main (int argc, char *argv[])
             verbose = 1;
         if (!strcmp (argv[i], OPTION_BMP) || !strcmp (argv[i], OPTION_BMP_LONG))
             output_ext = extensions[1]; // change to "bmp"
+        if (!strcmp (argv[i], OPTION_TEXT) || !strcmp (argv[i], OPTION_TEXT_LONG))
+            output_ext = extensions[2]; // change to "csv"
         if (!strcmp (argv[i], OPTION_OVERWRITE) || !strcmp (argv[i], OPTION_OVERWRITE_LONG))
             force_overwrite = 1;
     }
@@ -271,26 +276,24 @@ int main (int argc, char *argv[])
     for (i = 0; i < number_of_files; i++) {
         if (exists (filenames[i])) {
             if (verbose)
-                fprintf (stdout, "- Loading file #%d: %s\n", i + 1,
-                         (char *) filenames[i]);
+                fprintf (stdout, "- Loading file #%d: %s\n", i + 1, (char *) filenames[i]);
             replace_extension (fn, filenames[i], output_ext, sizeof (fn));
             if (verbose)
-                fprintf (stdout, "  - %s replaced by extension .%s: %s\n",
-                         filenames[i], output_ext, fn);
+                fprintf (stdout, "  - %s replaced by extension .%s: %s\n", filenames[i], output_ext, fn);
             load_map (filenames[i]);
             if (!exists (fn) || force_overwrite) {
                 if (verbose)
                     fprintf (stdout, "  - Saving %s...\n", fn);
 
-                visual_map (showing, fn);
+                if (textual_map)
+                    textual_map(showing, fn);
+                else
+                    visual_map (showing, fn);
 
                 if (verbose)
-                    fprintf (stdout, "  - \"%s\" created with mode \"%d\"\n", fn,
-                             gmap.map_mode);
+                    fprintf (stdout, "  - \"%s\" created with mode \"%d\"\n", fn, gmap.map_mode);
             } else {
-                fprintf (stdout,
-                         "Warning: The file \"%s\" already exists.\n         Use the \"%s\" or \"%s\" option to force overwrite.\n",
-                         fn, OPTION_OVERWRITE, OPTION_OVERWRITE_LONG);
+                fprintf (stderr, "Warning: The file \"%s\" already exists.\n         Use the \"%s\" or \"%s\" option to force overwrite.\n", fn, OPTION_OVERWRITE, OPTION_OVERWRITE_LONG);
             }
         }
     }

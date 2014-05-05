@@ -567,6 +567,186 @@ void visual_map (s_show showing, const char *save_fname)
     destroy_bitmap (bmp);
 }                               /* visual_map () */
 
+
+
+/*! \brief Save the whole map as a pcx
+ *
+ * Make a comma-separated (.csv) file output all the layers/attributes to it.
+ * Like visual_map(), but gives output is a text file, not an image.
+ * \author OC
+ * \date 20140504
+ *
+ * \param   showing Struct detailing which layers/attributes to output.
+ * \param   output_filename File to save the map to.
+ */
+void textual_map (s_show showing, const char *output_filename)
+{
+    unsigned int row, col;
+    size_t tile_index;
+    size_t entity_index;
+    size_t marker_index;
+    size_t boundary_index;
+
+    if (showing.layer[0])
+    {
+        printf("Layer 0: (%d, %d)\n", gmap.xsize, gmap.ysize);
+        for (row = 0; row < gmap.ysize; row++)
+        {
+            for (col = 0; col < gmap.xsize; col++)
+            {
+                tile_index = row * gmap.xsize + col;
+                printf("%3d,", 1 + map[tile_index]);
+            }
+            printf("\n");
+        }
+    }
+
+    if (showing.layer[1])
+    {
+        printf("Layer 1: (%d, %d)\n", gmap.xsize, gmap.ysize);
+        for (row = 0; row < gmap.ysize; row++)
+        {
+            for (col = 0; col < gmap.xsize; col++)
+            {
+                tile_index = row * gmap.xsize + col;
+                printf("%3d,", 1 + b_map[tile_index]);
+            }
+            printf("\n");
+        }
+    }
+
+    if (showing.layer[2])
+    {
+        printf("Layer 2: (%d, %d)\n", gmap.xsize, gmap.ysize);
+        for (row = 0; row < gmap.ysize; row++)
+        {
+            for (col = 0; col < gmap.xsize; col++)
+            {
+                tile_index = row * gmap.xsize + col;
+                printf("%3d,", 1 + f_map[tile_index]);
+            }
+            printf("\n");
+        }
+    }
+
+    if (showing.shadows)
+    {
+        printf("Shadows:\n");
+        for (row = 0; row < gmap.ysize; row++)
+        {
+            for (col = 0; col < gmap.xsize; col++)
+            {
+                tile_index = row * gmap.xsize + col;
+                printf("%d,", sh_map[tile_index]);
+            }
+            printf("\n");
+        }
+    }
+
+    if (showing.obstacles)
+    {
+        printf("Obstacles:\n");
+        for (row = 0; row < gmap.ysize; row++)
+        {
+            for (col = 0; col < gmap.xsize; col++)
+            {
+                tile_index = row * gmap.xsize + col;
+                printf("%d,", o_map[tile_index]);
+            }
+            printf("\n");
+        }
+    }
+
+    if (showing.zones)
+    {
+        printf("Zones:\n");
+        for (row = 0; row < gmap.ysize; row++)
+        {
+            for (col = 0; col < gmap.xsize; col++)
+            {
+                tile_index = row * gmap.xsize + col;
+                printf("%d,", z_map[tile_index]);
+            }
+            printf("\n");
+        }
+    }
+
+    /* Show entities */
+    if (showing.entities)
+    {
+        printf("Entities:\n");
+        printf("index:\tchrx,x,y,tilex,tiley,eid,active,facing,moving,movcnt,framectr,movemode,obsmode,delay,"
+               "delayctr,speed,scount,cmd,sidx,extra,chasing,cmdnum,atype,snapback,facehero,transl,"
+               "script,target_x,target_y\n");
+        for (entity_index = 0; entity_index < MAX_ENT; entity_index++)
+        {
+            if (gent[entity_index].active)
+            {
+                printf("%d:\t", entity_index);
+                printf("%d,", gent[entity_index].chrx);
+                printf("%d,", gent[entity_index].x);
+                printf("%d,", gent[entity_index].y);
+                printf("%d,", gent[entity_index].tilex);
+                printf("%d,", gent[entity_index].tiley);
+                printf("%d,", gent[entity_index].eid);
+                printf("%d,", gent[entity_index].active);
+                printf("%d,", gent[entity_index].facing);
+                printf("%d,", gent[entity_index].moving);
+                printf("%d,", gent[entity_index].movcnt);
+                printf("%d,", gent[entity_index].framectr);
+                printf("%d,", gent[entity_index].movemode);
+                printf("%d,", gent[entity_index].obsmode);
+                printf("%d,", gent[entity_index].delay);
+                printf("%d,", gent[entity_index].delayctr);
+                printf("%d,", gent[entity_index].speed);
+                printf("%d,", gent[entity_index].scount);
+                printf("%d,", gent[entity_index].cmd);
+                printf("%d,", gent[entity_index].sidx);
+                printf("%d,", gent[entity_index].extra);
+                printf("%d,", gent[entity_index].chasing);
+                printf("%d,", gent[entity_index].cmdnum);
+                printf("%d,", gent[entity_index].atype);
+                printf("%d,", gent[entity_index].snapback);
+                printf("%d,", gent[entity_index].facehero);
+                printf("%d,", gent[entity_index].transl);
+                printf("%s,", gent[entity_index].script);       // max length: 60
+                printf("%d,", gent[entity_index].target_x);
+                printf("%d\n", gent[entity_index].target_y);
+            }
+        }
+    }
+
+    /* Show marker flags */
+    if (showing.markers && gmap.markers.size > 0)
+    {
+        printf("Markers:\n");
+        for (marker_index = 0; marker_index < gmap.markers.size; ++marker_index)
+        {
+            printf("\"%s\" (%d, %d)\n", gmap.markers.array[marker_index].name, gmap.markers.array[marker_index].x, gmap.markers.array[marker_index].y);
+        }
+    }
+
+    /* Show boundary boxes */
+    if (showing.boundaries)
+    {
+        printf("Boundaries:\n");
+        printf("Index:\tleft,top,right,bottom,btile\n");
+        for (boundary_index = 0; boundary_index < gmap.bounds.size; boundary_index++)
+        {
+            printf("%d:\t%d, %d, %d, %d, %d\n",
+                boundary_index,
+                gmap.bounds.array[boundary_index].left,
+                gmap.bounds.array[boundary_index].top,
+                gmap.bounds.array[boundary_index].right,
+                gmap.bounds.array[boundary_index].bottom,
+                gmap.bounds.array[boundary_index].btile
+            );
+        }
+    }
+
+    // TODO: Save out to 'output_filename' here
+}
+
 /* Local Variables:     */
 /* mode: c              */
 /* comment-column: 0    */
