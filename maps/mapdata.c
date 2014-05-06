@@ -15,11 +15,12 @@
  *
  * Create the font layout for the map editor
  */
-void getfont (void)
+void getfont(void)
 {
     // This turns the other/indent.pro settings off:
     // *INDENT-OFF*
-    static unsigned char kq_font[3276] = {
+    static unsigned char kq_font[3276] =
+    {
         /* space */
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         /* exclamation point */
@@ -221,20 +222,36 @@ void getfont (void)
     static int color_white[] = { 0, 255, 15 };
 
     for (a = 0; a < 198; a++)
+    {
         for (b = 0; b < 6; b++)
-            putpixel (font6, b, a, color_gray[(int) *ptr++]);
+        {
+            putpixel(font6, b, a, color_gray[(int) *ptr++]);
+        }
+    }
 
     for (a = 198; a < 390; a++)
+    {
         for (b = 0; b < 6; b++)
-            putpixel (font6, b, a, color_white[(int) *ptr++]);
+        {
+            putpixel(font6, b, a, color_white[(int) *ptr++]);
+        }
+    }
 
     for (a = 390; a < 546; a++)
+    {
         for (b = 0; b < 6; b++)
-            putpixel (font6, b, a, color_gray[(int) *ptr++]);
+        {
+            putpixel(font6, b, a, color_gray[(int) *ptr++]);
+        }
+    }
 #else
     for (a = 0; a < 546; a++)
+    {
         for (b = 0; b < 6; b++)
-            putpixel (font6, b, a, color_gray[(int) *ptr++]);
+        {
+            putpixel(font6, b, a, color_gray[(int) *ptr++]);
+        }
+    }
 #endif
 
 }                               /* getfont () */

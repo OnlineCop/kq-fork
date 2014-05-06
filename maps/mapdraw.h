@@ -101,73 +101,71 @@ typedef struct
  */
 
 /* From mapdata.c */
-void getfont (void);
+void getfont(void);
 
 /* From mapdump.c */
-void usage (const char *);
+void usage(const char *);
 
 /* From mapedit.c */
-extern void bufferize (void);
-void center_window (int, int);
-extern void cleanup (void);
-void cmessage (const char *);
-void draw_map (void);
-unsigned int get_line (const int, const int, char *, const int);
-void make_rect (BITMAP *, const int, const int);
-void normalize_view (void);
-void print_sfont (const int, const int, const char *, BITMAP *);
-int startup (void);
-void update_tileset (void);
-void wait_enter (void);
-int yninput (void);
+extern void bufferize(void);
+void center_window(int, int);
+extern void cleanup(void);
+void cmessage(const char *);
+void draw_map(void);
+unsigned int get_line(const int, const int, char *, const int);
+void make_rect(BITMAP *, const int, const int);
+void normalize_view(void);
+void print_sfont(const int, const int, const char *, BITMAP *);
+int startup(void);
+void update_tileset(void);
+void wait_enter(void);
+int yninput(void);
 
 /* From mapent.c */
-void displace_entities (void);
-void draw_entdata (const int);
-void draw_ents (void);
-void erase_entity (const int, const int);
-void init_entities (void);
-void place_entity (int, int);
-void update_entities (void);
+void displace_entities(void);
+void draw_entdata(const int);
+void draw_ents(void);
+void erase_entity(const int, const int);
+void init_entities(void);
+void place_entity(int, int);
+void update_entities(void);
 
 /* From mapfile.c */
-void make_mapfrompcx (void);
-void maptopcx (int format);
-int new_map (void);
-void prompt_load_map (void);
-void prompt_save_map (void);
-void save_map (const char *);
+void make_mapfrompcx(void);
+void maptopcx(int format);
+int new_map(void);
+void prompt_load_map(void);
+void prompt_save_map(void);
+void save_map(const char *);
 
 /* From mapshared.c */
-void blit2screen (void);
-void load_iconsets (PALETTE);
-void load_map (const char *);
-void set_pcx (BITMAP **, const char *, PALETTE, const int);
-void shared_cleanup (void);
-void shared_startup (void);
-void visual_map (s_show, const char *);
-void textual_map (s_show, const char *);
+void blit2screen(void);
+void load_iconsets(PALETTE);
+void load_map(const char *);
+void set_pcx(BITMAP **, const char *, PALETTE, const int);
+void shared_cleanup(void);
+void shared_startup(void);
+void visual_map(s_show, const char *);
+void textual_map(s_show, const char *);
 
 /* From mapstructs.c */
-void add_change_bounding (int, int, int, int *);
-void add_change_marker (int, int, int, int *);
-void bound_rect (BITMAP *, s_bound, int);
-int find_next_marker (int, int *);
-int find_bound (int, int *);
-int is_contained_marker (s_marker, int, int);
-void orient_bounds (int);
-void orient_markers (int);
-void rename_bound_tile (s_bound *);
-void rename_marker (s_marker *);
+void add_change_bounding(int, int, int, int *);
+void add_change_marker(int, int, int, int *);
+void bound_rect(BITMAP *, s_bound, int);
+int find_next_marker(int, int *);
+int find_bound(int, int *);
+int is_contained_marker(s_marker, int, int);
+void orient_bounds(int);
+void orient_markers(int);
+void rename_bound_tile(s_bound *);
+void rename_marker(s_marker *);
 
 /* One in each of: mapdiff.c, mapdump.c, and mapfile.c */
-void error_load (const char *);
+void error_load(const char *);
 
 
-extern BITMAP *double_buffer, *pcx_buffer, *icons[MAX_TILES],
-    *eframes[MAX_EPICS][NUM_FACING_DIRECTIONS * ENT_FRAMES_PER_DIR];
-extern BITMAP *font6, *mesh1[MAX_OBSTACLES], *mesh2, *mesh3,
-    *shadow[MAX_SHADOWS], *marker_image, *marker_image_active;
+extern BITMAP *double_buffer, *pcx_buffer, *icons[MAX_TILES], *eframes[MAX_EPICS][NUM_FACING_DIRECTIONS *ENT_FRAMES_PER_DIR];
+extern BITMAP *font6, *mesh1[MAX_OBSTACLES], *mesh2, *mesh3, *shadow[MAX_SHADOWS], *marker_image, *marker_image_active;
 extern PALETTE pal;
 
 extern char map_fname[40], map_path[MAX_PATH], *strbuf;

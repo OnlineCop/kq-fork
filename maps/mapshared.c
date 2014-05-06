@@ -21,7 +21,8 @@ BITMAP *marker_image, *marker_image_active;
 
 // This line turns off other/indent.pro indentation settings:
 // *INDENT-OFF*
-PALETTE pal = {
+PALETTE pal =
+{
     {0, 0, 0, 0}, {0, 0, 0, 0}, {8, 8, 8, 0}, {12, 12, 12, 0},
     {16, 16, 16, 0}, {20, 20, 20, 0}, {24, 24, 24, 0}, {28, 28, 28, 0},
     {33, 33, 33, 0}, {38, 38, 38, 0}, {43, 43, 43, 0}, {47, 47, 47, 0},
@@ -106,7 +107,8 @@ PALETTE pal = {
 // *INDENT-ON*
 
 
-const char *icon_files[NUM_TILESETS] = {
+const char *icon_files[NUM_TILESETS] =
+{
     "land.pcx", "newtown.pcx", "castle.pcx", "Incave.pcx", "village.pcx",
     "mount.pcx", "shrine.pcx", "fortress.pcx"
 };
@@ -135,27 +137,28 @@ unsigned char *search_map;
  * changes to the way this blits to the screen, we'll only have to update it
  * once.
  */
-void blit2screen (void)
+void blit2screen(void)
 {
-    blit (double_buffer, screen, 0, 0, 0, 0, SW, SH);
+    blit(double_buffer, screen, 0, 0, 0, 0, SW, SH);
 }
 
 
 
-void load_iconsets (PALETTE pal)
+void load_iconsets(PALETTE pal)
 {
     unsigned int x, y;
 
-    set_pcx (&pcx_buffer, icon_files[gmap.tileset], pal, 1);
+    set_pcx(&pcx_buffer, icon_files[gmap.tileset], pal, 1);
     max_sets = (pcx_buffer->h / TILE_H);
 
-    for (y = 0; y < max_sets; y++) {
+    for (y = 0; y < max_sets; y++)
+    {
         for (x = 0; x < ICONSET_SIZE; x++)
-            blit (pcx_buffer, icons[y * ICONSET_SIZE + x], x * TILE_W, y * TILE_H,
-                  0, 0, TILE_W, TILE_H);
+            blit(pcx_buffer, icons[y * ICONSET_SIZE + x], x * TILE_W, y * TILE_H,
+                 0, 0, TILE_W, TILE_H);
     }
     icon_set = 0;
-    destroy_bitmap (pcx_buffer);
+    destroy_bitmap(pcx_buffer);
 }
 
 
@@ -164,108 +167,135 @@ void load_iconsets (PALETTE pal)
  *
  * \param   filename File to load
  */
-void load_map (const char *path)
+void load_map(const char *path)
 {
     int p, q, i;
     PACKFILE *pf;
     char load_fname[PATH_MAX];
 
-    ASSERT (load_fname);
-    strcpy (load_fname, path);
+    ASSERT(load_fname);
+    strcpy(load_fname, path);
 
-    if (!exists (load_fname)) {
-        replace_extension (load_fname, load_fname, "map", sizeof (load_fname));
-        if (!exists (load_fname)) {
-            error_load (load_fname);
+    if (!exists(load_fname))
+    {
+        replace_extension(load_fname, load_fname, "map", sizeof(load_fname));
+        if (!exists(load_fname))
+        {
+            error_load(load_fname);
             return;
         }
     }
 
-    pf = pack_fopen (load_fname, F_READ_PACKED);
-    if (!pf) {
-        error_load (load_fname);
+    pf = pack_fopen(load_fname, F_READ_PACKED);
+    if (!pf)
+    {
+        error_load(load_fname);
         return;
     }
 
     /*printf("\nLoading map \"%s\":\n", load_fname);*/
-    strcpy (map_path, load_fname);
-    strcpy (map_fname, get_filename (load_fname));
+    strcpy(map_path, load_fname);
+    strcpy(map_fname, get_filename(load_fname));
 
-    load_s_map (&gmap, pf);
+    load_s_map(&gmap, pf);
 
     /* Recount the number of entities on the map */
     number_of_ents = 0;
-    for (i = 0; i < MAX_ENT; i++) {
-        load_s_entity (gent + i, pf);
+    for (i = 0; i < MAX_ENT; i++)
+    {
+        load_s_entity(gent + i, pf);
         if (gent[i].active != 0)
+        {
             number_of_ents = i + 1;
+        }
     }
 
-    bufferize ();
+    bufferize();
 
     /*printf("\nmap:\n");*/
-    for (q = 0; q < gmap.ysize; ++q) {
-        for (p = 0; p < gmap.xsize; ++p) {
-            map[q * gmap.xsize + p] = pack_igetw (pf);
+    for (q = 0; q < gmap.ysize; ++q)
+    {
+        for (p = 0; p < gmap.xsize; ++p)
+        {
+            map[q * gmap.xsize + p] = pack_igetw(pf);
             /*printf("%d,", map[q * gmap.xsize + p]);*/
         }
         /*printf("\n");*/
     }
     /*printf("\nb_map:\n");*/
-    for (q = 0; q < gmap.ysize; ++q) {
-        for (p = 0; p < gmap.xsize; ++p) {
-            b_map[q * gmap.xsize + p] = pack_igetw (pf);
+    for (q = 0; q < gmap.ysize; ++q)
+    {
+        for (p = 0; p < gmap.xsize; ++p)
+        {
+            b_map[q * gmap.xsize + p] = pack_igetw(pf);
             /*printf("%d,", b_map[q * gmap.xsize + p]);*/
         }
         /*printf("\n");*/
     }
     /*printf("\nf_map:\n");*/
-    for (q = 0; q < gmap.ysize; ++q) {
-        for (p = 0; p < gmap.xsize; ++p) {
-            f_map[q * gmap.xsize + p] = pack_igetw (pf);
+    for (q = 0; q < gmap.ysize; ++q)
+    {
+        for (p = 0; p < gmap.xsize; ++p)
+        {
+            f_map[q * gmap.xsize + p] = pack_igetw(pf);
             /*printf("%d,", f_map[q * gmap.xsize + p]);*/
         }
         /*printf("\n");*/
     }
 
-    pack_fread (z_map, (gmap.xsize * gmap.ysize), pf);
-    pack_fread (sh_map, (gmap.xsize * gmap.ysize), pf);
-    pack_fread (o_map, (gmap.xsize * gmap.ysize), pf);
-    pack_fclose (pf);
+    pack_fread(z_map, (gmap.xsize * gmap.ysize), pf);
+    pack_fread(sh_map, (gmap.xsize * gmap.ysize), pf);
+    pack_fread(o_map, (gmap.xsize * gmap.ysize), pf);
+    pack_fclose(pf);
 
-    set_pcx (&pcx_buffer, icon_files[gmap.tileset], pal, 1);
+    set_pcx(&pcx_buffer, icon_files[gmap.tileset], pal, 1);
     max_sets = (pcx_buffer->h / TILE_H);
 
-    load_iconsets (pal);
+    load_iconsets(pal);
 
     /* Check for bogus map squares */
-    for (p = 0; p < gmap.xsize * gmap.ysize; ++p) {
+    for (p = 0; p < gmap.xsize * gmap.ysize; ++p)
+    {
         /* Mid layer */
         if (map[p] > MAX_TILES)
+        {
             map[p] = 0;
+        }
 
         /* Background layer */
         if (b_map[p] > MAX_TILES)
+        {
             b_map[p] = 0;
+        }
 
         /* Foreground layer */
         if (f_map[p] > MAX_TILES)
+        {
             f_map[p] = 0;
+        }
 
         /* Obstacles layer */
         if (o_map[p] > MAX_OBSTACLES)
+        {
             o_map[p] = 0;
+        }
 
         /* Shadow layer */
         if (sh_map[p] >= MAX_SHADOWS)
+        {
             sh_map[p] = 0;
+        }
     }
 
     for (i = 0; i < MAX_TILES; i++)
+    {
         tilex[i] = i;
+    }
     for (i = 0; i < MAX_ANIM; i++)
+    {
         adata[i] = tanim[gmap.tileset][i];
-}                               /* load_map () */
+    }
+}                               /* load_map() */
 
 
 
@@ -278,59 +308,72 @@ void load_map (const char *path)
  * /param   pcx_pal Palette to set the image to
  * /param   critical If file cannot be found, exit the program with an error
  */
-void set_pcx (BITMAP ** pcx_buf, const char *pcx_file, PALETTE pcx_pal,
-              const int critical)
+void set_pcx(BITMAP **pcx_buf, const char *pcx_file, PALETTE pcx_pal,
+             const int critical)
 {
     char filename[PATH_MAX];
 
-    sprintf (filename, "%s/data/%s", KQ_DATA, pcx_file);
+    sprintf(filename, "%s/data/%s", KQ_DATA, pcx_file);
 
-    if (exists (filename))
-        *pcx_buf = load_pcx (filename, pcx_pal);
-    else {
-        if (exists (pcx_file))
-            *pcx_buf = load_pcx (pcx_file, pcx_pal);
-        else {
-            sprintf (strbuf, "Could not find file: %s.\n", pcx_file);
+    if (exists(filename))
+    {
+        *pcx_buf = load_pcx(filename, pcx_pal);
+    }
+    else
+    {
+        if (exists(pcx_file))
+        {
+            *pcx_buf = load_pcx(pcx_file, pcx_pal);
+        }
+        else
+        {
+            sprintf(strbuf, "Could not find file: %s.\n", pcx_file);
 
-            allegro_message ("%s", strbuf);
-            if (critical) {
+            allegro_message("%s", strbuf);
+            if (critical)
+            {
                 /* This means that this file is critical to the program, so we need to
                  * exit the program completely, as this cannot be recovered from.
                  */
-                cleanup ();
-                exit (EXIT_FAILURE);
+                cleanup();
+                exit(EXIT_FAILURE);
             }
         }
     }
-}                               /* set_pcx () */
+}                               /* set_pcx() */
 
 
 
 /*! \brief Cleanup scripts used in mapedit.c and mapdump.c */
-void shared_cleanup (void)
+void shared_cleanup(void)
 {
     int i;
 
-    destroy_bitmap (font6);
-    destroy_bitmap (marker_image);
-    destroy_bitmap (marker_image_active);
+    destroy_bitmap(font6);
+    destroy_bitmap(marker_image);
+    destroy_bitmap(marker_image_active);
     for (i = 0; i < MAX_TILES; i++)
-        destroy_bitmap (icons[i]);
+    {
+        destroy_bitmap(icons[i]);
+    }
     for (i = 0; i < MAX_SHADOWS; i++)
-        destroy_bitmap (shadow[i]);
+    {
+        destroy_bitmap(shadow[i]);
+    }
     for (i = 0; i < MAX_OBSTACLES; i++)
-        destroy_bitmap (mesh1[i]);
+    {
+        destroy_bitmap(mesh1[i]);
+    }
 }
 
 
 
 /*! \brief Startup scripts used in mapedit.c and mapdump.c */
-void shared_startup (void)
+void shared_startup(void)
 {
     int i, x, y;
 
-    set_palette (pal);
+    set_palette(pal);
 
     /* Give several variables sane defaults */
 
@@ -342,81 +385,90 @@ void shared_startup (void)
 
 
     /* Used for icons */
-    for (i = 0; i < MAX_TILES; i++) {
-        icons[i] = create_bitmap (TILE_W, TILE_H);
-        clear (icons[i]);
+    for (i = 0; i < MAX_TILES; i++)
+    {
+        icons[i] = create_bitmap(TILE_W, TILE_H);
+        clear(icons[i]);
     }
 
     /* Used for Obstacles */
     /* Block all directions */
-    mesh1[0] = create_bitmap (TILE_W, TILE_H);
-    clear (mesh1[0]);
-    for (y = 0; y < TILE_H; y += 2) {
+    mesh1[0] = create_bitmap(TILE_W, TILE_H);
+    clear(mesh1[0]);
+    for (y = 0; y < TILE_H; y += 2)
+    {
         for (x = 0; x < TILE_W; x += 2)
-            putpixel (mesh1[0], x, y, 255);
+        {
+            putpixel(mesh1[0], x, y, 255);
+        }
         for (x = 1; x < TILE_W; x += 2)
-            putpixel (mesh1[0], x, y + 1, 255);
+        {
+            putpixel(mesh1[0], x, y + 1, 255);
+        }
     }
 
     /* Block up */
-    mesh1[1] = create_bitmap (TILE_W, TILE_H);
-    clear (mesh1[1]);
-    hline (mesh1[1], 0, 0, TILE_W - 1, 255);
-    vline (mesh1[1], TILE_W / 2, 0, TILE_H - 1, 255);
+    mesh1[1] = create_bitmap(TILE_W, TILE_H);
+    clear(mesh1[1]);
+    hline(mesh1[1], 0, 0, TILE_W - 1, 255);
+    vline(mesh1[1], TILE_W / 2, 0, TILE_H - 1, 255);
 
     /* Block right */
-    mesh1[2] = create_bitmap (TILE_W, TILE_H);
-    clear (mesh1[2]);
-    hline (mesh1[2], 0, TILE_H / 2, TILE_W - 1, 255);
-    vline (mesh1[2], TILE_W - 1, 0, TILE_W - 1, 255);
+    mesh1[2] = create_bitmap(TILE_W, TILE_H);
+    clear(mesh1[2]);
+    hline(mesh1[2], 0, TILE_H / 2, TILE_W - 1, 255);
+    vline(mesh1[2], TILE_W - 1, 0, TILE_W - 1, 255);
 
     /* Block down */
-    mesh1[3] = create_bitmap (TILE_W, TILE_H);
-    clear (mesh1[3]);
-    hline (mesh1[3], 0, TILE_H - 1, TILE_W - 1, 255);
-    vline (mesh1[3], TILE_W / 2, 0, TILE_H - 1, 255);
+    mesh1[3] = create_bitmap(TILE_W, TILE_H);
+    clear(mesh1[3]);
+    hline(mesh1[3], 0, TILE_H - 1, TILE_W - 1, 255);
+    vline(mesh1[3], TILE_W / 2, 0, TILE_H - 1, 255);
 
     /* Block left */
-    mesh1[4] = create_bitmap (TILE_W, TILE_H);
-    clear (mesh1[4]);
-    hline (mesh1[4], 0, TILE_W / 2, TILE_W - 1, 255);
-    vline (mesh1[4], 0, 0, TILE_H - 1, 255);
+    mesh1[4] = create_bitmap(TILE_W, TILE_H);
+    clear(mesh1[4]);
+    hline(mesh1[4], 0, TILE_W / 2, TILE_W - 1, 255);
+    vline(mesh1[4], 0, 0, TILE_H - 1, 255);
 
     /* Used for Shadows */
     /* Shadows */
-    set_pcx (&pcx_buffer, "Misc.pcx", pal, 1);
-    for (i = 0; i < MAX_SHADOWS; i++) {
-        shadow[i] = create_bitmap (TILE_W, TILE_H);
-        blit (pcx_buffer, shadow[i], i * TILE_W, 160, 0, 0, TILE_W, TILE_H);
+    set_pcx(&pcx_buffer, "Misc.pcx", pal, 1);
+    for (i = 0; i < MAX_SHADOWS; i++)
+    {
+        shadow[i] = create_bitmap(TILE_W, TILE_H);
+        blit(pcx_buffer, shadow[i], i * TILE_W, 160, 0, 0, TILE_W, TILE_H);
     }
-    destroy_bitmap (pcx_buffer);
+    destroy_bitmap(pcx_buffer);
 
     /* Entity images */
-    set_pcx (&pcx_buffer, "entities.pcx", pal, 1);
-    for (x = 0; x < MAX_EPICS; x++) {
-        for (i = 0; i < 12; i++) {
-            eframes[x][i] = create_bitmap (ENT_W, ENT_H);
-            blit (pcx_buffer, eframes[x][i], i * ENT_W, x * ENT_H, 0, 0, ENT_W,
-                  ENT_H);
+    set_pcx(&pcx_buffer, "entities.pcx", pal, 1);
+    for (x = 0; x < MAX_EPICS; x++)
+    {
+        for (i = 0; i < 12; i++)
+        {
+            eframes[x][i] = create_bitmap(ENT_W, ENT_H);
+            blit(pcx_buffer, eframes[x][i], i * ENT_W, x * ENT_H, 0, 0, ENT_W,
+                 ENT_H);
         }
     }
-    destroy_bitmap (pcx_buffer);
+    destroy_bitmap(pcx_buffer);
 
     /* Create the marker image */
-    marker_image = create_bitmap (TILE_W, TILE_H);
-    clear_bitmap (marker_image);
-    vline (marker_image, 0, 0, TILE_H, makecol (255, 255, 255));
-    vline (marker_image, 1, 0, TILE_H, makecol (192, 192, 192));
-    rectfill (marker_image, 2, 0, TILE_W / 2 + 2, TILE_H / 2,
-              makecol (255, 0, 0));
+    marker_image = create_bitmap(TILE_W, TILE_H);
+    clear_bitmap(marker_image);
+    vline(marker_image, 0, 0, TILE_H, makecol(255, 255, 255));
+    vline(marker_image, 1, 0, TILE_H, makecol(192, 192, 192));
+    rectfill(marker_image, 2, 0, TILE_W / 2 + 2, TILE_H / 2,
+             makecol(255, 0, 0));
 
     /* Create the active marker image */
-    marker_image_active = create_bitmap (TILE_W, TILE_H);
-    clear_bitmap (marker_image_active);
-    vline (marker_image_active, 0, 0, TILE_H, makecol (255, 255, 255));
-    vline (marker_image_active, 1, 0, TILE_H, makecol (192, 192, 192));
-    rectfill (marker_image_active, 2, 0, TILE_W / 2 + 2, TILE_H / 2,
-              makecol (0, 0, 255));
+    marker_image_active = create_bitmap(TILE_W, TILE_H);
+    clear_bitmap(marker_image_active);
+    vline(marker_image_active, 0, 0, TILE_H, makecol(255, 255, 255));
+    vline(marker_image_active, 1, 0, TILE_H, makecol(192, 192, 192));
+    rectfill(marker_image_active, 2, 0, TILE_W / 2 + 2, TILE_H / 2,
+             makecol(0, 0, 255));
 }
 
 
@@ -432,7 +484,7 @@ void shared_startup (void)
  *
  * \param   save_fname File to save the map to
  */
-void visual_map (s_show showing, const char *save_fname)
+void visual_map(s_show showing, const char *save_fname)
 {
     int i, j, w;
     BITMAP *bmp;
@@ -442,85 +494,111 @@ void visual_map (s_show showing, const char *save_fname)
     unsigned short *layer_s;
 
     /* Create a bitmap the same size as the map */
-    bmp = create_bitmap (xsize, ysize);
-    clear (bmp);
+    bmp = create_bitmap(xsize, ysize);
+    clear(bmp);
 
-    if (showing.layer[0]) {
+    if (showing.layer[0])
+    {
         layer_s = &map[0];
-        for (j = 0; j < ysize; j += TILE_H) {
-            for (i = 0; i < xsize; i += TILE_W) {
-                blit (icons[*layer_s], bmp, 0, 0, i, j, TILE_W, TILE_H);
+        for (j = 0; j < ysize; j += TILE_H)
+        {
+            for (i = 0; i < xsize; i += TILE_W)
+            {
+                blit(icons[*layer_s], bmp, 0, 0, i, j, TILE_W, TILE_H);
                 ++layer_s;
             }
         }
     }
 
-    if (showing.layer[1]) {
+    if (showing.layer[1])
+    {
         layer_s = &b_map[0];
-        for (j = 0; j < ysize; j += TILE_H) {
-            for (i = 0; i < xsize; i += TILE_W) {
-                draw_sprite (bmp, icons[*layer_s], i, j);
+        for (j = 0; j < ysize; j += TILE_H)
+        {
+            for (i = 0; i < xsize; i += TILE_W)
+            {
+                draw_sprite(bmp, icons[*layer_s], i, j);
                 ++layer_s;
             }
         }
     }
 
-    if (showing.layer[2]) {
+    if (showing.layer[2])
+    {
         layer_s = &f_map[0];
-        for (j = 0; j < ysize; j += TILE_H) {
-            for (i = 0; i < xsize; i += TILE_W) {
-                draw_sprite (bmp, icons[*layer_s], i, j);
+        for (j = 0; j < ysize; j += TILE_H)
+        {
+            for (i = 0; i < xsize; i += TILE_W)
+            {
+                draw_sprite(bmp, icons[*layer_s], i, j);
                 ++layer_s;
             }
         }
     }
 
-    if (showing.shadows) {
-        for (j = 0; j < gmap.ysize; j++) {
-            for (i = 0; i < gmap.xsize; i++) {
-                draw_trans_sprite (bmp, shadow[sh_map[j * gmap.xsize + i]],
-                                   i * TILE_W, j * TILE_H);
+    if (showing.shadows)
+    {
+        for (j = 0; j < gmap.ysize; j++)
+        {
+            for (i = 0; i < gmap.xsize; i++)
+            {
+                draw_trans_sprite(bmp, shadow[sh_map[j * gmap.xsize + i]],
+                                  i * TILE_W, j * TILE_H);
             }
         }
     }
 
-    if (showing.obstacles) {
-        for (j = 0; j < gmap.ysize; j++) {
-            for (i = 0; i < gmap.xsize; i++) {
+    if (showing.obstacles)
+    {
+        for (j = 0; j < gmap.ysize; j++)
+        {
+            for (i = 0; i < gmap.xsize; i++)
+            {
                 /* Which tile is currently being evaluated */
                 w = j * gmap.xsize + i;
                 if (o_map[w] > 0)
-                    draw_sprite (bmp, mesh1[o_map[w] - 1], i * TILE_W, j * TILE_H);
+                {
+                    draw_sprite(bmp, mesh1[o_map[w] - 1], i * TILE_W, j * TILE_H);
+                }
             }
         }
     }
 
-    if (showing.zones) {
-        for (j = 0; j < gmap.ysize; j++) {
-            for (i = 0; i < gmap.xsize; i++) {
+    if (showing.zones)
+    {
+        for (j = 0; j < gmap.ysize; j++)
+        {
+            for (i = 0; i < gmap.xsize; i++)
+            {
                 /* Which tile is currently being evaluated */
                 w = j * gmap.xsize + i;
-                if (z_map[w] > 0) {
+                if (z_map[w] > 0)
+                {
 
-                    if (z_map[w] < 10) {
+                    if (z_map[w] < 10)
+                    {
                         /* The zone's number is single-digit, center vert+horiz */
-                        textprintf_ex (bmp, font, i * TILE_W + 4, j * TILE_H + 4,
-                                       makecol (255, 255, 255), 0, "%d", z_map[w]);
-                    } else if (z_map[w] < 100) {
+                        textprintf_ex(bmp, font, i * TILE_W + 4, j * TILE_H + 4,
+                                      makecol(255, 255, 255), 0, "%d", z_map[w]);
+                    }
+                    else if (z_map[w] < 100)
+                    {
                         /* The zone's number is double-digit, center only vert */
-                        textprintf_ex (bmp, font, i * TILE_W, j * TILE_H + 4,
-                                       makecol (255, 255, 255), 0, "%d", z_map[w]);
-                    } else {
+                        textprintf_ex(bmp, font, i * TILE_W, j * TILE_H + 4,
+                                      makecol(255, 255, 255), 0, "%d", z_map[w]);
+                    }
+                    else
+                    {
                         /* The zone's number is triple-digit.  Print the 100's digit
                          * in the top-center of the square; the 10's and 1's digits
                          * on bottom of the square
                          */
-                        textprintf_ex (bmp, font, i * TILE_W + 4, j * TILE_H,
-                                       makecol (255, 255, 255), 0, "%d",
-                                       (int) (z_map[w] / 100));
-                        textprintf_ex (bmp, font, i * TILE_W, j * TILE_H + TILE_H / 2,
-                                       makecol (255, 255, 255), 0, "%02d",
-                                       (int) (z_map[w] % 100));
+                        textprintf_ex(bmp, font, i * TILE_W + 4, j * TILE_H,
+                                      makecol(255, 255, 255), 0, "%d",
+                                      (int)(z_map[w] / 100));
+                        textprintf_ex(bmp, font, i * TILE_W, j * TILE_H + TILE_H / 2,
+                                      makecol(255, 255, 255), 0, "%02d",
+                                      (int)(z_map[w] % 100));
                     }
                 }
             }
@@ -528,44 +606,54 @@ void visual_map (s_show showing, const char *save_fname)
     }
 
     /* Show entities */
-    if (showing.entities) {
-        for (i = 0; i < MAX_ENT; i++) {
-            if (gent[i].active) {
-                if (gent[i].transl == 0) {
-                    draw_sprite (bmp, eframes[gent[i].chrx][gent[i].facing * ENT_FRAMES_PER_DIR],
-                                 gent[i].tilex * TILE_W, gent[i].tiley * TILE_H);
-                } else {
-                    draw_trans_sprite (bmp,
-                                       eframes[gent[i].chrx][gent[i].facing * ENT_FRAMES_PER_DIR],
-                                       gent[i].tilex * TILE_W,
-                                       gent[i].tiley * TILE_H);
+    if (showing.entities)
+    {
+        for (i = 0; i < MAX_ENT; i++)
+        {
+            if (gent[i].active)
+            {
+                if (gent[i].transl == 0)
+                {
+                    draw_sprite(bmp, eframes[gent[i].chrx][gent[i].facing * ENT_FRAMES_PER_DIR],
+                                gent[i].tilex * TILE_W, gent[i].tiley * TILE_H);
+                }
+                else
+                {
+                    draw_trans_sprite(bmp,
+                                      eframes[gent[i].chrx][gent[i].facing * ENT_FRAMES_PER_DIR],
+                                      gent[i].tilex * TILE_W,
+                                      gent[i].tiley * TILE_H);
                 }                   // if..else ()
             }
         }
     }
 
     /* Show marker flags */
-    if (showing.markers && gmap.markers.size > 0) {
-        for (i = 0; i < gmap.markers.size; ++i) {
-            draw_sprite (bmp, marker_image,
-                         gmap.markers.array[i].x * TILE_W + (TILE_W / 2),
-                         gmap.markers.array[i].y * TILE_H - (TILE_H / 2));
+    if (showing.markers && gmap.markers.size > 0)
+    {
+        for (i = 0; i < gmap.markers.size; ++i)
+        {
+            draw_sprite(bmp, marker_image,
+                        gmap.markers.array[i].x * TILE_W + (TILE_W / 2),
+                        gmap.markers.array[i].y * TILE_H - (TILE_H / 2));
         }
     }
 
     /* Show boundary boxes */
-    if (showing.boundaries) {
-        for (i = 0; i < gmap.bounds.size; i++) {
-            rect (bmp, gmap.bounds.array[i].left * TILE_W, gmap.bounds.array[i].top * TILE_H,
-                  (gmap.bounds.array[i].right + 1) * TILE_W - 1,
-                  (gmap.bounds.array[i].bottom + 1) * TILE_H - 1, 24);
+    if (showing.boundaries)
+    {
+        for (i = 0; i < gmap.bounds.size; i++)
+        {
+            rect(bmp, gmap.bounds.array[i].left * TILE_W, gmap.bounds.array[i].top * TILE_H,
+                 (gmap.bounds.array[i].right + 1) * TILE_W - 1,
+                 (gmap.bounds.array[i].bottom + 1) * TILE_H - 1, 24);
         }
     }
 
-    get_palette (pal);
-    save_bitmap (save_fname, bmp, pal);
-    destroy_bitmap (bmp);
-}                               /* visual_map () */
+    get_palette(pal);
+    save_bitmap(save_fname, bmp, pal);
+    destroy_bitmap(bmp);
+}                               /* visual_map() */
 
 
 
@@ -579,7 +667,7 @@ void visual_map (s_show showing, const char *save_fname)
  * \param   showing Struct detailing which layers/attributes to output.
  * \param   output_filename File to save the map to.
  */
-void textual_map (s_show showing, const char *output_filename)
+void textual_map(s_show showing, const char *output_filename)
 {
     unsigned int row, col;
     size_t tile_index;
@@ -734,13 +822,13 @@ void textual_map (s_show showing, const char *output_filename)
         for (boundary_index = 0; boundary_index < gmap.bounds.size; boundary_index++)
         {
             printf("%d:\t%d, %d, %d, %d, %d\n",
-                boundary_index,
-                gmap.bounds.array[boundary_index].left,
-                gmap.bounds.array[boundary_index].top,
-                gmap.bounds.array[boundary_index].right,
-                gmap.bounds.array[boundary_index].bottom,
-                gmap.bounds.array[boundary_index].btile
-            );
+                   boundary_index,
+                   gmap.bounds.array[boundary_index].left,
+                   gmap.bounds.array[boundary_index].top,
+                   gmap.bounds.array[boundary_index].right,
+                   gmap.bounds.array[boundary_index].bottom,
+                   gmap.bounds.array[boundary_index].btile
+                  );
         }
     }
 
