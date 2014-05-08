@@ -1,4 +1,0 @@
-#!/bin/sh
-# Indent all KQ files as we like them.
-
-INDENT_PROFILE=other/indent.pro indent src/*.c include/*.h
