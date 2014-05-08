@@ -55,26 +55,6 @@ set(kq-fork_SRCS
 	src/shopmenu.c
 	src/timing.c
 	src/unix.c
-
-#	maps/mapdata.c
-#	maps/mapdiff.c
-#	maps/mapdump.c
-#	maps/mapedit.c
-#	maps/mapent.c
-#	maps/mapfile.c
-#	maps/mapshared.c
-#	maps/mapstructs.c
-#	other/rescmp.c
-#	other/res-skel.1.c
-#	other/res-skel.2.c
-#	other/res-skel.3.c
-#	other/res-skel.4.c
-#	other/res-skel.5.c
-#	other/res-skel.6.c
-#	saves/sgupdate.c
-#	src/misc/runner.c
-#	src/music_dumb.c
-#	src/win.c
 )
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
