@@ -1361,8 +1361,6 @@ int main(int argc, const char *argv[])
     int i;
 
     setlocale(LC_ALL, "");
-    (void) bindtextdomain(PACKAGE, KQ_LOCALE);
-    (void) textdomain(PACKAGE);
 
     skip_splash = 0;
     for (i = 1; i < argc; i++)

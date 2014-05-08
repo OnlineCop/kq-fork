@@ -132,7 +132,7 @@ void play_music(const char *music_name, long position)
 {
     if (is_sound != 0)
     {
-        char filename[PATH_MAX];
+        char filename[2048];
 
         stop_music();
         strcpy(filename, kqres(MUSIC_DIR, music_name));

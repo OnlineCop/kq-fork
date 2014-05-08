@@ -39,9 +39,9 @@
 #include "platform.h"
 
 static int init_path = 0;
-static char user_dir[PATH_MAX];
-static char data_dir[PATH_MAX];
-static char lib_dir[PATH_MAX];
+static char user_dir[2048];
+static char data_dir[2048];
+static char lib_dir[2048];
 
 
 /*! \brief Returns the full path for this file
@@ -59,7 +59,7 @@ static char lib_dir[PATH_MAX];
 const char *get_resource_file_path(const char *str1, const char *str2,
                                    const char *file)
 {
-    static char ans[PATH_MAX];
+    static char ans[2048];
 
     sprintf(ans, "%s/%s/%s", user_dir, str2, file);
     if (!exists(ans))
@@ -88,7 +88,7 @@ const char *get_resource_file_path(const char *str1, const char *str2,
  */
 const char *get_lua_file_path(const char *str1, const char *file)
 {
-    static char ans[PATH_MAX];
+    static char ans[2048];
 
     sprintf(ans, "%s/scripts/%s.lob", user_dir, file);
     if (!exists(ans))
@@ -125,7 +125,7 @@ const char *get_lua_file_path(const char *str1, const char *file)
  */
 const char *kqres(enum eDirectories dir, const char *file)
 {
-    char exe[PATH_MAX];
+    char exe[2048];
 
     if (!init_path)
     {
@@ -143,7 +143,7 @@ const char *kqres(enum eDirectories dir, const char *file)
         }
 
         /* Do not get fooled by a corrupted $HOME */
-        if (home != NULL && strlen(home) < PATH_MAX)
+        if (home != NULL && strlen(home) < 2048)
         {
             sprintf(user_dir, "%s/.kq", home);
             /* Always try to make the directory, just to be sure. */
@@ -155,18 +155,9 @@ const char *kqres(enum eDirectories dir, const char *file)
         }
         /* Now the data directory */
         get_executable_name(exe, sizeof(exe));
-        if (strcmp(exe, KQ_BIN) == 0)
-        {
-            /* It's in its proper installed location */
-            strcpy(data_dir, KQ_DATA);
-            strcpy(lib_dir, KQ_LIB);
-        }
-        else
-        {
-            /* Not installed, development version */
-            strcpy(data_dir, ".");
-            strcpy(lib_dir, ".");
-        }
+        /* Not installed, development version */
+        strcpy(data_dir, ".");
+        strcpy(lib_dir, ".");
         init_path = 1;
     }
     switch (dir)
