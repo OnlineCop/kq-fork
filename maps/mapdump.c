@@ -147,8 +147,8 @@ int main(int argc, char *argv[])
     s_show showing, d_showing;
 
     setlocale(LC_ALL, "");
-    bindtextdomain(PACKAGE, KQ_LOCALE);
-    textdomain(PACKAGE);
+    //    bindtextdomain(PACKAGE, KQ_LOCALE);
+    //    textdomain(PACKAGE);
 
     /* Make sure that we have some sort of input; exit with error if not */
     if (argc == 1)

@@ -962,8 +962,8 @@ int main(unsigned int argc, char *argv[])
     char *filenames[PATH_MAX];
 
     setlocale(LC_ALL, "");
-    bindtextdomain(PACKAGE, KQ_LOCALE);
-    textdomain(PACKAGE);
+    //    bindtextdomain(PACKAGE, KQ_LOCALE);
+    //    textdomain(PACKAGE);
 
     startup();
 

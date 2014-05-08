@@ -2510,8 +2510,8 @@ int main(int argc, char *argv[])
     int i;
 
     setlocale(LC_ALL, "");
-    bindtextdomain(PACKAGE, KQ_LOCALE);
-    textdomain(PACKAGE);
+    //    bindtextdomain(PACKAGE, KQ_LOCALE);
+    //    textdomain(PACKAGE);
 
     row[0] = vtiles * TILE_H + 6;
     for (i = 1; i < 8; i++)

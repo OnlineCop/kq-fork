@@ -313,7 +313,7 @@ void set_pcx(BITMAP **pcx_buf, const char *pcx_file, PALETTE pcx_pal,
 {
     char filename[PATH_MAX];
 
-    sprintf(filename, "%s/data/%s", KQ_DATA, pcx_file);
+    //    sprintf(filename, "%s/data/%s", KQ_DATA, pcx_file);
 
     if (exists(filename))
     {
