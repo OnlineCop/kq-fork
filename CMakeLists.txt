@@ -77,7 +77,7 @@ set(kq-fork_SRCS
 #	src/win.c
 )
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include;${CMAKE_CURRENT_SOURCE_DIR}/maps")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(CMAKE_C_FLAGS "-O0 -ggdb3 -Wall -Wextra -Wpedantic -std=c99")
 set(ALLEGRO_LIBRARY "-lalleg")
