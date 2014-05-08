@@ -36,11 +36,11 @@
 typedef unsigned int t_entity;
 
 
-void process_entities (void);   /*  kq.c  */
-int entityat (int, int, t_entity);   /*  kq.c  */
-void set_script (t_entity, const char *);  /*  intrface.c  */
-void place_ent (t_entity, int, int); /*  intrface.c, kq.c  */
-void count_entities (void);     /*  kq.c  */
+void process_entities(void);    /*  kq.c  */
+int entityat(int, int, t_entity);    /*  kq.c  */
+void set_script(t_entity, const char *);   /*  intrface.c  */
+void place_ent(t_entity, int, int);  /*  intrface.c, kq.c  */
+void count_entities(void);      /*  kq.c  */
 
 
 /* move modes */

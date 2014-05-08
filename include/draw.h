@@ -50,56 +50,56 @@
 
 /*  combat.c, effects.c, (item|mas|shop|eqp)menu.c, heroc.c, kq.c,  */
 /*  [he]skill.c, intrface.c, selector.c, menu.c, setup.c, sgame.c  */
-void blit2screen (int, int);
+void blit2screen(int, int);
 
 /*  hskill.c, sgame.c  */
-void color_scale (BITMAP *, BITMAP *, int, int);
+void color_scale(BITMAP *, BITMAP *, int, int);
 
 /*  combat.c, effects.c, hskill.c  */
-void convert_cframes (int, int, int, int);
+void convert_cframes(int, int, int, int);
 
 /*  combat.c, effects.c, hskill.c  */
-void revert_cframes (int, int);
+void revert_cframes(int, int);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, menu.c, selector.c  */
-void draw_icon (BITMAP *, int, int, int);
+void draw_icon(BITMAP *, int, int, int);
 
 /*  combat.c, menu.c  */
-void draw_stsicon (BITMAP *, int, int, int, int, int);
+void draw_stsicon(BITMAP *, int, int, int, int, int);
 
 /*  intrface.c  */
-int is_forestsquare (int, int);
+int is_forestsquare(int, int);
 
 /*  (eqp|item|mas|shop)menu.c, intrface.c, kq.c, magic.c, menu.c,  */
 /*  selector.c, setup.c, sgame.c  */
-void drawmap (void);
+void drawmap(void);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, hskill.c,  */
 /*  menu.c, selector.c, setup.c, sgame.c, intrface.c  */
-void menubox (BITMAP *, int, int, int, int, int);
+void menubox(BITMAP *, int, int, int, int, int);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, hskill.c,  */
 /*  intrface.c, selector.c, setup.c, sgame.c, menu.c  */
-void print_font (BITMAP *, int, int, const char *, int);
+void print_font(BITMAP *, int, int, const char *, int);
 
 /*  effects.c -> only place (RB IDEA: moving it there?)  */
-void print_num (BITMAP *, int, int, char *, int);
+void print_num(BITMAP *, int, int, char *, int);
 
 /*  intrface.c, setup.c  */
-void text_ex (int, int, const char *);
-void porttext_ex (int, int, const char *);
+void text_ex(int, int, const char *);
+void porttext_ex(int, int, const char *);
 
 /*  intrface.c, setup.c  */
-int prompt (int, int, int, const char *, const char *, const char *, const char *);
-int prompt_ex (int, const char *, const char *[], int);
+int prompt(int, int, int, const char *, const char *, const char *, const char *);
+int prompt_ex(int, const char *, const char *[], int);
 
 /*  combat.c, hskill.c, intrface.c, (item|shop)menu.c, kq.c, sgame.c  */
-void message (const char *, int, int, int, int);
+void message(const char *, int, int, int, int);
 
 /*  intrface.c, kq.c  */
-void set_view (int, int, int, int, int);
+void set_view(int, int, int, int, int);
 
-BITMAP *copy_bitmap (BITMAP *, BITMAP *);
+BITMAP *copy_bitmap(BITMAP *, BITMAP *);
 
 /*  global variables  */
 extern unsigned char BLUE;

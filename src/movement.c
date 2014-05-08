@@ -36,11 +36,11 @@
 #include "movement.h"
 
 
-static int compose_path (AL_CONST int *, int, int, char *, int);
-static void copy_map (int *);
-static int minimize_path (AL_CONST char *, char *, int);
-static int search_paths (int, int *, int, int, int, int, int, int, int, int,
-                         int);
+static int compose_path(AL_CONST int *, int, int, char *, int);
+static void copy_map(int *);
+static int minimize_path(AL_CONST char *, char *, int);
+static int search_paths(int, int *, int, int, int, int, int, int, int, int,
+                        int);
 
 
 /*! \brief Generates the solution path.
@@ -61,8 +61,8 @@ static int search_paths (int, int *, int, int, int, int, int, int, int, int,
  *
  * \sa search_paths copy_map find_path minimize_path
  */
-static int compose_path (AL_CONST int *map, int target_x, int target_y,
-                         char *buffer, int size)
+static int compose_path(AL_CONST int *map, int target_x, int target_y,
+                        char *buffer, int size)
 {
     char temp[1024];
     int index = 0;
@@ -74,13 +74,15 @@ static int compose_path (AL_CONST int *map, int target_x, int target_y,
     y = target_y;
     value = map[y * g_map.xsize + x];
     index = value - 2;
-    memset (temp, '\0', sizeof (temp));
+    memset(temp, '\0', sizeof(temp));
 
-    while (value > 1) {
+    while (value > 1)
+    {
 
         /*  move as many squares up as possible  */
         while ((y > 0) && (map[(y - 1) * g_map.xsize + x] == (value - 1))
-                 && (value > 1)) {
+                && (value > 1))
+        {
             value--;
             y--;
             temp[index--] = 'D';
@@ -88,7 +90,8 @@ static int compose_path (AL_CONST int *map, int target_x, int target_y,
 
         /*  move as many squares left as possible  */
         while ((x > 0) && (map[y * g_map.xsize + (x - 1)] == (value - 1))
-                 && (value > 1)) {
+                && (value > 1))
+        {
             value--;
             x--;
             temp[index--] = 'R';
@@ -96,8 +99,9 @@ static int compose_path (AL_CONST int *map, int target_x, int target_y,
 
         /*  move as many squares down as possible  */
         while ((y < g_map.ysize - 1)
-                 && (map[(y + 1) * g_map.xsize + x] == (value - 1))
-                 && (value > 1)) {
+                && (map[(y + 1) * g_map.xsize + x] == (value - 1))
+                && (value > 1))
+        {
             value--;
             y++;
             temp[index--] = 'U';
@@ -105,15 +109,16 @@ static int compose_path (AL_CONST int *map, int target_x, int target_y,
 
         /*  move as many squares right as possible  */
         while ((x < g_map.xsize - 1)
-                 && (map[y * g_map.xsize + (x + 1)] == (value - 1))
-                 && (value > 1)) {
+                && (map[y * g_map.xsize + (x + 1)] == (value - 1))
+                && (value > 1))
+        {
             value--;
             x++;
             temp[index--] = 'L';
         }
     }
 
-    return (minimize_path (temp, buffer, size));
+    return (minimize_path(temp, buffer, size));
 }
 
 
@@ -127,24 +132,31 @@ static int compose_path (AL_CONST int *map, int target_x, int target_y,
  *
  * \sa search_paths compose_path find_path minimize_path
  */
-static void copy_map (int *map)
+static void copy_map(int *map)
 {
     register int x, y;
     unsigned int index;
 
-    for (y = 0; y < g_map.ysize; y++) {
-        for (x = 0; x < g_map.xsize; x++) {
+    for (y = 0; y < g_map.ysize; y++)
+    {
+        for (x = 0; x < g_map.xsize; x++)
+        {
             index = y * g_map.xsize + x;
 
             if (o_seg[index])
+            {
                 map[index] = -1;
+            }
         }
     }
 
     /*  RB: faster to do this than to check if there is an entity at every square  */
-    for (index = 0; index < MAX_ENT; index++) {
+    for (index = 0; index < MAX_ENT; index++)
+    {
         if (g_ent[index].active)
+        {
             map[g_ent[index].tilex * g_map.ysize + g_ent[index].tiley] = -1;
+        }
     }
 }
 
@@ -171,34 +183,42 @@ static void copy_map (int *map)
  *
  * \sa copy_map compose_path search_paths minimize_path
  */
-int find_path (int id, int source_x, int source_y, int target_x, int target_y,
-               char *buffer, int size)
+int find_path(int id, int source_x, int source_y, int target_x, int target_y,
+              char *buffer, int size)
 {
     int *map = NULL;
     int result = 0;
 
     if (buffer == NULL || size == 0)
+    {
         return (3);
+    }
 
-    memset (buffer, '\0', size);
+    memset(buffer, '\0', size);
 
     /*  TODO: Allocate memory once instead of every call  */
-    result = g_map.xsize * g_map.ysize * sizeof (int);
-    map = (int *) malloc (result);
+    result = g_map.xsize * g_map.ysize * sizeof(int);
+    map = (int *) malloc(result);
     if (map == NULL)
+    {
         return (3);
+    }
 
-    memset (map, 0, result);
-    copy_map (map);
-    result = search_paths (id, map, 1, source_x, source_y, target_x, target_y,
-                           0, 0, g_map.xsize, g_map.ysize);
+    memset(map, 0, result);
+    copy_map(map);
+    result = search_paths(id, map, 1, source_x, source_y, target_x, target_y,
+                          0, 0, g_map.xsize, g_map.ysize);
 
     if (!result)
-        result = compose_path (map, target_x, target_y, buffer, size);
+    {
+        result = compose_path(map, target_x, target_y, buffer, size);
+    }
     else
+    {
         result = 1;
+    }
 
-    free (map);
+    free(map);
     return (result);
 }
 
@@ -218,7 +238,7 @@ int find_path (int id, int source_x, int source_y, int target_x, int target_y,
  *
  * \sa search_paths copy_map find_path compose_path
  */
-static int minimize_path (AL_CONST char *source, char *target, int size)
+static int minimize_path(AL_CONST char *source, char *target, int size)
 {
     int source_index = 0;
     int repetition = 0;
@@ -226,27 +246,33 @@ static int minimize_path (AL_CONST char *source, char *target, int size)
     char temp[16];
     char buffer[512];
 
-    memset (buffer, '\0', sizeof (buffer));
-    while (source[source_index] != '\0') {
+    memset(buffer, '\0', sizeof(buffer));
+    while (source[source_index] != '\0')
+    {
         value = source[source_index];
 
         source_index++;
         repetition = 1;
-        while ((source[source_index] == value) && (source[source_index] != '\0')) {
+        while ((source[source_index] == value) && (source[source_index] != '\0'))
+        {
             source_index++;
             repetition++;
         }
 
         /*  FIXME: check to see if the buffer is long enough?  */
-        snprintf (temp, sizeof (temp), "%c%d", value, repetition);
-        strncat (buffer, temp, sizeof (buffer) - strlen (buffer) - 1);
+        snprintf(temp, sizeof(temp), "%c%d", value, repetition);
+        strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
     }
 
-    if (strlen (buffer) < (unsigned int) size) {
-        strcpy (target, buffer);
+    if (strlen(buffer) < (unsigned int) size)
+    {
+        strcpy(target, buffer);
         return (0);
-    } else
+    }
+    else
+    {
         return (1);
+    }
 }
 
 
@@ -274,9 +300,9 @@ static int minimize_path (AL_CONST char *source, char *target, int size)
  *
  * \sa copy_map compose_path find_path minimize_path
  */
-static int search_paths (int id, int *map, int step, int source_x,
-                         int source_y, int target_x, int target_y, int start_x,
-                         int start_y, int limit_x, int limit_y)
+static int search_paths(int id, int *map, int step, int source_x,
+                        int source_y, int target_x, int target_y, int start_x,
+                        int start_y, int limit_x, int limit_y)
 {
     int index;
     int value;
@@ -285,31 +311,34 @@ static int search_paths (int id, int *map, int step, int source_x,
     index = source_y * limit_x + source_x;
     value = map[index];
     if ((value != -1) && (value == 0 || value > step)
-         && (step == 1 || !entityat (source_x, source_y, id))) {
+            && (step == 1 || !entityat(source_x, source_y, id)))
+    {
         map[index] = step;
 
         if ((source_x == target_x) && (source_y == target_y))
+        {
             return 0;
+        }
 
         if (source_x > start_x)
-            result &= search_paths (id, map, step + 1, source_x - 1, source_y,
-                                    target_x, target_y, start_x, start_y,
-                                    limit_x, limit_y);
+            result &= search_paths(id, map, step + 1, source_x - 1, source_y,
+                                   target_x, target_y, start_x, start_y,
+                                   limit_x, limit_y);
 
         if (source_x < limit_x - 1)
-            result &= search_paths (id, map, step + 1, source_x + 1, source_y,
-                                    target_x, target_y, start_x, start_y,
-                                    limit_x, limit_y);
+            result &= search_paths(id, map, step + 1, source_x + 1, source_y,
+                                   target_x, target_y, start_x, start_y,
+                                   limit_x, limit_y);
 
         if (source_y > start_y)
-            result &= search_paths (id, map, step + 1, source_x, source_y - 1,
-                                    target_x, target_y, start_x, start_y,
-                                    limit_x, limit_y);
+            result &= search_paths(id, map, step + 1, source_x, source_y - 1,
+                                   target_x, target_y, start_x, start_y,
+                                   limit_x, limit_y);
 
         if (source_y < limit_y - 1)
-            result &= search_paths (id, map, step + 1, source_x, source_y + 1,
-                                    target_x, target_y, start_x, start_y,
-                                    limit_x, limit_y);
+            result &= search_paths(id, map, step + 1, source_x, source_y + 1,
+                                   target_x, target_y, start_x, start_y,
+                                   limit_x, limit_y);
     }
 
     return (result);

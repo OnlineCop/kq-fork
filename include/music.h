@@ -30,16 +30,16 @@
 
 //#include <aldumb.h>
 
-void init_music (void);
-void shutdown_music (void);
-void poll_music (void);
+void init_music(void);
+void shutdown_music(void);
+void poll_music(void);
 
-void set_music_volume (float volume);
+void set_music_volume(float volume);
 
-void play_music (const char *music_name, long position);
-void pause_music (void);
-void resume_music (void);
-void stop_music (void);
+void play_music(const char *music_name, long position);
+void pause_music(void);
+void resume_music(void);
+void stop_music(void);
 
 
 #endif  /* __MUSIC_H */

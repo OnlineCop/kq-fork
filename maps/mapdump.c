@@ -339,7 +339,7 @@ int main(int argc, char *argv[])
                     fprintf(stdout, "  - Saving %s...\n", fn);
                 }
 
-                if (textual_map)
+                if (output_ext == extensions[2])
                 {
                     textual_map(showing, fn);
                 }

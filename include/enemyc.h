@@ -24,10 +24,10 @@
 #define __ENEMYC_H 1
 
 
-int select_encounter (int, int);        /*  combat.c  */
-void enemy_init (void);         /*  combat.c  */
-void enemy_chooseaction (int);  /*  combat.c  */
-void enemy_charmaction (int);   /*  combat.c, heroc.c  */
+int select_encounter(int, int);         /*  combat.c  */
+void enemy_init(void);          /*  combat.c  */
+void enemy_chooseaction(int);   /*  combat.c  */
+void enemy_charmaction(int);    /*  combat.c, heroc.c  */
 
 
 #endif  /* __ENEMYC_H */

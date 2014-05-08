@@ -753,9 +753,11 @@ void textual_map(s_show showing, const char *output_filename)
             for (col = 0; col < gmap.xsize; col++)
             {
                 tile_index = row * gmap.xsize + col;
-                printf("%d,", z_map[tile_index]);
+                if (z_map[tile_index] > 0)
+                {
+                    printf("- %d: (%d, %d)\n", z_map[tile_index], col * 16, row * 16);
+                }
             }
-            printf("\n");
         }
     }
 

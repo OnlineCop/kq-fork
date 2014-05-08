@@ -43,17 +43,17 @@
 #define SND_EXPLODE 42
 
 
-                                /*  This is in addition to setup.c:  */
-void parse_setup (void);        /*  kq.c  */
-void config_menu (void);        /*  sgame.c  */
-void show_help (void);          /*  sgame.c  */
-void set_graphics_mode (void);  /*  kq.c, sgame.c  */
-void sound_init (void);         /*  kq.c  */
-void free_samples (void);       /*  kq.c  */
-void play_effect (int, int);    /*  draw.c, effects.c, entity.c, heroc.c, */
-                                /*  (eqp|item|mas|shop)menu.c, hskill.c,  */
-                                /*  intrface.c, menu.c, selector.c,       */
-                                /*  sgame.c                               */
+/*  This is in addition to setup.c:  */
+void parse_setup(void);         /*  kq.c  */
+void config_menu(void);         /*  sgame.c  */
+void show_help(void);           /*  sgame.c  */
+void set_graphics_mode(void);   /*  kq.c, sgame.c  */
+void sound_init(void);          /*  kq.c  */
+void free_samples(void);        /*  kq.c  */
+void play_effect(int, int);     /*  draw.c, effects.c, entity.c, heroc.c, */
+/*  (eqp|item|mas|shop)menu.c, hskill.c,  */
+/*  intrface.c, menu.c, selector.c,       */
+/*  sgame.c                               */
 
 extern char debugging;          /*  combat.c, kq.c, sgame.c  */
 extern char slow_computer;      /*  effects.c, heroc.c  */
@@ -68,7 +68,8 @@ extern char slow_computer;      /*  effects.c, heroc.c  */
 #else
 
 /*! Look up table of names for keys */
-static char *keynames[] = {
+static char *keynames[] =
+{
     "",
     "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
     "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
@@ -93,7 +94,7 @@ static char *keynames[] = {
 
 
 #define N_KEYNAMES (sizeof (keynames) / sizeof (*keynames))
-const char *kq_keyname (int);
+const char *kq_keyname(int);
 #endif
 
 

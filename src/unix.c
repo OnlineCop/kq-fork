@@ -56,14 +56,16 @@ static char lib_dir[PATH_MAX];
  * \param file The filename
  * \returns the combined path
  */
-const char *get_resource_file_path (const char *str1, const char *str2,
-                                    const char *file)
+const char *get_resource_file_path(const char *str1, const char *str2,
+                                   const char *file)
 {
     static char ans[PATH_MAX];
 
-    sprintf (ans, "%s/%s/%s", user_dir, str2, file);
-    if (!exists (ans))
-        sprintf (ans, "%s/%s/%s", str1, str2, file);
+    sprintf(ans, "%s/%s/%s", user_dir, str2, file);
+    if (!exists(ans))
+    {
+        sprintf(ans, "%s/%s/%s", str1, str2, file);
+    }
     return ans;
 }
 
@@ -84,19 +86,24 @@ const char *get_resource_file_path (const char *str1, const char *str2,
  * \param file The filename
  * \returns the combined path
  */
-const char *get_lua_file_path (const char *str1, const char *file)
+const char *get_lua_file_path(const char *str1, const char *file)
 {
     static char ans[PATH_MAX];
 
-    sprintf (ans, "%s/scripts/%s.lob", user_dir, file);
-    if (!exists (ans)) {
-        sprintf (ans, "%s/scripts/%s.lua", user_dir, file);
-        if (!exists (ans)) {
-            sprintf (ans, "%s/scripts/%s.lob", str1, file);
-            if (!exists (ans)) {
-                sprintf (ans, "%s/scripts/%s.lua", str1, file);
-                if (!exists (ans))
+    sprintf(ans, "%s/scripts/%s.lob", user_dir, file);
+    if (!exists(ans))
+    {
+        sprintf(ans, "%s/scripts/%s.lua", user_dir, file);
+        if (!exists(ans))
+        {
+            sprintf(ans, "%s/scripts/%s.lob", str1, file);
+            if (!exists(ans))
+            {
+                sprintf(ans, "%s/scripts/%s.lua", str1, file);
+                if (!exists(ans))
+                {
                     return NULL;
+                }
             }
         }
     }
@@ -116,61 +123,72 @@ const char *get_lua_file_path (const char *str1, const char *file)
  * \param   file File name below that directory.
  * \returns the combined path
  */
-const char *kqres (enum eDirectories dir, const char *file)
+const char *kqres(enum eDirectories dir, const char *file)
 {
     char exe[PATH_MAX];
 
-    if (!init_path) {
+    if (!init_path)
+    {
         /* Get home directory; this bit originally written by SH */
         struct passwd *pwd;
-        char *home = getenv ("HOME");
+        char *home = getenv("HOME");
 
-        if (home == NULL) {
+        if (home == NULL)
+        {
             /* Try looking in password file for home dir. */
-            if ((pwd = getpwuid (getuid ())))
+            if ((pwd = getpwuid(getuid())))
+            {
                 home = pwd->pw_dir;
+            }
         }
 
         /* Do not get fooled by a corrupted $HOME */
-        if (home != NULL && strlen (home) < PATH_MAX) {
-            sprintf (user_dir, "%s/.kq", home);
+        if (home != NULL && strlen(home) < PATH_MAX)
+        {
+            sprintf(user_dir, "%s/.kq", home);
             /* Always try to make the directory, just to be sure. */
-            mkdir (user_dir, 0755);
-        } else {
-            strcpy (user_dir, ".");
+            mkdir(user_dir, 0755);
+        }
+        else
+        {
+            strcpy(user_dir, ".");
         }
         /* Now the data directory */
-        get_executable_name (exe, sizeof (exe));
-        if (strcmp (exe, KQ_BIN) == 0) {
+        get_executable_name(exe, sizeof(exe));
+        if (strcmp(exe, KQ_BIN) == 0)
+        {
             /* It's in its proper installed location */
-            strcpy (data_dir, KQ_DATA);
-            strcpy (lib_dir, KQ_LIB);
-        } else {
+            strcpy(data_dir, KQ_DATA);
+            strcpy(lib_dir, KQ_LIB);
+        }
+        else
+        {
             /* Not installed, development version */
-            strcpy (data_dir, ".");
-            strcpy (lib_dir, ".");
+            strcpy(data_dir, ".");
+            strcpy(lib_dir, ".");
         }
         init_path = 1;
     }
-    switch (dir) {
-    case DATA_DIR:
-        return get_resource_file_path (data_dir, "data", file);
-        break;
-    case MUSIC_DIR:
-        return get_resource_file_path (data_dir, "music", file);
-        break;
-    case MAP_DIR:
-        return get_resource_file_path (data_dir, "maps", file);
-        break;
-    case SAVE_DIR:
-    case SETTINGS_DIR:
-        return get_resource_file_path (user_dir, "", file);
-        break;
-    case SCRIPT_DIR:
-        return get_lua_file_path (lib_dir, file);
-        break;
-    default:
-        return NULL;
+    switch (dir)
+    {
+        case DATA_DIR:
+            return get_resource_file_path(data_dir, "data", file);
+            break;
+        case MUSIC_DIR:
+            return get_resource_file_path(data_dir, "music", file);
+            break;
+        case MAP_DIR:
+            return get_resource_file_path(data_dir, "maps", file);
+            break;
+        case SAVE_DIR:
+        case SETTINGS_DIR:
+            return get_resource_file_path(user_dir, "", file);
+            break;
+        case SCRIPT_DIR:
+            return get_lua_file_path(lib_dir, file);
+            break;
+        default:
+            return NULL;
     }
 }
 

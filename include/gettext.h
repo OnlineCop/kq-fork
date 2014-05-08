@@ -144,15 +144,19 @@ inline
 #endif
 #endif
 static const char *
-pgettext_aux (const char *domain,
-              const char *msg_ctxt_id, const char *msgid,
-              int category)
+pgettext_aux(const char *domain,
+             const char *msg_ctxt_id, const char *msgid,
+             int category)
 {
-  const char *translation = dcgettext (domain, msg_ctxt_id, category);
-  if (translation == msg_ctxt_id)
-    return msgid;
-  else
-    return translation;
+    const char *translation = dcgettext(domain, msg_ctxt_id, category);
+    if (translation == msg_ctxt_id)
+    {
+        return msgid;
+    }
+    else
+    {
+        return translation;
+    }
 }
 
 #ifdef __GNUC__
@@ -163,17 +167,21 @@ inline
 #endif
 #endif
 static const char *
-npgettext_aux (const char *domain,
-               const char *msg_ctxt_id, const char *msgid,
-               const char *msgid_plural, unsigned long int n,
-               int category)
+npgettext_aux(const char *domain,
+              const char *msg_ctxt_id, const char *msgid,
+              const char *msgid_plural, unsigned long int n,
+              int category)
 {
-  const char *translation =
-    dcngettext (domain, msg_ctxt_id, msgid_plural, n, category);
-  if (translation == msg_ctxt_id || translation == msgid_plural)
-    return (n == 1 ? msgid : msgid_plural);
-  else
-    return translation;
+    const char *translation =
+        dcngettext(domain, msg_ctxt_id, msgid_plural, n, category);
+    if (translation == msg_ctxt_id || translation == msgid_plural)
+    {
+        return (n == 1 ? msgid : msgid_plural);
+    }
+    else
+    {
+        return translation;
+    }
 }
 
 /* The same thing extended for non-constant arguments.  Here MSGCTXT and MSGID
@@ -206,36 +214,40 @@ inline
 #endif
 #endif
 static const char *
-dcpgettext_expr (const char *domain,
-                 const char *msgctxt, const char *msgid,
-                 int category)
+dcpgettext_expr(const char *domain,
+                const char *msgctxt, const char *msgid,
+                int category)
 {
-  size_t msgctxt_len = strlen (msgctxt) + 1;
-  size_t msgid_len = strlen (msgid) + 1;
-  const char *translation;
+    size_t msgctxt_len = strlen(msgctxt) + 1;
+    size_t msgid_len = strlen(msgid) + 1;
+    const char *translation;
 #if _LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS
-  char msg_ctxt_id[msgctxt_len + msgid_len];
+    char msg_ctxt_id[msgctxt_len + msgid_len];
 #else
-  char buf[1024];
-  char *msg_ctxt_id =
-    (msgctxt_len + msgid_len <= sizeof (buf)
-     ? buf
-     : (char *) malloc (msgctxt_len + msgid_len));
-  if (msg_ctxt_id != NULL)
+    char buf[1024];
+    char *msg_ctxt_id =
+        (msgctxt_len + msgid_len <= sizeof(buf)
+         ? buf
+         : (char *) malloc(msgctxt_len + msgid_len));
+    if (msg_ctxt_id != NULL)
 #endif
     {
-      memcpy (msg_ctxt_id, msgctxt, msgctxt_len - 1);
-      msg_ctxt_id[msgctxt_len - 1] = '\004';
-      memcpy (msg_ctxt_id + msgctxt_len, msgid, msgid_len);
-      translation = dcgettext (domain, msg_ctxt_id, category);
+        memcpy(msg_ctxt_id, msgctxt, msgctxt_len - 1);
+        msg_ctxt_id[msgctxt_len - 1] = '\004';
+        memcpy(msg_ctxt_id + msgctxt_len, msgid, msgid_len);
+        translation = dcgettext(domain, msg_ctxt_id, category);
 #if !_LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS
-      if (msg_ctxt_id != buf)
-        free (msg_ctxt_id);
+        if (msg_ctxt_id != buf)
+        {
+            free(msg_ctxt_id);
+        }
 #endif
-      if (translation != msg_ctxt_id)
-        return translation;
+        if (translation != msg_ctxt_id)
+        {
+            return translation;
+        }
     }
-  return msgid;
+    return msgid;
 }
 
 #define npgettext_expr(Msgctxt, Msgid, MsgidPlural, N) \
@@ -251,37 +263,41 @@ inline
 #endif
 #endif
 static const char *
-dcnpgettext_expr (const char *domain,
-                  const char *msgctxt, const char *msgid,
-                  const char *msgid_plural, unsigned long int n,
-                  int category)
+dcnpgettext_expr(const char *domain,
+                 const char *msgctxt, const char *msgid,
+                 const char *msgid_plural, unsigned long int n,
+                 int category)
 {
-  size_t msgctxt_len = strlen (msgctxt) + 1;
-  size_t msgid_len = strlen (msgid) + 1;
-  const char *translation;
+    size_t msgctxt_len = strlen(msgctxt) + 1;
+    size_t msgid_len = strlen(msgid) + 1;
+    const char *translation;
 #if _LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS
-  char msg_ctxt_id[msgctxt_len + msgid_len];
+    char msg_ctxt_id[msgctxt_len + msgid_len];
 #else
-  char buf[1024];
-  char *msg_ctxt_id =
-    (msgctxt_len + msgid_len <= sizeof (buf)
-     ? buf
-     : (char *) malloc (msgctxt_len + msgid_len));
-  if (msg_ctxt_id != NULL)
+    char buf[1024];
+    char *msg_ctxt_id =
+        (msgctxt_len + msgid_len <= sizeof(buf)
+         ? buf
+         : (char *) malloc(msgctxt_len + msgid_len));
+    if (msg_ctxt_id != NULL)
 #endif
     {
-      memcpy (msg_ctxt_id, msgctxt, msgctxt_len - 1);
-      msg_ctxt_id[msgctxt_len - 1] = '\004';
-      memcpy (msg_ctxt_id + msgctxt_len, msgid, msgid_len);
-      translation = dcngettext (domain, msg_ctxt_id, msgid_plural, n, category);
+        memcpy(msg_ctxt_id, msgctxt, msgctxt_len - 1);
+        msg_ctxt_id[msgctxt_len - 1] = '\004';
+        memcpy(msg_ctxt_id + msgctxt_len, msgid, msgid_len);
+        translation = dcngettext(domain, msg_ctxt_id, msgid_plural, n, category);
 #if !_LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS
-      if (msg_ctxt_id != buf)
-        free (msg_ctxt_id);
+        if (msg_ctxt_id != buf)
+        {
+            free(msg_ctxt_id);
+        }
 #endif
-      if (!(translation == msg_ctxt_id || translation == msgid_plural))
-        return translation;
+        if (!(translation == msg_ctxt_id || translation == msgid_plural))
+        {
+            return translation;
+        }
     }
-  return (n == 1 ? msgid : msgid_plural);
+    return (n == 1 ? msgid : msgid_plural);
 }
 
 #endif /* _LIBGETTEXT_H */

@@ -27,11 +27,11 @@
 #define MAX_ITEMS           9
 
 
-void camp_item_menu (void);     /*  menu.c  */
-int check_inventory (int, int); /*  many functions ;)  */
-int item_effects (int, int, int);       /*  heroc.c  */
-void remove_item (int, int);    /*  (eqp|shop)menu.c, heroc.c  */
-int useup_item (int);
+void camp_item_menu(void);      /*  menu.c  */
+int check_inventory(int, int);  /*  many functions ;)  */
+int item_effects(int, int, int);        /*  heroc.c  */
+void remove_item(int, int);     /*  (eqp|shop)menu.c, heroc.c  */
+int useup_item(int);
 
 
 #endif  /* __ITEMMENU_H */

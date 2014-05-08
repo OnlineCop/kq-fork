@@ -30,9 +30,9 @@
 /* Number of save game slots */
 #define NUMSG 20
 
-void load_sgstats (void);       /*  kq.c  */
-int start_menu (int);           /*  kq.c  */
-int system_menu (void);         /*  kq.c  */
+void load_sgstats(void);        /*  kq.c  */
+int start_menu(int);            /*  kq.c  */
+int system_menu(void);          /*  kq.c  */
 
 
 #endif  /* __SGAME_H */

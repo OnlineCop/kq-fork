@@ -24,8 +24,8 @@
 #define __HSKILL_H 1
 
 
-int hero_skillcheck (int);      /*  heroc.c  */
-int skill_use (int);            /*  heroc.c  */
+int hero_skillcheck(int);       /*  heroc.c  */
+int skill_use(int);             /*  heroc.c  */
 
 
 #endif  /* __HSKILL_H */

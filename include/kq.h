@@ -62,26 +62,26 @@
 #include "structs.h"
 
 
-void change_map (const char *, int, int, int, int);   /*  intrface.c, magic.c  */
-void change_mapm (const char *, const char *, int, int);      /*  intrface.c */
-void readcontrols (void);       /*  everywhere ;)  */
-void calc_viewport (int);       /*  entity.c, intrface.c  */
-void zone_check (void);         /*  entity.c  */
-void warp (int, int, int);      /*  only in intrface.c  */
-void check_animation (void);    /*  draw.c, intrface.c  */
-void activate (void);           /*  only in entity.c  */
-void unpress (void);            /*  everywhere ;)  */
-void wait_enter (void);         /*  everywhere ;)  */
-void klog (const char *);       /*  draw.c, intrface.c, magic.c, setup.c  */
-void init_players (void);       /*  sgame.c  */
-void kwait (int);               /*  intrface.c  */
-NORETURN void program_death (const char *);    /*  everywhere ;)  */
-unsigned int in_party (int);    /*  combat.c, intrface.c  */
-void wait_for_entity (int, int); /*  intrface.c  */
-char *get_timer_event (void);   /*  entity.c, kq.c  */
-int add_timer_event (const char *, int);  /*  intrface.c  */
-void reset_timer_events (void); /*  intrface.c  */
-void reset_world (void);        /*  sgame.c  */
+void change_map(const char *, int, int, int, int);    /*  intrface.c, magic.c  */
+void change_mapm(const char *, const char *, int, int);       /*  intrface.c */
+void readcontrols(void);        /*  everywhere ;)  */
+void calc_viewport(int);        /*  entity.c, intrface.c  */
+void zone_check(void);          /*  entity.c  */
+void warp(int, int, int);       /*  only in intrface.c  */
+void check_animation(void);     /*  draw.c, intrface.c  */
+void activate(void);            /*  only in entity.c  */
+void unpress(void);             /*  everywhere ;)  */
+void wait_enter(void);          /*  everywhere ;)  */
+void klog(const char *);        /*  draw.c, intrface.c, magic.c, setup.c  */
+void init_players(void);        /*  sgame.c  */
+void kwait(int);                /*  intrface.c  */
+NORETURN void program_death(const char *);     /*  everywhere ;)  */
+unsigned int in_party(int);     /*  combat.c, intrface.c  */
+void wait_for_entity(int, int);  /*  intrface.c  */
+char *get_timer_event(void);    /*  entity.c, kq.c  */
+int add_timer_event(const char *, int);   /*  intrface.c  */
+void reset_timer_events(void);  /*  intrface.c  */
+void reset_world(void);         /*  sgame.c  */
 
 
 
@@ -172,7 +172,7 @@ extern int no_monsters;
 
 
 /*! Yield processor to other tasks */
-void kq_yield (void);
+void kq_yield(void);
 
 #ifdef DEBUGMODE
 extern BITMAP *obj_mesh;

@@ -55,15 +55,15 @@ typedef struct
     unsigned char ilvl;          /*!< What level this item is */
     unsigned char hnds;          /*!< This is used to index into the ::magic[] array */
 
-/*! For seeds, determines what attribute is affected.
- * - 0 Strength
- * - 1 Agility
- * - 2 Vitality
- * - 3 Intellect
- * - 4 Wisdom
- *
- * See item_effects()
- */
+    /*! For seeds, determines what attribute is affected.
+     * - 0 Strength
+     * - 1 Agility
+     * - 2 Vitality
+     * - 3 Intellect
+     * - 4 Wisdom
+     *
+     * See item_effects()
+     */
     unsigned char bst;
     unsigned char elem;          /*!< For runes, what element will it affect (see rs parameter of res_adjust() ) */
     unsigned char imb;           /*!< imbued - What spell is cast when you "use" this item in combat */
@@ -135,13 +135,13 @@ typedef struct
 
 
 extern PALETTE pal;                 /*  draw.c, hskill.c, intrface.c,    */
-                                    /*  kq.c, magic.c, menu.c, sgame.c,  */
-                                    /*  shopmenu.c                       */
+/*  kq.c, magic.c, menu.c, sgame.c,  */
+/*  shopmenu.c                       */
 extern s_item items[NUM_ITEMS];     /*  combat.c, effects.c, heroc.c,   */
-                                    /*  (eqp|item|shop)menu.c, menu.c,  */
-                                    /*  hskill.c, intrface.c,           */
+/*  (eqp|item|shop)menu.c, menu.c,  */
+/*  hskill.c, intrface.c,           */
 extern s_spell magic[NUM_SPELLS];   /*  enemyc.c, heroc.c, hskill.c,  */
-                                    /*  (item|mas)menu.c, magic.c     */
+/*  (item|mas)menu.c, magic.c     */
 extern s_effect eff[NUM_EFFECTS];   /*  effects.c, hskill.c, magic.c  */
 extern s_erow erows[NUM_ETROWS];    /*  combat.c, enemyc.c  */
 extern s_encounter battles[NUM_BATTLES];    /*  only in combat.c  */

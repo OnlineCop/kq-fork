@@ -27,10 +27,10 @@
 #define NUMSHOPS      50
 #define SHOPITEMS     12
 
-void do_inn_effects (int);      /*  only in intrface.c  */
-void draw_shopgold (void);      /*  only in shopmenu.c  */
-void inn (const char *, int, int);    /*  only in intrface.c  */
-int shop (int);                 /*  only in intrface.c  */
+void do_inn_effects(int);       /*  only in intrface.c  */
+void draw_shopgold(void);       /*  only in shopmenu.c  */
+void inn(const char *, int, int);     /*  only in intrface.c  */
+int shop(int);                  /*  only in intrface.c  */
 
 
 typedef struct

@@ -45,13 +45,13 @@
 
 
 /*! \name combat function prototypes  */
-int combat_check (int, int);    /*  entity.c  */
-int combat (int);               /*  intrface.c  */
-void battle_render (int, int, int);     /*  effects.c, [eh]skill.c, heroc.c, magic.c, selector.c  */
-void draw_fighter (size_t, size_t);   /*  effects.c, hskill.c  */
-int fight (int, int, int);      /*  enemyc.c, [eh]skill.c, heroc.c  */
-void multi_fight (int);         /*  hskill.c  */
-void fkill (int);               /*  heroc.c, hskill.c, magic.c  */
+int combat_check(int, int);     /*  entity.c  */
+int combat(int);                /*  intrface.c  */
+void battle_render(int, int, int);      /*  effects.c, [eh]skill.c, heroc.c, magic.c, selector.c  */
+void draw_fighter(size_t, size_t);    /*  effects.c, hskill.c  */
+int fight(int, int, int);       /*  enemyc.c, [eh]skill.c, heroc.c  */
+void multi_fight(int);          /*  hskill.c  */
+void fkill(int);                /*  heroc.c, hskill.c, magic.c  */
 
 
 /*!  global combat related variables  */

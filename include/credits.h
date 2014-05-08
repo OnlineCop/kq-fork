@@ -25,13 +25,13 @@
 
 
 /*! Allocate memory for credits display */
-void allocate_credits (void);
+void allocate_credits(void);
 
 /*! Deallocate memory */
-void deallocate_credits (void);
+void deallocate_credits(void);
 
 /*! Display credits (call in a loop) */
-void display_credits (void);
+void display_credits(void);
 
 
 #endif  /* __CREDITS_H */

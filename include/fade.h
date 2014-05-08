@@ -28,7 +28,7 @@
 #define TRANS_FADE_OUT   2
 #define TRANS_FADE_WHITE 3
 
-void do_transition (int, int);
+void do_transition(int, int);
 
 
 #endif  /* __FADE_H */

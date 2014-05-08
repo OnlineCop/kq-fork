@@ -51,10 +51,10 @@ typedef enum eDirectories
 /* Get the directory for application data (music, gfx, etc.)
    or user data (screenshots, prefs, saved games)
  */
-const char *kqres (enum eDirectories, const char *);
+const char *kqres(enum eDirectories, const char *);
 
-const char *get_lua_file_path (const char *, const char *);
-const char *get_resource_file_path (const char *, const char *, const char *);
+const char *get_lua_file_path(const char *, const char *);
+const char *get_resource_file_path(const char *, const char *, const char *);
 
 
 #define maybe_poll_joystick poll_joystick

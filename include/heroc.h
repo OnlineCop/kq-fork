@@ -44,11 +44,11 @@ typedef enum ePIDX
 
 extern int can_use_item;        /* intrface.c */
 
-void hero_init (void);          /*  combat.c  */
-void hero_choose_action (int);  /*  combat.c  */
-void auto_herochooseact (int);  /*  combat.c  */
-int available_spells (int);     /*  hskill.c  */
-int combat_spell_menu (int);    /*  hskill.c  */
+void hero_init(void);           /*  combat.c  */
+void hero_choose_action(int);   /*  combat.c  */
+void auto_herochooseact(int);   /*  combat.c  */
+int available_spells(int);      /*  hskill.c  */
+int combat_spell_menu(int);     /*  hskill.c  */
 
 
 #endif  /* __HEROC_H */

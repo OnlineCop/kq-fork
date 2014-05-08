@@ -52,22 +52,26 @@ static int frate;
  *
  * \param   ms Time to pause in milliseconds
  */
-void kq_wait (long ms)
+void kq_wait(long ms)
 {
     /* dumb's doc says to call poll_music each bufsize / freq seconds */
     static const int delay = 1000 * 4096 * 2 / 44100;
     struct timeval timeout = { 0, 0 };
-    while (ms > 0) {
-        if (ms > delay) {
+    while (ms > 0)
+    {
+        if (ms > delay)
+        {
             timeout.tv_usec = delay * 1000;
             ms -= delay;
-        } else {
+        }
+        else
+        {
             timeout.tv_usec = ms * 1000;
             ms = 0;
         }
-        select (0, NULL, NULL, NULL, &timeout);
+        select(0, NULL, NULL, NULL, &timeout);
 
-        poll_music ();
+        poll_music();
     }
 }
 
@@ -82,31 +86,36 @@ void kq_wait (long ms)
  * \param   fps The targeted frames per second
  * \returns The actual frames per second
  */
-int limit_frame_rate (int fps)
+int limit_frame_rate(int fps)
 {
     static struct timeval last_exec = { 0, 0 };
     struct timeval tv = { 0, 0 };
     struct timeval timeout = { 0, 0 };
     time_t seconds;
 
-    gettimeofday (&tv, 0);
+    gettimeofday(&tv, 0);
     /* The time between now and (last exec + delay) */
     timeout.tv_usec = last_exec.tv_usec - tv.tv_usec + (1000000 / fps)
-        + 1000000 * (last_exec.tv_sec - tv.tv_sec);
+                      + 1000000 * (last_exec.tv_sec - tv.tv_sec);
     seconds = last_exec.tv_sec;
     /* Negative waits are not yet possible */
-    if (timeout.tv_usec < 0 || !last_exec.tv_sec) {
+    if (timeout.tv_usec < 0 || !last_exec.tv_sec)
+    {
         last_exec.tv_usec = tv.tv_usec;
         last_exec.tv_sec = tv.tv_sec;
-    } else {
-        select (0, NULL, NULL, NULL, &timeout);
+    }
+    else
+    {
+        select(0, NULL, NULL, NULL, &timeout);
         last_exec.tv_usec += (1000000 / fps);
-        if (last_exec.tv_usec > 1000000) {
+        if (last_exec.tv_usec > 1000000)
+        {
             ++last_exec.tv_sec;
             last_exec.tv_usec -= 1000000;
         }
     }
-    if (seconds != last_exec.tv_sec) {
+    if (seconds != last_exec.tv_sec)
+    {
         mfrate = frate;
         frate = 0;
     }
@@ -116,40 +125,48 @@ int limit_frame_rate (int fps)
 
 #elif defined(_WIN32)
 
-void kq_wait (long ms)
+void kq_wait(long ms)
 {
     /* dumb's doc says to call poll_music each bufsize / freq seconds */
     static const int delay = 1000 * 4096 * 4 / 44100;
 
-    while (ms > 0) {
-        if (ms > delay) {
-            Sleep (delay);
+    while (ms > 0)
+    {
+        if (ms > delay)
+        {
+            Sleep(delay);
             ms -= delay;
-        } else {
-            Sleep (ms);
+        }
+        else
+        {
+            Sleep(ms);
             ms = 0;
         }
-        poll_music ();
+        poll_music();
     }
 }
 
 
 
-int limit_frame_rate (int fps)
+int limit_frame_rate(int fps)
 {
     static long last_exec = 0;
     long now, delay;
 
-    now = GetTickCount ();
+    now = GetTickCount();
     delay = last_exec - now + 1000 / fps;
 //   skips = delay;
-    if (delay < 0) {
+    if (delay < 0)
+    {
         last_exec = now;
-    } else {
-        last_exec += 1000 / fps;
-        Sleep (delay);
     }
-    if (now / 1000 != last_exec / 1000) {
+    else
+    {
+        last_exec += 1000 / fps;
+        Sleep(delay);
+    }
+    if (now / 1000 != last_exec / 1000)
+    {
         mfrate = frate;
         frate = 0;
     }
@@ -167,27 +184,28 @@ int limit_frame_rate (int fps)
  * \remark PH does this need locking with LOCK_FUNCTION
  *            like a timer function does?
  */
-static void _kq_rest_callback (void)
+static void _kq_rest_callback(void)
 {
-    poll_music ();
+    poll_music();
 }
 
 
 
-void kq_wait (long ms)
+void kq_wait(long ms)
 {
-    rest_callback (ms, _kq_rest_callback);
+    rest_callback(ms, _kq_rest_callback);
 }
 
 
 
-int limit_frame_rate (int fps)
+int limit_frame_rate(int fps)
 {
     static int last_ksec = 0;
 
-    vsync ();
+    vsync();
     ++frate;
-    if (last_ksec != ksec) {
+    if (last_ksec != ksec)
+    {
         last_ksec = ksec;
         mfrate = frate;
         frate = 0;

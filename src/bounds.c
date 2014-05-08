@@ -59,11 +59,11 @@ void add_bound(
 
     if (barray->size++ > 0) // post-increment
     {
-        barray->array = (s_bound *) realloc(barray->array, barray->size * sizeof (s_bound));
+        barray->array = (s_bound *) realloc(barray->array, barray->size * sizeof(s_bound));
     }
     else
     {
-        barray->array = (s_bound *) malloc(barray->size * sizeof (s_bound));
+        barray->array = (s_bound *) malloc(barray->size * sizeof(s_bound));
     }
 
     last_element = &barray->array[barray->size - 1];
@@ -86,7 +86,7 @@ void add_bound(
  * \param   num_bound_boxes Number of elements in the \sa bound_box array
  * \return  1 if 'which' coords found anywhere withing any other boxes
  */
-int bound_in_bound2 (
+int bound_in_bound2(
     s_bound *which,
     s_bound *bound_box,
     int num_bound_boxes)
@@ -114,30 +114,38 @@ int bound_in_bound2 (
      * Else, something was overlapping, and we'll return '1'
      */
     was_found = 0;
-    for (i = 0; i < num_bound_boxes; i++) {
+    for (i = 0; i < num_bound_boxes; i++)
+    {
         x2[0] = bound_box[i].left;
         x2[1] = bound_box[i].right;
         y2[0] = bound_box[i].top;
         y2[1] = bound_box[i].bottom;
 
-        for (j = 0; j < 2; j++) {
+        for (j = 0; j < 2; j++)
+        {
             true1 = (x1[j] >= x2[j] && x1[j] <= x2[1 - j]);
             true2 = (x2[j] >= x1[j] && x2[j] <= x1[1 - j]);
-            if (!true1 && !true2) {
+            if (!true1 && !true2)
+            {
                 continue;
             }
 
-            for (k = 0; k < 2; k++) {
+            for (k = 0; k < 2; k++)
+            {
                 true1 = (y1[k] >= y2[k] && y1[k] <= y2[1 - k]);
                 true2 = (y2[k] >= y1[k] && y2[k] <= y1[1 - k]);
-                if (!true1 && !true2) {
+                if (!true1 && !true2)
+                {
                     continue;
-                } else {
+                }
+                else
+                {
                     was_found = 1;
                 }
             }
         }
-        if (was_found) {
+        if (was_found)
+        {
             break;
         }
     }
@@ -157,7 +165,7 @@ int bound_in_bound2 (
  *
  * \returns index+1 in array if found, else 0 if not found
  */
-unsigned int is_bound (
+unsigned int is_bound(
     s_bound_array *sbound,
     const unsigned short left,
     const unsigned short top,
@@ -191,13 +199,17 @@ unsigned int is_bound (
         y2 = top;
     }
 
-    for (i = 0; i < sbound->size; ++i) {
+    for (i = 0; i < sbound->size; ++i)
+    {
         if ((x1 > sbound->array[i].right) ||
-            (x2 < sbound->array[i].left) ||
-            (y1 > sbound->array[i].bottom) ||
-            (y2 < sbound->array[i].top)) {
+                (x2 < sbound->array[i].left) ||
+                (y1 > sbound->array[i].bottom) ||
+                (y2 < sbound->array[i].top))
+        {
             continue;
-        } else {
+        }
+        else
+        {
             return i + 1;
         }
     }
@@ -218,7 +230,7 @@ unsigned int is_bound (
  *
  * \returns NULL if not found, else address within boxes_array array
  */
-s_bound *is_contained_bound (
+s_bound *is_contained_bound(
     s_bound *boxes_array,
     unsigned int num_boxes,
     int left,
@@ -229,11 +241,15 @@ s_bound *is_contained_bound (
     unsigned int i;
 
     if (num_boxes > 0)
+    {
         assert(boxes_array && "s_bound is NULL");
+    }
 
-    for (i = 0; i < num_boxes; i++) {
+    for (i = 0; i < num_boxes; i++)
+    {
         if (left >= boxes_array[i].left && right <= boxes_array[i].right
-             && top >= boxes_array[i].top && bottom <= boxes_array[i].bottom) {
+                && top >= boxes_array[i].top && bottom <= boxes_array[i].bottom)
+        {
             return (&boxes_array[i]);
         }
     }
@@ -251,45 +267,52 @@ s_bound *is_contained_bound (
  * \param[in]     pf - PACKFILE from whence data are pulled
  * \return        Non-0 on error, 0 on success
  */
-size_t load_bounds (
+size_t load_bounds(
     s_bound_array *barray,
     PACKFILE *pf)
 {
     s_bound *mbound = NULL;
     unsigned int i;
 
-    assert (barray && "barray == NULL");
-    assert (pf && "pf == NULL");
+    assert(barray && "barray == NULL");
+    assert(pf && "pf == NULL");
 
-    if (!barray || !pf) {
-        allegro_message ("NULL passed into load_bounds()\n");
+    if (!barray || !pf)
+    {
+        allegro_message("NULL passed into load_bounds()\n");
         return 1;
     }
 
-    barray->size = pack_igetw (pf);
-    if (pack_feof (pf)) {
-        allegro_message ("Expected value for number of bounds. Instead, received EOF.\n");
+    barray->size = pack_igetw(pf);
+    if (pack_feof(pf))
+    {
+        allegro_message("Expected value for number of bounds. Instead, received EOF.\n");
         return 2;
     }
 
-    if (barray->size > 0) {
+    if (barray->size > 0)
+    {
         barray->array = (s_bound *) realloc
-            (barray->array, barray->size * sizeof (s_bound));
-        for (i = 0; i < barray->size; ++i) {
+                        (barray->array, barray->size * sizeof(s_bound));
+        for (i = 0; i < barray->size; ++i)
+        {
             mbound = &barray->array[i];
 
-            mbound->left    = pack_igetw (pf);
-            mbound->top     = pack_igetw (pf);
-            mbound->right   = pack_igetw (pf);
-            mbound->bottom  = pack_igetw (pf);
-            mbound->btile   = pack_igetw (pf);
+            mbound->left    = pack_igetw(pf);
+            mbound->top     = pack_igetw(pf);
+            mbound->right   = pack_igetw(pf);
+            mbound->bottom  = pack_igetw(pf);
+            mbound->btile   = pack_igetw(pf);
 
-            if (pack_feof (pf)) {
+            if (pack_feof(pf))
+            {
                 /*printf ("Encountered EOF during bound #%d read.\n", i);*/
                 return 3;
             }
         }
-    } else {
+    }
+    else
+    {
         barray->array = NULL;
     }
 
@@ -329,38 +352,42 @@ void remove_bound(
  * \param[out] pf - PACKFILE to where data is written
  * \return     Non-0 on error, 0 on success
  */
-size_t save_bounds (
+size_t save_bounds(
     s_bound_array *barray,
     PACKFILE *pf)
 {
     size_t i;
     s_bound *mbound = NULL;
 
-    assert (barray && "barray == NULL");
-    assert (pf && "pf == NULL");
+    assert(barray && "barray == NULL");
+    assert(pf && "pf == NULL");
 
-    if (!barray || !pf) {
-        printf ("NULL passed into save_bounds()\n");
+    if (!barray || !pf)
+    {
+        printf("NULL passed into save_bounds()\n");
         return 1;
     }
 
-    pack_iputw (barray->size, pf);
-    if (pack_feof (pf)) {
-        printf ("Encountered EOF when writing bound array size.\n");
+    pack_iputw(barray->size, pf);
+    if (pack_feof(pf))
+    {
+        printf("Encountered EOF when writing bound array size.\n");
         return 2;
     }
 
-    for (i = 0; i < barray->size; ++i) {
+    for (i = 0; i < barray->size; ++i)
+    {
         mbound = &barray->array[i];
 
-        pack_iputw (mbound->left, pf);
-        pack_iputw (mbound->top, pf);
-        pack_iputw (mbound->right, pf);
-        pack_iputw (mbound->bottom, pf);
-        pack_iputw (mbound->btile, pf);
+        pack_iputw(mbound->left, pf);
+        pack_iputw(mbound->top, pf);
+        pack_iputw(mbound->right, pf);
+        pack_iputw(mbound->bottom, pf);
+        pack_iputw(mbound->btile, pf);
 
-        if (pack_feof (pf)) {
-            allegro_message ("Encountered EOF when writing bound %d.\n", (int)i);
+        if (pack_feof(pf))
+        {
+            allegro_message("Encountered EOF when writing bound %d.\n", (int)i);
             return 3;
         }
     }
@@ -380,7 +407,7 @@ size_t save_bounds (
  * \param   bottom Bottom edge of boundary
  * \param   btile  Tile
  */
-void set_bounds (
+void set_bounds(
     s_bound *which_bound,
     int left,
     int top,
@@ -391,19 +418,25 @@ void set_bounds (
     assert(which_bound && "s_bound is NULL");
 
     // This check ensures that the given `left' is always <= `right'
-    if (left <= right) {
+    if (left <= right)
+    {
         which_bound->left = left;
         which_bound->right = right;
-    } else {
+    }
+    else
+    {
         which_bound->left = right;
         which_bound->right = left;
     }
 
     // This check ensures that the given `top' is always <= `bottom'
-    if (top <= bottom) {
+    if (top <= bottom)
+    {
         which_bound->top = top;
         which_bound->bottom = bottom;
-    } else {
+    }
+    else
+    {
         which_bound->top = bottom;
         which_bound->bottom = top;
     }

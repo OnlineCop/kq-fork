@@ -24,14 +24,14 @@
 #define __SELECTOR_H 1
 
 
-int select_player (void);                 /*  menu.c  */
-int select_any_player (int, int, const char *); /*  (item|mas)menu.c  */
-int select_hero (int, int, int);          /*  enemyc.c, heroc.c  */
-int select_enemy (int, int);              /*  enemyc.c, heroc.c, hskill.c  */
-int auto_select_hero (int, int);          /*  enemyc.c, heroc.c  */
-int auto_select_enemy (int, int);         /*  enemyc.c, heroc.c  */
-int select_party (int *, int, int);       /*  intrface.c  */
-void party_newlead (void);                /*  selector.c, menu.c  */
+int select_player(void);                  /*  menu.c  */
+int select_any_player(int, int, const char *);  /*  (item|mas)menu.c  */
+int select_hero(int, int, int);           /*  enemyc.c, heroc.c  */
+int select_enemy(int, int);               /*  enemyc.c, heroc.c, hskill.c  */
+int auto_select_hero(int, int);           /*  enemyc.c, heroc.c  */
+int auto_select_enemy(int, int);          /*  enemyc.c, heroc.c  */
+int select_party(int *, int, int);        /*  intrface.c  */
+void party_newlead(void);                 /*  selector.c, menu.c  */
 
 
 #endif  /* __SELECTOR_H */
