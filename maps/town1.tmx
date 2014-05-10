@@ -3933,9 +3933,9 @@
    <tile gid="51"/>
    <tile gid="64"/>
    <tile gid="2"/>
-   <tile gid="51"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
+   <tile gid="44"/>
+   <tile gid="50"/>
+   <tile gid="53"/>
    <tile gid="2"/>
    <tile gid="56"/>
    <tile gid="2"/>
@@ -4030,7 +4030,7 @@
    <tile gid="2"/>
    <tile gid="51"/>
    <tile gid="2"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="38"/>
@@ -4125,7 +4125,7 @@
    <tile gid="69"/>
    <tile gid="51"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="2"/>
    <tile gid="56"/>
    <tile gid="2"/>
@@ -4220,7 +4220,7 @@
    <tile gid="69"/>
    <tile gid="73"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
@@ -4315,7 +4315,7 @@
    <tile gid="50"/>
    <tile gid="55"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="11"/>
@@ -4410,7 +4410,7 @@
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="11"/>
@@ -4505,7 +4505,7 @@
    <tile gid="11"/>
    <tile gid="2"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
@@ -4600,7 +4600,7 @@
    <tile gid="13"/>
    <tile gid="2"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="2"/>
@@ -4695,7 +4695,7 @@
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="11"/>
    <tile gid="84"/>
    <tile gid="124"/>
@@ -4790,7 +4790,7 @@
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="11"/>
    <tile gid="87"/>
    <tile gid="125"/>
@@ -4885,7 +4885,7 @@
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="11"/>
    <tile gid="93"/>
    <tile gid="94"/>
@@ -4980,7 +4980,7 @@
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="13"/>
    <tile gid="2"/>
    <tile gid="2"/>
@@ -5075,7 +5075,7 @@
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="2"/>
    <tile gid="12"/>
    <tile gid="2"/>
@@ -5170,7 +5170,7 @@
    <tile gid="69"/>
    <tile gid="64"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="12"/>
@@ -5265,7 +5265,7 @@
    <tile gid="2"/>
    <tile gid="64"/>
    <tile gid="64"/>
-   <tile gid="2"/>
+   <tile gid="51"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="56"/>
@@ -5360,12 +5360,12 @@
    <tile gid="2"/>
    <tile gid="64"/>
    <tile gid="64"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
-   <tile gid="2"/>
+   <tile gid="54"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="50"/>
+   <tile gid="55"/>
    <tile gid="2"/>
    <tile gid="2"/>
    <tile gid="64"/>
@@ -8570,6 +8570,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -8584,11 +8585,14 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -8659,6 +8663,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -8668,9 +8673,11 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -8745,6 +8752,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -8756,6 +8764,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -8769,6 +8778,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -8864,17 +8874,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -9353,7 +9353,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -9634,7 +9634,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -9906,7 +9906,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -10004,6 +10004,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -10013,8 +10014,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="59"/>
@@ -10204,6 +10204,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -10285,6 +10286,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -10304,6 +10306,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -10394,6 +10397,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -10474,13 +10478,9 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -10779,7 +10779,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -10860,6 +10860,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -10868,8 +10869,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -10967,7 +10967,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -11047,6 +11047,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -11063,8 +11064,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -11254,7 +11254,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -11429,6 +11429,14 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="300"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -11436,15 +11444,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -11629,7 +11629,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -11914,6 +11914,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -12014,11 +12015,10 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="300"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -26625,64 +26625,64 @@
  </layer>
  <objectgroup name="zones" width="95" height="70">
   <object name="zone01_entrance" x="160" y="320" width="16" height="48"/>
-  <object name="zone06_" x="224" y="512" width="16" height="16"/>
-  <object name="zone14_" x="224" y="704" width="16" height="16"/>
-  <object name="zone12_" x="288" y="624" width="16" height="16"/>
-  <object name="zone10_inn_door_in" x="320" y="288" width="16" height="16"/>
-  <object name="zone40_" x="320" y="512" width="16" height="16"/>
-  <object name="zone06_" x="432" y="256" width="16" height="16"/>
-  <object name="zone07_" x="432" y="912" width="16" height="16"/>
-  <object name="zone20_" x="480" y="576" width="16" height="16"/>
-  <object name="zone06_" x="496" y="256" width="16" height="16"/>
-  <object name="zone18_magic_door_in" x="496" y="416" width="16" height="16"/>
-  <object name="zone25_" x="544" y="176" width="16" height="16"/>
-  <object name="zone16_" x="544" y="576" width="16" height="16"/>
-  <object name="zone22_" x="592" y="880" width="16" height="16"/>
-  <object name="zone21_bookshelves" x="848" y="688" width="32" height="16"/>
-  <object name="zone24_fireplace" x="880" y="224" width="16" height="16"/>
+  <object name="zone02_inn_desk" x="960" y="256" width="16" height="16"/>
+  <object name="zone03_armor_desk" x="1296" y="464" width="16" height="16"/>
   <object name="zone04_weapon_desk" x="880" y="464" width="16" height="16"/>
-  <object name="zone15_weapon_door_out" x="896" y="560" width="16" height="16"/>
-  <object name="zone24_fireplace" x="896" y="688" width="16" height="16"/>
-  <object name="zone24_fireplace" x="928" y="432" width="16" height="16"/>
-  <object name="zone21_bookshelves" x="928" y="688" width="176" height="16"/>
-  <object name="inn_desk" x="960" y="256" width="16" height="16"/>
-  <object name="zone11_inn_door_out" x="960" y="352" width="16" height="16"/>
+  <object name="zone05_item_desk" x="1152" y="256" width="16" height="16"/>
   <object name="zone06_derig_door" x="992" y="784" width="16" height="16"/>
-  <object name="zone23_derig_door_out" x="992" y="896" width="16" height="16"/>
+  <object name="zone06_door_locked" x="224" y="512" width="16" height="16"/>
+  <object name="zone06_door_locked" x="432" y="256" width="16" height="16"/>
+  <object name="zone06_door_locked" x="496" y="256" width="16" height="16"/>
+  <object name="zone07_stairs" x="432" y="912" width="16" height="16"/>
+  <object name="zone08_magic_chest" x="1008" y="448" width="16" height="16"/>
+  <object name="zone09_magic_desk" x="1088" y="464" width="16" height="16"/>
+  <object name="zone10_inn_door_in" x="320" y="288" width="16" height="16"/>
+  <object name="zone11_inn_door_out" x="960" y="352" width="16" height="16"/>
+  <object name="zone12_armor_door_in" x="288" y="624" width="16" height="16"/>
+  <object name="zone13_armor_door_out" x="1296" y="560" width="16" height="16"/>
+  <object name="zone14_weapon_door_in" x="224" y="704" width="16" height="16"/>
+  <object name="zone15_weapon_door_out" x="896" y="560" width="16" height="16"/>
+  <object name="zone16_item_door_in" x="544" y="576" width="16" height="16"/>
+  <object name="zone17_item_door_out" x="1168" y="336" width="16" height="16"/>
+  <object name="zone18_magic_door_in" x="496" y="416" width="16" height="16"/>
+  <object name="zone19_magic_door_out" x="1088" y="544" width="16" height="16"/>
+  <object name="zone20_chest_pot" x="480" y="576" width="16" height="16"/>
+  <object name="zone21_bookshelves" x="848" y="688" width="32" height="16"/>
+  <object name="zone21_bookshelves" x="928" y="688" width="176" height="16"/>
   <object name="zone21_bookshelves" x="1008" y="224" width="16" height="16"/>
   <object name="zone21_bookshelves" x="1008" y="432" width="48" height="16"/>
-  <object name="zone08_magic_chest" x="1008" y="448" width="16" height="16"/>
   <object name="zone21_bookshelves" x="1072" y="224" width="16" height="16"/>
   <object name="zone21_bookshelves" x="1072" y="432" width="16" height="16"/>
-  <object name="zone09_magic_desk" x="1088" y="464" width="16" height="16"/>
-  <object name="zone19_magic_door_out" x="1088" y="544" width="16" height="16"/>
+  <object name="zone21_bookshelves" x="1152" y="432" width="32" height="16"/>
+  <object name="zone21_bookshelves" x="1248" y="224" width="16" height="16"/>
+  <object name="zone21_bookshelves" x="1344" y="432" width="32" height="16"/>
+  <object name="zone22_derig_door_in" x="592" y="880" width="16" height="16"/>
+  <object name="zone23_derig_door_out" x="992" y="896" width="16" height="16"/>
+  <object name="zone24_fireplace" x="880" y="224" width="16" height="16"/>
+  <object name="zone24_fireplace" x="896" y="688" width="16" height="16"/>
+  <object name="zone24_fireplace" x="928" y="432" width="16" height="16"/>
   <object name="zone24_fireplace" x="1104" y="224" width="16" height="16"/>
   <object name="zone24_fireplace" x="1120" y="432" width="16" height="16"/>
-  <object name="zone05_item_desk" x="1152" y="256" width="16" height="16"/>
-  <object name="zone21_bookshelves" x="1152" y="432" width="32" height="16"/>
-  <object name="zone17_item_door_out" x="1168" y="336" width="16" height="16"/>
-  <object name="zone26_collectables" x="1184" y="704" width="32" height="16"/>
-  <object name="zone28_collectables" x="1184" y="736" width="16" height="16"/>
-  <object name="zone31_collectables" x="1184" y="768" width="32" height="16"/>
-  <object name="zone29_collectables" x="1200" y="736" width="16" height="16"/>
   <object name="zone24_fireplace" x="1216" y="224" width="16" height="16"/>
-  <object name="zone27_collectables" x="1216" y="704" width="16" height="16"/>
-  <object name="zone30_collectables" x="1216" y="736" width="16" height="16"/>
-  <object name="zone32_collectables" x="1216" y="768" width="16" height="16"/>
   <object name="zone24_fireplace" x="1232" y="688" width="16" height="16"/>
-  <object name="zone21_bookshelves" x="1248" y="224" width="16" height="16"/>
   <object name="zone24_fireplace" x="1248" y="432" width="16" height="16"/>
-  <object name="zone37_collectables" x="1248" y="752" width="16" height="16"/>
-  <object name="zone41_collectables_door_out" x="1248" y="816" width="16" height="16"/>
+  <object name="zone25_chest_flowers" x="544" y="176" width="16" height="16"/>
+  <object name="zone26_collectables" x="1184" y="704" width="32" height="16"/>
+  <object name="zone27_collectables" x="1216" y="704" width="16" height="16"/>
+  <object name="zone28_collectables" x="1184" y="736" width="16" height="16"/>
+  <object name="zone29_collectables" x="1200" y="736" width="16" height="16"/>
+  <object name="zone30_collectables" x="1216" y="736" width="16" height="16"/>
+  <object name="zone31_collectables" x="1184" y="768" width="32" height="16"/>
+  <object name="zone32_collectables" x="1216" y="768" width="16" height="16"/>
+  <object name="zone33_collectables" x="1296" y="672" width="16" height="16"/>
+  <object name="zone34_collectables" x="1312" y="720" width="16" height="16"/>
   <object name="zone35_collectables" x="1264" y="688" width="16" height="16"/>
   <object name="zone36_collectables" x="1264" y="720" width="16" height="16"/>
+  <object name="zone37_collectables" x="1248" y="752" width="16" height="16"/>
   <object name="zone38_collectables" x="1280" y="752" width="16" height="16"/>
-  <object name="zone03_armor_desk" x="1296" y="464" width="16" height="16"/>
-  <object name="zone13_armor_door_out" x="1296" y="560" width="16" height="16"/>
-  <object name="zone33_collectables" x="1296" y="672" width="16" height="16"/>
   <object name="zone39_collectables" x="1296" y="768" width="16" height="16"/>
-  <object name="zone21_bookshelves" x="1344" y="432" width="32" height="16"/>
-  <object name="zone34_collectables" x="1312" y="720" width="16" height="16"/>
+  <object name="zone40_collectables_door_in" x="320" y="512" width="16" height="16"/>
+  <object name="zone41_collectables_door_out" x="1248" y="816" width="16" height="16"/>
  </objectgroup>
  <objectgroup name="bounds" width="95" height="70">
   <object name="bound_inn" x="832" y="176" width="208" height="192"/>
