@@ -25,36 +25,36 @@ endif(DUMB_FOUND)
 include_directories( ${ALLEGRO_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} )
 
 set(kq-fork_SRCS
-	src/bounds.c
-	src/combat.c
-	src/console.c
-	src/credits.c
-	src/disk.c
-	src/draw.c
-	src/effects.c
-	src/enemyc.c
-	src/entity.c
-	src/eqpmenu.c
-	src/eskill.c
-	src/fade.c
-	src/heroc.c
-	src/hskill.c
-	src/intrface.c
-	src/itemmenu.c
-	src/kq.c
-	src/magic.c
-	src/markers.c
-	src/masmenu.c
-	src/menu.c
-	src/movement.c
-	src/music.c
-	src/res.c
-	src/selector.c
-	src/setup.c
-	src/sgame.c
-	src/shopmenu.c
-	src/timing.c
-	src/unix.c
+	src/bounds.cpp
+	src/combat.cpp
+	src/console.cpp
+	src/credits.cpp
+	src/disk.cpp
+	src/draw.cpp
+	src/effects.cpp
+	src/enemyc.cpp
+	src/entity.cpp
+	src/eqpmenu.cpp
+	src/eskill.cpp
+	src/fade.cpp
+	src/heroc.cpp
+	src/hskill.cpp
+	src/intrface.cpp
+	src/itemmenu.cpp
+	src/kq.cpp
+	src/magic.cpp
+	src/markers.cpp
+	src/masmenu.cpp
+	src/menu.cpp
+	src/movement.cpp
+	src/music.cpp
+	src/res.cpp
+	src/selector.cpp
+	src/setup.cpp
+	src/sgame.cpp
+	src/shopmenu.cpp
+	src/timing.cpp
+	src/unix.cpp
 )
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
