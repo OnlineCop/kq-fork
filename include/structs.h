@@ -65,7 +65,7 @@ typedef struct
     int extra_sdword2;           /*!< Not used */
     char song_file[16];          /*!< Base file name for map song */
     char map_desc[40];           /*!< Map name (shown when map first appears) */
-    s_marker_array markers;      /*!< Marker array and marker size */
+    MarkerArray markers;         /*!< Marker array */
     s_bound_array bounds;        /*!< Bound array and bound size */
 } s_map;
 

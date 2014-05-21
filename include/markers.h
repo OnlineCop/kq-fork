@@ -25,6 +25,47 @@
 
 
 #include <allegro.h>
+#include <string>
+#include <vector>
+
+
+class Marker
+{
+    public:
+        const std::string& Name() const;
+        void Name(const std::string& name);
+
+        const uint X() const;
+        void X(const uint x);
+
+        const uint Y() const;
+        void Y(const uint y);
+
+    protected:
+        std::string _name;
+        uint _x;
+        uint _y;
+};
+
+
+class MarkerArray
+{
+    public:
+        std::vector<Marker*> Markers() const;
+        void Markers(std::vector<Marker*> markers);
+
+        void AddMarker(Marker* marker);
+        void ClearMarkers();
+
+        Marker* FindMarker(const std::string& name);
+
+        int LoadMarkers(PACKFILE* packfile);
+        int SaveMarkers(PACKFILE* packfile);
+
+    protected:
+        std::vector<Marker*> _markers;
+};
+
 
 
 /*! \file

@@ -775,21 +775,19 @@ void change_mapm(const char *map_name, const char *marker_name, int offset_x,
                  int offset_y)
 {
     int msx = 0, msy = 0, mvx = 0, mvy = 0;
-    s_marker *m;
 
     load_map(map_name);
+
     /* Search for the marker with the name passed into the function. Both
-     * player's starting position and camera position will be the same
+     * player's starting position and camera position will be the same.
      */
-    for (m = g_map.markers.array;
-            m < g_map.markers.array + g_map.markers.size; ++m)
+    Marker* marker = g_map.markers.FindMarker(marker_name);
+    if (marker != NULL)
     {
-        if (!strcmp(marker_name, m->name))
-        {
-            msx = mvx = m->x + offset_x;
-            msy = mvy = m->y + offset_y;
-        }
+        msx = mvx = marker->X();
+        msy = mvy = marker->Y();
     }
+
     prepare_map(msx, msy, mvx, mvy);
 }
 
@@ -2299,16 +2297,10 @@ void zone_check(void)
 
     stc = z_seg[zy * g_map.xsize + zx];
 
-    if (g_map.zero_zone != 0)
+    // Zone 0 is considered for do_zone() unless zero_zone == 0.
+    if (g_map.zero_zone != 0 || stc > 0)
     {
         do_zone(stc);
-    }
-    else
-    {
-        if (stc > 0)
-        {
-            do_zone(stc);
-        }
     }
 }
 
