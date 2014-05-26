@@ -10,6 +10,7 @@
 
 
 #include "mapdraw.h"
+#include <sstream>
 
 
 /*! \brief Add or remove a bounding area
@@ -156,22 +157,12 @@ void add_change_bounding(int x, int y, int mouse_b, int *current)
  * \param   mouse_b - Whether to add or remove marker (1 to add, 2 to remove)
  * \param   current - Number of markers currently defined
  */
-void add_change_marker(int x, int y, int mouse_b, int *current)
+void add_change_marker(int x, int y, int mouse_b, size_t *current)
 {
-    s_marker *m;
-    s_marker *found = NULL;
+    std::vector<Marker*> markerArray = gmap.markers.Markers();
+    Marker* found = gmap.markers.FindMarker(x, y);
 
-    /* Does a marker exist here? */
-    for (m = gmap.markers.array; m < gmap.markers.array + gmap.markers.size; ++m)
-    {
-        if (m->x == x && m->y == y)
-        {
-            found = m;
-            break;
-        }
-    }
-
-    if (found)
+    if (found != NULL)
     {
         /* There is a marker here */
         if (mouse_b == 1)
@@ -182,17 +173,16 @@ void add_change_marker(int x, int y, int mouse_b, int *current)
         else if (mouse_b == 2)
         {
             /* Delete it */
+            gmap.markers.RemoveMarker(found);
 
             /* Move the selector to the previous marker if this was the last
              * marker on the map
              */
-            gmap.markers.size--;
-            if (*current == gmap.markers.size)
+            size_t markerArraySize = markerArray.size();
+            if (*current >= markerArraySize)
             {
-                *current = gmap.markers.size - 1;
+                *current = markerArraySize - 1;
             }
-            memcpy(found, found + 1, (&gmap.markers.array[gmap.markers.size] - found) *
-                   sizeof(s_marker));
 
             /* Wait for mouse button to be released */
         }
@@ -202,19 +192,16 @@ void add_change_marker(int x, int y, int mouse_b, int *current)
         /* There is no marker here */
         if (mouse_b == 1)
         {
+            std::stringstream ss;
+            ss << "Marker_" << markerArray.size();
+
             /* Add a marker with default name */
-            if (gmap.markers.size < MAX_MARKERS)
-            {
-                *current = gmap.markers.size;
-                gmap.markers.array =
-                    (s_marker *) realloc(gmap.markers.array,
-                                         (gmap.markers.size + 1) * sizeof(s_marker));
-                m = &gmap.markers.array[gmap.markers.size];
-                m->x = x;
-                m->y = y;
-                sprintf(m->name, "Marker_%d", (int)gmap.markers.size);
-                gmap.markers.size++;
-            }
+            Marker* marker = new Marker();
+            marker->X(x);
+            marker->Y(y);
+            marker->Name(ss.str());
+
+            gmap.markers.AddMarker(marker);
         }
     }
 }
@@ -328,10 +315,12 @@ int find_bound(int direction, int *current)
  *                    - 3 means last marker
  * \param   current - Number of markers currently defined
  */
-int find_next_marker(int direction, int *current)
+int find_next_marker(int direction, size_t *current)
 {
+    std::vector<Marker*> markerArray = gmap.markers.Markers();
+
     // No markers; nothing to do, so return 'not found'
-    if (gmap.markers.size < 1)
+    if (markerArray.size() == 0)
     {
         return 0;
     }
@@ -345,21 +334,31 @@ int find_next_marker(int direction, int *current)
     else if (direction == -1)
     {
         /* Previous Marker */
-        if (--*current < 0)
+        if (*current > 0)
         {
-            *current = gmap.markers.size - 1;
+            --*current;
+        }
+        else
+        {
+            *current = markerArray.size() - 1;
         }
     }
     else if (direction == 0)
     {
-        /* Center map on current Marker */
-        center_window(gmap.markers.array[*current].x,
-                      gmap.markers.array[*current].y);
+        if (*current < markerArray.size())
+        {
+            /* Center map on current Marker */
+            center_window(markerArray[*current]->X(), markerArray[*current]->Y());
+        }
     }
     else if (direction == 1)
     {
         /* Next Marker */
-        if (++*current >= gmap.markers.size)
+        if (*current < markerArray.size())
+        {
+            ++*current;
+        }
+        else
         {
             *current = 0;
         }
@@ -367,28 +366,9 @@ int find_next_marker(int direction, int *current)
     else if (direction == 3)
     {
         /* Last Marker */
-        *current = gmap.markers.size - 1;
+        *current = markerArray.size() - 1;
     }
     return 1;
-}
-
-
-
-/* Check whether this marker is at these coordinates
- * \param   m - The specified marker we are to check
- * \param   x - Given x coordinate on the map
- * \param   y - Given y coordinate on the map
- */
-int is_contained_marker(s_marker m, int x, int y)
-{
-    if (m.x == x && m.y == y)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
 }
 
 
@@ -452,35 +432,6 @@ void orient_bounds(int current)
 
 
 
-/*! \brief Move the window so we can see the currenly-selected marker
- *
- * \param   current - Number of markers currently defined
- * \modify  global coords "window_[xy]" will be updated
- */
-void orient_markers(int current)
-{
-    /* Move view-window enough to show marker */
-    if (gmap.markers.array[current].x < window_x)
-    {
-        window_x = gmap.markers.array[current].x;
-    }
-    else if (gmap.markers.array[current].x > window_x + htiles - 1)
-    {
-        window_x = gmap.markers.array[current].x - htiles + 1;
-    }
-
-    if (gmap.markers.array[current].y < window_y)
-    {
-        window_y = gmap.markers.array[current].y;
-    }
-    else if (gmap.markers.array[current].y > window_y + vtiles - 1)
-    {
-        window_y = gmap.markers.array[current].y - vtiles + 1;
-    }
-}
-
-
-
 /*! \brief Give the bounded area a new background tile number
  *
  * \param   box - Which box to assign the value to
@@ -534,13 +485,12 @@ void rename_bound_tile(s_bound *box)
  *
  * \param   found - Which marker to rename
  */
-void rename_marker(s_marker *found)
+void rename_marker(Marker* found)
 {
     int response, done;
-    s_marker *m;
 
     make_rect(double_buffer, 2, 32);
-    print_sfont(6, 6, found->name, double_buffer);
+    print_sfont(6, 6, found->Name().c_str(), double_buffer);
     print_sfont(6, 12, ">", double_buffer);
 
     done = 0;
@@ -570,18 +520,16 @@ void rename_marker(s_marker *found)
         }
 
         /* Make sure no other markers have the same name */
-        for (m = gmap.markers.array; m < gmap.markers.array + gmap.markers.size; ++m)
+        Marker* foundByName = gmap.markers.FindMarker(strbuf);
+        if (foundByName != NULL)
         {
-            if (!strcmp(strbuf, m->name) && m != found)
-            {
-                cmessage("Another marker has that name. Use another name.");
-                yninput();
-                done = 0;
-                break;
-            }
+            cmessage("Another marker has that name. Use another name.");
+            yninput();
+            done = 0;
+            break;
         }
     }
-    strcpy(found->name, strbuf);
+    found->Name(strbuf);
 }                               /* rename_marker() */
 
 /* Local Variables:     */

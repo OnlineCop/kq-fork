@@ -22,6 +22,8 @@
 #endif
 
 #include <allegro.h>
+#include <vector>
+#include <string>
 #include <stdio.h>
 #include <string.h>
 
@@ -37,7 +39,6 @@
 #include "config.h"
 #endif
 
-#include "gettext.h"
 #define _(s) gettext(s)
 
 #include "../include/bounds.h"
@@ -150,15 +151,14 @@ void textual_map(s_show, const char *);
 
 /* From mapstructs.c */
 void add_change_bounding(int, int, int, int *);
-void add_change_marker(int, int, int, int *);
+void add_change_marker(int, int, int, size_t *);
 void bound_rect(BITMAP *, s_bound, int);
-int find_next_marker(int, int *);
+int find_next_marker(int, size_t *);
 int find_bound(int, int *);
-int is_contained_marker(s_marker, int, int);
 void orient_bounds(int);
 void orient_markers(int);
 void rename_bound_tile(s_bound *);
-void rename_marker(s_marker *);
+void rename_marker(Marker *);
 
 /* One in each of: mapdiff.c, mapdump.c, and mapfile.c */
 void error_load(const char *);

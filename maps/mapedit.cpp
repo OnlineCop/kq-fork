@@ -13,6 +13,7 @@
 
 #include <assert.h>
 #include <locale.h>
+#include <iterator>
 
 #include "../include/enums.h"
 #include "mapdraw.h"
@@ -156,7 +157,7 @@ const int vtiles = (SH - 48) / TILE_H;
 int column[8], row[8];
 
 /*! Markers in use in this map */
-int curmarker;
+size_t curmarker = 0;
 int cpu_usage = 2;              // Default to rest(1)
 
 /*! Bounding areas on the map */
@@ -1013,21 +1014,30 @@ void draw_map(void)
     }
 
     /* Draw the Markers */
-    if (showing.markers == 1 && gmap.markers.size > 0)
+    if (showing.markers == 1)
     {
-        for (i = 0; i < gmap.markers.size; ++i)
+        std::vector<Marker*> markerArray = gmap.markers.Markers();
+        std::vector<Marker*>::iterator it;
+        for (it = markerArray.begin(); it != markerArray.end(); ++it)
         {
-            if ((gmap.markers.array[i].x >= window_x) && (gmap.markers.array[i].x < window_x + htiles) && (gmap.markers.array[i].y >= window_y) && (gmap.markers.array[i].y < window_y + vtiles))
+            Marker* marker = *it;
+            if ((marker->X() >= window_x) && (marker->X() < window_x + htiles) &&
+                (marker->Y() >= window_y) && (marker->Y() < window_y + vtiles))
             {
-                draw_sprite(double_buffer, marker_image, (gmap.markers.array[i].x - window_x) * TILE_W + TILE_W / 2, (gmap.markers.array[i].y - window_y) * TILE_H - TILE_H / 2);
+                draw_sprite(double_buffer, marker_image,
+                            (marker->X() - window_x) * TILE_W + TILE_W / 2,
+                            (marker->Y() - window_y) * TILE_H - TILE_H / 2);
             }                      /* If marker is visible */
         }                         /* For each marker */
 
         /* Only draw highlight around marker if the mode is correct */
-        if (draw_mode == MAP_MARKERS)
+        if (draw_mode == MAP_MARKERS && curmarker < markerArray.size())
         {
+            Marker* currentMarker = markerArray[curmarker];
             /* Put a rectangle around the selected one for clarity */
-            draw_sprite(double_buffer, mesh_h, (gmap.markers.array[curmarker].x - window_x) * TILE_W, (gmap.markers.array[curmarker].y - window_y) * TILE_H);
+            draw_sprite(double_buffer, mesh_h,
+                        (currentMarker->X() - window_x) * TILE_W,
+                        (currentMarker->Y() - window_y) * TILE_H);
         }
     }
 
@@ -1123,6 +1133,7 @@ void draw_menubars(void)
     int draw_mode_display, draw_mode_last, draw_the_rect;
     int mouse_tile_x = mouse_x / TILE_W;
     int mouse_tile_y = mouse_y / TILE_H;
+    std::vector<Marker*> markerArray = gmap.markers.Markers();
 
     /* Description for the current draw_mode (could use work) */
     char dt[][12] =
@@ -1451,19 +1462,33 @@ void draw_menubars(void)
     /* Displays both the currently selected Marker as well as the
      * Marker under the mouse
      */
-    else if (draw_mode == MAP_MARKERS && gmap.markers.size > 0)
+    else if (draw_mode == MAP_MARKERS)
     {
-        sprintf(strbuf, "Marker #%d: %s (%d, %d)", curmarker, gmap.markers.array[curmarker].name, gmap.markers.array[curmarker].x, gmap.markers.array[curmarker].y);
-        print_sfont(column[4], row[0], strbuf, double_buffer);
+        std::vector<Marker*>::iterator it;
+        Marker* currentMarker = NULL;
+
+        if (curmarker < markerArray.size())
+        {
+            currentMarker = markerArray[curmarker];
+            sprintf(strbuf, "Marker #%d: %s (%d, %d)",
+                    curmarker,
+                    currentMarker->Name().c_str(),
+                    currentMarker->X(),
+                    currentMarker->Y()
+            );
+            print_sfont(column[4], row[0], strbuf, double_buffer);
+        }
+
         xp = mouse_tile_x + window_x;
         yp = mouse_tile_y + window_y;
-        for (p = 0; p < gmap.markers.size; p++)
+        for (it = markerArray.begin(); it != markerArray.end(); ++it)
         {
-            if (gmap.markers.array[p].x == xp && gmap.markers.array[p].y == yp)
+            Marker* marker = *it;
+            if (marker->X() == xp && marker->Y() == yp)
             {
                 sprintf(strbuf, "Current Marker:");
                 print_sfont(column[4], row[1], strbuf, double_buffer);
-                sprintf(strbuf, "Marker #%d: \"%s\"", p, gmap.markers.array[p].name);
+                sprintf(strbuf, "Marker #%d: \"%s\"", p, marker->Name().c_str());
                 print_sfont(column[4] + 24, row[2], strbuf, double_buffer);
             }
         }
@@ -1617,7 +1642,7 @@ void draw_menubars(void)
             p -= (TILE_W - 1);
         }
 
-        if (gmap.markers.size > 0)
+        if (curmarker < markerArray.size())
         {
             textprintf_ex(double_buffer, font, p, 274, makecol(255, 255, 255), 0, "%d", curmarker);
         }
@@ -1688,7 +1713,6 @@ void draw_menubars(void)
         blit(arrow_pics[3], double_buffer, 0, 0, (htiles + 3) * TILE_W, 332, TILE_W, TILE_H);
         blit(arrow_pics[4], double_buffer, 0, 0, (htiles + 2) * TILE_W, 348, TILE_W, TILE_H);
     }
-
 }                               /* draw_menubars() */
 
 
@@ -2109,6 +2133,10 @@ void get_tile(void)
     unsigned int i;
     s_bound *found_box;
 
+    std::vector<Marker*> markerArray = gmap.markers.Markers();
+    std::vector<Marker*>::iterator it;
+    size_t curmarkerCount = 0;
+
     switch (draw_mode)
     {
         case MAP_LAYER1:
@@ -2161,11 +2189,13 @@ void get_tile(void)
             break;
 
         case MAP_MARKERS:
-            for (i = 0; i < gmap.markers.size; i++)
+            for (it = markerArray.begin(); it != markerArray.end(); ++it)
             {
-                if (is_contained_marker(gmap.markers.array[i], xx, yy))
+                curmarkerCount++;
+                Marker* marker = *it;
+                if (marker->X() == xx && marker->Y() == yy)
                 {
-                    curmarker = i;
+                    curmarker = curmarkerCount;
                 }
             }
             break;
@@ -2657,13 +2687,16 @@ void paste_region(const int tx, const int ty)
     moved_x = tx - copyx1;       // copyx1 - tx < 0 ? tx - copyx1 : copyx1 - tx;
     moved_y = ty - copyy1;       // copyy1 - ty < 0 ? ty - copyy1 : copyy1 - ty;
 
-    for (m = gmap.markers.array; m < gmap.markers.array + gmap.markers.size; ++m)
+    std::vector<Marker*> markerArray = gmap.markers.Markers();
+    std::vector<Marker*>::iterator it;
+    for (it = markerArray.begin(); it != markerArray.end(); ++it)
     {
-        if (!(m->x < copyx1 || m->x > copyx2 || m->y < copyy1 || m->y > copyy2))
+        Marker* marker = *it;
+        if (!(marker->X() < copyx1 || marker->X() > copyx2 || marker->Y() < copyy1 || marker->Y() > copyy2))
         {
             /* Move the markers found within the Copy From block */
-            m->x += moved_x;
-            m->y += moved_y;
+            marker->X(marker->X() + moved_x);
+            marker->Y(marker->Y() + moved_y);
         }
     }
 
@@ -3083,7 +3116,7 @@ int process_keyboard(const int k)
             }
             else if (draw_mode == MAP_MARKERS)
             {
-                curmarker = gmap.markers.size - 1;
+                curmarker = gmap.markers.Markers().size() - 1;
                 orient_markers(curmarker);
             }
             break;
@@ -4773,9 +4806,12 @@ void resize_map(const int selection)
 
     // Check if there are "stray" markers; prompt user what to do with them.
     done = 0;
-    for (m = gmap.markers.array; m < gmap.markers.array + gmap.markers.size; ++m)
+    std::vector<Marker*> markerArray = gmap.markers.Markers();
+    std::vector<Marker*>::iterator it;
+    for (it = markerArray.begin(); it != markerArray.end(); ++it)
     {
-        if (m->x >= new_width || m->y >= new_height)
+        Marker* marker = *it;
+        if (marker->X() >= new_width || marker->Y() >= new_height)
         {
             done++;
         }
@@ -4796,12 +4832,14 @@ void resize_map(const int selection)
         else
         {
             // They chose to remove the markers
-            for (m = gmap.markers.array + gmap.markers.size; m > gmap.markers.array; --m)
+            std::vector<Marker*>::reverse_iterator rit;
+            for (rit = markerArray.rbegin(); rit != markerArray.rend(); ++rit)
             {
-                if (m->x >= new_width || m->y >= new_height)
+                Marker* marker = *rit;
+                if (marker->X() >= new_width || marker->Y() >= new_height)
                 {
                     // This removes the marker
-                    add_change_marker(m->x, m->y, 2, &curmarker);
+                    add_change_marker(marker->X(), marker->Y(), 2, &curmarker);
                 }
             }
         }
@@ -5529,6 +5567,42 @@ int yninput(void)
     blit2screen();
     return done - 1;
 }                               /* yninput() */
+
+
+
+/*! \brief Move the window so we can see the currenly-selected marker
+ *
+ * \param   markerIndex - Number of markers currently defined
+ * \modify  global coords "window_[xy]" will be updated
+ */
+void orient_markers(size_t markerIndex)
+{
+    std::vector<Marker*> markerArray = gmap.markers.Markers();
+    Marker* marker = NULL;
+    if (markerIndex < markerArray.size())
+    {
+        marker = markerArray[markerIndex];
+    }
+
+    /* Move view-window enough to show marker */
+    if (marker->X() < window_x)
+    {
+        window_x = marker->X();
+    }
+    else if (marker->X() > window_x + htiles - 1)
+    {
+        window_x = marker->X() - htiles + 1;
+    }
+
+    if (marker->Y() < window_y)
+    {
+        window_y = marker->Y();
+    }
+    else if (marker->Y() > window_y + vtiles - 1)
+    {
+        window_y = marker->Y() - vtiles + 1;
+    }
+}
 
 /* Local Variables:     */
 /* mode: c              */

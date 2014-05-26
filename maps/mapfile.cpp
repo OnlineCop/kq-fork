@@ -369,14 +369,8 @@ int new_map(void)
     /* Redraw the screen, blank */
     blit2screen();
 
-    // Remove the markers from the map
-    for (m = gmap.markers.array + gmap.markers.size; m > gmap.markers.array; --m)
-    {
-        int curmarker = gmap.markers.size;
-
-        // This removes the marker
-        add_change_marker(m->x, m->y, 2, &curmarker);
-    }
+    // Remove all markers from the map
+    gmap.markers.ClearMarkers();
 
     /* Default values for the new map */
     gmap.map_no = 0;
@@ -399,8 +393,6 @@ int new_map(void)
     gmap.extra_sdword2 = 0;
     gmap.song_file[0] = 0;
     gmap.map_desc[0] = 0;
-    gmap.markers.size = 0;
-    gmap.markers.array = NULL;
     gmap.bounds.size = 0;
     gmap.bounds.array = NULL;
 

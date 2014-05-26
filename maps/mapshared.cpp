@@ -380,8 +380,7 @@ void shared_startup(void)
     map = b_map = f_map = c_map = cf_map = cb_map = 0;
     z_map = sh_map = o_map = cz_map = csh_map = co_map = 0;
     search_map = 0;
-    gmap.markers.array = NULL;
-    gmap.markers.size = 0;
+    gmap.markers.ClearMarkers();
 
 
     /* Used for icons */
@@ -629,13 +628,16 @@ void visual_map(s_show showing, const char *save_fname)
     }
 
     /* Show marker flags */
-    if (showing.markers && gmap.markers.size > 0)
+    if (showing.markers)
     {
-        for (i = 0; i < gmap.markers.size; ++i)
+        std::vector<Marker*> markerArray = gmap.markers.Markers();
+        std::vector<Marker*>::iterator it;
+        for (it = markerArray.begin(); it != markerArray.end(); ++it)
         {
+            Marker* marker = *it;
             draw_sprite(bmp, marker_image,
-                        gmap.markers.array[i].x * TILE_W + (TILE_W / 2),
-                        gmap.markers.array[i].y * TILE_H - (TILE_H / 2));
+                        marker->X() * TILE_W + (TILE_W / 2),
+                        marker->Y() * TILE_H - (TILE_H / 2));
         }
     }
 
@@ -807,12 +809,18 @@ void textual_map(s_show showing, const char *output_filename)
     }
 
     /* Show marker flags */
-    if (showing.markers && gmap.markers.size > 0)
+    if (showing.markers)
     {
-        printf("Markers:\n");
-        for (marker_index = 0; marker_index < gmap.markers.size; ++marker_index)
+        std::vector<Marker*> markerArray = gmap.markers.Markers();
+        if (markerArray.size() > 0)
         {
-            printf("\"%s\" (%d, %d)\n", gmap.markers.array[marker_index].name, gmap.markers.array[marker_index].x, gmap.markers.array[marker_index].y);
+            printf("Markers:\n");
+        }
+        std::vector<Marker*>::iterator it;
+        for (it = markerArray.begin(); it != markerArray.end(); ++it)
+        {
+            Marker* marker = *it;
+            printf("\"%s\" (%d, %d)\n", marker->Name().c_str(), marker->X(), marker->Y());
         }
     }
 

@@ -54,9 +54,11 @@ class MarkerArray
         std::vector<Marker*> Markers() const;
         void Markers(std::vector<Marker*> markers);
 
-        void AddMarker(Marker* marker);
         void ClearMarkers();
+        void AddMarker(Marker* marker);
+        void RemoveMarker(Marker* marker);
 
+        Marker* FindMarker(const int x, const int y);
         Marker* FindMarker(const std::string& name);
 
         int LoadMarkers(PACKFILE* packfile);

@@ -106,6 +106,40 @@ void MarkerArray::AddMarker(Marker* marker)
 }
 
 
+void MarkerArray::RemoveMarker(Marker* marker)
+{
+    std::vector<Marker*>::iterator it;
+
+    for (it = _markers.begin(); it != _markers.end(); ++it)
+    {
+        if (*it == marker)
+        {
+            it = _markers.erase(it);
+            break;
+        }
+    }
+}
+
+
+Marker* MarkerArray::FindMarker(const int x, const int y)
+{
+    Marker* found = NULL;
+    std::vector<Marker*>::iterator it;
+
+    for (it = _markers.begin(); it != _markers.end(); ++it)
+    {
+        Marker* marker = *it;
+        if (marker->X() == x && marker->Y() == y)
+        {
+            found = marker;
+            break;
+        }
+    }
+
+    return found;
+}
+
+
 Marker* MarkerArray::FindMarker(const std::string& name)
 {
     Marker* marker = NULL;
@@ -117,6 +151,7 @@ Marker* MarkerArray::FindMarker(const std::string& name)
         if (m->Name() == name)
         {
             marker = m;
+            break;
         }
     }
 
