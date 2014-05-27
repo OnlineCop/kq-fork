@@ -132,6 +132,8 @@ int load_s_map(s_map *sm, PACKFILE *f)
     pack_fread(sm->song_file, sizeof(sm->song_file), f);    // Name of music file played when player is on this map
     pack_fread(sm->map_desc, sizeof(sm->map_desc), f);      // Town description player sees when first entering a map
 
+    sm->markers.ClearMarkers();
+    sm->bounds.ClearBounds();
     if (sm->revision >= 1)
     {
         /* Markers stuff */
@@ -140,18 +142,10 @@ int load_s_map(s_map *sm, PACKFILE *f)
         if (sm->revision >= 2)
         {
             /* Bounding boxes stuff */
-            load_bounds(&sm->bounds, f);
-        }
-        else
-        {
-            sm->bounds.size = 0;
+            sm->bounds.LoadBounds(f);
         }
     }
-    else
-    {
-        sm->markers.ClearMarkers();
-        sm->bounds.size = 0;
-    }
+
     return 0;
 }
 
@@ -194,7 +188,7 @@ int save_s_map(s_map *sm, PACKFILE *f)
     sm->markers.SaveMarkers(f);
 
     /* Bounding boxes */
-    save_bounds(&sm->bounds, f);
+    sm->bounds.SaveBounds(f);
 
     return 0;
 }

@@ -297,7 +297,7 @@ static void draw_backlayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    s_bound box;
+    Bound box;
 
     if (view_on == 0)
     {
@@ -545,7 +545,7 @@ static void draw_forelayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    s_bound box;
+    Bound box;
 
     if (view_on == 0)
     {
@@ -755,7 +755,7 @@ static void draw_midlayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    s_bound box;
+    Bound box;
 
     if (view_on == 0)
     {
@@ -817,17 +817,12 @@ static void draw_midlayer(void)
 static void draw_playerbound(void)
 {
     int dx, dy, xtc, ytc;
-    s_bound *found = NULL;
     unsigned short ent_x = g_ent[0].tilex;
     unsigned short ent_y = g_ent[0].tiley;
 
     /* Is the player standing inside a bounding area? */
-    unsigned int found_index = is_bound(&g_map.bounds, ent_x, ent_y, ent_x, ent_y);
-    if (found_index)
-    {
-        found = &g_map.bounds.array[found_index - 1];
-    }
-    else
+    Bound *found = g_map.bounds.is_bound(ent_x, ent_y, ent_x, ent_y);
+    if (found == NULL)
     {
         return;
     }

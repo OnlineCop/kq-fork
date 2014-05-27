@@ -2145,7 +2145,7 @@ static int KQ_get_bounds(lua_State *L)
 
         ent_x = g_ent[a].tilex;
         ent_y = g_ent[a].tiley;
-        found_index = is_bound(&g_map.bounds, ent_x, ent_y, ent_x, ent_y);
+        found_index = g_map.bounds.get_bound_index(ent_x, ent_y, ent_x, ent_y);
         if (found_index > 0)
         {
             lua_pushnumber(L, found_index - 1);
