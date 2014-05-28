@@ -59,6 +59,13 @@ set(kq-fork_SRCS
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
+# DEBUGMODE lets players alter options in the ESC->Config menu (including seeing obstacles and zones)
+add_definitions(-DDEBUGMODE)
+
+# KQ_CHEATS works in conjunction with the setting 'cheat = 1' in the player's ~/.kq/kq.cfg file.
+# When enabled, hitting F10 will open 'cheat.lua' if it exists, and then call the cheat() function there.
+add_definitions(-DKQ_CHEATS)
+
 set(CMAKE_C_FLAGS "-O0 -ggdb3 -Wall -Wextra -Wpedantic -std=c99")
 set(ALLEGRO_LIBRARY "-lalleg")
 set(LUA_LIBRARY "-llua")

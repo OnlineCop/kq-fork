@@ -275,10 +275,6 @@ void config_menu(void)
             switch (ptr)
             {
                 case 0:
-#ifdef __DJGPP__
-                    text_ex(B_TEXT, 255,
-                            _("This version of KQ was compiled for DOS and does not support windowed mode"));
-#else
                     text_ex(B_TEXT, 255,
                             _("Changing the display mode to or from windowed view could have serious ramifications. It is advised that you save first."));
                     if (windowed == 0)
@@ -296,13 +292,10 @@ void config_menu(void)
                         set_config_int(NULL, "windowed", windowed);
                         set_graphics_mode();
                     }
-#endif
                     break;
                 case 1:
-#ifdef __DJGPP__
                     text_ex(B_TEXT, 255,
                             _("This version of KQ was compiled for DOS and does not support stretching"));
-#else
                     text_ex(B_TEXT, 255,
                             _("Changing the stretched view option could have serious ramifications. It is advised that you save your game before trying this."));
                     if (stretch_view == 0)
@@ -320,7 +313,6 @@ void config_menu(void)
                         set_config_int(NULL, "stretch_view", stretch_view);
                         set_graphics_mode();
                     }
-#endif
                     break;
                 case 2:
                     show_frate = !show_frate;
@@ -739,39 +731,33 @@ static void parse_allegro_setup(void)
     set_config_file(cfg);
 
     /* NB. JB's config file uses intro=yes --> skip_intro=0 */
-    skip_intro = get_config_int(NULL, "skip_intro", 0);
-#ifdef __DJGPP__
-    /* In DJGPP, it's always non-windowed non-stretched (DOS-era stuff!) */
-    windowed = 0;
-    stretch_view = 0;
-#else
-    windowed = get_config_int(NULL, "windowed", 1);
-    stretch_view = get_config_int(NULL, "stretch_view", 1);
-#endif
-    wait_retrace = get_config_int(NULL, "wait_retrace", 1);
-    show_frate = get_config_int(NULL, "show_frate", 0);
-    is_sound = get_config_int(NULL, "is_sound", 1);
-    use_joy = get_config_int(NULL, "use_joy", 0);
-    slow_computer = get_config_int(NULL, "slow_computer", 0);
-    cpu_usage = get_config_int(NULL, "cpu_usage", 2);
+    skip_intro      = get_config_int(NULL, "skip_intro", 0);
+    windowed        = get_config_int(NULL, "windowed", 1);
+    stretch_view    = get_config_int(NULL, "stretch_view", 1);
+    wait_retrace    = get_config_int(NULL, "wait_retrace", 1);
+    show_frate      = get_config_int(NULL, "show_frate", 0);
+    is_sound        = get_config_int(NULL, "is_sound", 1);
+    use_joy         = get_config_int(NULL, "use_joy", 0);
+    slow_computer   = get_config_int(NULL, "slow_computer", 0);
+    cpu_usage       = get_config_int(NULL, "cpu_usage", 2);
 #ifdef KQ_CHEATS
-    cheat = get_config_int(NULL, "cheat", 0);
+    cheat           = get_config_int(NULL, "cheat", 0);
     no_random_encounters = get_config_int(NULL, "no_random_encounters", 0);
-    no_monsters = get_config_int(NULL, "no_monsters", 0);
-    every_hit_999 = get_config_int(NULL, "every_hit_999", 0);
+    no_monsters     = get_config_int(NULL, "no_monsters", 0);
+    every_hit_999   = get_config_int(NULL, "every_hit_999", 0);
 #endif
 #ifdef DEBUGMODE
-    debugging = get_config_int(NULL, "debugging", 0);
+    debugging       = get_config_int(NULL, "debugging", 0);
 #endif
 
-    kup = get_config_int(NULL, "kup", KEY_UP);
-    kdown = get_config_int(NULL, "kdown", KEY_DOWN);
-    kleft = get_config_int(NULL, "kleft", KEY_LEFT);
-    kright = get_config_int(NULL, "kright", KEY_RIGHT);
-    kesc = get_config_int(NULL, "kesc", KEY_ESC);
-    kalt = get_config_int(NULL, "kalt", KEY_ALT);
-    kctrl = get_config_int(NULL, "kctrl", KEY_LCONTROL);
-    kenter = get_config_int(NULL, "kenter", KEY_ENTER);
+    kup             = get_config_int(NULL, "kup", KEY_UP);
+    kdown           = get_config_int(NULL, "kdown", KEY_DOWN);
+    kleft           = get_config_int(NULL, "kleft", KEY_LEFT);
+    kright          = get_config_int(NULL, "kright", KEY_RIGHT);
+    kesc            = get_config_int(NULL, "kesc", KEY_ESC);
+    kalt            = get_config_int(NULL, "kalt", KEY_ALT);
+    kctrl           = get_config_int(NULL, "kctrl", KEY_LCONTROL);
+    kenter          = get_config_int(NULL, "kenter", KEY_ENTER);
     pop_config_state();
 }
 
