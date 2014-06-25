@@ -29,11 +29,6 @@
  * Also some colour manipulation.
  */
 
-#include <assert.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "combat.h"
 #include "console.h"
 #include "draw.h"
@@ -44,6 +39,11 @@
 #include "res.h"
 #include "setup.h"
 #include "timing.h"
+
+#include <cassert>
+#include <cctype>
+#include <cstdio>
+#include <cstring>
 
 /* Globals */
 #define MSG_ROWS 4

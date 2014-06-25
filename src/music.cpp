@@ -27,12 +27,12 @@
  * Interfaces to DUMB
  */
 
-#include <stdio.h>
-#include <string.h>
-
 #include "kq.h"
 #include "music.h"
 #include "platform.h"
+
+#include <cstdio>
+#include <cstring>
 
 
 /* DUMB version of music */

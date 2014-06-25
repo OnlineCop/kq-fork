@@ -32,9 +32,6 @@
  *          the party array
  */
 
-#include <stdio.h>
-#include <string.h>
-
 #include "combat.h"
 #include "draw.h"
 #include "effects.h"
@@ -51,6 +48,9 @@
 #include "setup.h"
 #include "skills.h"
 #include "timing.h"
+
+#include <cstdio>
+#include <cstring>
 
 /* External variables */
 int can_use_item = 1;

@@ -27,15 +27,15 @@
  *
  * Looks after keeping the music playing whilst the game is 'paused'
  */
+#include "kq.h"
+#include "timing.h"
+#include "music.h"
+
 #ifdef _WIN32
 # include <windef.h>
 # include <stdarg.h>
 # include <winbase.h>
 #endif
-
-#include "kq.h"
-#include "timing.h"
-#include "music.h"
 
 static int mfrate;
 static int frate;

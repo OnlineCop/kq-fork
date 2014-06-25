@@ -27,8 +27,8 @@
  * \date ????????
  */
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #include "draw.h"
 #include "fade.h"

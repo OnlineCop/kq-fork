@@ -30,13 +30,13 @@
  * e.g. Linux
  */
 
+#include "platform.h"
+
 #include <allegro.h>
 #include <pwd.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <sys/stat.h>
-
-#include "platform.h"
 
 static int init_path = 0;
 static char user_dir[2048];

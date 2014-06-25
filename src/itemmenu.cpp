@@ -27,9 +27,6 @@
  * \date ????????
  */
 
-#include <stdio.h>
-#include <string.h>
-
 #include "kq.h"
 #include "combat.h"
 #include "draw.h"
@@ -42,6 +39,9 @@
 #include "selector.h"
 #include "setup.h"
 #include "skills.h"
+
+#include <cstdio>
+#include <cstring>
 
 char item_act;
 

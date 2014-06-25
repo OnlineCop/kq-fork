@@ -188,7 +188,7 @@ npgettext_aux(const char *domain,
    can be arbitrary expressions.  But for string literals these macros are
    less efficient than those above.  */
 
-#include <string.h>
+#include <cstring>
 
 #if (((__GNUC__ >= 3 || __GNUG__ >= 2) && !defined __STRICT_ANSI__) \
      /* || __STDC_VERSION__ >= 199901L */ )

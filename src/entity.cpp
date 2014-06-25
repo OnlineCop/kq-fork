@@ -27,13 +27,6 @@
  * \date ??????
  */
 
-#include <assert.h>
-#include <ctype.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "combat.h"
 #include "entity.h"
 #include "enums.h"
@@ -42,6 +35,13 @@
 #include "kq.h"
 #include "menu.h"
 #include "setup.h"
+
+#include <cassert>
+#include <cctype>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 
 

@@ -28,9 +28,6 @@
  * \date ????????
  */
 
-#include <stdio.h>
-#include <string.h>
-
 #include "combat.h"
 #include "draw.h"
 #include "effects.h"
@@ -49,6 +46,9 @@
 #include "setup.h"
 #include "structs.h"
 #include "timing.h"
+
+#include <cstdio>
+#include <cstring>
 
 
 /*! \name global variables  */

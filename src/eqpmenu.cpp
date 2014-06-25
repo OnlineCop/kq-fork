@@ -29,9 +29,6 @@
  * including dropping and optimizing the items carried.
  */
 
-#include <stdio.h>
-#include <string.h>
-
 #include "kq.h"
 #include "draw.h"
 #include "eqpmenu.h"
@@ -39,6 +36,9 @@
 #include "menu.h"
 #include "res.h"
 #include "setup.h"
+
+#include <cstdio>
+#include <cstring>
 
 
 /* Globals  */

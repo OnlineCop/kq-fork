@@ -29,12 +29,12 @@
  */
 
 
-#include <assert.h>
-#include <stdio.h>
-
 #include "../include/bounds.h"
 #include "../include/disk.h"
 #include "../include/markers.h"
+
+#include <cassert>
+#include <cstdio>
 
 
 int load_s_entity(s_entity *s, PACKFILE *f)

@@ -36,8 +36,8 @@
 #include "kq.h"
 
 #ifndef KQ_SCAN_DEPEND
-# include <stdio.h>
-# include <string.h>
+# include <cstdio>
+# include <cstring>
 extern "C" {
 # include <lua.h>
 # include <lualib.h>

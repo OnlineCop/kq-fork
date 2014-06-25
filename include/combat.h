@@ -36,7 +36,7 @@
 
 
 #include "enums.h"
-
+#include <cstring>
 
 #define BATTLE_INC    20
 #define ROUND_MAX    400

@@ -28,9 +28,6 @@
  * \remark Updated  ML Oct-2002
  */
 
-#include <stdio.h>
-#include <string.h>
-
 #include "combat.h"
 #include "draw.h"
 #include "kq.h"
@@ -39,6 +36,9 @@
 #include "res.h"
 #include "setup.h"
 #include "timing.h"
+
+#include <cstdio>
+#include <cstring>
 
 
 /*! \name Globals */

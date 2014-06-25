@@ -33,10 +33,6 @@
  *          mode to be saved/loaded ?
  */
 
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-
 #include "combat.h"
 #include "credits.h"
 #include "disk.h"
@@ -55,6 +51,10 @@
 #include "shopmenu.h"
 #include "structs.h"
 #include "timing.h"
+
+#include <cstdio>
+#include <cctype>
+#include <cstring>
 
 /*! \brief No game-wide globals in this file. */
 

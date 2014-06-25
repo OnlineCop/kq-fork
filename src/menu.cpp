@@ -19,10 +19,6 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
-#include <stdio.h>
-#include <string.h>
-
 #include "draw.h"
 #include "eqpmenu.h"
 #include "heroc.h"
@@ -35,6 +31,10 @@
 #include "selector.h"
 #include "setup.h"
 #include "structs.h"
+
+#include <cstdio>
+#include <cstring>
+
 
 /*! \file
  * \brief Main menu functions

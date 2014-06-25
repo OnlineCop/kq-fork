@@ -26,15 +26,14 @@
  * \author ML
  * \date October 2002
  */
-
-#include <string.h>
-#include "kq.h"
-
-#include <allegro/internal/aintern.h>
 #include "draw.h"
 #include "fade.h"
+#include "kq.h"
 #include "music.h"
 #include "res.h"
+
+#include <cstring>
+#include <allegro/internal/aintern.h>
 
 
 

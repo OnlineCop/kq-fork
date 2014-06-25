@@ -29,11 +29,11 @@
  * \author RB
  * \date March 2005
  */
-
-#include <stdio.h>
-#include <string.h>
 #include "kq.h"
 #include "movement.h"
+
+#include <cstdio>
+#include <cstring>
 
 
 static int compose_path(AL_CONST int *, int, int, char *, int);

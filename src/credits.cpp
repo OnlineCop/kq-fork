@@ -27,11 +27,11 @@
  * \date 20030526
  */
 
-#include <string.h>
 #include "kq.h"
 #include "credits.h"
 #include "draw.h"
 
+#include <cstring>
 
 static int ease(int);
 

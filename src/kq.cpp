@@ -39,13 +39,6 @@
  * Thanks due to Edge <hardedged@excite.com> and Caz Jones for BeOS joystick fixes
  */
 
-#include <assert.h>
-#include <locale.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-
-
 #include "console.h"
 #include "credits.h"
 #include "disk.h"
@@ -68,6 +61,12 @@
 #include "sgame.h"
 #include "shopmenu.h"
 #include "structs.h"
+
+#include <cassert>
+#include <clocale>
+#include <cstdio>
+#include <cstring>
+#include <ctime>
 
 
 /*! Name of the current map */

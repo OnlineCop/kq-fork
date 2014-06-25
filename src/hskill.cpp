@@ -27,9 +27,6 @@
  * \date ????????
  */
 
-#include <stdio.h>
-#include <string.h>
-
 #include "kq.h"
 #include "combat.h"
 #include "draw.h"
@@ -43,6 +40,9 @@
 #include "selector.h"
 #include "setup.h"
 #include "timing.h"
+
+#include <cstdio>
+#include <cstring>
 
 
 /* Internal function */
