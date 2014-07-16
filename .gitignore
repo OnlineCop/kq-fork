@@ -1,8 +1,6 @@
 # Object files
 *.o
-*.ko
 *.obj
-*.elf
 
 # Libraries
 *.lib
@@ -18,9 +16,6 @@
 *.exe
 *.out
 *.app
-*.i*86
-*.x86_64
-*.hex
 
 # Compiled lua files
 *.lob
@@ -71,3 +66,6 @@ po/stamp-po
 scripts/Makefile
 scripts/Makefile.in
 stamp-h1
+
+# Mac OS X file system files
+.DS_Store
