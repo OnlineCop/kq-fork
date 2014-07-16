@@ -49,6 +49,7 @@ set(kq-fork_SRCS
 	src/movement.cpp
 	src/music.cpp
 	src/res.cpp
+	src/resistances.cpp
 	src/selector.cpp
 	src/setup.cpp
 	src/sgame.cpp
