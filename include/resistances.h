@@ -2,6 +2,7 @@
 #define _RESISTANCES_H
 
 #include <allegro.h>
+#include <cstdio>
 #include <map>
 
 
@@ -25,6 +26,10 @@ enum eResistance
     RESIST_TIME,      //15
 };
 
+const signed int MIN_RESISTANCE = -10;
+const signed int MAX_RESISTANCE_GROUP1 = 10;
+const signed int MAX_RESISTANCE_GROUP2 = 20;
+
 
 /*! \name Runes/Resistances */
 /*  Entity's strengths and weaknesses to certain elements and elemental attacks:
@@ -39,8 +44,20 @@ class Resistances
         // Default constructor, no arguments.
         Resistances();
 
-        // Destructor
+        // Initialization constructor, one argument per eResistance.
+        Resistances(int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int);
+
+        // Copy constructor.
+        Resistances(const Resistances&);
+
+        // Destructor.
         ~Resistances();
+
+        // Assignment operator.
+        Resistances& operator=(const Resistances&);
+
+        // Load resistance data from the specified FILE, returning 0 on success or non-0 on failure.
+        int Load(FILE* file);
 
         // Load resistance data from the specified PACKFILE, returning 0 on success or non-0 on failure.
         int Load(PACKFILE *);
@@ -51,8 +68,14 @@ class Resistances
         // Return how much of a resistance to the specified elemental attack this entity has.
         signed int GetResistanceAmount(eResistance);
 
+        // Return how much all resistances combined equal.
+        signed int GetCombinedResistanceAmounts();
+
         // Set the amount of resistance to the specified elemental attack.
         void SetResistanceAmount(eResistance, signed int);
+
+        // Add the specified amount of resistance to the elemental attack.
+        signed int AddResistanceAmount(eResistance, signed int);
 
     public:
 

@@ -33,6 +33,7 @@
 #include "bounds.h"
 #include "enums.h"
 #include "markers.h"
+#include "resistances.h"
 
 #include <allegro.h>
 
@@ -161,7 +162,7 @@ typedef struct
     int mp;                      /*!< Magic points */
     int mmp;                     /*!< Maximum magic points */
     int stats[NUM_STATS];
-    char res[16];
+    Resistances resistances;     /*!< Weakness or strength to RESIST_* effects. */
     unsigned char sts[24];
     unsigned char eqp[6];        /*!< Weapons, armor, etc. equipped */
     unsigned char spells[60];    /*!< Known spells */
@@ -221,7 +222,7 @@ typedef struct
                                   * If Ayla steals something, she will get this item 5% of the time.
                                   */
     int stats[NUM_STATS];        /*!<\brief See A_* constants in kq.h */
-    char res[16];                /*!<\brief See R_* constants in kq.h */
+    Resistances resistances;     /*!<\brief Weakness or strength to RESIST_* effects. */
     unsigned char facing;        /*!<\brief Direction character's sprite faces */
     unsigned char aframe;        /*!<\brief Battle sprite to display (standing, casting, attacking) */
     unsigned char crit;

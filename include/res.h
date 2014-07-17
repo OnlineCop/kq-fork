@@ -72,7 +72,7 @@ typedef struct
     int price;                   /*!< Default price of this item, in gp */
     unsigned char eq[8];         /*!< Who can equip this item. See heroc.h */
     int stats[13];               /*!< Stat bonuses for equipping this item See A_ constants in kq.h */
-    char res[16];                /*!< Resistances. See R_ constants in kq.h */
+    Resistances resistances;     /*!< Resistances. See RESIST_* constants in resistances.h */
 } s_item;
 
 

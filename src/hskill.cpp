@@ -41,6 +41,7 @@
 #include "setup.h"
 #include "timing.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 
@@ -214,7 +215,9 @@ int hero_skillcheck(int dude)
  */
 static void infusion(int c, int sn)
 {
+    size_t fighterIndex = (size_t)c;
     size_t j;
+    s_fighter* currentFighter = &fighter[fighterIndex];
 
     switch (sn)
     {
@@ -225,210 +228,192 @@ static void infusion(int c, int sn)
 
             /* Increase resistance to Earthquake attacks */
         case M_TREMOR:
-            fighter[c].res[R_EARTH] += 5;
-            fighter[c].stats[A_DEF] += 15;
-            fighter[c].stats[A_MAG] += 10;
-            fighter[c].welem = 0;
+            currentFighter->resistances.AddResistanceAmount(RESIST_EARTH, 5);
+            currentFighter->stats[A_DEF] += 15;
+            currentFighter->stats[A_MAG] += 10;
+            currentFighter->welem = 0;
             break;
 
         case M_EARTHQUAKE:
-            fighter[c].res[R_EARTH] += 10;
-            fighter[c].stats[A_DEF] += 30;
-            fighter[c].stats[A_MAG] += 20;
-            fighter[c].welem = 0;
+            currentFighter->resistances.AddResistanceAmount(RESIST_EARTH, 10);
+            currentFighter->stats[A_DEF] += 30;
+            currentFighter->stats[A_MAG] += 20;
+            currentFighter->welem = 0;
             break;
 
             /* Increase resistance to Dark attacks */
             /* Decrease resistance to Light attacks */
         case M_GLOOM:
-            fighter[c].res[R_BLACK] += 8;
-            fighter[c].res[R_WHITE] -= 4;
-            fighter[c].stats[A_AUR] += 20;
-            fighter[c].welem = 1;
+            currentFighter->resistances.AddResistanceAmount(RESIST_BLACK, 8);
+            currentFighter->resistances.AddResistanceAmount(RESIST_WHITE, -4);
+            currentFighter->stats[A_AUR] += 20;
+            currentFighter->welem = 1;
             break;
 
         case M_NEGATIS:
-            fighter[c].res[R_BLACK] += 16;
-            fighter[c].res[R_WHITE] -= 8;
-            fighter[c].stats[A_AUR] += 40;
-            fighter[c].welem = 1;
+            currentFighter->resistances.AddResistanceAmount(RESIST_BLACK, 16);
+            currentFighter->resistances.AddResistanceAmount(RESIST_WHITE, -8);
+            currentFighter->stats[A_AUR] += 40;
+            currentFighter->welem = 1;
             break;
 
             /* Increase resistance to Fire attacks */
             /* Decrease resistance to Water & Ice attacks */
         case M_SCORCH:
-            fighter[c].res[R_FIRE] += 4;
-            fighter[c].res[R_WATER]--;
-            fighter[c].res[R_ICE]--;
-            fighter[c].stats[A_ATT] += 10;
-            fighter[c].stats[A_HIT] += 10;
-            fighter[c].welem = 2;
+            currentFighter->resistances.AddResistanceAmount(RESIST_FIRE, 4);
+            currentFighter->resistances.AddResistanceAmount(RESIST_WATER, -1);
+            currentFighter->resistances.AddResistanceAmount(RESIST_ICE, -1);
+            currentFighter->stats[A_ATT] += 10;
+            currentFighter->stats[A_HIT] += 10;
+            currentFighter->welem = 2;
             break;
 
         case M_FIREBLAST:
-            fighter[c].res[R_FIRE] += 8;
-            fighter[c].res[R_WATER] -= 2;
-            fighter[c].res[R_ICE] -= 2;
-            fighter[c].stats[A_ATT] += 20;
-            fighter[c].stats[A_HIT] += 20;
-            fighter[c].welem = 2;
+            currentFighter->resistances.AddResistanceAmount(RESIST_FIRE, 8);
+            currentFighter->resistances.AddResistanceAmount(RESIST_WATER, -2);
+            currentFighter->resistances.AddResistanceAmount(RESIST_ICE, -2);
+            currentFighter->stats[A_ATT] += 20;
+            currentFighter->stats[A_HIT] += 20;
+            currentFighter->welem = 2;
             break;
 
         case M_FLAMEWALL:
-            fighter[c].res[R_FIRE] += 12;
-            fighter[c].res[R_WATER] -= 4;
-            fighter[c].res[R_ICE] -= 4;
-            fighter[c].stats[A_ATT] += 40;
-            fighter[c].stats[A_HIT] += 40;
-            fighter[c].welem = 2;
+            currentFighter->resistances.AddResistanceAmount(RESIST_FIRE, 12);
+            currentFighter->resistances.AddResistanceAmount(RESIST_WATER, -4);
+            currentFighter->resistances.AddResistanceAmount(RESIST_ICE, -4);
+            currentFighter->stats[A_ATT] += 40;
+            currentFighter->stats[A_HIT] += 40;
+            currentFighter->welem = 2;
             break;
 
             /* Increase resistance to Thunder attacks */
         case M_SHOCK:
-            fighter[c].res[R_THUNDER] += 3;
-            fighter[c].stats[A_EVD] += 10;
-            fighter[c].welem = 3;
+            currentFighter->resistances.AddResistanceAmount(RESIST_THUNDER, 3);
+            currentFighter->stats[A_EVD] += 10;
+            currentFighter->welem = 3;
             break;
 
         case M_LIGHTNING:
-            fighter[c].res[R_THUNDER] += 6;
-            fighter[c].stats[A_EVD] += 25;
-            fighter[c].welem = 3;
+            currentFighter->resistances.AddResistanceAmount(RESIST_THUNDER, 6);
+            currentFighter->stats[A_EVD] += 25;
+            currentFighter->welem = 3;
             break;
 
         case M_THUNDERSTORM:
-            fighter[c].res[R_THUNDER] += 12;
-            fighter[c].stats[A_EVD] += 50;
-            fighter[c].welem = 3;
+            currentFighter->resistances.AddResistanceAmount(RESIST_THUNDER, 12);
+            currentFighter->stats[A_EVD] += 50;
+            currentFighter->welem = 3;
             break;
 
             /* Increase resistance to Air attacks */
         case M_WHIRLWIND:
-            fighter[c].res[R_AIR] += 5;
-            fighter[c].stats[A_EVD] += 15;
-            fighter[c].stats[A_SPD] += 10;
-            fighter[c].welem = 4;
+            currentFighter->resistances.AddResistanceAmount(RESIST_AIR, 5);
+            currentFighter->stats[A_EVD] += 15;
+            currentFighter->stats[A_SPD] += 10;
+            currentFighter->welem = 4;
             break;
 
         case M_TORNADO:
-            fighter[c].res[R_AIR] += 10;
-            fighter[c].stats[A_EVD] += 30;
-            fighter[c].stats[A_SPD] += 20;
-            fighter[c].welem = 4;
+            currentFighter->resistances.AddResistanceAmount(RESIST_AIR, 10);
+            currentFighter->stats[A_EVD] += 30;
+            currentFighter->stats[A_SPD] += 20;
+            currentFighter->welem = 4;
             break;
 
             /* Increase resistance to Light attacks */
             /* Decrease resistance to Dark attacks */
         case M_FADE:
-            fighter[c].res[R_WHITE] += 5;
-            fighter[c].res[R_BLACK] -= 2;
-            fighter[c].stats[A_SPI] += 10;
-            fighter[c].welem = 5;
+            currentFighter->resistances.AddResistanceAmount(RESIST_WHITE, 5);
+            currentFighter->resistances.AddResistanceAmount(RESIST_BLACK, -2);
+            currentFighter->stats[A_SPI] += 10;
+            currentFighter->welem = 5;
             break;
 
         case M_LUMINE:
-            fighter[c].res[R_WHITE] += 10;
-            fighter[c].res[R_BLACK] -= 5;
-            fighter[c].stats[A_SPI] += 25;
-            fighter[c].welem = 5;
+            currentFighter->resistances.AddResistanceAmount(RESIST_WHITE, 10);
+            currentFighter->resistances.AddResistanceAmount(RESIST_BLACK, -5);
+            currentFighter->stats[A_SPI] += 25;
+            currentFighter->welem = 5;
             break;
 
             /* Increase resistance to Water attacks */
             /* Decrease resistance to Thunder attacks */
         case M_FLOOD:
-            fighter[c].res[R_WATER] += 5;
-            fighter[c].res[R_THUNDER] -= 5;
-            for (j = 9; j < R_TOTAL_RES; j++)
-            {
-                fighter[c].res[j] += 3;
-                if (fighter[c].res[j] > 10)
-                {
-                    fighter[c].res[j] = 10;
-                }
-            }
-            fighter[c].welem = 6;
+            currentFighter->resistances.AddResistanceAmount(RESIST_WATER, 5);
+            currentFighter->resistances.AddResistanceAmount(RESIST_THUNDER, -5);
+            currentFighter->resistances.AddResistanceAmount(RESIST_BLIND, 3);
+            currentFighter->resistances.AddResistanceAmount(RESIST_CHARM, 3);
+            currentFighter->resistances.AddResistanceAmount(RESIST_PARALYZE, 3);
+            currentFighter->resistances.AddResistanceAmount(RESIST_PETRIFY, 3);
+            currentFighter->resistances.AddResistanceAmount(RESIST_SILENCE, 3);
+            currentFighter->resistances.AddResistanceAmount(RESIST_SLEEP, 3);
+            currentFighter->resistances.AddResistanceAmount(RESIST_TIME, 3);
+            currentFighter->welem = 6;
             break;
 
         case M_TSUNAMI:
-            fighter[c].res[R_WATER] += 10;
-            fighter[c].res[R_THUNDER] -= 10;
-            for (j = 9; j < R_TOTAL_RES; j++)
-            {
-                fighter[c].res[j] += 6;
-                if (fighter[c].res[j] > 10)
-                {
-                    fighter[c].res[j] = 10;
-                }
-            }
-            fighter[c].welem = 6;
+            currentFighter->resistances.AddResistanceAmount(RESIST_WATER, 10);
+            currentFighter->resistances.AddResistanceAmount(RESIST_THUNDER, -10);
+            currentFighter->resistances.AddResistanceAmount(RESIST_BLIND, 6);
+            currentFighter->resistances.AddResistanceAmount(RESIST_CHARM, 6);
+            currentFighter->resistances.AddResistanceAmount(RESIST_PARALYZE, 6);
+            currentFighter->resistances.AddResistanceAmount(RESIST_PETRIFY, 6);
+            currentFighter->resistances.AddResistanceAmount(RESIST_SILENCE, 6);
+            currentFighter->resistances.AddResistanceAmount(RESIST_SLEEP, 6);
+            currentFighter->resistances.AddResistanceAmount(RESIST_TIME, 6);
+            currentFighter->welem = 6;
             break;
 
             /* Increase resistance to Ice & Water attacks */
             /* Decrease resistance to Fire attacks */
         case M_FROST:
-            fighter[c].res[R_ICE] += 7;
-            fighter[c].res[R_WATER] += 4;
-            fighter[c].res[R_FIRE] -= 5;
-            fighter[c].stats[A_DEF] += 10;
-            fighter[c].welem = 7;
+            currentFighter->resistances.AddResistanceAmount(RESIST_ICE, 7);
+            currentFighter->resistances.AddResistanceAmount(RESIST_WATER, 4);
+            currentFighter->resistances.AddResistanceAmount(RESIST_FIRE, -5);
+            currentFighter->stats[A_DEF] += 10;
+            currentFighter->welem = 7;
             break;
 
         case M_BLIZZARD:
-            fighter[c].res[R_ICE] += 14;
-            fighter[c].res[R_WATER] += 8;
-            fighter[c].res[R_FIRE] -= 10;
-            fighter[c].stats[A_DEF] += 25;
-            fighter[c].welem = 7;
+            currentFighter->resistances.AddResistanceAmount(RESIST_ICE, 14);
+            currentFighter->resistances.AddResistanceAmount(RESIST_WATER, 8);
+            currentFighter->resistances.AddResistanceAmount(RESIST_FIRE, -10);
+            currentFighter->stats[A_DEF] += 25;
+            currentFighter->welem = 7;
             break;
 
             /* Increase resistance to Poison attacks */
         case M_VENOM:
-            fighter[c].res[R_POISON] += 4;
-            j = fighter[c].mhp / 10;
+            currentFighter->resistances.AddResistanceAmount(RESIST_POISON, 4);
+            j = currentFighter->mhp / 10;
             if (j < 10)
             {
                 j = 10;
             }
-            fighter[c].hp += j;
-            fighter[c].mhp += j;
-            fighter[c].welem = 8;
+            currentFighter->hp += j;
+            currentFighter->mhp += j;
+            currentFighter->welem = 8;
             break;
 
         case M_VIRUS:
-            fighter[c].res[R_POISON] += 8;
-            j = fighter[c].mhp * 25 / 100;
+            currentFighter->resistances.AddResistanceAmount(RESIST_POISON, 8);
+            j = currentFighter->mhp * 25 / 100;
             if (j < 40)
             {
                 j = 40;
             }
-            fighter[c].hp += j;
-            fighter[c].mhp += j;
-            fighter[c].welem = 8;
+            currentFighter->hp += j;
+            currentFighter->mhp += j;
+            currentFighter->welem = 8;
             break;
 
         case M_PLAGUE:
-            fighter[c].res[R_POISON] += 12;
-            j = fighter[c].mhp * 4 / 10;
-            if (j < 80)
-            {
-                j = 80;
-            }
-            fighter[c].hp += j;
-            fighter[c].mhp += j;
-            fighter[c].welem = 8;
+            currentFighter->resistances.AddResistanceAmount(RESIST_POISON, 12);
+            j = std::max<int>(80, currentFighter->mhp * 4 / 10);
+            currentFighter->hp += j;
+            currentFighter->mhp += j;
+            currentFighter->welem = 8;
             break;
-    }
-
-    for (j = 0; j < 9; j++)
-    {
-        if (fighter[c].res[j] < -10)
-        {
-            fighter[c].res[j] = -10;
-        }
-        if (fighter[c].res[j] > 20)
-        {
-            fighter[c].res[j] = 20;
-        }
     }
 }
 
@@ -457,29 +442,33 @@ void reveal(int tgt)
     print_font(double_buffer, 92, 136, _("White"), FNORMAL);
     print_font(double_buffer, 92, 144, _("Water"), FNORMAL);
     print_font(double_buffer, 92, 152, _("Ice"), FNORMAL);
-    for (c = 0; c < 8; c++)
+    for (c = (int)RESIST_EARTH; c <= (int)RESIST_ICE; c++)
     {
+        int resistanceAmount = fighter[tgt].resistances.GetResistanceAmount((eResistance)c);
         rectfill(double_buffer, 156, c * 8 + 97, 226, c * 8 + 103, 3);
-        if (fighter[tgt].res[c] < 0)
+        if (resistanceAmount < 0)
         {
             g = 18;                // bright red, meaning WEAK defense
-            d = abs(fighter[tgt].res[c]);
+            d = abs(resistanceAmount);
         }
-        else if (fighter[tgt].res[c] >= 0 && fighter[tgt].res[c] <= 10)
+        else if (resistanceAmount >= 0 && resistanceAmount <= 10)
         {
             g = 34;                // bright green, meaning so-so defense
-            d = fighter[tgt].res[c];
+            d = resistanceAmount;
         }
-        else if (fighter[tgt].res[c] > 10)
+        else if (resistanceAmount > 10)
         {
             g = 50;                // bright blue, meaning STRONG defense
-            d = fighter[tgt].res[c] - 10;
+            d = resistanceAmount - 10;
         }
 
         if (d > 0)
+        {
             for (b = 0; b < d; b++)
-                rectfill(double_buffer, b * 7 + 157, c * 8 + 98, b * 7 + 162,
-                         c * 8 + 102, g + b);
+            {
+                rectfill(double_buffer, b * 7 + 157, c * 8 + 98, b * 7 + 162, c * 8 + 102, g + b);
+            }
+        }
     }
     blit2screen(0, 0);
     do_transition(TRANS_FADE_IN, 4);
@@ -498,8 +487,7 @@ void reveal(int tgt)
  */
 int skill_use(int who)
 {
-    int tgt, found_item, a, b, c, p, cts, tx, ty, g = 0, next_target = 0,
-                                                  nn[NUM_FIGHTERS];
+    int tgt, found_item, a, b, c, p, cts, tx, ty, g = 0, next_target = 0, nn[NUM_FIGHTERS];
     BITMAP *temp;
 
     tempa = status_adjust(who);

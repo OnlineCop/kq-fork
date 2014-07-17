@@ -2561,12 +2561,12 @@ static int KQ_get_party_next(lua_State *L)
  */
 static int KQ_get_party_res(lua_State *L)
 {
-    int a = (int) lua_tonumber(L, 1);
-    int b = (int) lua_tonumber(L, 2);
+    int partyMemberIndex = (int) lua_tonumber(L, 1);
+    int resistanceIndex = (int) lua_tonumber(L, 2);
 
-    if (a >= 0 && a <= 7 && b >= 0 && b <= 15)
+    if (partyMemberIndex >= 0 && partyMemberIndex <= 7 && resistanceIndex >= RESIST_EARTH && resistanceIndex <= RESIST_TIME)
     {
-        lua_pushnumber(L, party[a].res[b]);
+        lua_pushnumber(L, party[partyMemberIndex].resistances.GetResistanceAmount((eResistance)resistanceIndex));
     }
     return 1;
 }
@@ -4035,12 +4035,12 @@ static int KQ_set_party_next(lua_State *L)
  */
 static int KQ_set_party_res(lua_State *L)
 {
-    int a = (int) lua_tonumber(L, 1);
-    int b = (int) lua_tonumber(L, 2);
+    int partyMemberIndex = (int) lua_tonumber(L, 1);
+    int resistanceIndex = (int) lua_tonumber(L, 2);
 
-    if (a >= 0 && a <= 7 && b >= 0 && b <= 12)
+    if (partyMemberIndex >= 0 && partyMemberIndex <= 7 && resistanceIndex >= RESIST_EARTH && resistanceIndex <= RESIST_PETRIFY)
     {
-        party[a].res[b] = (int) lua_tonumber(L, 3);
+        party[partyMemberIndex].resistances.SetResistanceAmount((eResistance)resistanceIndex, (int)lua_tonumber(L, 3));
     }
     return 0;
 }

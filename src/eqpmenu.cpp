@@ -42,7 +42,8 @@
 
 
 /* Globals  */
-int tstats[13], tres[R_TOTAL_RES];
+int tstats[13];
+Resistances tempResistances;
 unsigned short t_inv[MAX_INV], sm;
 size_t tot;
 char eqp_act;
@@ -80,10 +81,7 @@ static void calc_equippreview(unsigned int aa, unsigned int p2, int ii)
     {
         tstats[z] = fighter[aa].stats[z];
     }
-    for (z = 0; z < R_TOTAL_RES; z++)
-    {
-        tres[z] = fighter[aa].res[z];
-    }
+    tempResistances = fighter[aa].resistances;
     party[pidx[aa]].eqp[p2] = c;
     update_equipstats();
 }
@@ -440,13 +438,12 @@ static void draw_equippreview(int ch, int ptr, int pp)
     menubox(double_buffer, 188 + xofs, 212 + yofs, 13, 1, BLUE);
     if (ptr >= 0)
     {
-        c1 = 0;
-        c2 = 0;
-        for (z = 0; z < R_TOTAL_RES; z++)
-        {
-            c1 += fighter[ch].res[z];
-            c2 += tres[z];
-        }
+        // Count up the total resistance of both the original (tempResistances) and
+        // new (fighter->resistances) and display whether the overall resistance
+        // went up or down.
+
+        c1 = fighter[ch].resistances.GetCombinedResistanceAmounts();
+        c2 = tempResistances.GetCombinedResistanceAmounts();
         if (c1 < c2)
             print_font(double_buffer, 212 + xofs, 220 + yofs, _("Resist up"),
                        FNORMAL);
@@ -793,10 +790,7 @@ static void optimize_equip(int c)
         {
             v += items[b].stats[z];
         }
-        for (z = 0; z < R_TOTAL_RES; z++)
-        {
-            v += items[b].res[z];
-        }
+        v += items[b].resistances.GetCombinedResistanceAmounts();
         if (v > maxx)
         {
             maxx = v;

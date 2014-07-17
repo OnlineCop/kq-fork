@@ -394,7 +394,7 @@ void menu(void)
  */
 s_fighter *player2fighter(int who, s_fighter *pf)
 {
-    int j, a, b;
+    int j, itemIndex, b;
     int z[5] = { 5, 3, 2, 1, 4 };
     s_fighter tf;
 
@@ -422,10 +422,7 @@ s_fighter *player2fighter(int who, s_fighter *pf)
         tf.stats[j] =
             ((party[who].lvl - 1) * lup[who][j + 4] + party[who].stats[j]) / 100;
     }
-    for (j = 0; j < R_TOTAL_RES; j++)
-    {
-        tf.res[j] = party[who].res[j];
-    }
+    tf.resistances = party[who].resistances;
     /* set weapon elemental power and imbuements for easy use in combat */
     tf.welem = items[party[who].eqp[0]].elem;
     if (items[party[who].eqp[0]].use == USE_ATTACK)
@@ -440,15 +437,15 @@ s_fighter *player2fighter(int who, s_fighter *pf)
      * that can be imbued, so some item types get priority over
      * others... hence the need to run through each in this loop.
      */
-    for (a = 0; a < 5; a++)
+    for (size_t equipmentIndex = 0; equipmentIndex < 5; equipmentIndex++)
     {
-        if (items[party[who].eqp[z[a]]].use == USE_IMBUED)
+        if (items[party[who].eqp[z[equipmentIndex]]].use == USE_IMBUED)
         {
             for (b = 0; b < 2; b++)
             {
                 if (tf.imb[b] == 0)
                 {
-                    tf.imb[b] = items[party[who].eqp[z[a]]].imb;
+                    tf.imb[b] = items[party[who].eqp[z[equipmentIndex]]].imb;
                     b = 2;
                 }
             }
@@ -462,20 +459,20 @@ s_fighter *player2fighter(int who, s_fighter *pf)
     {
         tf.welem = 6;
     }
-    for (j = 0; j < 6; j++)
+    for (size_t equipmentIndex = 0; equipmentIndex < 6; equipmentIndex++)
     {
-        a = party[who].eqp[j];
-        if (j == 0)
+        itemIndex = party[who].eqp[equipmentIndex];
+        if (equipmentIndex == 0)
         {
-            if (a == 0)
+            if (itemIndex == 0)
             {
                 tf.bonus = 50;
             }
             else
             {
-                tf.bonus = items[a].bon;
+                tf.bonus = items[itemIndex].bon;
             }
-            if (items[a].icon == 1 || items[a].icon == 3 || items[a].icon == 21)
+            if (items[itemIndex].icon == 1 || items[itemIndex].icon == 3 || items[itemIndex].icon == 21)
             {
                 tf.bstat = 1;
             }
@@ -487,73 +484,53 @@ s_fighter *player2fighter(int who, s_fighter *pf)
              * in combat, it will look like this .
              * The colour comes from s_item::kol
              */
-            tf.cwt = items[a].icon;
+            tf.cwt = items[itemIndex].icon;
             if (tf.cwt == W_CHENDIGAL)
             {
                 tf.cwt = W_SWORD;
             }
         }
-        for (b = 0; b < 13; b++)
+        for (size_t statsIndex = 0; statsIndex < 13; statsIndex++)
         {
-            if (b == A_SPI && who == TEMMIN)
+            if (statsIndex == A_SPI && who == TEMMIN)
             {
-                if (items[a].stats[A_SPI] > 0)
+                if (items[itemIndex].stats[A_SPI] > 0)
                 {
-                    tf.stats[A_SPI] += items[a].stats[A_SPI];
+                    tf.stats[A_SPI] += items[itemIndex].stats[A_SPI];
                 }
             }
             else
             {
-                tf.stats[b] += items[a].stats[b];
+                tf.stats[statsIndex] += items[itemIndex].stats[statsIndex];
             }
         }
-        for (b = 0; b < R_TOTAL_RES; b++)
+
+        for (size_t resistanceIndex = RESIST_EARTH; resistanceIndex <= RESIST_TIME; resistanceIndex++)
         {
-            tf.res[b] += items[a].res[b];
+            int resistanceAmount = items[itemIndex].resistances.GetResistanceAmount((eResistance)resistanceIndex);
+            tf.resistances.AddResistanceAmount((eResistance)resistanceIndex, resistanceAmount);
         }
     }
+
     if (who == CORIN)
     {
-        tf.res[R_EARTH] += tf.lvl / 4;
-        tf.res[R_FIRE] += tf.lvl / 4;
-        tf.res[R_AIR] += tf.lvl / 4;
-        tf.res[R_WATER] += tf.lvl / 4;
+        int quarterLevel = tf.lvl / 4;
+        tf.resistances.AddResistanceAmount(RESIST_EARTH, quarterLevel);
+        tf.resistances.AddResistanceAmount(RESIST_FIRE, quarterLevel);
+        tf.resistances.AddResistanceAmount(RESIST_AIR, quarterLevel);
+        tf.resistances.AddResistanceAmount(RESIST_WATER, quarterLevel);
     }
+
     if (party[who].eqp[5] == I_AGRAN)
     {
-        a = 0;
-        for (j = 0; j < R_TOTAL_RES; j++)
+        int combinedResistance = tf.resistances.GetCombinedResistanceAmounts();
+        int newResistanceAmount = ((combinedResistance * 10) / 16 + 5) / 10;
+        for (size_t resistanceIndex = (size_t)RESIST_EARTH; resistanceIndex < (size_t)RESIST_TIME; resistanceIndex++)
         {
-            a += tf.res[j];
-        }
-        b = ((a * 10) / 16 + 5) / 10;
-        for (j = 0; j < R_TOTAL_RES; j++)
-        {
-            tf.res[j] = b;
+            tf.resistances.SetResistanceAmount((eResistance)resistanceIndex, newResistanceAmount);
         }
     }
-    for (j = 0; j < 8; j++)
-    {
-        if (tf.res[j] < -10)
-        {
-            tf.res[j] = -10;
-        }
-        if (tf.res[j] > 20)
-        {
-            tf.res[j] = 20;
-        }
-    }
-    for (j = 8; j < R_TOTAL_RES; j++)
-    {
-        if (tf.res[j] < 0)
-        {
-            tf.res[j] = 0;
-        }
-        if (tf.res[j] > 10)
-        {
-            tf.res[j] = 10;
-        }
-    }
+
     if (party[who].eqp[5] == I_MANALOCKET)
     {
         tf.mrp = party[who].mrp / 2;
@@ -562,6 +539,7 @@ s_fighter *player2fighter(int who, s_fighter *pf)
     {
         tf.mrp = party[who].mrp;
     }
+
     tf.stats[A_HIT] += tf.stats[A_STR] / 5;
     tf.stats[A_HIT] += tf.stats[A_AGI] / 5;
     tf.stats[A_DEF] += tf.stats[A_VIT] / 8;
@@ -881,30 +859,35 @@ static void status_screen(int ch)
         print_font(double_buffer, 168 + xofs, 136 + yofs, _("Sleep"), FNORMAL);
         print_font(double_buffer, 168 + xofs, 144 + yofs, _("Time"), FNORMAL);
 
-        for (i = 0; i < R_TOTAL_RES; i++)
+        for (size_t resistanceIndex = RESIST_EARTH; resistanceIndex <= RESIST_TIME; resistanceIndex++)
         {
-            rectfill(double_buffer, 240 + xofs, i * 8 + 25 + yofs, 310 + xofs,
-                     i * 8 + 31 + yofs, 3);
-            if (fighter[ch].res[i] < 0)
+            rectfill(double_buffer, 240 + xofs, resistanceIndex * 8 + 25 + yofs, 310 + xofs,
+                     resistanceIndex * 8 + 31 + yofs, 3);
+            int resistanceAmount = fighter[ch].resistances.GetResistanceAmount((eResistance)resistanceIndex);
+            int visualResistanceIndicator = 0;
+            if (resistanceAmount < 0)
             {
                 bc = 18;            // bright red, meaning WEAK defense
-                z = abs(fighter[ch].res[i]);
+                visualResistanceIndicator = abs(resistanceAmount);
             }
-            else if (fighter[ch].res[i] >= 0 && fighter[ch].res[i] <= 10)
+            else if (resistanceAmount >= 0 && resistanceAmount <= 10)
             {
                 bc = 34;            // bright green, meaning so-so defense
-                z = fighter[ch].res[i];
+                visualResistanceIndicator = resistanceAmount;
             }
-            else if (fighter[ch].res[i] > 10)
+            else if (resistanceAmount > 10)
             {
                 bc = 50;            // bright blue, meaning STRONG defense
-                z = fighter[ch].res[i] - 10;
+                visualResistanceIndicator = resistanceAmount - 10;
             }
 
-            if (z > 0)
-                for (p = 0; p < z; p++)
-                    rectfill(double_buffer, p * 7 + 241 + xofs, i * 8 + 26 + yofs,
-                             p * 7 + 246 + xofs, i * 8 + 30 + yofs, bc + p);
+            if (visualResistanceIndicator > 0)
+            {
+                for (p = 0; p < visualResistanceIndicator; p++)
+                {
+                    rectfill(double_buffer, p * 7 + 241 + xofs, resistanceIndex * 8 + 26 + yofs, p * 7 + 246 + xofs, resistanceIndex * 8 + 30 + yofs, bc + p);
+                }
+            }
         }
         menubox(double_buffer, 160 + xofs, 160 + yofs, 18, 6, BLUE);
         for (i = 0; i < 6; i++)

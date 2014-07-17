@@ -216,11 +216,7 @@ int load_s_player(s_player *s, PACKFILE *f)
     {
         s->stats[i] = pack_igetl(f);
     }
-
-    for (i = 0; i < R_TOTAL_RES; ++i)
-    {
-        s->res[i] = pack_getc(f);
-    }
+    s->resistances.Load(f);
 
     for (i = 0; i < 24; ++i)
     {
@@ -259,22 +255,23 @@ int save_s_player(s_player *s, PACKFILE *f)
     pack_iputl(s->mhp, f);
     pack_iputl(s->mp, f);
     pack_iputl(s->mmp, f);
+
     for (i = 0; i < NUM_STATS; ++i)
     {
         pack_iputl(s->stats[i], f);
     }
-    for (i = 0; i < R_TOTAL_RES; ++i)
-    {
-        pack_putc(s->res[i], f);
-    }
+    s->resistances.Save(f);
+
     for (i = 0; i < 24; ++i)
     {
         pack_putc(s->sts[i], f);
     }
+
     for (i = 0; i < NUM_EQUIPMENT; ++i)
     {
         pack_putc(s->eqp[i], f);
     }
+
     for (i = 0; i < 60; ++i)
     {
         pack_putc(s->spells[i], f);

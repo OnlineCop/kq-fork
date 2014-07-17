@@ -1363,7 +1363,7 @@ int non_dmg_save(int tgt, int per)
  *
  * \param   tgt Target
  * \param   rs Rune/element
- * \param   amt Amount of resistence to given rune
+ * \param   amt Amount of resistance to given rune
  * \returns difference of resistance to damage given by rune
  */
 int res_adjust(int tgt, int rs, int amt)
@@ -1371,24 +1371,27 @@ int res_adjust(int tgt, int rs, int amt)
     int ad, b;
     s_fighter tf;
 
-    if (rs > 15 || rs < 0)
+    if (rs < RESIST_EARTH || rs > RESIST_TIME)
     {
         return amt;
     }
+    eResistance resistanceIndex = (eResistance)rs;
+
     tf = status_adjust(tgt);
+    signed int resistance = tf.resistances.GetResistanceAmount(resistanceIndex);
     ad = amt;
-    if (tf.res[rs] < 0)
+    if (resistance < 0)
     {
-        b = 10 + abs(tf.res[rs]);
+        b = 10 + abs(resistance);
         ad = ad * b / 10;
     }
-    if (tf.res[rs] > 10)
+    if (resistance > 10)
     {
-        ad = ((ad * (tf.res[rs] - 10)) / 10) * -1;
+        ad = ((ad * (resistance - 10)) / 10) * -1;
     }
-    if (tf.res[rs] >= 1 && tf.res[rs] <= 10)
+    if (resistance >= 1 && resistance <= 10)
     {
-        ad -= ad * tf.res[rs] / 10;
+        ad -= ad * resistance / 10;
     }
     return ad;
 }
@@ -1408,20 +1411,24 @@ int res_throw(int tgt, int rs)
 {
     s_fighter tf;
 
-    if (rs > R_TIME || rs < R_EARTH)
+    if (rs < RESIST_EARTH || rs > RESIST_TIME)
     {
         return 0;
     }
+    eResistance resistanceIndex = (eResistance)rs;
+
     tf = status_adjust(tgt);
-    if (tf.res[rs] < 1)
+    signed int resistance = tf.resistances.GetResistanceAmount(resistanceIndex);
+
+    if (resistance < 1)
     {
         return 0;
     }
-    if (tf.res[rs] >= 10)
+    if (resistance >= 10)
     {
         return 1;
     }
-    if (rand() % 10 < tf.res[rs])
+    if (rand() % 10 < resistance)
     {
         return 1;
     }

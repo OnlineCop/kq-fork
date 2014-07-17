@@ -1,4 +1,7 @@
 #include "resistances.h"
+#include "templates.h"
+#include <algorithm>
+
 
 // Default constructor, no arguments.
 Resistances::Resistances()
@@ -22,10 +25,98 @@ Resistances::Resistances()
 }
 
 
-// Destructor
+// Initialization constructor, one argument per eResistance.
+Resistances::Resistances(
+    int resist_earth,
+    int resist_black,
+    int resist_fire,
+    int resist_thunder,
+    int resist_air,
+    int resist_white,
+    int resist_water,
+    int resist_ice,
+    int resist_poison,
+    int resist_blind,
+    int resist_charm,
+    int resist_paralyze,
+    int resist_petrify,
+    int resist_silence,
+    int resist_sleep,
+    int resist_time)
+{
+    _resistances[RESIST_EARTH]      = resist_earth;
+    _resistances[RESIST_BLACK]      = resist_black;
+    _resistances[RESIST_FIRE]       = resist_fire;
+    _resistances[RESIST_THUNDER]    = resist_thunder;
+    _resistances[RESIST_AIR]        = resist_air;
+    _resistances[RESIST_WHITE]      = resist_white;
+    _resistances[RESIST_WATER]      = resist_water;
+    _resistances[RESIST_ICE]        = resist_ice;
+    _resistances[RESIST_POISON]     = resist_poison;
+    _resistances[RESIST_BLIND]      = resist_blind;
+    _resistances[RESIST_CHARM]      = resist_charm;
+    _resistances[RESIST_PARALYZE]   = resist_paralyze;
+    _resistances[RESIST_PETRIFY]    = resist_petrify;
+    _resistances[RESIST_SILENCE]    = resist_silence;
+    _resistances[RESIST_SLEEP]      = resist_sleep;
+    _resistances[RESIST_TIME]       = resist_time;
+}
+
+
+// Copy constructor.
+Resistances::Resistances(const Resistances& other) :
+    _resistances(other._resistances)
+{
+    //
+}
+
+
+// Destructor.
 Resistances::~Resistances()
 {
     //
+}
+
+
+// Assignment operator.
+Resistances& Resistances::operator=(const Resistances& other)
+{
+    this->_resistances = other._resistances;
+    return *this;
+}
+
+
+// Load resistance data from the specified FILE, returning 0 on success or non-0 on failure.
+int Resistances::Load(FILE* file)
+{
+    signed int tmp = 0;
+    int loadSuccessResult = 0;
+
+    try
+    {
+        fscanf(file, "%d", &_resistances[RESIST_EARTH]);
+        fscanf(file, "%d", &_resistances[RESIST_BLACK]);
+        fscanf(file, "%d", &_resistances[RESIST_FIRE]);
+        fscanf(file, "%d", &_resistances[RESIST_THUNDER]);
+        fscanf(file, "%d", &_resistances[RESIST_AIR]);
+        fscanf(file, "%d", &_resistances[RESIST_WHITE]);
+        fscanf(file, "%d", &_resistances[RESIST_WATER]);
+        fscanf(file, "%d", &_resistances[RESIST_ICE]);
+        fscanf(file, "%d", &_resistances[RESIST_POISON]);
+        fscanf(file, "%d", &_resistances[RESIST_BLIND]);
+        fscanf(file, "%d", &_resistances[RESIST_CHARM]);
+        fscanf(file, "%d", &_resistances[RESIST_PARALYZE]);
+        fscanf(file, "%d", &_resistances[RESIST_PETRIFY]);
+        fscanf(file, "%d", &_resistances[RESIST_SILENCE]);
+        fscanf(file, "%d", &_resistances[RESIST_SLEEP]);
+        fscanf(file, "%d", &_resistances[RESIST_TIME]);
+    }
+    catch (int exceptionNum)
+    {
+        loadSuccessResult = 1;
+    }
+
+    return loadSuccessResult;
 }
 
 
@@ -109,6 +200,21 @@ signed int Resistances::GetResistanceAmount(eResistance resistance)
 }
 
 
+// Return how much all resistances combined equal.
+signed int Resistances::GetCombinedResistanceAmounts()
+{
+    std::map<eResistance, signed int>::iterator it, itEnd;
+    signed int sum = 0;
+
+    for (it = _resistances.begin(); it != _resistances.end(); ++it)
+    {
+        sum += it->second;
+    }
+
+    return sum;
+}
+
+
 // Set the amount of resistance to the specified elemental attack.
 void Resistances::SetResistanceAmount(eResistance resistance, signed int value)
 {
@@ -118,4 +224,25 @@ void Resistances::SetResistanceAmount(eResistance resistance, signed int value)
     {
         _resistances[resistance] = value;
     }
+}
+
+
+// Add the specified amount of resistance to the elemental attack.
+signed int Resistances::AddResistanceAmount(eResistance resistance, signed int value)
+{
+    std::map<eResistance, signed int>::iterator it;
+    signed int newValue = 0;
+
+    it = _resistances.find(resistance);
+    if (it != _resistances.end())
+    {
+        int minValue = MIN_RESISTANCE;
+        int maxValue = (it->first <= RESIST_ICE ? MAX_RESISTANCE_GROUP1 : MAX_RESISTANCE_GROUP2);
+        // Add the new value to the current resistance, clamping minimum and maximum values.
+        newValue = clamp<signed int>(_resistances[resistance] + value, minValue, maxValue);
+
+        _resistances[resistance] = newValue;
+    }
+
+    return newValue;
 }
