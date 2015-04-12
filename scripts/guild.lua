@@ -1,14 +1,14 @@
 -- guild - "Home of the Embers in Sunarin"
 -- /*
--- P_GUILDSECRET - Have we discovered the secret passage into the Embers' base?
+-- progress.guildsecret - Have we discovered the secret passage into the Embers' base?
 --   (0) Not found it
 --   (1) Found it and it's open
 --   (2) Found it, gone through, and it's shut again (it will reopen as we approach)
--- P_FOUGHTGUILD - Have we fought the bandits for the helmet?
+-- progress.foughtguild - Have we fought the bandits for the helmet?
 --   (0) Have not fought
 --   (1) Fought and beat them
 --   (2) Lose the key to get back in (when leaving)
--- P_OPALHELMET - Did you obtain it?
+-- progress.opalhelmet - Did you obtain it?
 --   (0) No
 --   (1) Yes
 -- */
@@ -33,7 +33,7 @@ function refresh()
   local x, y
 
   x, y = marker("ustairs1")
-  if (get_progress(P_GUILDSECRET) == 1) then
+  if (progress.guildsecret == 1) then
     set_obs  (x + 2, y - 1, 0)
     set_zone (x + 2, y - 1, 0)
     set_mtile(x + 2, y - 2, 0)
@@ -46,7 +46,7 @@ function refresh()
     set_zone (x + 4, y - 1, 4)
     set_ftile(x + 4, y - 2, 242)
     set_ftile(x + 4, y - 1, 243)
-  elseif (get_progress(P_GUILDSECRET) == 2) then
+  elseif (progress.guildsecret == 2) then
     set_obs  (x + 2, y - 1, 1)
     set_mtile(x + 2, y - 2, 242)
     set_mtile(x + 2, y - 1, 241)
@@ -60,18 +60,18 @@ function refresh()
     set_ftile(x + 4, y - 1, 0)
   end
 
-  if (get_progress(P_FOUGHTGUILD) > 0) then
+  if (progress.foughtguild > 0) then
     set_ent_active(0, 0)
     set_ent_active(1, 0)
   end
 
-  if (get_progress(P_OPALHELMET) > 0) then
+  if (progress.opalhelmet > 0) then
     set_mtile("helm", 265)
     set_zone("helm", 0)
   end
 
   -- Should Ayla appear or not?
-  if (LOC_manor_or_party(AYLA) or get_progress(P_FOUGHTGUILD) < 1) then
+  if (LOC_manor_or_party(AYLA) or progress.foughtguild < 1) then
     set_ent_active(2, 0)
   else
     set_ent_active(2, 1)
@@ -104,13 +104,13 @@ end
 
 
 -- Updated 20020929 PH
--- Added test for P_OPALHELMET so
+-- Added test for progress.opalhelmet so
 -- that you can re-enter the guild
 -- if you do not have the helmet yet
 function zone_handler(zn)
   if (zn == 1) then
-    if (get_progress(P_OPALHELMET) == 1) then
-      set_progress(P_FOUGHTGUILD, 2)
+    if (progress.opalhelmet == 1) then
+      progress.foughtguild = 2
     end
     change_map("town5", "guild_door")
 
@@ -118,10 +118,10 @@ function zone_handler(zn)
     warp("dstairs1", 8)
 
   elseif (zn == 3) then
-    if (get_progress(P_GUILDSECRET) == 0) then
+    if (progress.guildsecret == 0) then
       bubble(HERO1, _"Well I'll be...")
       bubble(HERO1, _"The book really IS called 'How to Enter the Ember's Secret Hideout'. Heh... brilliant in its simplicity, I suppose.")
-      set_progress(P_GUILDSECRET, 1)
+      progress.guildsecret = 1
       sfx(26)
       refresh()
     end
@@ -154,7 +154,7 @@ function zone_handler(zn)
     LOC_hidden_door()
 
   elseif (zn == 11) then
-    if (get_progress(P_FOUGHTGUILD) == 0) then
+    if (progress.foughtguild == 0) then
       LOC_fight()
     end
 
@@ -170,13 +170,13 @@ function zone_handler(zn)
   elseif(zn == 15) then
     -- Close the secret door
     sfx(26)
-    set_progress(P_GUILDSECRET, 2)
+    progress.guildsecret = 2
     refresh()
 
   elseif (zn == 16) then
     -- Open the secret door (a second time)
     sfx(26)
-    set_progress(P_GUILDSECRET, 1)
+    progress.guildsecret = 1
     refresh()
 
   elseif (zn >= 17 and zn <= 21) then
@@ -220,7 +220,7 @@ end
 
 
 function LOC_ayla_join(en)
-  if (get_progress(P_AYLA_QUEST) == 0) then
+  if (progress.ayla_quest == 0) then
     -- This code creates an unsolvable catch-22. Probably to prevent trapping the player in an unfinished quest.
     bubble(en, _"Wha...? Oh, it's you!")
     bubble(HERO1, _"Hello... I recognise you from Nostik's manor, don't I?")
@@ -256,7 +256,7 @@ function LOC_fight()
   local a, b
   local x, y = marker("fight")
 
-  if (get_progress(P_FOUGHTGUILD) ~= 0) then
+  if (progress.foughtguild ~= 0) then
     return
   end
 
@@ -292,7 +292,7 @@ function LOC_fight()
   if (get_alldead() == 1) then
     return
   end
-  set_progress(P_FOUGHTGUILD, 1)
+  progress.foughtguild = 1
   set_ftile(x, y - 1, 0)
   set_ftile(x - 1, y, 0)
   set_ftile(x + 1, y, 0)
@@ -307,10 +307,10 @@ end
 
 
 function LOC_get_helm()
-  if (get_progress(P_OPALHELMET) == 0) then
+  if (progress.opalhelmet == 0) then
     sfx(5)
     msg(_"Opal Helmet procured", 255, 0)
-    set_progress(P_OPALHELMET, 1)
+    progress.opalhelmet = 1
     add_special_item(SI_OPALHELMET)
     refresh()
     drawmap()

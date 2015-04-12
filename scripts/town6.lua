@@ -1,13 +1,13 @@
 -- town6 - "Ajantara"
 
 function autoexec()
-  if (get_progress(P_OPALSHIELD) == 0) then
+  if (progress.opalshield == 0) then
     -- Remove the guards from the map
     set_ent_active(5, 0)
     set_ent_active(6, 0)
   end
 
-  if (get_progress(P_OPALSHIELD) == 1 and get_progress(P_SAVEBREANNE) < 3) then
+  if (progress.opalshield == 1 and progress.savebreanne < 3) then
     -- Remove Breanne
     set_ent_active(9, 0)
   end
@@ -27,11 +27,11 @@ function entity_handler(en)
     bubble(en, _"This is a lovely little town. Don't you think so?")
 
   elseif (en == 3) then
-    if (get_progress(P_OPALSHIELD) == 0) then
+    if (progress.opalshield == 0) then
       bubble(en, _"Wanna play tag with me?")
       return
     end
-    if (get_progress(P_SAVEBREANNE) < 3) then
+    if (progress.savebreanne < 3) then
       bubble(en, _"I miss Breanne.")
     else
       bubble(en, _"This town rocks!")
@@ -41,7 +41,7 @@ function entity_handler(en)
     bubble(en, _"Sorry, I'm far too busy and you have terrible breath.")
 
   elseif (en == 5) then
-    if (get_progress(P_SAVEBREANNE) < 3) then
+    if (progress.savebreanne < 3) then
       bubble(en, _"There has been a lot of Cult activity around these parts lately.")
     else
       bubble(en, _"Has the Cult really been rousted?")
@@ -51,19 +51,19 @@ function entity_handler(en)
     bubble(en, _"Lord and Lady Ajantara have hired us to watch the town.")
 
   elseif (en == 7) then
-    if (get_progress(P_OPALSHIELD) == 0) then
+    if (progress.opalshield == 0) then
       bubble(en, _"Lord Ajantara's grandfather founded this town.")
       return
     end
-    if (get_progress(P_SAVEBREANNE) == 0) then
-      if (get_progress(P_TALKGRAMPA) == 0) then
+    if (progress.savebreanne == 0) then
+      if (progress.talkgrampa == 0) then
         bubble(en, _"Lord and Lady Ajantara's daughter, Breanne, was kidnapped last night. They are looking for someone to help find her!")
-        set_progress(P_TALKGRAMPA, 1)
+        progress.talkgrampa = 1
       else
         bubble(en, _"You should go and speak with the Ajantaras.")
       end
     else
-      if (get_progress(P_SAVEBREANNE) < 3) then
+      if (progress.savebreanne < 3) then
         bubble(en, _"You truly are kind.")
       else
         bubble(en, _"It's a lovely day isn't it?")
@@ -74,7 +74,7 @@ function entity_handler(en)
     bubble(en, _"Everything in this town is owned by Lord and Lady Ajantara.")
 
   elseif (en == 9) then
-    if (get_progress(P_OPALSHIELD) == 0) then
+    if (progress.opalshield == 0) then
       bubble(en, _"Hiya!")
       return
     end
@@ -173,7 +173,7 @@ function zone_handler(zn)
     shop(16)
 
   elseif (zn == 21) then
-    if (get_progress(P_TOWN6INN) > 0) then
+    if (progress.town6inn > 0) then
       inn(_"Ajantara Inn", 1, 1)
     else
       inn(_"Ajantara Inn", 150, 1)
@@ -205,8 +205,8 @@ function zone_handler(zn)
     LOC_complain()
 
   elseif (zn == 30) then
-    if (get_progress(P_WARPSTONE) == 0) then
-      set_progress(P_WARPSTONE, 1)
+    if (progress.warpstone == 0) then
+      progress.warpstone = 1
     end
     change_map("town2", "travelpoint")
 
@@ -222,7 +222,7 @@ end
 
 
 function LOC_complain()
-  if (get_progress(P_SAVEBREANNE) == 1) then
+  if (progress.savebreanne == 1) then
     if (get_numchrs() == 1) then
       bubble(HERO1, _"Ugh... I getting real sick of this running around crap! Why is nothing I need where it's supposed to be?")
       bubble(HERO1, _"I'll bet that even if I had waited a month and come here for the Band, the Ajantara's daughter would have just been kidnapped.")
@@ -247,20 +247,20 @@ function LOC_complain()
       bubble(HERO2, _"Saving the world?")
       bubble(HERO1, _"Stuff it, I'm on a roll here.")
     end
-    set_progress(P_SAVEBREANNE, 2)
+    progress.savebreanne = 2
   end
 end
 
 
 function LOC_lady_ajantara(en)
-  if (get_progress(P_OPALSHIELD) == 0) then
+  if (progress.opalshield == 0) then
     bubble(en, _"Welcome... enjoy your stay.")
     return
   end
-  if (get_progress(P_SAVEBREANNE) == 0) then
+  if (progress.savebreanne == 0) then
     bubble(en, _"Oh poor Breanne!")
   else
-    if (get_progress(P_SAVEBREANNE) < 3) then
+    if (progress.savebreanne < 3) then
       bubble(en, _"Good luck to you!")
     else
       bubble(en, _"Breanne is a dear.")
@@ -270,13 +270,13 @@ end
 
 
 function LOC_lord_ajantara(en)
-  if (get_progress(P_OPALSHIELD) == 0) then
+  if (progress.opalshield == 0) then
     bubble(en, _"How do you like our little town?")
     return
   end
-  if (get_progress(P_SAVEBREANNE) == 0) then
+  if (progress.savebreanne == 0) then
     bubble(en, _"You must help save our daughter! We'll give you anything, just please bring her back to us.")
-    if (get_progress(P_TALKGRAMPA) == 1) then
+    if (progress.talkgrampa == 1) then
       bubble(HERO1, _"We were told she was kidnapped, but by who? Where did they take her?")
       bubble(en, _"The ones who took her are members of a cult... the Cult of the Shadow Walker. They took her to their tower on Sharia island.")
     else
@@ -301,25 +301,25 @@ function LOC_lord_ajantara(en)
     bubble(HERO1, _"Really? Great! Where is it?")
     bubble(en, _"It belongs to my daughter. She is probably wearing it.")
     bubble(HERO1, _"Of course. Well, time to go!")
-    set_progress(P_SAVEBREANNE, 1)
+    progress.savebreanne = 1
     return
   end
-  if (get_progress(P_SAVEBREANNE) == 4) then
+  if (progress.savebreanne == 4) then
     bubble(en, _"Things are finally back to normal.")
     return
   end
-  if (get_progress(P_SAVEBREANNE) < 3) then
+  if (progress.savebreanne < 3) then
     bubble(en, _"Please be careful.")
   else
     bubble(en, _"Breanne told us she gave you the Band. We're glad everything has worked out so great. Thank you very much!")
     bubble(en, _"I know it's not much, but to show our appreciation, we want you to feel welcome in our town.")
     bubble(en, _"Therefore, any time you need to stay at our inn, you'll only be charged 1 GP!")
-    set_progress(P_TOWN6INN, 1)
+    progress.town6inn = 1
     bubble(HERO1, _"That's very kind of you. Thank you!")
     bubble(en, _"Oh, and by the way. You should take this.")
     sfx(5)
     msg(_"Cave Key procured", 255, 0)
-    set_progress(P_CAVEKEY, 1)
+    progress.cavekey = 1
     add_special_item(SI_CAVEKEY)
     drawmap()
     screen_dump()
@@ -332,6 +332,6 @@ function LOC_lord_ajantara(en)
     bubble(en, _"Well, I'm glad we could help. However, I must warn you to be extra cautious on this quest.")
     bubble(en, _"A dark race of Larinon live in the dungeons down there and they are most unpleasant.")
     bubble(HERO1, _"Thanks for the warning, and thank you again for the key.")
-    set_progress(P_SAVEBREANNE, 4)
+    progress.savebreanne = 4
   end
 end

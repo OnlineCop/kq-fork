@@ -2,21 +2,21 @@
 
 -- /*
 -- {
--- P_BRONZEKEY: Key into the room with Corin and the troll
+-- progress.bronzekey: Key into the room with Corin and the troll
 --   (0) Don't have the key yet
 --   (1) Got the key from Demnas
 --   (2) Used the key to open the bronze door
 --
--- P_DEMNASDEAD: Whether you defeated Demnas
+-- progress.demnasdead: Whether you defeated Demnas
 --   (0) Still kickin'
 --   (1) Dead
 --
--- P_DENORIAN: Status of Denorian's statue
+-- progress.denorian: Status of Denorian's statue
 --   (0)..(2) Setup in dville.lua
 --   (3) You have the Oracle's broken statue, haven't met troll
 --   (4) Defeated troll
 --
--- P_TALK_CORIN: If you've spoken to Corin
+-- progress.talk_corin: If you've spoken to Corin
 --   (0) Haven't spoken to him yet
 --   (1) He tells you about the connection of the troll and Malkaron's armies
 --
@@ -35,8 +35,8 @@ function entity_handler(en)
 
   elseif (en == 1) then
     -- You have not spoken to Corin about the troll
-    if (get_progress(P_TALK_CORIN) == 0) then
-      if (get_progress(P_DENORIAN) < 4) then
+    if (progress.talk_corin == 0) then
+      if (progress.denorian < 4) then
         -- You have not yet faced the troll down the stairs
         bubble(en, _"Oh, $0, it's great to see you!")
         bubble(en, _"I traced the missing statue here to Demnas, but before I could confront him, a horde of Malkaron's followers attacked him.")
@@ -47,7 +47,7 @@ function entity_handler(en)
         bubble(en, _"I haven't. I hit it with a sleep spell as soon as I was locked in here.")
         set_ent_facing(en, FACE_RIGHT)
         bubble(en, _"It's down the stairs right there. Why don't you go take care of it now?")
-        set_progress(P_TALK_CORIN, 1)
+        progress.talk_corin = 1
       else
         -- You have defeated the troll
         bubble(en, _"$0! I saw you run down the stairs there before I could tell you about the troll!")
@@ -62,9 +62,9 @@ function entity_handler(en)
         LOC_join_corin(en)
       end
     -- Corin told you about the troll
-    elseif (get_progress(P_TALK_CORIN) == 1) then
+    elseif (progress.talk_corin == 1) then
       -- You have not fought the troll yet
-      if (get_progress(P_DENORIAN) < 4) then
+      if (progress.denorian < 4) then
         bubble(en, _"I'll wait up here. I'm not ready to take on a troll just yet.")
       -- You fought the troll
       else
@@ -100,11 +100,11 @@ function refresh()
   showch("treasure4", 65)
   showch("treasure5", 66)
 
-  if (get_progress(P_DEMNASDEAD) > 0) then
+  if (progress.demnasdead > 0) then
     set_ent_active(0, 0)
   end
 
-  if (get_progress(P_BRONZEKEY) == 2) then
+  if (progress.bronzekey == 2) then
     set_zone("door4", 2)
     set_obs("door4", 0)
   end
@@ -117,7 +117,7 @@ function refresh()
     set_ent_active(1, 0)
   end
 
-  if (get_progress(P_DENORIAN) > 2) then
+  if (progress.denorian > 2) then
     set_ent_active(2, 0)
   end
 end
@@ -151,11 +151,11 @@ function zone_handler(zn)
     LOC_doors_out("door8")
 
   elseif (zn == 4) then
-    if (get_progress(P_BRONZEKEY) == 0) then
+    if (progress.bronzekey == 0) then
       bubble(HERO1, _"Locked.")
-    elseif (get_progress(P_BRONZEKEY) == 1) then
+    elseif (progress.bronzekey == 1) then
       bubble(HERO1, _"What luck! The key from that crazy Demnas guy unlocks this door!")
-      set_progress(P_BRONZEKEY, 2)
+      progress.bronzekey = 2
       remove_special_item(SI_BRONZEKEY)
       refresh()
     end
@@ -200,7 +200,7 @@ function zone_handler(zn)
     warp("dstairs", 8)
 
   elseif (zn == 13) then
-    if (get_progress(P_DENORIAN) < 4) then
+    if (progress.denorian < 4) then
       bubble(HERO1, _"The Denorians were right. There really WAS a troll. Looks like it's already dead, though.")
       msg(_"The troll suddenly lunges at you... it was only asleep!", 0, 0)
       set_run(0)
@@ -211,7 +211,7 @@ function zone_handler(zn)
       bubble(HERO1, _"He used this poor bugger and then left him here to rot.")
       wait(100)
       bubble(HERO1, _"Well, I should go back to the village now and report all this.")
-      set_progress(P_DENORIAN, 4)
+      progress.denorian = 4
     else
       bubble(HERO1, _"This cell is now his tomb.")
     end
@@ -220,7 +220,7 @@ function zone_handler(zn)
     -- Nothing: no random battles here
 
   elseif (zn == 15) then
-    if (get_progress(P_DENORIAN) > 2) then
+    if (progress.denorian > 2) then
       msg(_"The statue is no longer here.", 58, 0)
     else
       bubble(HERO1, _"This statue of the Oracle appears to be broken in half!")
@@ -300,7 +300,7 @@ function LOC_join_corin(en)
       wait_for_entity(en, en)
     end
   end
-  set_progress(P_PLAYERS, get_progress(P_PLAYERS) + 1)
+  progress.players = progress.players + 1
 
 end
 
@@ -326,19 +326,19 @@ function LOC_talk_demnas(en)
   if (get_alldead() == 1) then
     return
   end
-  set_progress(P_DEMNASDEAD, 1)
+  progress.demnasdead = 1
   refresh()
   drawmap()
   screen_dump()
 
   sfx(5)
   msg(_"Bronze key procured", 255, 0)
-  set_progress(P_BRONZEKEY, 1)
+  progress.bronzekey = 1
   add_special_item(SI_BRONZEKEY)
 
   sfx(5)
   msg(_"Broken Denorian Statue procured", 255, 0)
-  set_progress(P_DENORIAN, 3)
+  progress.denorian = 3
   add_special_item(SI_DENORIANSTATUE)
   refresh()
 end

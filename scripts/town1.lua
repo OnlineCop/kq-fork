@@ -518,11 +518,11 @@ function LOC_talk_jen (en)
   end -- talk_tsorin
 
 -- /*
---  if (get_progress(P_TALK_TSORIN) == 1 or get_progress(P_TALK_TSORIN) == 2) then
+--  if (progress.talk_tsorin == 1 or progress.talk_tsorin == 2) then
 --    LOC_help_jen_tsorin(en)
---  elseif (get_progress(P_PORTALGONE) == 0) then
+--  elseif (progress.portalgone == 0) then
 --    LOC_help_jen_portal(en)
---  elseif (get_progress(P_UCOIN) == 3) then
+--  elseif (progress.ucoin == 3) then
 --    LOC_help_jen_coin(en)
 --  else
 --    LOC_help_jen_none(en)

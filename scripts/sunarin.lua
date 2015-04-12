@@ -12,7 +12,7 @@ function entity_handler(en)
     wait_for_entity(HERO2)
 
     bubble(en, _"I am the king of thieves!")
-    if (get_progress(P_AYLA_QUEST) == 7 and get_ent_chrx(HERO1) ~= 0) then
+    if (progress.ayla_quest == 7 and get_ent_chrx(HERO1) ~= 0) then
       bubble(HERO1, _"Yea? Well I'm Ayla... you know, "..pick("Daughter of Malkaron",
         "Princess Ayla", "heir to Dungar's estate").."!")
       bubble(en, _"Oh really. Is that a fact?")

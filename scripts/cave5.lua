@@ -3,7 +3,7 @@
 -- Todo: top door back in from pass, some chests on wrong
 -- level inside cave cabin, obstacles for pass chests
 -- Side quest 7: Sensar
---  P_SIDEQUEST7 = 0 - not started
+--  progress.sidequest7 = 0 - not started
 --               = 1 - you have defeated all Ghost Miners
 --               = 2 - you've met Sensar and he's joined
 --                     or been dismissed
@@ -16,7 +16,7 @@ function autoexec()
   num_miners = 6
 -- Just check that Sensar has not already been recruited
   if LOC_manor_or_party(SENSAR) then
-    set_progress(P_SIDEQUEST7, 2)
+    progress.sidequest7 = 2
   end
   refresh()
 end
@@ -31,7 +31,7 @@ function entity_handler(en)
     bubble(HERO1, _"If you're feeling better you can join up, or go back to the Manor to rest.")
     returning = select_team({SENSAR})
     add_to_manor(returning)
-    set_progress(P_SIDEQUEST7, 2)
+    progress.sidequest7 = 2
     refresh()
   end
 end
@@ -44,22 +44,22 @@ end
 
 function refresh()
   -- Modify the map to reflect bombed-out areas
-  if (get_progress(P_OPALDRAGONOUT) ~= 0) then
+  if (progress.opaldragonout ~= 0) then
     copy_tile_all(124, 22, 111, 39, 3, 3)
   end
-  if (get_progress(P_BOMB1) ~= 0) then
+  if (progress.bomb1 ~= 0) then
     copy_tile_all(110, 82, 72, 94, 5, 5)
   end
-  if (get_progress(P_BOMB2) ~= 0) then
+  if (progress.bomb2 ~= 0) then
     copy_tile_all(110, 68, 29, 84, 15, 12)
   end
-  if (get_progress(P_BOMB3) ~= 0) then
+  if (progress.bomb3 ~= 0) then
     copy_tile_all(47, 118, 17, 113, 6, 5)
   end
-  if (get_progress(P_BOMB4) == 3) then
+  if (progress.bomb4 == 3) then
     copy_tile_all(117, 60, 43, 53, 6, 7)
   end
-  if (get_progress(P_BOMB5) ~= 0) then
+  if (progress.bomb5 ~= 0) then
     copy_tile_all(121, 20, 34, 25, 3, 5)
   end
 
@@ -73,7 +73,7 @@ function refresh()
 
   -- Place Sensar if necessary
   local en = 0
-  if (get_progress(P_SIDEQUEST7) == 1) then
+  if (progress.sidequest7 == 1) then
     set_ent_chrx(en, 255)
     set_ent_id(en, SENSAR)
     set_ent_active(en, 1)
@@ -157,8 +157,8 @@ function zone_handler(zn)
     chest(89, I_VITSEED, 2)
     refresh()
   elseif (zn == 22) then
-    if (get_progress(P_OPALARMOUR) == 0) then
-      set_progress(P_OPALARMOUR, 1)
+    if (progress.opalarmour == 0) then
+      progress.opalarmour = 1
       add_special_item(SI_OPALARMOUR)
       sfx(5)
       msg(_"Opal Armour procured!", 255, 0)
@@ -173,9 +173,9 @@ function zone_handler(zn)
 
     num_miners = num_miners - 1
     -- Killed all miners?
-    if (num_miners == 0) and (get_progress(P_SIDEQUEST7) == 0) then
+    if (num_miners == 0) and (progress.sidequest7 == 0) then
       -- Place Sensar in position
-      set_progress(P_SIDEQUEST7, 1)
+      progress.sidequest7 = 1
       refresh()
       bubble(0, _"Uhhh...", "Where am I?")
     end
@@ -206,7 +206,7 @@ function blowup(loc)
                      "Good. On to the next.",
                      "So much for stealth!",
                      "Crude, but effective..."})
-    set_progress(P_BOMB1, 1)
+    progress.bomb1 = 1
   elseif (loc == 2) then
   -- Second zone (cliff)
     hero_escape("R3D3R3D5R8")
@@ -224,7 +224,7 @@ function blowup(loc)
     else
       bubble(HERO1, _"Argh. I think I used too much!")
     end
-    set_progress(P_BOMB2, 1)
+    progress.bomb2 = 1
   elseif (loc == 3) then
     -- On left
     hero_escape("R1U2R5U10")
@@ -237,10 +237,10 @@ function blowup(loc)
                      "Satisfactory.",
                      "Too noisy!",
                      "Hmm."})
-    set_progress(P_BOMB3, 1)
+    progress.bomb3 = 1
   elseif (loc == 4) then
     -- Double pillar (left)
-    local p = get_progress(P_BOMB4)
+    local p = progress.bomb4
     if (p == 0 or p == 2) then
       hero_escape("L7D2L4D4L2")
       sfx(42)
@@ -252,14 +252,14 @@ function blowup(loc)
                        "Another goal attained.",
                        "This is almost painful.",
                        "As one sows, so shall he reap..."})
-      set_progress(P_BOMB4, p + 1)
+      progress.bomb4 = p + 1
     elseif (p == 1) then
       -- Already destroyed this side
       bubble(HERO1, _"I weakened it, but it might need another hit to destroy it")
     end
   elseif (loc == 5) then
     -- Double pillar (right)
-    local p = get_progress(P_BOMB4)
+    local p = progress.bomb4
     if (p == 0 or p == 1) then
       hero_escape("R5D4R7D1R5")
       sfx(42)
@@ -271,7 +271,7 @@ function blowup(loc)
                        "No collateral damage here.",
                        "This can't be good for my health.",
                        "I feel the need to reflect upon my actions."})
-      set_progress(P_BOMB4, p + 2)
+      progress.bomb4 = p + 2
     elseif (p == 2) then
       -- Already destroyed this side
       bubble(HERO1, _"I weakened it, but it might need another hit to destroy it.")
@@ -288,7 +288,7 @@ function blowup(loc)
                      "Mission accomplished!",
                      "My ears are ringing!",
                      "So much destruction..."})
-    set_progress(P_BOMB5, 1)
+    progress.bomb5 = 1
   end
 
   -- After all is said and done, refresh the screen to show effects
@@ -309,7 +309,7 @@ function destroy1()
                      "Good. On to the next.",
                      "So much for stealth!",
                      "Crude, but effective..."})
-    set_progress(P_BOMB1, 1)
+    progress.bomb1 = 1
     refresh()
   end
 end
@@ -333,7 +333,7 @@ function destroy2()
     else
       bubble(HERO1, _"Argh. I think I used too much!")
     end
-    set_progress(P_BOMB2, 1)
+    progress.bomb2 = 1
     refresh()
   end
 end
@@ -352,7 +352,7 @@ function destroy3()
                      "Satisfactory.",
                      "Too noisy!",
                      "Hmm."})
-    set_progress(P_BOMB3, 1)
+    progress.bomb3 = 1
     refresh()
   end
 end
@@ -360,7 +360,7 @@ end
 
 function destroy4a()
   -- Double pillar (left)
-  local p = get_progress(P_BOMB4)
+  local p = progress.bomb4
   if ((p == 0 or p == 2) and has_dynamite()) then
     hero_escape("L7D2L4D4L2")
     sfx(42)
@@ -372,7 +372,7 @@ function destroy4a()
                      "Another goal attained.",
                      "This is almost painful.",
                      "As one sows, so shall he reap..."})
-    set_progress(P_BOMB4, p + 1)
+    progress.bomb4 = p + 1
   elseif (p == 1) then
     -- Already destroyed this side
     bubble(HERO1, _"I weakened it, but it might need another hit to destroy it")
@@ -383,7 +383,7 @@ end
 
 function destroy4b()
   -- Double pillar (right)
-  local p = get_progress(P_BOMB4)
+  local p = progress.bomb4
   if ((p == 0 or p == 1) and has_dynamite()) then
     hero_escape("R5D4R7D1R5")
     sfx(42)
@@ -395,7 +395,7 @@ function destroy4b()
                      "No collateral damage here.",
                      "This can't be good for my health.",
                      "I feel the need to reflect upon my actions."})
-    set_progress(P_BOMB4, p + 2)
+    progress.bomb4 = p + 2
   elseif (p == 2) then
     -- Already destroyed this side
     bubble(HERO1, _"I weakened it, but it might need another hit to destroy it.")
@@ -416,7 +416,7 @@ function destroy5()
                      "Mission accomplished!",
                      "My ears are ringing!",
                      "So much destruction..."})
-    set_progress(P_BOMB5, 1)
+    progress.bomb5 = 1
     refresh()
   end
 end
@@ -475,7 +475,7 @@ end
 
 function opaldragon()
   local spd
-  if (get_progress(P_OPALDRAGONOUT) == 0) then
+  if (progress.opaldragonout == 0) then
     if (get_numchrs() > 1) then
       set_autoparty(1)
       set_ent_script(HERO2, "L1")
@@ -506,7 +506,7 @@ function opaldragon()
     set_run(0)
     combat(58)
     set_run(1)
-    set_progress(P_OPALDRAGONOUT, 1)
+    progress.opaldragonout = 1
 
     orient_heroes()
     refresh()

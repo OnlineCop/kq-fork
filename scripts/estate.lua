@@ -1,16 +1,16 @@
 -- estate - "Home of Dungar and Emma east of Maldea"
 
 function autoexec()
-  if (get_progress(P_OPALHELMET) == 0 and get_progress(P_TALKGELIK) < 3) then
+  if (progress.opalhelmet == 0 and progress.talkgelik < 3) then
     set_ent_active(2, 0)
   end
-  if (get_progress(P_TALKGELIK) > 3) then
+  if (progress.talkgelik > 3) then
     local x, y = marker("house_o")
     set_zone(x, y - 1, 6)
     set_obs (x, y - 1, 1)
     set_ent_active(0, 0)
   end
-  if (get_progress(P_EMBERSKEY) == 1) then
+  if (progress.emberskey == 1) then
     set_ent_facing(0, FACE_UP)
     set_desc(0)
   end
@@ -22,22 +22,22 @@ function entity_handler(en)
     bubble(0, _"I'm the grounds keeper here.")
 
   elseif (en == 1) then
-    if (get_progress(P_OPALHELMET) == 0) then
-      if (get_progress(P_TALKGELIK) == 0) then
+    if (progress.opalhelmet == 0) then
+      if (progress.talkgelik == 0) then
         bubble(en, _"Hello, are you a friend of my husband's?")
-      elseif (get_progress(P_TALKGELIK) == 1) then
+      elseif (progress.talkgelik == 1) then
         bubble(en, _"You need the Opal helmet? I'm afraid you are too late... It was stolen!")
         bubble(en, _"My husband left for Sunarin to try and get it back. If you go there you will probably find him.")
-        set_progress(P_TALKGELIK, 2)
-      elseif (get_progress(P_TALKGELIK) == 2) then
+        progress.talkgelik = 2
+      elseif (progress.talkgelik == 2) then
         bubble(en, _"Did you find my husband?")
-      elseif (get_progress(P_TALKGELIK) == 3) then
+      elseif (progress.talkgelik == 3) then
         bubble(en, _"Good luck!")
       else
         bubble(en, _"Hello, I'm Emma.")
       end
     else
-      if (get_progress(P_TALKGELIK) == 3) then
+      if (progress.talkgelik == 3) then
         bubble(en, _"Fabulous!")
       else
         bubble(en, _"...")
@@ -45,7 +45,7 @@ function entity_handler(en)
     end
 
   elseif (en == 2) then
-    if (get_progress(P_OPALHELMET) == 0) then
+    if (progress.opalhelmet == 0) then
       bubble(en, _"Just return here with the Helmet once you find it. I'd like to see it before you borrow it.")
     else
       LOC_murder(en)
@@ -56,12 +56,12 @@ end
 
 
 function postexec()
-  if (get_progress(P_EMBERSKEY) == 1) then
+  if (progress.emberskey == 1) then
     local wife = 1
     local en = 2
     wait(50)
     bubble(en, _"Well, you can get into the Ember's guild through the house in the south-west part of town. The door is locked, so you'll need this.")
-    set_progress(P_EMBERSKEY, 2)
+    progress.emberskey = 2
     add_special_item(SI_EMBERSKEY)
     sfx(5)
     msg(_"Ember's key procured", 255, 0)
@@ -116,7 +116,7 @@ function zone_handler(zn)
     warp("dstairs1", 8)
 
   elseif (zn == 8) then
-    if (get_progress(P_TALKGELIK) < 4) then
+    if (progress.talkgelik < 4) then
       bubble(HERO1, _"That scream came from up here somewhere! I can't leave!")
     else
       warp("ustairs1", 8)
@@ -129,7 +129,7 @@ function zone_handler(zn)
     door_out("hut_o")
 
   elseif (zn == 11) then
-    if (get_progress(P_TALKGELIK) < 4) then
+    if (progress.talkgelik < 4) then
       if (get_numchrs() == 1) then
         set_ent_script(HERO1, "U1F0")
         wait_for_entity(HERO1, HERO1)
@@ -141,10 +141,10 @@ function zone_handler(zn)
     end
 
   elseif (zn == 12) then
-    if (get_progress(P_TALKGELIK) < 4) then
+    if (progress.talkgelik < 4) then
       local wife = 1
 
-      set_progress(P_TALKGELIK, 4)
+      progress.talkgelik = 4
       set_ent_facing(wife, FACE_DOWN)
       bubble(wife, _"Oh $0!")
       bubble(wife, _"I woke up because I thought I heard fighting in your room.")

@@ -7,8 +7,8 @@
 
 function autoexec()
   set_ent_active(0, 0)
-  if (get_progress(P_TALK_TEMMIN) == 1 or
-      get_progress(P_TALK_TEMMIN) == 2) then
+  if (progress.talk_temmin == 1 or
+      progress.talk_temmin == 2) then
     set_ent_id(1, TEMMIN)
   else
     set_ent_active(1, 0)
@@ -50,10 +50,10 @@ function refresh()
   showch("treasure9", 29)
   showch("treasure10", 30)
 
-  if (get_progress(P_TALK_TEMMIN) == 2) then
+  if (progress.talk_temmin == 2) then
     set_ent_facehero(1, 1)
   end
-  if (get_progress(P_UNDEADJEWEL) ~= 0) then
+  if (progress.undeadjewel ~= 0) then
     set_btile("jewel", 237)
   end
 end
@@ -70,7 +70,7 @@ end
 
 
 function zone_handler(zn)
-  if (zn == 0 and get_progress(P_GOBLINITEM) == 0) then
+  if (zn == 0 and progress.goblinitem == 0) then
     combat(52)
 
   elseif (zn == 1) then
@@ -92,7 +92,7 @@ function zone_handler(zn)
     warp("dstairs3", 8)
 
   elseif (zn == 7) then
-    if (get_progress(P_KILLBLORD) == 0) then
+    if (progress.killblord == 0) then
       LOC_blord(0)
     else
       warp("ustairs4", 8)
@@ -194,20 +194,20 @@ function LOC_blord(en)
 
   msg(_"Goblin jewel procured", 19, 0);
 
-  set_progress(P_KILLBLORD, 1)
+  progress.killblord = 1
   add_special_item(SI_UNDEADJEWEL)
-  set_progress(P_TALK_TEMMIN, 3)
+  progress.talk_temmin = 3
 
 end
 
 
 function LOC_goblin_king(en)
-  if (get_progress(P_GOBLINITEM) == 1) then
+  if (progress.goblinitem == 1) then
     bubble(HERO1, _"Ooohh... shiny.")
     return
   end
 
-  if (get_progress(P_SIDEQUEST3) == 0) then
+  if (progress.sidequest3 == 0) then
     local en = 255
 
     bubble(HERO1, _"Hey, that gem would fit here.")
@@ -246,10 +246,10 @@ function LOC_goblin_king(en)
     wait(50)
     bubble(HERO1, _"Hello?")
     bubble(HERO1, _"Urgh! I hate when they do that!")
-    set_progress(P_GOBLINITEM, 1)
+    progress.goblinitem = 1
     add_special_item(SI_JADEPENDANT)
-    set_progress(P_SIDEQUEST3, 1)
-    set_progress(P_UNDEADJEWEL, 1)
+    progress.sidequest3 = 1
+    progress.undeadjewel = 1
     remove_special_item(SI_UNDEADJEWEL)
     return
   else
@@ -259,7 +259,7 @@ end
 
 
 function LOC_talk_temmin(en)
-  if (get_progress(P_TALK_TEMMIN) == 1) then
+  if (progress.talk_temmin == 1) then
     if (get_numchrs() > 1) then
       bubble(en, _"$0! $1! I am pleased to see you.")
     else
@@ -276,7 +276,7 @@ function LOC_talk_temmin(en)
     bubble(en, _"I am a failure and a coward.")
     bubble(HERO1, _"But...")
     bubble(en, _"Save it. You won't change my mind.")
-    set_progress(P_TALK_TEMMIN, 2)
+    progress.talk_temmin = 2
     refresh()
   else
     bubble(en, _"...")

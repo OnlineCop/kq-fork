@@ -170,7 +170,7 @@ function zone_handler(zn)
       set_btile(16, 14, 153)
       bubble(HERO1, _"Uh oh!")
     elseif progress.fellinpit == 2 then
-    -- if (get_progress(P_TALKDERIG) == 4) or (get_progress(P_TALKDERIG) == 5) then
+    -- if (progress.talkderig == 4) or (progress.talkderig == 5) then
       bubble(HERO1, _"I'd rather not go down there right now.")
       return
     end

@@ -2,17 +2,17 @@
 
 -- /*
 -- {
--- P_ALTARSWITCH: Whether the switch on the alter has been flipped
+-- progress.altarswitch: Whether the switch on the alter has been flipped
 --   (0) Not yet
 --   (1) Switched; stairs showing
 --
--- P_GOBLINITEM:
+-- progress.goblinitem:
 --   (0) Have not put the Goblin Jewel back yet
 --   (1) Have put the Goblin Jewel back and stopped the undead
 --
--- P_PLAYERS:
+-- progress.players:
 --
--- P_TALK_TEMMIN: Whether you have spoken to Temmin when you entered the map
+-- progress.talk_temmin: Whether you have spoken to Temmin when you entered the map
 --   (0) Haven't spoken about him
 --   (1) You spoke with the priest about Temmin
 --   (2) You've spoken to him once
@@ -25,18 +25,18 @@
 function autoexec()
   local b
 
-  if (not LOC_manor_or_party(TEMMIN) and get_progress(P_TALK_TEMMIN) == 3) then
+  if (not LOC_manor_or_party(TEMMIN) and progress.talk_temmin == 3) then
     -- // Make the NPC look like Temmin if he hasn't been recruited yet
     set_ent_id(41, TEMMIN)
   else
     -- // Otherwise, remove him from screen
     set_ent_active(41, 0)
   end
-  if (get_progress(P_TALK_TEMMIN) > 0) then
+  if (progress.talk_temmin > 0) then
     set_ent_tilex(38, 23)
   end
   set_ent_active(42, 0)
-  if (get_progress(P_TALK_TEMMIN) == 4) then
+  if (progress.talk_temmin == 4) then
     for b = 23, 29, 1 do
       set_ent_active(b, 0)
     end
@@ -57,14 +57,14 @@ function entity_handler(en)
     bubble(en, _"We were relieved of duty while the monks guard the alter room.")
 
   elseif (en >= 8 and en <= 11) then
-    if (get_progress(P_GOBLINITEM) == 0) then
+    if (progress.goblinitem == 0) then
       bubble(en, _"We are guards from Andra, helping defend the temple.")
     else
       bubble(en, _"I'll guess we'll be going back to Andra soon.")
     end
 
   elseif (en >= 12 and en <= 15) then
-    if (get_progress(P_GOBLINITEM) == 0) then
+    if (progress.goblinitem == 0) then
       bubble(en, _"I'm famished. We just finished beating back a bunch of monsters.")
     else
       bubble(en, _"Things are finally get back to normal around here.")
@@ -83,7 +83,7 @@ function entity_handler(en)
     bubble(en, _"We have to listen to his lessons. I can't talk to you now.")
 
   elseif (en == 20) then
-    if (get_progress(P_GOBLINITEM) == 0) then
+    if (progress.goblinitem == 0) then
       bubble(en, _"I wish I could go beat the bad guys! This school is boring.")
     else
       bubble(en, _"This guy just goes on and on.")
@@ -93,7 +93,7 @@ function entity_handler(en)
     bubble(en, _"Those monks lock themselves away until there's a problem. I haven't heard them say a word all week!")
 
   elseif (en == 22) then
-    if (get_progress(P_GOBLINITEM) == 0) then
+    if (progress.goblinitem == 0) then
       bubble(en, _"I was asked to teach these children, so as to distract them from the monster threat. Pardon me.")
     else
       bubble(en, _"These children simply won't pay attention.")
@@ -122,7 +122,7 @@ function entity_handler(en)
     bubble(en, _"...zzz...")
 
   elseif (en == 36) then
-    if (get_progress(P_GOBLINITEM) == 0) then
+    if (progress.goblinitem == 0) then
       bubble(en, _"...Guarding the... ...zzz... Gotta defend the... zzz...")
     else
       bubble(en, _"...zzz... must sleep...")
@@ -132,7 +132,7 @@ function entity_handler(en)
     bubble(en, _"This door is drafty. I can't get to sleep.")
 
   elseif (en == 38) then
-    if (get_progress(P_TALK_TEMMIN) == 0) then
+    if (progress.talk_temmin == 0) then
       bubble(en, _"You should not enter this section of the Temple. It is dangerous.")
       if (get_numchrs() > 1) then
         bubble(HERO1, _"We're here to help.")
@@ -149,7 +149,7 @@ function entity_handler(en)
       end
       bubble(en, _"Well, I see no real point in arguing. Go ahead.")
       bubble(HERO1, _"Thank you.")
-      set_progress(P_ALTARSWITCH, 1)
+      progress.altarswitch = 1
       refresh()
       -- /*
       -- If we are facing right, then we are in the priest's way, so he
@@ -161,8 +161,8 @@ function entity_handler(en)
          set_ent_script(38, "L1F3")
       end
       wait_for_entity(38, 38)
-      set_progress(P_TALK_TEMMIN, 1)
-    elseif (get_progress(P_TALK_TEMMIN) < 3) then
+      progress.talk_temmin = 1
+    elseif (progress.talk_temmin < 3) then
       bubble(en, _"The spirits are restless.")
     else
       bubble(en, _"The spirits are at peace.")
@@ -182,7 +182,7 @@ end
 
 function refresh()
   local x, y
-  if (get_progress(P_ALTARSWITCH) == 1) then
+  if (progress.altarswitch == 1) then
     x, y = marker("move_statue")
     set_ftile(x, y - 1, 0)
     set_btile(x, y, 29)
@@ -243,7 +243,7 @@ function zone_handler(zn)
     warp("move_statue", 8)
 
   elseif (zn == 15) then
-    if (get_progress(P_GOBLINITEM) == 0) then
+    if (progress.goblinitem == 0) then
       combat(51)
     end
 
@@ -252,10 +252,10 @@ end
 
 
 function LOC_alter()
-  if (get_progress(P_ALTARSWITCH) == 0) then
+  if (progress.altarswitch == 0) then
     bubble(HERO1, _"A switch!")
     sfx(26)
-    set_progress(P_ALTARSWITCH, 1)
+    progress.altarswitch = 1
     refresh()
   end
 end
@@ -317,6 +317,6 @@ function LOC_join_temmin(en)
     end
   end
   set_ent_active(en, 0)
-  set_progress(P_PLAYERS, get_progress(P_PLAYERS) + 1)
-  set_progress(P_TALK_TEMMIN, 4)
+  progress.players = progress.players + 1
+  progress.talk_temmin = 4
 end

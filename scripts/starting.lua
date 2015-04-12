@@ -2,7 +2,7 @@
 
 -- /*
 -- {
--- P_SKIPINTRO: Whether to show the entire starting again
+-- progress.skipintro: Whether to show the entire starting again
 --   (0) Show the entire starting
 --   (1) Do not show everything
 -- }
