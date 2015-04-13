@@ -1,0 +1,56 @@
+called: /usr/bin/g++
+	/media/sf_kq-fork/maps
+	/usr/bin/g++
+	-g3
+	-gdwarf-2
+	-I/usr/include/../include
+	-I/media/sf_kq-fork/maps/../include
+	-I/media/sf_kq-fork/maps
+	-I/media/sf_kq-fork/maps/../../include
+	-o
+	CMakeFiles/mapdraw.dir/media/sf_kq-fork/src/bounds.cpp.o
+	-c
+	/media/sf_kq-fork/src/bounds.cpp
+
+called: /usr/bin/g++
+	/media/sf_kq-fork/maps
+	/usr/bin/g++
+	-g3
+	-gdwarf-2
+	-I/usr/include/../include
+	-I/media/sf_kq-fork/maps/../include
+	-I/media/sf_kq-fork/maps
+	-I/media/sf_kq-fork/maps/../../include
+	-o
+	CMakeFiles/mapdraw.dir/media/sf_kq-fork/src/disk.cpp.o
+	-c
+	/media/sf_kq-fork/src/disk.cpp
+
+called: /usr/bin/g++
+	/media/sf_kq-fork/maps
+	/usr/bin/g++
+	-g3
+	-gdwarf-2
+	-I/usr/include/../include
+	-I/media/sf_kq-fork/maps/../include
+	-I/media/sf_kq-fork/maps
+	-I/media/sf_kq-fork/maps/../../include
+	-o
+	CMakeFiles/mapdraw.dir/media/sf_kq-fork/src/markers.cpp.o
+	-c
+	/media/sf_kq-fork/src/markers.cpp
+
+called: /usr/bin/g++
+	/media/sf_kq-fork/maps
+	/usr/bin/g++
+	-g3
+	-gdwarf-2
+	-I/usr/include/../include
+	-I/media/sf_kq-fork/maps/../include
+	-I/media/sf_kq-fork/maps
+	-I/media/sf_kq-fork/maps/../../include
+	-o
+	CMakeFiles/mapdraw.dir/mapdata.cpp.o
+	-c
+	/media/sf_kq-fork/maps/mapdata.cpp
+

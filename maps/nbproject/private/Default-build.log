@@ -1,0 +1,25 @@
+make: Warning: File 'Makefile' has modification time 0.031 s in the future
+make[1]: Warning: File 'CMakeFiles/Makefile2' has modification time 0.00013 s in the future
+Scanning dependencies of target mapdraw
+make[2]: Warning: File 'CMakeFiles/mapdraw.dir/depend.make' has modification time 1.3 s in the future
+[ 11%] Building CXX object CMakeFiles/mapdraw.dir/media/sf_kq-fork/src/bounds.cpp.o
+[ 22%] Building CXX object CMakeFiles/mapdraw.dir/media/sf_kq-fork/src/disk.cpp.o
+[ 33%] Building CXX object CMakeFiles/mapdraw.dir/media/sf_kq-fork/src/markers.cpp.o
+[ 44%] Building CXX object CMakeFiles/mapdraw.dir/mapdata.cpp.o
+In file included from /media/sf_kq-fork/maps/mapdata.cpp:12:0:
+/media/sf_kq-fork/maps/mapdraw.h:155:27: error: ‘s_bound’ has not been declared
+ void bound_rect(BITMAP *, s_bound, int);
+                           ^
+/media/sf_kq-fork/maps/mapdraw.h:160:24: error: variable or field ‘rename_bound_tile’ declared void
+ void rename_bound_tile(s_bound *);
+                        ^
+/media/sf_kq-fork/maps/mapdraw.h:160:24: error: ‘s_bound’ was not declared in this scope
+/media/sf_kq-fork/maps/mapdraw.h:160:33: error: expected primary-expression before ‘)’ token
+ void rename_bound_tile(s_bound *);
+                                 ^
+CMakeFiles/mapdraw.dir/build.make:123: recipe for target 'CMakeFiles/mapdraw.dir/mapdata.cpp.o' failed
+make[2]: *** [CMakeFiles/mapdraw.dir/mapdata.cpp.o] Error 1
+CMakeFiles/Makefile2:60: recipe for target 'CMakeFiles/mapdraw.dir/all' failed
+make[1]: *** [CMakeFiles/mapdraw.dir/all] Error 2
+Makefile:76: recipe for target 'all' failed
+make: *** [all] Error 2
