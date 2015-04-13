@@ -30,10 +30,13 @@
 autom4te.cache/
 intl/
 m4/
+build/
+maps/build/
 
 # Auto-generated files
 ABOUT-NLS
 aclocal.m4
+allegro.log
 compile
 config.guess
 config.h
@@ -46,6 +49,7 @@ configure
 depcomp
 install-sh
 kq
+kq-fork
 Makefile
 Makefile.in
 mapdiff
