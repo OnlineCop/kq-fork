@@ -298,16 +298,14 @@ static void combat_draw_spell_menu(int c, int ptr, int pg)
         {
             draw_icon(double_buffer, magic[z].icon, 96, j * 8 + 32);
             if (combat_castable(c, pg * NUM_SPELLS_PER_PAGE + j) == 1)
-                print_font(double_buffer, 104, j * 8 + 32, magic[z].name,
-                           FNORMAL);
+                print_font(double_buffer, 104, j * 8 + 32, magic[z].name, FNORMAL);
             else
             {
                 print_font(double_buffer, 104, j * 8 + 32, magic[z].name, FDARK);
             }
             b = mp_needed(c, z);
             sprintf(strbuf, "%d", b);
-            print_font(double_buffer, 222 - (strlen(strbuf) * 8), j * 8 + 32,
-                       strbuf, FNORMAL);
+            print_font(double_buffer, 222 - (strlen(strbuf) * 8), j * 8 + 32, strbuf, FNORMAL);
             draw_sprite(double_buffer, b_mp, 222, j * 8 + 32);
         }
     }
@@ -321,7 +319,7 @@ static void combat_draw_spell_menu(int c, int ptr, int pg)
  *
  * Use the selected item and show the effects.
  *
- * \param   ss Index of character attacking or PSIZE if an enemy is attacking
+ * \param   ss Index of character attacking or PARTY_SIZE if an enemy is attacking
  * \param   t1 Item to use
  * \param   tg Index of target
  * \returns 1 if anything happened, 0 otherwise
@@ -335,7 +333,7 @@ static int combat_item(int ss, int t1, int tg)
     {
         return 0;
     }
-    strcpy(ctext, items[t1].name);
+    ctext = items[t1].name;
     dct = 1;
     r = item_effects(ss, tg, t1);
     dct = 0;
@@ -346,14 +344,14 @@ static int combat_item(int ss, int t1, int tg)
     if (items[t1].tgt == TGT_ENEMY_ALL)
     {
         tl = 1;
-        if (ss == PSIZE)
+        if (ss == PARTY_SIZE)
         {
             st = 0;
             tt = numchrs;
         }
         else
         {
-            st = PSIZE;
+            st = PARTY_SIZE;
             tt = num_enemies;
         }
     }
@@ -406,8 +404,7 @@ static int combat_item_menu(int whom)
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 16);
         /* put description of selected item */
         menubox(double_buffer, 72, 152, 20, 1, BLUE);
-        print_font(double_buffer, 80, 160,
-                   items[g_inv[ptr + pptr * 16][0]].desc, FNORMAL);
+        print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16][0]].desc, FNORMAL);
         blit2screen(0, 0);
 
         readcontrols();
@@ -461,11 +458,9 @@ static int combat_item_menu(int whom)
             else
             {
                 if (g_inv[pptr * 16 + ptr][0] == I_LTONIC)
-                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][0]].tgt - 1,
-                                    1);
+                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][0]].tgt - 1, 1);
                 else
-                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][0]].tgt - 1,
-                                    0);
+                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][0]].tgt - 1, 0);
             }
             if (z > -1)
             {
@@ -985,10 +980,8 @@ void hero_init(void)
         blit((BITMAP *) pb->dat, cframes[i][3], 96, z * 32, 0, 0, 32, 32);
         blit((BITMAP *) pb->dat, cframes[i][4], 128, z * 32, 0, 0, 32, 32);
         blit((BITMAP *) pb->dat, cframes[i][5], 160, z * 32, 0, 0, 32, 32);
-        blit((BITMAP *) pb->dat, cframes[i][6], z * 64 + 192,
-             fighter[i].cwt * 32, 0, 0, 32, 32);
-        blit((BITMAP *) pb->dat, cframes[i][7], z * 64 + 224,
-             fighter[i].cwt * 32, 0, 0, 32, 32);
+        blit((BITMAP *) pb->dat, cframes[i][6], z * 64 + 192, fighter[i].cwt * 32, 0, 0, 32, 32);
+        blit((BITMAP *) pb->dat, cframes[i][7], z * 64 + 224, fighter[i].cwt * 32, 0, 0, 32, 32);
         if (fighter[i].cwt > 0 && items[party[z].eqp[0]].kol > 0)
         {
             for (n = 0; n < cframes[i][0]->h; n++)
@@ -1145,7 +1138,7 @@ static int hero_invokeitem(int whom, int eno)
      */
     if (eno == I_STAFF1)
     {
-        strcpy(ctext, _("Neutralize Poison"));
+        ctext = "Neutralize Poison";
         draw_spellsprite(0, 1, 27, 0);
         for (a = 0; a < numchrs; a++)
             if (fighter[a].sts[S_DEAD] == 0)
@@ -1156,7 +1149,7 @@ static int hero_invokeitem(int whom, int eno)
     if (eno == I_ROD1)
     {
         b = rand() % 3 + 1;
-        strcpy(ctext, _("Magic Missiles"));
+        ctext = "Magic Missiles";
         dct = 1;
         ta[tg] = 0;
         for (a = 0; a < b; a++)
@@ -1210,7 +1203,7 @@ static void hero_run(void)
     {
         bt = bt / b;
     }
-    for (p = PSIZE; p < PSIZE + num_enemies; p++)
+    for (p = PARTY_SIZE; p < PARTY_SIZE + num_enemies; p++)
     {
         if (fighter[p].sts[S_DEAD] == 0)
         {
@@ -1238,7 +1231,7 @@ static void hero_run(void)
     {
         if (rand() % 100 < (100 - a))
         {
-            g = b * fighter[PSIZE].lvl * c;
+            g = b * fighter[PARTY_SIZE].lvl * c;
             if (gp < g)
             {
                 g = gp;

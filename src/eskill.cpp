@@ -49,44 +49,46 @@
  */
 void combat_skill(int who)
 {
-    int sk = fighter[who].ai[fighter[who].csmem] - 100;
-    int tgt = fighter[who].ctmem;
+    if (who < 0 || who >= NUM_FIGHTERS) return;
+
+    int attack_special_skill = fighter[who].ai[fighter[who].csmem] - 100;
+    int attack_recipient = fighter[who].ctmem;
     int a;
     int b;
 
     tempa = status_adjust(who);
     battle_render(0, 0, 0);
     blit2screen(0, 0);
-    if (sk == 1)
+    if (attack_special_skill == 1)
     {
-        strcpy(ctext, _("Venomous Bite"));
+        ctext = "Venomous Bite";
         dct = 1;
         tempa.welem = R_POISON + 1;
-        fight(who, tgt, 1);
+        fight(who, attack_recipient, 1);
         dct = 0;
         fighter[who].atrack[fighter[who].csmem] = 2;
     }
-    if (sk == 2)
+    if (attack_special_skill == 2)
     {
-        strcpy(ctext, _("Double Slash"));
+        ctext = "Double Slash";
         dct = 1;
         tempa.stats[A_ATT] = tempa.stats[A_ATT] * 15 / 10;
-        fight(who, tgt, 1);
+        fight(who, attack_recipient, 1);
         dct = 0;
         fighter[who].atrack[fighter[who].csmem] = 2;
     }
-    if (sk == 3)
+    if (attack_special_skill == 3)
     {
-        strcpy(ctext, _("Chill Touch"));
+        ctext = "Chill Touch";
         dct = 1;
-        draw_spellsprite(tgt, 0, 10, 1);
-        special_damage_oneall_enemies(who, 60, R_ICE, tgt, 0);
+        draw_spellsprite(attack_recipient, 0, 10, 1);
+        special_damage_oneall_enemies(who, 60, R_ICE, attack_recipient, 0);
         dct = 0;
         fighter[who].atrack[fighter[who].csmem] = 2;
     }
-    if (sk == 4)
+    if (attack_special_skill == 4)
     {
-        strcpy(ctext, _("Flash Flood"));
+        ctext = "Flash Flood";
         dct = 1;
         draw_hugesprite(0, 80, 108, 21, 1);
         /*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
@@ -94,49 +96,49 @@ void combat_skill(int who)
         dct = 0;
         fighter[who].atrack[fighter[who].csmem] = 3;
     }
-    if (sk == 5)
+    if (attack_special_skill == 5)
     {
-        b = 0;
-        for (a = 0; a < numchrs; a++)
-            if (fighter[a].sts[S_DEAD] == 0)
+        unsigned int dead_fighter_count = 0;
+        for (int fighter_index = 0; fighter_index < numchrs; fighter_index++)
+            if (fighter[fighter_index].sts[S_DEAD] == 0)
             {
-                b++;
+                dead_fighter_count++;
             }
-        if (b > 1)
+        if (dead_fighter_count > 1)
         {
             fighter[who].ctmem = 1000;
         }
-        strcpy(ctext, _("Sweep"));
+        ctext = "Sweep";
         dct = 1;
         tempa.stats[A_ATT] = tempa.stats[A_ATT] * 75 / 100;
         multi_fight(who);
         dct = 0;
         fighter[who].atrack[fighter[who].csmem] = 2;
     }
-    if (sk == 6)
+    if (attack_special_skill == 6)
     {
-        strcpy(ctext, _("ParaClaw"));
+        ctext = "ParaClaw";
         dct = 1;
         tempa.welem = R_PARALYZE + 1;
-        fight(who, tgt, 1);
+        fight(who, attack_recipient, 1);
         dct = 0;
         fighter[who].atrack[fighter[who].csmem] = 3;
     }
-    if (sk == 7)
+    if (attack_special_skill == 7)
     {
-        strcpy(ctext, _("Dragon Bite"));
+        ctext = "Dragon Bite";
         dct = 1;
         tempa.stats[A_ATT] = tempa.stats[A_ATT] * 15 / 10;
         tempa.stats[A_HIT] = tempa.stats[A_HIT] * 9 / 10;
         tempa.welem = 0;
-        fight(who, tgt, 1);
+        fight(who, attack_recipient, 1);
         dct = 0;
         fighter[who].atrack[fighter[who].csmem] = 2;
     }
-    if (sk == 8)
+    if (attack_special_skill == 8)
     {
         b = 0;
-        strcpy(ctext, _("Stone Gas"));
+        ctext = "Stone Gas";
         draw_spellsprite(0, 1, 46, 1);
         for (a = 0; a < numchrs; a++)
         {
@@ -160,16 +162,15 @@ void combat_skill(int who)
         }
         fighter[who].atrack[fighter[who].csmem] = 3;
     }
-    if (sk == 9)
+    if (attack_special_skill == 9)
     {
         b = 0;
-        strcpy(ctext, _("Zemmel Rod"));
+        ctext = "Zemmel Rod";
         if (rand() % 4 < 2)
         {
             draw_spellsprite(0, 1, 11, 1);
             /*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
-            special_damage_oneall_enemies(who, 25, R_THUNDER, SEL_ALL_ENEMIES,
-                                          1);
+            special_damage_oneall_enemies(who, 25, R_THUNDER, SEL_ALL_ENEMIES, 1);
             fighter[who].atrack[fighter[who].csmem] = 2;
             return;
         }
@@ -216,23 +217,22 @@ void combat_skill(int who)
         }
         fighter[who].atrack[fighter[who].csmem] = 2;
     }
-    if (sk == 10)
+    if (attack_special_skill == 10)
     {
-        strcpy(ctext, _("Poison Gas"));
+        ctext = "Poison Gas";
         draw_spellsprite(0, 1, 47, 1);
         /*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
         special_damage_oneall_enemies(who, 40, R_POISON, SEL_ALL_ENEMIES, 1);
         fighter[who].atrack[fighter[who].csmem] = 3;
     }
-    if (sk == 11)
+    if (attack_special_skill == 11)
     {
         b = 0;
-        strcpy(ctext, _("Tangle Root"));
+        ctext = "Tangle Root";
         draw_spellsprite(0, 1, 24, 0);
         for (a = 0; a < numchrs; a++)
         {
-            if (res_throw(a, S_STOP) == 0 && non_dmg_save(a, 65) == 0
-                    && fighter[a].sts[S_STONE] == 0)
+            if (res_throw(a, S_STOP) == 0 && non_dmg_save(a, 65) == 0 && fighter[a].sts[S_STONE] == 0)
             {
                 fighter[a].sts[S_STOP] = 2 + rand() % 2;
                 ta[a] = NODISPLAY;
@@ -249,49 +249,48 @@ void combat_skill(int who)
         }
         fighter[who].atrack[fighter[who].csmem] = 3;
     }
-    if (sk == 12)
+    if (attack_special_skill == 12)
     {
-        strcpy(ctext, _("Petrifying Bite"));
+        ctext = "Petrifying Bite";
         dct = 1;
         tempa.stats[A_ATT] = tempa.stats[A_ATT];
         tempa.stats[A_HIT] = tempa.stats[A_HIT] * 8 / 10;
         tempa.welem = 13;
-        fight(who, tgt, 1);
+        fight(who, attack_recipient, 1);
         dct = 0;
         fighter[who].atrack[fighter[who].csmem] = 3;
     }
-    if (sk == 13)
+    if (attack_special_skill == 13)
     {
-        strcpy(ctext, _("Maul of the Titans"));
+        ctext = "Maul of the Titans";
         draw_hugesprite(0, 80, 110, 29, 1);
         /*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
         special_damage_oneall_enemies(who, 60, R_EARTH, SEL_ALL_ENEMIES, 1);
         fighter[who].atrack[fighter[who].csmem] = 3;
     }
-    if (sk == 14)
+    if (attack_special_skill == 14)
     {
-        strcpy(ctext, _("Stunning Strike"));
+        ctext = "Stunning Strike";
         dct = 1;
         tempa.stats[A_ATT] = tempa.stats[A_ATT] * 8 / 10;
-        fight(who, tgt, 1);
+        fight(who, attack_recipient, 1);
         dct = 0;
-        if (non_dmg_save(tgt, 80) == 0 && ta[tgt] != MISS)
+        if (non_dmg_save(attack_recipient, 80) == 0 && ta[attack_recipient] != MISS)
         {
-            fighter[tgt].sts[S_STOP] = 2;
+            fighter[attack_recipient].sts[S_STOP] = 2;
         }
         fighter[who].atrack[fighter[who].csmem] = 4;
     }
-    if (sk == 15)
+    if (attack_special_skill == 15)
     {
-        strcpy(ctext, _("Howl"));
+        ctext = "Howl";
         draw_spellsprite(0, 1, 14, 0);
         b = 0;
         for (a = 0; a < numchrs; a++)
         {
             if (fighter[who].sts[S_MUTE] == 0)
             {
-                if (res_throw(a, S_CHARM) == 0 && non_dmg_save(a, 65) == 0
-                        && fighter[a].sts[S_STONE] == 0)
+                if (res_throw(a, S_CHARM) == 0 && non_dmg_save(a, 65) == 0 && fighter[a].sts[S_STONE] == 0)
                 {
                     fighter[a].sts[S_CHARM] = 2 + rand() % 2;
                     ta[a] = NODISPLAY;
@@ -314,9 +313,9 @@ void combat_skill(int who)
         }
         fighter[who].atrack[fighter[who].csmem] = 3;
     }
-    if (sk == 16)
+    if (attack_special_skill == 16)
     {
-        strcpy(ctext, _("Rasp"));
+        ctext = "Rasp";
         draw_spellsprite(0, 1, 48, 0);
         for (a = 0; a < numchrs; a++)
         {
@@ -340,9 +339,9 @@ void combat_skill(int who)
         }
         fighter[who].atrack[fighter[who].csmem] = 3;
     }
-    if (sk == 17)
+    if (attack_special_skill == 17)
     {
-        strcpy(ctext, _("Shadow Blast"));
+        ctext = "Shadow Blast";
         draw_spellsprite(0, 1, 49, 1);
         special_damage_oneall_enemies(who, 75, R_BLACK, SEL_ALL_ENEMIES, 1);
         fighter[who].atrack[fighter[who].csmem] = 3;

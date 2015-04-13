@@ -154,7 +154,7 @@ static void enemy_attack(int whom)
         cact[whom] = 0;
         return;
     }
-    if (b < PSIZE && numchrs > 1)
+    if (b < PARTY_SIZE && numchrs > 1)
     {
         c = 0;
         for (a = 0; a < numchrs; a++)
@@ -400,19 +400,19 @@ void enemy_init(void)
     }
     for (i = 0; i < num_enemies; ++i)
     {
-        f = make_enemy(cf[i], &fighter[i + PSIZE]);
+        f = make_enemy(cf[i], &fighter[i + PARTY_SIZE]);
         for (p = 0; p < MAXCFRAMES; ++p)
         {
             /* If, in a previous combat, we made a bitmap, destroy it now */
-            if (cframes[i + PSIZE][p])
+            if (cframes[i + PARTY_SIZE][p])
             {
-                destroy_bitmap(cframes[i + PSIZE][p]);
+                destroy_bitmap(cframes[i + PARTY_SIZE][p]);
             }
             /* and create a new one */
-            cframes[i + PSIZE][p] = create_bitmap(f->img->w, f->img->h);
-            blit(f->img, cframes[i + PSIZE][p], 0, 0, 0, 0, f->img->w,
+            cframes[i + PARTY_SIZE][p] = create_bitmap(f->img->w, f->img->h);
+            blit(f->img, cframes[i + PARTY_SIZE][p], 0, 0, 0, 0, f->img->w,
                  f->img->h);
-            tcframes[i + PSIZE][p] = copy_bitmap(tcframes[i + PSIZE][p], f->img);
+            tcframes[i + PARTY_SIZE][p] = copy_bitmap(tcframes[i + PARTY_SIZE][p], f->img);
         }
     }
 }
@@ -481,11 +481,11 @@ static void enemy_spellcheck(int w, int ws)
             {
                 case M_SHIELD:
                 case M_SHIELDALL:
-                    yes = enemy_stscheck(S_SHIELD, PSIZE);
+                    yes = enemy_stscheck(S_SHIELD, PARTY_SIZE);
                     break;
                 case M_HOLYMIGHT:
                     aux = 0;
-                    for (z = PSIZE; z < PSIZE + num_enemies; z++)
+                    for (z = PARTY_SIZE; z < PARTY_SIZE + num_enemies; z++)
                         if (fighter[z].sts[S_DEAD] == 0
                                 && fighter[z].sts[S_STRENGTH] < 2)
                         {
@@ -498,7 +498,7 @@ static void enemy_spellcheck(int w, int ws)
                     break;
                 case M_BLESS:
                     aux = 0;
-                    for (z = PSIZE; z < PSIZE + num_enemies; z++)
+                    for (z = PARTY_SIZE; z < PARTY_SIZE + num_enemies; z++)
                         if (fighter[z].sts[S_DEAD] == 0 && fighter[z].sts[S_BLESS] < 3)
                         {
                             aux++;
@@ -509,18 +509,18 @@ static void enemy_spellcheck(int w, int ws)
                     }
                     break;
                 case M_TRUEAIM:
-                    yes = enemy_stscheck(S_TRUESHOT, PSIZE);
+                    yes = enemy_stscheck(S_TRUESHOT, PARTY_SIZE);
                     break;
                 case M_REGENERATE:
-                    yes = enemy_stscheck(S_REGEN, PSIZE);
+                    yes = enemy_stscheck(S_REGEN, PARTY_SIZE);
                     break;
                 case M_THROUGH:
-                    yes = enemy_stscheck(S_ETHER, PSIZE);
+                    yes = enemy_stscheck(S_ETHER, PARTY_SIZE);
                     break;
                 case M_HASTEN:
                 case M_QUICKEN:
                     aux = 0;
-                    for (z = PSIZE; z < PSIZE + num_enemies; z++)
+                    for (z = PARTY_SIZE; z < PARTY_SIZE + num_enemies; z++)
                         if (fighter[z].sts[S_DEAD] == 0 && fighter[z].sts[S_TIME] != 2)
                         {
                             aux++;
@@ -532,7 +532,7 @@ static void enemy_spellcheck(int w, int ws)
                     break;
                 case M_SHELL:
                 case M_WALL:
-                    yes = enemy_stscheck(S_RESIST, PSIZE);
+                    yes = enemy_stscheck(S_RESIST, PARTY_SIZE);
                     break;
                 case M_ABSORB:
                     if (fighter[w].hp < fighter[w].mhp / 2)
@@ -579,7 +579,7 @@ static void enemy_spellcheck(int w, int ws)
                     break;
                 case M_DIVINEGUARD:
                     aux = 0;
-                    for (z = PSIZE; z < PSIZE + num_enemies; z++)
+                    for (z = PARTY_SIZE; z < PARTY_SIZE + num_enemies; z++)
                         if (fighter[z].sts[S_DEAD] == 0 && fighter[z].sts[S_SHIELD] == 0
                                 && fighter[z].sts[S_RESIST] == 0)
                         {
@@ -640,9 +640,9 @@ static int enemy_stscheck(int ws, int s)
 {
     int z, a = 0;
 
-    if (s == PSIZE)
+    if (s == PARTY_SIZE)
     {
-        for (z = PSIZE; z < PSIZE + num_enemies; z++)
+        for (z = PARTY_SIZE; z < PARTY_SIZE + num_enemies; z++)
             if (fighter[z].sts[S_DEAD] == 0 && fighter[z].sts[ws] == 0)
             {
                 a++;
@@ -1035,7 +1035,7 @@ static int spell_setup(int whom, int z)
             if (z == M_CURE1 || z == M_CURE2 || z == M_CURE3 || z == M_CURE4)
             {
                 aux = 0;
-                for (a = PSIZE; a < PSIZE + num_enemies; a++)
+                for (a = PARTY_SIZE; a < PARTY_SIZE + num_enemies; a++)
                     if (fighter[a].sts[S_DEAD] == 0
                             && fighter[a].hp < fighter[a].mhp * 75 / 100)
                     {

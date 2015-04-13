@@ -50,25 +50,25 @@ void Marker::Name(const std::string& name)
 }
 
 
-const uint Marker::X() const
+const unsigned int Marker::X() const
 {
     return _x;
 }
 
 
-void Marker::X(const uint x)
+void Marker::X(const unsigned int x)
 {
     _x = x;
 }
 
 
-const uint Marker::Y() const
+const unsigned int Marker::Y() const
 {
     return _y;
 }
 
 
-void Marker::Y(const uint y)
+void Marker::Y(const unsigned int y)
 {
     _y = y;
 }

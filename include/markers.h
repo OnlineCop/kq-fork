@@ -35,16 +35,16 @@ class Marker
         const std::string& Name() const;
         void Name(const std::string& name);
 
-        const uint X() const;
-        void X(const uint x);
+        const unsigned int X() const;
+        void X(const unsigned int x);
 
-        const uint Y() const;
-        void Y(const uint y);
+        const unsigned int Y() const;
+        void Y(const unsigned int y);
 
     protected:
         std::string _name;
-        uint _x;
-        uint _y;
+        unsigned int _x;
+        unsigned int _y;
 };
 
 

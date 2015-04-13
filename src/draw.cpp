@@ -217,7 +217,7 @@ void color_scale(BITMAP *src, BITMAP *dest, int st, int fn)
  * \param   who Character to convert
  * \param   st Start of output range
  * \param   fn End of output range
- * \param   convert_heroes If ==1 then \p who<PSIZE means convert all heroes, otherwise all enemies
+ * \param   convert_heroes If ==1 then \p who<PARTY_SIZE means convert all heroes, otherwise all enemies
  */
 void convert_cframes(int who, int st, int fn, int convert_heroes)
 {
@@ -226,15 +226,15 @@ void convert_cframes(int who, int st, int fn, int convert_heroes)
     /* Determine the range of frames to convert */
     if (convert_heroes == 1)
     {
-        if (who < PSIZE)
+        if (who < PARTY_SIZE)
         {
             a = 0;
             a1 = numchrs;
         }
         else
         {
-            a = PSIZE;
-            a1 = PSIZE + num_enemies;
+            a = PARTY_SIZE;
+            a1 = PARTY_SIZE + num_enemies;
         }
     }
     else
@@ -373,7 +373,7 @@ static void draw_char(int xw, int yw)
     BITMAP **sprite_base;
     BITMAP *spr = NULL;
 
-    for (ii = PSIZE + noe; ii > 0; ii--)
+    for (ii = PARTY_SIZE + noe; ii > 0; ii--)
     {
         i = ii - 1;
         fid = g_ent[i].eid;
@@ -387,7 +387,7 @@ static void draw_char(int xw, int yw)
         {
             fr = g_ent[i].facing * ENT_FRAMES_PER_DIR + (g_ent[i].framectr > 10 ? 1 : 0);
         }
-        if (i < PSIZE && i < numchrs)
+        if (i < PARTY_SIZE && i < numchrs)
         {
             /* It's a hero */
             /* Masquerade: if chrx!=0 then this hero is disguised as someone else... */
@@ -1017,7 +1017,7 @@ static void draw_porttextbox(int bstyle, int chr)
 
     wid = gbbw * 8 + 16;
     hgt = gbbh * 12 + 16;
-    chr = chr - PSIZE;
+    chr = chr - PARTY_SIZE;
 
     draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid,
                 gbby + yofs + hgt, BLUE, bstyle);
@@ -1993,7 +1993,7 @@ static const char *relay(const char *buf)
  * by blitting the 'master copy' from tcframes.
  *
  * \param   who Character to restore
- * \param   revert_heroes If ==1 then convert all heroes if \p who < PSIZE, otherwise convert all enemies
+ * \param   revert_heroes If ==1 then convert all heroes if \p who < PARTY_SIZE, otherwise convert all enemies
  */
 void revert_cframes(int who, int revert_heroes)
 {
@@ -2003,15 +2003,15 @@ void revert_cframes(int who, int revert_heroes)
     /* Determine the range of frames to revert */
     if (revert_heroes == 1)
     {
-        if (who < PSIZE)
+        if (who < PARTY_SIZE)
         {
             a = 0;
             a1 = numchrs;
         }
         else
         {
-            a = PSIZE;
-            a1 = PSIZE + num_enemies;
+            a = PARTY_SIZE;
+            a1 = PARTY_SIZE + num_enemies;
         }
     }
     else

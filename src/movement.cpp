@@ -260,7 +260,7 @@ static int minimize_path(AL_CONST char *source, char *target, int size)
         }
 
         /*  FIXME: check to see if the buffer is long enough?  */
-        snprintf(temp, sizeof(temp), "%c%d", value, repetition);
+        _snprintf(temp, sizeof(temp), "%c%d", value, repetition);
         strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
     }
 

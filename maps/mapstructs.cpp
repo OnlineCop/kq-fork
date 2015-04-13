@@ -22,11 +22,11 @@
  */
 void add_change_bounding(int x, int y, int mouse_b, int *current)
 {
-    s_bound *b;
-    s_bound *found = NULL;
+    Bound *b;
+    Bound *found = NULL;
 
     /* Used only to check if boundaries are okay */
-    s_bound temp;
+    Bound temp;
 
     /* Does a bounding box exist at this coordinate? */
     found = is_contained_bound(gmap.bounds.array, gmap.bounds.size, x, y, x, y);
@@ -67,8 +67,7 @@ void add_change_bounding(int x, int y, int mouse_b, int *current)
                 *current = gmap.bounds.size - 1;
             }
 
-            memcpy(found, found + 1,
-                   (&gmap.bounds.array[gmap.bounds.size] - found) * sizeof(s_bound));
+            memcpy(found, found + 1, (&gmap.bounds.array[gmap.bounds.size] - found) * sizeof(Bound));
             gmap.bounds.array[gmap.bounds.size].btile = 0;
             return;
         }
@@ -214,9 +213,9 @@ void add_change_marker(int x, int y, int mouse_b, size_t *current)
  * \param   b - Bounding box's coordinates
  * \param   color - color of the rectangle
  */
-void bound_rect(BITMAP *where, s_bound b, int color)
+void bound_rect(BITMAP *where, Bound b, int color)
 {
-    s_bound rectb;
+    Bound rectb;
 
     rectb.left = (b.left - window_x) * 16;
     rectb.top = (b.top - window_y) * 16;
@@ -436,7 +435,7 @@ void orient_bounds(int current)
  *
  * \param   box - Which box to assign the value to
  */
-void rename_bound_tile(s_bound *box)
+void rename_bound_tile(Bound *box)
 {
     int response, done;
     int selected_tile = 0;

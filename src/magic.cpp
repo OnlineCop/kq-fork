@@ -115,10 +115,10 @@ static void beffect_all_enemies(int caster, int spell_number)
 {
     int nt, st, a, sp_hit;
 
-    if (caster < PSIZE)
+    if (caster < PARTY_SIZE)
     {
         nt = num_enemies;
-        st = PSIZE;
+        st = PARTY_SIZE;
     }
     else
     {
@@ -508,7 +508,7 @@ int cast_spell(int whom, int is_item)
                 {
                     int i, nt, st;
 
-                    if (whom < PSIZE)
+                    if (whom < PARTY_SIZE)
                     {
                         nt = numchrs;
                         st = 0;
@@ -516,7 +516,7 @@ int cast_spell(int whom, int is_item)
                     else
                     {
                         nt = num_enemies;
-                        st = PSIZE;
+                        st = PARTY_SIZE;
                     }
                     for (i = st; i < nt; i++)
                     {
@@ -608,7 +608,7 @@ int combat_spell(int whom, int is_item)
         if (tgt == SEL_ALL_ALLIES)
         {
             tall = 1;
-            if (whom < PSIZE)
+            if (whom < PARTY_SIZE)
             {
                 nt = numchrs;
                 st = 0;
@@ -616,7 +616,7 @@ int combat_spell(int whom, int is_item)
             else
             {
                 nt = num_enemies;
-                st = PSIZE;
+                st = PARTY_SIZE;
             }
         }
     }
@@ -625,10 +625,10 @@ int combat_spell(int whom, int is_item)
         if (tgt == SEL_ALL_ENEMIES)
         {
             tall = 1;
-            if (whom < PSIZE)
+            if (whom < PARTY_SIZE)
             {
                 nt = num_enemies;
-                st = PSIZE;
+                st = PARTY_SIZE;
             }
             else
             {
@@ -637,7 +637,7 @@ int combat_spell(int whom, int is_item)
             }
         }
     }
-    strcpy(ctext, magic[spell_number].name);
+    ctext = magic[spell_number].name;
     if (is_item == 0)
     {
         draw_castersprite(whom, eff[magic[spell_number].eff].kolor);
@@ -790,7 +790,7 @@ static void cure_oneall_allies(int caster, int tgt, int spell_number)
 
     if (tgt == SEL_ALL_ALLIES)
     {
-        if (caster < PSIZE)
+        if (caster < PARTY_SIZE)
         {
             nt = numchrs;
             st = 0;
@@ -798,7 +798,7 @@ static void cure_oneall_allies(int caster, int tgt, int spell_number)
         else
         {
             nt = num_enemies;
-            st = PSIZE;
+            st = PARTY_SIZE;
         }
     }
     else
@@ -867,10 +867,10 @@ static void damage_all_enemies(int caster, int spell_number)
 {
     int nt, st;
 
-    if (caster < PSIZE)
+    if (caster < PARTY_SIZE)
     {
         nt = num_enemies;
-        st = PSIZE;
+        st = PARTY_SIZE;
     }
     else
     {
@@ -896,10 +896,10 @@ static void damage_oneall_enemies(int caster, int tgt, int spell_number)
 
     if (tgt == SEL_ALL_ENEMIES)
     {
-        if (caster < PSIZE)
+        if (caster < PARTY_SIZE)
         {
             nt = num_enemies;
-            st = PSIZE;
+            st = PARTY_SIZE;
         }
         else
         {
@@ -986,7 +986,7 @@ static void geffect_all_allies(int caster, int spell_number)
 {
     int nt, st, a, b = 0;
 
-    if (caster < PSIZE)
+    if (caster < PARTY_SIZE)
     {
         nt = numchrs;
         st = 0;
@@ -994,7 +994,7 @@ static void geffect_all_allies(int caster, int spell_number)
     else
     {
         nt = num_enemies;
-        st = PSIZE;
+        st = PARTY_SIZE;
     }
     if (rand() % 100 + 1 >
             fighter[caster].stats[A_AUR + magic[spell_number].stat])
@@ -1472,12 +1472,12 @@ void special_damage_oneall_enemies(int caster_index, int spell_dmg,
 
     if (target_index == SEL_ALL_ENEMIES)
     {
-        if (caster_index < PSIZE)
+        if (caster_index < PARTY_SIZE)
         {
             /* Enemies are the monsters; you are attacking */
-            first_target = PSIZE;
+            first_target = PARTY_SIZE;
             last_target = num_enemies;
-            for (a = PSIZE; a < PSIZE + num_enemies; a++)
+            for (a = PARTY_SIZE; a < PARTY_SIZE + num_enemies; a++)
                 if (fighter[a].sts[S_DEAD] == 0)
                 {
                     number_of_enemies++;
@@ -1595,7 +1595,7 @@ void special_damage_oneall_enemies(int caster_index, int spell_dmg,
  */
 static void special_spells(int caster, int spell_number)
 {
-    if (caster >= PSIZE)
+    if (caster >= PARTY_SIZE)
     {
         sprintf(strbuf, _("Enemy %d tried to cast %s?!"), caster,
                 magic[spell_number].name);
@@ -1662,9 +1662,9 @@ static void spell_damage(int caster, int spell_number, int st, int nt)
 
     if (nt > 1)
     {
-        if (caster < PSIZE)
+        if (caster < PARTY_SIZE)
         {
-            for (a = PSIZE; a < PSIZE + num_enemies; a++)
+            for (a = PARTY_SIZE; a < PARTY_SIZE + num_enemies; a++)
                 if (fighter[a].sts[S_DEAD] == 0)
                 {
                     ne++;

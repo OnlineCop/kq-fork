@@ -544,7 +544,7 @@ void check_map(void)
     int i;
     int _map_no, _zero_zone, _map_mode, _can_save, _tileset, _use_sstone, _can_warp, _extra_byte, _xsize, _ysize, _pmult, _pdiv, _stx, _sty, _warpx, _warpy, _revision, _extra_sdword2, _song_file, _map_desc, _num_markers, _num_markers1, _num_markers2, marker_num, _num_bound_boxes, _num_bound_boxes1, _num_bound_boxes2, bound_box_num;
     s_marker *_m1, *_m2;
-    s_bound *_b1, *_b2;
+    Bound *_b1, *_b2;
 
     _map_no = gmap1.map_no != gmap2.map_no ? 1 : 0;
     _zero_zone = gmap1.zero_zone != gmap2.zero_zone ? 1 : 0;

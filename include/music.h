@@ -28,7 +28,9 @@
    we are using dumb, and it doesn't make sense to have to include aldumb
    individually */
 
-//#include <aldumb.h>
+#ifdef USE_DUMB
+#include <aldumb.h>
+#endif
 
 void init_music(void);
 void shutdown_music(void);

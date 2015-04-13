@@ -1111,7 +1111,7 @@ void draw_map(void)
         {
             short x1, y1, x2, y2;
 
-            s_bound bound = gmap.bounds.array[gmap.bounds.size];
+            Bound bound = gmap.bounds.array[gmap.bounds.size];
             x1 = (bound.left - window_x) * TILE_W;
             y1 = (bound.top - window_y) * TILE_H;
             x2 = (bound.left + 1 - window_x) * TILE_W - 1;
@@ -2131,7 +2131,7 @@ void get_tile(void)
 
     unsigned int tile = yy * gmap.xsize + xx;
     unsigned int i;
-    s_bound *found_box;
+    Bound *found_box;
 
     std::vector<Marker*> markerArray = gmap.markers.Markers();
     std::vector<Marker*>::iterator it;
@@ -3365,7 +3365,7 @@ int process_keyboard(const int k)
             /* Save the map you are working on */
 
             /* Copy the bounding boxes back in */
-            gmap.bounds.array = (s_bound *) realloc(gmap.bounds.array, gmap.bounds.size * sizeof(s_bound));
+            gmap.bounds.array = (Bound *) realloc(gmap.bounds.array, gmap.bounds.size * sizeof(Bound));
 
             prompt_save_map();
             break;

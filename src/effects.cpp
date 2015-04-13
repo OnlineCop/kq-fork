@@ -51,7 +51,7 @@
  * This is the expanding circle animation.
  *
  * \param   tgt Target, must be >=2
- * \param   aflag If ==1, then target all. If target <PSIZE then target all
+ * \param   aflag If ==1, then target all. If target <PARTY_SIZE then target all
  *          heroes, otherwise target all enemies.
  */
 void death_animation(int tgt, int aflag)
@@ -67,14 +67,14 @@ void death_animation(int tgt, int aflag)
     }
     if (aflag == 1)
     {
-        if (tgt < PSIZE)
+        if (tgt < PARTY_SIZE)
         {
             f = 0;
             n = numchrs;
         }
         else
         {
-            f = PSIZE;
+            f = PARTY_SIZE;
             n = num_enemies;
         }
     }
@@ -150,14 +150,14 @@ void display_amount(int tgt, int cl, int aflag)
 
     if (aflag == 1)
     {
-        if (tgt < PSIZE)
+        if (tgt < PARTY_SIZE)
         {
             f = 0;
             n = numchrs;
         }
         else
         {
-            f = PSIZE;
+            f = PARTY_SIZE;
             n = num_enemies;
         }
     }
@@ -256,14 +256,14 @@ void draw_attacksprite(int tgt, int aflag, int ef, int shows)
     pb = load_datafile_object(SPELL_DATAFILE, eff[ef].ename);
     if (aflag == 1)
     {
-        if (tgt < PSIZE)
+        if (tgt < PARTY_SIZE)
         {
             f = 0;
             n = numchrs;
         }
         else
         {
-            f = PSIZE;
+            f = PARTY_SIZE;
             n = num_enemies;
         }
     }
@@ -272,7 +272,7 @@ void draw_attacksprite(int tgt, int aflag, int ef, int shows)
         f = tgt;
         n = 1;
     }
-    if (tgt < PSIZE)
+    if (tgt < PARTY_SIZE)
     {
         for (a = f; a < f + n; a++)
         {
@@ -320,7 +320,7 @@ void draw_attacksprite(int tgt, int aflag, int ef, int shows)
         kq_wait(eff[ef].delay);
         fullblit(back, double_buffer);
     }
-    if (tgt < PSIZE)
+    if (tgt < PARTY_SIZE)
     {
         for (a = f; a < f + n; a++)
         {
@@ -411,14 +411,14 @@ void draw_hugesprite(int tgt, int hx, int hy, int ef, int shows)
 
     pb = load_datafile_object(SPELL_DATAFILE, eff[ef].ename);
     convert_cframes(tgt, eff[ef].kolor - 3, eff[ef].kolor + 3, 1);
-    if (tgt < PSIZE)
+    if (tgt < PARTY_SIZE)
     {
         f = 0;
         n = numchrs;
     }
     else
     {
-        f = PSIZE;
+        f = PARTY_SIZE;
         n = num_enemies;
     }
     curx = -1;
@@ -483,14 +483,14 @@ void draw_spellsprite(int tgt, int aflag, int ef, int shows)
     convert_cframes(tgt, eff[ef].kolor - 3, eff[ef].kolor + 3, aflag);
     if (aflag == 1)
     {
-        if (tgt < PSIZE)
+        if (tgt < PARTY_SIZE)
         {
             f = 0;
             n = numchrs;
         }
         else
         {
-            f = PSIZE;
+            f = PARTY_SIZE;
             n = num_enemies;
         }
     }
@@ -559,7 +559,7 @@ void fight_animation(int tgt, int who, int ma)
 {
     int a;
 
-    if (who < PSIZE)
+    if (who < PARTY_SIZE)
     {
         a = items[party[pidx[who]].eqp[EQP_WEAPON]].eff;
     }

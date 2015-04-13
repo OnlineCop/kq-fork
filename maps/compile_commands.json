@@ -1,0 +1,47 @@
+[
+{
+  "directory": "/media/sf_kq-fork/maps",
+  "command": "/usr/bin/g++    -g3 -gdwarf-2 -I/usr/include/../include -I/media/sf_kq-fork/maps/../include -I/media/sf_kq-fork/maps -I/media/sf_kq-fork/maps/../../include    -o CMakeFiles/mapdraw.dir/media/sf_kq-fork/src/bounds.cpp.o -c /media/sf_kq-fork/src/bounds.cpp",
+  "file": "/media/sf_kq-fork/src/bounds.cpp"
+},
+{
+  "directory": "/media/sf_kq-fork/maps",
+  "command": "/usr/bin/g++    -g3 -gdwarf-2 -I/usr/include/../include -I/media/sf_kq-fork/maps/../include -I/media/sf_kq-fork/maps -I/media/sf_kq-fork/maps/../../include    -o CMakeFiles/mapdraw.dir/media/sf_kq-fork/src/disk.cpp.o -c /media/sf_kq-fork/src/disk.cpp",
+  "file": "/media/sf_kq-fork/src/disk.cpp"
+},
+{
+  "directory": "/media/sf_kq-fork/maps",
+  "command": "/usr/bin/g++    -g3 -gdwarf-2 -I/usr/include/../include -I/media/sf_kq-fork/maps/../include -I/media/sf_kq-fork/maps -I/media/sf_kq-fork/maps/../../include    -o CMakeFiles/mapdraw.dir/media/sf_kq-fork/src/markers.cpp.o -c /media/sf_kq-fork/src/markers.cpp",
+  "file": "/media/sf_kq-fork/src/markers.cpp"
+},
+{
+  "directory": "/media/sf_kq-fork/maps",
+  "command": "/usr/bin/g++    -g3 -gdwarf-2 -I/usr/include/../include -I/media/sf_kq-fork/maps/../include -I/media/sf_kq-fork/maps -I/media/sf_kq-fork/maps/../../include    -o CMakeFiles/mapdraw.dir/mapdata.cpp.o -c /media/sf_kq-fork/maps/mapdata.cpp",
+  "file": "/media/sf_kq-fork/maps/mapdata.cpp"
+},
+{
+  "directory": "/media/sf_kq-fork/maps",
+  "command": "/usr/bin/g++    -g3 -gdwarf-2 -I/usr/include/../include -I/media/sf_kq-fork/maps/../include -I/media/sf_kq-fork/maps -I/media/sf_kq-fork/maps/../../include    -o CMakeFiles/mapdraw.dir/mapedit.cpp.o -c /media/sf_kq-fork/maps/mapedit.cpp",
+  "file": "/media/sf_kq-fork/maps/mapedit.cpp"
+},
+{
+  "directory": "/media/sf_kq-fork/maps",
+  "command": "/usr/bin/g++    -g3 -gdwarf-2 -I/usr/include/../include -I/media/sf_kq-fork/maps/../include -I/media/sf_kq-fork/maps -I/media/sf_kq-fork/maps/../../include    -o CMakeFiles/mapdraw.dir/mapent.cpp.o -c /media/sf_kq-fork/maps/mapent.cpp",
+  "file": "/media/sf_kq-fork/maps/mapent.cpp"
+},
+{
+  "directory": "/media/sf_kq-fork/maps",
+  "command": "/usr/bin/g++    -g3 -gdwarf-2 -I/usr/include/../include -I/media/sf_kq-fork/maps/../include -I/media/sf_kq-fork/maps -I/media/sf_kq-fork/maps/../../include    -o CMakeFiles/mapdraw.dir/mapfile.cpp.o -c /media/sf_kq-fork/maps/mapfile.cpp",
+  "file": "/media/sf_kq-fork/maps/mapfile.cpp"
+},
+{
+  "directory": "/media/sf_kq-fork/maps",
+  "command": "/usr/bin/g++    -g3 -gdwarf-2 -I/usr/include/../include -I/media/sf_kq-fork/maps/../include -I/media/sf_kq-fork/maps -I/media/sf_kq-fork/maps/../../include    -o CMakeFiles/mapdraw.dir/mapshared.cpp.o -c /media/sf_kq-fork/maps/mapshared.cpp",
+  "file": "/media/sf_kq-fork/maps/mapshared.cpp"
+},
+{
+  "directory": "/media/sf_kq-fork/maps",
+  "command": "/usr/bin/g++    -g3 -gdwarf-2 -I/usr/include/../include -I/media/sf_kq-fork/maps/../include -I/media/sf_kq-fork/maps -I/media/sf_kq-fork/maps/../../include    -o CMakeFiles/mapdraw.dir/mapstructs.cpp.o -c /media/sf_kq-fork/maps/mapstructs.cpp",
+  "file": "/media/sf_kq-fork/maps/mapstructs.cpp"
+}
+]

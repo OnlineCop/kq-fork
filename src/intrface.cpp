@@ -603,11 +603,11 @@ void do_entity(int en_num)
 #ifdef DEBUGMODE
     lua_pushcfunction(theL, KQ_traceback);
     lua_getglobal(theL, "entity_handler");
-    lua_pushnumber(theL, en_num - PSIZE);
+    lua_pushnumber(theL, en_num - PARTY_SIZE);
     lua_pcall(theL, 1, 0, oldtop + 1);
 #else
     lua_getglobal(theL, "entity_handler");
-    lua_pushnumber(theL, en_num - PSIZE);
+    lua_pushnumber(theL, en_num - PARTY_SIZE);
     lua_call(theL, 1, 0);
 #endif
     lua_settop(theL, oldtop);
@@ -1088,7 +1088,7 @@ static void init_obj(lua_State *L)
         lua_pushvalue(L, -2);
         lua_setmetatable(L, -2);
         lua_pushstring(L, LUA_ENT_KEY);
-        lua_pushlightuserdata(L, &g_ent[i + PSIZE]);
+        lua_pushlightuserdata(L, &g_ent[i + PARTY_SIZE]);
         lua_rawset(L, -3);
         lua_rawseti(L, -2, i);
     }
@@ -1107,7 +1107,7 @@ static int KQ_add_chr(lua_State *L)
 {
     int a = (int) lua_tonumber(L, 1);
 
-    if (numchrs < PSIZE)
+    if (numchrs < PARTY_SIZE)
     {
         pidx[numchrs] = a;
         g_ent[numchrs].active = 1;
@@ -3275,9 +3275,9 @@ static int KQ_remove_chr(lua_State *L)
             a--;
             pidx[a] = ENTITY_NONE;
             numchrs--;
-            if (a != PSIZE - 1)
+            if (a != PARTY_SIZE - 1)
             {
-                for (b = 0; b < PSIZE - 1; b++)
+                for (b = 0; b < PARTY_SIZE - 1; b++)
                 {
                     if (pidx[b] == ENTITY_NONE)
                     {
@@ -3811,7 +3811,7 @@ static int KQ_set_noe(lua_State *L)
 {
     int a = (int) lua_tonumber(L, 1);
 
-    if (a >= 0 && a <= MAX_ENT + PSIZE)
+    if (a >= 0 && a <= MAX_ENT + PARTY_SIZE)
     {
         noe = a;
     }
@@ -4743,7 +4743,7 @@ static int KQ_party_getter(lua_State *L)
  * Implement setting the character objects in the
  * party array. Set an element to nil to remove the relevant
  * hero from the party.
- * \param L::1 which party member (0..PSIZE-1)
+ * \param L::1 which party member (0..PARTY_SIZE-1)
  * \param L::2 hero object
  * \returns 0 (no values returned)
  */
@@ -4751,7 +4751,7 @@ static int KQ_party_setter(lua_State *L)
 {
     size_t which = (size_t) lua_tonumber(L, 2);
 
-    if (which < PSIZE)
+    if (which < PARTY_SIZE)
     {
         /* check if it is a valid hero object */
         if (lua_isnil(L, 3))
@@ -4764,7 +4764,7 @@ static int KQ_party_setter(lua_State *L)
                 return 0;
             }
             /* it was nil, erase a character */
-            for (i = which; i < (PSIZE - 1); ++i)
+            for (i = which; i < (PARTY_SIZE - 1); ++i)
             {
                 pidx[i] = pidx[i + 1];
                 memcpy(&g_ent[i], &g_ent[i + 1], sizeof(s_entity));
@@ -4841,7 +4841,7 @@ static int real_entity_num(lua_State *L, int pos)
                 return 255;
 
             default:
-                return ee + PSIZE;
+                return ee + PARTY_SIZE;
         }
     }
     if (lua_istable(L, pos))

@@ -60,12 +60,12 @@
 
 /*! \name Internal variables */
 /* NUMSG is the number of save slots. */
-/* PSIZE is the maximum party size (2) */
+/* PARTY_SIZE is the maximum party size (2) */
 
 /* These describe the save slots. Number of characters, gp, etc */
 /* They are used to make the save menu prettier. */
-int snc[NUMSG], sgp[NUMSG], shr[NUMSG], smin[NUMSG], sid[NUMSG][PSIZE], slv[NUMSG][PSIZE];
-unsigned char shp[NUMSG][PSIZE], smp[NUMSG][PSIZE];
+int snc[NUMSG], sgp[NUMSG], shr[NUMSG], smin[NUMSG], sid[NUMSG][PARTY_SIZE], slv[NUMSG][PARTY_SIZE];
+unsigned char shp[NUMSG][PARTY_SIZE], smp[NUMSG][PARTY_SIZE];
 
 /* Which save_slot the player is pointing to */
 int save_ptr = 0;
@@ -169,7 +169,7 @@ static void delete_game(void)
         sgp[save_ptr] = 0;
         shr[save_ptr] = 0;
         smin[save_ptr] = 0;
-        for (a = 0; a < PSIZE; a++)
+        for (a = 0; a < PARTY_SIZE; a++)
         {
             sid[save_ptr][a] = 0;
             shp[save_ptr][a] = 0;
@@ -269,7 +269,7 @@ int load_game_91(PACKFILE *sdat)
     gp = pack_igetl(sdat);
     khr = pack_igetl(sdat);
     kmin = pack_igetl(sdat);
-    for (a = 0; a < PSIZE; a++)
+    for (a = 0; a < PARTY_SIZE; a++)
     {
         pidx[a] = pack_igetl(sdat);
         g_ent[a].active = 0;
@@ -640,9 +640,9 @@ static int load_game_92(PACKFILE *sdat)
 
     /* Load number of, and which characters in party */
     numchrs = pack_igetw(sdat);
-    if (numchrs > PSIZE)
+    if (numchrs > PARTY_SIZE)
     {
-        message(_("Error. numchrs in saved game > PSIZE"), 255, 0, 0, 0);
+        message(_("Error. numchrs in saved game > PARTY_SIZE"), 255, 0, 0, 0);
         return 0;
     }
     for (a = 0; a < numchrs; a++)
@@ -653,7 +653,7 @@ static int load_game_92(PACKFILE *sdat)
     }
 
     /* Zero set empty party character(s), if any */
-    for (; a < PSIZE; a++)
+    for (; a < PARTY_SIZE; a++)
     {
         pidx[a] = 0;
         g_ent[a].active = 0;
@@ -841,7 +841,7 @@ void load_sgstats(void)
             sgp[a] = 0;
             shr[a] = 0;
             smin[a] = 0;
-            for (b = 0; b < PSIZE; b++)
+            for (b = 0; b < PARTY_SIZE; b++)
             {
                 sid[a][b] = 0;
                 shp[a][b] = 0;
@@ -890,14 +890,14 @@ void load_sgstats(void)
                 sgp[a] = pack_igetl(ldat);
                 shr[a] = pack_igetl(ldat);
                 smin[a] = pack_igetl(ldat);
-                for (b = 0; b < PSIZE; b++)
+                for (b = 0; b < PARTY_SIZE; b++)
                 {
                     sid[a][b] = pack_igetl(ldat);
                 }
                 for (b = 0; b < MAXCHRS; b++)
                 {
                     load_s_player(&tpm, ldat);
-                    for (c = 0; c < PSIZE; c++)
+                    for (c = 0; c < PARTY_SIZE; c++)
                     {
                         if (b == sid[a][c])
                         {
@@ -945,7 +945,7 @@ static int save_game(void)
 
     /* Rest of this function is no longer used */
 
-    for (b = 0; b < PSIZE; b++)
+    for (b = 0; b < PARTY_SIZE; b++)
     {
         sid[save_ptr][b] = 0;
         shp[save_ptr][b] = 0;
@@ -978,7 +978,7 @@ static int save_game(void)
     pack_iputl(gp, sdat);
     pack_iputl(shr[save_ptr], sdat);
     pack_iputl(smin[save_ptr], sdat);
-    for (a = 0; a < PSIZE; a++)
+    for (a = 0; a < PARTY_SIZE; a++)
     {
         pack_iputl(pidx[a], sdat);
     }
@@ -1060,7 +1060,7 @@ static int save_game_92(void)
     size_t a, b, c, d;
     PACKFILE *sdat;
 
-    for (b = 0; b < PSIZE; b++)
+    for (b = 0; b < PARTY_SIZE; b++)
     {
         sid[save_ptr][b] = 0;
         shp[save_ptr][b] = 0;

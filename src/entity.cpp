@@ -164,19 +164,21 @@ void count_entities(void)
  */
 static int entity_near(t_entity eno, t_entity tgt, int rad)
 {
-    int ax, ay, ex, ey, b;
+    int ax, ay;
+    s_entity* entity1 = &g_ent[eno];
+    s_entity* entity2 = &g_ent[tgt];
 
-    b = 0 - rad;
-    ex = g_ent[eno].tilex;
-    ey = g_ent[eno].tiley;
-    for (ay = b; ay <= rad; ay++)
+    for (ay = -rad; ay <= rad; ay++)
     {
-        for (ax = b; ax <= rad; ax++)
+        for (ax = -rad; ax <= rad; ax++)
         {
-            if (ex + ax >= view_x1 && ax + ax <= view_x2 && ey + ay >= view_y1
-                    && ey + ay <= view_y2)
+            if (entity1->tilex + ax == entity2->tilex &&
+                entity1->tiley + ay == entity2->tiley)
             {
-                if (ex + ax == g_ent[tgt].tilex && ey + ay == g_ent[tgt].tiley)
+                if (entity1->tilex + ax >= view_x1 &&
+                    entity1->tilex + ax <= view_x2 &&
+                    entity1->tiley + ay >= view_y1 &&
+                    entity1->tiley + ay <= view_y2)
                 {
                     return 1;
                 }
@@ -208,9 +210,9 @@ int entityat(int ox, int oy, t_entity who)
     {
         if (g_ent[i].active && ox == g_ent[i].tilex && oy == g_ent[i].tiley)
         {
-            if (who >= PSIZE)
+            if (who >= PARTY_SIZE)
             {
-                if (g_ent[who].eid == ID_ENEMY && i < PSIZE)
+                if (g_ent[who].eid == ID_ENEMY && i < PARTY_SIZE)
                 {
                     if (combat(0) == 1)
                     {
@@ -230,7 +232,7 @@ int entityat(int ox, int oy, t_entity who)
                     }
                     return 0;
                 }
-                if (i >= PSIZE)
+                if (i >= PARTY_SIZE)
                 {
                     return i + 1;
                 }
@@ -898,7 +900,7 @@ static void process_entity(t_entity target_entity)
         if (ent->movcnt == 0)
         {
             ent->moving = 0;
-            if (target_entity < PSIZE)
+            if (target_entity < PARTY_SIZE)
             {
                 player = &party[pidx[target_entity]];
                 if (steps < STEPS_NEEDED)
@@ -1017,7 +1019,7 @@ static void speed_adjust(t_entity target_entity)
             break;
     }
     /* TT: This is to see if the player is "running" */
-    if (key[kctrl] && target_entity < PSIZE)
+    if (key[kctrl] && target_entity < PARTY_SIZE)
     {
         process_entity(target_entity);
     }

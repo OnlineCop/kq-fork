@@ -51,7 +51,7 @@ typedef enum eSizes
 #define MAX_TILES        1024
 #define MAXE               41
 #define MAXCHRS             8
-#define PSIZE               2U
+#define PARTY_SIZE               2U
 #define MAXFRAMES          12
 #define MAXEFRAMES         12
 #define WINDOW_TILES_W     21

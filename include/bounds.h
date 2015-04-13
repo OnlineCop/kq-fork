@@ -37,10 +37,10 @@
 class Rect
 {
     public:
-        uint x;
-        uint y;
-        uint width;
-        uint height;
+        unsigned int x;
+        unsigned int y;
+        unsigned int width;
+        unsigned int height;
 };
 
 
@@ -89,9 +89,9 @@ class BoundArray
         void     RemoveBound(const unsigned int);
         size_t   SaveBounds(PACKFILE *);
 
-        bool     DoesBoundContainPoint(uint, uint);
+        bool     DoesBoundContainPoint(unsigned int, unsigned int);
         bool     DoesBoundContainRect(Rect);
-        bool     DoesBoundContainCoordinate(uint, uint, uint, uint);
+        bool     DoesBoundContainCoordinate(unsigned int, unsigned int, unsigned int, unsigned int);
 
     protected:
         std::vector<Bound *> _array;

@@ -109,18 +109,14 @@ static void camp_draw_spell_menu(int c, int pg, int ptr)
         }
         if (z > 0)
         {
-            draw_icon(double_buffer, magic[z].icon, 96 + xofs,
-                      j * 8 + 100 + yofs);
-            print_font(double_buffer, 104 + xofs, j * 8 + 100 + yofs,
-                       magic[z].name, a);
+            draw_icon(double_buffer, magic[z].icon, 96 + xofs, j * 8 + 100 + yofs);
+            print_font(double_buffer, 104 + xofs, j * 8 + 100 + yofs, magic[z].name, a);
             sprintf(strbuf, "%d", mp_needed(c, z));
-            print_font(double_buffer, 232 - (strlen(strbuf) * 8) + xofs,
-                       j * 8 + 100 + yofs, strbuf, a);
+            print_font(double_buffer, 232 - (strlen(strbuf) * 8) + xofs, j * 8 + 100 + yofs, strbuf, a);
         }
     }
     menubox(double_buffer, 40 + xofs, 204 + yofs, 28, 1, BLUE);
-    print_font(double_buffer, (160 - (strlen(magic[b].desc) * 4)) + xofs,
-               212 + yofs, magic[b].desc, FNORMAL);
+    print_font(double_buffer, (160 - (strlen(magic[b].desc) * 4)) + xofs, 212 + yofs, magic[b].desc, FNORMAL);
     draw_sprite(double_buffer, pgb[pg], 230 + xofs, 194 + yofs);
 }
 
@@ -158,8 +154,7 @@ void camp_spell_menu(int c)
         else
         {
             if (pg[0] == pg[1])
-                draw_sprite(double_buffer, mptr, 88 + xofs,
-                            ptr[0] * 8 + 100 + yofs);
+                draw_sprite(double_buffer, mptr, 88 + xofs, ptr[0] * 8 + 100 + yofs);
             draw_sprite(double_buffer, sptr, 88 + xofs, ptr[1] * 8 + 100 + yofs);
         }
         blit2screen(xofs, yofs);
@@ -383,12 +378,9 @@ int learn_new_spells(int who)
                 {
                     sprintf(strbuf, _("%s learned %s"), party[who].name, magic[a].name);
                     fullblit(back, double_buffer);
-                    menubox(double_buffer, 148 - (strlen(strbuf) * 4), 152,
-                            strlen(strbuf) + 1, 1, BLUE);
-                    draw_icon(double_buffer, magic[a].icon,
-                              156 - (strlen(strbuf) * 4), 160);
-                    print_font(double_buffer, 164 - (strlen(strbuf) * 4), 160,
-                               strbuf, FNORMAL);
+                    menubox(double_buffer, 148 - (strlen(strbuf) * 4), 152, strlen(strbuf) + 1, 1, BLUE);
+                    draw_icon(double_buffer, magic[a].icon, 156 - (strlen(strbuf) * 4), 160);
+                    print_font(double_buffer, 164 - (strlen(strbuf) * 4), 160, strbuf, FNORMAL);
                     blit2screen(0, 0);
                     wait_enter();
                     g++;
@@ -411,9 +403,10 @@ int learn_new_spells(int who)
  * \param   sn Index of spell
  * \returns 0 if spell failed, 1 if success
  */
-static int need_spell(int ta, int sn)
+static int need_spell(int target, int sn)
 {
     int a, b, vc = 0;
+    unsigned int ta = (unsigned int)target;
 
     if (ta < numchrs)
     {

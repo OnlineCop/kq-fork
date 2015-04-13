@@ -31,12 +31,6 @@
 #include "timing.h"
 #include "music.h"
 
-#ifdef _WIN32
-# include <windef.h>
-# include <stdarg.h>
-# include <winbase.h>
-#endif
-
 static int mfrate;
 static int frate;
 
@@ -124,6 +118,10 @@ int limit_frame_rate(int fps)
 }
 
 #elif defined(_WIN32)
+
+#include "allegro.h"
+#include "winalleg.h"
+#include <stdarg.h>
 
 void kq_wait(long ms)
 {

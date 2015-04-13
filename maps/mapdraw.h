@@ -152,12 +152,12 @@ void textual_map(s_show, const char *);
 /* From mapstructs.c */
 void add_change_bounding(int, int, int, int *);
 void add_change_marker(int, int, int, size_t *);
-void bound_rect(BITMAP *, s_bound, int);
+void bound_rect(BITMAP *, Bound, int);
 int find_next_marker(int, size_t *);
 int find_bound(int, int *);
 void orient_bounds(int);
 void orient_markers(int);
-void rename_bound_tile(s_bound *);
+void rename_bound_tile(Bound *);
 void rename_marker(Marker *);
 
 /* One in each of: mapdiff.c, mapdump.c, and mapfile.c */

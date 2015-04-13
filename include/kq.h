@@ -31,6 +31,7 @@
  */
 
 #include <allegro.h>
+#include <string>
 
 /* Have to undef some stuff because Allegro defines it - thanks guys
 */
@@ -118,7 +119,7 @@ extern int jbalt;               /*  setup.c, sgame.c  */
 extern int jbctrl;              /*  setup.c, sgame.c  */
 extern int jbenter;             /*  setup.c, sgame.c  */
 extern int jbesc;               /*  setup.c, sgame.c  */
-extern int vx, vy, mx, my, steps, lastm[PSIZE];
+extern int vx, vy, mx, my, steps, lastm[PARTY_SIZE];
 
 extern BITMAP *double_buffer, *fx_buffer;
 extern BITMAP *map_icons[MAX_TILES];
@@ -137,7 +138,7 @@ extern unsigned char treasure[SIZE_TREASURE];
 extern unsigned char save_spells[SIZE_SAVE_SPELL];
 extern BITMAP *kfonts;
 extern s_map g_map;
-extern s_entity g_ent[MAX_ENT + PSIZE];
+extern s_entity g_ent[MAX_ENT + PARTY_SIZE];
 extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
 extern s_anim adata[MAX_ANIM];
 extern unsigned int numchrs;
@@ -152,7 +153,8 @@ extern s_heroinfo players[MAXCHRS];
 extern s_fighter fighter[NUM_FIGHTERS];
 extern s_fighter tempa, tempd;
 extern int noi, shin[12], dct;
-extern char sname[39], ctext[39];
+extern char sname[39];
+extern std::string ctext;
 extern volatile int timer, ksec, kmin, khr, animation_count, timer_count;
 extern unsigned short lup[MAXCHRS][20];
 extern COLOR_MAP cmap;

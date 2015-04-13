@@ -35,6 +35,18 @@
 #include <cstring>
 
 
+#ifndef USE_DUMB
+
+void init_music(void) {}
+void shutdown_music(void) {}
+void set_music_volume(float volume) {}
+void poll_music(void) {}
+void play_music(const char *music_name, long position) {}
+void stop_music(void) {}
+void pause_music(void) {}
+void resume_music(void) {}
+
+#else // USE_DUMB
 /* DUMB version of music */
 #include <aldumb.h>
 
@@ -161,8 +173,7 @@ void play_music(const char *music_name, long position)
             {
                 /* ML: we should (?) adjust the buffer size after everything is running smooth */
                 mod_player[current_music_player] =
-                    al_start_duh(mod_song[current_music_player], 2, position, 1.0,
-                                 4096 * 4, 44100);
+                    al_start_duh(mod_song[current_music_player], 2, position, 1.0, 4096 * 4, 44100);
             }
             else
             {
@@ -235,6 +246,8 @@ void resume_music(void)
         al_resume_duh(mod_player[current_music_player]);
     }
 }
+
+#endif
 
 /* Local Variables:     */
 /* mode: c              */

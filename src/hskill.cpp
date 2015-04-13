@@ -84,7 +84,7 @@ int hero_skillcheck(int dude)
                 return 0;
             }
             b = 0;
-            for (a = PSIZE; a < PSIZE + num_enemies; a++)
+            for (a = PARTY_SIZE; a < PARTY_SIZE + num_enemies; a++)
             {
                 if (fighter[a].sts[S_DEAD] == 0 && fighter[a].sts[S_STONE] == 0)
                 {
@@ -129,7 +129,7 @@ int hero_skillcheck(int dude)
             {
                 return 0;
             }
-            for (a = PSIZE; a < PSIZE + num_enemies; a++)
+            for (a = PARTY_SIZE; a < PARTY_SIZE + num_enemies; a++)
             {
                 if (fighter[a].sts[S_DEAD] == 0 && fighter[a].sts[S_STONE] == 0)
                 {
@@ -503,7 +503,7 @@ int skill_use(int who)
             blit((BITMAP *) backart->dat, temp, 0, 0, 0, 0, 320, 240);
             color_scale(temp, (BITMAP *) backart->dat, 16, 31);
             b = fighter[who].mhp / 20;
-            strcpy(ctext, _("Rage"));
+            ctext = "Rage";
             dct = 1;
             tempa.stats[A_ATT] = fighter[who].stats[A_ATT];
             tempa.stats[A_HIT] = fighter[who].stats[A_HIT];
@@ -515,7 +515,7 @@ int skill_use(int who)
             fight(who, tgt, 1);
             if (fighter[tgt].sts[S_DEAD] == 1)
             {
-                for (a = PSIZE; a < PSIZE + num_enemies; a++)
+                for (a = PARTY_SIZE; a < PARTY_SIZE + num_enemies; a++)
                 {
                     if (fighter[a].sts[S_DEAD] == 0)
                     {
@@ -545,7 +545,7 @@ int skill_use(int who)
 
         case SARINA:
             fighter[who].ctmem = 1000;
-            strcpy(ctext, _("Sweep"));
+            ctext = "Sweep";
             dct = 1;
             tempa.stats[A_ATT] = tempa.stats[A_ATT] * 75 / 100;
             fighter[who].aframe = 6;
@@ -559,7 +559,7 @@ int skill_use(int who)
             break;
 
         case CORIN:
-            strcpy(ctext, _("Elemental Infusion"));
+            ctext = "Elemental Infusion";
             dct = 1;
             fighter[who].aux = 2;
             if (combat_spell_menu(who) == 1)
@@ -568,8 +568,7 @@ int skill_use(int who)
                 curx = -1;
                 cury = -1;
                 play_effect(22, 128);
-                convert_cframes(who, eff[magic[fighter[who].csmem].eff].kolor - 3,
-                                eff[magic[fighter[who].csmem].eff].kolor + 3, 0);
+                convert_cframes(who, eff[magic[fighter[who].csmem].eff].kolor - 3, eff[magic[fighter[who].csmem].eff].kolor + 3, 0);
                 battle_render(0, 0, 0);
                 fullblit(double_buffer, back);
                 for (p = 0; p < 2; p++)
@@ -579,12 +578,10 @@ int skill_use(int who)
                         tx = fighter[who].cx + (fighter[who].cw / 2);
                         ty = fighter[who].cy + (fighter[who].cl / 2);
                         if (p == 0)
-                            circlefill(double_buffer, tx, ty, a,
-                                       eff[magic[fighter[who].csmem].eff].kolor);
+                            circlefill(double_buffer, tx, ty, a, eff[magic[fighter[who].csmem].eff].kolor);
                         else
                         {
-                            circlefill(double_buffer, tx, ty, 15 - a,
-                                       eff[magic[fighter[who].csmem].eff].kolor);
+                            circlefill(double_buffer, tx, ty, 15 - a, eff[magic[fighter[who].csmem].eff].kolor);
                             draw_fighter(who, 0);
                         }
                         blit2screen(0, 0);
@@ -618,13 +615,13 @@ int skill_use(int who)
         case AJATHAR:
             if (fighter[who].unl > 0)
             {
-                strcpy(ctext, _("Dispel Undead"));
+                ctext = "Dispel Undead";
                 dct = 1;
                 fullblit(double_buffer, back);
                 for (a = 0; a < 14; a++)
                 {
-                    convert_cframes(PSIZE, 1 + a, 15, 1);
-                    for (g = PSIZE; g < PSIZE + num_enemies; g++)
+                    convert_cframes(PARTY_SIZE, 1 + a, 15, 1);
+                    for (g = PARTY_SIZE; g < PARTY_SIZE + num_enemies; g++)
                     {
                         if (is_active(g))
                         {
@@ -635,10 +632,10 @@ int skill_use(int who)
                     kq_wait(50);
                     fullblit(back, double_buffer);
                 }
-                revert_cframes(PSIZE, 1);
+                revert_cframes(PARTY_SIZE, 1);
                 dct = 0;
                 b = fighter[who].lvl * 15;
-                for (g = PSIZE; g < PSIZE + num_enemies; g++)
+                for (g = PARTY_SIZE; g < PARTY_SIZE + num_enemies; g++)
                 {
                     if (fighter[g].sts[S_DEAD] == 0 && fighter[g].mhp > 0)
                     {
@@ -669,7 +666,7 @@ int skill_use(int who)
                         }
                     }
                 }
-                death_animation(PSIZE, 1);
+                death_animation(PARTY_SIZE, 1);
                 curx = -1;
                 cury = -1;
                 battle_render(who, who, 0);
@@ -693,7 +690,7 @@ int skill_use(int who)
                         b = rand() % (25 * c) + (50 * c);
                     }
                 }
-                strcpy(ctext, _("Divine Cure"));
+                ctext = "Divine Cure";
                 dct = 1;
                 draw_spellsprite(0, 1, 15, 1);
                 dct = 0;
@@ -756,7 +753,7 @@ int skill_use(int who)
             fighter[who].cx = fighter[tgt].cx - 16;
             fighter[who].cy = fighter[tgt].cy + fighter[tgt].cl - 40;
             fighter[who].facing = 1;
-            strcpy(ctext, _("Steal"));
+            ctext = "Steal";
             dct = 1;
             battle_render(0, who + 1, 0);
             blit2screen(0, 0);

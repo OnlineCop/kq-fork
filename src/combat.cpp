@@ -313,7 +313,7 @@ void battle_render(int plyr, int hl, int sall)
     if ((sall == 0) && (curx > -1) && (cury > -1))
     {
         draw_sprite(double_buffer, bptr, curx + (curw / 2) - 8, cury - 8);
-        if (plyr - 1 >= PSIZE)
+        if (plyr - 1 >= PARTY_SIZE)
         {
             t = curx + (curw / 2);
             t -= (strlen(fighter[plyr - 1].name) * 4);
@@ -400,7 +400,7 @@ void battle_render(int plyr, int hl, int sall)
         draw_stsicon(double_buffer, 1, z, 17, b + 8, 200);
     }
 
-    for (t = PSIZE; t < PSIZE + num_enemies; t++)
+    for (t = PARTY_SIZE; t < PARTY_SIZE + num_enemies; t++)
     {
         if (fighter[t].sts[S_DEAD] == 0)
         {
@@ -410,9 +410,9 @@ void battle_render(int plyr, int hl, int sall)
 
     if (dct == 1)
     {
-        menubox(double_buffer, 152 - (strlen(ctext) * 4), 8, strlen(ctext), 1,
+        menubox(double_buffer, 152 - (ctext.length() * 4), 8, ctext.length(), 1,
                 BLUE);
-        print_font(double_buffer, 160 - (strlen(ctext) * 4), 16, ctext,
+        print_font(double_buffer, 160 - (ctext.length() * 4), 16, ctext.c_str(),
                    FNORMAL);
     }
 }
@@ -452,7 +452,7 @@ static int check_end(void)
     /*      heroes won the battle.                                    */
     alive = 0;
     for (index = 0; index < num_enemies; index++)
-        if (fighter[index + PSIZE].sts[S_DEAD] == 0)
+        if (fighter[index + PARTY_SIZE].sts[S_DEAD] == 0)
         {
             alive++;
         }
@@ -631,7 +631,7 @@ static void do_action(int dude)
     {
         fighter[dude].sts[S_CHARM]--;
 
-        if (dude < PSIZE)
+        if (dude < PARTY_SIZE)
         {
             auto_herochooseact(dude);
         }
@@ -644,7 +644,7 @@ static void do_action(int dude)
     if (cact[dude] != 0)
     {
         revert_cframes(dude, 0);
-        if (dude < PSIZE)
+        if (dude < PARTY_SIZE)
         {
             if (fighter[dude].sts[S_CHARM] == 0)
             {
@@ -795,9 +795,9 @@ static void do_round(void)
                 rcount = 0;
             }
 
-            for (index = 0; index < PSIZE + num_enemies; index++)
+            for (index = 0; index < PARTY_SIZE + num_enemies; index++)
             {
-                if ((index < numchrs) || (index >= PSIZE))
+                if ((index < numchrs) || (index >= PARTY_SIZE))
                 {
                     if (((fighter[index].sts[S_POISON] - 1) == rcount)
                             && (fighter[index].hp > 1))
@@ -932,7 +932,7 @@ static void do_round(void)
             battle_render(0, 0, 0);
             blit2screen(0, 0);
 
-            for (index = 0; index < (PSIZE + num_enemies); index++)
+            for (index = 0; index < (PARTY_SIZE + num_enemies); index++)
             {
                 if ((bspeed[index] >= ROUND_MAX) && (cact[index] > 0))
                 {
@@ -994,7 +994,7 @@ void draw_fighter(size_t dude, size_t dcur)
     }
     else
     {
-        if (dude < PSIZE)
+        if (dude < PARTY_SIZE)
         {
             // Your party
             BITMAP *shad =
@@ -1029,7 +1029,7 @@ void draw_fighter(size_t dude, size_t dcur)
         draw_sprite(double_buffer, bptr, xx + (fr->cw / 2) - 8, yy - 8);
     }
 
-    if ((vspell == 1) && (dude >= PSIZE))
+    if ((vspell == 1) && (dude >= PARTY_SIZE))
     {
         ff = fr->hp * 30 / fr->mhp;
         if ((fr->hp > 0) && (ff < 1))
@@ -1150,7 +1150,7 @@ int fight(int ar, int dr, int sk)
         fighter[dr].cy = fighter[a].cy - 16;
     }
 
-    if (ar < PSIZE)
+    if (ar < PARTY_SIZE)
     {
         fighter[ar].aframe = 7;
     }
@@ -1160,7 +1160,7 @@ int fight(int ar, int dr, int sk)
     }
 
     fight_animation(dr, ar, 0);
-    if (ar < PSIZE)
+    if (ar < PARTY_SIZE)
     {
         fighter[ar].aframe = 0;
     }
@@ -1234,7 +1234,7 @@ void fkill(int victim)
     /* PH Combat cheat - when a hero dies s/he is mysteriously boosted back
      * to full HP.
      */
-    if (cheat && victim < PSIZE)
+    if (cheat && victim < PARTY_SIZE)
     {
         fighter[victim].hp = fighter[victim].mhp;
         return;
@@ -1248,7 +1248,7 @@ void fkill(int victim)
 
     fighter[victim].sts[S_DEAD] = 1;
     fighter[victim].hp = 0;
-    if (victim < PSIZE)
+    if (victim < PARTY_SIZE)
     {
         fighter[victim].defeat_item_common = 0;
     }
@@ -1303,7 +1303,7 @@ static void heroes_win(void)
         ta[index] = 0;
     }
 
-    for (index = PSIZE; index < PSIZE + num_enemies; index++)
+    for (index = PARTY_SIZE; index < PARTY_SIZE + num_enemies; index++)
     {
         txp += fighter[index].xp;
         tgp += fighter[index].gp;
@@ -1336,18 +1336,18 @@ static void heroes_win(void)
         /* PH bug: (?) should found_item be reset to zero at the start of this loop?
          * If you defeat 2 enemies, you should (possibly) get 2 items, right?
          */
-        if ((rand() % 100) < fighter[index + PSIZE].dip)
+        if ((rand() % 100) < fighter[index + PARTY_SIZE].dip)
         {
-            if (fighter[index + PSIZE].defeat_item_common > 0)
+            if (fighter[index + PARTY_SIZE].defeat_item_common > 0)
             {
-                found_item = fighter[index + PSIZE].defeat_item_common;
+                found_item = fighter[index + PARTY_SIZE].defeat_item_common;
             }
 
-            if (fighter[index + PSIZE].defeat_item_rare > 0)
+            if (fighter[index + PARTY_SIZE].defeat_item_rare > 0)
             {
                 if ((rand() % 100) < 5)
                 {
-                    found_item = fighter[index + PSIZE].defeat_item_rare;
+                    found_item = fighter[index + PARTY_SIZE].defeat_item_rare;
                 }
             }
 
@@ -1473,7 +1473,7 @@ static void init_fighters(void)
      */
     hero_init();
     enemy_init();
-    for (index = 0; index < (PSIZE + num_enemies); index++)
+    for (index = 0; index < (PARTY_SIZE + num_enemies); index++)
     {
         nspeed[index] = (fighter[index].stats[A_SPD] + 50) / 5;
     }
@@ -1512,9 +1512,9 @@ void multi_fight(int ar)
     }
 
     // if the attacker is you, target enemies
-    if (ar < PSIZE)
+    if (ar < PARTY_SIZE)
     {
-        st = PSIZE;
+        st = PARTY_SIZE;
         nd = num_enemies;
     }
     // if the attacker is enemy, target your party
@@ -1571,7 +1571,7 @@ void multi_fight(int ar)
         }
     }
 
-    if (ar < PSIZE)
+    if (ar < PARTY_SIZE)
     {
         fighter[ar].aframe = 7;
     }
@@ -1581,7 +1581,7 @@ void multi_fight(int ar)
     }
 
     fight_animation(st, ar, 1);
-    if (ar < PSIZE)
+    if (ar < PARTY_SIZE)
     {
         fighter[ar].aframe = 0;
     }
@@ -1651,7 +1651,7 @@ static void roll_initiative(void)
         }
     }
 
-    for (i = PSIZE; i < PSIZE + num_enemies; i++)
+    for (i = PARTY_SIZE; i < PARTY_SIZE + num_enemies; i++)
     {
         if (hs == 1)
         {
@@ -1683,7 +1683,7 @@ static void roll_initiative(void)
     /* PH: This should be ok */
     for (i = 0; i < NUM_FIGHTERS; i++)
     {
-        if (i < numchrs || (i >= PSIZE && i < (PSIZE + num_enemies)))
+        if (i < numchrs || (i >= PARTY_SIZE && i < (PARTY_SIZE + num_enemies)))
         {
             for (j = 0; j < 2; j++)
                 if (fighter[i].imb[j] > 0)
@@ -1736,7 +1736,7 @@ static void snap_togrid(void)
         fighter[index].facing = hf;
     }
 
-    for (index = PSIZE; index < (PSIZE + num_enemies); index++)
+    for (index = PARTY_SIZE; index < (PARTY_SIZE + num_enemies); index++)
     {
         fighter[index].facing = mf;
     }
@@ -1748,11 +1748,11 @@ static void snap_togrid(void)
         fighter[index].cy = 128;
     }
 
-    a = fighter[PSIZE].cw + 16;
+    a = fighter[PARTY_SIZE].cw + 16;
     mf = 170 - (num_enemies * a / 2);
-    for (index = PSIZE; index < PSIZE + num_enemies; index++)
+    for (index = PARTY_SIZE; index < PARTY_SIZE + num_enemies; index++)
     {
-        fighter[index].cx = (index - PSIZE) * a + mf;
+        fighter[index].cx = (index - PARTY_SIZE) * a + mf;
 
         if (fighter[index].cl < 104)
         {

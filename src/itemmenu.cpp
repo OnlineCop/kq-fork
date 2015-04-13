@@ -429,7 +429,7 @@ int item_effects(int sa, int t, int ti)
     if (sa == 0)
     {
         san = numchrs;
-        se = PSIZE;
+        se = PARTY_SIZE;
         sen = num_enemies;
     }
     else
@@ -644,13 +644,13 @@ int item_effects(int sa, int t, int ti)
             draw_spellsprite(t, 0, items[ti].eff, 0);
             return 2;
     }
-    if (sa == PSIZE || in_combat == 1)
+    if (sa == PARTY_SIZE || in_combat == 1)
     {
         return 1;
     }
     if (ti >= I_STRSEED && ti <= I_WISSEED)
     {
-        if (fighter[t].sts[S_DEAD] != 0 || in_combat == 1 || t >= PSIZE)
+        if (fighter[t].sts[S_DEAD] != 0 || in_combat == 1 || t >= PARTY_SIZE)
         {
             return 0;
         }

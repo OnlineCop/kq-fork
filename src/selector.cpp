@@ -71,13 +71,13 @@ static signed int tmpd[NUM_FIGHTERS]; // defined in heroc.h
  *               or select only where HP<75% of MHP if csts==CURE_CHECK
  *               or select any if csts==NO_STS_CHECK
  *               (Never selects a dead enemy)
- * \returns enemy index (PSIZE..PSIZE+num_enemies-1) or PIDX_UNDEFINED if no enemy found
+ * \returns enemy index (PARTY_SIZE..PARTY_SIZE+num_enemies-1) or PIDX_UNDEFINED if no enemy found
  */
 int auto_select_enemy(int whom, int csts)
 {
     unsigned int i, number_enemies = 0;
 
-    for (i = PSIZE; i < PSIZE + num_enemies; i++)
+    for (i = PARTY_SIZE; i < PARTY_SIZE + num_enemies; i++)
     {
         if (fighter[i].sts[S_DEAD] == 0)
         {
@@ -553,14 +553,14 @@ int select_any_player(int csa, int icn, const char *msg)
  *
  * \param   whom Attacker (person doing the action)
  * \param   multi Target(s)
- * \returns enemy index (PSIZE..PSIZE+num_enemies-1) or PIDX_UNDEFINED if cancelled
+ * \returns enemy index (PARTY_SIZE..PARTY_SIZE+num_enemies-1) or PIDX_UNDEFINED if cancelled
  *          or SEL_ALL_ENEMIES if 'all' was selected (by pressing U or D)
  */
 int select_enemy(int whom, int multi)
 {
     unsigned int a, cntr = 0, ptr, stop, select_all;
 
-    for (a = PSIZE; a < PSIZE + num_enemies; a++)
+    for (a = PARTY_SIZE; a < PARTY_SIZE + num_enemies; a++)
     {
         if (can_attack(a) == 1)
         {
@@ -819,7 +819,7 @@ int select_hero(int whom, int multi, int csd)
  */
 int select_party(int *avail, int n_avail, int numchrs_max)
 {
-    static const unsigned int BTN_EXIT = (MAXCHRS + PSIZE);
+    static const unsigned int BTN_EXIT = (MAXCHRS + PARTY_SIZE);
 
     signed int hero = PIDX_UNDEFINED;
     signed int x, y;
@@ -863,9 +863,9 @@ int select_party(int *avail, int n_avail, int numchrs_max)
             }
         }
         /* draw the party */
-        x = xofs + (320 - 40 * PSIZE) / 2;
+        x = xofs + (320 - 40 * PARTY_SIZE) / 2;
         y = yofs + 88;
-        for (i = 0; i < PSIZE; ++i)
+        for (i = 0; i < PARTY_SIZE; ++i)
         {
             menubox(double_buffer, x, y, 2, 2,
                     (cur == MAXCHRS + i ? DARKRED : DARKBLUE));
@@ -877,7 +877,7 @@ int select_party(int *avail, int n_avail, int numchrs_max)
         }
         /* Draw the 'Exit' button */
         menubox(double_buffer, x, y, 4, 1,
-                (cur == PSIZE + MAXCHRS ? DARKRED : DARKBLUE));
+                (cur == PARTY_SIZE + MAXCHRS ? DARKRED : DARKBLUE));
         print_font(double_buffer, x + 8, y + 8, _("Exit"), FNORMAL);
         /* See which hero is selected and draw his/her stats */
         if (cur < n_avail)

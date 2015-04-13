@@ -119,7 +119,7 @@ void draw_mainmenu(int swho)
     int p;
 
     timer_count = 0;
-    for (p = 0; p < PSIZE; p++)
+    for (p = 0; p < PARTY_SIZE; p++)
         menubox(double_buffer, 44 + xofs, p * 64 + 64 + yofs, 18, 6,
                 swho == p ? DARKBLUE : BLUE);
     menubox(double_buffer, 204 + xofs, 64 + yofs, 7, 6, BLUE);
@@ -653,9 +653,9 @@ void revert_equipstats(void)
 {
     int i, j, g, nc;
 
-    if (numchrs > PSIZE)
+    if (numchrs > PARTY_SIZE)
     {
-        nc = PSIZE;
+        nc = PARTY_SIZE;
     }
     else
     {

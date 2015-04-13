@@ -124,7 +124,7 @@ unsigned char save_spells[SIZE_SAVE_SPELL];
 s_map g_map;
 
 /*! Current entities (players+NPCs) */
-s_entity g_ent[MAX_ENT + PSIZE];
+s_entity g_ent[MAX_ENT + PARTY_SIZE];
 
 s_tileset tilesets[MAX_TILESETS];
 int num_tilesets = 0;
@@ -246,7 +246,7 @@ int noi;
 int dct = 0;
 
 /*! Name of current spell or special ability */
-char ctext[39];
+std::string ctext;
 
 /* PH: needed these fwd declarations */
 #ifdef DEBUGMODE
@@ -449,7 +449,7 @@ void activate(void)
 
     p = entityat(looking_at_x, looking_at_y, 0);
 
-    if (p >= PSIZE)
+    if (p >= PARTY_SIZE)
     {
         tf = g_ent[p - 1].facing;
 
@@ -1322,7 +1322,7 @@ static void load_map(const char *map_name)
     load_s_map(&g_map, pf);
     for (i = 0; i < MAX_ENT; ++i)
     {
-        load_s_entity(&g_ent[PSIZE + i], pf);
+        load_s_entity(&g_ent[PARTY_SIZE + i], pf);
     }
     map_alloc();
     for (i = 0; i < g_map.xsize * g_map.ysize; ++i)
