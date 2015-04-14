@@ -20,9 +20,16 @@ endif(LUA_FOUND)
 
 if(DUMB_FOUND)
 	message(STATUS "DUMB found at ${DUMB_INCLUDE_DIR}")
+	# assume dumb's allegro support is here too
+	set(AL_DUMB_LIBRARIES "-laldmb")
 endif(DUMB_FOUND)
 
+if (DUMB_FOUND AND ALLEGRO_FOUND)
+endif(DUMB_FOUND AND ALLEGRO_FOUND)
+
 include_directories( ${ALLEGRO_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} )
+set(KQ_DEBUGGING 0 CACHE BOOL "Features for debugging the game")
+
 
 set(kq-fork_SRCS
 	src/bounds.c
@@ -60,11 +67,19 @@ set(kq-fork_SRCS
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(CMAKE_C_FLAGS "-O0 -ggdb3 -Wall -Wextra -Wpedantic -std=c99")
-set(ALLEGRO_LIBRARY "-lalleg")
-set(LUA_LIBRARY "-llua")
-set(DUMB_LIBRARY "-laldmb -ldumb")
+#set(ALLEGRO_LIBRARY "-lalleg")
+#set(DUMB_LIBRARY "-laldmb -ldumb")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(kq-fork ${kq-fork_SRCS})
 
-target_link_libraries(kq-fork ${ALLEGRO_LIBRARY} ${LUA_LIBRARY} ${DUMB_LIBRARY} ${M_LIB})
+if(KQ_DEBUGGING)
+set_target_properties(kq-fork PROPERTIES COMPILE_DEFINITIONS DEBUGMODE)
+endif(KQ_DEBUGGING)
+
+target_link_libraries(kq-fork 
+  ${ALLEGRO_LIBRARIES} 
+  ${LUA_LIBRARY} 
+  ${AL_DUMB_LIBRARIES} 
+  ${DUMB_LIBRARIES} 
+  ${M_LIB})
