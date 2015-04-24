@@ -39,8 +39,7 @@
 static int compose_path(AL_CONST int *, int, int, char *, int);
 static void copy_map(int *);
 static int minimize_path(AL_CONST char *, char *, int);
-static int search_paths(int, int *, int, int, int, int, int, int, int, int,
-                        int);
+static int search_paths(int, int *, int, int, int, int, int, int, int, int, int);
 
 
 /*! \brief Generates the solution path.
@@ -300,9 +299,18 @@ static int minimize_path(AL_CONST char *source, char *target, int size)
  *
  * \sa copy_map compose_path find_path minimize_path
  */
-static int search_paths(int id, int *map, int step, int source_x,
-                        int source_y, int target_x, int target_y, int start_x,
-                        int start_y, int limit_x, int limit_y)
+static int search_paths(
+    int id,
+    int *map,
+    int step,
+    int source_x,
+    int source_y,
+    int target_x,
+    int target_y,
+    int start_x,
+    int start_y,
+    int limit_x,
+    int limit_y)
 {
     int index;
     int value;
@@ -310,8 +318,9 @@ static int search_paths(int id, int *map, int step, int source_x,
 
     index = source_y * limit_x + source_x;
     value = map[index];
-    if ((value != -1) && (value == 0 || value > step)
-            && (step == 1 || !entityat(source_x, source_y, id)))
+    if ((value != -1) &&
+        (value == 0 || value > step) &&
+        (step == 1 || !entityat(source_x, source_y, id)))
     {
         map[index] = step;
 
@@ -321,24 +330,24 @@ static int search_paths(int id, int *map, int step, int source_x,
         }
 
         if (source_x > start_x)
-            result &= search_paths(id, map, step + 1, source_x - 1, source_y,
-                                   target_x, target_y, start_x, start_y,
-                                   limit_x, limit_y);
+        {
+            result &= search_paths(id, map, step + 1, source_x - 1, source_y, target_x, target_y, start_x, start_y, limit_x, limit_y);
+        }
 
         if (source_x < limit_x - 1)
-            result &= search_paths(id, map, step + 1, source_x + 1, source_y,
-                                   target_x, target_y, start_x, start_y,
-                                   limit_x, limit_y);
+        {
+            result &= search_paths(id, map, step + 1, source_x + 1, source_y, target_x, target_y, start_x, start_y, limit_x, limit_y);
+        }
 
         if (source_y > start_y)
-            result &= search_paths(id, map, step + 1, source_x, source_y - 1,
-                                   target_x, target_y, start_x, start_y,
-                                   limit_x, limit_y);
+        {
+            result &= search_paths(id, map, step + 1, source_x, source_y - 1, target_x, target_y, start_x, start_y, limit_x, limit_y);
+        }
 
         if (source_y < limit_y - 1)
-            result &= search_paths(id, map, step + 1, source_x, source_y + 1,
-                                   target_x, target_y, start_x, start_y,
-                                   limit_x, limit_y);
+        {
+            result &= search_paths(id, map, step + 1, source_x, source_y + 1, target_x, target_y, start_x, start_y, limit_x, limit_y);
+        }
     }
 
     return (result);
