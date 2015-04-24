@@ -4648,27 +4648,55 @@ int lua_dofile(lua_State *L, const char *filename)
  */
 static int kq_dostring(lua_State *L, const char *cmd)
 {
-    int retval, nrets;
-    size_t i;
+  int retval, nrets, top;
+  int i;
 
-    nrets = lua_gettop(L);
+    top = lua_gettop(L);
+    /* Parse the command into an anonymous function on the stack */
     retval = lua_load(L, (lua_Reader) stringreader, &cmd, "<console>", NULL);
     if (retval != 0)
     {
         scroll_console("Parse error");
         return retval;
     }
+    /* Call it with no args and any number of return values */
     retval = lua_pcall(L, 0, LUA_MULTRET, 0);
     if (retval != 0)
     {
         scroll_console("Execute error");
         return retval;
     }
-    nrets = lua_gettop(L) - nrets;
-    for (i = 0; i < nrets; ++i)
-    {
-        scroll_console(lua_tostring(L, -nrets + i));
-    }
+    nrets = lua_gettop(L) - top;
+    for (i = -nrets; i < 0; ++i)
+      {
+	if (lua_isboolean(L, i))
+	  {
+	    scroll_console(lua_toboolean(L, i) ? "true" : "false");
+	  }
+	else if (lua_isstring(L, i))
+	  {
+	    scroll_console(lua_tostring(L, i));
+	  }
+	else if (lua_isfunction(L, i))
+	  {
+	    scroll_console("<FUNCTION>");
+	  } else if (lua_isuserdata(L, i))
+	  {
+	    scroll_console("<USERDATA>");
+	  }
+	else if (lua_istable(L, i))
+	  {
+	    scroll_console("<TABLE>");
+	  }
+	else if (lua_isnil(L, i))
+	  {
+	    scroll_console("<NIL>");
+	  }
+	else
+	  {
+	    scroll_console("<OTHER>");
+	  }
+      }
     lua_pop(L, nrets);
     return 0;
 }
