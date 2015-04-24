@@ -143,9 +143,9 @@ void run_console(void)
     int running;
     unsigned int string_len;
     unsigned int i;
-    const char get[] = "return get_progress(P_";
-    const char ret[] = "return ";
-    const char set[] = "set_progress(P_";
+    static const char get[] = "return get_progress(P_";
+    static const char ret[] = "return ";
+    static const char set[] = "set_progress(P_";
 
     g_console.inputline[0] = '\0';
     g_console.on = 1;
