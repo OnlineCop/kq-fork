@@ -37,7 +37,7 @@
 
 BoundArray::BoundArray()
 {
-	_array.clear();
+    _array.clear();
 }
 
 BoundArray::~BoundArray()
