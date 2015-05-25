@@ -102,8 +102,7 @@ void blit2screen(int xw, int yw)
         char fbuf[16];
 
         sprintf(fbuf, "%3d", frate);
-        rectfill(double_buffer, xofs, yofs, xofs + 24, yofs + 8,
-                 makecol(0, 0, 0));
+        rectfill(double_buffer, xofs, yofs, xofs + 24, yofs + 8, makecol(0, 0, 0));
         print_font(double_buffer, xofs, yofs, fbuf, FNORMAL);
     }
 #ifdef DEBUGMODE
