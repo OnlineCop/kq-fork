@@ -24,9 +24,11 @@ function zone_handler(zn)
 
   elseif (zn == 3) then
     set_save(0)
+    set_sstone(0)
 
   elseif (zn == 4) then
     set_save(1)
+    set_sstone(1)
 
   end
 end
