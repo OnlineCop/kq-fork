@@ -75,3 +75,6 @@ po/stamp-po
 scripts/Makefile
 scripts/Makefile.in
 stamp-h1
+
+# Mac OS X file system files
+.DS_Store

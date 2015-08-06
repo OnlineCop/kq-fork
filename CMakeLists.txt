@@ -28,6 +28,7 @@ if (DUMB_FOUND AND ALLEGRO_FOUND)
 endif(DUMB_FOUND AND ALLEGRO_FOUND)
 
 include_directories( ${ALLEGRO_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} )
+#set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
 set(KQ_DEBUGGING 0 CACHE BOOL "Features for debugging the game")
 
 
@@ -66,7 +67,15 @@ set(kq-fork_SRCS
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-set(CMAKE_C_FLAGS "-O0 -ggdb3 -Wall -Wextra -Wpedantic -std=c99")
+# DEBUGMODE lets players alter options in the ESC->Config menu (including seeing obstacles and zones)
+#add_definitions(-DDEBUGMODE)
+
+# KQ_CHEATS works in conjunction with the setting 'cheat = 1' in the player's ~/.kq/kq.cfg file.
+# When enabled, hitting F10 will open 'cheat.lua' if it exists, and then call the cheat() function there.
+#add_definitions(-DKQ_CHEATS)
+
+#set(CMAKE_C_FLAGS "-O0 -g -ggdb3 -DDEBUG -DKQ_CHEATS -Wall -Wextra -Wpedantic -std=c99")
+set(CMAKE_C_FLAGS "-O0 -g -ggdb3 -Wall -Wextra -Wpedantic -std=c99")
 #set(ALLEGRO_LIBRARY "-lalleg")
 #set(DUMB_LIBRARY "-laldmb -ldumb")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
