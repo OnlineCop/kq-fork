@@ -152,7 +152,7 @@ extern s_heroinfo players[MAXCHRS];
 extern s_fighter fighter[NUM_FIGHTERS];
 extern s_fighter tempa, tempd;
 extern int noi, shin[12], dct;
-extern char sname[39]
+extern char sname[39];
 extern char ctext[39];
 extern volatile int timer, ksec, kmin, khr, animation_count, timer_count;
 extern unsigned short lup[MAXCHRS][20];
