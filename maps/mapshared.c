@@ -683,7 +683,7 @@ void textual_map(s_show showing, const char *output_filename)
             for (col = 0; col < gmap.xsize; col++)
             {
                 tile_index = row * gmap.xsize + col;
-                printf("%3d,", 1 + map[tile_index]);
+                printf("%3d,", map[tile_index]);
             }
             printf("\n");
         }
@@ -697,7 +697,7 @@ void textual_map(s_show showing, const char *output_filename)
             for (col = 0; col < gmap.xsize; col++)
             {
                 tile_index = row * gmap.xsize + col;
-                printf("%3d,", 1 + b_map[tile_index]);
+                printf("%3d,", b_map[tile_index]);
             }
             printf("\n");
         }
@@ -711,7 +711,7 @@ void textual_map(s_show showing, const char *output_filename)
             for (col = 0; col < gmap.xsize; col++)
             {
                 tile_index = row * gmap.xsize + col;
-                printf("%3d,", 1 + f_map[tile_index]);
+                printf("%3d,", f_map[tile_index]);
             }
             printf("\n");
         }
