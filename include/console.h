@@ -24,7 +24,7 @@
 #define __CONSOLE_H 1
 
 
-void display_console(int, int);
+void display_console(unsigned int, unsigned int);
 void do_console_command(const char *);
 void init_console(void);
 void run_console(void);
