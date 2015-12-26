@@ -1567,7 +1567,7 @@ int start_menu(int skip_splash)
             draw_sprite(double_buffer, menuptr, 112, ptr * 8 + 124);
             redraw = 0;
         }
-        display_credits();
+        display_credits(double_buffer);
         blit2screen(0, 0);
         readcontrols();
         if (bhelp)

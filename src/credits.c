@@ -28,12 +28,11 @@
  */
 
 #include <string.h>
-#include "kq.h"
 #include "credits.h"
 #include "draw.h"
+#include "gettext.h"
 
-
-static int ease(int);
+#define _(s) gettext(s)
 
 
 /*! Array of strings */
@@ -60,17 +59,19 @@ static const char *credits[] =
     "Günther Brammer",
     "WinterKnight",
     "Edgar Alberto Molina",
-    "Steven Fullmer",
+    "Steven Fullmer (OnlineCop)",
     NULL
 };
 
 
+// Compiler doesn't like "const unsigned int", so it's this or a #define.
+#define NUM_EASE_VALUES 32U
 
 static const char **cc = NULL;
-static short int etab[32];
+static short int ease_table[NUM_EASE_VALUES];
 static BITMAP *wk = NULL;
 
-static volatile int ticks = 0;
+static volatile unsigned int ticks = 0;
 static void ticker(void)
 {
     ticks++;
@@ -82,19 +83,27 @@ END_OF_FUNCTION(ticker)
 void allocate_credits(void)
 {
     unsigned int tlen = 0;
-    int i;
+    const char **credits_current_line = NULL;
+    size_t current_line_length = 0;
+    size_t ease_index;
 
-    for (cc = credits; *cc; ++cc)
+    // Determine the longest text in the credits.
+    for (credits_current_line = credits; *credits_current_line; ++credits_current_line)
     {
-        if (strlen(*cc) > tlen)
+        current_line_length = strlen(*credits_current_line);
+        if (current_line_length > tlen)
         {
-            tlen = strlen(*cc);
+            tlen = current_line_length;
         }
     }
-    wk = create_bitmap(8 * tlen, 64);
-    for (i = 0; i < 32; ++i)
+    wk = create_bitmap(8 * tlen, NUM_EASE_VALUES * 2);
+
+    // Pre-generate the ease_table values, so they don't have
+    // to be calculated on the fly at runtime. All calculations
+    // are integer division, so should 
+    for (ease_index = 0; ease_index < NUM_EASE_VALUES; ++ease_index)
     {
-        etab[i] = i * i * (3 * 32 - 2 * i) / 32 / 32;
+        ease_table[ease_index] = ease_index * ease_index * (3 * NUM_EASE_VALUES - 2 * ease_index) / NUM_EASE_VALUES / NUM_EASE_VALUES;
     }
     cc = credits;
     LOCK_FUNCTION(ticker);
@@ -113,21 +122,27 @@ void deallocate_credits(void)
 
 
 
-void display_credits(void)
+void display_credits(BITMAP *double_buffer)
 {
     static const char *pressf1;
-    int i, x0, e;
-    static int last_e = 999;
+    static int last_ease_amount = 999;
+    int i, x0, ease_amount;
+    unsigned int max_ticks = 640;
 
     pressf1 = _("Press F1 for help");
     if (wk == NULL)
     {
         allocate_credits();
     }
-    if (ticks > 640)
+
+    if (ticks > max_ticks)
     {
         clear_bitmap(wk);
         print_font(wk, (wk->w - 8 * strlen(*cc)) / 2, 42, *cc, FNORMAL);
+
+        /* After each 'max_ticks' number of ticks, increment the current line of
+         * credits displayed, looping back to the beginning as needed.
+         */
         if (*(++cc) == NULL)
         {
             cc = credits;
@@ -135,28 +150,27 @@ void display_credits(void)
         print_font(wk, (wk->w - 8 * strlen(*cc)) / 2, 10, *cc, FNORMAL);
         ticks = 0;
     }
-    e = 320 - ticks;
-    if (e != last_e)
+
+    ease_amount = (max_ticks / 2) - ticks;
+    if (ease_amount != last_ease_amount)
     {
-        x0 = (320 - wk->w) / 2;
+        x0 = (SCREEN_W - wk->w) / 2;
         for (i = 0; i < wk->w; ++i)
         {
-            blit(wk, double_buffer, i, ease(i + e), i + x0, 185, 1, 32);
+            blit(wk, double_buffer, i, ease(i + ease_amount), i + x0, 185, 1, 32);
         }
-        print_font(double_buffer, (320 - 8 * strlen(pressf1)) / 2, 210,
-                   pressf1, FNORMAL);
+        print_font(double_buffer, (320 - 8 * strlen(pressf1)) / 2, 210, pressf1, FNORMAL);
 #ifdef KQ_CHEATS
         /* Put an un-ignorable cheat message; this should stop
          * PH releasing versions with cheat mode compiled in ;)
          */
-        print_font(double_buffer, 80, 40,
-                   cheat ? _("*CHEAT MODE ON*") : _("*CHEAT MODE OFF*"), FGOLD);
+        print_font(double_buffer, 80, 40, cheat ? _("*CHEAT MODE ON*") : _("*CHEAT MODE OFF*"), FGOLD);
 #endif
 #ifdef DEBUGMODE
         /* TT: Similarly, if we are in debug mode, we should be warned. */
         print_font(double_buffer, 80, 48, _("*DEBUG MODE ON*"), FGOLD);
 #endif
-        last_e = e;
+        last_ease_amount = ease_amount;
     }
 }
 
@@ -164,26 +178,26 @@ void display_credits(void)
 
 /*! \brief An S-shaped curve
  *
- * Returns values from an 'ease' curve,
- * generally =3*x^2-2*x^3
+ * Returns values from an 'ease' curve, generally 3*x^2 - 2*x^3,
+ * but clamped to 0..NUM_EASE_VALUES (inclusive).
  *
- * Here modified to return a value 0..32
  * \param   x Where to evaluate the function
- * \returns 0 if x<0, 32 if x>=32, otherwise a number between 0 and 32
+ * \returns Clamped integer value between 0 and NUM_EASE_VALUES, inclusive.
  */
-static int ease(int x)
+int ease(signed int x)
 {
+    unsigned int abs_x = (unsigned int)x;
     if (x <= 0)
     {
         return 0;
     }
-    else if (x >= 32)
+    else if (abs_x >= NUM_EASE_VALUES)
     {
-        return 32;
+        return NUM_EASE_VALUES;
     }
     else
     {
-        return etab[x];
+        return ease_table[abs_x];
     }
 }
 

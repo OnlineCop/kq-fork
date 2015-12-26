@@ -24,6 +24,9 @@
 #define __CREDITS_H 1
 
 
+#include <allegro.h>
+
+
 /*! Allocate memory for credits display */
 void allocate_credits(void);
 
@@ -31,7 +34,9 @@ void allocate_credits(void);
 void deallocate_credits(void);
 
 /*! Display credits (call in a loop) */
-void display_credits(void);
+void display_credits(BITMAP *);
+
+int ease(signed int);
 
 
 #endif  /* __CREDITS_H */
