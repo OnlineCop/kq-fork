@@ -66,8 +66,7 @@ void add_change_bounding(int x, int y, int mouse_b, int *current)
                 *current = gmap.bounds.size - 1;
             }
 
-            memcpy(found, found + 1,
-                   (&gmap.bounds.array[gmap.bounds.size] - found) * sizeof(s_bound));
+            memcpy(found, found + 1, (&gmap.bounds.array[gmap.bounds.size] - found) * sizeof(s_bound));
             gmap.bounds.array[gmap.bounds.size].btile = 0;
             return;
         }
@@ -131,7 +130,6 @@ void add_change_bounding(int x, int y, int mouse_b, int *current)
                  */
                 if (is_bound(&gmap.bounds, temp.left, temp.top, temp.right, temp.bottom) == 0)
                 {
-//            if (!bound_in_bound2 (&temp, gmap.bounds.array, gmap.bounds.size)) {
                     set_bounds(b, temp.left, temp.top, temp.right, temp.bottom, b->btile);
                     gmap.bounds.size++;
                     active_bound = 0;
@@ -206,9 +204,7 @@ void add_change_marker(int x, int y, int mouse_b, int *current)
             if (gmap.markers.size < MAX_MARKERS)
             {
                 *current = gmap.markers.size;
-                gmap.markers.array =
-                    (s_marker *) realloc(gmap.markers.array,
-                                         (gmap.markers.size + 1) * sizeof(s_marker));
+                gmap.markers.array = (s_marker *) realloc(gmap.markers.array, (gmap.markers.size + 1) * sizeof(s_marker));
                 m = &gmap.markers.array[gmap.markers.size];
                 m->x = x;
                 m->y = y;
@@ -353,8 +349,7 @@ int find_next_marker(int direction, int *current)
     else if (direction == 0)
     {
         /* Center map on current Marker */
-        center_window(gmap.markers.array[*current].x,
-                      gmap.markers.array[*current].y);
+        center_window(gmap.markers.array[*current].x, gmap.markers.array[*current].y);
     }
     else if (direction == 1)
     {

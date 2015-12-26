@@ -147,6 +147,7 @@ void shared_cleanup(void);
 void shared_startup(void);
 void visual_map(s_show, const char *);
 void textual_map(s_show, const char *);
+void textual_map_json();
 
 /* From mapstructs.c */
 void add_change_bounding(int, int, int, int *);

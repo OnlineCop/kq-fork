@@ -153,8 +153,7 @@ void draw_entdata(const int ent_index)
     print_sfont(column[0], row[3], strbuf, double_buffer);
     sprintf(strbuf, "5 - speed = %d", gent[ent_index].speed);
     print_sfont(column[0], row[4], strbuf, double_buffer);
-    sprintf(strbuf, "6 - atype = %d (%s)", gent[ent_index].atype,
-            ent_atype[gent[ent_index].atype]);
+    sprintf(strbuf, "6 - atype = %d (%s)", gent[ent_index].atype, ent_atype[gent[ent_index].atype]);
     print_sfont(column[0], row[5], strbuf, double_buffer);
     sprintf(strbuf, "0 - %s", gent[ent_index].script);
     print_sfont(column[0], row[6], strbuf, double_buffer);
@@ -162,8 +161,7 @@ void draw_entdata(const int ent_index)
     /* Options in the second column */
     sprintf(strbuf, "7 - change entity sprite (%d)", gent[ent_index].chrx);
     print_sfont(column[2], row[0], strbuf, double_buffer);
-    sprintf(strbuf, "8 - direction facing (%s)",
-            dir_facing[gent[ent_index].facing]);
+    sprintf(strbuf, "8 - direction facing (%s)", dir_facing[gent[ent_index].facing]);
     print_sfont(column[2], row[1], strbuf, double_buffer);
     sprintf(strbuf, "9 - %s", ent_obsmode[gent[ent_index].obsmode]);
     print_sfont(column[2], row[2], strbuf, double_buffer);
@@ -196,18 +194,21 @@ void draw_ents(void)
     for (d = 0; d < number_of_ents; d++)
     {
         /* Draw only the entities within the view-screen */
-        if ((gent[d].tilex >= window_x) && (gent[d].tilex < window_x + htiles)
-                && (gent[d].tiley >= window_y)
-                && (gent[d].tiley < window_y + vtiles))
+        if (gent[d].tilex >= window_x
+         && gent[d].tilex < window_x + htiles
+         && gent[d].tiley >= window_y
+         && gent[d].tiley < window_y + vtiles)
         {
             ent = eframes[gent[d].chrx][gent[d].facing * 3];
             /* Draw either a normal sprite or a translucent one */
             if (gent[d].transl == 0)
-                draw_sprite(double_buffer, ent, gent[d].tilex * TILE_W - x0,
-                            gent[d].tiley * TILE_W - y0);
+            {
+                draw_sprite(double_buffer, ent, gent[d].tilex * TILE_W - x0, gent[d].tiley * TILE_W - y0);
+            }
             else
-                draw_trans_sprite(double_buffer, ent, gent[d].tilex * TILE_W - x0,
-                                  gent[d].tiley * TILE_H - y0);
+            {
+                draw_trans_sprite(double_buffer, ent, gent[d].tilex * TILE_W - x0, gent[d].tiley * TILE_H - y0);
+            }
         }
     }
 }                               /* draw_ents() */
@@ -231,11 +232,13 @@ void erase_entity(const int ent_x, const int ent_y)
     }
 
     for (a = 0; a < number_of_ents; a++)
+    {
         /* Get the index number of the last-drawn entity from this spot */
         if (gent[a].tilex == ent_x && gent[a].tiley == ent_y)
         {
             ent_index = a;
         }
+    }
 
     /* There is no entity under the mouse */
     if (ent_index == -1)
@@ -363,10 +366,12 @@ void place_entity(int ent_x, int ent_y)
 
     /* This will prevent user from placing more than 1 entity on a coord */
     for (a = 0; a < number_of_ents; a++)
+    {
         if (gent[a].tilex == ent_x && gent[a].tiley == ent_y)
         {
             someone_there = 1;
         }
+    }
 
     /* NPC already found; do nothing */
     if (someone_there)

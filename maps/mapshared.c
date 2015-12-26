@@ -109,8 +109,7 @@ PALETTE pal =
 
 const char *icon_files[NUM_TILESETS] =
 {
-    "land.pcx", "newtown.pcx", "castle.pcx", "Incave.pcx", "village.pcx",
-    "mount.pcx", "shrine.pcx", "fortress.pcx"
+    "land.pcx", "newtown.pcx", "castle.pcx", "Incave.pcx", "village.pcx", "mount.pcx", "shrine.pcx", "fortress.pcx"
 };
 
 char map_fname[40], *strbuf;
@@ -154,8 +153,9 @@ void load_iconsets(PALETTE pal)
     for (y = 0; y < max_sets; y++)
     {
         for (x = 0; x < ICONSET_SIZE; x++)
-            blit(pcx_buffer, icons[y * ICONSET_SIZE + x], x * TILE_W, y * TILE_H,
-                 0, 0, TILE_W, TILE_H);
+        {
+            blit(pcx_buffer, icons[y * ICONSET_SIZE + x], x * TILE_W, y * TILE_H, 0, 0, TILE_W, TILE_H);
+        }
     }
     icon_set = 0;
     destroy_bitmap(pcx_buffer);
@@ -308,8 +308,7 @@ void load_map(const char *path)
  * /param   pcx_pal Palette to set the image to
  * /param   critical If file cannot be found, exit the program with an error
  */
-void set_pcx(BITMAP **pcx_buf, const char *pcx_file, PALETTE pcx_pal,
-             const int critical)
+void set_pcx(BITMAP **pcx_buf, const char *pcx_file, PALETTE pcx_pal, const int critical)
 {
     char filename[PATH_MAX];
 
@@ -448,8 +447,7 @@ void shared_startup(void)
         for (i = 0; i < 12; i++)
         {
             eframes[x][i] = create_bitmap(ENT_W, ENT_H);
-            blit(pcx_buffer, eframes[x][i], i * ENT_W, x * ENT_H, 0, 0, ENT_W,
-                 ENT_H);
+            blit(pcx_buffer, eframes[x][i], i * ENT_W, x * ENT_H, 0, 0, ENT_W, ENT_H);
         }
     }
     destroy_bitmap(pcx_buffer);
@@ -459,16 +457,14 @@ void shared_startup(void)
     clear_bitmap(marker_image);
     vline(marker_image, 0, 0, TILE_H, makecol(255, 255, 255));
     vline(marker_image, 1, 0, TILE_H, makecol(192, 192, 192));
-    rectfill(marker_image, 2, 0, TILE_W / 2 + 2, TILE_H / 2,
-             makecol(255, 0, 0));
+    rectfill(marker_image, 2, 0, TILE_W / 2 + 2, TILE_H / 2, makecol(255, 0, 0));
 
     /* Create the active marker image */
     marker_image_active = create_bitmap(TILE_W, TILE_H);
     clear_bitmap(marker_image_active);
     vline(marker_image_active, 0, 0, TILE_H, makecol(255, 255, 255));
     vline(marker_image_active, 1, 0, TILE_H, makecol(192, 192, 192));
-    rectfill(marker_image_active, 2, 0, TILE_W / 2 + 2, TILE_H / 2,
-             makecol(0, 0, 255));
+    rectfill(marker_image_active, 2, 0, TILE_W / 2 + 2, TILE_H / 2, makecol(0, 0, 255));
 }
 
 
@@ -542,8 +538,7 @@ void visual_map(s_show showing, const char *save_fname)
         {
             for (i = 0; i < gmap.xsize; i++)
             {
-                draw_trans_sprite(bmp, shadow[sh_map[j * gmap.xsize + i]],
-                                  i * TILE_W, j * TILE_H);
+                draw_trans_sprite(bmp, shadow[sh_map[j * gmap.xsize + i]], i * TILE_W, j * TILE_H);
             }
         }
     }
@@ -578,14 +573,12 @@ void visual_map(s_show showing, const char *save_fname)
                     if (z_map[w] < 10)
                     {
                         /* The zone's number is single-digit, center vert+horiz */
-                        textprintf_ex(bmp, font, i * TILE_W + 4, j * TILE_H + 4,
-                                      makecol(255, 255, 255), 0, "%d", z_map[w]);
+                        textprintf_ex(bmp, font, i * TILE_W + 4, j * TILE_H + 4, makecol(255, 255, 255), 0, "%d", z_map[w]);
                     }
                     else if (z_map[w] < 100)
                     {
                         /* The zone's number is double-digit, center only vert */
-                        textprintf_ex(bmp, font, i * TILE_W, j * TILE_H + 4,
-                                      makecol(255, 255, 255), 0, "%d", z_map[w]);
+                        textprintf_ex(bmp, font, i * TILE_W, j * TILE_H + 4, makecol(255, 255, 255), 0, "%d", z_map[w]);
                     }
                     else
                     {
@@ -593,12 +586,8 @@ void visual_map(s_show showing, const char *save_fname)
                          * in the top-center of the square; the 10's and 1's digits
                          * on bottom of the square
                          */
-                        textprintf_ex(bmp, font, i * TILE_W + 4, j * TILE_H,
-                                      makecol(255, 255, 255), 0, "%d",
-                                      (int)(z_map[w] / 100));
-                        textprintf_ex(bmp, font, i * TILE_W, j * TILE_H + TILE_H / 2,
-                                      makecol(255, 255, 255), 0, "%02d",
-                                      (int)(z_map[w] % 100));
+                        textprintf_ex(bmp, font, i * TILE_W + 4, j * TILE_H, makecol(255, 255, 255), 0, "%d", (int)(z_map[w] / 100));
+                        textprintf_ex(bmp, font, i * TILE_W, j * TILE_H + TILE_H / 2, makecol(255, 255, 255), 0, "%02d", (int)(z_map[w] % 100));
                     }
                 }
             }
@@ -614,16 +603,12 @@ void visual_map(s_show showing, const char *save_fname)
             {
                 if (gent[i].transl == 0)
                 {
-                    draw_sprite(bmp, eframes[gent[i].chrx][gent[i].facing * ENT_FRAMES_PER_DIR],
-                                gent[i].tilex * TILE_W, gent[i].tiley * TILE_H);
+                    draw_sprite(bmp, eframes[gent[i].chrx][gent[i].facing * ENT_FRAMES_PER_DIR], gent[i].tilex * TILE_W, gent[i].tiley * TILE_H);
                 }
                 else
                 {
-                    draw_trans_sprite(bmp,
-                                      eframes[gent[i].chrx][gent[i].facing * ENT_FRAMES_PER_DIR],
-                                      gent[i].tilex * TILE_W,
-                                      gent[i].tiley * TILE_H);
-                }                   // if..else ()
+                    draw_trans_sprite(bmp, eframes[gent[i].chrx][gent[i].facing * ENT_FRAMES_PER_DIR], gent[i].tilex * TILE_W, gent[i].tiley * TILE_H);
+                }
             }
         }
     }
@@ -633,9 +618,7 @@ void visual_map(s_show showing, const char *save_fname)
     {
         for (i = 0; i < gmap.markers.size; ++i)
         {
-            draw_sprite(bmp, marker_image,
-                        gmap.markers.array[i].x * TILE_W + (TILE_W / 2),
-                        gmap.markers.array[i].y * TILE_H - (TILE_H / 2));
+            draw_sprite(bmp, marker_image, gmap.markers.array[i].x * TILE_W + (TILE_W / 2), gmap.markers.array[i].y * TILE_H - (TILE_H / 2));
         }
     }
 
@@ -644,9 +627,7 @@ void visual_map(s_show showing, const char *save_fname)
     {
         for (i = 0; i < gmap.bounds.size; i++)
         {
-            rect(bmp, gmap.bounds.array[i].left * TILE_W, gmap.bounds.array[i].top * TILE_H,
-                 (gmap.bounds.array[i].right + 1) * TILE_W - 1,
-                 (gmap.bounds.array[i].bottom + 1) * TILE_H - 1, 24);
+            rect(bmp, gmap.bounds.array[i].left * TILE_W, gmap.bounds.array[i].top * TILE_H, (gmap.bounds.array[i].right + 1) * TILE_W - 1, (gmap.bounds.array[i].bottom + 1) * TILE_H - 1, 24);
         }
     }
 
@@ -657,7 +638,7 @@ void visual_map(s_show showing, const char *save_fname)
 
 
 
-/*! \brief Save the whole map as a pcx
+/*! \brief Save the whole map as a text file.
  *
  * Make a comma-separated (.csv) file output all the layers/attributes to it.
  * Like visual_map(), but gives output is a text file, not an image.
@@ -824,17 +805,216 @@ void textual_map(s_show showing, const char *output_filename)
         for (boundary_index = 0; boundary_index < gmap.bounds.size; boundary_index++)
         {
             printf("%d:\t%d, %d, %d, %d, %d\n",
-                   boundary_index,
-                   gmap.bounds.array[boundary_index].left,
-                   gmap.bounds.array[boundary_index].top,
-                   gmap.bounds.array[boundary_index].right,
-                   gmap.bounds.array[boundary_index].bottom,
-                   gmap.bounds.array[boundary_index].btile
-                  );
+                boundary_index,
+                gmap.bounds.array[boundary_index].left,
+                gmap.bounds.array[boundary_index].top,
+                gmap.bounds.array[boundary_index].right,
+                gmap.bounds.array[boundary_index].bottom,
+                gmap.bounds.array[boundary_index].btile
+            );
         }
     }
 
     // TODO: Save out to 'output_filename' here
+}
+
+
+
+/*! \brief Save the whole map as a JSON-formatted text file.
+ *
+ * Creates a JSON-formatted file output an entire map's metadata.
+ * Like textual_map(), but all data are exported, regardless of
+ * command-line flags to indicate otherwise.
+ *
+ * \author OC
+ * \date 20151226
+ */
+void textual_map_json(s_show showing)
+{
+    unsigned int row, col;
+    size_t tile_index;
+    size_t entity_index;
+    size_t marker_index;
+    size_t boundary_index;
+
+    /* Map metadata */
+    printf("{\n");
+    printf("\"metadata\":{\n");
+    printf("\t\"map_no\":%d", gmap.map_no);
+    printf(",\n\t\"zero_zone\":%d", gmap.zero_zone);
+    printf(",\n\t\"map_mode\":%d", gmap.map_mode);
+    printf(",\n\t\"can_save\":%d", gmap.can_save);
+    printf(",\n\t\"tileset\":%d", gmap.tileset);
+    printf(",\n\t\"use_sstone\":%d", gmap.use_sstone);
+    printf(",\n\t\"can_warp\":%d", gmap.can_warp);
+    printf(",\n\t\"extra_byte\":%d", gmap.extra_byte);
+    printf(",\n\t\"xsize\":%d", gmap.xsize);
+    printf(",\n\t\"ysize\":%d", gmap.ysize);
+    printf(",\n\t\"pmult\":%d", gmap.pmult);
+    printf(",\n\t\"pdiv\":%d", gmap.pdiv);
+    printf(",\n\t\"stx\":%d", gmap.stx);
+    printf(",\n\t\"sty\":%d", gmap.sty);
+    printf(",\n\t\"warpx\":%d", gmap.warpx);
+    printf(",\n\t\"warpy\":%d", gmap.warpy);
+    printf(",\n\t\"revision\":%d", gmap.revision);
+    printf(",\n\t\"extra_sdword2\":%d", gmap.extra_sdword2);
+    printf(",\n\t\"song_file\":\"%s\"", gmap.song_file);
+    printf(",\n\t\"map_desc\":\"%s\"", gmap.map_desc);
+    printf("\n},\n");
+
+    /* Show marker flags */
+    printf("\"markers\":[\n");
+    for (marker_index = 0; marker_index < gmap.markers.size; ++marker_index)
+    {
+        printf("\t{\"name\":\"%s\",", gmap.markers.array[marker_index].name);
+        printf("\"x\":%d,", gmap.markers.array[marker_index].x);
+        printf("\"y\":%d}%s\n", gmap.markers.array[marker_index].y, (marker_index < gmap.markers.size - 1) ? "," : "");
+    }
+    printf("],\n");
+
+    /* Show boundary boxes */
+    printf("\"boundaries\":[\n");
+    for (boundary_index = 0; boundary_index < gmap.bounds.size; boundary_index++)
+    {
+        printf("\t{\"left\":%d,", gmap.bounds.array[boundary_index].left);
+        printf("\"top\":%d,", gmap.bounds.array[boundary_index].top);
+        printf("\"right\":%d,", gmap.bounds.array[boundary_index].right);
+        printf("\"bottom\":%d,", gmap.bounds.array[boundary_index].bottom);
+        printf("\"btile\":%d}%s\n", gmap.bounds.array[boundary_index].btile, (boundary_index < gmap.bounds.size - 1) ? "," : "");
+    }
+    printf("],\n");
+
+    /* Show entities */
+    printf("\"entities\":[\n");
+    for (entity_index = 0; entity_index < MAX_ENT; entity_index++)
+    {
+        if (gent[entity_index].active == 0)
+        {
+            continue;
+        }
+        printf("\t{\"chrx\":%d,", gent[entity_index].chrx);
+        printf("\"x\":%d,", gent[entity_index].x);
+        printf("\"y\":%d,", gent[entity_index].y);
+        printf("\"tilex\":%d,", gent[entity_index].tilex);
+        printf("\"tiley\":%d,", gent[entity_index].tiley);
+        printf("\"eid\":%d,", gent[entity_index].eid);
+        printf("\"active\":%d,", gent[entity_index].active);
+        printf("\"facing\":%d,", gent[entity_index].facing);
+        printf("\"moving\":%d,", gent[entity_index].moving);
+        printf("\"movcnt\":%d,", gent[entity_index].movcnt);
+        printf("\"framectr\":%d,", gent[entity_index].framectr);
+        printf("\"movemode\":%d,", gent[entity_index].movemode);
+        printf("\"obsmode\":%d,", gent[entity_index].obsmode);
+        printf("\"delay\":%d,", gent[entity_index].delay);
+        printf("\"delayctr\":%d,", gent[entity_index].delayctr);
+        printf("\"speed\":%d,", gent[entity_index].speed);
+        printf("\"scount\":%d,", gent[entity_index].scount);
+        printf("\"cmd\":%d,", gent[entity_index].cmd);
+        printf("\"sidx\":%d,", gent[entity_index].sidx);
+        printf("\"extra\":%d,", gent[entity_index].extra);
+        printf("\"chasing\":%d,", gent[entity_index].chasing);
+        printf("\"cmdnum\":%d,", gent[entity_index].cmdnum);
+        printf("\"atype\":%d,", gent[entity_index].atype);
+        printf("\"snapback\":%d,", gent[entity_index].snapback);
+        printf("\"facehero\":%d,", gent[entity_index].facehero);
+        printf("\"transl\":%d,", gent[entity_index].transl);
+        printf("\"script\":\"%s\",", gent[entity_index].script);
+        printf("\"target_x\":%d,", gent[entity_index].target_x);
+        printf("\"target_y\":%d}%s\n", gent[entity_index].target_y, (entity_index < MAX_ENT - 1) ? "," : "");
+    }
+    printf("],\n");
+
+    // Layer 0
+    printf("\"map_seg\":[\n");
+    for (row = 0; row < gmap.ysize; row++)
+    {
+        printf("\t[");
+        for (col = 0; col < gmap.xsize - 1; col++)
+        {
+            tile_index = row * gmap.xsize + col;
+            printf("%d,", map[tile_index]);
+        }
+        tile_index = row * gmap.xsize + col;
+        printf("%d]%s\n", map[tile_index], (row < gmap.ysize - 1) ? "," : "");
+    }
+    printf("],\n");
+
+    // Layer 1
+    printf("\"b_seg\":[\n");
+    for (row = 0; row < gmap.ysize; row++)
+    {
+        printf("\t[");
+        for (col = 0; col < gmap.xsize - 1; col++)
+        {
+            tile_index = row * gmap.xsize + col;
+            printf("%d,", b_map[tile_index]);
+        }
+        tile_index = row * gmap.xsize + col;
+        printf("%d]%s\n", b_map[tile_index], (row < gmap.ysize - 1) ? "," : "");
+    }
+    printf("],\n");
+
+    // Layer 2
+    printf("\"f_seg\":[\n");
+    for (row = 0; row < gmap.ysize; row++)
+    {
+        printf("\t[");
+        for (col = 0; col < gmap.xsize - 1; col++)
+        {
+            tile_index = row * gmap.xsize + col;
+            printf("%d,", f_map[tile_index]);
+        }
+        tile_index = row * gmap.xsize + col;
+        printf("%d]%s\n", f_map[tile_index], (row < gmap.ysize - 1) ? "," : "");
+    }
+    printf("],\n");
+
+    // Zones
+    printf("\"zones\":[\n");
+    for (row = 0; row < gmap.ysize; row++)
+    {
+        printf("\t[");
+        for (col = 0; col < gmap.xsize - 1; col++)
+        {
+            tile_index = row * gmap.xsize + col;
+            printf("%d,", z_map[tile_index]);
+        }
+        tile_index = row * gmap.xsize + col;
+        printf("%d]%s\n", f_map[tile_index], (row < gmap.ysize - 1) ? "," : "");
+    }
+    printf("],\n");
+
+    // Shadows
+    printf("\"shadows\":[\n");
+    for (row = 0; row < gmap.ysize; row++)
+    {
+        printf("\t[");
+        for (col = 0; col < gmap.xsize - 1; col++)
+        {
+            tile_index = row * gmap.xsize + col;
+            printf("%d,", sh_map[tile_index]);
+        }
+        tile_index = row * gmap.xsize + col;
+        printf("%d]%s\n", sh_map[tile_index], (row < gmap.ysize - 1) ? "," : "");
+    }
+    printf("],\n");
+
+    // Obstacles
+    printf("\"obstacles\":[\n");
+    for (row = 0; row < gmap.ysize; row++)
+    {
+        printf("\t[");
+        for (col = 0; col < gmap.xsize - 1; col++)
+        {
+            tile_index = row * gmap.xsize + col;
+            printf("%d,", o_map[tile_index]);
+        }
+        tile_index = row * gmap.xsize + col;
+        printf("%d]%s\n", o_map[tile_index], (row < gmap.ysize - 1) ? "," : "");
+    }
+    printf("],\n");
+
+    printf("}");
 }
 
 /* Local Variables:     */

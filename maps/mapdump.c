@@ -34,6 +34,8 @@ const char OPTION_BMP[]            = "-B";
 const char OPTION_BMP_LONG[]       = "--bmp";
 const char OPTION_OVERWRITE[]      = "-F";
 const char OPTION_OVERWRITE_LONG[] = "--force-overwrite";
+const char OPTION_JSON[]            = "-J";
+const char OPTION_JSON_LONG[]       = "--json";
 const char OPTION_TEXT[]            = "-T";
 const char OPTION_TEXT_LONG[]       = "--text";
 const char OPTION_VERBOSE[]        = "-V";
@@ -108,6 +110,7 @@ void usage(const char *argv)
     fprintf(stdout, "  %s, %s\t\tshows this help dialog\n", OPTION_HELP, OPTION_HELP_LONG);
     fprintf(stdout, "\n");
     fprintf(stdout, "  %s, %s\t\toutput as Windows bitmap instead of PCX\n", OPTION_BMP, OPTION_BMP_LONG);
+    fprintf(stdout, "  %s, %s\t\toutput as JSON-formatted text file instead of image\n", OPTION_JSON, OPTION_JSON_LONG);
     fprintf(stdout, "  %s, %s\t\toutput as comma-separated text file instead of image\n", OPTION_TEXT, OPTION_TEXT_LONG);
     fprintf(stdout, "  %s, %s\toverwrite image, even if it already exists\n", OPTION_OVERWRITE, OPTION_OVERWRITE_LONG);
     fprintf(stdout, "  %s, %s\t\tdisplays %s output in verbose mode\n", OPTION_VERBOSE, OPTION_VERBOSE_LONG, argv);
@@ -139,7 +142,7 @@ int main(int argc, char *argv[])
     char fn[PATH_MAX], *filenames[PATH_MAX];
     int i, number_of_files = 0, verbose = 0;
     int force_overwrite = 0;
-    const char *extensions[] = { "pcx", "bmp", "txt" };
+    const char *extensions[] = { "pcx", "bmp", "txt", "json" };
     const char *output_ext = extensions[0]; // default to "pcx"
     COLOR_MAP cmap;
 
@@ -206,7 +209,11 @@ int main(int argc, char *argv[])
         }
         if (!strcmp(argv[i], OPTION_TEXT) || !strcmp(argv[i], OPTION_TEXT_LONG))
         {
-            output_ext = extensions[2];    // change to "csv"
+            output_ext = extensions[2];    // change to "txt"
+        }
+        if (!strcmp(argv[i], OPTION_JSON) || !strcmp(argv[i], OPTION_JSON_LONG))
+        {
+            output_ext = extensions[3];    // change to "json"
         }
         if (!strcmp(argv[i], OPTION_OVERWRITE) || !strcmp(argv[i], OPTION_OVERWRITE_LONG))
         {
@@ -342,6 +349,10 @@ int main(int argc, char *argv[])
                 if (output_ext == extensions[2])
                 {
                     textual_map(showing, fn);
+                }
+                else if (output_ext == extensions[3])
+                {
+                    textual_map_json();
                 }
                 else
                 {

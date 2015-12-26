@@ -1632,7 +1632,7 @@ void draw_menubars(void)
         stretch_blit(icons[curtile], double_buffer, 0, 0, TILE_W, TILE_H, (htiles + 1) * TILE_W + TILE_W / 2, 250, TILE_W * 2, TILE_H * 2);
     }
     print_sfont(htiles * TILE_W + 42 - (strlen(strbuf) * 6 / 2), 234, strbuf, double_buffer);
-    print_sfont((htiles + 1) * TILE_W + 2, 240, "Preview:", double_buffer);
+    print_sfont((htiles + 1) * TILE_W + 2, SCREEN_H, "Preview:", double_buffer);
     rect(double_buffer, (htiles + 1) * TILE_W + 6, 248, (htiles + 3) * TILE_W + TILE_W / 2 + 1, 283, 255);
 
     /* Display the draw_mode */
@@ -2037,9 +2037,9 @@ unsigned int get_line(const int line_x, const int line_y, char *buffer, const in
     unsigned int done = 0, index = 0, ch;
     BITMAP *under;
 
-    under = create_bitmap(320, 6);
+    under = create_bitmap(SCREEN_W, 6);
 
-    blit(screen, under, 0, line_y, 0, 0, 320, 6);
+    blit(screen, under, 0, line_y, 0, 0, SCREEN_W, 6);
     while (!done)
     {
         ch = (readkey() & 0xff);
@@ -2074,7 +2074,7 @@ unsigned int get_line(const int line_x, const int line_y, char *buffer, const in
                     }
                     buffer[index] = ' ';
                     buffer[index + 1] = 0;
-                    blit(under, screen, 0, 0, 0, line_y, 320, 8);
+                    blit(under, screen, 0, 0, 0, line_y, SCREEN_W, 8);
                     print_sfont(line_x, line_y, buffer, screen);
                     buffer[index] = 0;
                 }
