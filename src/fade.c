@@ -53,11 +53,11 @@
  * \param   to Ending palette index (0..255)
  * \date    20040731 PH added check for out-of-range speed
  */
-static void _fade_from_range(AL_CONST PALETTE source, AL_CONST PALETTE dest,
-                             int speed, int from, int to)
+static void _fade_from_range(AL_CONST PALETTE source, AL_CONST PALETTE dest, unsigned int speed, int from, int to)
 {
     PALETTE temp;
     int c, start, last;
+    size_t pal_index;
 
     /* make sure fade speed is in range */
     if (speed < 1)
@@ -69,9 +69,9 @@ static void _fade_from_range(AL_CONST PALETTE source, AL_CONST PALETTE dest,
         speed = 64;
     }
 
-    for (c = 0; c < PAL_SIZE; c++)
+    for (pal_index = 0; pal_index < PAL_SIZE; pal_index++)
     {
-        temp[c] = source[c];
+        temp[pal_index] = source[pal_index];
     }
     start = retrace_count;
     last = -1;
@@ -101,7 +101,7 @@ static void _fade_from_range(AL_CONST PALETTE source, AL_CONST PALETTE dest,
  * \param   type Any of TRANS_FADE_IN, TRANS_FADE_OUT, TRANS_FADE_WHITE
  * \param   param Speed of transition
  */
-void do_transition(int type, int param)
+void do_transition(eTransitionFade type, int param)
 {
     if (type == TRANS_FADE_IN)
     {
@@ -117,7 +117,7 @@ void do_transition(int type, int param)
     else if (type == TRANS_FADE_WHITE)
     {
         PALETTE temp, whp;
-        int a;
+        size_t a;
 
         get_palette(temp);
         for (a = 0; a < 256; a++)

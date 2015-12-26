@@ -24,11 +24,16 @@
 #define __FADE_H 1
 
 
-#define TRANS_FADE_IN    1
-#define TRANS_FADE_OUT   2
-#define TRANS_FADE_WHITE 3
+typedef enum eTransitionFade
+{
+    TRANS_FADE_IN    = 1,
+    TRANS_FADE_OUT   = 2,
+    TRANS_FADE_WHITE = 3,
 
-void do_transition(int, int);
+    NUM_TRANSITIONS
+} eTransitionFade;
+
+void do_transition(eTransitionFade, int);
 
 
 #endif  /* __FADE_H */
