@@ -102,8 +102,7 @@ void blit2screen(int xw, int yw)
         char fbuf[16];
 
         sprintf(fbuf, "%3d", frate);
-        rectfill(double_buffer, xofs, yofs, xofs + 24, yofs + 8,
-                 makecol(0, 0, 0));
+        rectfill(double_buffer, xofs, yofs, xofs + 24, yofs + 8, makecol(0, 0, 0));
         print_font(double_buffer, xofs, yofs, fbuf, FNORMAL);
     }
 #ifdef DEBUGMODE
@@ -111,11 +110,11 @@ void blit2screen(int xw, int yw)
 #endif
     if (stretch_view == 1)
     {
-        stretch_blit(double_buffer, screen, xw, yw, 320, 240, 0, 0, 640, 480);
+        stretch_blit(double_buffer, screen, xw, yw, SCREEN_W, SCREEN_H, 0, 0, SCREEN_W * 2, SCREEN_H * 2);
     }
     else
     {
-        blit(double_buffer, screen, xw, yw, 0, 0, 320, 240);
+        blit(double_buffer, screen, xw, yw, 0, 0, SCREEN_W, SCREEN_H);
     }
     frate = limit_frame_rate(25);
 }
@@ -183,26 +182,33 @@ static void border(BITMAP *where, int left, int top, int right, int bottom)
  *
  * \param   src Source bitmap
  * \param   dest Destination bitmap
- * \param   st Start of output color range
- * \param   fn End of output color range
+ * \param   output_range_start Start of output color range
+ * \param   output_range_end End of output color range
  */
-void color_scale(BITMAP *src, BITMAP *dest, int st, int fn)
+void color_scale(BITMAP *src, BITMAP *dest, int output_range_start, int output_range_end)
 {
-    int ix, iy, z, a;
+    int ix, iy, z;
+    int current_pixel_color;
+
+    if (src == 0 || dest == 0)
+    {
+        return;
+    }
 
     clear_bitmap(dest);
     for (iy = 0; iy < dest->h; iy++)
     {
         for (ix = 0; ix < dest->w; ix++)
         {
-            a = src->line[iy][ix];
-            if (a > 0)
+            current_pixel_color = src->line[iy][ix];
+            if (current_pixel_color > 0)
             {
-                z = pal[a].r;
-                z += pal[a].g;
-                z += pal[a].b;
-                z = z * (fn - st) / 192;
-                dest->line[iy][ix] = st + z;
+                z = pal[current_pixel_color].r;
+                z += pal[current_pixel_color].g;
+                z += pal[current_pixel_color].b;
+                // 192 is '64*3' (max value for each of R, G and B).
+                z = z * (output_range_end - output_range_start) / 192;
+                dest->line[iy][ix] = output_range_start + z;
             }
         }
     }
@@ -215,11 +221,11 @@ void color_scale(BITMAP *src, BITMAP *dest, int st, int fn)
  * This is used to color_scale one or more fighter frames.
  *
  * \param   who Character to convert
- * \param   st Start of output range
- * \param   fn End of output range
+ * \param   output_range_start Start of output range
+ * \param   output_range_end End of output range
  * \param   convert_heroes If ==1 then \p who<PSIZE means convert all heroes, otherwise all enemies
  */
-void convert_cframes(int who, int st, int fn, int convert_heroes)
+void convert_cframes(int who, int output_range_start, int output_range_end, int convert_heroes)
 {
     int a, p, a1;
 
@@ -247,7 +253,7 @@ void convert_cframes(int who, int st, int fn, int convert_heroes)
     {
         for (p = 0; p < MAXCFRAMES; p++)
         {
-            color_scale(tcframes[a][p], cframes[a][p], st, fn);
+            color_scale(tcframes[a][p], cframes[a][p], output_range_start, output_range_end);
         }
         ++a;
     }
@@ -343,8 +349,7 @@ static void draw_backlayer(void)
                 {
                     here = ((ytc + dy) * g_map.xsize) + xtc + dx;
                     pix = map_seg[here];
-                    blit(map_icons[tilex[pix]], double_buffer, 0, 0,
-                         dx * 16 + xofs, dy * 16 + yofs, 16, 16);
+                    blit(map_icons[tilex[pix]], double_buffer, 0, 0, dx * 16 + xofs, dy * 16 + yofs, 16, 16);
                 }
             }
         }
@@ -410,8 +415,7 @@ static void draw_char(int xw, int yw)
             if (is_forestsquare(g_ent[i].tilex, g_ent[i].tiley))
             {
                 f = !g_ent[i].moving;
-                if (g_ent[i].moving
-                        && is_forestsquare(g_ent[i].x / 16, g_ent[i].y / 16))
+                if (g_ent[i].moving && is_forestsquare(g_ent[i].x / 16, g_ent[i].y / 16))
                 {
                     f = 1;
                 }
@@ -511,9 +515,11 @@ static void draw_char(int xw, int yw)
         else
         {
             /* It's an NPC */
-            if (g_ent[i].active && g_ent[i].tilex >= view_x1
-                    && g_ent[i].tilex <= view_x2 && g_ent[i].tiley >= view_y1
-                    && g_ent[i].tiley <= view_y2)
+            if (g_ent[i].active
+             && g_ent[i].tilex >= view_x1
+             && g_ent[i].tilex <= view_x2
+             && g_ent[i].tiley >= view_y1
+             && g_ent[i].tiley <= view_y2)
             {
                 if (dx >= -16 && dx <= 336 && dy >= -16 && dy <= 256)
                 {
@@ -695,8 +701,7 @@ void draw_icon(BITMAP *where, int ino, int icx, int icy)
  * \param   bg Colour/style of background
  * \param   bstyle Style of border
  */
-static void draw_kq_box(BITMAP *where, int x1, int y1, int x2, int y2,
-                        int bg, int bstyle)
+static void draw_kq_box(BITMAP *where, int x1, int y1, int x2, int y2, int bg, int bstyle)
 {
     int a;
 
@@ -799,8 +804,7 @@ static void draw_midlayer(void)
                 {
                     here = ((ytc + dy) * g_map.xsize) + xtc + dx;
                     pix = b_seg[here];
-                    draw_sprite(double_buffer, map_icons[tilex[pix]],
-                                dx * 16 + xofs, dy * 16 + yofs);
+                    draw_sprite(double_buffer, map_icons[tilex[pix]], dx * 16 + xofs, dy * 16 + yofs);
                 }
             }
         }
@@ -911,14 +915,17 @@ static void draw_shadows(void)
     {
         for (dx = 0; dx < 21; dx++)
         {
-            if (ytc + dy >= view_y1 && xtc + dx >= view_x1 && ytc + dy <= view_y2
-                    && xtc + dx <= view_x2)
+            if (ytc + dy >= view_y1
+             && xtc + dx >= view_x1
+             && ytc + dy <= view_y2
+             && xtc + dx <= view_x2)
             {
                 here = ((ytc + dy) * g_map.xsize) + xtc + dx;
                 pix = s_seg[here];
                 if (pix > 0)
-                    draw_trans_sprite(double_buffer, shadow[pix], dx * 16 + xofs,
-                                      dy * 16 + yofs);
+                {
+                    draw_trans_sprite(double_buffer, shadow[pix], dx * 16 + xofs, dy * 16 + yofs);
+                }
             }
         }
     }
@@ -986,8 +993,7 @@ static void draw_textbox(int bstyle)
     wid = gbbw * 8 + 16;
     hgt = gbbh * 12 + 16;
 
-    draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid,
-                gbby + yofs + hgt, BLUE, bstyle);
+    draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid, gbby + yofs + hgt, BLUE, bstyle);
     if (gbt != -1)
     {
         /* select the correct stem-thingy that comes out of the speech bubble */
@@ -998,8 +1004,7 @@ static void draw_textbox(int bstyle)
 
     for (a = 0; a < gbbh; a++)
     {
-        print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs,
-                   msgbuf[a], FBIG);
+        print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs, msgbuf[a], FBIG);
     }
 }
 
@@ -1024,14 +1029,12 @@ static void draw_porttextbox(int bstyle, int chr)
     hgt = gbbh * 12 + 16;
     chr = chr - PSIZE;
 
-    draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid,
-                gbby + yofs + hgt, BLUE, bstyle);
+    draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid, gbby + yofs + hgt, BLUE, bstyle);
 
 
     for (a = 0; a < gbbh; a++)
     {
-        print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs,
-                   msgbuf[a], FBIG);
+        print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs, msgbuf[a], FBIG);
     }
 
     a--;
@@ -1075,7 +1078,9 @@ void drawmap(void)
     {
         draw_backlayer();
     }
-    if (g_map.map_mode == 1 || g_map.map_mode == 3 || g_map.map_mode == 5)
+    if (g_map.map_mode == 1
+     || g_map.map_mode == 3
+     || g_map.map_mode == 5)
     {
         draw_char(16, 16);
     }
@@ -1083,7 +1088,9 @@ void drawmap(void)
     {
         draw_midlayer();
     }
-    if (g_map.map_mode == 0 || g_map.map_mode == 2 || g_map.map_mode == 4)
+    if (g_map.map_mode == 0
+     || g_map.map_mode == 2
+     || g_map.map_mode == 4)
     {
         draw_char(16, 16);
     }
@@ -1111,10 +1118,8 @@ void drawmap(void)
     }
     if (display_desc == 1)
     {
-        menubox(double_buffer, 152 - (strlen(g_map.map_desc) * 4) + xofs,
-                8 + yofs, strlen(g_map.map_desc), 1, BLUE);
-        print_font(double_buffer, 160 - (strlen(g_map.map_desc) * 4) + xofs,
-                   16 + yofs, g_map.map_desc, FNORMAL);
+        menubox(double_buffer, 152 - (strlen(g_map.map_desc) * 4) + xofs, 8 + yofs, strlen(g_map.map_desc), 1, BLUE);
+        print_font(double_buffer, 160 - (strlen(g_map.map_desc) * 4) + xofs, 16 + yofs, g_map.map_desc, FNORMAL);
     }
 }
 
@@ -1287,22 +1292,19 @@ void message(const char *m, int icn, int delay, int x_m, int y_m)
         if (icn == 255)
         {
             /* No icon */
-            menubox(double_buffer, 152 - (max_len * 4) + x_m, 108 + y_m, max_len,
-                    num_lines, DARKBLUE);
+            menubox(double_buffer, 152 - (max_len * 4) + x_m, 108 + y_m, max_len, num_lines, DARKBLUE);
         }
         else
         {
             /* There is an icon; make the box a little bit bigger to the left */
-            menubox(double_buffer, 144 - (max_len * 4) + x_m, 108 + y_m,
-                    max_len + 1, num_lines, DARKBLUE);
+            menubox(double_buffer, 144 - (max_len * 4) + x_m, 108 + y_m, max_len + 1, num_lines, DARKBLUE);
             draw_icon(double_buffer, icn, 152 - (max_len * 4) + x_m, 116 + y_m);
         }
 
         /* Draw the text */
         for (i = 0; i < num_lines; ++i)
         {
-            print_font(double_buffer, 160 - (max_len * 4) + x_m,
-                       116 + 8 * i + y_m, msgbuf[i], FNORMAL);
+            print_font(double_buffer, 160 - (max_len * 4) + x_m, 116 + 8 * i + y_m, msgbuf[i], FNORMAL);
         }
         /* Show it */
         blit2screen(x_m, y_m);
@@ -1635,8 +1637,7 @@ void print_num(BITMAP *where, int sx, int sy, char *msg, int cl)
  * \param   sp4 Line 4 of text
  * \returns index of option chosen (0..numopt-1)
  */
-int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2,
-           const char *sp3, const char *sp4)
+int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, const char *sp3, const char *sp4)
 {
     int ly, stop = 0, ptr = 0, a;
     unsigned int str_len;
@@ -1675,12 +1676,12 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2,
 
 #if 0
         for (a = 0; a < gbbh; a++)
-            print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs,
-                       msgbuf[a], FBIG);
+        {
+            print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs, msgbuf[a], FBIG);
+        }
 #endif // if 0
 
-        draw_sprite(double_buffer, menuptr, gbbx + xofs + 8,
-                    ptr * 12 + ly + yofs);
+        draw_sprite(double_buffer, menuptr, gbbx + xofs + 8, ptr * 12 + ly + yofs);
         blit2screen(xofs, yofs);
 
         readcontrols();
@@ -1788,7 +1789,7 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
                 }
             }
             winheight = n_opt > 4 ? 4 : n_opt;
-            winx = xofs + (320 - winwidth * 8) / 2;
+            winx = xofs + (SCREEN_W - winwidth * 8) / 2;
             winy = yofs + 230 - winheight * 12;
             running = 1;
             while (running)
@@ -1799,16 +1800,12 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
                 set_textpos(who);
                 draw_textbox(B_TEXT);
                 /* Draw the  options text */
-                draw_kq_box(double_buffer, winx - 5, winy - 5,
-                            winx + winwidth * 8 + 13, winy + winheight * 12 + 5,
-                            BLUE, B_TEXT);
+                draw_kq_box(double_buffer, winx - 5, winy - 5, winx + winwidth * 8 + 13, winy + winheight * 12 + 5, BLUE, B_TEXT);
                 for (i = 0; i < winheight; ++i)
                 {
-                    print_font(double_buffer, winx + 8, winy + i * 12,
-                               opt[i + topopt], FBIG);
+                    print_font(double_buffer, winx + 8, winy + i * 12, opt[i + topopt], FBIG);
                 }
-                draw_sprite(double_buffer, menuptr, winx + 8 - menuptr->w,
-                            (curopt - topopt) * 12 + winy + 4);
+                draw_sprite(double_buffer, menuptr, winx + 8 - menuptr->w, (curopt - topopt) * 12 + winy + 4);
                 /* Draw the 'up' and 'down' markers if there are more options than will fit in the window */
                 if (topopt > 0)
                 {
@@ -2029,8 +2026,7 @@ void revert_cframes(int who, int revert_heroes)
     {
         for (p = 0; p < MAXCFRAMES; p++)
         {
-            blit(tcframes[a][p], cframes[a][p], 0, 0, 0, 0, fighter[a].cw,
-                 fighter[a].cl);
+            blit(tcframes[a][p], cframes[a][p], 0, 0, 0, 0, fighter[a].cw, fighter[a].cl);
         }
         ++a;
     }
@@ -2060,7 +2056,7 @@ static void set_textpos(int who)
         {
             gbbx = 296 - (gbbw * 8);
         }
-        if (gby > -16 && gby < 240)
+        if (gby > -16 && gby < SCREEN_H)
         {
             if (g_ent[who].facing == 1 || g_ent[who].facing == 2)
             {
