@@ -120,10 +120,12 @@ void death_animation(int tgt, int aflag)
         }
     }
     for (g = f; g < f + n; g++)
+    {
         if (deffect[g] == 1)
         {
             deffect[g] = 0;
         }
+    }
     revert_cframes(tgt, aflag);
     battle_render(0, 0, 0);
     blit2screen(0, 0);
@@ -308,12 +310,10 @@ void draw_attacksprite(int tgt, int aflag, int ef, int shows)
                 dy = fighter[g].cy + (fighter[g].cl / 2) - (eff[ef].ysize / 2);
                 draw_fighter(g, 0);
                 if (shows == 1 && fighter[g].sts[S_SHIELD] > 0)
-                    draw_trans_sprite(double_buffer, b_shield,
-                                      fighter[g].cx + (fighter[g].cw / 2) - 24,
-                                      fighter[g].cy + (fighter[g].cl / 2) - 24);
-                masked_blit((BITMAP *) pb->dat, double_buffer, 0,
-                            eff[ef].ysize * a, dx, dy, eff[ef].xsize,
-                            eff[ef].ysize);
+                {
+                    draw_trans_sprite(double_buffer, b_shield, fighter[g].cx + (fighter[g].cw / 2) - 24, fighter[g].cy + (fighter[g].cl / 2) - 24);
+                }
+                masked_blit((BITMAP *) pb->dat, double_buffer, 0, eff[ef].ysize * a, dx, dy, eff[ef].xsize, eff[ef].ysize);
             }
         }
         blit2screen(0, 0);
@@ -431,22 +431,24 @@ void draw_hugesprite(int tgt, int hx, int hy, int ef, int shows)
     for (a = 0; a < eff[ef].numf; a++)
     {
         if (eff[ef].orient == 0)
-            masked_blit((BITMAP *) pb->dat, double_buffer, 0, eff[ef].ysize * a,
-                        hx, hy, eff[ef].xsize, eff[ef].ysize);
+        {
+            masked_blit((BITMAP *) pb->dat, double_buffer, 0, eff[ef].ysize * a, hx, hy, eff[ef].xsize, eff[ef].ysize);
+        }
         for (g = f; g < f + n; g++)
         {
             if (is_active(g) == 1)
             {
                 if (shows == 1 && fighter[g].sts[S_RESIST] > 0)
-                    draw_trans_sprite(double_buffer, b_shell,
-                                      fighter[g].cx + (fighter[g].cw / 2) - 24,
-                                      fighter[g].cy + (fighter[g].cl / 2) - 24);
+                {
+                    draw_trans_sprite(double_buffer, b_shell, fighter[g].cx + (fighter[g].cw / 2) - 24, fighter[g].cy + (fighter[g].cl / 2) - 24);
+                }
                 draw_fighter(g, 0);
             }
         }
         if (eff[ef].orient == 1)
-            masked_blit((BITMAP *) pb->dat, double_buffer, 0, eff[ef].ysize * a,
-                        hx, hy, eff[ef].xsize, eff[ef].ysize);
+        {
+            masked_blit((BITMAP *) pb->dat, double_buffer, 0, eff[ef].ysize * a, hx, hy, eff[ef].xsize, eff[ef].ysize);
+        }
         blit2screen(0, 0);
         kq_wait(eff[ef].delay);
         fullblit(back, double_buffer);
@@ -527,12 +529,10 @@ void draw_spellsprite(int tgt, int aflag, int ef, int shows)
                 }
                 draw_fighter(g, 0);
                 if (shows == 1 && fighter[g].sts[S_RESIST] > 0)
-                    draw_trans_sprite(double_buffer, b_shell,
-                                      fighter[g].cx + (fighter[g].cw / 2) - 24,
-                                      fighter[g].cy + (fighter[g].cl / 2) - 24);
-                masked_blit((BITMAP *) pb->dat, double_buffer, 0,
-                            eff[ef].ysize * a, dx, dy, eff[ef].xsize,
-                            eff[ef].ysize);
+                {
+                    draw_trans_sprite(double_buffer, b_shell, fighter[g].cx + (fighter[g].cw / 2) - 24, fighter[g].cy + (fighter[g].cl / 2) - 24);
+                }
+                masked_blit((BITMAP *) pb->dat, double_buffer, 0, eff[ef].ysize * a, dx, dy, eff[ef].xsize, eff[ef].ysize);
             }
         }
         blit2screen(0, 0);
@@ -558,10 +558,12 @@ void draw_spellsprite(int tgt, int aflag, int ef, int shows)
 void fight_animation(int tgt, int who, int ma)
 {
     int a;
+    unsigned int fighter_weapon_index;
 
     if (who < PSIZE)
     {
-        a = items[party[pidx[who]].eqp[EQP_WEAPON]].eff;
+        fighter_weapon_index = party[pidx[who]].eqp[EQP_WEAPON];
+        a = items[fighter_weapon_index].eff;
     }
     else
     {
