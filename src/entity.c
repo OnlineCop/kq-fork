@@ -77,7 +77,7 @@ static void chase(t_entity target_entity)
     if (g_ent[target_entity].chasing == 0)
     {
         if (entity_near(target_entity, 0, 3) == 1
-                && rand() % 100 <= g_ent[target_entity].extra)
+         && rand() % 100 <= g_ent[target_entity].extra)
         {
             g_ent[target_entity].chasing = 1;
             if (g_ent[target_entity].speed < 7)
@@ -141,10 +141,12 @@ void count_entities(void)
 
     noe = 0;
     for (i = 0; i < MAX_ENT; i++)
+    {
         if (g_ent[i].active == 1)
         {
             noe = i + 1;
         }
+    }
 }
 
 
@@ -173,10 +175,13 @@ static int entity_near(t_entity eno, t_entity tgt, int rad)
     {
         for (ax = b; ax <= rad; ax++)
         {
-            if (ex + ax >= view_x1 && ax + ax <= view_x2 && ey + ay >= view_y1
-                    && ey + ay <= view_y2)
+            if (ex + ax >= view_x1
+             && ax + ax <= view_x2
+             && ey + ay >= view_y1
+             && ey + ay <= view_y2)
             {
-                if (ex + ax == g_ent[tgt].tilex && ey + ay == g_ent[tgt].tiley)
+                if (ex + ax == g_ent[tgt].tilex
+                 && ey + ay == g_ent[tgt].tiley)
                 {
                     return 1;
                 }
@@ -206,7 +211,9 @@ int entityat(int ox, int oy, t_entity who)
 
     for (i = 0; i < MAX_ENT; i++)
     {
-        if (g_ent[i].active && ox == g_ent[i].tilex && oy == g_ent[i].tiley)
+        if (g_ent[i].active
+         && ox == g_ent[i].tilex
+         && oy == g_ent[i].tiley)
         {
             if (who >= PSIZE)
             {
@@ -354,8 +361,9 @@ static void follow(int tile_x, int tile_y)
             move(i, tile_x - g_ent[i].tilex, tile_y - g_ent[i].tiley);
         }
         else
-            move(i, g_ent[i - 1].tilex - g_ent[i].tilex,
-                 g_ent[i - 1].tiley - g_ent[i].tiley);
+        {
+            move(i, g_ent[i - 1].tilex - g_ent[i].tilex, g_ent[i - 1].tiley - g_ent[i].tiley);
+        }
     }
 }
 
@@ -452,9 +460,7 @@ static void getcommand(t_entity target_entity)
 #ifdef DEBUGMODE
             if (debugging > 0)
             {
-                sprintf(strbuf,
-                        _("Invalid entity command (%c) at position %d for ent %d"), s,
-                        g_ent[target_entity].sidx, target_entity);
+                sprintf(strbuf, _("Invalid entity command (%c) at position %d for ent %d"), s, g_ent[target_entity].sidx, target_entity);
                 program_death(strbuf);
             }
 #endif
@@ -501,8 +507,10 @@ static int move(t_entity target_entity, int dx, int dy)
     {
         ent->facing = FACE_UP;
     }
-    if (tile_x + dx == -1 || tile_x + dx == g_map.xsize ||
-            tile_y + dy == -1 || tile_y + dy == g_map.ysize)
+    if (tile_x + dx == -1
+     || tile_x + dx == g_map.xsize
+     || tile_y + dy == -1
+     || tile_y + dy == g_map.ysize)
     {
         return 0;
     }
@@ -511,15 +519,17 @@ static int move(t_entity target_entity, int dx, int dy)
         // Try to automatically walk/run around obstacle.
         if (dx && obstruction(tile_x, tile_y, dx, 0, FALSE))
         {
-            if (dy != -1 && oldfacing == ent->facing
-                    && !obstruction(tile_x, tile_y + 1, dx, 0, TRUE)
-                    && !obstruction(tile_x, tile_y, 0, 1, TRUE))
+            if (dy != -1
+             && oldfacing == ent->facing
+             && !obstruction(tile_x, tile_y + 1, dx, 0, TRUE)
+             && !obstruction(tile_x, tile_y, 0, 1, TRUE))
             {
                 dy = 1;
             }
-            else if (dy != 1 && oldfacing == ent->facing
-                     && !obstruction(tile_x, tile_y - 1, dx, 0, TRUE)
-                     && !obstruction(tile_x, tile_y, 0, -1, TRUE))
+            else if (dy != 1
+             && oldfacing == ent->facing
+             && !obstruction(tile_x, tile_y - 1, dx, 0, TRUE)
+             && !obstruction(tile_x, tile_y, 0, -1, TRUE))
             {
                 dy = -1;
             }
@@ -530,15 +540,17 @@ static int move(t_entity target_entity, int dx, int dy)
         }
         if (dy && obstruction(tile_x, tile_y, 0, dy, FALSE))
         {
-            if (dx != -1 && oldfacing == ent->facing
-                    && !obstruction(tile_x + 1, tile_y, 0, dy, TRUE)
-                    && !obstruction(tile_x, tile_y, 1, 0, TRUE))
+            if (dx != -1
+             && oldfacing == ent->facing
+             && !obstruction(tile_x + 1, tile_y, 0, dy, TRUE)
+             && !obstruction(tile_x, tile_y, 1, 0, TRUE))
             {
                 dx = 1;
             }
-            else if (dx != 1 && oldfacing == ent->facing
-                     && !obstruction(tile_x - 1, tile_y, 0, dy, TRUE)
-                     && !obstruction(tile_x, tile_y, -1, 0, TRUE))
+            else if (dx != 1
+             && oldfacing == ent->facing
+             && !obstruction(tile_x - 1, tile_y, 0, dy, TRUE)
+             && !obstruction(tile_x, tile_y, -1, 0, TRUE))
             {
                 dx = -1;
             }
@@ -552,10 +564,12 @@ static int move(t_entity target_entity, int dx, int dy)
             dx = dy = 0;
         }
     }
+
     if (!dx && !dy && oldfacing == ent->facing)
     {
         return 0;
     }
+
     if (ent->obsmode == 1 && entityat(tile_x + dx, tile_y + dy, target_entity))
     {
         return 0;
@@ -566,7 +580,7 @@ static int move(t_entity target_entity, int dx, int dy)
     {
         source_tile = tile_y * g_map.xsize + tile_x;
         if (z_seg[source_tile] != z_seg[source_tile + dx]
-                || z_seg[source_tile] != z_seg[source_tile + dy * g_map.xsize])
+         || z_seg[source_tile] != z_seg[source_tile + dy * g_map.xsize])
         {
             if (ent->facing == FACE_LEFT || ent->facing == FACE_RIGHT)
             {
@@ -596,7 +610,8 @@ static int move(t_entity target_entity, int dx, int dy)
     // Make sure player can't walk diagonally between active entities.
     if (dx && dy)
     {
-        if (obstruction(tile_x, tile_y, dx, 0, TRUE) && obstruction(tile_x, tile_y, 0, dy, TRUE))
+        if (obstruction(tile_x, tile_y, dx, 0, TRUE)
+         && obstruction(tile_x, tile_y, 0, dy, TRUE))
         {
             return 0;
         }
@@ -633,9 +648,10 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
     t_entity i;
 
     // Block entity if it tries to walk off the map
-    if ((origin_x == 0 && move_x < 0) || (origin_y == 0 && move_y < 0) ||
-            (origin_x == g_map.xsize - 1 && move_x > 0) ||
-            (origin_y == g_map.ysize - 1 && move_y > 0))
+    if ((origin_x == 0 && move_x < 0)
+     || (origin_y == 0 && move_y < 0)
+     || (origin_x == g_map.xsize - 1 && move_x > 0)
+     || (origin_y == g_map.ysize - 1 && move_y > 0))
     {
         return 1;
     }
@@ -688,7 +704,9 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
     {
         for (i = 0; i < MAX_ENT; i++)
         {
-            if (g_ent[i].active && dest_x == g_ent[i].tilex && dest_y == g_ent[i].tiley)
+            if (g_ent[i].active
+             && dest_x == g_ent[i].tilex
+             && dest_y == g_ent[i].tiley)
             {
                 return 1;
             }
@@ -952,8 +970,7 @@ void set_script(t_entity target_entity, const char *movestring)
     g_ent[target_entity].sidx = 0;   // Reset script command index
     g_ent[target_entity].cmdnum = 0; // There are no scripted commands
     g_ent[target_entity].movemode = MM_SCRIPT;   // Force the entity to follow the script
-    strncpy(g_ent[target_entity].script, movestring,
-            sizeof(g_ent[target_entity].script));
+    strncpy(g_ent[target_entity].script, movestring, sizeof(g_ent[target_entity].script));
 }
 
 
