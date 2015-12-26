@@ -159,8 +159,6 @@ int load_s_map(s_map *sm, PACKFILE *f)
 
 int save_s_map(s_map *sm, PACKFILE *f)
 {
-    size_t i;
-
     assert(sm && "sm == NULL");
     assert(f && "f == NULL");
 
@@ -251,7 +249,7 @@ int load_s_player(s_player *s, PACKFILE *f)
 
 int save_s_player(s_player *s, PACKFILE *f)
 {
-    int i;
+    size_t i;
 
     pack_fwrite(s->name, sizeof(s->name), f);
     pack_putc(0, f);             /* alignment */
@@ -294,14 +292,14 @@ int save_s_player(s_player *s, PACKFILE *f)
 
 int load_s_tileset(s_tileset *s, PACKFILE *f)
 {
-    int i;
+    size_t animation_index;
 
     pack_fread(s->icon_set, sizeof(s->icon_set), f);
-    for (i = 0; i < MAX_ANIM; ++i)
+    for (animation_index = 0; animation_index < MAX_ANIM; ++animation_index)
     {
-        s->tanim[i].start = pack_igetw(f);
-        s->tanim[i].end = pack_igetw(f);
-        s->tanim[i].delay = pack_igetw(f);
+        s->tanim[animation_index].start = pack_igetw(f);
+        s->tanim[animation_index].end = pack_igetw(f);
+        s->tanim[animation_index].delay = pack_igetw(f);
     }
     return 0;
 }
@@ -310,14 +308,14 @@ int load_s_tileset(s_tileset *s, PACKFILE *f)
 
 int save_s_tileset(s_tileset *s, PACKFILE *f)
 {
-    int i;
+    size_t animation_index;
 
     pack_fwrite(s->icon_set, sizeof(s->icon_set), f);
-    for (i = 0; i < MAX_ANIM; ++i)
+    for (animation_index = 0; animation_index < MAX_ANIM; ++animation_index)
     {
-        pack_iputw(s->tanim[i].start, f);
-        pack_iputw(s->tanim[i].end, f);
-        pack_iputw(s->tanim[i].delay, f);
+        pack_iputw(s->tanim[animation_index].start, f);
+        pack_iputw(s->tanim[animation_index].end, f);
+        pack_iputw(s->tanim[animation_index].delay, f);
     }
     return 0;
 }
