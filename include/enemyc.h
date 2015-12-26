@@ -26,8 +26,8 @@
 
 int select_encounter(int, int);         /*  combat.c  */
 void enemy_init(void);          /*  combat.c  */
-void enemy_chooseaction(int);   /*  combat.c  */
-void enemy_charmaction(int);    /*  combat.c, heroc.c  */
+void enemy_chooseaction(size_t);   /*  combat.c  */
+void enemy_charmaction(size_t);    /*  combat.c, heroc.c  */
 
 
 #endif  /* __ENEMYC_H */
