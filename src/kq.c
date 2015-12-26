@@ -137,7 +137,7 @@ s_anim adata[MAX_ANIM];
 int noe = 0;
 
 /*! Identifies characters in the party */
-int pidx[MAXCHRS];
+unsigned int pidx[MAXCHRS];
 
 /*! Number of characters in the party */
 unsigned int numchrs = 0;
@@ -269,8 +269,7 @@ static void time_counter(void);
  * hours, minutes and seconds. They're all used in the my_counter() timer
  * function just below
  */
-volatile int timer = 0, ksec = 0, kmin = 0, khr = 0,
-             timer_count = 0, animation_count = 0;
+volatile int timer = 0, ksec = 0, kmin = 0, khr = 0, timer_count = 0, animation_count = 0;
 
 /*! Current colour map */
 COLOR_MAP cmap;
@@ -284,8 +283,7 @@ unsigned char display_desc = 0;
 /*! Which map layers should be drawn. These are set when the map is loaded;
      see change_map()
  */
-unsigned char draw_background = 1, draw_middle = 1,
-              draw_foreground = 1, draw_shadow = 1;
+unsigned char draw_background = 1, draw_middle = 1, draw_foreground = 1, draw_shadow = 1;
 
 /*! Items in inventory. g_inv[][0] is the item id, g_inv[][1] is the quantity */
 unsigned short g_inv[MAX_INV][2];
@@ -399,8 +397,7 @@ s_progress progresses[120] =        // 120 progress
  */
 void activate(void)
 {
-    int zx, zy, looking_at_x = 0, looking_at_y = 0, q,
-                target_char_facing = 0, tf;
+    int zx, zy, looking_at_x = 0, looking_at_y = 0, q, target_char_facing = 0, tf;
 
     unsigned int p;
 
@@ -771,8 +768,7 @@ void change_map(const char *map_name, int msx, int msy, int mvx, int mvy)
  * \param   offset_x Push player left/right this many tiles from the marker
  * \param   offset_y Push player up/down this many tiles from the marker
  */
-void change_mapm(const char *map_name, const char *marker_name, int offset_x,
-                 int offset_y)
+void change_mapm(const char *map_name, const char *marker_name, int offset_x, int offset_y)
 {
     int msx = 0, msy = 0, mvx = 0, mvy = 0;
     s_marker *m;
@@ -781,8 +777,7 @@ void change_mapm(const char *map_name, const char *marker_name, int offset_x,
     /* Search for the marker with the name passed into the function. Both
      * player's starting position and camera position will be the same
      */
-    for (m = g_map.markers.array;
-            m < g_map.markers.array + g_map.markers.size; ++m)
+    for (m = g_map.markers.array; m < g_map.markers.array + g_map.markers.size; ++m)
     {
         if (!strcmp(marker_name, m->name))
         {
@@ -798,10 +793,13 @@ void change_mapm(const char *map_name, const char *marker_name, int offset_x,
 /*! \brief Do tile animation
  *
  * This updates tile indexes for animation threads.
+ * Animations within tilemaps consist of a starting tile index, an ending
+ * tile index, and a delay. The smaller the delay value, the faster that the
+ * animation cycles through the tiles.
  */
 void check_animation(void)
 {
-    int i, j;
+    size_t animation_index, animation_tile;
     int diff = animation_count;
 
     animation_count -= diff;
@@ -809,26 +807,26 @@ void check_animation(void)
     {
         return;
     }
-    for (i = 0; i < MAX_ANIM; i++)
+    for (animation_index = 0; animation_index < MAX_ANIM; animation_index++)
     {
-        if (adata[i].start != 0)
+        if (adata[animation_index].start != 0)
         {
-            if (adata[i].delay && adata[i].delay < adelay[i])
+            if (adata[animation_index].delay && adata[animation_index].delay < adelay[animation_index])
             {
-                adelay[i] %= adata[i].delay;
-                for (j = adata[i].start; j <= adata[i].end; j++)
+                adelay[animation_index] %= adata[animation_index].delay;
+                for (animation_tile = adata[animation_index].start; animation_tile <= adata[animation_index].end; animation_tile++)
                 {
-                    if (tilex[j] < adata[i].end)
+                    if (tilex[animation_tile] < adata[animation_index].end)
                     {
-                        tilex[j]++;
+                        tilex[animation_tile]++;
                     }
                     else
                     {
-                        tilex[j] = adata[i].start;
+                        tilex[animation_tile] = adata[animation_index].start;
                     }
                 }
             }
-            adelay[i] += diff;
+            adelay[animation_index] += diff;
         }
     }
 }
@@ -868,8 +866,7 @@ void data_dump(void)
         }
         for (a = 0; a < 120; a++)
         {
-            fprintf(ff, "%d: %s = %d\n", progresses[a].num_progress,
-                    progresses[a].name, progress[a]);
+            fprintf(ff, "%d: %s = %d\n", progresses[a].num_progress, progresses[a].name, progress[a]);
         }
         fprintf(ff, "\n");
         for (a = 0; a < NUMSHOPS; a++)
@@ -1073,20 +1070,21 @@ char *get_timer_event(void)
 
 /*! \brief Is this character in the party?
  *
- * Determine if a given character is currently in play.
+ * Determine whether the specified character is currently in play.
  *
  * \param   pn Character to ask about
- * \returns where it is in the party list (1 or 2), or 0 if not
+ * \returns 1 more than the ID of the member, if found in the party,
+ *          else 0 to indicate NOT in party.
  */
-unsigned int in_party(int pn)
+unsigned int in_party(unsigned int pn)
 {
-    unsigned int a;
+    size_t pidx_index;
 
-    for (a = 0; a < MAXCHRS; a++)
+    for (pidx_index = 0; pidx_index < MAXCHRS; pidx_index++)
     {
-        if (pidx[a] == pn)
+        if (pidx[pidx_index] == pn)
         {
-            return a + 1;
+            return pidx_index + 1;
         }
     }
 
@@ -1103,26 +1101,26 @@ unsigned int in_party(int pn)
 void init_players(void)
 {
     DATAFILE *pb;
-    int i, j;
+    size_t i, party_index, frame_index;
 
-    for (j = 0; j < MAXCHRS; j++)
+    for (party_index = 0; party_index < MAXCHRS; party_index++)
     {
         for (i = 0; i < 24; i++)
         {
-            party[j].sts[i] = 0;
+            party[party_index].sts[i] = 0;
         }
 
         for (i = 0; i < 6; i++)
         {
-            party[j].eqp[i] = 0;
+            party[party_index].eqp[i] = 0;
         }
 
         for (i = 0; i < 60; i++)
         {
-            party[j].spells[i] = 0;
+            party[party_index].spells[i] = 0;
         }
 
-        learn_new_spells(j);
+        learn_new_spells(party_index);
     }
 
     gp = 0;
@@ -1136,11 +1134,11 @@ void init_players(void)
 
     set_palette(pal);
 
-    for (i = 0; i < MAXCHRS; i++)
+    for (party_index = 0; party_index < MAXCHRS; party_index++)
     {
-        for (j = 0; j < MAXFRAMES; j++)
+        for (frame_index = 0; frame_index < MAXFRAMES; frame_index++)
         {
-            blit((BITMAP *) pb->dat, frames[i][j], j * 16, i * 16, 0, 0, 16, 16);
+            blit((BITMAP *)pb->dat, frames[party_index][frame_index], frame_index * 16, party_index * 16, 0, 0, 16, 16);
         }
     }
 
@@ -1216,8 +1214,7 @@ void kwait(int dtime)
             if (key[KEY_W] && key[KEY_ALT])
             {
                 klog(_("Alt+W Pressed:"));
-                sprintf(strbuf, "\tkwait(); cnt=%d, dtime=%d, timer_count=%d",
-                        cnt, dtime, timer_count);
+                sprintf(strbuf, "\tkwait(); cnt=%d, dtime=%d, timer_count=%d", cnt, dtime, timer_count);
                 klog(strbuf);
                 break;
             }
@@ -1227,8 +1224,7 @@ void kwait(int dtime)
         {
             if (debugging > 0)
             {
-                sprintf(strbuf, "kwait(); cnt = %d, dtime = %d, timer_count = %d",
-                        cnt, dtime, timer_count);
+                sprintf(strbuf, "kwait(); cnt = %d, dtime = %d, timer_count = %d", cnt, dtime, timer_count);
             }
             else
             {
@@ -1255,19 +1251,19 @@ void load_heroes(void)
 {
     PACKFILE *f;
     DATAFILE *pcxb;
-    int i;
+    size_t player_index;
 
     /* Hero stats */
     if ((f = pack_fopen(kqres(DATA_DIR, "hero.kq"), F_READ_PACKED)) == NULL)
     {
         program_death(_("Cannot open hero data file"));
     }
-    for (i = 0; i < MAXCHRS; ++i)
+    for (player_index = 0; player_index < MAXCHRS; ++player_index)
     {
-        /*        pack_fread (&players[i].plr, sizeof (s_player), f); */
-        load_s_player(&players[i].plr, f);
+        load_s_player(&players[player_index].plr, f);
     }
     pack_fclose(f);
+
     /* portraits */
     pcxb = load_datafile_object(PCX_DATAFILE, "KQFACES_PCX");
 
@@ -1276,12 +1272,10 @@ void load_heroes(void)
         program_death(_("Could not load kqfaces.pcx!"));
     }
 
-    for (i = 0; i < 4; ++i)
+    for (player_index = 0; player_index < 4; ++player_index)
     {
-        blit((BITMAP *) pcxb->dat, players[i].portrait, 0, i * 40, 0, 0, 40,
-             40);
-        blit((BITMAP *) pcxb->dat, players[i + 4].portrait, 40, i * 40, 0, 0,
-             40, 40);
+        blit((BITMAP *) pcxb->dat, players[player_index].portrait, 0, player_index * 40, 0, 0, 40, 40);
+        blit((BITMAP *) pcxb->dat, players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
     }
 
     unload_datafile_object(pcxb);
@@ -1325,6 +1319,10 @@ static void load_map(const char *map_name)
     load_s_map(&g_map, pf);
     for (i = 0; i < MAX_ENT; ++i)
     {
+        /* g_ent[0] and g_ent[1] are the player's avatars. All
+         * the rest on the map (PSIZE..MAX_ENT) are loaded from
+         * the map's data.
+         */
         load_s_entity(&g_ent[PSIZE + i], pf);
     }
     map_alloc();
@@ -1560,13 +1558,13 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
          * are stairs or a doorway that they should start at).
          */
         if (msx == 0 && msy == 0)
-            // Place players at default map starting coords
         {
+            // Place players at default map starting coords
             place_ent(i, g_map.stx, g_map.sty);
         }
         else
-            // Place players at specific coordinates in the map
         {
+            // Place players at specific coordinates in the map
             place_ent(i, msx, msy);
         }
 
@@ -1596,8 +1594,9 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     for (o = 0; o < (size_t) pcxb->h / 16; o++)
     {
         for (i = 0; i < (size_t) pcxb->w / 16; i++)
-            blit((BITMAP *) pb->dat, map_icons[o * (pcxb->w / 16) + i], i * 16,
-                 o * 16, 0, 0, 16, 16);
+        {
+            blit((BITMAP *) pb->dat, map_icons[o * (pcxb->w / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
+        }
     }
 
     unload_datafile_object(pb);
@@ -2147,19 +2146,21 @@ void wait_enter(void)
  * Specify a range of entities to wait for.
  * \note 20030810 PH implemented this in a neater way, need to check if it always works though.
  *
- * \param   est First entity
- * \param   efi Last entity
+ * \param   first_entity_index First entity
+ * \param   last_entity_index Last entity
  */
-void wait_for_entity(int est, int efi)
+void wait_for_entity(size_t first_entity_index, size_t last_entity_index)
 {
-    int e, n, m;
+    int any_following_entities;
+    unsigned char move_mode;
+    size_t entity_index;
 
-    if (est > efi)
+    if (first_entity_index > last_entity_index)
     {
-        int temp = est;
+        int temp = first_entity_index;
 
-        est = efi;
-        efi = temp;
+        first_entity_index = last_entity_index;
+        last_entity_index = temp;
     }
 
     autoparty = 1;
@@ -2185,18 +2186,17 @@ void wait_for_entity(int est, int efi)
             program_death(_("X-Alt pressed - exiting"));
         }
 
-        n = 0;
-        for (e = est; e <= efi; ++e)
+        any_following_entities = 0;
+        for (entity_index = first_entity_index; entity_index <= last_entity_index; ++entity_index)
         {
-            m = g_ent[e].movemode;
-            if (g_ent[e].active == 1 && (m == MM_SCRIPT || m == MM_TARGET))
+            move_mode = g_ent[entity_index].movemode;
+            if (g_ent[entity_index].active == 1 && (move_mode == MM_SCRIPT || move_mode == MM_TARGET))
             {
-                n = 1;
+                any_following_entities = 1;
                 break; // for()
             }
         }
-    }
-    while (n);
+    } while (any_following_entities);
     autoparty = 0;
 }
 
@@ -2214,7 +2214,7 @@ void wait_for_entity(int est, int efi)
  */
 void warp(int wtx, int wty, int fspeed)
 {
-    int i, f;
+    size_t entity_index, last_entity;
 
     if (hold_fade == 0)
     {
@@ -2223,23 +2223,23 @@ void warp(int wtx, int wty, int fspeed)
 
     if (numchrs == 0)
     {
-        f = 1;
+        last_entity = 1;
     }
     else
     {
-        f = numchrs;
+        last_entity = numchrs;
     }
 
-    for (i = 0; i < f; i++)
+    for (entity_index = 0; entity_index < last_entity; entity_index++)
     {
-        place_ent(i, wtx, wty);
-        g_ent[i].moving = 0;
-        g_ent[i].movcnt = 0;
-        g_ent[i].framectr = 0;
+        place_ent(entity_index, wtx, wty);
+        g_ent[entity_index].moving = 0;
+        g_ent[entity_index].movcnt = 0;
+        g_ent[entity_index].framectr = 0;
     }
 
-    vx = wtx * 16;
-    vy = wty * 16;
+    vx = wtx * TILE_W;
+    vy = wty * TILE_H;
 
     calc_viewport(1);
     drawmap();
