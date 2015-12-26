@@ -70,7 +70,7 @@ static int combat_item(int, int, int);
 static void draw_invokable(int);
 static int can_invoke_item(int);
 static int hero_invoke(int);
-static int hero_invokeitem(int, int);
+static int hero_invokeitem(size_t, size_t);
 static void hero_run(void);
 static void combat_draw_spell_menu(int, int, int);
 static int combat_spell_targeting(int);
@@ -203,6 +203,7 @@ static int combat_castable(int spell_caster, int spell_number)
 
     b = party[pidx[spell_caster]].spells[spell_number];
     if (b == M_WARP)
+    {
 #ifdef DEBUGMODE
         // They can only run if we are in debugging mode >= 3
         if (can_run == 0 && debugging < 3)
@@ -215,6 +216,7 @@ static int combat_castable(int spell_caster, int spell_number)
             return 0;
         }
 #endif
+    }
 
     if (magic[b].use == USE_ANY_INF || magic[b].use == USE_COMBAT_INF)
     {
@@ -298,16 +300,16 @@ static void combat_draw_spell_menu(int c, int ptr, int pg)
         {
             draw_icon(double_buffer, magic[z].icon, 96, j * 8 + 32);
             if (combat_castable(c, pg * NUM_SPELLS_PER_PAGE + j) == 1)
-                print_font(double_buffer, 104, j * 8 + 32, magic[z].name,
-                           FNORMAL);
+            {
+                print_font(double_buffer, 104, j * 8 + 32, magic[z].name, FNORMAL);
+            }
             else
             {
                 print_font(double_buffer, 104, j * 8 + 32, magic[z].name, FDARK);
             }
             b = mp_needed(c, z);
             sprintf(strbuf, "%d", b);
-            print_font(double_buffer, 222 - (strlen(strbuf) * 8), j * 8 + 32,
-                       strbuf, FNORMAL);
+            print_font(double_buffer, 222 - (strlen(strbuf) * 8), j * 8 + 32, strbuf, FNORMAL);
             draw_sprite(double_buffer, b_mp, 222, j * 8 + 32);
         }
     }
@@ -406,8 +408,7 @@ static int combat_item_menu(int whom)
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 16);
         /* put description of selected item */
         menubox(double_buffer, 72, 152, 20, 1, BLUE);
-        print_font(double_buffer, 80, 160,
-                   items[g_inv[ptr + pptr * 16][0]].desc, FNORMAL);
+        print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16][0]].desc, FNORMAL);
         blit2screen(0, 0);
 
         readcontrols();
@@ -461,18 +462,16 @@ static int combat_item_menu(int whom)
             else
             {
                 if (g_inv[pptr * 16 + ptr][0] == I_LTONIC)
-                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][0]].tgt - 1,
-                                    1);
+                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][0]].tgt - 1, 1);
                 else
-                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][0]].tgt - 1,
-                                    0);
+                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][0]].tgt - 1, 0);
             }
             if (z > -1)
             {
                 if (combat_item(0, g_inv[pptr * 16 + ptr][0], z) == 1)
                 {
                     if (items[fighter[whom].csmem].use != USE_ANY_INF
-                            && items[fighter[whom].csmem].use != USE_COMBAT_INF)
+                     && items[fighter[whom].csmem].use != USE_COMBAT_INF)
                     {
                         remove_item(pptr * 16 + ptr, 1);
                     }
@@ -500,12 +499,14 @@ static int combat_item_menu(int whom)
  */
 static int combat_item_usable(int itno)
 {
+    // FIXME: What is this magic number '6'?
     if (items[itno].type != 6 || items[itno].tgt == TGT_NONE)
     {
         return 0;
     }
-    if (items[itno].use == USE_NOT || items[itno].use == USE_CAMP_ONCE
-            || items[itno].use == USE_CAMP_INF)
+    if (items[itno].use == USE_NOT
+     || items[itno].use == USE_CAMP_ONCE
+     || items[itno].use == USE_CAMP_INF)
     {
         return 0;
     }
@@ -593,8 +594,7 @@ int combat_spell_menu(int c)
     }
     if (stop == 2)
     {
-        if ((fighter[c].csmem == M_LIFE || fighter[c].csmem == M_FULLLIFE)
-                && numchrs == 1)
+        if ((fighter[c].csmem == M_LIFE || fighter[c].csmem == M_FULLLIFE) && numchrs == 1)
         {
             return 0;
         }
@@ -709,9 +709,9 @@ static int hero_attack(int whom)
     }
     else
     {
+        /* PH fixme: replaced 99 with NO_STS_CHECK */
+        /* was 99 a bug? see auto_select_hero()  */
         if (fighter[whom].ctmem == 0)
-            /* PH fixme: replaced 99 with NO_STS_CHECK */
-            /* was 99 a bug? see auto_select_hero()  */
         {
             tgt = auto_select_enemy(whom, NO_STS_CHECK);
         }
@@ -797,10 +797,12 @@ void hero_choose_action(int who)
         }
         tt = 0;
         for (a = 0; a < 6; a++)
+        {
             if (can_invoke_item(party[pidx[who]].eqp[a]))
             {
                 tt++;
             }
+        }
         if (tt > 0)
         {
             strcpy(ca[my], _("Invoke"));
@@ -963,69 +965,106 @@ void hero_choose_action(int who)
  * some different luminous green weapons.
  * These colours are replaced by the 'true' weapon colours as
  * determined by s_item::kol .
- * The shape is chosen by s_fighter::cwt
+ * The shape is chosen by s_fighter::current_weapon_type
  */
 void hero_init(void)
 {
-    int z, i, p, n;
     DATAFILE *pb;
+
+    size_t fighter_index;
+    size_t frame_index;
+    size_t current_line;
+    size_t current_pixel;
+    unsigned int current_fighter_index;
+    unsigned int fighter_x;
+    unsigned int fighter_y;
+    unsigned int fighter_weapon_index;
 
     update_equipstats();
     pb = load_datafile_object(PCX_DATAFILE, "USBAT_PCX");
-    for (i = 0; i < numchrs; i++)
+
+    // Load all 8 fighters' stances into the `cframes` array.
+    // cframes[fighter's index][]
+    // cframes[][fighter's stance]
+    for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
     {
-        for (p = 0; p < MAXCFRAMES; p++)
+        for (frame_index = 0; frame_index < MAXCFRAMES; frame_index++)
         {
-            clear_bitmap(cframes[i][p]);
+            clear_bitmap(cframes[fighter_index][frame_index]);
         }
-        z = pidx[i];
-        blit((BITMAP *) pb->dat, cframes[i][0], 0, z * 32, 0, 0, 32, 32);
-        blit((BITMAP *) pb->dat, cframes[i][1], 32, z * 32, 0, 0, 32, 32);
-        blit((BITMAP *) pb->dat, cframes[i][2], 64, z * 32, 0, 0, 32, 32);
-        blit((BITMAP *) pb->dat, cframes[i][3], 96, z * 32, 0, 0, 32, 32);
-        blit((BITMAP *) pb->dat, cframes[i][4], 128, z * 32, 0, 0, 32, 32);
-        blit((BITMAP *) pb->dat, cframes[i][5], 160, z * 32, 0, 0, 32, 32);
-        blit((BITMAP *) pb->dat, cframes[i][6], z * 64 + 192,
-             fighter[i].cwt * 32, 0, 0, 32, 32);
-        blit((BITMAP *) pb->dat, cframes[i][7], z * 64 + 224,
-             fighter[i].cwt * 32, 0, 0, 32, 32);
-        if (fighter[i].cwt > 0 && items[party[z].eqp[0]].kol > 0)
+        current_fighter_index = pidx[fighter_index];
+
+        fighter_y = current_fighter_index * 32;
+
+        // Facing away from screen (see only the fighter's back)
+        blit((BITMAP *) pb->dat, cframes[fighter_index][0], 0, fighter_y, 0, 0, 32, 32);
+        // Facing toward the screen (see only the fighter's front)
+        blit((BITMAP *) pb->dat, cframes[fighter_index][1], 32, fighter_y, 0, 0, 32, 32);
+        // Arms out (casting a spell)
+        blit((BITMAP *) pb->dat, cframes[fighter_index][2], 64, fighter_y, 0, 0, 32, 32);
+        // Dead
+        blit((BITMAP *) pb->dat, cframes[fighter_index][3], 96, fighter_y, 0, 0, 32, 32);
+        // Victory: Facing toward the screen (cheering at end of a battle)
+        blit((BITMAP *) pb->dat, cframes[fighter_index][4], 128, fighter_y, 0, 0, 32, 32);
+        // Blocking: Facing away from the screen (pushed back from enemy attack)
+        blit((BITMAP *) pb->dat, cframes[fighter_index][5], 160, fighter_y, 0, 0, 32, 32);
+
+        fighter_x = current_fighter_index * 64 + 192;
+        fighter_y = fighter[fighter_index].current_weapon_type * 32;
+
+        // Attack stances, column 6 (0-based): weapon held up to strike
+        blit((BITMAP *) pb->dat, cframes[fighter_index][6], fighter_x, fighter_y, 0, 0, 32, 32);
+
+        // Attack stances, column 7 (0-based): weapon forward, striking
+        blit((BITMAP *) pb->dat, cframes[fighter_index][7], fighter_x + 32, fighter_y, 0, 0, 32, 32);
+
+        fighter_weapon_index = party[current_fighter_index].eqp[0];
+
+        // If `kol` is non-zero, loop through all pixels in both of the Attack stances bitmaps
+        // and find the light-green color in the `pal` color palette.
+        // - Value "168" corresponds to entry value {27, 54, 27, 0}
+        // - Value "175" corresponds to entry value {53, 63, 53, 0}
+        // Swap out those "green" colors and replace them with the `kol` colors that match the
+        // colors that the weapons should actually be instead.
+        if (fighter[fighter_index].current_weapon_type > 0 && items[fighter_weapon_index].kol > 0)
         {
-            for (n = 0; n < cframes[i][0]->h; n++)
+            for (current_line = 0; current_line < (unsigned int)cframes[fighter_index][0]->h; current_line++)
             {
-                for (p = 0; p < cframes[i][0]->w; p++)
+                for (current_pixel = 0; current_pixel < (unsigned int)cframes[fighter_index][0]->w; current_pixel++)
                 {
-                    if (cframes[i][6]->line[n][p] == 168)
+                    if (cframes[fighter_index][6]->line[current_line][current_pixel] == 168)
                     {
-                        cframes[i][6]->line[n][p] = items[party[z].eqp[0]].kol;
+                        cframes[fighter_index][6]->line[current_line][current_pixel] = items[fighter_weapon_index].kol;
                     }
                     else
                     {
-                        if (cframes[i][6]->line[n][p] == 175)
-                            cframes[i][6]->line[n][p] =
-                                items[party[z].eqp[0]].kol + 4;
+                        if (cframes[fighter_index][6]->line[current_line][current_pixel] == 175)
+                        {
+                            cframes[fighter_index][6]->line[current_line][current_pixel] = items[fighter_weapon_index].kol + 4;
+                        }
                     }
-                    if (cframes[i][7]->line[n][p] == 168)
+                    if (cframes[fighter_index][7]->line[current_line][current_pixel] == 168)
                     {
-                        cframes[i][7]->line[n][p] = items[party[z].eqp[0]].kol;
+                        cframes[fighter_index][7]->line[current_line][current_pixel] = items[fighter_weapon_index].kol;
                     }
                     else
                     {
-                        if (cframes[i][7]->line[n][p] == 175)
-                            cframes[i][7]->line[n][p] =
-                                items[party[z].eqp[0]].kol + 4;
+                        if (cframes[fighter_index][7]->line[current_line][current_pixel] == 175)
+                        {
+                            cframes[fighter_index][7]->line[current_line][current_pixel] = items[fighter_weapon_index].kol + 4;
+                        }
                     }
                 }
             }
         }
-        for (p = 0; p < MAXCFRAMES; p++)
+        for (frame_index = 0; frame_index < MAXCFRAMES; frame_index++)
         {
-            tcframes[i][p] = copy_bitmap(tcframes[i][p], cframes[i][p]);
+            tcframes[fighter_index][frame_index] = copy_bitmap(tcframes[fighter_index][frame_index], cframes[fighter_index][frame_index]);
         }
 
-        fighter[i].cw = 32;
-        fighter[i].cl = 32;
-        fighter[i].aframe = 0;
+        fighter[fighter_index].cw = 32;
+        fighter[fighter_index].cl = 32;
+        fighter[fighter_index].aframe = 0;
     }
     unload_datafile_object(pb);
 }
@@ -1110,61 +1149,65 @@ static int hero_invoke(int whom)
  *       aka (Debian) "#224521 Multitargeting with iron rod crashes"
  *       submitted by Sam Hocevar
  *
- * \param   whom Index of target in Hero's party
- * \param   eno Item that is being invoked
+ * \param   attacker_fighter_index Index of target in Hero's party
+ * \param   item_index Item that is being invoked
  * \returns 1 if item was successfully used, 0 otherwise
  */
-static int hero_invokeitem(int whom, int eno)
+static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 {
-    int tg = 0, a, b;
+    signed int defender_fighter_index = 0;
+    unsigned int random_fighter_index;
+    size_t fighter_index;
 
-    if (items[eno].tgt <= TGT_ALLY_ALL && items[eno].tgt >= TGT_ALLY_ONE)
+    if (items[item_index].tgt <= TGT_ALLY_ALL && items[item_index].tgt >= TGT_ALLY_ONE)
     {
-        tg = select_hero(whom, items[eno].tgt - TGT_ALLY_ONE, 0);
-        if (tg == PIDX_UNDEFINED)
+        defender_fighter_index = select_hero(attacker_fighter_index, items[item_index].tgt - TGT_ALLY_ONE, 0);
+        if (defender_fighter_index == PIDX_UNDEFINED)
         {
             return 0;
         }
     }
-    if (items[eno].tgt >= TGT_ENEMY_ONE)
+    if (items[item_index].tgt >= TGT_ENEMY_ONE)
     {
-        tg = select_enemy(whom, items[eno].tgt - TGT_ENEMY_ONE);
-        if (tg == PIDX_UNDEFINED)
+        defender_fighter_index = select_enemy(attacker_fighter_index, items[item_index].tgt - TGT_ENEMY_ONE);
+        if (defender_fighter_index == PIDX_UNDEFINED)
         {
             return 0;
         }
     }
-    if (items[eno].imb > 0)
+    if (items[item_index].imb > 0)
     {
-        cast_imbued_spell(whom, items[eno].imb, items[eno].stats[A_ATT], tg);
+        cast_imbued_spell(attacker_fighter_index, items[item_index].imb, items[item_index].stats[A_ATT], defender_fighter_index);
         return 1;
     }
 
     /* This will likely become a separate function, but here is
      * where we are invoking items.
      */
-    if (eno == I_STAFF1)
+    if (item_index == I_STAFF1)
     {
         strcpy(ctext, _("Neutralize Poison"));
         draw_spellsprite(0, 1, 27, 0);
-        for (a = 0; a < numchrs; a++)
-            if (fighter[a].sts[S_DEAD] == 0)
+        for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+        {
+            if (fighter[fighter_index].sts[S_DEAD] == 0)
             {
-                fighter[a].sts[S_POISON] = 0;
+                fighter[fighter_index].sts[S_POISON] = 0;
             }
+        }
     }
-    if (eno == I_ROD1)
+    if (item_index == I_ROD1)
     {
-        b = rand() % 3 + 1;
+        random_fighter_index = rand() % 3 + 1;
         strcpy(ctext, _("Magic Missiles"));
         dct = 1;
-        ta[tg] = 0;
-        for (a = 0; a < b; a++)
+        ta[defender_fighter_index] = 0;
+        for (fighter_index = 0; fighter_index < random_fighter_index; fighter_index++)
         {
-            if (fighter[tg].sts[S_DEAD] == 0)
+            if (fighter[defender_fighter_index].sts[S_DEAD] == 0)
             {
-                draw_attacksprite(tg, 0, 4, 1);
-                special_damage_oneall_enemies(whom, 16, -1, tg, 0);
+                draw_attacksprite(defender_fighter_index, 0, 4, 1);
+                special_damage_oneall_enemies(attacker_fighter_index, 16, -1, defender_fighter_index, 0);
             }
         }
         dct = 0;
@@ -1181,7 +1224,8 @@ static int hero_invokeitem(int whom, int eno)
  */
 static void hero_run(void)
 {
-    int a, b = 0, c = 0, bt = 0, ct = 0, p, fr, fx, fy, g = 0;
+    int a, b = 0, c = 0, bt = 0, ct = 0, fr, fx, fy, g = 0;
+    size_t fighter_index;
 
     // TT: slow_computer additions for speed-ups
     int count;
@@ -1194,12 +1238,12 @@ static void hero_run(void)
     {
         a = 74;
     }
-    for (p = 0; p < numchrs; p++)
+    for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
     {
-        if (fighter[p].sts[S_DEAD] == 0)
+        if (fighter[fighter_index].sts[S_DEAD] == 0)
         {
             b++;
-            bt += fighter[p].stats[A_SPD];
+            bt += fighter[fighter_index].stats[A_SPD];
         }
     }
     if (b == 0)
@@ -1210,12 +1254,12 @@ static void hero_run(void)
     {
         bt = bt / b;
     }
-    for (p = PSIZE; p < PSIZE + num_enemies; p++)
+    for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
     {
-        if (fighter[p].sts[S_DEAD] == 0)
+        if (fighter[fighter_index].sts[S_DEAD] == 0)
         {
             c++;
-            ct += fighter[p].stats[A_SPD];
+            ct += fighter[fighter_index].stats[A_SPD];
         }
     }
     if (c == 0)
@@ -1281,19 +1325,19 @@ static void hero_run(void)
             clear_bitmap(double_buffer);
             menubox(double_buffer, 152 - g, 32, strlen(strbuf), 1, BLUE);
             print_font(double_buffer, 160 - g, 40, strbuf, FNORMAL);
-            for (b = 0; b < numchrs; b++)
+            for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
             {
-                fx = fighter[b].cx;
-                fy = fighter[b].cy;
+                fx = fighter[fighter_index].cx;
+                fy = fighter[fighter_index].cy;
                 fr = 0;
                 if (a > 10)
                 {
                     fr++;
                 }
 
-                if (fighter[b].sts[S_DEAD] == 0)
+                if (fighter[fighter_index].sts[S_DEAD] == 0)
                 {
-                    draw_sprite(double_buffer, frames[pidx[b]][fr], fx, fy);
+                    draw_sprite(double_buffer, frames[pidx[fighter_index]][fr], fx, fy);
                 }
             }
             blit2screen(0, 0);

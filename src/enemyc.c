@@ -91,7 +91,7 @@ void unload_enemies(void);
  * -# stat[11] (A_EVD)
  * -# stat[12] (A_MAG)
  * -# bonus (bstat set to 0)
- * -# cwt (current weapon type)
+ * -# current_weapon_type (current weapon type)
  * -# welem Weapon elemental power
  * -# unl Undead Level (defense against Undead attacks)
  * -# crit (?)
@@ -778,7 +778,7 @@ static void load_enemies(void)
         f->bstat = 0;
         // Current weapon type
         fscanf(edat, "%d", &tmp);
-        f->cwt = tmp;
+        f->current_weapon_type = tmp;
         // Weapon elemental type
         fscanf(edat, "%d", &tmp);
         f->welem = tmp;

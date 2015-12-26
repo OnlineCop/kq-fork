@@ -487,10 +487,10 @@ s_fighter *player2fighter(int who, s_fighter *pf)
              * in combat, it will look like this .
              * The colour comes from s_item::kol
              */
-            tf.cwt = items[a].icon;
-            if (tf.cwt == W_CHENDIGAL)
+            tf.current_weapon_type = items[a].icon;
+            if (tf.current_weapon_type == W_CHENDIGAL)
             {
-                tf.cwt = W_SWORD;
+                tf.current_weapon_type = W_SWORD;
             }
         }
         for (b = 0; b < 13; b++)

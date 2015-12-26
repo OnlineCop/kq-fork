@@ -565,7 +565,7 @@ void fight_animation(int tgt, int who, int ma)
     }
     else
     {
-        a = fighter[who].cwt;
+        a = fighter[who].current_weapon_type;
     }
     draw_attacksprite(tgt, ma, a, 1);
 }
