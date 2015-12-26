@@ -33,6 +33,7 @@
 #include "combat.h"
 #include "draw.h"
 #include "enemyc.h"
+#include "eskill.h"
 #include "heroc.h"
 #include "kq.h"
 #include "magic.h"

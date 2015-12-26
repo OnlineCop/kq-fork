@@ -419,10 +419,11 @@ void battle_render(signed int plyr, size_t hl, int sall)
         }
     }
 
-    if (dct == 1)
+    if (display_attack_string == 1)
     {
-        menubox(double_buffer, 152 - (strlen(ctext) * 4), 8, strlen(ctext), 1, BLUE);
-        print_font(double_buffer, 160 - (strlen(ctext) * 4), 16, ctext, FNORMAL);
+        size_t ctext_length = strlen(attack_string) * 4;
+        menubox(double_buffer, 152 - ctext_length, 8, strlen(attack_string), 1, BLUE);
+        print_font(double_buffer, 160 - ctext_length, 16, attack_string, FNORMAL);
     }
 }
 

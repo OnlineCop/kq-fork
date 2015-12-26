@@ -337,10 +337,10 @@ static int combat_item(int ss, int t1, int tg)
     {
         return 0;
     }
-    strcpy(ctext, items[t1].name);
-    dct = 1;
+    strcpy(attack_string, items[t1].name);
+    display_attack_string = 1;
     r = item_effects(ss, tg, t1);
-    dct = 0;
+    display_attack_string = 0;
     if (r < 2)
     {
         return r;
@@ -1186,7 +1186,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
      */
     if (item_index == I_STAFF1)
     {
-        strcpy(ctext, _("Neutralize Poison"));
+        strcpy(attack_string, _("Neutralize Poison"));
         draw_spellsprite(0, 1, 27, 0);
         for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
         {
@@ -1199,8 +1199,8 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
     if (item_index == I_ROD1)
     {
         random_fighter_index = rand() % 3 + 1;
-        strcpy(ctext, _("Magic Missiles"));
-        dct = 1;
+        strcpy(attack_string, _("Magic Missiles"));
+        display_attack_string = 1;
         ta[defender_fighter_index] = 0;
         for (fighter_index = 0; fighter_index < random_fighter_index; fighter_index++)
         {
@@ -1210,7 +1210,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
                 special_damage_oneall_enemies(attacker_fighter_index, 16, -1, defender_fighter_index, 0);
             }
         }
-        dct = 0;
+        display_attack_string = 0;
     }
     return 1;
 }

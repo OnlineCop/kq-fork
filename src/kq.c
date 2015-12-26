@@ -234,7 +234,7 @@ s_fighter fighter[NUM_FIGHTERS];
 s_fighter tempa, tempd;
 
 /*! Name of current shop */
-char sname[39];
+char shop_name[39];
 
 /*! Number of items in a shop */
 int noi;
@@ -243,11 +243,11 @@ int noi;
 /* int shin[SHOPITEMS]; One global variable down; 999,999 to go --WK */
 
 
-/*! Should we display a box with ctext in it (used in combat) */
-int dct = 0;
+/*! Should we display a box with attack_string in it (used in combat) */
+int display_attack_string = 0;
 
 /*! Name of current spell or special ability */
-char ctext[39];
+char attack_string[39];
 
 /* PH: needed these fwd declarations */
 #ifdef DEBUGMODE

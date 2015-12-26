@@ -366,9 +366,9 @@ void draw_castersprite(int cstr, int cc)
     curx = -1;
     cury = -1;
     fighter[cstr].aframe = 2;
-    dct = 1;
+    display_attack_string = 1;
     battle_render(0, 0, 0);
-    dct = 0;
+    display_attack_string = 0;
     fullblit(double_buffer, back);
     play_effect(22, 128);
     for (a = 0; a < 10; a++)
@@ -423,9 +423,9 @@ void draw_hugesprite(int tgt, int hx, int hy, int ef, int shows)
     }
     curx = -1;
     cury = -1;
-    dct = 1;
+    display_attack_string = 1;
     battle_render(0, 0, 0);
-    dct = 0;
+    display_attack_string = 0;
     fullblit(double_buffer, back);
     play_effect(eff[ef].snd, 128);
     for (a = 0; a < eff[ef].numf; a++)
@@ -503,9 +503,9 @@ void draw_spellsprite(int tgt, int aflag, int ef, int shows)
     }
     curx = -1;
     cury = -1;
-    dct = 1;
+    display_attack_string = 1;
     battle_render(0, 0, 0);
-    dct = 0;
+    display_attack_string = 0;
     fullblit(double_buffer, back);
     play_effect(eff[ef].snd, 128);
     for (a = 0; a < eff[ef].numf; a++)

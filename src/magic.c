@@ -638,7 +638,7 @@ int combat_spell(int whom, int is_item)
             }
         }
     }
-    strcpy(ctext, magic[spell_number].name);
+    strcpy(attack_string, magic[spell_number].name);
     if (is_item == 0)
     {
         draw_castersprite(whom, eff[magic[spell_number].eff].kolor);

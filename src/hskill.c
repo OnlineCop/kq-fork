@@ -515,8 +515,8 @@ int skill_use(int who)
             blit((BITMAP *) backart->dat, temp, 0, 0, 0, 0, 320, 240);
             color_scale(temp, (BITMAP *) backart->dat, 16, 31);
             b = fighter[who].mhp / 20;
-            strcpy(ctext, _("Rage"));
-            dct = 1;
+            strcpy(attack_string, _("Rage"));
+            display_attack_string = 1;
             tempa.stats[A_ATT] = fighter[who].stats[A_ATT];
             tempa.stats[A_HIT] = fighter[who].stats[A_HIT];
             if (fighter[tgt].crit == 1)
@@ -544,7 +544,7 @@ int skill_use(int who)
 
             fighter[who].hp -= (b * 2);
             ta[who] = (b * 2);
-            dct = 0;
+            display_attack_string = 0;
             blit(temp, (BITMAP *) backart->dat, 0, 0, 0, 0, 320, 240);
             display_amount(who, FDECIDE, 0);
             if (fighter[who].sts[S_DEAD] == 0 && fighter[who].hp <= 0)
@@ -557,8 +557,8 @@ int skill_use(int who)
 
         case SARINA:
             fighter[who].ctmem = 1000;
-            strcpy(ctext, _("Sweep"));
-            dct = 1;
+            strcpy(attack_string, _("Sweep"));
+            display_attack_string = 1;
             tempa.stats[A_ATT] = tempa.stats[A_ATT] * 75 / 100;
             fighter[who].aframe = 6;
             curx = -1;
@@ -567,12 +567,12 @@ int skill_use(int who)
             blit2screen(0, 0);
             kq_wait(150);
             multi_fight(who);
-            dct = 0;
+            display_attack_string = 0;
             break;
 
         case CORIN:
-            strcpy(ctext, _("Elemental Infusion"));
-            dct = 1;
+            strcpy(attack_string, _("Elemental Infusion"));
+            display_attack_string = 1;
             fighter[who].aux = 2;
             if (combat_spell_menu(who) == 1)
             {
@@ -620,18 +620,18 @@ int skill_use(int who)
             else
             {
                 fighter[who].aux = 0;
-                dct = 0;
+                display_attack_string = 0;
                 return 0;
             }
-            dct = 0;
+            display_attack_string = 0;
             fighter[who].sts[S_INFUSE] = magic[fighter[who].csmem].elem;
             break;
 
         case AJATHAR:
             if (fighter[who].unl > 0)
             {
-                strcpy(ctext, _("Dispel Undead"));
-                dct = 1;
+                strcpy(attack_string, _("Dispel Undead"));
+                display_attack_string = 1;
                 fullblit(double_buffer, back);
                 for (a = 0; a < 14; a++)
                 {
@@ -648,7 +648,7 @@ int skill_use(int who)
                     fullblit(back, double_buffer);
                 }
                 revert_cframes(PSIZE, 1);
-                dct = 0;
+                display_attack_string = 0;
                 b = fighter[who].lvl * 15;
                 for (g = PSIZE; g < PSIZE + num_enemies; g++)
                 {
@@ -705,10 +705,10 @@ int skill_use(int who)
                         b = rand() % (25 * c) + (50 * c);
                     }
                 }
-                strcpy(ctext, _("Divine Cure"));
-                dct = 1;
+                strcpy(attack_string, _("Divine Cure"));
+                display_attack_string = 1;
                 draw_spellsprite(0, 1, 15, 1);
-                dct = 0;
+                display_attack_string = 0;
                 for (a = 0; a < numchrs; a++)
                 {
                     if (fighter[a].sts[S_STONE] == 0 && fighter[a].sts[S_DEAD] == 0)
@@ -768,14 +768,14 @@ int skill_use(int who)
             fighter[who].cx = fighter[tgt].cx - 16;
             fighter[who].cy = fighter[tgt].cy + fighter[tgt].cl - 40;
             fighter[who].facing = 1;
-            strcpy(ctext, _("Steal"));
-            dct = 1;
+            strcpy(attack_string, _("Steal"));
+            display_attack_string = 1;
             battle_render(0, who + 1, 0);
             blit2screen(0, 0);
             kq_wait(100);
             play_effect(SND_MENU, 128);
             kq_wait(500);
-            dct = 0;
+            display_attack_string = 0;
             battle_render(who, who, 0);
             found_item = 0;
 #ifdef DEBUGMODE
@@ -862,7 +862,7 @@ int skill_use(int who)
 #endif
             fighter[who].cx = tx;
             fighter[who].cy = ty;
-            dct = 0;
+            display_attack_string = 0;
             fighter[who].facing = 0;
             battle_render(who, who, 0);
             blit2screen(0, 0);
