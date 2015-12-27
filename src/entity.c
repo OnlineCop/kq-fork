@@ -137,14 +137,14 @@ static void chase(t_entity target_entity)
  */
 void count_entities(void)
 {
-    t_entity i;
+    size_t entity_index;
 
     noe = 0;
-    for (i = 0; i < MAX_ENT; i++)
+    for (entity_index = 0; entity_index < MAX_ENT; entity_index++)
     {
-        if (g_ent[i].active == 1)
+        if (g_ent[entity_index].active == 1)
         {
-            noe = i + 1;
+            noe = entity_index + 1;
         }
     }
 }

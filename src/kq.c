@@ -134,7 +134,7 @@ int num_tilesets = 0;
 s_anim adata[MAX_ANIM];
 
 /*! Number of enemies */
-int noe = 0;
+unsigned int noe = 0;
 
 /*! Identifies characters in the party */
 unsigned int pidx[MAXCHRS];

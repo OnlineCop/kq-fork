@@ -869,8 +869,7 @@ static int fieldcmp(const void *pa, const void *pb)
  */
 static void fieldsort(void)
 {
-    qsort(fields, sizeof(fields) / sizeof(*fields), sizeof(struct s_field),
-          fieldcmp);
+    qsort(fields, sizeof(fields) / sizeof(*fields), sizeof(struct s_field), fieldcmp);
 }
 
 
@@ -976,9 +975,7 @@ static int get_field(const char *n)
     struct s_field st;
 
     st.name = n;
-    ans = (struct s_field *)
-          bsearch(&st, fields, sizeof(fields) / sizeof(*fields),
-                  sizeof(struct s_field), fieldcmp);
+    ans = (struct s_field *)bsearch(&st, fields, sizeof(fields) / sizeof(*fields), sizeof(struct s_field), fieldcmp);
     return (ans ? ans->id : -1);
 }
 
@@ -1281,8 +1278,7 @@ void remove_special_item(int index)
         {
             special_items[i - 1].index = special_items[i].index;
             strncpy(special_items[i - 1].name, special_items[i].name, 38);
-            strncpy(special_items[i - 1].description,
-                    special_items[i].description, 40);
+            strncpy(special_items[i - 1].description, special_items[i].description, 40);
             special_items[i - 1].icon = special_items[i].icon;
             special_items[i - 1].quantity = special_items[i].quantity;
         }
@@ -1338,10 +1334,17 @@ static int KQ_blit(lua_State *L)
     int a = (int) lua_tonumber(L, 1);
 
     if (a >= 0 && a <= 4)
-        blit(g_bmp[a], double_buffer, (int) lua_tonumber(L, 2),
-             (int) lua_tonumber(L, 3), (int) lua_tonumber(L, 4) + xofs,
-             (int) lua_tonumber(L, 5) + yofs, (int) lua_tonumber(L, 6),
-             (int) lua_tonumber(L, 7));
+    {
+        blit(g_bmp[a],
+            double_buffer,
+            (int) lua_tonumber(L, 2),
+            (int) lua_tonumber(L, 3),
+            (int) lua_tonumber(L, 4) + xofs,
+            (int) lua_tonumber(L, 5) + yofs,
+            (int) lua_tonumber(L, 6),
+            (int) lua_tonumber(L, 7)
+        );
+    }
     return 0;
 }
 
@@ -1676,7 +1679,8 @@ static int KQ_check_key(lua_State *L)
 
 static int KQ_chest(lua_State *L)
 {
-    int gd = 0, a = 0;
+    size_t fighter_index = 0;
+    int gd = 0;
     int tno = (int) lua_tonumber(L, 1);
     int ino = (int) lua_tonumber(L, 2);
     int amt = (int) lua_tonumber(L, 3);
@@ -1705,7 +1709,7 @@ static int KQ_chest(lua_State *L)
          * in the same place twice.
          */
         if ((chestx >= 0 && chestx < g_map.xsize)
-                || (chesty >= 0 && chesty < g_map.ysize))
+         || (chesty >= 0 && chesty < g_map.ysize))
         {
             set_mtile(chestx, chesty, tile);
         }
@@ -1722,14 +1726,14 @@ static int KQ_chest(lua_State *L)
     }
     else
     {
-        while (a < numchrs)
+        while (fighter_index < numchrs)
         {
             if (check_inventory(ino, amt) > 0)
             {
                 gd = 1;
-                a = numchrs;
+                fighter_index = numchrs;
             }
-            a++;
+            fighter_index++;
         }
     }
     if (gd == 1)
@@ -1811,8 +1815,8 @@ static int KQ_copy_tile_all(lua_State *L)
     int sy = (int) lua_tonumber(L, 2);
     int dx = (int) lua_tonumber(L, 3);
     int dy = (int) lua_tonumber(L, 4);
-    int wid = (int) lua_tonumber(L, 5);
-    int hgt = (int) lua_tonumber(L, 6);
+    unsigned int wid = (unsigned int) lua_tonumber(L, 5);
+    unsigned int hgt = (unsigned int) lua_tonumber(L, 6);
     size_t os, od, i, j;
 
     /*      sprintf (strbuf, "Copy (%d,%d)x(%d,%d) to (%d,%d)", sx, sy, wid, hgt, dx, dy);
@@ -1842,8 +1846,9 @@ static int KQ_create_bmp(lua_State *L)
     int a = (int) lua_tonumber(L, 1);
 
     if (a >= 0 && a <= 4)
-        g_bmp[a] =
-            create_bitmap((int) lua_tonumber(L, 2), (int) lua_tonumber(L, 3));
+    {
+        g_bmp[a] = create_bitmap((int) lua_tonumber(L, 2), (int) lua_tonumber(L, 3));
+    }
     return 0;
 }
 
@@ -1851,8 +1856,7 @@ static int KQ_create_bmp(lua_State *L)
 
 static int KQ_create_df(lua_State *L)
 {
-    g_df = load_datafile_object(kqres(DATA_DIR, lua_tostring(L, 1)),
-                                lua_tostring(L, 2));
+    g_df = load_datafile_object(kqres(DATA_DIR, lua_tostring(L, 1)), lua_tostring(L, 2));
     return 0;
 }
 
@@ -1860,9 +1864,13 @@ static int KQ_create_df(lua_State *L)
 
 static int KQ_dark_mbox(lua_State *L)
 {
-    menubox(double_buffer, (int) lua_tonumber(L, 1) + xofs,
-            (int) lua_tonumber(L, 2) + yofs, (int) lua_tonumber(L, 3),
-            (int) lua_tonumber(L, 4), DARKBLUE);
+    menubox(double_buffer,
+        (int) lua_tonumber(L, 1) + xofs,
+        (int) lua_tonumber(L, 2) + yofs,
+        (int) lua_tonumber(L, 3),
+        (int) lua_tonumber(L, 4),
+        DARKBLUE
+    );
     return 0;
 }
 
@@ -1895,10 +1903,17 @@ static int KQ_df2bmp(lua_State *L)
     int a = (int) lua_tonumber(L, 1);
 
     if (a >= 0 && a <= 4)
-        blit((BITMAP *) g_df->dat, g_bmp[a], (int) lua_tonumber(L, 2),
-             (int) lua_tonumber(L, 3), (int) lua_tonumber(L, 4),
-             (int) lua_tonumber(L, 5), (int) lua_tonumber(L, 6),
-             (int) lua_tonumber(L, 7));
+    {
+        blit((BITMAP *) g_df->dat,
+            g_bmp[a],
+            (int) lua_tonumber(L, 2),
+            (int) lua_tonumber(L, 3),
+            (int) lua_tonumber(L, 4),
+            (int) lua_tonumber(L, 5),
+            (int) lua_tonumber(L, 6),
+            (int) lua_tonumber(L, 7)
+        );
+    }
     return 0;
 }
 
@@ -2022,8 +2037,9 @@ static int KQ_draw_pstat(lua_State *L)
     int a = (int) lua_tonumber(L, 1);
 
     if (a >= 0 && a <= 7)
-        draw_playerstat(double_buffer, a, (int) lua_tonumber(L, 2) + xofs,
-                        (int) lua_tonumber(L, 3) + yofs);
+    {
+        draw_playerstat(double_buffer, a, (int) lua_tonumber(L, 2) + xofs, (int) lua_tonumber(L, 3) + yofs);
+    }
     return 0;
 }
 
@@ -2034,8 +2050,11 @@ static int KQ_drawframe(lua_State *L)
     int a = (int) lua_tonumber(L, 1);
     int b = (int) lua_tonumber(L, 2);
 
-    draw_sprite(double_buffer, frames[a][b], (int) lua_tonumber(L, 3) + xofs,
-                (int) lua_tonumber(L, 4) + yofs);
+    draw_sprite(double_buffer,
+        frames[a][b],
+        (int) lua_tonumber(L, 3) + xofs,
+        (int) lua_tonumber(L, 4) + yofs
+    );
     return 0;
 }
 
@@ -2055,8 +2074,13 @@ static int KQ_drawsprite(lua_State *L)
     int a = (int) lua_tonumber(L, 1);
 
     if (a >= 0 && a <= 4)
-        draw_sprite(double_buffer, g_bmp[a], (int) lua_tonumber(L, 2) + xofs,
-                    (int) lua_tonumber(L, 3) + yofs);
+    {
+        draw_sprite(double_buffer,
+            g_bmp[a],
+            (int) lua_tonumber(L, 2) + xofs,
+            (int) lua_tonumber(L, 3) + yofs
+        );
+    }
     return 0;
 }
 
@@ -2654,9 +2678,9 @@ static int KQ_get_progress(lua_State *L)
             return 1;
         }
         else
-            return luaL_error(L, "%sExpected integer from 0 to %d. Got %d.",
-                              function_name, SIZE_PROGRESS - 1, a);
-
+        {
+            return luaL_error(L, "%sExpected integer from 0 to %d. Got %d.", function_name, SIZE_PROGRESS - 1, a);
+        }
     }
 
     return luaL_error(L, "%sArgument must be an integer.", function_name);
@@ -2748,8 +2772,10 @@ static int KQ_give_item(lua_State *L)
 
 static int KQ_give_xp(lua_State *L)
 {
-    give_xp((int) lua_tonumber(L, 1), (int) lua_tonumber(L, 2),
-            (int) lua_tonumber(L, 3));
+    give_xp((int) lua_tonumber(L, 1),
+        (int) lua_tonumber(L, 2),
+        (int) lua_tonumber(L, 3)
+    );
     return 0;
 }
 
@@ -2767,8 +2793,10 @@ static int KQ_in_forest(lua_State *L)
 
 static int KQ_inn(lua_State *L)
 {
-    inn(lua_tostring(L, 1), (int) lua_tonumber(L, 2),
-        (int) lua_tonumber(L, 3));
+    inn(lua_tostring(L, 1),
+        (int) lua_tonumber(L, 2),
+        (int) lua_tonumber(L, 3)
+    );
     return 0;
 }
 
@@ -2814,9 +2842,13 @@ static int KQ_krnd(lua_State *L)
 
 static int KQ_light_mbox(lua_State *L)
 {
-    menubox(double_buffer, (int) lua_tonumber(L, 1) + xofs,
-            (int) lua_tonumber(L, 2) + yofs, (int) lua_tonumber(L, 3),
-            (int) lua_tonumber(L, 4), DARKRED);
+    menubox(double_buffer,
+        (int) lua_tonumber(L, 1) + xofs,
+        (int) lua_tonumber(L, 2) + yofs,
+        (int) lua_tonumber(L, 3),
+        (int) lua_tonumber(L, 4),
+        DARKRED
+    );
     return 0;
 }
 
@@ -2863,10 +2895,17 @@ static int KQ_maskblit(lua_State *L)
     int a = (int) lua_tonumber(L, 1);
 
     if (a >= 0 && a <= 4)
-        masked_blit(g_bmp[a], double_buffer, (int) lua_tonumber(L, 2),
-                    (int) lua_tonumber(L, 3), (int) lua_tonumber(L, 4) + xofs,
-                    (int) lua_tonumber(L, 5) + yofs, (int) lua_tonumber(L, 6),
-                    (int) lua_tonumber(L, 7));
+    {
+        masked_blit(g_bmp[a],
+            double_buffer,
+            (int) lua_tonumber(L, 2),
+            (int) lua_tonumber(L, 3),
+            (int) lua_tonumber(L, 4) + xofs,
+            (int) lua_tonumber(L, 5) + yofs,
+            (int) lua_tonumber(L, 6),
+            (int) lua_tonumber(L, 7)
+        );
+    }
     return 0;
 }
 
@@ -2874,9 +2913,13 @@ static int KQ_maskblit(lua_State *L)
 
 static int KQ_mbox(lua_State *L)
 {
-    menubox(double_buffer, (int) lua_tonumber(L, 1) + xofs,
-            (int) lua_tonumber(L, 2) + yofs, (int) lua_tonumber(L, 3),
-            (int) lua_tonumber(L, 4), BLUE);
+    menubox(double_buffer,
+        (int) lua_tonumber(L, 1) + xofs,
+        (int) lua_tonumber(L, 2) + yofs,
+        (int) lua_tonumber(L, 3),
+        (int) lua_tonumber(L, 4),
+        BLUE
+    );
     return 0;
 }
 
@@ -2982,8 +3025,14 @@ static int KQ_move_entity(lua_State *L)
         kill = (int) lua_tonumber(L, 4);
     }
 
-    find_path(entity_id, g_ent[entity_id].tilex, g_ent[entity_id].tiley,
-              target_x, target_y, buffer, sizeof(buffer));
+    find_path(entity_id,
+        g_ent[entity_id].tilex,
+        g_ent[entity_id].tiley,
+        target_x,
+        target_y,
+        buffer,
+        sizeof(buffer)
+    );
 
     /*  FIXME: The fourth parameter is a ugly hack for now.  */
     if (kill)
@@ -3032,16 +3081,25 @@ static int KQ_orient_heroes(lua_State *L)
         }
         if (g_ent[0].tilex == g_ent[1].tilex) {
             if (g_ent[0].tiley < g_ent[1].tiley)
+            {
                 lastm[0] = MOVE_UP;
+            }
             else
+            {
                 lastm[0] = MOVE_DOWN;
+            }
             return 0;
         }
-        if (g_ent[0].tiley == g_ent[1].tiley) {
+        if (g_ent[0].tiley == g_ent[1].tiley)
+        {
             if (g_ent[0].tilex < g_ent[1].tilex)
+            {
                 lastm[0] = MOVE_LEFT;
+            }
             else
+            {
                 lastm[0] = MOVE_RIGHT;
+            }
             return 0;
         }
     }
@@ -3108,9 +3166,12 @@ static int KQ_pnum(lua_State *L)
     int a = (int) lua_tonumber(L, 3);
 
     sprintf(strbuf, "%d", a);
-    print_font(double_buffer, (int) lua_tonumber(L, 1) + xofs,
-               (int) lua_tonumber(L, 2) + yofs, strbuf,
-               (int) lua_tonumber(L, 4));
+    print_font(double_buffer,
+        (int) lua_tonumber(L, 1) + xofs,
+        (int) lua_tonumber(L, 2) + yofs,
+        strbuf,
+        (int) lua_tonumber(L, 4)
+    );
     return 0;
 }
 
@@ -3181,9 +3242,12 @@ static int KQ_prompt(lua_State *L)
 
 static int KQ_ptext(lua_State *L)
 {
-    print_font(double_buffer, (int) lua_tonumber(L, 1) + xofs,
-               (int) lua_tonumber(L, 2) + yofs, lua_tostring(L, 3),
-               (int) lua_tonumber(L, 4));
+    print_font(double_buffer,
+        (int) lua_tonumber(L, 1) + xofs,
+        (int) lua_tonumber(L, 2) + yofs,
+        lua_tostring(L, 3),
+        (int) lua_tonumber(L, 4)
+    );
     return 0;
 }
 
@@ -3277,7 +3341,7 @@ static int KQ_remove_chr(lua_State *L)
             {
                 for (b = 0; b < PSIZE - 1; b++)
                 {
-                    if (pidx[b] == ENTITY_NONE)
+                    if (pidx[b] == (unsigned int)ENTITY_NONE)
                     {
                         pidx[b] = pidx[b + 1];
                         pidx[b + 1] = ENTITY_NONE;
@@ -3438,8 +3502,10 @@ static int KQ_set_btile(lua_State *L)
         /* Format:
          *    set_btile(x, y, value)
          */
-        set_btile((int) lua_tonumber(L, 1), (int) lua_tonumber(L, 2),
-                  (int) lua_tonumber(L, 3));
+        set_btile((int) lua_tonumber(L, 1),
+            (int) lua_tonumber(L, 2),
+            (int) lua_tonumber(L, 3)
+        );
     }
     return 0;
 }
@@ -3691,8 +3757,10 @@ static int KQ_set_ftile(lua_State *L)
         /* Format:
          *    set_ftile(x, y, value)
          */
-        set_ftile((int) lua_tonumber(L, 1), (int) lua_tonumber(L, 2),
-                  (int) lua_tonumber(L, 3));
+        set_ftile((int) lua_tonumber(L, 1),
+            (int) lua_tonumber(L, 2),
+            (int) lua_tonumber(L, 3)
+        );
     }
     return 0;
 }
@@ -3796,8 +3864,10 @@ static int KQ_set_mtile(lua_State *L)
         /* Format:
          *    set_mtile(x, y, value)
          */
-        set_mtile((int) lua_tonumber(L, 1), (int) lua_tonumber(L, 2),
-                  (int) lua_tonumber(L, 3));
+        set_mtile((int) lua_tonumber(L, 1),
+            (int) lua_tonumber(L, 2),
+            (int) lua_tonumber(L, 3)
+        );
     }
     return 0;
 }
@@ -3806,9 +3876,9 @@ static int KQ_set_mtile(lua_State *L)
 
 static int KQ_set_noe(lua_State *L)
 {
-    int a = (int) lua_tonumber(L, 1);
+    unsigned int a = (unsigned int) lua_tonumber(L, 1);
 
-    if (a >= 0 && a <= MAX_ENT + PSIZE)
+    if (a <= MAX_ENT + PSIZE)
     {
         noe = a;
     }
@@ -3844,8 +3914,10 @@ static int KQ_set_obs(lua_State *L)
         /* Format:
          *    set_obs(x, y, value)
          */
-        set_obs((int) lua_tonumber(L, 1), (int) lua_tonumber(L, 2),
-                (int) lua_tonumber(L, 3));
+        set_obs((int) lua_tonumber(L, 1),
+            (int) lua_tonumber(L, 2),
+            (int) lua_tonumber(L, 3)
+        );
     }
     return 0;
 }
@@ -4111,9 +4183,9 @@ static int KQ_set_progress(lua_State *L)
             return 0;
         }
         else
-            return luaL_error(L, "%s: Expected integer from 0 to %d. Got %d.",
-                              error_prefix, SIZE_PROGRESS - 1, a);
-
+        {
+            return luaL_error(L, "%s: Expected integer from 0 to %d. Got %d.", error_prefix, SIZE_PROGRESS - 1, a);
+        }
     }
 
     return luaL_error(L, "%s must be an integer.", error_prefix);
@@ -4174,8 +4246,10 @@ static int KQ_set_shadow(lua_State *L)
         /* Format:
          *    set_shadow(x, y, value)
          */
-        set_shadow((int) lua_tonumber(L, 1), (int) lua_tonumber(L, 2),
-                   (int) lua_tonumber(L, 3));
+        set_shadow((int) lua_tonumber(L, 1),
+            (int) lua_tonumber(L, 2),
+            (int) lua_tonumber(L, 3)
+        );
     }
     return 0;
 }
@@ -4326,8 +4400,10 @@ static int KQ_set_zone(lua_State *L)
         /* Format:
          *    set_zone(x, y, value)
          */
-        set_zone((int) lua_tonumber(L, 1), (int) lua_tonumber(L, 2),
-                 (int) lua_tonumber(L, 3));
+        set_zone((int) lua_tonumber(L, 1),
+            (int) lua_tonumber(L, 2),
+            (int) lua_tonumber(L, 3)
+        );
     }
     return 0;
 }
@@ -4394,8 +4470,7 @@ static int KQ_shop_add_item(lua_State *L)
     index = (size_t) lua_tonumber(L, 1);
     if (index >= NUMSHOPS)
     {
-        printf(_("Value passed to shop_add_item() L::1 (%u) >= NUMSHOPS\n"),
-               (unsigned int) index);
+        printf(_("Value passed to shop_add_item() L::1 (%u) >= NUMSHOPS\n"), (unsigned int) index);
         return 0;
     }
 
@@ -4479,13 +4554,11 @@ static int KQ_traceback(lua_State *theL)
     while (lua_getstack(theL, level, &ar) != 0)
     {
         lua_getinfo(theL, "Sln", &ar);
-        printf(_("#%d Line %d in (%s %s) %s\n"), level, ar.currentline, ar.what,
-               ar.namewhat, ar.name);
+        printf(_("#%d Line %d in (%s %s) %s\n"), level, ar.currentline, ar.what, ar.namewhat, ar.name);
         ++level;
     }
     message
-    (_("Script error. If KQ was compiled with DEBUGMODE, see allegro.log"),
-     255, 0, xofs, yofs);
+    (_("Script error. If KQ was compiled with DEBUGMODE, see allegro.log"), 255, 0, xofs, yofs);
     return 1;
 }
 
@@ -4747,9 +4820,9 @@ int KQ_print(lua_State *L)
  */
 static int KQ_party_getter(lua_State *L)
 {
-    int which = lua_tonumber(L, 2);
+    unsigned int which = (unsigned int)lua_tonumber(L, 2);
 
-    if (which >= 0 && which < numchrs)
+    if (which < numchrs)
     {
         lua_getglobal(L, "player");
         lua_rawgeti(L, -1, pidx[which]);
