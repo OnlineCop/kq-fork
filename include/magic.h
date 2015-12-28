@@ -99,19 +99,19 @@
 /*! non-combat spell states */
 #define P_REPULSE         48
 
-int combat_spell(int, int);     /*  enemyc.c, heroc.c  */
-int cast_spell(int, int);       /*  masmenu.c  */
-void cast_imbued_spell(int, int, int, int);     /*  combat.c, heroc.c  */
-void special_damage_oneall_enemies(int, int, int, int, int);    /*  eskill.c heroc.c  */
-int res_adjust(int, int, int);  /*  combat.c, itemmenu.c  */
+int combat_spell(size_t, int);     /*  enemyc.c, heroc.c  */
+int cast_spell(size_t, int);       /*  masmenu.c  */
+void cast_imbued_spell(size_t, int, int, int);     /*  combat.c, heroc.c  */
+void special_damage_oneall_enemies(size_t, int, int, size_t, int);    /*  eskill.c heroc.c  */
+int res_adjust(size_t, size_t, int);  /*  combat.c, itemmenu.c  */
 int res_throw(int, int);        /*  combat.c, eskill.c  */
 int non_dmg_save(int, int);     /*  combat.c, eskill.c  */
-int mp_needed(int, int);        /*  enemyc.c, hskill.c, masmenu.c, heroc.c  */
-void adjust_hp(int, int);       /*  combat.c, [he]skill.c, (item|mas)menu.c, heroc.c  */
-void adjust_mp(int, int);       /*  eskill.c, itemmenu.c  */
+int mp_needed(size_t, int);        /*  enemyc.c, hskill.c, masmenu.c, heroc.c  */
+void adjust_hp(size_t, int);       /*  combat.c, [he]skill.c, (item|mas)menu.c, heroc.c  */
+void adjust_mp(size_t, int);       /*  eskill.c, itemmenu.c  */
 int do_shell_check(int, int);   /*  hskill.c, itemmenu.c  */
 int do_shield_check(int, int);  /*  only in combat.c  */
-s_fighter status_adjust(int);   /*  combat.c, [he]skill.c  */
+s_fighter status_adjust(size_t);   /*  combat.c, [he]skill.c  */
 
 
 #endif  /* __MAGIC_H */
