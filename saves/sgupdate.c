@@ -171,7 +171,7 @@ void load_game_v85_90 (void)
    pack_fread (progress, 2000, sdat);
    pack_fread (treasure, 1000, sdat);
    pack_fread (shopq, 600 * sizeof (shopq[0][0]), sdat);
-   pack_fread (g_inv, 128 * sizeof (g_inv[0][0]), sdat);
+   pack_fread (g_inv, 128 * sizeof (g_inv[0][GLOBAL_INVENTORY_ITEM]), sdat);
    pack_fread (&gsvol, sizeof (gsvol), sdat);
    pack_fread (&gmvol, sizeof (gmvol), sdat);
    if (tv == 85)
@@ -231,7 +231,7 @@ void save_game (char *fname)
    pack_fwrite (progress, 2000, gdat);
    pack_fwrite (treasure, 1000, gdat);
    pack_fwrite (shopq, 600 * sizeof (shopq[0][0]), gdat);
-   pack_fwrite (g_inv, 128 * sizeof (g_inv[0][0]), gdat);
+   pack_fwrite (g_inv, 128 * sizeof (g_inv[0][GLOBAL_INVENTORY_ITEM]), gdat);
    pack_fwrite (&gsvol, sizeof (gsvol), gdat);
    pack_fwrite (&gmvol, sizeof (gmvol), gdat);
    pack_fwrite (&windowed, sizeof (windowed), gdat);
@@ -262,20 +262,20 @@ int invchk (int i, int q)
    if (i == 0 || q == 0)
       return 3;
    for (n = 63; n >= 0; n--) {
-      if (g_inv[n][0] == 0)
+      if (g_inv[n][GLOBAL_INVENTORY_ITEM] == 0)
          v = n;
-      if (g_inv[n][0] == i && g_inv[n][1] <= 9 - q)
+      if (g_inv[n][GLOBAL_INVENTORY_ITEM] == i && g_inv[n][GLOBAL_INVENTORY_QUANTITY] <= 9 - q)
          d = n;
    }
    if (v == 64 && d == 64)
       return 0;
    if (d < 64) {
-      g_inv[d][0] = i;
-      g_inv[d][1] += q;
+      g_inv[d][GLOBAL_INVENTORY_ITEM] = i;
+      g_inv[d][GLOBAL_INVENTORY_QUANTITY] += q;
       return 1;
    }
-   g_inv[v][0] = i;
-   g_inv[v][1] += q;
+   g_inv[v][GLOBAL_INVENTORY_ITEM] = i;
+   g_inv[v][GLOBAL_INVENTORY_QUANTITY] += q;
    return 2;
 }
 
@@ -318,8 +318,8 @@ int main (int argc, char **argv)
 
    if (tv == 84) {
       for (a = 0; a < 64; a++) {
-         g_inv[a][0] = 0;
-         g_inv[a][1] = 0;
+         g_inv[a][GLOBAL_INVENTORY_ITEM] = 0;
+         g_inv[a][GLOBAL_INVENTORY_QUANTITY] = 0;
       }
 
       fprintf (stdout, "Doing player conversions.\n");
