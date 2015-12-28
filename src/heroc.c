@@ -745,7 +745,9 @@ static int hero_attack(int whom)
  */
 void hero_choose_action(size_t fighter_index)
 {
-    int stop = 0, a, amy;
+    int stop = 0, amy;
+    size_t equipment_index;
+    size_t ca_index;
     unsigned int sptr = 1, ptr = 0, my = 0, tt, chi[9];
 
     // This is going to blow up if we translate _(...) text into a language
@@ -799,9 +801,9 @@ void hero_choose_action(size_t fighter_index)
             my++;
         }
         tt = 0;
-        for (a = 0; a < NUM_EQUIPMENT; a++)
+        for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
         {
-            if (can_invoke_item(party[pidx[fighter_index]].eqp[a]))
+            if (can_invoke_item(party[pidx[fighter_index]].eqp[equipment_index]))
             {
                 tt++;
             }
@@ -821,9 +823,9 @@ void hero_choose_action(size_t fighter_index)
             amy = 184;
         }
         menubox(double_buffer, 120, amy, 8, my, BLUE);
-        for (a = 0; a < my; a++)
+        for (ca_index = 0; ca_index < my; ca_index++)
         {
-            print_font(double_buffer, 136, a * 8 + amy + 8, ca[a], FNORMAL);
+            print_font(double_buffer, 136, ca_index * 8 + amy + 8, ca[ca_index], FNORMAL);
         }
         if (sptr == 1)
         {
@@ -891,7 +893,7 @@ void hero_choose_action(size_t fighter_index)
                 // of whether DEBUGMODE is declared or not.
                 // It also needs to run in case "debugging" is NOT >= 3.
 #endif
-                if (sptr > 1 + can_run)
+                if (sptr - 1 > can_run)
                 {
                     sptr = 1 + can_run;
                 }
@@ -1163,7 +1165,7 @@ static int hero_invoke(int whom)
  */
 static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 {
-    signed int defender_fighter_index = 0;
+    ePIDX defender_fighter_index = 0;
     unsigned int random_fighter_index;
     size_t fighter_index;
 

@@ -129,15 +129,16 @@ static void buy_item(int how_many, int item_no)
 static void buy_menu(void)
 {
     int stop = 0, cost;
-    size_t a, i, j, xptr = 1, yptr = 0;
-    int k, max, max_x = 0;
+    size_t shop_item_index, item_index, xptr = 1, yptr = 0;
+    eFontColor font_color;
+    unsigned int max, max_x = 0;
     unsigned short item_no;
 
-    for (a = 0; a < noi; a++)
+    for (shop_item_index = 0; shop_item_index < num_shop_items; shop_item_index++)
     {
-        if (shops[shop_no].items_current[a] > max_x)
+        if (shops[shop_no].items_current[shop_item_index] > max_x)
         {
-            max_x = shops[shop_no].items_current[a];
+            max_x = shops[shop_no].items_current[shop_item_index];
         }
     }
 
@@ -156,37 +157,37 @@ static void buy_menu(void)
         menubox(double_buffer, 32 + xofs, 24 + yofs, 30, 16, BLUE);
         menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, BLUE);
         draw_shopgold();
-        for (i = 0; i < noi; i++)
+        for (shop_item_index = 0; shop_item_index < num_shop_items; shop_item_index++)
         {
-            j = shops[shop_no].items[i];
-            max = shops[shop_no].items_current[i];
+            item_index = shops[shop_no].items[shop_item_index];
+            max = shops[shop_no].items_current[shop_item_index];
             if (xptr <= max)
             {
                 max = xptr;
             }
-            draw_icon(double_buffer, items[j].icon, 48 + xofs, i * 8 + 32 + yofs);
-            cost = max * items[j].price;
+            draw_icon(double_buffer, items[item_index].icon, 48 + xofs, shop_item_index * 8 + 32 + yofs);
+            cost = max * items[item_index].price;
             if (cost > gp)
             {
-                k = FDARK;
+                font_color = FDARK;
             }
             else
             {
-                k = FNORMAL;
+                font_color = FNORMAL;
             }
-            print_font(double_buffer, 56 + xofs, i * 8 + 32 + yofs, items[j].name, k);
+            print_font(double_buffer, 56 + xofs, shop_item_index * 8 + 32 + yofs, items[item_index].name, font_color);
             if (max > 1)
             {
-                sprintf(strbuf, "(%d)", max);
-                print_font(double_buffer, 256 + xofs, i * 8 + 32 + yofs, strbuf, k);
+                sprintf(strbuf, "(%u)", max);
+                print_font(double_buffer, 256 + xofs, shop_item_index * 8 + 32 + yofs, strbuf, font_color);
             }
             if (max > 0)
             {
                 sprintf(strbuf, "%d", cost);
-                print_font(double_buffer, 248 - (strlen(strbuf) * 8) + xofs, i * 8 + 32 + yofs, strbuf, k);
+                print_font(double_buffer, 248 - (strlen(strbuf) * 8) + xofs, shop_item_index * 8 + 32 + yofs, strbuf, font_color);
             }
             else
-                print_font(double_buffer, 200 + xofs, i * 8 + 32 + yofs, _("Sold Out!"), k);
+                print_font(double_buffer, 200 + xofs, shop_item_index * 8 + 32 + yofs, _("Sold Out!"), font_color);
         }
 
         item_no = shops[shop_no].items[yptr];
@@ -205,14 +206,14 @@ static void buy_menu(void)
             }
             else
             {
-                yptr = noi - 1;
+                yptr = num_shop_items - 1;
             }
             play_effect(SND_CLICK, 128);
         }
         if (down)
         {
             unpress();
-            if (yptr < noi - 1)
+            if (yptr < num_shop_items - 1)
             {
                 yptr++;
             }
@@ -263,21 +264,21 @@ static void buy_menu(void)
  */
 void do_inn_effects(int do_delay)
 {
-    int a, b, c;
+    size_t pidx_index, stats_index, party_index;
 
-    for (a = 0; a < numchrs; a++)
+    for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
     {
-        c = pidx[a];
-        party[c].hp = party[c].mhp;
-        party[c].mp = party[c].mmp;
-        for (b = 0; b < 8; b++)
+        party_index = pidx[pidx_index];
+        party[party_index].hp = party[party_index].mhp;
+        party[party_index].mp = party[party_index].mmp;
+        for (stats_index = 0; stats_index < 8; stats_index++)
         {
-            party[c].sts[b] = 0;
+            party[party_index].sts[stats_index] = 0;
         }
     }
     pause_music();
     play_effect(36, 128);
-    if (do_delay)
+    if (do_delay != 0)
     {
         do_transition(TRANS_FADE_OUT, 2);
         drawmap();
@@ -316,65 +317,69 @@ void draw_shopgold(void)
  */
 static void draw_sideshot(int selected_item)
 {
-    int a, j, ownd = 0, eqp = 0, wx, wy, slot;
+    int wx, wy;
     int cs[13];
+    unsigned int ownd = 0, equipped_items = 0, slot;
+    size_t pidx_index, equipment_index, stats_index, cs_index, spell_index, inventory_index;
 
     menubox(double_buffer, 80 + xofs, 192 + yofs, 18, 4, BLUE);
-    for (a = 0; a < numchrs; a++)
+    for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
     {
-        wx = a * 72 + 88 + xofs;
+        wx = pidx_index * 72 + 88 + xofs;
         wy = 200 + yofs;
-        draw_sprite(double_buffer, frames[pidx[a]][2], wx, wy);
+        draw_sprite(double_buffer, frames[pidx[pidx_index]][2], wx, wy);
     }
     if (selected_item == -1)
     {
         return;
     }
     slot = items[selected_item].type;
-    for (a = 0; a < numchrs; a++)
+    for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
     {
-        wx = a * 72 + 88 + xofs;
+        wx = pidx_index * 72 + 88 + xofs;
         wy = 200 + yofs;
-        for (j = 0; j < 6; j++)
-            if (party[pidx[a]].eqp[j] == selected_item)
+        for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
+        {
+            if (party[pidx[pidx_index]].eqp[equipment_index] == selected_item)
             {
-                eqp++;
+                equipped_items++;
             }
+        }
         if (slot < 6)
         {
-            if (party[pidx[a]].eqp[slot] > 0)
+            if (party[pidx[pidx_index]].eqp[slot] > 0)
             {
-                for (j = 0; j < NUM_STATS; j++)
-                    cs[j] =
-                        items[selected_item].stats[j] -
-                        items[party[pidx[a]].eqp[slot]].stats[j];
+                for (stats_index = 0; stats_index < NUM_STATS; stats_index++)
+                {
+                    cs[stats_index] = items[selected_item].stats[stats_index] - items[party[pidx[pidx_index]].eqp[slot]].stats[stats_index];
+                }
             }
             else
             {
-                for (j = 0; j < NUM_STATS; j++)
+                for (stats_index = 0; stats_index < NUM_STATS; stats_index++)
                 {
-                    cs[j] = items[selected_item].stats[j];
+                    cs[stats_index] = items[selected_item].stats[stats_index];
                 }
             }
             if (slot == 0)
             {
                 draw_icon(double_buffer, 3, wx + 16, wy);
                 print_font(double_buffer, wx + 16, wy + 8, "%", FNORMAL);
-                for (j = 0; j < 2; j++)
+                for (cs_index = 0; cs_index < 2; cs_index++)
                 {
-                    if (cs[j + 8] < 0)
+                    if (cs[cs_index + 8] < 0)
                     {
-                        sprintf(strbuf, "%-4d", cs[j + 8]);
-                        print_font(double_buffer, wx + 24, j * 8 + wy, strbuf, FRED);
+                        sprintf(strbuf, "%-4d", cs[cs_index + 8]);
+                        print_font(double_buffer, wx + 24, cs_index * 8 + wy, strbuf, FRED);
                     }
-                    else if (cs[j + 8] > 0)
+                    else if (cs[cs_index + 8] > 0)
                     {
-                        sprintf(strbuf, "+%-3d", cs[j + 8]);
-                        print_font(double_buffer, wx + 24, j * 8 + wy, strbuf, FGREEN);
+                        sprintf(strbuf, "+%-3d", cs[cs_index + 8]);
+                        print_font(double_buffer, wx + 24, cs_index * 8 + wy, strbuf, FGREEN);
                     }
-                    else if (cs[j + 8] == 0)
+                    else if (cs[cs_index + 8] == 0)
                     {
-                        print_font(double_buffer, wx + 24, j * 8 + wy, "=", FNORMAL);
+                        print_font(double_buffer, wx + 24, cs_index * 8 + wy, "=", FNORMAL);
                     }
                 }
             }
@@ -383,25 +388,25 @@ static void draw_sideshot(int selected_item)
                 draw_icon(double_buffer, 9, wx + 16, wy);
                 print_font(double_buffer, wx + 16, wy + 8, "%", FNORMAL);
                 draw_icon(double_buffer, 47, wx + 16, wy + 16);
-                for (j = 0; j < 3; j++)
+                for (cs_index = 0; cs_index < 3; cs_index++)
                 {
-                    if (cs[j + 10] < 0)
+                    if (cs[cs_index + 10] < 0)
                     {
-                        sprintf(strbuf, "%-4d", cs[j + 10]);
-                        print_font(double_buffer, wx + 24, j * 8 + wy, strbuf, FRED);
+                        sprintf(strbuf, "%-4d", cs[cs_index + 10]);
+                        print_font(double_buffer, wx + 24, cs_index * 8 + wy, strbuf, FRED);
                     }
-                    else if (cs[j + 10] > 0)
+                    else if (cs[cs_index + 10] > 0)
                     {
-                        sprintf(strbuf, "+%-3d", cs[j + 10]);
-                        print_font(double_buffer, wx + 24, j * 8 + wy, strbuf, FGREEN);
+                        sprintf(strbuf, "+%-3d", cs[cs_index + 10]);
+                        print_font(double_buffer, wx + 24, cs_index * 8 + wy, strbuf, FGREEN);
                     }
-                    else if (cs[j + 10] == 0)
+                    else if (cs[cs_index + 10] == 0)
                     {
-                        print_font(double_buffer, wx + 24, j * 8 + wy, "=", FNORMAL);
+                        print_font(double_buffer, wx + 24, cs_index * 8 + wy, "=", FNORMAL);
                     }
                 }
             }
-            if (items[selected_item].eq[pidx[a]] == 0)
+            if (items[selected_item].eq[pidx[pidx_index]] == 0)
             {
                 draw_sprite(double_buffer, noway, wx, wy);
             }
@@ -410,24 +415,26 @@ static void draw_sideshot(int selected_item)
         {
             if (items[selected_item].icon == W_SBOOK || items[selected_item].icon == W_ABOOK)
             {
-                for (j = 0; j < 60; j++)
-                    if (party[pidx[a]].spells[j] == items[selected_item].hnds)
+                for (spell_index = 0; spell_index < 60; spell_index++)
+                    if (party[pidx[pidx_index]].spells[spell_index] == items[selected_item].hnds)
                     {
                         draw_sprite(double_buffer, noway, wx, wy);
                     }
             }
         }
     }
-    for (j = 0; j < MAX_INV; j++)
-        if (g_inv[j][GLOBAL_INVENTORY_ITEM] == selected_item)
+    for (inventory_index = 0; inventory_index < MAX_INV; inventory_index++)
+    {
+        if (g_inv[inventory_index][GLOBAL_INVENTORY_ITEM] == selected_item)
         {
-            ownd += g_inv[j][GLOBAL_INVENTORY_QUANTITY];    // quantity of this item
+            ownd += g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY];    // quantity of this item
         }
+    }
     sprintf(strbuf, _("Own: %d"), ownd);
     print_font(double_buffer, 88 + xofs, 224 + yofs, strbuf, FNORMAL);
     if (slot < 6)
     {
-        sprintf(strbuf, _("Eqp: %d"), eqp);
+        sprintf(strbuf, _("Eqp: %d"), equipped_items);
         print_font(double_buffer, 160 + xofs, 224 + yofs, strbuf, FNORMAL);
     }
 }
@@ -441,44 +448,47 @@ static void draw_sideshot(int selected_item)
  * healing or resurrection.
  *
  * \param   iname Name of Inn
- * \param   gpc Gold per character (base price)
+ * \param   gold_per_character Gold per character (base price)
  * \param   pay If 0, staying is free.
  */
-void inn(const char *iname, int gpc, int pay)
+void inn(const char *iname, unsigned int gold_per_character, int pay)
 {
-    int a, b, my = 0, stop = 0, gpts;
+    int b, my = 0, stop = 0;
+    unsigned int total_gold_cost;
+    size_t pidx_index, party_index;
 
     if (pay == 0)
     {
         /* TT add: (pay) is also used now to indicate whether we should wait
          *         (fade in/out) or just heal the heroes and be done
          */
-        do_inn_effects(0);
+        do_inn_effects(pay);
         return;
     }
     unpress();
     drawmap();
     menubox(double_buffer, 152 - (strlen(iname) * 4) + xofs, yofs, strlen(iname), 1, BLUE);
     print_font(double_buffer, 160 - (strlen(iname) * 4) + xofs, 8 + yofs, iname, FGOLD);
-    gpts = gpc;
-    for (a = 0; a < numchrs; a++)
+    total_gold_cost = gold_per_character;
+    for (party_index = 0; party_index < numchrs; party_index++)
     {
-        if (party[pidx[a]].sts[S_POISON] != 0)
+        pidx_index = pidx[party_index];
+        if (party[pidx_index].sts[S_POISON] != 0)
         {
-            gpts += gpc * 50 / 100;
+            total_gold_cost += gold_per_character / 2;
         }
-        if (party[pidx[a]].sts[S_BLIND] != 0)
+        if (party[pidx_index].sts[S_BLIND] != 0)
         {
-            gpts += gpc * 50 / 100;
+            total_gold_cost += gold_per_character / 2;
         }
-        if (party[pidx[a]].sts[S_MUTE] != 0)
+        if (party[pidx_index].sts[S_MUTE] != 0)
         {
-            gpts += gpc * 50 / 100;
+            total_gold_cost += gold_per_character / 2;
         }
-        if (party[pidx[a]].sts[S_DEAD] != 0)
+        if (party[pidx_index].sts[S_DEAD] != 0)
         {
-            b = gpc * 50 / 100;
-            gpts += (b * party[pidx[a]].lvl / 5);
+            b = gold_per_character / 2;
+            total_gold_cost += (b * party[pidx_index].lvl / 5);
         }
     }
     while (!stop)
@@ -486,14 +496,14 @@ void inn(const char *iname, int gpc, int pay)
         check_animation();
         drawmap();
 
-        sprintf(strbuf, _("The cost is %d gp for the night."), gpts);
+        sprintf(strbuf, _("The cost is %u gp for the night."), total_gold_cost);
         menubox(double_buffer, 152 - (strlen(strbuf) * 4) + xofs, 48 + yofs, strlen(strbuf), 1, BLUE);
         print_font(double_buffer, 160 - (strlen(strbuf) * 4) + xofs, 56 + yofs, strbuf, FNORMAL);
         menubox(double_buffer, 248 + xofs, 168 + yofs, 7, 2, BLUE);
         print_font(double_buffer, 256 + xofs, 176 + yofs, _("Gold:"), FGOLD);
         sprintf(strbuf, "%d", gp);
         print_font(double_buffer, 312 - (strlen(strbuf) * 8) + xofs, 184 + yofs, strbuf, FNORMAL);
-        if (gp >= gpts)
+        if ((unsigned int)gp >= total_gold_cost)
         {
             menubox(double_buffer, 52 + xofs, 96 + yofs, 25, 2, BLUE);
             print_font(double_buffer, 60 + xofs, 108 + yofs, _("Do you wish to stay?"), FNORMAL);
@@ -544,7 +554,7 @@ void inn(const char *iname, int gpc, int pay)
             unpress();
             if (my == 0)
             {
-                gp -= gpts;
+                gp -= total_gold_cost;
                 do_inn_effects(pay);
                 stop = 1;
             }
@@ -867,15 +877,15 @@ int shop(int shop_num)
     }
 
     /* Return 1 if shop has no items to sell */
-    noi = SHOPITEMS - 1;
-    for (a = SHOPITEMS - 1; a >= 0; a--)
+    num_shop_items = SHOPITEMS - 1;
+    for (a = SHOPITEMS; a > 0; a--)
     {
-        if (shops[shop_no].items[a] == 0)
+        if (shops[shop_no].items[a - 1] == 0)
         {
-            noi = a;
+            num_shop_items = a - 1;
         }
     }
-    if (noi == 0)
+    if (num_shop_items == 0)
     {
         return 1;
     }

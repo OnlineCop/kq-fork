@@ -236,9 +236,6 @@ s_fighter tempa, tempd;
 /*! Name of current shop */
 char shop_name[39];
 
-/*! Number of items in a shop */
-int noi;
-
 /*! Items in a shop */
 /* int shin[SHOPITEMS]; One global variable down; 999,999 to go --WK */
 

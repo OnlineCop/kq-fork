@@ -129,7 +129,7 @@ size_t load_markers(s_marker_array *marray, PACKFILE *pf)
  */
 size_t save_markers(s_marker_array *marray, PACKFILE *pf)
 {
-    size_t i;
+    size_t marker_index;
 
     assert(marray && "marray == NULL");
     assert(pf && "pf == NULL");
@@ -148,16 +148,16 @@ size_t save_markers(s_marker_array *marray, PACKFILE *pf)
         return 2;
     }
 
-    for (i = 0; i < marray->size; ++i)
+    for (marker_index = 0; marker_index < marray->size; ++marker_index)
     {
-        pack_fwrite(marray->array[i].name, sizeof(marray->array[i].name), pf);
-        pack_iputw(marray->array[i].x, pf);
-        pack_iputw(marray->array[i].y, pf);
+        pack_fwrite(marray->array[marker_index].name, sizeof(marray->array[marker_index].name), pf);
+        pack_iputw(marray->array[marker_index].x, pf);
+        pack_iputw(marray->array[marker_index].y, pf);
 
         if (pack_feof(pf))
         {
             assert(0 && "pack_iputw() for marker->[xy] received EOF signal.");
-            printf("Encountered EOF when writing marker %dsize.\n", i);
+            printf("Encountered EOF when writing marker %usize.\n", (unsigned int)marker_index);
             return 3;
         }
     }

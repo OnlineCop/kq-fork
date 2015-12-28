@@ -33,7 +33,6 @@
 #include "res.h"
 #include "selector.h"
 #include "setup.h"
-#include "skills.h"
 
 /*! \file
  * \brief Menus for spells
@@ -48,9 +47,9 @@
 int close_menu;
 
 /*  Internal functions  */
-static int need_spell(int, int);
-static void camp_draw_spell_menu(int, int, int);
-static void camp_spell_targeting(int, int);
+static int need_spell(size_t, size_t);
+static void camp_draw_spell_menu(size_t, size_t, size_t);
+static void camp_spell_targeting(size_t, size_t);
 static int camp_castable(int, int);
 
 
@@ -85,44 +84,41 @@ static int camp_castable(int who, int sno)
  *
  * Draw the current character's grimoire contents.
  *
- * \param   c Index of caster
- * \param   pg Page that spell is found on
- * \param   ptr Cursor on current page
+ * \param   caster_fighter_index Index of caster
+ * \param   spell_page Page that spell is found on
+ * \param   spell_page_cursor Cursor on current page
  */
-static void camp_draw_spell_menu(int c, int pg, int ptr)
+static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page, size_t spell_page_cursor)
 {
-    int l, z, j, b, a;
+    int text_color;
+    size_t spell_index, pidx_index, current_spell, first_spell_index;
 
-    l = pidx[c];
-    b = party[l].spells[pg * NUM_SPELLS_PER_PAGE + ptr];
+    pidx_index = pidx[caster_fighter_index];
+    first_spell_index = party[pidx_index].spells[spell_page * NUM_SPELLS_PER_PAGE + spell_page_cursor];
     menubox(double_buffer, 80 + xofs, 12 + yofs, 18, 1, BLUE);
     print_font(double_buffer, 140 + xofs, 20 + yofs, _("Magic"), FGOLD);
     menubox(double_buffer, 80 + xofs, 36 + yofs, 18, 5, BLUE);
-    draw_playerstat(double_buffer, l, 88 + xofs, 44 + yofs);
+    draw_playerstat(double_buffer, pidx_index, 88 + xofs, 44 + yofs);
     menubox(double_buffer, 80 + xofs, 92 + yofs, 18, 12, BLUE);
-    for (j = 0; j < NUM_SPELLS_PER_PAGE; j++)
+    for (current_spell = 0; current_spell < NUM_SPELLS_PER_PAGE; current_spell++)
     {
-        z = party[l].spells[pg * NUM_SPELLS_PER_PAGE + j];
-        a = FDARK;
-        if (camp_castable(c, z) == 1)
+        spell_index = party[pidx_index].spells[spell_page * NUM_SPELLS_PER_PAGE + current_spell];
+        text_color = FDARK;
+        if (camp_castable(caster_fighter_index, spell_index) == 1)
         {
-            a = FNORMAL;
+            text_color = FNORMAL;
         }
-        if (z > 0)
+        if (spell_index > 0)
         {
-            draw_icon(double_buffer, magic[z].icon, 96 + xofs,
-                      j * 8 + 100 + yofs);
-            print_font(double_buffer, 104 + xofs, j * 8 + 100 + yofs,
-                       magic[z].name, a);
-            sprintf(strbuf, "%d", mp_needed(c, z));
-            print_font(double_buffer, 232 - (strlen(strbuf) * 8) + xofs,
-                       j * 8 + 100 + yofs, strbuf, a);
+            draw_icon(double_buffer, magic[spell_index].icon, 96 + xofs, current_spell * 8 + 100 + yofs);
+            print_font(double_buffer, 104 + xofs, current_spell * 8 + 100 + yofs, magic[spell_index].name, text_color);
+            sprintf(strbuf, "%d", mp_needed(caster_fighter_index, spell_index));
+            print_font(double_buffer, 232 - (strlen(strbuf) * 8) + xofs, current_spell * 8 + 100 + yofs, strbuf, text_color);
         }
     }
     menubox(double_buffer, 40 + xofs, 204 + yofs, 28, 1, BLUE);
-    print_font(double_buffer, (160 - (strlen(magic[b].desc) * 4)) + xofs,
-               212 + yofs, magic[b].desc, FNORMAL);
-    draw_sprite(double_buffer, pgb[pg], 230 + xofs, 194 + yofs);
+    print_font(double_buffer, (160 - (strlen(magic[first_spell_index].desc) * 4)) + xofs, 212 + yofs, magic[first_spell_index].desc, FNORMAL);
+    draw_sprite(double_buffer, pgb[spell_page], 230 + xofs, 194 + yofs);
 }
 
 
@@ -159,8 +155,9 @@ void camp_spell_menu(int c)
         else
         {
             if (pg[0] == pg[1])
-                draw_sprite(double_buffer, mptr, 88 + xofs,
-                            ptr[0] * 8 + 100 + yofs);
+            {
+                draw_sprite(double_buffer, mptr, 88 + xofs, ptr[0] * 8 + 100 + yofs);
+            }
             draw_sprite(double_buffer, sptr, 88 + xofs, ptr[1] * 8 + 100 + yofs);
         }
         blit2screen(xofs, yofs);
@@ -270,65 +267,68 @@ void camp_spell_menu(int c)
  *
  * Select any necessary targets and prepare the spell.
  *
- * \param   mc Index of spell caster
- * \param   sn Spell number
+ * \param   caster_fighter_index Index of spell caster
+ * \param   spell_number Spell number
  */
-static void camp_spell_targeting(int mc, int sn)
+static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_number)
 {
-    int tg = 0, a;
+    int tg = 0;
+    size_t fighter_index;
 
-    if (magic[sn].tgt == TGT_NONE || magic[sn].tgt > TGT_ALLY_ALL)
+    if (magic[spell_number].tgt == TGT_NONE || magic[spell_number].tgt > TGT_ALLY_ALL)
     {
         return;
     }
     while (tg > -1)
     {
-        if (party[pidx[mc]].mp < mp_needed(mc, sn))
+        if (party[pidx[caster_fighter_index]].mp < mp_needed(caster_fighter_index, spell_number))
         {
             return;
         }
-        if (magic[sn].use != USE_ANY_INF && magic[sn].use != USE_CAMP_INF)
+        if (magic[spell_number].use != USE_ANY_INF && magic[spell_number].use != USE_CAMP_INF)
         {
             return;
         }
-        if (sn != M_WARP && sn != M_REPULSE)
+        if (spell_number != M_WARP && spell_number != M_REPULSE)
         {
-            tg =
-                select_any_player(magic[sn].tgt - 1, magic[sn].icon, magic[sn].name);
+            tg = select_any_player(magic[spell_number].tgt - 1, magic[spell_number].icon, magic[spell_number].name);
             if (tg < 0)
             {
                 return;
             }
-            if (need_spell(tg, sn) == 0)
+            if (need_spell(tg, spell_number) == 0)
             {
                 play_effect(SND_BAD, 128);
                 return;
             }
-            fighter[mc].ctmem = tg;
+            fighter[caster_fighter_index].ctmem = tg;
         }
         else
         {
             tg = SEL_ALL_ALLIES;
         }
-        fighter[mc].csmem = sn;
-        for (a = 0; a < numchrs; a++)
+        fighter[caster_fighter_index].csmem = spell_number;
+        for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
         {
-            ta[a] = 0;
+            ta[fighter_index] = 0;
         }
-        if (cast_spell(mc, 0) == 1)
+        if (cast_spell(caster_fighter_index, 0) == 1)
         {
-            if (sn == M_WARP || sn == M_REPULSE)
+            if (spell_number == M_WARP || spell_number == M_REPULSE)
             {
                 close_menu = 1;
                 return;
             }
             else
-                /*  DS: This piece of code need to be here, because if a spell cast fail */
-                /*      you can't adjust your hp                                         */
-                for (a = 0; a < numchrs; a++)
+            {
+                /*  DS: This piece of code needs to be here because if a spell
+                 * cast fails, you can't adjust your hp.
+                 */
+                for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
                 {
-                    adjust_hp(a, ta[a]);
+                    adjust_hp(fighter_index, ta[fighter_index]);
                 }
+            }
             play_effect(SND_TWINKLE, 128);
         }
         else
@@ -360,10 +360,12 @@ int learn_new_spells(int who)
     {
         nog = 1;
         for (i = 0; i < 60; i++)
+        {
             if (party[who].spells[i] == a)
             {
                 nog = 0;
             }
+        }
         if (magic[a].clvl[who] == 0 || magic[a].clvl[who] > party[who].lvl)
         {
             nog = 0;
@@ -384,12 +386,9 @@ int learn_new_spells(int who)
                 {
                     sprintf(strbuf, _("%s learned %s"), party[who].name, magic[a].name);
                     fullblit(back, double_buffer);
-                    menubox(double_buffer, 148 - (strlen(strbuf) * 4), 152,
-                            strlen(strbuf) + 1, 1, BLUE);
-                    draw_icon(double_buffer, magic[a].icon,
-                              156 - (strlen(strbuf) * 4), 160);
-                    print_font(double_buffer, 164 - (strlen(strbuf) * 4), 160,
-                               strbuf, FNORMAL);
+                    menubox(double_buffer, 148 - (strlen(strbuf) * 4), 152, strlen(strbuf) + 1, 1, BLUE);
+                    draw_icon(double_buffer, magic[a].icon, 156 - (strlen(strbuf) * 4), 160);
+                    print_font(double_buffer, 164 - (strlen(strbuf) * 4), 160, strbuf, FNORMAL);
                     blit2screen(0, 0);
                     wait_enter();
                     g++;
@@ -408,41 +407,45 @@ int learn_new_spells(int who)
  *
  * Does the target even need the spell that's been selected?
  *
- * \param   ta Target
- * \param   sn Index of spell
+ * \param   target_fighter_index Target
+ * \param   spell_number Index of spell
  * \returns 0 if spell failed, 1 if success
  */
-static int need_spell(int ta, int sn)
+static int need_spell(size_t target_fighter_index, size_t spell_number)
 {
-    int a, b, vc = 0;
+    size_t stats_index;
+    size_t figher_index, victim_figher_index = 0;
+    unsigned int affected_targets;
 
-    if (ta < numchrs)
+    if (target_fighter_index < numchrs)
     {
-        vc = pidx[ta];
+        victim_figher_index = pidx[target_fighter_index];
     }
-    switch (sn)
+    switch (spell_number)
     {
         case M_RESTORE:
-            if (party[vc].sts[S_POISON] == 0 && party[vc].sts[S_BLIND] == 0)
+            if (party[victim_figher_index].sts[S_POISON] == 0 && party[victim_figher_index].sts[S_BLIND] == 0)
             {
                 return 0;
             }
             break;
         case M_RECOVERY:
-            a = 0;
-            for (b = 0; b < 7; b++)
-                if (party[vc].sts[b] != 0)
+            affected_targets = 0;
+            for (stats_index = 0; stats_index <= S_SLEEP; stats_index++)
+            {
+                if (party[victim_figher_index].sts[stats_index] != 0)
                 {
-                    a++;
+                    affected_targets++;
                 }
-            if (a == 0 || party[vc].sts[S_DEAD] != 0)
+            }
+            if (affected_targets == 0 || party[victim_figher_index].sts[S_DEAD] != 0)
             {
                 return 0;
             }
             break;
         case M_LIFE:
         case M_FULLLIFE:
-            if (party[vc].sts[S_DEAD] == 0)
+            if (party[victim_figher_index].sts[S_DEAD] == 0)
             {
                 return 0;
             }
@@ -451,24 +454,24 @@ static int need_spell(int ta, int sn)
         case M_CURE2:
         case M_CURE3:
         case M_CURE4:
-            if (ta == SEL_ALL_ALLIES)
+            if (target_fighter_index == SEL_ALL_ALLIES)
             {
-                b = 0;
-                for (a = 0; a < numchrs; a++)
-                    if (party[pidx[a]].hp == party[pidx[a]].mhp
-                            || party[pidx[a]].sts[S_STONE] != 0
-                            || party[pidx[a]].sts[S_DEAD] != 0)
+                affected_targets = 0;
+                for (figher_index = 0; figher_index < numchrs; figher_index++)
+                {
+                    if (party[pidx[figher_index]].hp == party[pidx[figher_index]].mhp || party[pidx[figher_index]].sts[S_STONE] != 0 || party[pidx[figher_index]].sts[S_DEAD] != 0)
                     {
-                        b++;
+                        affected_targets++;
                     }
-                if (b == numchrs)
+                }
+                if (affected_targets == numchrs)
                 {
                     return 0;
                 }
             }
             else
             {
-                if (party[vc].hp == party[vc].mhp)
+                if (party[victim_figher_index].hp == party[victim_figher_index].mhp)
                 {
                     return 0;
                 }
@@ -478,8 +481,8 @@ static int need_spell(int ta, int sn)
 
             /* RB FIXME What was this supposed to do? */
             /* TT: This means that if you're on a map where you can warp from (main.map)
-                     you can get away from this battle.  But if you're somewhere that the
-                     map is defined as 'can_warp = 0', you can't use the warp spell there.
+             *     you can get away from this battle.  But if you're somewhere that the
+             *     map is defined as 'can_warp = 0', you can't use the warp spell there.
              */
             if (g_map.can_warp == 0)
             {
