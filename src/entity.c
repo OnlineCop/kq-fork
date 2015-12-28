@@ -140,7 +140,7 @@ void count_entities(void)
     size_t entity_index;
 
     noe = 0;
-    for (entity_index = 0; entity_index < MAX_ENT; entity_index++)
+    for (entity_index = 0; entity_index < MAX_ENTITIES_PER_MAP; entity_index++)
     {
         if (g_ent[entity_index].active == 1)
         {
@@ -209,11 +209,9 @@ int entityat(int ox, int oy, t_entity who)
 {
     t_entity i;
 
-    for (i = 0; i < MAX_ENT; i++)
+    for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
     {
-        if (g_ent[i].active
-         && ox == g_ent[i].tilex
-         && oy == g_ent[i].tiley)
+        if (g_ent[i].active && ox == g_ent[i].tilex && oy == g_ent[i].tiley)
         {
             if (who >= PSIZE)
             {
@@ -702,7 +700,7 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
     // Another entity blocks movement as well
     if (check_entity)
     {
-        for (i = 0; i < MAX_ENT; i++)
+        for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
         {
             if (g_ent[i].active
              && dest_x == g_ent[i].tilex
@@ -815,7 +813,7 @@ void process_entities(void)
     t_entity i;
     const char *t_evt;
 
-    for (i = 0; i < MAX_ENT; i++)
+    for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
     {
         if (g_ent[i].active == 1)
         {

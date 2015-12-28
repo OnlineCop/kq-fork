@@ -122,7 +122,7 @@ unsigned int max_sets = 51;
 unsigned int number_of_ents = 0;
 
 s_map gmap;
-s_entity gent[MAX_ENT];
+s_entity gent[MAX_ENTITIES_PER_MAP];
 s_show showing;
 
 unsigned short *map, *b_map, *f_map, *c_map, *cf_map, *cb_map;
@@ -201,7 +201,7 @@ void load_map(const char *path)
 
     /* Recount the number of entities on the map */
     number_of_ents = 0;
-    for (i = 0; i < MAX_ENT; i++)
+    for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
     {
         load_s_entity(gent + i, pf);
         if (gent[i].active != 0)
@@ -597,7 +597,7 @@ void visual_map(s_show showing, const char *save_fname)
     /* Show entities */
     if (showing.entities)
     {
-        for (i = 0; i < MAX_ENT; i++)
+        for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
         {
             if (gent[i].active)
             {
@@ -749,7 +749,7 @@ void textual_map(s_show showing, const char *output_filename)
         printf("index:\tchrx,x,y,tilex,tiley,eid,active,facing,moving,movcnt,framectr,movemode,obsmode,delay,"
                "delayctr,speed,scount,cmd,sidx,extra,chasing,cmdnum,atype,snapback,facehero,transl,"
                "script,target_x,target_y\n");
-        for (entity_index = 0; entity_index < MAX_ENT; entity_index++)
+        for (entity_index = 0; entity_index < MAX_ENTITIES_PER_MAP; entity_index++)
         {
             if (gent[entity_index].active)
             {
@@ -886,7 +886,7 @@ void textual_map_json(s_show showing)
 
     /* Show entities */
     printf("\"entities\":[\n");
-    for (entity_index = 0; entity_index < MAX_ENT; entity_index++)
+    for (entity_index = 0; entity_index < MAX_ENTITIES_PER_MAP; entity_index++)
     {
         if (gent[entity_index].active == 0)
         {
@@ -920,7 +920,7 @@ void textual_map_json(s_show showing)
         printf("\"transl\":%d,", gent[entity_index].transl);
         printf("\"script\":\"%s\",", gent[entity_index].script);
         printf("\"target_x\":%d,", gent[entity_index].target_x);
-        printf("\"target_y\":%d}%s\n", gent[entity_index].target_y, (entity_index < MAX_ENT - 1) ? "," : "");
+        printf("\"target_y\":%d}%s\n", gent[entity_index].target_y, (entity_index < MAX_ENTITIES_PER_MAP - 1) ? "," : "");
     }
     printf("],\n");
 

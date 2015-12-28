@@ -65,7 +65,7 @@ static void draw_porttextbox(int, int);
 static void generic_text(int, int, int);
 const char *parse_string(const char *);
 static const char *relay(const char *);
-static void set_textpos(int);
+static void set_textpos(unsigned int);
 static int get_glyph_index(unsigned int);
 
 
@@ -2054,14 +2054,15 @@ void revert_cframes(size_t fighter_index, int revert_heroes)
  * The purpose of this function is to calculate where a text bubble
  * should go in relation to the entity who is speaking.
  *
- * \param   who Character that is speaking, or -1 for 'general'
+ * \param   entity_index If value is between 0..MAX_ENTITIES_PER_MAP (exclusive),
+ *              character that is speaking, otherwise 'general'.
  */
-static void set_textpos(int who)
+static void set_textpos(unsigned int entity_index)
 {
-    if (who < MAX_ENT && who >= 0)
+    if (entity_index < MAX_ENTITIES_PER_MAP)
     {
-        gbx = (g_ent[who].tilex * 16) - vx;
-        gby = (g_ent[who].tiley * 16) - vy;
+        gbx = (g_ent[entity_index].tilex * TILE_W) - vx;
+        gby = (g_ent[entity_index].tiley * TILE_H) - vy;
         gbbx = gbx - (gbbw * 4);
         if (gbbx < 8)
         {
@@ -2073,7 +2074,7 @@ static void set_textpos(int who)
         }
         if (gby > -16 && gby < SCREEN_H)
         {
-            if (g_ent[who].facing == 1 || g_ent[who].facing == 2)
+            if (g_ent[entity_index].facing == 1 || g_ent[entity_index].facing == 2)
             {
                 if (gbbh * 12 + gby + 40 <= 232)
                 {

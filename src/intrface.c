@@ -3878,7 +3878,7 @@ static int KQ_set_noe(lua_State *L)
 {
     unsigned int a = (unsigned int) lua_tonumber(L, 1);
 
-    if (a <= MAX_ENT + PSIZE)
+    if (a <= MAX_ENTITIES_PER_MAP + PSIZE)
     {
         noe = a;
     }

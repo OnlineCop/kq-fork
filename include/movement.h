@@ -24,7 +24,7 @@
 #define __MOVEMENT_H 1
 
 
-int find_path(int, int, int, int, int, char *, int);
+int find_path(size_t, unsigned int, unsigned int, unsigned int, unsigned int, char *, unsigned int);
 
 
 #endif  /* __MOVEMENT_H */

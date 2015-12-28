@@ -125,7 +125,7 @@ unsigned char save_spells[SIZE_SAVE_SPELL];
 s_map g_map;
 
 /*! Current entities (players+NPCs) */
-s_entity g_ent[MAX_ENT + PSIZE];
+s_entity g_ent[MAX_ENTITIES_PER_MAP + PSIZE];
 
 s_tileset tilesets[MAX_TILESETS];
 int num_tilesets = 0;
@@ -1314,10 +1314,10 @@ static void load_map(const char *map_name)
     }
 
     load_s_map(&g_map, pf);
-    for (i = 0; i < MAX_ENT; ++i)
+    for (i = 0; i < MAX_ENTITIES_PER_MAP; ++i)
     {
         /* g_ent[0] and g_ent[1] are the player's avatars. All
-         * the rest on the map (PSIZE..MAX_ENT) are loaded from
+         * the rest on the map (PSIZE..MAX_ENTITIES_PER_MAP) are loaded from
          * the map's data.
          */
         load_s_entity(&g_ent[PSIZE + i], pf);
@@ -1570,7 +1570,7 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
         g_ent[i].moving = 0;
     }
 
-    for (i = 0; i < MAX_ENT; i++)
+    for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
     {
         if (g_ent[i].chrx == 38 && g_ent[i].active == 1)
         {
@@ -1638,7 +1638,7 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
 
     count_entities();
 
-    for (i = 0; i < MAX_ENT; i++)
+    for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
     {
         g_ent[i].delayctr = 0;
     }

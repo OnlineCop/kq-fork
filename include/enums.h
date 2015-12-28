@@ -38,7 +38,7 @@
 // easier for a lot of IDEs to interpret.
 
 
-enum eSizes
+enum eSize
 {
     TILE_H = 16U,
     TILE_W = 16U,
@@ -84,7 +84,7 @@ enum eGlobalInventory
 #define MAXEFRAMES         12
 #define WINDOW_TILES_W     21
 #define WINDOW_TILES_H     16
-#define MAX_ENT            50
+#define MAX_ENTITIES_PER_MAP 50
 #define ID_ENEMY          254
 #define ENT_FRAMES_PER_DIR  3
 

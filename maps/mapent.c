@@ -359,7 +359,7 @@ void place_entity(int ent_x, int ent_y)
     int a, someone_there = 0;
 
     /* Don't allow too many NPCs on the map */
-    if (number_of_ents >= MAX_ENT)
+    if (number_of_ents >= MAX_ENTITIES_PER_MAP)
     {
         return;
     }
