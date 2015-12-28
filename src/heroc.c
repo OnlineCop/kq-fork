@@ -741,12 +741,15 @@ static int hero_attack(int whom)
  * Give the player a menu for a specific character and
  * allow him/her to choose an action.
  *
- * \param   who Index of player (see constants in progress.h)
+ * \param   fighter_index Index of player (see constants in progress.h)
  */
-void hero_choose_action(int who)
+void hero_choose_action(size_t fighter_index)
 {
-    int stop = 0, sptr = 1, ptr = 0, a, amy;
-    int my = 0, chi[9], tt;
+    int stop = 0, a, amy;
+    unsigned int sptr = 1, ptr = 0, my = 0, tt, chi[9];
+
+    // This is going to blow up if we translate _(...) text into a language
+    // where the text is longer than 8 characters.
     char ca[9][8];
 
     strcpy(sk_names[0], _("Rage"));
@@ -758,32 +761,32 @@ void hero_choose_action(int who)
     strcpy(sk_names[6], _("Steal"));
     strcpy(sk_names[7], _("Sense"));
 
-    if (cact[who] == 0)
+    if (cact[fighter_index] == 0)
     {
         return;
     }
     unpress();
-    fighter[who].defend = 0;
-    fighter[who].facing = 0;
-    if (pidx[who] != CORIN && pidx[who] != CASANDRA)
+    fighter[fighter_index].defend = 0;
+    fighter[fighter_index].facing = 0;
+    if (pidx[fighter_index] != CORIN && pidx[fighter_index] != CASANDRA)
     {
-        fighter[who].aux = 0;
+        fighter[fighter_index].aux = 0;
     }
     while (!stop)
     {
         check_animation();
-        battle_render(who + 1, who + 1, 0);
+        battle_render(fighter_index + 1, fighter_index + 1, 0);
         my = 0;
         strcpy(ca[my], _("Attack"));
         chi[my] = C_ATTACK;
         my++;
-        if (hero_skillcheck(who))
+        if (hero_skillcheck(fighter_index))
         {
-            strcpy(ca[my], sk_names[pidx[who]]);
+            strcpy(ca[my], sk_names[pidx[fighter_index]]);
             chi[my] = C_SKILL;
             my++;
         }
-        if (fighter[who].sts[S_MUTE] == 0 && available_spells(who) > 0)
+        if (fighter[fighter_index].sts[S_MUTE] == 0 && available_spells(fighter_index) > 0)
         {
             strcpy(ca[my], _("Spell"));
             chi[my] = C_SPELL;
@@ -796,9 +799,9 @@ void hero_choose_action(int who)
             my++;
         }
         tt = 0;
-        for (a = 0; a < 6; a++)
+        for (a = 0; a < NUM_EQUIPMENT; a++)
         {
-            if (can_invoke_item(party[pidx[who]].eqp[a]))
+            if (can_invoke_item(party[pidx[fighter_index]].eqp[a]))
             {
                 tt++;
             }
@@ -842,8 +845,11 @@ void hero_choose_action(int who)
         if (up)
         {
             unpress();
-            ptr--;
-            if (ptr < 0)
+            if (ptr > 0)
+            {
+                ptr--;
+            }
+            else
             {
                 ptr = my - 1;
             }
@@ -852,8 +858,11 @@ void hero_choose_action(int who)
         if (down)
         {
             unpress();
-            ptr++;
-            if (ptr >= my)
+            if (ptr < my - 1)
+            {
+                ptr++;
+            }
+            else
             {
                 ptr = 0;
             }
@@ -862,10 +871,9 @@ void hero_choose_action(int who)
         if (left)
         {
             unpress();
-            sptr--;
-            if (sptr < 0)
+            if (sptr > 0)
             {
-                sptr = 0;
+                sptr--;
             }
         }
         if (right)
@@ -893,14 +901,14 @@ void hero_choose_action(int who)
             unpress();
             if (sptr == 0)
             {
-                fighter[who].defend = 1;
-                cact[who] = 0;
+                fighter[fighter_index].defend = 1;
+                cact[fighter_index] = 0;
                 stop = 1;
             }
             if (sptr == 2)
             {
                 hero_run();
-                cact[who] = 0;
+                cact[fighter_index] = 0;
                 stop = 1;
             }
             if (sptr == 1)
@@ -908,37 +916,37 @@ void hero_choose_action(int who)
                 switch (chi[ptr])
                 {
                     case C_ATTACK:
-                        if (hero_attack(who) == 1)
+                        if (hero_attack(fighter_index) == 1)
                         {
-                            cact[who] = 0;
+                            cact[fighter_index] = 0;
                             stop = 1;
                         }
                         break;
                     case C_ITEM:
-                        if (combat_item_menu(who) == 1)
+                        if (combat_item_menu(fighter_index) == 1)
                         {
-                            cact[who] = 0;
+                            cact[fighter_index] = 0;
                             stop = 1;
                         }
                         break;
                     case C_INVOKE:
-                        if (hero_invoke(who) == 1)
+                        if (hero_invoke(fighter_index) == 1)
                         {
-                            cact[who] = 0;
+                            cact[fighter_index] = 0;
                             stop = 1;
                         }
                         break;
                     case C_SPELL:
-                        if (combat_spell_menu(who) == 1)
+                        if (combat_spell_menu(fighter_index) == 1)
                         {
-                            cact[who] = 0;
+                            cact[fighter_index] = 0;
                             stop = 1;
                         }
                         break;
                     case C_SKILL:
-                        if (skill_use(who) == 1)
+                        if (skill_use(fighter_index) == 1)
                         {
-                            cact[who] = 0;
+                            cact[fighter_index] = 0;
                             stop = 1;
                         }
                         break;
@@ -1026,7 +1034,7 @@ void hero_init(void)
         // - Value "175" corresponds to entry value {53, 63, 53, 0}
         // Swap out those "green" colors and replace them with the `kol` colors that match the
         // colors that the weapons should actually be instead.
-        if (fighter[fighter_index].current_weapon_type > 0 && items[fighter_weapon_index].kol > 0)
+        if (fighter[fighter_index].current_weapon_type != W_NO_WEAPON && items[fighter_weapon_index].kol > 0)
         {
             for (current_line = 0; current_line < (unsigned int)cframes[fighter_index][0]->h; current_line++)
             {

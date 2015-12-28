@@ -52,7 +52,8 @@ void combat_skill(size_t fighter_index)
 {
     int sk = fighter[fighter_index].ai[fighter[fighter_index].csmem] - 100;
     int tgt = fighter[fighter_index].ctmem;
-    int a;
+    size_t target_fighter_index;
+    size_t affected_targets;
     int b;
 
     tempa = status_adjust(fighter_index);
@@ -94,15 +95,15 @@ void combat_skill(size_t fighter_index)
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 5:
-        b = 0;
-        for (a = 0; a < numchrs; a++)
+        affected_targets = 0;
+        for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
-            if (fighter[a].sts[S_DEAD] == 0)
+            if (fighter[target_fighter_index].sts[S_DEAD] == 0)
             {
-                b++;
+                affected_targets++;
             }
         }
-        if (b > 1)
+        if (affected_targets > 1)
         {
             fighter[fighter_index].ctmem = 1000;
         }
@@ -132,33 +133,33 @@ void combat_skill(size_t fighter_index)
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
         break;
     case 8:
-        b = 0;
+        affected_targets = 0;
         strcpy(attack_string, _("Stone Gas"));
         draw_spellsprite(0, 1, 46, 1);
-        for (a = 0; a < numchrs; a++)
+        for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
-            if (fighter[a].sts[S_DEAD] == 0)
+            if (fighter[target_fighter_index].sts[S_DEAD] == 0)
             {
-                if (res_throw(a, R_PETRIFY) == 0 && non_dmg_save(a, 75) == 0)
+                if (res_throw(target_fighter_index, R_PETRIFY) == 0 && non_dmg_save(target_fighter_index, 75) == 0)
                 {
-                    fighter[a].sts[S_STONE] = rand() % 3 + 2;
-                    ta[a] = NODISPLAY;
+                    fighter[target_fighter_index].sts[S_STONE] = rand() % 3 + 2;
+                    ta[target_fighter_index] = NODISPLAY;
                 }
                 else
                 {
-                    ta[a] = MISS;
-                    b++;
+                    ta[target_fighter_index] = MISS;
+                    affected_targets++;
                 }
             }
         }
-        if (b > 0)
+        if (affected_targets > 0)
         {
             display_amount(0, FNORMAL, 1);
         }
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 9:
-        b = 0;
+        affected_targets = 0;
         strcpy(attack_string, _("Zemmel Rod"));
         if (rand() % 4 < 2)
         {
@@ -169,43 +170,43 @@ void combat_skill(size_t fighter_index)
             return;
         }
         draw_spellsprite(0, 1, 40, 0);
-        for (a = 0; a < numchrs; a++)
+        for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
-            if (res_throw(a, R_TIME) == 0)
+            if (res_throw(target_fighter_index, R_TIME) == 0)
             {
-                if (non_dmg_save(a, 75) == 0 && fighter[a].sts[S_STONE] == 0)
+                if (non_dmg_save(target_fighter_index, 75) == 0 && fighter[target_fighter_index].sts[S_STONE] == 0)
                 {
-                    if (fighter[a].sts[S_TIME] == 2)
+                    if (fighter[target_fighter_index].sts[S_TIME] == 2)
                     {
-                        fighter[a].sts[S_TIME] = 0;
+                        fighter[target_fighter_index].sts[S_TIME] = 0;
                     }
                     else
                     {
-                        if (fighter[a].sts[S_TIME] == 0)
+                        if (fighter[target_fighter_index].sts[S_TIME] == 0)
                         {
-                            fighter[a].sts[S_TIME] = 1;
-                            ta[a] = NODISPLAY;
+                            fighter[target_fighter_index].sts[S_TIME] = 1;
+                            ta[target_fighter_index] = NODISPLAY;
                         }
                         else
                         {
-                            ta[a] = MISS;
-                            b++;
+                            ta[target_fighter_index] = MISS;
+                            affected_targets++;
                         }
                     }
                 }
                 else
                 {
-                    ta[a] = MISS;
-                    b++;
+                    ta[target_fighter_index] = MISS;
+                    affected_targets++;
                 }
             }
             else
             {
-                ta[a] = MISS;
-                b++;
+                ta[target_fighter_index] = MISS;
+                affected_targets++;
             }
         }
-        if (b > 0)
+        if (affected_targets > 0)
         {
             display_amount(0, FNORMAL, 1);
         }
@@ -219,23 +220,23 @@ void combat_skill(size_t fighter_index)
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 11:
-        b = 0;
+        affected_targets = 0;
         strcpy(attack_string, _("Tangle Root"));
         draw_spellsprite(0, 1, 24, 0);
-        for (a = 0; a < numchrs; a++)
+        for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
-            if (res_throw(a, S_STOP) == 0 && non_dmg_save(a, 65) == 0 && fighter[a].sts[S_STONE] == 0)
+            if (res_throw(target_fighter_index, S_STOP) == 0 && non_dmg_save(target_fighter_index, 65) == 0 && fighter[target_fighter_index].sts[S_STONE] == 0)
             {
-                fighter[a].sts[S_STOP] = 2 + rand() % 2;
-                ta[a] = NODISPLAY;
+                fighter[target_fighter_index].sts[S_STOP] = 2 + rand() % 2;
+                ta[target_fighter_index] = NODISPLAY;
             }
             else
             {
-                ta[a] = MISS;
-                b++;
+                ta[target_fighter_index] = MISS;
+                affected_targets++;
             }
         }
-        if (b > 0)
+        if (affected_targets > 0)
         {
             display_amount(0, FNORMAL, 1);
         }
@@ -273,29 +274,29 @@ void combat_skill(size_t fighter_index)
     case 15:
         strcpy(attack_string, _("Howl"));
         draw_spellsprite(0, 1, 14, 0);
-        b = 0;
-        for (a = 0; a < numchrs; a++)
+        affected_targets = 0;
+        for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
             if (fighter[fighter_index].sts[S_MUTE] == 0)
             {
-                if (res_throw(a, S_CHARM) == 0 && non_dmg_save(a, 65) == 0 && fighter[a].sts[S_STONE] == 0)
+                if (res_throw(target_fighter_index, S_CHARM) == 0 && non_dmg_save(target_fighter_index, 65) == 0 && fighter[target_fighter_index].sts[S_STONE] == 0)
                 {
-                    fighter[a].sts[S_CHARM] = 2 + rand() % 2;
-                    ta[a] = NODISPLAY;
+                    fighter[target_fighter_index].sts[S_CHARM] = 2 + rand() % 2;
+                    ta[target_fighter_index] = NODISPLAY;
                 }
                 else
                 {
-                    ta[a] = MISS;
-                    b++;
+                    ta[target_fighter_index] = MISS;
+                    affected_targets++;
                 }
             }
             else
             {
-                ta[a] = MISS;
-                b++;
+                ta[target_fighter_index] = MISS;
+                affected_targets++;
             }
         }
-        if (b > 0)
+        if (affected_targets > 0)
         {
             display_amount(0, FNORMAL, 1);
         }
@@ -304,25 +305,25 @@ void combat_skill(size_t fighter_index)
     case 16:
         strcpy(attack_string, _("Rasp"));
         draw_spellsprite(0, 1, 48, 0);
-        for (a = 0; a < numchrs; a++)
+        for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
-            b = fighter[a].hp / 3;
-            ta[a] = 0 - b;
+            b = fighter[target_fighter_index].hp / 3;
+            ta[target_fighter_index] = 0 - b;
         }
         display_amount(0, FNORMAL, 1);
-        for (a = 0; a < numchrs; a++)
+        for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
-            adjust_hp(a, ta[a]);
+            adjust_hp(target_fighter_index, ta[target_fighter_index]);
         }
-        for (a = 0; a < numchrs; a++)
+        for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
-            b = fighter[a].mp / 3;
-            ta[a] = 0 - b;
+            b = fighter[target_fighter_index].mp / 3;
+            ta[target_fighter_index] = 0 - b;
         }
         display_amount(0, FRED, 1);
-        for (a = 0; a < numchrs; a++)
+        for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
-            adjust_mp(a, ta[a]);
+            adjust_mp(target_fighter_index, ta[target_fighter_index]);
         }
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;

@@ -71,6 +71,23 @@ typedef struct
 
 
 
+typedef enum eHeroBitFlags
+{
+    BITS_NO_HERO    = 0,
+    BITS_SENSAR     = 1 << 0,
+    BITS_SARINA     = 1 << 1,
+    BITS_CORIN      = 1 << 2,
+    BITS_AJATHAR    = 1 << 3,
+    BITS_CASANDRA   = 1 << 4,
+    BITS_TEMMIN     = 1 << 5,
+    BITS_AYLA       = 1 << 6,
+    BITS_NOSLOM     = 1 << 7,
+
+    BITS_ALL_HERO   = BITS_SENSAR | BITS_SARINA | BITS_CORIN | BITS_AJATHAR | BITS_CASANDRA | BITS_TEMMIN | BITS_AYLA | BITS_NOSLOM
+} eHeroBitFlags;
+
+
+
 /*! \brief Entity
  *
  * Contains info on an entities appearance, position and behaviour */
@@ -161,9 +178,9 @@ typedef struct
     int mp;                      /*!< Magic points */
     int mmp;                     /*!< Maximum magic points */
     int stats[NUM_STATS];
-    char res[16];
-    unsigned char sts[24];
-    unsigned char eqp[6];        /*!< Weapons, armor, etc. equipped */
+    char res[16];                /*!< eResistance: See R_* constants */
+    unsigned char sts[24];       /*!< eSpellType */
+    unsigned char eqp[NUM_EQUIPMENT];   /*!< eEquipment: Weapons, armor, etc. equipped */
     unsigned char spells[60];    /*!< Known spells */
 } s_player;
 
@@ -221,21 +238,21 @@ typedef struct
                                   * If Ayla steals something, she will get this item 5% of the time.
                                   */
     int stats[NUM_STATS];        /*!<\brief See A_* constants in kq.h */
-    char res[16];                /*!<\brief See R_* constants in kq.h */
+    char res[16];                /*!<\brief eResistance: See R_* constants */
     unsigned char facing;        /*!<\brief Direction character's sprite faces */
     unsigned char aframe;        /*!<\brief Battle sprite to display (standing, casting, attacking) */
     unsigned char crit;
-    unsigned char sts[24];
+    unsigned char sts[24];       /*!< eSpellType */
     unsigned char defend;
     unsigned char ai[8];
     unsigned char aip[8];
     unsigned char atrack[8];
     unsigned int csmem;          /*!<\brief Spell number, associated with M_* spells, used within s_spell magic[] array. */
     int ctmem;                   /*!<\brief Spell target: who is going to be affected by the spell; can be set to -1 */
-    int current_weapon_type;     /*!<\brief Current Weapon Type
-                                  * The shape of the currently held weapon (sword, dagger, axe etc) \sa hero_init()
-                                  */
-    int welem;                   /*!<\brief Which Element type (sick, fire, water, etc.) */
+    unsigned int current_weapon_type;   /*!<\brief Current Weapon Type
+                                         * The shape of the currently held weapon (sword, dagger, axe etc) \sa hero_init()
+                                         */
+    int welem;                   /*!<\brief eResistance: Which Element type (sick, fire, water, etc.) */
     int unl;                     /*!<\brief UNLiving (undead), like zombies, skeletons, etc. */
     int aux;
     int bonus;
