@@ -220,42 +220,47 @@ void color_scale(BITMAP *src, BITMAP *dest, int output_range_start, int output_r
  *
  * This is used to color_scale one or more fighter frames.
  *
- * \param   who Character to convert
+ * \param   fighter_index Character to convert
  * \param   output_range_start Start of output range
  * \param   output_range_end End of output range
- * \param   convert_heroes If ==1 then \p who<PSIZE means convert all heroes, otherwise all enemies
+ * \param   convert_heroes If ==1 then \cframe_index fighter_index<PSIZE means convert all heroes, otherwise all enemies
  */
-void convert_cframes(int who, int output_range_start, int output_range_end, int convert_heroes)
+void convert_cframes(size_t fighter_index, int output_range_start, int output_range_end, int convert_heroes)
 {
-    int a, p, a1;
+    size_t start_fighter_index, end_fighter_index, cframe_index;
 
     /* Determine the range of frames to convert */
     if (convert_heroes == 1)
     {
-        if (who < PSIZE)
+        if (fighter_index < PSIZE)
         {
-            a = 0;
-            a1 = numchrs;
+            start_fighter_index = 0;
+            end_fighter_index = numchrs;
         }
         else
         {
-            a = PSIZE;
-            a1 = PSIZE + num_enemies;
+            start_fighter_index = PSIZE;
+            end_fighter_index = PSIZE + num_enemies;
         }
     }
     else
     {
-        a = who;
-        a1 = who + 1;
+        start_fighter_index = fighter_index;
+        end_fighter_index = fighter_index + 1;
     }
 
-    while (a < a1)
+    while (start_fighter_index < end_fighter_index)
     {
-        for (p = 0; p < MAXCFRAMES; p++)
+        for (cframe_index = 0; cframe_index < MAXCFRAMES; cframe_index++)
         {
-            color_scale(tcframes[a][p], cframes[a][p], output_range_start, output_range_end);
+            color_scale(
+                tcframes[start_fighter_index][cframe_index],
+                cframes[start_fighter_index][cframe_index],
+                output_range_start,
+                output_range_end
+            );
         }
-        ++a;
+        ++start_fighter_index;
     }
 }
 
@@ -370,52 +375,59 @@ static void draw_backlayer(void)
  */
 static void draw_char(int xw, int yw)
 {
-    unsigned int ii;
-    int fr, dx, dy, i, f, fid;
+    signed int dx, dy;
+    int f;
     int x, y;
-    int horiz, vert;
-    int here, there;
+    signed int horiz, vert;
+    unsigned int here, there;
     BITMAP **sprite_base;
     BITMAP *spr = NULL;
+    size_t follower_fighter_index;
+    size_t fighter_index;
+    size_t fighter_frame, fighter_frame_add;
+    size_t fighter_type_id;
 
-    for (ii = PSIZE + noe; ii > 0; ii--)
+    for (follower_fighter_index = PSIZE + noe; follower_fighter_index > 0; follower_fighter_index--)
     {
-        i = ii - 1;
-        fid = g_ent[i].eid;
-        dx = g_ent[i].x - vx + xw;
-        dy = g_ent[i].y - vy + yw;
-        if (!g_ent[i].moving)
+        fighter_index = follower_fighter_index - 1;
+        fighter_type_id = g_ent[fighter_index].eid;
+        dx = g_ent[fighter_index].x - vx + xw;
+        dy = g_ent[fighter_index].y - vy + yw;
+        if (!g_ent[fighter_index].moving)
         {
-            fr = g_ent[i].facing * ENT_FRAMES_PER_DIR + 2;
+            fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + 2;
         }
         else
         {
-            fr = g_ent[i].facing * ENT_FRAMES_PER_DIR + (g_ent[i].framectr > 10 ? 1 : 0);
+            fighter_frame_add = g_ent[fighter_index].framectr > 10 ? 1 : 0;
+            fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + fighter_frame_add;
         }
-        if (i < PSIZE && i < numchrs)
+        if (fighter_index < PSIZE && fighter_index < numchrs)
         {
             /* It's a hero */
             /* Masquerade: if chrx!=0 then this hero is disguised as someone else... */
-            sprite_base = g_ent[i].chrx ? eframes[g_ent[i].chrx] : frames[fid];
+            sprite_base = g_ent[fighter_index].chrx
+                ? eframes[g_ent[fighter_index].chrx]
+                : frames[fighter_type_id];
 
-            if (party[fid].sts[S_DEAD] != 0)
+            if (party[fighter_type_id].sts[S_DEAD] != 0)
             {
-                fr = g_ent[i].facing * ENT_FRAMES_PER_DIR + 2;
+                fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + 2;
             }
-            if (party[fid].sts[S_POISON] != 0)
+            if (party[fighter_type_id].sts[S_POISON] != 0)
             {
                 /* PH: we are calling this every frame? */
-                color_scale(sprite_base[fr], tc2, 32, 47);
+                color_scale(sprite_base[fighter_frame], tc2, 32, 47);
                 spr = tc2;
             }
             else
             {
-                spr = sprite_base[fr];
+                spr = sprite_base[fighter_frame];
             }
-            if (is_forestsquare(g_ent[i].tilex, g_ent[i].tiley))
+            if (is_forestsquare(g_ent[fighter_index].tilex, g_ent[fighter_index].tiley))
             {
-                f = !g_ent[i].moving;
-                if (g_ent[i].moving && is_forestsquare(g_ent[i].x / 16, g_ent[i].y / 16))
+                f = !g_ent[fighter_index].moving;
+                if (g_ent[fighter_index].moving && is_forestsquare(g_ent[fighter_index].x / TILE_W, g_ent[fighter_index].y / TILE_H))
                 {
                     f = 1;
                 }
@@ -427,7 +439,7 @@ static void draw_char(int xw, int yw)
                 }
             }
 
-            if (party[fid].sts[S_DEAD] == 0)
+            if (party[fighter_type_id].sts[S_DEAD] == 0)
             {
                 draw_sprite(double_buffer, spr, dx, dy);
             }
@@ -442,26 +454,26 @@ static void draw_char(int xw, int yw)
              * We also need to ensure that the target coords has SOMETHING in the
              * o_seg[] portion, else there will be graphical glitches.
              */
-            if (i == 0 && g_ent[0].moving)
+            if (fighter_index == 0 && g_ent[0].moving)
             {
                 horiz = 0;
                 vert = 0;
                 /* Determine the direction moving */
 
-                if (g_ent[i].tilex * 16 > g_ent[i].x)
+                if (g_ent[fighter_index].tilex * TILE_W > g_ent[fighter_index].x)
                 {
                     horiz = 1;       // Right
                 }
-                else if (g_ent[i].tilex * 16 < g_ent[i].x)
+                else if (g_ent[fighter_index].tilex * TILE_W < g_ent[fighter_index].x)
                 {
                     horiz = -1;      // Left
                 }
 
-                if (g_ent[i].tiley * 16 > g_ent[i].y)
+                if (g_ent[fighter_index].tiley * TILE_H > g_ent[fighter_index].y)
                 {
                     vert = 1;        // Down
                 }
-                else if (g_ent[i].tiley * 16 < g_ent[i].y)
+                else if (g_ent[fighter_index].tiley * TILE_H < g_ent[fighter_index].y)
                 {
                     vert = -1;       // Up
                 }
@@ -478,26 +490,26 @@ static void draw_char(int xw, int yw)
                         /* Moving diag down */
 
                         // Final x-coord is one left/right of starting x-coord
-                        x = (g_ent[i].tilex - horiz) * 16 - vx + xw;
+                        x = (g_ent[fighter_index].tilex - horiz) * TILE_W - vx + xw;
                         // Final y-coord is same as starting y-coord
-                        y = g_ent[i].tiley * 16 - vy + yw;
+                        y = g_ent[fighter_index].tiley * TILE_H - vy + yw;
                         // Where the tile is on the map that we will draw over
-                        there = (g_ent[i].tiley) * g_map.xsize + g_ent[i].tilex - horiz;
+                        there = (g_ent[fighter_index].tiley) * g_map.xsize + g_ent[fighter_index].tilex - horiz;
                         // Original position, before you started moving
-                        here = (g_ent[i].tiley - vert) * g_map.xsize + g_ent[i].tilex - horiz;
+                        here = (g_ent[fighter_index].tiley - vert) * g_map.xsize + g_ent[fighter_index].tilex - horiz;
                     }
                     else
                     {
                         /* Moving diag up */
 
                         // Final x-coord is same as starting x-coord
-                        x = g_ent[i].tilex * 16 - vx + xw;
+                        x = g_ent[fighter_index].tilex * TILE_W - vx + xw;
                         // Final y-coord is above starting y-coord
-                        y = (g_ent[i].tiley - vert) * 16 - vy + yw;
+                        y = (g_ent[fighter_index].tiley - vert) * TILE_H - vy + yw;
                         // Where the tile is on the map that we will draw over
-                        there = (g_ent[i].tiley - vert) * g_map.xsize + g_ent[i].tilex;
+                        there = (g_ent[fighter_index].tiley - vert) * g_map.xsize + g_ent[fighter_index].tilex;
                         // Target position
-                        here = (g_ent[i].tiley) * g_map.xsize + g_ent[i].tilex;
+                        here = (g_ent[fighter_index].tiley) * g_map.xsize + g_ent[fighter_index].tilex;
                     }
 
                     /* Because of possible redraw problems, only draw if there is
@@ -515,18 +527,21 @@ static void draw_char(int xw, int yw)
         else
         {
             /* It's an NPC */
-            if (g_ent[i].active
-             && g_ent[i].tilex >= view_x1
-             && g_ent[i].tilex <= view_x2
-             && g_ent[i].tiley >= view_y1
-             && g_ent[i].tiley <= view_y2)
+            if (g_ent[fighter_index].active
+             && g_ent[fighter_index].tilex >= view_x1
+             && g_ent[fighter_index].tilex <= view_x2
+             && g_ent[fighter_index].tiley >= view_y1
+             && g_ent[fighter_index].tiley <= view_y2)
             {
-                if (dx >= -16 && dx <= 336 && dy >= -16 && dy <= 256)
+                
+                if (dx >= TILE_W * -1 && dx <= TILE_W * WINDOW_TILES_W
+                 && dy >= TILE_H * -1 && dy <= TILE_H * WINDOW_TILES_H)
                 {
-                    spr = (g_ent[i].eid >= ID_ENEMY) ? eframes[g_ent[i].chrx][fr] :
-                          frames[g_ent[i].eid][fr];
+                    spr = (g_ent[fighter_index].eid >= ID_ENEMY)
+                        ? eframes[g_ent[fighter_index].chrx][fighter_frame]
+                        : frames[g_ent[fighter_index].eid][fighter_frame];
 
-                    if (g_ent[i].transl == 0)
+                    if (g_ent[fighter_index].transl == 0)
                     {
                         draw_sprite(double_buffer, spr, dx, dy);
                     }
@@ -1556,7 +1571,7 @@ static int get_glyph_index(unsigned int cp)
  * \param   msg String to draw
  * \param   cl Font index (0..6)
  */
-void print_font(BITMAP *where, int sx, int sy, const char *msg, int cl)
+void print_font(BITMAP *where, int sx, int sy, const char *msg, eFontColor cl)
 {
     int z = 0, hgt = 8;
     unsigned int cc = 0;
@@ -1994,41 +2009,41 @@ static const char *relay(const char *buf)
  * Restore specified fighter frames to normal color. This is done
  * by blitting the 'master copy' from tcframes.
  *
- * \param   who Character to restore
- * \param   revert_heroes If ==1 then convert all heroes if \p who < PSIZE, otherwise convert all enemies
+ * \param   fighter_index Character to restore
+ * \param   revert_heroes If ==1 then convert all heroes if fighter_index < PSIZE, otherwise convert all enemies
  */
-void revert_cframes(int who, int revert_heroes)
+void revert_cframes(size_t fighter_index, int revert_heroes)
 {
-    int a, p;
-    int a1;
+    size_t start_fighter_index, end_fighter_index;
+    size_t cframe_index;
 
     /* Determine the range of frames to revert */
     if (revert_heroes == 1)
     {
-        if (who < PSIZE)
+        if (fighter_index < PSIZE)
         {
-            a = 0;
-            a1 = numchrs;
+            start_fighter_index = 0;
+            end_fighter_index = numchrs;
         }
         else
         {
-            a = PSIZE;
-            a1 = PSIZE + num_enemies;
+            start_fighter_index = PSIZE;
+            end_fighter_index = PSIZE + num_enemies;
         }
     }
     else
     {
-        a = who;
-        a1 = who + 1;
+        start_fighter_index = fighter_index;
+        end_fighter_index = fighter_index + 1;
     }
 
-    while (a < a1)
+    while (start_fighter_index < end_fighter_index)
     {
-        for (p = 0; p < MAXCFRAMES; p++)
+        for (cframe_index = 0; cframe_index < MAXCFRAMES; cframe_index++)
         {
-            blit(tcframes[a][p], cframes[a][p], 0, 0, 0, 0, fighter[a].cw, fighter[a].cl);
+            blit(tcframes[start_fighter_index][cframe_index], cframes[start_fighter_index][cframe_index], 0, 0, 0, 0, fighter[start_fighter_index].cw, fighter[start_fighter_index].cl);
         }
-        ++a;
+        ++start_fighter_index;
     }
 }
 

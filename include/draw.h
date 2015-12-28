@@ -26,24 +26,36 @@
 
 #include <allegro.h>
 
+// TODO: Find out whether these values paired to any color defined within PALETTE 'pal'
 #define GREY1      4
 #define GREY2      8
 #define GREY3     13
 #define WHITE     15
 #define DBLUE      3
 #define DRED       6
-#define FNORMAL    0
-#define FRED       1
-#define FYELLOW    2
-#define FGREEN     3
-#define FDARK      4
-#define FGOLD      5
-#define FBIG       6
-#define FDECIDE    7
-#define B_TEXT     0
-#define B_THOUGHT  1
-#define B_MESSAGE  2
 
+typedef enum eFontColor
+{
+    FNORMAL    = 0,
+    FRED       = 1,
+    FYELLOW    = 2,
+    FGREEN     = 3,
+    FDARK      = 4,
+    FGOLD      = 5,
+    FBIG       = 6,
+    FDECIDE    = 7,
+
+    NUM_FONT_COLORS // always last
+} eFontColor;
+
+typedef enum eBubbleStyle
+{
+    B_TEXT     = 0,
+    B_THOUGHT  = 1,
+    B_MESSAGE  = 2,
+
+    NUM_BUBBLE_STYLES // always last
+} eBubbleStyle;
 
 
 /*  draw global functions  */
@@ -56,10 +68,10 @@ void blit2screen(int, int);
 void color_scale(BITMAP *, BITMAP *, int, int);
 
 /*  combat.c, effects.c, hskill.c  */
-void convert_cframes(int, int, int, int);
+void convert_cframes(size_t, int, int, int);
 
 /*  combat.c, effects.c, hskill.c  */
-void revert_cframes(int, int);
+void revert_cframes(size_t, int);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, menu.c, selector.c  */
 void draw_icon(BITMAP *, int, int, int);
@@ -80,7 +92,7 @@ void menubox(BITMAP *, int, int, int, int, int);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, hskill.c,  */
 /*  intrface.c, selector.c, setup.c, sgame.c, menu.c  */
-void print_font(BITMAP *, int, int, const char *, int);
+void print_font(BITMAP *, int, int, const char *, eFontColor);
 
 /*  effects.c -> only place (RB IDEA: moving it there?)  */
 void print_num(BITMAP *, int, int, char *, int);
