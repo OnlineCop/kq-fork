@@ -230,9 +230,9 @@ typedef struct
     unsigned char ai[8];
     unsigned char aip[8];
     unsigned char atrack[8];
-    int csmem;
-    int ctmem;
-    int current_weapon_type;     /*!< \brief Current Weapon Type
+    unsigned int csmem;          /*!<\brief Spell number, associated with M_* spells, used within s_spell magic[] array. */
+    int ctmem;                   /*!<\brief Spell target: who is going to be affected by the spell; can be set to -1 */
+    int current_weapon_type;     /*!<\brief Current Weapon Type
                                   * The shape of the currently held weapon (sword, dagger, axe etc) \sa hero_init()
                                   */
     int welem;                   /*!<\brief Which Element type (sick, fire, water, etc.) */
