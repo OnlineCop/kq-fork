@@ -106,10 +106,10 @@ static void calc_possible_equip(int c, int slot)
     for (k = 0; k < MAX_INV; k++)
     {
         // Check if we have any items at all
-        if (g_inv[k][0] > 0 && g_inv[k][1] > 0)
+        if (g_inv[k][GLOBAL_INVENTORY_ITEM] > 0 && g_inv[k][GLOBAL_INVENTORY_QUANTITY] > 0)
         {
-            if (items[g_inv[k][0]].type == slot
-                    && items[g_inv[k][0]].eq[pidx[c]] != 0)
+            if (items[g_inv[k][GLOBAL_INVENTORY_ITEM]].type == slot
+                    && items[g_inv[k][GLOBAL_INVENTORY_ITEM]].eq[pidx[c]] != 0)
             {
                 t_inv[tot] = k;
                 tot++;
@@ -484,7 +484,7 @@ static int equip(unsigned int c, unsigned int selected_item, unsigned int forced
 
     if (forced == 0)
     {
-        d = g_inv[selected_item][0];
+        d = g_inv[selected_item][GLOBAL_INVENTORY_ITEM];
     }
     else
     {
@@ -522,16 +522,16 @@ static int equip(unsigned int c, unsigned int selected_item, unsigned int forced
     {
         for (i = 0; i < MAX_INV; i++)
             // Check if we have any items at all
-            if (g_inv[selected_item][0] > 0 && g_inv[selected_item][1] > 0)
+            if (g_inv[selected_item][GLOBAL_INVENTORY_ITEM] > 0 && g_inv[selected_item][GLOBAL_INVENTORY_QUANTITY] > 0)
             {
                 n++;
             }
         // this first argument checks to see if there's one of given item
-        if (g_inv[selected_item][1] == 1 && n == MAX_INV && forced == 0)
+        if (g_inv[selected_item][GLOBAL_INVENTORY_QUANTITY] == 1 && n == MAX_INV && forced == 0)
         {
             party[c].eqp[a] = d;
-            g_inv[selected_item][0] = b;
-            g_inv[selected_item][1] = 1;
+            g_inv[selected_item][GLOBAL_INVENTORY_ITEM] = b;
+            g_inv[selected_item][GLOBAL_INVENTORY_QUANTITY] = 1;
             return 1;
         }
         else

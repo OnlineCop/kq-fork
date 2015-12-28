@@ -419,9 +419,9 @@ static void draw_sideshot(int selected_item)
         }
     }
     for (j = 0; j < MAX_INV; j++)
-        if (g_inv[j][0] == selected_item)
+        if (g_inv[j][GLOBAL_INVENTORY_ITEM] == selected_item)
         {
-            ownd += g_inv[j][1];    // quantity of this item
+            ownd += g_inv[j][GLOBAL_INVENTORY_QUANTITY];    // quantity of this item
         }
     sprintf(strbuf, _("Own: %d"), ownd);
     print_font(double_buffer, 88 + xofs, 224 + yofs, strbuf, FNORMAL);
@@ -572,7 +572,7 @@ static void sell_howmany(int item_no, size_t inv_page)
     int l, max_items, prc, my = 1, stop;
 
     stop = 0;
-    l = g_inv[inv_page * NUM_ITEMS_PER_PAGE + item_no][0];
+    l = g_inv[inv_page * NUM_ITEMS_PER_PAGE + item_no][GLOBAL_INVENTORY_ITEM];
     prc = items[l].price;
     if (prc == 0)
     {
@@ -580,7 +580,7 @@ static void sell_howmany(int item_no, size_t inv_page)
         return;
     }
     // Maximum (total) number of items
-    max_items = g_inv[inv_page * NUM_ITEMS_PER_PAGE + item_no][1];
+    max_items = g_inv[inv_page * NUM_ITEMS_PER_PAGE + item_no][GLOBAL_INVENTORY_QUANTITY];
     if (max_items == 1)
     {
         menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, DARKBLUE);
@@ -660,7 +660,7 @@ static void sell_item(int itno, int ni)
 {
     int l, stop = 0, sp, a;
 
-    l = g_inv[itno][0];
+    l = g_inv[itno][GLOBAL_INVENTORY_ITEM];
     sp = (items[l].price * 50 / 100) * ni;
     menubox(double_buffer, 96 + xofs, 192 + yofs, 14, 1, DARKBLUE);
     print_font(double_buffer, 104 + xofs, 200 + yofs, _("Confirm/Cancel"), FNORMAL);
@@ -721,7 +721,7 @@ static void sell_menu(void)
         draw_shopgold();
         for (p = 0; p < NUM_ITEMS_PER_PAGE; p++)
         {
-            z = g_inv[inv_page * NUM_ITEMS_PER_PAGE + p][0];
+            z = g_inv[inv_page * NUM_ITEMS_PER_PAGE + p][GLOBAL_INVENTORY_ITEM];
             if (items[z].price == 0)
             {
                 k = FDARK;
@@ -733,17 +733,17 @@ static void sell_menu(void)
             draw_icon(double_buffer, items[z].icon, 48 + xofs, p * 8 + 32 + yofs);
             print_font(double_buffer, 56 + xofs, p * 8 + 32 + yofs, items[z].name, k);
             // Check if quantity of this item > 1
-            if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + p][1] > 1)
+            if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + p][GLOBAL_INVENTORY_QUANTITY] > 1)
             {
                 // The '^' in this is an 'x' in allfonts.pcx
-                sprintf(strbuf, "^%d", g_inv[inv_page * NUM_ITEMS_PER_PAGE + p][1]);
+                sprintf(strbuf, "^%d", g_inv[inv_page * NUM_ITEMS_PER_PAGE + p][GLOBAL_INVENTORY_QUANTITY]);
                 print_font(double_buffer, 264 + xofs, p * 8 + 32 + yofs, strbuf, k);
             }
         }
-        sp = items[g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][0]].price * 50 / 100;
-        if (items[g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][0]].price > 0)
+        sp = items[g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_ITEM]].price * 50 / 100;
+        if (items[g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_ITEM]].price > 0)
         {
-            if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][1] > 1)
+            if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_QUANTITY] > 1)
             {
                 // Check if there is more than one item
                 sprintf(strbuf, _("%d gp for each one."), sp);
@@ -758,7 +758,7 @@ static void sell_menu(void)
         }
         else
         {
-            if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][0] > 0)
+            if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_ITEM] > 0)
             {
                 print_font(double_buffer, 76 + xofs, 192 + yofs, _("That can not be sold!"), FNORMAL);
             }
@@ -824,7 +824,7 @@ static void sell_menu(void)
         if (balt)
         {
             unpress();
-            if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][0] > 0 && items[g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][0]].price > 0)
+            if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_ITEM] > 0 && items[g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_ITEM]].price > 0)
             {
                 sell_howmany(yptr, inv_page);
             }

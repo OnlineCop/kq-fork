@@ -256,9 +256,9 @@ static void combat_draw_items(int pg)
     for (a = 0; a < 16; a++)
     {
         // b == item index #
-        b = g_inv[pg * 16 + a][0];
+        b = g_inv[pg * 16 + a][GLOBAL_INVENTORY_ITEM];
         // c == quantity of item
-        c = g_inv[pg * 16 + a][1];
+        c = g_inv[pg * 16 + a][GLOBAL_INVENTORY_QUANTITY];
         draw_icon(double_buffer, items[b].icon, 88, a * 8 + 16);
         if (combat_item_usable(b) == 1)
         {
@@ -408,7 +408,7 @@ static int combat_item_menu(int whom)
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 16);
         /* put description of selected item */
         menubox(double_buffer, 72, 152, 20, 1, BLUE);
-        print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16][0]].desc, FNORMAL);
+        print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16][GLOBAL_INVENTORY_ITEM]].desc, FNORMAL);
         blit2screen(0, 0);
 
         readcontrols();
@@ -455,20 +455,20 @@ static int combat_item_menu(int whom)
         if (balt)
         {
             unpress();
-            if (items[g_inv[pptr * 16 + ptr][0]].tgt >= TGT_ENEMY_ONE)
+            if (items[g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM]].tgt >= TGT_ENEMY_ONE)
             {
-                z = select_enemy(whom, items[g_inv[pptr * 16 + ptr][0]].tgt - 4);
+                z = select_enemy(whom, items[g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM]].tgt - 4);
             }
             else
             {
-                if (g_inv[pptr * 16 + ptr][0] == I_LTONIC)
-                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][0]].tgt - 1, 1);
+                if (g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM] == I_LTONIC)
+                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM]].tgt - 1, 1);
                 else
-                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][0]].tgt - 1, 0);
+                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM]].tgt - 1, 0);
             }
             if (z > -1)
             {
-                if (combat_item(0, g_inv[pptr * 16 + ptr][0], z) == 1)
+                if (combat_item(0, g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM], z) == 1)
                 {
                     if (items[fighter[whom].csmem].use != USE_ANY_INF
                      && items[fighter[whom].csmem].use != USE_COMBAT_INF)

@@ -314,8 +314,8 @@ int load_game_91(PACKFILE *sdat)
     }
     for (a = 0; a < MAX_INV; a++)
     {
-        g_inv[a][0] = pack_igetw(sdat);
-        g_inv[a][1] = pack_igetw(sdat);
+        g_inv[a][GLOBAL_INVENTORY_ITEM] = pack_igetw(sdat);
+        g_inv[a][GLOBAL_INVENTORY_QUANTITY] = pack_igetw(sdat);
     }
     /* Bunch of 0s for alignment */
     pack_igetl(sdat);
@@ -747,15 +747,15 @@ static int load_game_92(PACKFILE *sdat)
     }
     for (a = 0; a < b; a++)
     {
-        g_inv[a][0] = pack_igetw(sdat);
-        g_inv[a][1] = pack_igetw(sdat);
+        g_inv[a][GLOBAL_INVENTORY_ITEM] = pack_igetw(sdat);
+        g_inv[a][GLOBAL_INVENTORY_QUANTITY] = pack_igetw(sdat);
     }
 
     /* zero-set empty inventory slots */
     for (; a < MAX_INV; a++)
     {
-        g_inv[a][0] = 0;
-        g_inv[a][1] = 0;
+        g_inv[a][GLOBAL_INVENTORY_ITEM] = 0;
+        g_inv[a][GLOBAL_INVENTORY_QUANTITY] = 0;
     }
 
     /* Load special items info */
@@ -1016,8 +1016,8 @@ static int save_game(void)
     }
     for (a = 0; a < MAX_INV; a++)
     {
-        pack_iputw(g_inv[a][0], sdat);
-        pack_iputw(g_inv[a][1], sdat);
+        pack_iputw(g_inv[a][GLOBAL_INVENTORY_ITEM], sdat);
+        pack_iputw(g_inv[a][GLOBAL_INVENTORY_QUANTITY], sdat);
     }
     /* PH FIXME: do we _really_ want things like controls and screen */
     /* mode to be saved/loaded ? */
@@ -1158,8 +1158,8 @@ static int save_game_92(void)
     pack_iputw(MAX_INV, sdat);
     for (a = 0; a < MAX_INV; a++)
     {
-        pack_iputw(g_inv[a][0], sdat);
-        pack_iputw(g_inv[a][1], sdat);
+        pack_iputw(g_inv[a][GLOBAL_INVENTORY_ITEM], sdat);
+        pack_iputw(g_inv[a][GLOBAL_INVENTORY_QUANTITY], sdat);
     }
 
     /* Save special items */

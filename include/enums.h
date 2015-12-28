@@ -48,6 +48,14 @@ typedef enum eSizes
     NUM_ITEMS_PER_PAGE = 16U,
 } eSizes;
 
+enum eGlobalInventory
+{
+    GLOBAL_INVENTORY_ITEM = 0,
+    GLOBAL_INVENTORY_QUANTITY = 1,
+
+    NUM_GLOBAL_INVENTORY // always last
+};
+
 #define MAX_TILES        1024
 #define MAXE               41
 #define MAXCHRS             8
