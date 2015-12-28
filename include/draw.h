@@ -57,6 +57,21 @@ typedef enum eBubbleStyle
     NUM_BUBBLE_STYLES // always last
 } eBubbleStyle;
 
+/* These should correspond with the stems found in MISC.
+ * Bubbles are either solid (for speech) or wavy (for thoughts).
+ */
+typedef enum eBubbleStemStyle
+{
+    STEM_UNDEFINED      = -1,
+
+    STEM_BOTTOM_RIGHT   = 0,
+    STEM_BOTTOM_LEFT    = 1,
+    STEM_TOP_RIGHT      = 2,
+    STEM_TOP_LEFT       = 3,
+
+    NUM_BUBBLE_STEMS // always last
+} eBubbleStemStyle;
+
 
 /*  draw global functions  */
 

@@ -49,7 +49,8 @@
 #define MSG_ROWS 4
 #define MSG_COLS 36
 char msgbuf[MSG_ROWS][MSG_COLS];
-int gbx, gby, gbbx, gbby, gbt, gbbw, gbbh, gbbs;
+int gbx, gby, gbbx, gbby, gbbw, gbbh, gbbs;
+eBubbleStemStyle bubble_stem_style;
 unsigned char BLUE = 2, DARKBLUE = 0, DARKRED = 4;
 
 /*  Internal prototypes  */
@@ -1003,16 +1004,14 @@ static void draw_textbox(int bstyle)
     int wid, hgt, a;
     BITMAP *stem;
 
-    /*    BITMAP *tm; */
-
     wid = gbbw * 8 + 16;
     hgt = gbbh * 12 + 16;
 
     draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid, gbby + yofs + hgt, BLUE, bstyle);
-    if (gbt != -1)
+    if (bubble_stem_style != STEM_UNDEFINED)
     {
         /* select the correct stem-thingy that comes out of the speech bubble */
-        stem = bub[gbt + (bstyle == B_THOUGHT ? 4 : 0)];
+        stem = bub[bubble_stem_style + (bstyle == B_THOUGHT ? NUM_BUBBLE_STEMS : 0)];
         /* and draw it */
         draw_sprite(double_buffer, stem, gbx + xofs, gby + yofs);
     }
@@ -2111,12 +2110,12 @@ static void set_textpos(unsigned int entity_index)
         if (gbby > gby)
         {
             gby += 20;
-            gbt = (gbx < 152 ? 3 : 2);
+            bubble_stem_style = (gbx < 152 ? STEM_TOP_LEFT : STEM_TOP_RIGHT);
         }
         else
         {
             gby -= 20;
-            gbt = (gbx < 152 ? 1 : 0);
+            bubble_stem_style = (gbx < 152 ? STEM_BOTTOM_LEFT : STEM_BOTTOM_RIGHT);
         }
         if (gbx < gbbx + 8)
         {
@@ -2139,7 +2138,7 @@ static void set_textpos(unsigned int entity_index)
     {
         gbby = 216 - (gbbh * 12);
         gbbx = 152 - (gbbw * 4);
-        gbt = -1;
+        bubble_stem_style = STEM_UNDEFINED;
     }
 }
 
