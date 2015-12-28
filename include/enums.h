@@ -38,7 +38,7 @@
 // easier for a lot of IDEs to interpret.
 
 
-typedef enum eSizes
+enum eSizes
 {
     TILE_H = 16U,
     TILE_W = 16U,
@@ -46,7 +46,7 @@ typedef enum eSizes
     ENT_H  = 16U,
     NUM_SPELLS_PER_PAGE = 12U,
     NUM_ITEMS_PER_PAGE = 16U,
-} eSizes;
+};
 
 enum eGlobalInventory
 {
