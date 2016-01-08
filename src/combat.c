@@ -768,7 +768,6 @@ static int do_combat(char *bg, char *mus, int is_rnd)
                     SCREEN_W * 2, SCREEN_H * 2
                 );
             }
-
             else
             {
                 stretch_blit(

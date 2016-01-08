@@ -109,7 +109,7 @@ static void calc_possible_equip(int c, int slot)
         if (g_inv[k][GLOBAL_INVENTORY_ITEM] > 0 && g_inv[k][GLOBAL_INVENTORY_QUANTITY] > 0)
         {
             if (items[g_inv[k][GLOBAL_INVENTORY_ITEM]].type == slot
-                    && items[g_inv[k][GLOBAL_INVENTORY_ITEM]].eq[pidx[c]] != 0)
+             && items[g_inv[k][GLOBAL_INVENTORY_ITEM]].eq[pidx[c]] != 0)
             {
                 t_inv[tot] = k;
                 tot++;
@@ -521,11 +521,13 @@ static int equip(unsigned int c, unsigned int selected_item, unsigned int forced
     if (b > 0)
     {
         for (i = 0; i < MAX_INV; i++)
+        {
             // Check if we have any items at all
             if (g_inv[selected_item][GLOBAL_INVENTORY_ITEM] > 0 && g_inv[selected_item][GLOBAL_INVENTORY_QUANTITY] > 0)
             {
                 n++;
             }
+        }
         // this first argument checks to see if there's one of given item
         if (g_inv[selected_item][GLOBAL_INVENTORY_QUANTITY] == 1 && n == MAX_INV && forced == 0)
         {
@@ -759,10 +761,12 @@ static void optimize_equip(int c)
         }
     }
     if (maxi > -1)
+    {
         if (equip(pidx[c], t_inv[maxi], 0) == 0)
         {
             return;
         }
+    }
     for (z = 1; z < 5; z++)
     {
         maxx = 0;
@@ -778,10 +782,12 @@ static void optimize_equip(int c)
             }
         }
         if (maxi > -1)
+        {
             if (equip(pidx[c], t_inv[maxi], 0) == 0)
             {
                 return;
             }
+        }
     }
     maxx = 0;
     maxi = -1;
@@ -804,10 +810,12 @@ static void optimize_equip(int c)
         }
     }
     if (maxi > -1)
+    {
         if (equip(pidx[c], t_inv[maxi], 0) == 0)
         {
             return;
         }
+    }
     play_effect(SND_EQUIP, 128);
 }
 

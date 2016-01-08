@@ -68,8 +68,9 @@ int main (int argc, char *argv[])
             j = strlen (buf);
             strcat (buf, argv[i]);
             while (buf[j]) {
-               if (buf[j] == '/')
+               if (buf[j] == '/') {
                   buf[j] = '\\';
+               }
                j++;
             }
          } else

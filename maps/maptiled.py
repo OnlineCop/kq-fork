@@ -5,7 +5,7 @@ import argparse
 import array
 import xml.etree.ElementTree as ET
 
-MAX_ENT = 50
+MAX_ENTITIES_PER_MAP = 50
 SHADOW_TILE_OFFSET=200
 
 WINDOW_BITS = 12
@@ -217,7 +217,7 @@ class SMap:
             m.markers = m.bounds = []
         # Entities
         m.entities = []
-        for i in xrange(MAX_ENT):
+        for i in xrange(MAX_ENTITIES_PER_MAP):
             (ent, offset) = Entity.from_data(data, offset)
             if ent.eid > 0:
                 m.entities.append(ent)
