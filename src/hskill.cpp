@@ -536,8 +536,8 @@ int skill_use(size_t attack_fighter_index)
                 return 0;
             }
             enemy_index = (unsigned int)tgt;
-            temp = create_bitmap(SCREEN_W, SCREEN_H);
-            blit((BITMAP *) backart->dat, temp, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+            temp = create_bitmap(320, 240);
+            blit((BITMAP *) backart->dat, temp, 0, 0, 0, 0, 320, 240);
             color_scale(temp, (BITMAP *) backart->dat, 16, 31);
             b = fighter[attack_fighter_index].mhp / 20;
             strcpy(attack_string, _("Rage"));

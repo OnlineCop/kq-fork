@@ -111,11 +111,11 @@ void blit2screen(int xw, int yw)
 #endif
     if (stretch_view == 1)
     {
-        stretch_blit(double_buffer, screen, xw, yw, SCREEN_W, SCREEN_H, 0, 0, SCREEN_W * 2, SCREEN_H * 2);
+        stretch_blit(double_buffer, screen, xw, yw, 320, 240, 0, 0, 640, 480);
     }
     else
     {
-        blit(double_buffer, screen, xw, yw, 0, 0, SCREEN_W, SCREEN_H);
+        blit(double_buffer, screen, xw, yw, 0, 0, 320, 240);
     }
     frate = limit_frame_rate(25);
 }
@@ -1803,7 +1803,7 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
                 }
             }
             winheight = n_opt > 4 ? 4 : n_opt;
-            winx = xofs + (SCREEN_W - winwidth * 8) / 2;
+            winx = xofs + (320 - winwidth * 8) / 2;
             winy = yofs + 230 - winheight * 12;
             running = 1;
             while (running)
@@ -2071,7 +2071,7 @@ static void set_textpos(unsigned int entity_index)
         {
             gbbx = 296 - (gbbw * 8);
         }
-        if (gby > -16 && gby < SCREEN_H)
+        if (gby > -16 && gby < 240)
         {
             if (g_ent[entity_index].facing == 1 || g_ent[entity_index].facing == 2)
             {

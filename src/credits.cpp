@@ -154,7 +154,7 @@ void display_credits(BITMAP *double_buffer)
     ease_amount = (max_ticks / 2) - ticks;
     if (ease_amount != last_ease_amount)
     {
-        x0 = (SCREEN_W - wk->w) / 2;
+        x0 = (320 - wk->w) / 2;
         for (i = 0; i < wk->w; ++i)
         {
             blit(wk, double_buffer, i, ease(i + ease_amount), i + x0, 185, 1, 32);
