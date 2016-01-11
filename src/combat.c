@@ -318,7 +318,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
     }
 
     clear_bitmap(double_buffer);
-    blit((BITMAP *) backart->dat, double_buffer, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+    blit((BITMAP *) backart->dat, double_buffer, 0, 0, 0, 0, 320, 240);
 
     if ((sall == 0) && (curx > -1) && (cury > -1))
     {
@@ -762,10 +762,10 @@ static int do_combat(char *bg, char *mus, int is_rnd)
                     screen,
                     zoom_step * 16 + xofs,
                     zoom_step * 12 + yofs,
-                    SCREEN_W - (zoom_step * 32),
-                    SCREEN_H - (zoom_step * 24),
+                    320 - (zoom_step * 32),
+                    240 - (zoom_step * 24),
                     0, 0,
-                    SCREEN_W * 2, SCREEN_H * 2
+                    640, 480
                 );
             }
             else
@@ -775,10 +775,10 @@ static int do_combat(char *bg, char *mus, int is_rnd)
                     screen,
                     zoom_step * 16 + xofs,
                     zoom_step * 12 + yofs,
-                    SCREEN_W - (zoom_step * 32),
-                    SCREEN_H - (zoom_step * 24),
+                    320 - (zoom_step * 32),
+                    240 - (zoom_step * 24),
                     0, 0,
-                    SCREEN_W, SCREEN_H
+                    320, 240
                 );
             }
 
@@ -1174,7 +1174,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
             battle_render(defend_fighter_index + 1, 0, 0);
             blit2screen(0, 0);
             kq_wait(20);
-            rectfill(double_buffer, 0, 0, SCREEN_W, SCREEN_H, 15);
+            rectfill(double_buffer, 0, 0, 320, 240, 15);
             blit2screen(0, 0);
             kq_wait(20);
         }
