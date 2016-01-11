@@ -83,8 +83,7 @@ static void parse_jb_setup(void);
  * \param   value The setting (e.g. "Yes")
  * \param   color The foreground colour of the text
  */
-static void citem(int y, const char *caption, const char *value,
-                  const int color)
+static void citem(int y, const char *caption, const char *value, eFontColor color)
 {
     print_font(double_buffer, 48 + xofs, y + yofs, caption, color);
     print_font(double_buffer, SCREEN_H2 - 8 * strlen(value) + xofs, y + yofs, value, color);
@@ -102,6 +101,7 @@ void config_menu(void)
 {
     size_t stop = 0, ptr = 0;
     int p;
+    eFontColor fontColor;
     int temp_key = 0;
 
 #ifdef DEBUGMODE
@@ -178,18 +178,18 @@ void config_menu(void)
         citem(row[11], _("System Menu Key:"), kq_keyname(kesc), FNORMAL);
         citem(row[12], _("Sound System:"), is_sound ? _("ON") : _("OFF"), FNORMAL);
 
-        p = FNORMAL;
+        fontColor = FNORMAL;
         /* TT: This needs to check for ==0 because 1 means sound init */
         if (is_sound == 0)
         {
-            p = FDARK;
+            fontColor = FDARK;
         }
 
         sprintf(strbuf, "%3d%%", gsvol * 100 / 250);
-        citem(row[13], _("Sound Volume:"), strbuf, p);
+        citem(row[13], _("Sound Volume:"), strbuf, fontColor);
 
         sprintf(strbuf, "%3d%%", gmvol * 100 / 250);
-        citem(row[14], _("Music Volume:"), strbuf, p);
+        citem(row[14], _("Music Volume:"), strbuf, fontColor);
 
         citem(row[15], _("Slow Computer:"), slow_computer ? _("YES") : _("NO"), FNORMAL);
 

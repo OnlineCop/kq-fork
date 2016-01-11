@@ -49,7 +49,7 @@ enum eSize
 };
 
 
-typedef enum eShadow
+enum eShadow
 {
     SHADOW_NONE             = 0,
     SHADOW_LEFT_CORNER      = 1,
@@ -65,7 +65,7 @@ typedef enum eShadow
     SHADOW_LIGHT_TOP        = 11,
 
     NUM_SHADOWS // always last
-} eShadow;
+};
 
 
 enum eGlobalInventory
@@ -99,8 +99,8 @@ enum eGlobalInventory
 #define NUM_STATS          13
 #define MISS             9999
 #define NODISPLAY        9998
-#define SEL_ALL_ALLIES   9997
-#define SEL_ALL_ENEMIES  9996
+//#define SEL_ALL_ALLIES   9997
+//#define SEL_ALL_ENEMIES  9996
 #define SCANALL          9995
 #define NO_STS_CHECK     9994
 #define CURE_CHECK       9993
@@ -122,7 +122,7 @@ enum eGlobalInventory
 /*  These are the stats when you check your
  *  characters stats (on the left)
  */
-typedef enum eAttribute
+enum eAttribute
 {
     A_STR       = 0,    // Strength
     A_AGI       = 1,    // Agility
@@ -139,11 +139,11 @@ typedef enum eAttribute
     A_MAG       = 12,   // Mag.Def
 
     NUM_ATTRIBUTES // always last
-} eAttribute;
+};
 
 
 /*! \name Spells */
-typedef enum eSpellType
+enum eSpellType
 {
     S_POISON   = 0,
     S_BLIND    = 1,
@@ -165,11 +165,11 @@ typedef enum eSpellType
     S_INFUSE   = 17,
 
     NUM_SPELL_TYPES // always last
-} eSpellType;
+};
 
 
 /*! \name Special combat skills */
-typedef enum eCombatSkill
+enum eCombatSkill
 {
     C_ATTACK   = 1,
     C_COMBO    = 2,
@@ -181,7 +181,7 @@ typedef enum eCombatSkill
     C_RUN      = 8,
 
     NUM_COMBAT_SKILLS // always last
-} eCombatSkill;
+};
 
 
 /*! \name Runes/Resistances */
@@ -190,7 +190,7 @@ typedef enum eCombatSkill
  * (neutral), or a positive value (very little damage).
  * See s_fighter.res[] as well as s_spell.elem.
  */
-typedef enum eResistance
+enum eResistance
 {
     R_EARTH     = 0,
     R_BLACK     = 1,
@@ -210,14 +210,14 @@ typedef enum eResistance
     R_TIME      = 15,
 
     R_TOTAL_RES // always last
-} eResistance;
+};
 
 
 /*! \name Weapons */
 /* The order of these needs to correspond with the image placement within MISC,
  * 4th column down (0-based).
  */
-typedef enum eWeapon
+enum eWeapon
 {
     W_NO_WEAPON     = 0,
     W_MACE          = 1,
@@ -259,13 +259,13 @@ typedef enum eWeapon
     W_EXPLOSIVE     = 30,
 
     NUM_WEAPONS // always last
-} eWeapon;
+};
 
 
 /*!\name Use modes
  * Specify how an item can be used.
  */
-typedef enum eItemUse
+enum eItemUse
 {
     USE_NOT          = 0,
     USE_ANY_ONCE     = 1,
@@ -278,11 +278,11 @@ typedef enum eItemUse
     USE_IMBUED       = 8,
 
     NUM_USES // always last
-} eItemUse;
+};
 
 
 /*! \name Weapon/Spell targeting modes */
-typedef enum eTarget
+enum eTarget
 {
     TGT_CASTER        = -1,
     TGT_NONE          = 0,
@@ -294,11 +294,11 @@ typedef enum eTarget
     TGT_ENEMY_ALL     = 6,
 
     NUM_TARGETS // always last
-} eTarget;
+};
 
 
 /*! \name Facing directions */
-typedef enum eDirection
+enum eDirection
 {
     FACE_DOWN   = 0,
     FACE_UP     = 1,
@@ -306,14 +306,14 @@ typedef enum eDirection
     FACE_RIGHT  = 3,
 
     NUM_FACING_DIRECTIONS // always last
-} eDirection;
+};
 
 
 /* The map modes (parallax and drawing order) are listed here in
  * coded format. The layers are listed as 1, 2, 3, E (entity) S (shadow)
  * and a ) or ( marks which layers use the parallax mult/div.
  */
-typedef enum eMapMode
+enum eMapMode
 {
     MAPMODE_12E3S    = 0,   // "12E3S "
     MAPMODE_1E23S    = 1,   // "1E23S "
@@ -323,11 +323,11 @@ typedef enum eMapMode
     MAPMODE_12EP3S   = 5,   // "12E(3S"
 
     NUM_MAPMODES // always last
-} eMapMode;
+};
 
 
 /* move modes */
-typedef enum eMoveMode
+enum eMoveMode
 {
     MM_STAND    = 0,
     MM_WANDER   = 1,
@@ -336,10 +336,10 @@ typedef enum eMoveMode
     MM_TARGET   = 4,
 
     NUM_MOVEMODES // always last
-} eMoveMode;
+};
 
 
-typedef enum eObstacle
+enum eObstacle
 {
     BLOCK_NONE = 0,
     BLOCK_ALL  = 1,
@@ -349,10 +349,10 @@ typedef enum eObstacle
     BLOCK_L    = 5,
 
     NUM_OBSTACLES // always last
-} eObstacle;
+};
 
 
-typedef enum eEquipment
+enum eEquipment
 {
     EQP_WEAPON  = 0,
     EQP_SHIELD  = 1,
@@ -362,7 +362,7 @@ typedef enum eEquipment
     EQP_SPECIAL = 5,
 
     NUM_EQUIPMENT // always last
-} eEquipment;
+};
 
 
 #endif  /* __ENUMS_H */

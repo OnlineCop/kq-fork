@@ -25,7 +25,6 @@
 
 
 int hero_skillcheck(int);       /*  eskill.c, heroc.c  */
-int skill_use(int);             /*  eskill.c, heroc.c  */
 void infusion(int, int);        /*  hskill.c  */
 
 

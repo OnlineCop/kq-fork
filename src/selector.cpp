@@ -39,17 +39,7 @@
 #include "structs.h"
 
 
-/*  Internal functions  */
-static int can_attack(int);
-static unsigned int mini_menu(int mask);
-static void party_add(int id, int lead);
-static void party_remove(int id);
-
-/*  Internal variables  */
-static signed int tmpd[NUM_FIGHTERS]; // defined in heroc.h
-
-/*  Internal defines  */
-typedef enum eMiniMenu
+enum eMiniMenu
 {
     MM_NONE     = 0,
     MM_JOIN     = 1 << 0,
@@ -59,7 +49,16 @@ typedef enum eMiniMenu
     MM_OPTIONS_JOIN  = 0,
     MM_OPTIONS_LEAVE = 1,
     MM_OPTIONS_LEAD  = 2
-} eMiniMenu;
+};
+
+/*  Internal functions  */
+static int can_attack(int);
+static eMiniMenu mini_menu(int mask);
+static void party_add(int id, int lead);
+static void party_remove(int id);
+
+/*  Internal variables  */
+static signed int tmpd[NUM_FIGHTERS]; // defined in heroc.h
 
 
 /*! \brief  Select an enemy automatically
@@ -222,7 +221,7 @@ static int can_attack(int tgt)
  * \param   omask - Where the current selection curser is
  * \returns player's selection
  */
-static unsigned int mini_menu(int omask)
+static eMiniMenu mini_menu(int omask)
 {
     static unsigned int mini_menu_x = 162;
     static unsigned int mini_menu_y = 180;
@@ -265,9 +264,14 @@ static unsigned int mini_menu(int omask)
         if (up)
         {
             unpress();
-            if (cp == MM_OPTIONS_LEAVE || cp == MM_OPTIONS_LEAD)
+            if (cp == MM_OPTIONS_LEAVE)
             {
-                --cp;
+                cp = MM_OPTIONS_JOIN;
+                play_effect(SND_CLICK, 128);
+            }
+            else if (cp == MM_OPTIONS_LEAD)
+            {
+                cp = MM_OPTIONS_LEAVE;
                 play_effect(SND_CLICK, 128);
             }
             else
@@ -279,10 +283,15 @@ static unsigned int mini_menu(int omask)
         if (down)
         {
             unpress();
-            if (cp == MM_OPTIONS_JOIN || cp == MM_OPTIONS_LEAVE)
+            if (cp == MM_OPTIONS_JOIN)
             {
                 play_effect(SND_CLICK, 128);
-                ++cp;
+                cp = MM_OPTIONS_LEAVE;
+            }
+            else if (cp == MM_OPTIONS_LEAVE)
+            {
+                play_effect(SND_CLICK, 128);
+                cp = MM_OPTIONS_LEAD;
             }
             else
             {
@@ -299,7 +308,7 @@ static unsigned int mini_menu(int omask)
             unpress();
             if (omask & (1 << cp))
             {
-                return (1 << cp);
+                return (eMiniMenu)(1 << cp);
             }
             else
             {
@@ -662,7 +671,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
     }
     if (select_all == 0)
     {
-        return tmpd[ptr];
+        return (ePIDX)tmpd[ptr];
     }
     else
     {
@@ -795,7 +804,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
     }
     if (select_all == 0)
     {
-        return tmpd[ptr];
+        return (ePIDX)tmpd[ptr];
     }
     else
     {
@@ -818,11 +827,11 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
  * \param   numchrs_max The maximum number of heroes allowed in the party
  * \returns 1 if the party changed, 0 if cancelled
  */
-int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
+int select_party(int *avail, size_t n_avail, size_t numchrs_max)
 {
     static const unsigned int BTN_EXIT = (MAXCHRS + PSIZE);
 
-    ePIDX hero = PIDX_UNDEFINED;
+    unsigned int hero = (unsigned int)PIDX_UNDEFINED;
     eMiniMenu mini_menu_mask;
     size_t pidx_index;
     size_t fighter_index;
@@ -842,9 +851,9 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
     {
         for (pidx_index = 0; pidx_index < numchrs; ++pidx_index)
         {
-            if (avail[fighter_index] == (ePIDX)pidx[pidx_index])
+            if (avail[fighter_index] == pidx[pidx_index])
             {
-                avail[fighter_index] = PIDX_UNDEFINED;
+                avail[fighter_index] = (unsigned int)PIDX_UNDEFINED;
             }
         }
     }
@@ -862,7 +871,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
         {
             x = xofs + (320 - 32 * n_avail) / 2 + 32 * fighter_index;
             menubox(double_buffer, x, y, 2, 2, (fighter_index == cur ? DARKRED : DARKBLUE));
-            if (avail[fighter_index] != PIDX_UNDEFINED)
+            if (avail[fighter_index] != (unsigned int)PIDX_UNDEFINED)
             {
                 draw_sprite(double_buffer, frames[avail[fighter_index]][0], x + 8, y + 8);
             }
@@ -873,7 +882,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
         for (fighter_index = 0; fighter_index < PSIZE; ++fighter_index)
         {
             menubox(double_buffer, x, y, 2, 2, (cur == MAXCHRS + fighter_index ? DARKRED : DARKBLUE));
-            if (fighter_index < numchrs && (ePIDX)pidx[fighter_index] != PIDX_UNDEFINED)
+            if (fighter_index < numchrs && pidx[fighter_index] != (unsigned int)PIDX_UNDEFINED)
             {
                 draw_sprite(double_buffer, frames[pidx[fighter_index]][0], x + 8, y + 8);
             }
@@ -893,10 +902,10 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
         }
         else
         {
-            hero = PIDX_UNDEFINED;
+            hero = (unsigned int)PIDX_UNDEFINED;
         }
         menubox(double_buffer, 92, 152, 18, 5, DARKBLUE);
-        if (hero != PIDX_UNDEFINED)
+        if (hero != (unsigned int)PIDX_UNDEFINED)
         {
             draw_playerstat(double_buffer, hero, 100, 160);
         }
@@ -962,7 +971,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
                 /* selected the exit button */
                 return 1;
             }
-            if (hero == PIDX_UNDEFINED)
+            if (hero == (unsigned int)PIDX_UNDEFINED)
             {
                 /* Selected a space with no hero in it! */
                 play_effect(SND_BAD, 128);
@@ -986,12 +995,12 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
                     if (mini_menu_mask == MM_JOIN)
                     {
                         party_add(hero, 0);
-                        avail[cur] = PIDX_UNDEFINED;
+                        avail[cur] = (unsigned int)PIDX_UNDEFINED;
                     }
                     else if (mini_menu_mask == MM_LEAD)
                     {
                         party_add(hero, 1);
-                        avail[cur] = PIDX_UNDEFINED;
+                        avail[cur] = (unsigned int)PIDX_UNDEFINED;
                     }
                 }
                 else
@@ -1012,7 +1021,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
                         /* and put back on the top row */
                         for (pidx_index = 0; pidx_index < n_avail; ++pidx_index)
                         {
-                            if (avail[pidx_index] == PIDX_UNDEFINED)
+                            if (avail[pidx_index] == (unsigned int)PIDX_UNDEFINED)
                             {
                                 avail[pidx_index] = hero;
                                 break;

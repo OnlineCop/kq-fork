@@ -90,7 +90,7 @@ static int camp_castable(int who, int sno)
  */
 static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page, size_t spell_page_cursor)
 {
-    int text_color;
+    eFontColor text_color;
     size_t spell_index, pidx_index, current_spell, first_spell_index;
 
     pidx_index = pidx[caster_fighter_index];
@@ -279,7 +279,7 @@ static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_numbe
     {
         return;
     }
-    while (tg > -1)
+    while (tg != PIDX_UNDEFINED)
     {
         if (party[pidx[caster_fighter_index]].mp < mp_needed(caster_fighter_index, spell_number))
         {
@@ -292,7 +292,7 @@ static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_numbe
         if (spell_number != M_WARP && spell_number != M_REPULSE)
         {
             tg = select_any_player(magic[spell_number].tgt - 1, magic[spell_number].icon, magic[spell_number].name);
-            if (tg < 0)
+            if (tg == PIDX_UNDEFINED)
             {
                 return;
             }

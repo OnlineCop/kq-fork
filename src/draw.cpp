@@ -74,13 +74,13 @@ static int get_glyph_index(unsigned int);
  *
  * \sa relay()
  */
-typedef enum m_mode
+enum m_mode
 {
     M_UNDEF,
     M_SPACE,
     M_NONSPACE,
     M_END
-} m_mode;
+};
 
 
 

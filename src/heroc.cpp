@@ -40,6 +40,7 @@
 #include "effects.h"
 #include "eqpmenu.h"
 #include "heroc.h"
+#include "hskill.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
@@ -250,7 +251,8 @@ static int combat_castable(int spell_caster, int spell_number)
  */
 static void combat_draw_items(int pg)
 {
-    int a, b, c, k;
+    int a, b, c;
+    eFontColor k;
 
     menubox(double_buffer, 72, 8, 20, 16, BLUE);
     for (a = 0; a < 16; a++)
@@ -398,6 +400,7 @@ static int combat_item(int ss, int t1, int tg)
 static int combat_item_menu(int whom)
 {
     int z, stop = 0, ptr = 0, pptr = 0;
+    unsigned short inventory = g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM];
 
     fullblit(double_buffer, back);
     while (!stop)
@@ -455,20 +458,24 @@ static int combat_item_menu(int whom)
         if (balt)
         {
             unpress();
-            if (items[g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM]].tgt >= TGT_ENEMY_ONE)
+            if (items[inventory].tgt >= TGT_ENEMY_ONE)
             {
-                z = select_enemy(whom, items[g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM]].tgt - 4);
+                z = select_enemy(whom, (eTarget)(items[inventory].tgt - 4));
             }
             else
             {
-                if (g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM] == I_LTONIC)
-                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM]].tgt - 1, 1);
+                if (inventory == I_LTONIC)
+                {
+                    z = select_hero(whom, (eTarget)(items[inventory].tgt - 1), 1);
+                }
                 else
-                    z = select_hero(whom, items[g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM]].tgt - 1, 0);
+                {
+                    z = select_hero(whom, (eTarget)(items[inventory].tgt - 1), 0);
+                }
             }
             if (z > -1)
             {
-                if (combat_item(0, g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM], z) == 1)
+                if (combat_item(0, inventory, z) == 1)
                 {
                     if (items[fighter[whom].csmem].use != USE_ANY_INF
                      && items[fighter[whom].csmem].use != USE_COMBAT_INF)
@@ -638,11 +645,11 @@ static int combat_spell_targeting(int whom)
     {
         if (a == M_LIFE || a == M_FULLLIFE)
         {
-            tg = select_hero(whom, magic[a].tgt - 1, NO_STS_CHECK);
+            tg = select_hero(whom, (eTarget)(magic[a].tgt - 1), NO_STS_CHECK);
         }
         else
         {
-            tg = select_hero(whom, magic[a].tgt - 1, 0);
+            tg = select_hero(whom, (eTarget)(magic[a].tgt - 1), 0);
         }
         if (tg == -1)
         {
@@ -655,7 +662,7 @@ static int combat_spell_targeting(int whom)
     }
     else
     {
-        tg = select_enemy(whom, magic[a].tgt - 4);
+        tg = select_enemy(whom, (eTarget)(magic[a].tgt - 4));
         if (tg == -1)
         {
             return 0;
@@ -678,10 +685,11 @@ static int combat_spell_targeting(int whom)
  */
 static void draw_invokable(int dud)
 {
-    int a, tt, grd;
+    int a, tt;
+    eFontColor grd;
 
     menubox(double_buffer, 72, 80, 20, 6, BLUE);
-    for (a = 0; a < 6; a++)
+    for (a = 0; a < NUM_EQUIPMENT; a++)
     {
         tt = party[dud].eqp[a];
         grd = can_invoke_item(tt) ? FNORMAL : FDARK;
@@ -705,7 +713,7 @@ static int hero_attack(int whom)
 
     if (fighter[whom].sts[S_CHARM] == 0)
     {
-        tgt = select_enemy(whom, 0);
+        tgt = select_enemy(whom, TGT_NONE);
     }
     else
     {
@@ -1165,13 +1173,13 @@ static int hero_invoke(int whom)
  */
 static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 {
-    ePIDX defender_fighter_index = 0;
+    size_t defender_fighter_index = 0;
     unsigned int random_fighter_index;
     size_t fighter_index;
 
     if (items[item_index].tgt <= TGT_ALLY_ALL && items[item_index].tgt >= TGT_ALLY_ONE)
     {
-        defender_fighter_index = select_hero(attacker_fighter_index, items[item_index].tgt - TGT_ALLY_ONE, 0);
+        defender_fighter_index = select_hero(attacker_fighter_index, (eTarget)(items[item_index].tgt - TGT_ALLY_ONE), 0);
         if (defender_fighter_index == PIDX_UNDEFINED)
         {
             return 0;
@@ -1179,7 +1187,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
     }
     if (items[item_index].tgt >= TGT_ENEMY_ONE)
     {
-        defender_fighter_index = select_enemy(attacker_fighter_index, items[item_index].tgt - TGT_ENEMY_ONE);
+        defender_fighter_index = select_enemy(attacker_fighter_index, (eTarget)(items[item_index].tgt - TGT_ENEMY_ONE ));
         if (defender_fighter_index == PIDX_UNDEFINED)
         {
             return 0;

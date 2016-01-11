@@ -72,8 +72,16 @@ static int bspeed[NUM_FIGHTERS];
 static unsigned char hs;
 
 
+enum eAttackResult
+{
+    ATTACK_MISS,
+    ATTACK_SUCCESS,
+    ATTACK_CRITICAL
+};
+
+
 /* Internal prototypes */
-static unsigned int attack_result(int, int);
+static eAttackResult attack_result(int, int);
 static int check_end(void);
 static void do_action(size_t);
 static int do_combat(char *, char *, int);
@@ -83,14 +91,6 @@ static void heroes_win(void);
 static void init_fighters(void);
 static void roll_initiative(void);
 static void snap_togrid(void);
-
-
-typedef enum eAttackResult
-{
-    ATTACK_MISS,
-    ATTACK_SUCCESS,
-    ATTACK_CRITICAL
-} eAttackResult;
 
 
 /*! \brief Attack all enemies at once
@@ -103,8 +103,9 @@ typedef enum eAttackResult
  *
  * \param   ar Attacker
  * \param   dr Defender
- * \returns 0 if attack was a miss, 1 if attack was successful,
- *          or 2 if attack was a critical hit.
+ * \returns ATTACK_MISS if attack was a miss,
+ *          ATTACK_SUCCESS if attack was successful,
+ *          ATTACK_CRITICAL if attack was a critical hit.
  */
 eAttackResult attack_result(int ar, int dr)
 {

@@ -36,11 +36,13 @@
 #include "kq.h"
 
 #ifndef KQ_SCAN_DEPEND
-# include <stdio.h>
-# include <string.h>
+# include <cstdio>
+# include <cstring>
+extern "C" {
 # include <lua.h>
 # include <lualib.h>
 # include <lauxlib.h>
+}
 #endif /* KQ_SCAN_DEPEND */
 
 #include "combat.h"
@@ -3170,7 +3172,7 @@ static int KQ_pnum(lua_State *L)
         (int) lua_tonumber(L, 1) + xofs,
         (int) lua_tonumber(L, 2) + yofs,
         strbuf,
-        (int) lua_tonumber(L, 4)
+        (eFontColor) lua_tonumber(L, 4)
     );
     return 0;
 }
@@ -3246,7 +3248,7 @@ static int KQ_ptext(lua_State *L)
         (int) lua_tonumber(L, 1) + xofs,
         (int) lua_tonumber(L, 2) + yofs,
         lua_tostring(L, 3),
-        (int) lua_tonumber(L, 4)
+        (eFontColor) lua_tonumber(L, 4)
     );
     return 0;
 }

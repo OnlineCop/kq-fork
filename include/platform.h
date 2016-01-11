@@ -31,7 +31,7 @@
  */
 
 
-typedef enum eDirectories
+enum eDirectories
 {
     DATA_DIR        = 0,
     MAP_DIR         = 1,
@@ -39,7 +39,7 @@ typedef enum eDirectories
     MUSIC_DIR       = 3,
     SCRIPT_DIR      = 4,
     SETTINGS_DIR    = 5,
-} eDirectories;
+};
 
 
 #define PCX_DATAFILE   kqres(DATA_DIR, "mpcx.dat")

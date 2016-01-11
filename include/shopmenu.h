@@ -32,9 +32,6 @@ void draw_shopgold(void);       /*  only in shopmenu.c  */
 void inn(const char *, unsigned int, int);     /*  only in intrface.c  */
 int shop(int);                  /*  only in intrface.c  */
 
-/*! Number of items in a shop */
-unsigned int num_shop_items;
-
 typedef struct
 {
     char name[40];                            /* Name of this shop */

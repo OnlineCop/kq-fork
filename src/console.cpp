@@ -45,7 +45,7 @@ static struct console_state
 
 
 
-typedef enum eRunConsoleKeys
+enum eRunConsoleKeys
 {
     RUNKEY_RETURN = '\r',
     RUNKEY_DELETE = 127,
@@ -53,7 +53,7 @@ typedef enum eRunConsoleKeys
     RUNKEY_BACKSPACE = 8,
     RUNKEY_CTRL_R = 18,
     RUNKEY_CTRL_S = 19
-} eRunConsoleKeys;
+};
 
 
 /*! \brief Initialise the console state

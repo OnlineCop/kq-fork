@@ -28,6 +28,7 @@
 #include "effects.h"
 #include "enemyc.h"
 #include "fade.h"
+#include "heroc.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"

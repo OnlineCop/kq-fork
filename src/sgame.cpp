@@ -65,7 +65,7 @@
 /* These describe the save slots. Number of characters, gp, etc */
 /* They are used to make the save menu prettier. */
 signed int savegame_num_characters[NUMSG]; // -1 indicates "wrong version" of save game
-unsigned int savegame_gold[NUMSG], savegame_time_hours[NUMSG], savegame_time_hours[NUMSG];
+unsigned int savegame_gold[NUMSG], savegame_time_hours[NUMSG], savegame_time_minutes[NUMSG];
 unsigned int sid[NUMSG][PSIZE], slv[NUMSG][PSIZE];
 unsigned char shp[NUMSG][PSIZE], smp[NUMSG][PSIZE];
 
@@ -172,7 +172,7 @@ static void delete_game(void)
         savegame_num_characters[save_ptr] = 0;
         savegame_gold[save_ptr] = 0;
         savegame_time_hours[save_ptr] = 0;
-        savegame_time_hours[save_ptr] = 0;
+        savegame_time_minutes[save_ptr] = 0;
         for (pidx_index = 0; pidx_index < PSIZE; pidx_index++)
         {
             sid[save_ptr][pidx_index] = 0;
@@ -840,7 +840,7 @@ void load_sgstats(void)
             savegame_num_characters[current_save_game] = 0;
             savegame_gold[current_save_game] = 0;
             savegame_time_hours[current_save_game] = 0;
-            savegame_time_hours[current_save_game] = 0;
+            savegame_time_minutes[current_save_game] = 0;
             for (pidx_index = 0; pidx_index < PSIZE; pidx_index++)
             {
                 sid[current_save_game][pidx_index] = 0;
@@ -855,7 +855,7 @@ void load_sgstats(void)
             {
                 savegame_gold[current_save_game] = pack_igetl(ldat);
                 savegame_time_hours[current_save_game] = pack_igetw(ldat);
-                savegame_time_hours[current_save_game] = pack_igetw(ldat);
+                savegame_time_minutes[current_save_game] = pack_igetw(ldat);
                 savegame_num_characters[current_save_game] = pack_igetw(ldat);
                 if (savegame_num_characters[current_save_game] >= 0)
                 {
@@ -892,7 +892,7 @@ void load_sgstats(void)
                 savegame_num_characters[current_save_game] = pack_igetl(ldat);
                 savegame_gold[current_save_game] = pack_igetl(ldat);
                 savegame_time_hours[current_save_game] = pack_igetl(ldat);
-                savegame_time_hours[current_save_game] = pack_igetl(ldat);
+                savegame_time_minutes[current_save_game] = pack_igetl(ldat);
                 for (pidx_index = 0; pidx_index < PSIZE; pidx_index++)
                 {
                     sid[current_save_game][pidx_index] = pack_igetl(ldat);
@@ -967,7 +967,7 @@ static int save_game(void)
     }
     savegame_num_characters[save_ptr] = numchrs;
     savegame_gold[save_ptr] = gp;
-    savegame_time_hours[save_ptr] = kmin;
+    savegame_time_minutes[save_ptr] = kmin;
     savegame_time_hours[save_ptr] = khr;
     sprintf(strbuf, "sg%d.sav", save_ptr);
     sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_WRITE_PACKED);
@@ -981,7 +981,7 @@ static int save_game(void)
     pack_iputl(numchrs, sdat);
     pack_iputl(gp, sdat);
     pack_iputl(savegame_time_hours[save_ptr], sdat);
-    pack_iputl(savegame_time_hours[save_ptr], sdat);
+    pack_iputl(savegame_time_minutes[save_ptr], sdat);
 
     for (a = 0; a < PSIZE; a++)
     {
@@ -1084,7 +1084,7 @@ static int save_game_92(void)
     }
     savegame_num_characters[save_ptr] = numchrs;
     savegame_gold[save_ptr] = gp;
-    savegame_time_hours[save_ptr] = kmin;
+    savegame_time_minutes[save_ptr] = kmin;
     savegame_time_hours[save_ptr] = khr;
     sprintf(strbuf, "sg%d.sav", save_ptr);
     sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_WRITE_PACKED);
@@ -1097,7 +1097,7 @@ static int save_game_92(void)
     pack_putc(kq_version, sdat);
     pack_iputl(gp, sdat);
     pack_iputw(savegame_time_hours[save_ptr], sdat);
-    pack_iputw(savegame_time_hours[save_ptr], sdat);
+    pack_iputw(savegame_time_minutes[save_ptr], sdat);
 
     /* Save number of, and which characters are in the party */
     pack_iputw(numchrs, sdat);
@@ -1456,7 +1456,7 @@ static void show_sgstats(int saving)
                     b = smp[sg][a] * 32 / 100;
                     rectfill(double_buffer, hx + 32, hy + 17, hx + 32 + b, hy + 21, 25);
                 }
-                sprintf(strbuf, _("T %u:%02u"), savegame_time_hours[sg], savegame_time_hours[sg]);
+                sprintf(strbuf, _("T %u:%02u"), savegame_time_hours[sg], savegame_time_minutes[sg]);
                 print_font(double_buffer, 236, pointer_offset + 12, strbuf, FNORMAL);
                 sprintf(strbuf, _("G %u"), savegame_gold[sg]);
                 print_font(double_buffer, 236, pointer_offset + 28, strbuf, FNORMAL);
@@ -1689,7 +1689,7 @@ int system_menu(void)
 {
     int stop = 0, ptr = 0;
     char save_str[10];
-    int text_color = FNORMAL;
+    eFontColor text_color = FNORMAL;
 
     strcpy(save_str, _("Save  "));
 

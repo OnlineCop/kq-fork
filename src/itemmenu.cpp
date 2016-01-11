@@ -343,7 +343,7 @@ int check_inventory(size_t inventory_index, int item_quantity)
  */
 static void draw_itemmenu(int ptr, int pg, int sl)
 {
-    int palette_color;
+    eFontColor palette_color;
     size_t item_name_length;
     size_t item_index;
     size_t k;

@@ -71,7 +71,7 @@ typedef struct
 
 
 
-typedef enum eHeroBitFlags
+enum eHeroBitFlags
 {
     BITS_NO_HERO    = 0,
     BITS_SENSAR     = 1 << 0,
@@ -84,7 +84,7 @@ typedef enum eHeroBitFlags
     BITS_NOSLOM     = 1 << 7,
 
     BITS_ALL_HERO   = BITS_SENSAR | BITS_SARINA | BITS_CORIN | BITS_AJATHAR | BITS_CASANDRA | BITS_TEMMIN | BITS_AYLA | BITS_NOSLOM
-} eHeroBitFlags;
+};
 
 
 

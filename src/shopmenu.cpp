@@ -52,6 +52,9 @@ unsigned short num_shops = 0;
 
 s_shop shops[NUMSHOPS];         /* Initialized by init.lua:init_shop() */
 
+/*! Number of items in a shop */
+static unsigned int num_shop_items;
+
 /*  internal variables  */
 /*! \brief Current shop index */
 static unsigned char shop_no;
@@ -715,7 +718,8 @@ static void sell_item(int itno, int ni)
 static void sell_menu(void)
 {
     size_t yptr = 0, stop = 0;
-    int z, p, k, sp;
+    int z, p, sp;
+    eFontColor k;
     size_t inv_page = 0;
 
     while (!stop)

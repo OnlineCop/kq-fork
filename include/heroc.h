@@ -29,7 +29,7 @@
  */
 
 /*! \name Hero identifiers */
-typedef enum ePIDX
+enum ePIDX
 {
     PIDX_UNDEFINED   = -1,
     SENSAR            = 0,
@@ -40,7 +40,10 @@ typedef enum ePIDX
     TEMMIN            = 5,
     AYLA              = 6,
     NOSLOM            = 7,
-} ePIDX;
+
+    SEL_ALL_ALLIES,
+    SEL_ALL_ENEMIES
+};
 
 extern int can_use_item;        /* intrface.c */
 
