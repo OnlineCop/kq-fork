@@ -508,27 +508,29 @@ int add_timer_event(const char *n, int delta)
 #ifdef DEBUGMODE
 BITMAP *alloc_bmp(int, int, const char *);  // Get rid of "no prev prototype" warning
 
-/*! \brief Create bitmap
+/*! \brief Creates a bitmap, giving an error message with the specified name if it fails.
  *
- * This function allocates a bitmap and kills the
- * program if it fails. The name you supply is
- * shown if this happens.
- * \note PH is this really necessary?
+ * This function is wrapped in an #if..#endif guard so it only gets called
+ * when DEBUGMODE is defined. Otherwise, create_bitmap() is called, ignoring
+ * the last param.
+ * This function terminates the program with an error message if it fails to
+ * allocate the specified bitmap. The name supplied is shown if this happens
+ * to help you trace which bitmap caused the issue.
  *
- * \param   bx Width
- * \param   by Height
- * \param   bname Name of bitmap
+ * \param   bitmap_width Width
+ * \param   bitmap_height Height
+ * \param   bitmap_name Name of bitmap
  * \returns the pointer to the created bitmap
  */
-BITMAP *alloc_bmp(int bx, int by, const char *bname)
+BITMAP *alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name)
 {
     BITMAP *tmp;
 
-    tmp = create_bitmap(bx, by);
+    tmp = create_bitmap(bitmap_width, bitmap_height);
 
     if (!tmp)
     {
-        sprintf(strbuf, _("Could not allocate %s!."), bname);
+        sprintf(strbuf, _("Could not allocate %s!."), bitmap_name);
         program_death(strbuf);
     }
 
@@ -1135,7 +1137,7 @@ void init_players(void)
     {
         for (frame_index = 0; frame_index < MAXFRAMES; frame_index++)
         {
-            blit((BITMAP *)pb->dat, frames[party_index][frame_index], frame_index * 16, party_index * 16, 0, 0, 16, 16);
+            blit((BITMAP *) pb->dat, frames[party_index][frame_index], frame_index * 16, party_index * 16, 0, 0, 16, 16);
         }
     }
 
@@ -1723,9 +1725,6 @@ void readcontrols(void)
     left = key[kleft];
     right = key[kright];
 
-// TT: Is there a reason this has to be called twice in one function?
-//   poll_music ();
-
     /* Emergency kill-game set. */
     /* PH modified - need to hold down for 0.50 sec */
     if (key[KEY_ALT] && key[KEY_X])
@@ -1780,9 +1779,9 @@ void readcontrols(void)
 
 
 /*! \brief Delete any pending events
-*
-* This removes any events from the list
-*/
+ *
+ * This removes any events from the list
+ */
 void reset_timer_events(void)
 {
     int i;
@@ -2001,7 +2000,7 @@ static void startup(void)
     {
         for (p = 0; p < MAXEFRAMES; p++)
         {
-            blit((BITMAP *)pb->dat, eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
+            blit((BITMAP *) pb->dat, eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
         }
     }
     unload_datafile_object(pb);
