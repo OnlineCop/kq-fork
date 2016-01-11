@@ -2672,16 +2672,16 @@ static int KQ_get_progress(lua_State *L)
 
     if (lua_isnumber(L, 1))
     {
-        int a = (int) lua_tonumber(L, 1);
+        unsigned int progress_index = (unsigned int) lua_tonumber(L, 1);
 
-        if (a >= 0 && a < SIZE_PROGRESS)
+        if (progress_index < SIZE_PROGRESS)
         {
-            lua_pushnumber(L, progress[a]);
+            lua_pushnumber(L, progress[progress_index]);
             return 1;
         }
         else
         {
-            return luaL_error(L, "%sExpected integer from 0 to %d. Got %d.", function_name, SIZE_PROGRESS - 1, a);
+            return luaL_error(L, "%sExpected integer from 0 to %d. Got %d.", function_name, SIZE_PROGRESS - 1, (signed int)progress_index);
         }
     }
 
@@ -4177,16 +4177,16 @@ static int KQ_set_progress(lua_State *L)
 
     if (lua_isnumber(L, 1))
     {
-        int a = (int) lua_tonumber(L, 1);
+        unsigned int progress_index = (unsigned int) lua_tonumber(L, 1);
 
-        if (a >= 0 && a < SIZE_PROGRESS)
+        if (progress_index < SIZE_PROGRESS)
         {
-            progress[a] = (int) lua_tonumber(L, 2);
+            progress[progress_index] = (int) lua_tonumber(L, 2);
             return 0;
         }
         else
         {
-            return luaL_error(L, "%s: Expected integer from 0 to %d. Got %d.", error_prefix, SIZE_PROGRESS - 1, a);
+            return luaL_error(L, "%s: Expected integer from 0 to %d. Got %d.", error_prefix, SIZE_PROGRESS - 1, (signed int)progress_index);
         }
     }
 
