@@ -30,11 +30,13 @@
 
 #include <allegro.h>
 #include <winalleg.h>
+#include <stdio.h>
 #include "kq.h"
+#include "platform.h"
 
 static int init_path = 0;
-static char user_dir[PATH_MAX];
-static char game_dir[PATH_MAX];
+static char user_dir[MAX_PATH];
+static char game_dir[MAX_PATH];
 typedef HRESULT (WINAPI * SHGETFOLDERPATH) (HWND, int, HANDLE, DWORD, LPWSTR);
 
 #  define CSIDL_FLAG_CREATE 0x8000
@@ -56,7 +58,7 @@ typedef HRESULT (WINAPI * SHGETFOLDERPATH) (HWND, int, HANDLE, DWORD, LPWSTR);
  */
 const char * get_resource_file_path (const char * str1, const char * str2, const char * file)
 {
-    static char ans[PATH_MAX];
+    static char ans[MAX_PATH];
     FILE * fp;
 
     sprintf (ans, "%s/%s/%s", user_dir, str2, file);
@@ -88,7 +90,7 @@ const char * get_resource_file_path (const char * str1, const char * str2, const
  */
 const char * get_lua_file_path (const char * file)
 {
-    static char ans[PATH_MAX];
+    static char ans[MAX_PATH];
     FILE * fp;
 
     sprintf(ans, "%s/scripts/%s.lob", user_dir, file);
@@ -124,7 +126,7 @@ const char * get_lua_file_path (const char * file)
  * \param   file File name below that directory.
  * \returns the combined path
  */
-const char *kqres (int dir, const char *file)
+const char *kqres (eDirectories dir, const char *file)
 {
     HINSTANCE SHFolder;
     SHGETFOLDERPATH SHGetFolderPath;
@@ -132,30 +134,30 @@ const char *kqres (int dir, const char *file)
 
     if (!init_path)
     {
-        WCHAR tmp[PATH_MAX];
+        WCHAR tmp[MAX_PATH];
         home = NULL;
         /* Get home directory; this bit originally written by SH */
         SHFolder = LoadLibrary ("shfolder.dll");
         if (SHFolder != NULL)
         {
-            SHGetFolderPath = (void *) GetProcAddress (SHFolder, "SHGetFolderPathW");
+            SHGetFolderPath = (SHGETFOLDERPATH) GetProcAddress (SHFolder, "SHGetFolderPathW");
             if (SHGetFolderPath != NULL)
             {
                 /* Get the "Application Data" folder for the current user */
-                if (SHGetFolderPath(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, SHGFP_TYPE_CURRENT, tmp) = S_OK)
+                if (SHGetFolderPath(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, SHGFP_TYPE_CURRENT, tmp) == S_OK)
                 {
-                    home = uconvert(tmp, U_UNICODE, NULL, U_UTF8, 0);
+                    home = uconvert((const char*) tmp, U_UNICODE, NULL, U_UTF8, 0);
                 }
             }
             FreeLibrary (SHFolder);
         }
 
         /* Do not get fooled by a corrupted $HOME */
-        if (home != NULL && strlen (home) < PATH_MAX)
+        if (home != NULL && strlen (home) < MAX_PATH)
         {
             sprintf (user_dir, "%s\\KQ", home);
             /* Always try to make the directory, just to be sure. */
-            mkdir (user_dir);
+            _mkdir (user_dir);
         }
         else
         {
