@@ -104,7 +104,7 @@ void unload_enemies(void);
 
 
 /*! \brief Array of enemy 'fighters'  */
-static s_fighter **enemies = NULL;
+static s_fighter **enemy_fighters = NULL;
 static int enemies_n = 0;
 static int enemies_cap = 0;
 static DATAFILE *enemy_pcx = NULL;
@@ -405,7 +405,7 @@ void enemy_init(void)
     size_t fighter_index, frame_index;
     s_fighter *f;
 
-    if (enemies == NULL)
+    if (enemy_fighters == NULL)
     {
         load_enemies();
     }
@@ -699,7 +699,7 @@ static void load_enemies(void)
     FILE *edat;
     s_fighter *f;
 
-    if (enemies != NULL)
+    if (enemy_fighters != NULL)
     {
         /* Already done the loading */
         return;
@@ -716,16 +716,16 @@ static void load_enemies(void)
     }
     enemies_n = 0;
     enemies_cap = 128;
-    enemies = (s_fighter **) malloc(sizeof(s_fighter *) * enemies_cap);
+    enemy_fighters = (s_fighter **) malloc(sizeof(s_fighter *) * enemies_cap);
     // Loop through for every monster in allstat.mon
     while (fscanf(edat, "%s", strbuf) != EOF)
     {
         if (enemies_n >= enemies_cap)
         {
             enemies_cap *= 2;
-            enemies = (s_fighter **) realloc(enemies, sizeof(s_fighter *) * enemies_cap);
+            enemy_fighters = (s_fighter **) realloc(enemy_fighters, sizeof(s_fighter *) * enemies_cap);
         }
-        f = enemies[enemies_n++] = (s_fighter *) malloc(sizeof(s_fighter));
+        f = enemy_fighters[enemies_n++] = (s_fighter *) malloc(sizeof(s_fighter));
         memset(f, 0, sizeof(s_fighter));
         // Enemy name
         strncpy(f->name, strbuf, sizeof(f->name));
@@ -826,7 +826,7 @@ static void load_enemies(void)
     }
     for (i = 0; i < enemies_n; i++)
     {
-        f = enemies[i];
+        f = enemy_fighters[i];
         fscanf(edat, "%s", strbuf);
         fscanf(edat, "%d", &tmp);
         for (p = 0; p < R_TOTAL_RES; p++)
@@ -872,9 +872,9 @@ static void load_enemies(void)
  */
 static s_fighter *make_enemy(int who, s_fighter *en)
 {
-    if (enemies && who >= 0 && who < enemies_n)
+    if (enemy_fighters && who >= 0 && who < enemies_n)
     {
-        memcpy(en, enemies[who], sizeof(s_fighter));
+        memcpy(en, enemy_fighters[who], sizeof(s_fighter));
         return en;
     }
     else
@@ -1130,15 +1130,15 @@ void unload_enemies(void)
 {
     int i;
 
-    if (enemies != NULL)
+    if (enemy_fighters != NULL)
     {
         for (i = 0; i < enemies_n; ++i)
         {
-            destroy_bitmap(enemies[i]->img);
-            free(enemies[i]);
+            destroy_bitmap(enemy_fighters[i]->img);
+            free(enemy_fighters[i]);
         }
-        free(enemies);
-        enemies = NULL;
+        free(enemy_fighters);
+        enemy_fighters = NULL;
         unload_datafile_object(enemy_pcx);
     }
 }
