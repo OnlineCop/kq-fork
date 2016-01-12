@@ -16,14 +16,6 @@
 
 
 
-char **__crt0_glob_function (char *_arg)
-{
-   /* don't let djgpp glob our command line arguments */
-   return NULL;
-}
-
-
-
 int main (int argc, char *argv[])
 {
    char buf[256] = "";
