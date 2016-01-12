@@ -64,7 +64,7 @@ int hero_skillcheck(size_t fighter_index)
     size_t weapon_index = 0;
     size_t pidx_index = pidx[fighter_index];
     size_t target_fighter_index;
-    unsigned int can_be_affected;
+    unsigned int can_be_affected = 0;
 
     switch (pidx_index)
     {
@@ -88,7 +88,6 @@ int hero_skillcheck(size_t fighter_index)
             {
                 return 0;
             }
-            can_be_affected = 0;
             // See whether any enemies CAN be turned to stone.
             for (target_fighter_index = PSIZE; target_fighter_index < PSIZE + num_enemies; target_fighter_index++)
             {
