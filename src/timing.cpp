@@ -28,9 +28,9 @@
  * Looks after keeping the music playing whilst the game is 'paused'
  */
 #ifdef _WIN32
-# include <windef.h>
+#include <allegro.h>
+# include <winalleg.h>
 # include <stdarg.h>
-# include <winbase.h>
 #endif
 
 #include "kq.h"
