@@ -275,10 +275,6 @@ void config_menu(void)
             switch (ptr)
             {
                 case 0:
-#ifdef __DJGPP__
-                    text_ex(B_TEXT, 255,
-                            _("This version of KQ was compiled for DOS and does not support windowed mode"));
-#else
                     text_ex(B_TEXT, 255,
                             _("Changing the display mode to or from windowed view could have serious ramifications. It is advised that you save first."));
                     if (windowed == 0)
@@ -296,13 +292,8 @@ void config_menu(void)
                         set_config_int(NULL, "windowed", windowed);
                         set_graphics_mode();
                     }
-#endif
                     break;
                 case 1:
-#ifdef __DJGPP__
-                    text_ex(B_TEXT, 255,
-                            _("This version of KQ was compiled for DOS and does not support stretching"));
-#else
                     text_ex(B_TEXT, 255,
                             _("Changing the stretched view option could have serious ramifications. It is advised that you save your game before trying this."));
                     if (stretch_view == 0)
@@ -320,7 +311,6 @@ void config_menu(void)
                         set_config_int(NULL, "stretch_view", stretch_view);
                         set_graphics_mode();
                     }
-#endif
                     break;
                 case 2:
                     show_frate = !show_frate;
@@ -740,14 +730,8 @@ static void parse_allegro_setup(void)
 
     /* NB. JB's config file uses intro=yes --> skip_intro=0 */
     skip_intro = get_config_int(NULL, "skip_intro", 0);
-#ifdef __DJGPP__
-    /* In DJGPP, it's always non-windowed non-stretched (DOS-era stuff!) */
-    windowed = 0;
-    stretch_view = 0;
-#else
     windowed = get_config_int(NULL, "windowed", 1);
     stretch_view = get_config_int(NULL, "stretch_view", 1);
-#endif
     wait_retrace = get_config_int(NULL, "wait_retrace", 1);
     show_frate = get_config_int(NULL, "show_frate", 0);
     is_sound = get_config_int(NULL, "is_sound", 1);
