@@ -103,7 +103,7 @@ void allocate_credits(void)
     // are integer division, so should 
     for (ease_index = 0; ease_index < NUM_EASE_VALUES; ++ease_index)
     {
-        ease_table[ease_index] = ease_index * ease_index * (3 * NUM_EASE_VALUES - 2 * ease_index) / NUM_EASE_VALUES / NUM_EASE_VALUES;
+        ease_table[ease_index] = short(ease_index * ease_index * (3 * NUM_EASE_VALUES - 2 * ease_index) / NUM_EASE_VALUES / NUM_EASE_VALUES);
     }
     cc = credits;
     LOCK_FUNCTION(ticker);
