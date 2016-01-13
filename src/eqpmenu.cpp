@@ -341,7 +341,7 @@ static void draw_equippable(unsigned int c, unsigned int slot, unsigned int pptr
     }
     if (tot < NUM_ITEMS_PER_PAGE)
     {
-        sm = tot;
+        sm = unsigned short(tot);
     }
     else
     {

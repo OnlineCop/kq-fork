@@ -103,7 +103,7 @@ void allocate_credits(void)
     // are integer division, so should 
     for (ease_index = 0; ease_index < NUM_EASE_VALUES; ++ease_index)
     {
-        ease_table[ease_index] = ease_index * ease_index * (3 * NUM_EASE_VALUES - 2 * ease_index) / NUM_EASE_VALUES / NUM_EASE_VALUES;
+        ease_table[ease_index] = short(ease_index * ease_index * (3 * NUM_EASE_VALUES - 2 * ease_index) / NUM_EASE_VALUES / NUM_EASE_VALUES);
     }
     cc = credits;
     LOCK_FUNCTION(ticker);
@@ -164,6 +164,7 @@ void display_credits(BITMAP *double_buffer)
         /* Put an un-ignorable cheat message; this should stop
          * PH releasing versions with cheat mode compiled in ;)
          */
+		extern int cheat;
         print_font(double_buffer, 80, 40, cheat ? _("*CHEAT MODE ON*") : _("*CHEAT MODE OFF*"), FGOLD);
 #endif
 #ifdef DEBUGMODE
