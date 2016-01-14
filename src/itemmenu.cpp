@@ -319,13 +319,13 @@ int check_inventory(size_t inventory_index, int item_quantity)
     if (d < MAX_INV)
     {
         // This is redundant, but it is a good error-check
-        g_inv[d][GLOBAL_INVENTORY_ITEM] = unsigned short(inventory_index);
+        g_inv[d][GLOBAL_INVENTORY_ITEM] = (unsigned short)inventory_index;
         // Add item_quantity to this item's quantity
         g_inv[d][GLOBAL_INVENTORY_QUANTITY] += item_quantity;
         return 1;
     }
     // Add item to new slot
-    g_inv[v][GLOBAL_INVENTORY_ITEM] = unsigned short(inventory_index);
+    g_inv[v][GLOBAL_INVENTORY_ITEM] = (unsigned short)inventory_index;
     // Fill in item's quantity too
     g_inv[v][GLOBAL_INVENTORY_QUANTITY] += item_quantity;
     return 2;
