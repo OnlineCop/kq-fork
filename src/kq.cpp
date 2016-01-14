@@ -1635,7 +1635,7 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
 
     for (i = 0; i < MAX_TILES; i++)
     {
-        tilex[i] = unsigned short(i);
+        tilex[i] = (unsigned short)i;
     }
     for (i = 0; i < MAX_ANIM; i++)
     {
