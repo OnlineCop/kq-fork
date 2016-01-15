@@ -2053,12 +2053,12 @@ void revert_cframes(size_t fighter_index, int revert_heroes)
  * The purpose of this function is to calculate where a text bubble
  * should go in relation to the entity who is speaking.
  *
- * \param   entity_index If value is between 0..MAX_ENTITIES_PER_MAP (exclusive),
+ * \param   entity_index If value is between 0..MAX_ENTITIES (exclusive),
  *              character that is speaking, otherwise 'general'.
  */
 static void set_textpos(unsigned int entity_index)
 {
-    if (entity_index < MAX_ENTITIES_PER_MAP)
+    if (entity_index < MAX_ENTITIES)
     {
         gbx = (g_ent[entity_index].tilex * TILE_W) - vx;
         gby = (g_ent[entity_index].tiley * TILE_H) - vy;

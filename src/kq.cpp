@@ -125,7 +125,7 @@ unsigned char save_spells[SIZE_SAVE_SPELL];
 s_map g_map;
 
 /*! Current entities (players+NPCs) */
-s_entity g_ent[MAX_ENTITIES_PER_MAP + PSIZE];
+s_entity g_ent[MAX_ENTITIES];
 
 s_tileset tilesets[MAX_TILESETS];
 int num_tilesets = 0;
@@ -1582,7 +1582,7 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
         g_ent[i].moving = 0;
     }
 
-    for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
+    for (i = 0; i < MAX_ENTITIES; i++)
     {
         if (g_ent[i].chrx == 38 && g_ent[i].active == 1)
         {
@@ -1650,7 +1650,7 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
 
     count_entities();
 
-    for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
+    for (i = 0; i < MAX_ENTITIES; i++)
     {
         g_ent[i].delayctr = 0;
     }
@@ -1694,14 +1694,14 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
  */
 void program_death(const char *message)
 {
-    TRACE("%s\n", message);
+	TRACE("%s\n", message);
 	char tmp[1024];
 	memset(tmp, 0, sizeof(tmp));
 	strncpy(tmp, message, sizeof(tmp) - 1);
-    deallocate_stuff();
+	deallocate_stuff();
     set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
     allegro_message("%s\n", tmp);
-    exit(EXIT_FAILURE);
+	exit(EXIT_FAILURE);
 }
 
 

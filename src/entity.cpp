@@ -134,13 +134,15 @@ static void chase(t_entity target_entity)
 /*! \brief Count active entities
  *
  * Force calculation of the 'noe' variable.
+ * This actually calculates the last index of any active entity plus one,
+ * so if there are entities present, but not active, they may be counted.
  */
 void count_entities(void)
 {
     size_t entity_index;
 
     noe = 0;
-    for (entity_index = 0; entity_index < MAX_ENTITIES_PER_MAP; entity_index++)
+    for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++)
     {
         if (g_ent[entity_index].active == 1)
         {
@@ -209,7 +211,7 @@ int entityat(int ox, int oy, t_entity who)
 {
     t_entity i;
 
-    for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
+    for (i = 0; i < MAX_ENTITIES; i++)
     {
         if (g_ent[i].active && ox == g_ent[i].tilex && oy == g_ent[i].tiley)
         {
@@ -700,7 +702,7 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
     // Another entity blocks movement as well
     if (check_entity)
     {
-        for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
+        for (i = 0; i < MAX_ENTITIES; i++)
         {
             if (g_ent[i].active
              && dest_x == g_ent[i].tilex
@@ -813,7 +815,7 @@ void process_entities(void)
     t_entity i;
     const char *t_evt;
 
-    for (i = 0; i < MAX_ENTITIES_PER_MAP; i++)
+    for (i = 0; i < MAX_ENTITIES; i++)
     {
         if (g_ent[i].active == 1)
         {
