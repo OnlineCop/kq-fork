@@ -165,9 +165,3 @@ size_t save_markers(s_marker_array *marray, PACKFILE *pf)
     return 0;
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

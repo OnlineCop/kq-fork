@@ -5002,9 +5002,3 @@ static void set_shadow(int x, int y, int value)
     s_seg[y * g_map.xsize + x] = value;
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

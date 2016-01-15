@@ -331,9 +331,3 @@ static int search_paths(unsigned int entity_id, int *map, unsigned int step,
     return (result);
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

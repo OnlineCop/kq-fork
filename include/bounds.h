@@ -86,9 +86,3 @@ size_t       save_bounds(s_bound_array *, PACKFILE *);
 
 #endif  /* __BOUNDS_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

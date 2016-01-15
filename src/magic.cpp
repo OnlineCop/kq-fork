@@ -1831,9 +1831,3 @@ s_fighter status_adjust(size_t fighter_index)
     return tf;
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

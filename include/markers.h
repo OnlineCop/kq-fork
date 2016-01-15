@@ -74,9 +74,3 @@ size_t save_markers(s_marker_array *, PACKFILE *);
 
 #endif  /* __MARKERS_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

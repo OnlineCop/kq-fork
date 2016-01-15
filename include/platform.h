@@ -62,9 +62,3 @@ const char *get_resource_file_path(const char *, const char *, const char *);
 
 #endif  /* __PLATFORM_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */
