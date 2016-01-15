@@ -1695,9 +1695,12 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
 void program_death(const char *message)
 {
     TRACE("%s\n", message);
+	char tmp[1024];
+	memset(tmp, 0, sizeof(tmp));
+	strncpy(tmp, message, sizeof(tmp) - 1);
     deallocate_stuff();
     set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-    allegro_message("%s\n", message);
+    allegro_message("%s\n", tmp);
     exit(EXIT_FAILURE);
 }
 
