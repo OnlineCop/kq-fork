@@ -142,7 +142,7 @@ static void copy_map(int *map)
     }
 
     /*  RB: faster to do this than to check if there is an entity at every square  */
-    for (entity_index = 0; entity_index < MAX_ENTITIES_PER_MAP; entity_index++)
+    for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++)
     {
         if (g_ent[entity_index].active)
         {
