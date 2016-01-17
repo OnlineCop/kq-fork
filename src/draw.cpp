@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "bounds.h"
 #include "combat.h"
 #include "console.h"
 #include "draw.h"

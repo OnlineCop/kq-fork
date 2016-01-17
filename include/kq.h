@@ -59,6 +59,7 @@
 
 #include "entity.h"
 #include "enums.h"
+#include "maps.h"
 #include "structs.h"
 
 

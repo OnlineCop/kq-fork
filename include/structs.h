@@ -38,40 +38,6 @@
 #include "fighter.h"
 
 
-/*! \brief Map definition
- *
- * This is the structure of each map on disk
- * \note 20050126 PH add extensions for markers (rev1 map)
- * \note 20060710 TT add extensions for bounding boxes (rev2 map)
- */
-typedef struct
-{
-    signed char map_no;          /*!< Not used in code. */
-    unsigned char zero_zone;     /*!< Non-zero if zone 0 triggers an event */
-    unsigned char map_mode;      /*!< Map's parallax mode (see draw_map()) */
-    unsigned char can_save;      /*!< Non-zero if Save is allowed in this map */
-    unsigned char tileset;       /*!< Which tile-set to use */
-    unsigned char use_sstone;    /*!< Non-zero if sunstone works on this map */
-    unsigned char can_warp;      /*!< Non-zero if Warp is allowed in this map */
-    unsigned char extra_byte;    /*!< Currently unused */
-    int xsize;                   /*!< Map width */
-    int ysize;                   /*!< Map height */
-    int pmult;                   /*!< Parallax multiplier */
-    int pdiv;                    /*!< Parallax divider */
-    int stx;                     /*!< Default start x-coord */
-    int sty;                     /*!< Default start y-coord */
-    int warpx;                   /*!< x-coord where warp spell takes you to (see special_spells()) */
-    int warpy;                   /*!< y-coord where warp spell takes you to (see special_spells()) */
-    int revision;                /*!< Internal revision number for the map file */
-    int extra_sdword2;           /*!< Not used */
-    char song_file[16];          /*!< Base file name for map song */
-    char map_desc[40];           /*!< Map name (shown when map first appears) */
-    s_marker_array markers;      /*!< Marker array and marker size */
-    s_bound_array bounds;        /*!< Bound array and bound size */
-} s_map;
-
-
-
 enum eHeroBitFlags
 {
     BITS_NO_HERO    = 0,

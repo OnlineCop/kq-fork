@@ -12,6 +12,7 @@
 #include <locale.h>
 
 #include "mapdraw.h"
+#include "../include/bounds.h"
 #include "../include/disk.h"
 
 /* Force allegro compatibility */

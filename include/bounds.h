@@ -45,14 +45,14 @@
  * \author TT
  * \date 20060710
  */
-typedef struct
+struct s_bound
 {
     short left;                  /*!< Left edge of the bounding box */
     short top;                   /*!< Top edge of the bounding box */
     short right;                 /*!< Right edge of the bounding box */
     short bottom;                /*!< Bottom edge of the bounding box */
     short btile;                 /*!< Index of the tile to draw everywhere BUT here */
-} s_bound;
+};
 
 
 
@@ -64,11 +64,11 @@ typedef struct
  * \author OC
  * \date 20101017
  */
-typedef struct _bound_array
+struct s_bound_array
 {
     s_bound *array;
     size_t size;
-} s_bound_array;
+};
 
 
 // This line is temporary, but it cuts down a lot of repetition below

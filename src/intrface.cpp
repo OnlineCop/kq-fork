@@ -45,6 +45,7 @@ extern "C" {
 }
 #endif /* KQ_SCAN_DEPEND */
 
+#include "bounds.h"
 #include "combat.h"
 #include "console.h"
 #include "draw.h"

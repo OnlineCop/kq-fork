@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <locale.h>
 
+#include "../include/bounds.h"
 #include "../include/enums.h"
 #include "mapdraw.h"
 

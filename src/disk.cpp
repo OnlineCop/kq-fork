@@ -29,12 +29,15 @@
  */
 
 
-#include <assert.h>
-#include <stdio.h>
-
+// This '../' handles being compiled along with the map editor under the maps/ directory.
 #include "../include/bounds.h"
 #include "../include/disk.h"
 #include "../include/markers.h"
+#include "../include/platform.h"
+
+#include <assert.h>
+#include <stdio.h>
+#include <string>
 
 
 int load_s_entity(s_entity *s, PACKFILE *f)

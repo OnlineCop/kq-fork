@@ -26,6 +26,7 @@
 
 #include <allegro.h>
 #include "entity.h"
+#include "maps.h"
 #include "structs.h"
 
 int load_s_map(s_map *, PACKFILE *);
