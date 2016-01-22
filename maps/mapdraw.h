@@ -37,10 +37,11 @@
 #include "config.h"
 #endif
 
-#include "gettext.h"
+#include "../include/gettext.h"
 #define _(s) gettext(s)
 
 #include "../include/bounds.h"
+#include "../include/maps.h"
 #include "../include/structs.h"
 
 

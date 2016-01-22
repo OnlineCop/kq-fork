@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "markers.h"
+#include "../include/markers.h"
 
 
 unsigned int find_marker(const s_marker_array *marray, const char *name)

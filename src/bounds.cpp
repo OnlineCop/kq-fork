@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "bounds.h"
+#include "../include/bounds.h"
 
 
 
