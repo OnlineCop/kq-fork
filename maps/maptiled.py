@@ -5,8 +5,10 @@ import argparse
 import array
 import xml.etree.ElementTree as ET
 
+
+PY3 = sys.version_info > (3,)
 MAX_ENTITIES_PER_MAP = 50
-SHADOW_TILE_OFFSET=200
+SHADOW_TILE_OFFSET = 200
 
 WINDOW_BITS = 12
 LENGTH_BITS  = 4
@@ -20,18 +22,18 @@ def decompress(input):
     read_ptr = 4
     write_ptr = WINDOW_SIZE - MAX_MATCH
     while read_ptr < len(input):
-        (flag,) = struct.unpack('B', input[read_ptr])
+        (flag,) = struct.unpack_from('B', input, read_ptr)
         read_ptr += 1
         for bit in range(8):
             if flag & (1 << bit):
                 if read_ptr < len(input):
-                    out += input[read_ptr]
+                    out += input[read_ptr:read_ptr+1]
                     buffer[write_ptr % WINDOW_SIZE] = input[read_ptr]
                     write_ptr += 1
                     read_ptr += 1
             else:
                 if read_ptr < len(input)-1:
-                    pair = struct.unpack('BB', input[read_ptr:read_ptr+2])
+                    pair = struct.unpack_from('BB', input, read_ptr)
                     read_ptr += 2
                     offset = pair[0] | ((pair[1] & 0xF0) << 4)
                     length = (pair[1] & ((1 << LENGTH_BITS)-1)) + MIN_MATCH
@@ -44,8 +46,8 @@ def decompress(input):
 # Go through a tile map array and make it into an array of Zones
 def extract_zones(data, width, height):
     def findone():
-        for x in xrange(width):
-            for y in xrange(height):
+        for x in range(width):
+            for y in range(height):
                 if get(x,y) > 0:
                     return x,y
         return None
@@ -55,13 +57,13 @@ def extract_zones(data, width, height):
         else:
             return None
     def reset(x, y, w=1, h=1):
-        for i in xrange(w):
-            for j in xrange(h):
+        for i in range(w):
+            for j in range(h):
                 data[x + i + width * (y + j)] = 0
     def same(x, y, w, h):
         t = get(x, y)
-        for i in xrange(w):
-            for j in xrange(h):
+        for i in range(w):
+            for j in range(h):
                 if get(x + i, y + j) != t:
                     return False
         return True 
@@ -87,18 +89,18 @@ def extract_zones(data, width, height):
             t = get(x, y)
             (x,y,w,h) = extend(x,y)
             reset(x,y,w,h)
-            segs.append(Zone(x, y, w, h, "Zone %d" % t))
+            segs.append(Zone(x, y, w, h, t))
     return segs    
 
 # make a string from an array maybe with nulls in it.
 def nps(d):
-    ix = d.find('\0')
+    ix = d.find(b'\0')
     if ix <0:
         return str(d)
     else:
         return str(d[:ix])
 
-# List of all the tilesents names and images
+# List of all the tilesets names and images
 class Tileset:
     def __init__(self, name, source):
         self.name = name
@@ -113,7 +115,7 @@ class Tileset:
         self.width = int(image.get('width'))
         self.height = int(image.get('height'))
     def tile_count(self):
-        return self.width / self.tilewidth * self.height / self.tileheight
+        return int(self.width / self.tilewidth) * int(self.height / self.tileheight)
     def __str__(self):
         return "<Tileset %s, from %s with %d tiles>" % (self.name, self.source, self.tile_count())
     def as_xml(self):
@@ -127,14 +129,14 @@ class Tileset:
                           })
 def create_tileset(index):
     name, tsx = [
-        ("land", None),
+        ("land", "land.tsx"),
         ("newtown","newtown.tsx"),
         ("castle", "castle.tsx"),
         ("Incave", "cave.tsx"),
-        ("village.pcx", None),
-        ("mount.pcx", None),
-        ("shrine.pcx", None),
-        ("fortress.pcx", None),
+        ("village", "village.tsx"),
+        ("mount", "mount.tsx"),
+        ("shrine", "shrine.tsx"),
+        ("fortress", "fortress.tsx"),
     ][index]
     if tsx:
         return Tileset(name, tsx)
@@ -143,7 +145,6 @@ def create_tileset(index):
 
 character_tileset = Tileset("uschrs", "uschrs.tsx")
 entity_tileset = Tileset("entities", "entities.tsx")
-# TODO shadows are in the misc tileset starting at ID200
 misc_tileset = Tileset("misc", "misc.tsx")
 obstacle_tileset = Tileset("obstacles", "obstacles.tsx")
 
@@ -153,18 +154,7 @@ def mkprops(dict):
       for (k,v) in dict.items():
           ET.SubElement(properties, "property", {"name":k, "value":str(v)})
       return properties
-# make an xml object element from a marker
-# make an xml object from a tuple of (x,y,w,h,index)
-def mkzone(z):
-    (x, y, w, h, index) = z
-    return ET.Element("object",
-                    {
-                        "name":"Zone %d" % index,
-                        "x":str(x * 16),
-                        "y":str(y * 16),
-                        "width":str(w * 16),
-                        "height":str(h * 16)
-                    })
+
 # make an xml data element with these tile indexes
 def mktiles(ixs):
     data = ET.Element("data", {"encoding":"csv"})
@@ -174,12 +164,14 @@ def mktiles(ixs):
 class SMap:
     @staticmethod
     def from_data(data, offset):
+        def tn(v, o):
+            return int(v and v + o)
         m = SMap()
         (m.map_no,
          m.zero_zone,
          m.map_mode,
          m.can_save,
-         ts,
+         m.tileset,
          m.use_sstone,
          m.can_warp,
          m.extra_byte,
@@ -193,7 +185,7 @@ class SMap:
          m.warpy,
          m.revision,
          m.extra_sdword2) = struct.unpack('<BBBBBBBBIIIIIIIIII', data[:48])
-        m.tileset = create_tileset(ts)
+        m.tsx = create_tileset(m.tileset)
         m.song_file = nps(data[48:64])
         m.map_desc = nps(data[64:104])
         offset = 104
@@ -201,14 +193,14 @@ class SMap:
             (count,) = struct.unpack_from('<H', data, offset)
             m.markers = []
             offset += 2
-            for i in xrange(count):
+            for i in range(count):
                 marker, offset = Marker.from_data(data, offset)
                 m.markers.append(marker)
             if m.revision >= 2:
                 (count,) = struct.unpack_from('<H', data, offset)
                 m.bounds = []
                 offset += 2
-                for i in xrange(count):
+                for i in range(count):
                     bounds, offset = Bounds.from_data(data, offset)
                     m.bounds.append(bounds)
             else:
@@ -217,42 +209,43 @@ class SMap:
             m.markers = m.bounds = []
         # Entities
         m.entities = []
-        for i in xrange(MAX_ENTITIES_PER_MAP):
+        for i in range(MAX_ENTITIES_PER_MAP):
             (ent, offset) = Entity.from_data(data, offset)
             if ent.eid > 0:
                 m.entities.append(ent)
         for (i, e) in enumerate(m.entities):
             e.name = "Entity %d" % i
         # Tilemaps for each layer
-        m.tileset.first_gid = 1
-        entity_tileset.first_gid = m.tileset.first_gid + m.tileset.tile_count()
+        tileset = m.tsx
+        tileset.first_gid = 1
+        entity_tileset.first_gid = tileset.first_gid + tileset.tile_count()
         misc_tileset.first_gid = entity_tileset.first_gid + entity_tileset.tile_count()
         obstacle_tileset.first_gid = misc_tileset.first_gid + misc_tileset.tile_count()
         m.umap = array.array('H')
-        for i in xrange(m.xsize * m.ysize):
+        for i in range(m.xsize * m.ysize):
             (c,) = struct.unpack_from('H', data, offset)
-            m.umap.append(c + m.tileset.first_gid)
+            m.umap.append(tn(c, m.tsx.first_gid))
             offset+=2
         m.bmap = array.array('H')
-        for i in xrange(m.xsize * m.ysize):
+        for i in range(m.xsize * m.ysize):
             (c,) = struct.unpack_from('H', data, offset)
-            m.bmap.append(c + m.tileset.first_gid)
+            m.bmap.append(tn(c, m.tsx.first_gid))
             offset+=2
         m.fmap = array.array('H')
-        for i in xrange(m.xsize * m.ysize):
+        for i in range(m.xsize * m.ysize):
             (c,) = struct.unpack_from('H', data, offset)
-            m.fmap.append(c + m.tileset.first_gid)
+            m.fmap.append(tn(c, m.tsx.first_gid))
             offset+=2
         zmap = array.array('H')
-        for i in xrange(m.xsize * m.ysize):
+        for i in range(m.xsize * m.ysize):
             (c,) = struct.unpack_from('B', data, offset)
             zmap.append(c)
             offset+=1
         m.zones = extract_zones(zmap, m.xsize, m.ysize)
         m.shmap = array.array('H')
-        for i in xrange(m.xsize * m.ysize):
+        for i in range(m.xsize * m.ysize):
             (c,) = struct.unpack_from('B', data, offset)
-            m.shmap.append(c + misc_tileset.first_gid + SHADOW_TILE_OFFSET)
+            m.shmap.append(tn(c,  misc_tileset.first_gid + SHADOW_TILE_OFFSET))
             offset+=1
         m.omap = array.array('I')
         oconv = [0, obstacle_tileset.first_gid,
@@ -261,11 +254,11 @@ class SMap:
                  (obstacle_tileset.first_gid + 3),
                  (obstacle_tileset.first_gid + 4)
         ]
-        for i in xrange(m.xsize * m.ysize):
+        for i in range(m.xsize * m.ysize):
             (c,) = struct.unpack_from('B', data, offset)
             if c >= len(oconv) or c <= 0:
                 c = 0
-            m.omap.append(oconv[c])
+            m.omap.append(int(oconv[c]))
             offset+=1
         return m, offset
     def as_xml(self):
@@ -297,7 +290,9 @@ class SMap:
                               "backgroundcolor":"#0E0E0E"
                           })
         root.append(mkprops({
+            "map_no":self.map_no,
             "zero_zone":self.zero_zone,
+            "tileset":self.tileset,
             "can_save": self.can_save,
             "map_mode": self.map_mode,
             "use_sstone": self.use_sstone,
@@ -309,7 +304,7 @@ class SMap:
             "warpx": self.warpx,
             "warpy": self.warpy
         }))
-        root.extend([self.tileset.as_xml(), entity_tileset.as_xml(), misc_tileset.as_xml(), obstacle_tileset.as_xml()])
+        root.extend([self.tsx.as_xml(), entity_tileset.as_xml(), misc_tileset.as_xml(), obstacle_tileset.as_xml()])
         layer = ET.SubElement(root, "layer",
                               {
                                   "name":"map",
@@ -449,16 +444,17 @@ class Entity:
         }))
         return obj
 class Zone:
-    def __init__(self, x, y, w, h, name):
+    def __init__(self, x, y, w, h, index):
         self.x = x
         self.y = y
         self.w = w
         self.h = h
-        self.name = name
+        self.index = index
     def as_xml(self):
         return ET.Element("object",
             {
-                "name":self.name,
+                "type":"zone",
+                "name":str(self.index),
                 "x":str(self.x * 16),
                 "y":str(self.y * 16),
                 "width":str(self.w * 16),
@@ -520,7 +516,7 @@ class Bounds:
 
 parser = argparse.ArgumentParser()
 parser.add_argument('input_file', type=argparse.FileType('rb'), help="Input map file for conversion")
-parser.add_argument('-o', '--output', type=argparse.FileType('w'), default=sys.stdout, help="Output tmx file, default standard output")
+parser.add_argument('-o', '--output', type=argparse.FileType('wt'), default=sys.stdout, help="Output tmx file, default standard output")
 args = parser.parse_args()
 fd = args.input_file
 raw = fd.read()
@@ -528,5 +524,9 @@ fd.close()
 (magic,) = struct.unpack('<I', raw[:4])
 data = decompress(raw)
 (m,_) = SMap.from_data(data, 0)
-ET.ElementTree(m.as_xml()).write(args.output, encoding="UTF-8", xml_declaration=True)
+outxml = m.as_xml()
+if PY3:
+    ET.ElementTree(outxml).write(args.output, encoding='unicode')
+else:
+    ET.ElementTree(outxml).write(args.output)
 args.output.close()

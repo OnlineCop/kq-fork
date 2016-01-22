@@ -69,6 +69,7 @@
 #include "shopmenu.h"
 #include "structs.h"
 #include <string>
+#include "tiledmap.h"
 
 
 /*! Name of the current map */
@@ -751,7 +752,7 @@ void calc_viewport(int /*center*/)
  */
 void change_map(const std::string &map_name, int msx, int msy, int mvx, int mvy)
 {
-    load_map(map_name);
+    load_tmx(map_name);
     prepare_map(msx, msy, mvx, mvy);
 }
 
@@ -777,7 +778,7 @@ void change_mapm(const std::string &map_name, const std::string &marker_name, in
     int msx = 0, msy = 0, mvx = 0, mvy = 0;
     s_marker *m;
 
-    load_map(map_name);
+    load_tmx(map_name);
     /* Search for the marker with the name passed into the function. Both
      * player's starting position and camera position will be the same
      */

@@ -9,6 +9,7 @@ find_package(Lua REQUIRED)
 find_package(DUMB REQUIRED)
 
 find_library(M_LIB m)
+find_library(TINYXML2 tinyxml2)
 
 if(ALLEGRO_FOUND)
 	message(STATUS "Allegro found at ${ALLEGRO_INCLUDE_DIR}")
@@ -27,7 +28,7 @@ endif(DUMB_FOUND)
 if (DUMB_FOUND AND ALLEGRO_FOUND)
 endif(DUMB_FOUND AND ALLEGRO_FOUND)
 
-include_directories( ${ALLEGRO_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} )
+include_directories( ${ALLEGRO_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR})
 #set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
 set(KQ_DEBUGGING 0 CACHE BOOL "Features for debugging the game")
 
@@ -63,6 +64,7 @@ set(kq-fork_SRCS
 	src/shopmenu.cpp
 	src/timing.cpp
 	src/unix.cpp
+	src/tiledmap.cpp
 )
 
 set(mapdraw_SRCS
@@ -123,6 +125,7 @@ target_link_libraries(kq-fork
 	${LUA_LIBRARY}
 	${AL_DUMB_LIBRARIES}
 	${DUMB_LIBRARIES}
+	${TINYXML2}
 	${M_LIB})
 
 target_link_libraries(mapdraw
