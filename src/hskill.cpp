@@ -908,9 +908,3 @@ int skill_use(size_t attack_fighter_index)
     return 1;
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

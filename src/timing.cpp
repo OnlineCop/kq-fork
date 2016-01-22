@@ -217,9 +217,3 @@ int limit_frame_rate(int fps)
 
 #endif  // HAVE_SYS_SELECT_H
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

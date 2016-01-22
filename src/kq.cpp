@@ -2378,9 +2378,3 @@ void zone_check(void)
  * The names given are the base names of the maps/lua scripts
  */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

@@ -32,9 +32,3 @@ void enemy_charmaction(size_t);    /*  combat.c, heroc.c  */
 
 #endif  /* __ENEMYC_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

@@ -2227,9 +2227,3 @@ void porttext_ex(int fmt, int who, const char *s)
     }
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

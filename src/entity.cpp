@@ -1157,9 +1157,3 @@ static void wander(t_entity target_entity)
     }
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

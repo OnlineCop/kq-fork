@@ -617,9 +617,3 @@ int is_active(int guy)
     return (fighter[guy].sts[S_DEAD] == deadeffect ? 1 : 0);
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

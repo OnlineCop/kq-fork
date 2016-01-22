@@ -819,9 +819,3 @@ static void optimize_equip(int c)
     play_effect(SND_EQUIP, 128);
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

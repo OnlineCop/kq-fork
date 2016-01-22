@@ -41,9 +41,3 @@ int ease(signed int);
 
 #endif  /* __CREDITS_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

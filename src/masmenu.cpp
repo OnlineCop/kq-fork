@@ -497,9 +497,3 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
     return 1;
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

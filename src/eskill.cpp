@@ -337,9 +337,3 @@ void combat_skill(size_t fighter_index)
     }
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

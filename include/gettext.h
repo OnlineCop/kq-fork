@@ -302,9 +302,3 @@ dcnpgettext_expr(const char *domain,
 
 #endif /* _LIBGETTEXT_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

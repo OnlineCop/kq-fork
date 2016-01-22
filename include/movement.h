@@ -29,9 +29,3 @@ int find_path(size_t, unsigned int, unsigned int, unsigned int, unsigned int, ch
 
 #endif  /* __MOVEMENT_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

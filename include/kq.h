@@ -196,9 +196,3 @@ extern BITMAP *obj_mesh;
 
 #endif  /* __KQ_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */
