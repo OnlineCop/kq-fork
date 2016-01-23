@@ -210,8 +210,8 @@ vector<s_bound> load_tmx_bounds(XMLElement *el) {
         s_bound bound;
         bound.left = i->IntAttribute("x") / 16;
         bound.top = i->IntAttribute("y") / 16;
-        bound.right = i->IntAttribute("width") / 16 + bound.left;
-        bound.bottom = i->IntAttribute("height") / 16 + bound.top;
+        bound.right = i->IntAttribute("width") / 16 + bound.left - 1;
+        bound.bottom = i->IntAttribute("height") / 16 + bound.top - 1;
         auto props = extract_properties(i->FirstChildElement("properties"));
         bound.btile = int_prop(props, "btile");
         bounds.push_back(bound);
