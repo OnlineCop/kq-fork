@@ -191,7 +191,7 @@ static void load_tmx_map(s_map &smap, XMLElement *root) {
   }
   // Entities
   auto entities = load_tmx_entities(find_objectgroup(root, "entities"));
-  memset(g_ent, 0, sizeof(g_ent));
+  memset(&g_ent[PSIZE], 0, &g_ent[MAX_ENTITIES] - &g_ent[PSIZE]);
   std::copy(entities.begin(), entities.end(), &g_ent[PSIZE]);
 }
 
