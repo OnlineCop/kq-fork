@@ -37,9 +37,3 @@ int system_menu(void);          /*  kq.c  */
 
 #endif  /* __SGAME_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

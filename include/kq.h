@@ -59,6 +59,7 @@
 
 #include "entity.h"
 #include "enums.h"
+#include "maps.h"
 #include "structs.h"
 
 
@@ -137,7 +138,7 @@ extern unsigned char treasure[SIZE_TREASURE];
 extern unsigned char save_spells[SIZE_SAVE_SPELL];
 extern BITMAP *kfonts;
 extern s_map g_map;
-extern s_entity g_ent[MAX_ENTITIES_PER_MAP + PSIZE];
+extern s_entity g_ent[MAX_ENTITIES];
 extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
 extern s_anim adata[MAX_ANIM];
 extern unsigned int numchrs;
@@ -189,16 +190,10 @@ extern BITMAP *obj_mesh;
  * 272 == (240 + 16 + 16) or screen dimensions plus 1 tile on top and 1 tile
  * on bottom.
  */
-#define SCREEN_W2 ((320*2) + 16 + 16)
-#define SCREEN_H2 (240 + 16 + 16)
+#define SCREEN_W2 (320 + 2 * TILE_W)
+#define SCREEN_H2 (240 + 2 * TILE_H)
 #define fullblit(a,b) blit((a), (b), 0, 0, 0, 0, SCREEN_W2, SCREEN_H2)
 
 
 #endif  /* __KQ_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

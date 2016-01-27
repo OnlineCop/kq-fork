@@ -43,7 +43,7 @@ void place_ent(t_entity, int, int);  /*  intrface.c, kq.c  */
 void count_entities(void);      /*  kq.c  */
 
 
-typedef enum eCommands
+enum eCommands
 {
     COMMAND_NONE            = 0,
     COMMAND_MOVE_UP         = 1,
@@ -59,7 +59,7 @@ typedef enum eCommands
     COMMAND_KILL            = 11,
 
     NUM_COMMANDS // always last
-} eCommands;
+};
 
 
 #define ENTITY_NONE -1
@@ -67,9 +67,3 @@ typedef enum eCommands
 
 #endif  /* __ENTITY_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

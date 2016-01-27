@@ -34,15 +34,9 @@ ePIDX select_hero(size_t, eTarget, int);    /*  enemyc.c, heroc.c  */
 ePIDX select_enemy(size_t, eTarget);        /*  enemyc.c, heroc.c, hskill.c  */
 int auto_select_hero(int, int);             /*  enemyc.c, heroc.c  */
 int auto_select_enemy(int, int);            /*  enemyc.c, heroc.c  */
-int select_party(ePIDX *, size_t, size_t);  /*  intrface.c  */
+int select_party(int *, size_t, size_t);  /*  intrface.c  */
 void party_newlead(void);                   /*  selector.c, menu.c  */
 
 
 #endif  /* __SELECTOR_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

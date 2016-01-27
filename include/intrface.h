@@ -43,9 +43,3 @@ void lua_user_init(void);       /*  kq.c */
 
 #endif  /* __INTRFACE_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

@@ -47,9 +47,3 @@
 #define WHOOSH_WAV                       41       /* SAMP */
 #define WIND_WAV                         42       /* SAMP */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

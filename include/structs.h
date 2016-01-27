@@ -35,43 +35,10 @@
 #include "bounds.h"
 #include "enums.h"
 #include "markers.h"
+#include "fighter.h"
 
 
-/*! \brief Map definition
- *
- * This is the structure of each map on disk
- * \note 20050126 PH add extensions for markers (rev1 map)
- * \note 20060710 TT add extensions for bounding boxes (rev2 map)
- */
-typedef struct
-{
-    signed char map_no;          /*!< Not used in code. */
-    unsigned char zero_zone;     /*!< Non-zero if zone 0 triggers an event */
-    unsigned char map_mode;      /*!< Map's parallax mode (see draw_map()) */
-    unsigned char can_save;      /*!< Non-zero if Save is allowed in this map */
-    unsigned char tileset;       /*!< Which tile-set to use */
-    unsigned char use_sstone;    /*!< Non-zero if sunstone works on this map */
-    unsigned char can_warp;      /*!< Non-zero if Warp is allowed in this map */
-    unsigned char extra_byte;    /*!< Currently unused */
-    int xsize;                   /*!< Map width */
-    int ysize;                   /*!< Map height */
-    int pmult;                   /*!< Parallax multiplier */
-    int pdiv;                    /*!< Parallax divider */
-    int stx;                     /*!< Default start x-coord */
-    int sty;                     /*!< Default start y-coord */
-    int warpx;                   /*!< x-coord where warp spell takes you to (see special_spells()) */
-    int warpy;                   /*!< y-coord where warp spell takes you to (see special_spells()) */
-    int revision;                /*!< Internal revision number for the map file */
-    int extra_sdword2;           /*!< Not used */
-    char song_file[16];          /*!< Base file name for map song */
-    char map_desc[40];           /*!< Map name (shown when map first appears) */
-    s_marker_array markers;      /*!< Marker array and marker size */
-    s_bound_array bounds;        /*!< Bound array and bound size */
-} s_map;
-
-
-
-typedef enum eHeroBitFlags
+enum eHeroBitFlags
 {
     BITS_NO_HERO    = 0,
     BITS_SENSAR     = 1 << 0,
@@ -84,7 +51,7 @@ typedef enum eHeroBitFlags
     BITS_NOSLOM     = 1 << 7,
 
     BITS_ALL_HERO   = BITS_SENSAR | BITS_SARINA | BITS_CORIN | BITS_AJATHAR | BITS_CASANDRA | BITS_TEMMIN | BITS_AYLA | BITS_NOSLOM
-} eHeroBitFlags;
+};
 
 
 
@@ -203,69 +170,6 @@ typedef struct
 
 
 
-/*! \brief Fighter
- *
- * s_player is transformed into a s_fighter during combat.
- * See enemy_init() for more information on the fields.
- */
-typedef struct
-{
-    char name[25];               /*!<\brief Name */
-    int xp;                      /*!<\brief eXperience Points */
-    int gp;                      /*!<\brief Gold Points */
-    int lvl;                     /*!<\brief LeVeL */
-    int cx;                      /*!<\brief x-coord of image in datafile */
-    int cy;                      /*!<\brief y-coord of image in datafile */
-    int cw;                      /*!<\brief width in datafile */
-    int cl;                      /*!<\brief height in datafile */
-    int hp;                      /*!<\brief Hit Points */
-    int mhp;                     /*!<\brief Max Hit Points */
-    int mp;                      /*!<\brief Magic Points */
-    int mmp;                     /*!<\brief Max Magic Points */
-    int dip;                     /*!<\brief Defeat Item Probability
-                                  * Probability in % that the enemy will yield an item when defeated.
-                                  */
-    int defeat_item_common;      /*!<\brief Defeat Item Common
-                                  * If the enemy yields an item, you will get this item 95% of the time.
-                                  */
-    int defeat_item_rare;        /*!<\brief Defeat Item Rare
-                                  * If the enemy yields an item, you will get this item 5% of the time.
-                                  */
-    int steal_item_common;       /*!<\brief Steal Item Common
-                                  * If Ayla steals something, she will get this item 95% of the time.
-                                  */
-    int steal_item_rare;         /*!<\brief Steal Item Rare
-                                  * If Ayla steals something, she will get this item 5% of the time.
-                                  */
-    int stats[NUM_STATS];        /*!<\brief See A_* constants in kq.h */
-    char res[16];                /*!<\brief eResistance: See R_* constants */
-    unsigned char facing;        /*!<\brief Direction character's sprite faces */
-    unsigned char aframe;        /*!<\brief Battle sprite to display (standing, casting, attacking) */
-    unsigned char crit;
-    unsigned char sts[24];       /*!< eSpellType */
-    unsigned char defend;
-    unsigned char ai[8];
-    unsigned char aip[8];
-    unsigned char atrack[8];
-    unsigned int csmem;          /*!<\brief Spell number, associated with M_* spells, used within s_spell magic[] array. */
-    int ctmem;                   /*!<\brief Spell target: who is going to be affected by the spell; can be set to -1 */
-    unsigned int current_weapon_type;   /*!<\brief Current Weapon Type
-                                         * The shape of the currently held weapon (sword, dagger, axe etc) \sa hero_init()
-                                         */
-    int welem;                   /*!<\brief eResistance: Which Element type (sick, fire, water, etc.) */
-    int unl;                     /*!<\brief UNLiving (undead), like zombies, skeletons, etc. */
-    int aux;
-    int bonus;
-    int bstat;
-    int mrp;
-    int imb_s;
-    int imb_a;
-    int imb[2];
-    BITMAP *img;
-} s_fighter;
-
-
-
 /*! \brief Special Items
  *
  * Contains a list of the special items in the player's party (Opal Armor et al)
@@ -280,9 +184,3 @@ typedef struct
 
 #endif  /* __STRUCTS_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

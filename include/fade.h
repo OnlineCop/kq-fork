@@ -24,23 +24,17 @@
 #define __FADE_H 1
 
 
-typedef enum eTransitionFade
+enum eTransitionFade
 {
     TRANS_FADE_IN    = 1,
     TRANS_FADE_OUT   = 2,
     TRANS_FADE_WHITE = 3,
 
     NUM_TRANSITIONS
-} eTransitionFade;
+};
 
 void do_transition(eTransitionFade, int);
 
 
 #endif  /* __FADE_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

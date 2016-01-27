@@ -30,9 +30,3 @@ int skill_use(size_t);             /*  heroc.c  */
 
 #endif  /* __HSKILL_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

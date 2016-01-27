@@ -34,7 +34,7 @@
 #define DBLUE      3
 #define DRED       6
 
-typedef enum eFontColor
+enum eFontColor
 {
     FNORMAL    = 0,
     FRED       = 1,
@@ -46,21 +46,21 @@ typedef enum eFontColor
     FDECIDE    = 7,
 
     NUM_FONT_COLORS // always last
-} eFontColor;
+};
 
-typedef enum eBubbleStyle
+enum eBubbleStyle
 {
     B_TEXT     = 0,
     B_THOUGHT  = 1,
     B_MESSAGE  = 2,
 
     NUM_BUBBLE_STYLES // always last
-} eBubbleStyle;
+};
 
 /* These should correspond with the stems found in MISC.
  * Bubbles are either solid (for speech) or wavy (for thoughts).
  */
-typedef enum eBubbleStemStyle
+enum eBubbleStemStyle
 {
     STEM_UNDEFINED      = -1,
 
@@ -70,7 +70,7 @@ typedef enum eBubbleStemStyle
     STEM_TOP_LEFT       = 3,
 
     NUM_BUBBLE_STEMS // always last
-} eBubbleStemStyle;
+};
 
 
 /*  draw global functions  */
@@ -136,9 +136,3 @@ extern unsigned char DARKRED;
 
 #endif  /* __DRAW_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

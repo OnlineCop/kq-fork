@@ -184,9 +184,3 @@ extern s_encounter battles[NUM_BATTLES];    /*  only in combat.c  */
 
 #endif  /* __RES_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

@@ -36,9 +36,3 @@ int is_active(int);             /*  hskill.c  */
 
 #endif  /* __EFFECTS_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */
