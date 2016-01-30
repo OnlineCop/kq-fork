@@ -425,7 +425,7 @@ static void party_remove(signed int id)
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled or
  *          SEL_ALL_ALLIES if 'all' was selected (by pressing L or R)
  */
-int select_any_player(size_t csa, unsigned int icn, const char *msg)
+ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
 {
     unsigned int stop = 0, ptr, k, select_all;
     int shy = 120 - (numchrs * 28);
@@ -539,7 +539,7 @@ int select_any_player(size_t csa, unsigned int icn, const char *msg)
         return PIDX_UNDEFINED;
     }
 
-    return (select_all == 0 ? ptr : SEL_ALL_ALLIES);
+    return (select_all == 0 ? (ePIDX)ptr : SEL_ALL_ALLIES);
 }
 
 

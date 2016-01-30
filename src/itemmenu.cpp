@@ -230,7 +230,8 @@ void camp_item_menu(void)
  */
 static void camp_item_targetting(int pp)
 {
-    int t1, tg, z;
+    int t1, z;
+    ePIDX tg;
 
     t1 = g_inv[pp][GLOBAL_INVENTORY_ITEM];
     if (items[t1].use == USE_NOT || items[t1].use > USE_CAMP_INF)
@@ -245,7 +246,7 @@ static void camp_item_targetting(int pp)
     {
         update_equipstats();
         tg = select_any_player(items[t1].tgt - 1, items[t1].icon, items[t1].name);
-        if (tg > -1)
+        if (tg != PIDX_UNDEFINED)
         {
             z = item_effects(0, tg, t1);
             if (z == 0)

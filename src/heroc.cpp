@@ -1173,7 +1173,7 @@ static int hero_invoke(int whom)
  */
 static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 {
-    size_t defender_fighter_index = 0;
+    ePIDX defender_fighter_index = PIDX_UNDEFINED;
     unsigned int random_fighter_index;
     size_t fighter_index;
 
