@@ -59,6 +59,7 @@
 
 #include "entity.h"
 #include "enums.h"
+#include "heroc.h"
 #include "maps.h"
 #include "structs.h"
 
@@ -77,7 +78,7 @@ void klog(const char *);        /*  draw.c, intrface.c, magic.c, setup.c  */
 void init_players(void);        /*  sgame.c  */
 void kwait(int);                /*  intrface.c  */
 NORETURN void program_death(const char *);     /*  everywhere ;)  */
-unsigned int in_party(unsigned int);     /*  combat.c, intrface.c  */
+size_t in_party(ePIDX);     /*  combat.c, intrface.c  */
 void wait_for_entity(size_t, size_t);  /*  intrface.c  */
 char *get_timer_event(void);    /*  entity.c, kq.c  */
 int add_timer_event(const char *, int);   /*  intrface.c  */
@@ -87,38 +88,7 @@ void reset_world(void);         /*  sgame.c  */
 
 
 extern char curmap[16];         /*  sgame.c, draw.c, magic.c */
-
-extern int right;               /*  intrface.c, (eqp|item|mas|shop)menu.c, entity.c, menu.c, selector.c, setup.c, heroc.c  */
-
-extern int left;                /*  intrface.c, (eqp|item|mas|shop)menu.c, entity.c, menu.c, selector.c, setup.c, heroc.c  */
-
-extern int up;                  /*  selector.c, (eqp|item|mas|shop)menu.c, heroc.c, intrface.c, menu.c, entity.c, setup.c, sgame.c, draw.c  */
-
-extern int down;                /*  selector.c, (eqp|item|mas|shop)menu.c, heroc.c, intrface.c, menu.c, entity.c, setup.c, sgame.c, draw.c  */
-
-extern int besc;                /*  intrface.c, setup.c, sgame.c  */
-
-extern int benter;              /*  entity.c, intrface.c, setup.c, sgame.c  */
-
-extern int balt;                /*  selector.c, (eqp|item|mas|shop)menu.c, heroc.c, intrface.c, menu.c, setup.c, draw.c, sgame.c  */
-
-extern int bctrl;               /*  selector.c, (eqp|item|mas|shop)menu.c, sgame.c, heroc.c, intrface.c, setup.c, menu.c  */
-
-extern int bhelp;
-extern int bcheat;
-
-extern int kright;              /*  setup.c, sgame.c  */
-extern int kleft;               /*  setup.c, sgame.c  */
-extern int kup;                 /*  setup.c, sgame.c  */
-extern int kdown;               /*  setup.c, sgame.c  */
-extern int kesc;                /*  setup.c, sgame.c  */
-extern int kenter;              /*  setup.c, sgame.c  */
-extern int kalt;                /*  setup.c, sgame.c  */
-extern int kctrl;               /*  setup.c, sgame.c, entity.c  */
-extern int jbalt;               /*  setup.c, sgame.c  */
-extern int jbctrl;              /*  setup.c, sgame.c  */
-extern int jbenter;             /*  setup.c, sgame.c  */
-extern int jbesc;               /*  setup.c, sgame.c  */
+extern s_player_input PlayerInput;
 extern int vx, vy, mx, my, steps, lastm[PSIZE];
 
 extern BITMAP *double_buffer, *fx_buffer;
@@ -144,7 +114,7 @@ extern s_anim adata[MAX_ANIM];
 extern unsigned int numchrs;
 extern int gp, xofs, yofs, gsvol, gmvol;
 extern unsigned int noe;
-extern unsigned int pidx[MAXCHRS];
+extern ePIDX pidx[MAXCHRS];
 extern unsigned char autoparty, alldead, is_sound, deadeffect, vfollow, use_sstone, sound_avail;
 extern const unsigned char kq_version;
 extern unsigned char hold_fade, cansave, skip_intro, wait_retrace, windowed, stretch_view, cpu_usage;

@@ -1102,13 +1102,13 @@ static void init_obj(lua_State *L)
 
 static int KQ_add_chr(lua_State *L)
 {
-    int a = (int) lua_tonumber(L, 1);
+    ePIDX a = (ePIDX) lua_tonumber(L, 1);
 
     if (numchrs < PSIZE)
     {
         pidx[numchrs] = a;
         g_ent[numchrs].active = 1;
-        g_ent[numchrs].eid = a;
+        g_ent[numchrs].eid = (int)a;
         g_ent[numchrs].chrx = 0;
         numchrs++;
     }
@@ -3283,42 +3283,42 @@ static int KQ_read_controls(lua_State *L)
     }
 
     readcontrols();
-    if (up && a == 1)
+    if (PlayerInput.up && a == 1)
     {
         unpress();
         g_keys[0] = 1;
     }
-    if (down && b == 1)
+    if (PlayerInput.down && b == 1)
     {
         unpress();
         g_keys[1] = 1;
     }
-    if (left && c == 1)
+    if (PlayerInput.left && c == 1)
     {
         unpress();
         g_keys[2] = 1;
     }
-    if (right && d == 1)
+    if (PlayerInput.right && d == 1)
     {
         unpress();
         g_keys[3] = 1;
     }
-    if (balt && e == 1)
+    if (PlayerInput.balt && e == 1)
     {
         unpress();
         g_keys[4] = 1;
     }
-    if (bctrl && f == 1)
+    if (PlayerInput.bctrl && f == 1)
     {
         unpress();
         g_keys[5] = 1;
     }
-    if (benter && g == 1)
+    if (PlayerInput.benter && g == 1)
     {
         unpress();
         g_keys[6] = 1;
     }
-    if (besc && h == 1)
+    if (PlayerInput.besc && h == 1)
     {
         unpress();
         g_keys[7] = 1;
@@ -3330,24 +3330,23 @@ static int KQ_read_controls(lua_State *L)
 
 static int KQ_remove_chr(lua_State *L)
 {
-    unsigned int a, b;
+    size_t party_index, party_member_index;
 
     if (numchrs > 0)
     {
-        a = in_party((int) lua_tonumber(L, 1));
-        if (a > 0)
+        party_index = in_party((ePIDX) lua_tonumber(L, 1));
+        if (party_index < MAXCHRS)
         {
-            a--;
-            pidx[a] = ENTITY_NONE;
+            pidx[party_index] = PIDX_UNDEFINED;
             numchrs--;
-            if (a != PSIZE - 1)
+            if (party_index != PSIZE - 1)
             {
-                for (b = 0; b < PSIZE - 1; b++)
+                for (party_member_index = 0; party_member_index < PSIZE - 1; party_member_index++)
                 {
-                    if (pidx[b] == (unsigned int)ENTITY_NONE)
+                    if (pidx[party_member_index] == PIDX_UNDEFINED)
                     {
-                        pidx[b] = pidx[b + 1];
-                        pidx[b + 1] = ENTITY_NONE;
+                        pidx[party_member_index] = pidx[party_member_index + 1];
+                        pidx[party_member_index + 1] = PIDX_UNDEFINED;
                     }
                 }
             }
@@ -3387,7 +3386,7 @@ static int KQ_screen_dump(lua_State *L)
  */
 static int KQ_select_team(lua_State *L)
 {
-    static int team[MAXCHRS];
+    static ePIDX team[MAXCHRS];
     size_t i, t;
 
     for (i = 0; i < MAXCHRS; ++i)
@@ -3395,11 +3394,11 @@ static int KQ_select_team(lua_State *L)
         lua_rawgeti(L, 1, i + 1);
         if (lua_type(L, -1) == LUA_TNIL)
         {
-            team[i] = -1;
+            team[i] = PIDX_UNDEFINED;
         }
         else
         {
-            team[i] = (int) lua_tonumber(L, -1);
+            team[i] = (ePIDX) lua_tonumber(L, (int)PIDX_UNDEFINED);
             lua_pushnil(L);
             lua_rawseti(L, 1, i + 1);
         }
@@ -3409,7 +3408,7 @@ static int KQ_select_team(lua_State *L)
     t = 1;
     for (i = 0; i < MAXCHRS; ++i)
     {
-        if (team[i] != -1)
+        if (team[i] != PIDX_UNDEFINED)
         {
             lua_pushnumber(L, team[i]);
             lua_rawseti(L, 1, t++);
@@ -4872,7 +4871,7 @@ static int KQ_party_setter(lua_State *L)
             }
             --numchrs;
             g_ent[numchrs].active = 0;
-            pidx[numchrs] = ENTITY_NONE;
+            pidx[numchrs] = PIDX_UNDEFINED;
         }
         else if (lua_istable(L, 3))
         {
@@ -4888,7 +4887,7 @@ static int KQ_party_setter(lua_State *L)
                 {
                     which = numchrs;
                 }
-                pidx[which] = tt - party;
+                pidx[which] = (ePIDX)(tt - party);
                 if (which >= numchrs)
                 {
                     /* Added a character in */

@@ -76,7 +76,7 @@ void camp_item_menu(void)
 
         if (sel == 0)
         {
-            if (down)
+            if (PlayerInput.down)
             {
                 unpress();
                 ptr++;
@@ -86,7 +86,7 @@ void camp_item_menu(void)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (up)
+            if (PlayerInput.up)
             {
                 unpress();
                 ptr--;
@@ -97,7 +97,7 @@ void camp_item_menu(void)
                 play_effect(SND_CLICK, 128);
             }
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             if (sel == 0)
@@ -120,7 +120,7 @@ void camp_item_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             if (sel == 0)
@@ -143,7 +143,7 @@ void camp_item_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (sel == 1)
@@ -184,12 +184,12 @@ void camp_item_menu(void)
                                 blit2screen(xofs, yofs);
                                 readcontrols();
 
-                                if (balt)
+                                if (PlayerInput.balt)
                                 {
                                     unpress();
                                     stop2 = 2;
                                 }
-                                if (bctrl)
+                                if (PlayerInput.bctrl)
                                 {
                                     unpress();
                                     stop2 = 1;
@@ -205,7 +205,7 @@ void camp_item_menu(void)
                 }
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             if (sel == 0)

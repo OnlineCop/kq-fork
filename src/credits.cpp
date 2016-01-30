@@ -100,7 +100,7 @@ void allocate_credits(void)
 
     // Pre-generate the ease_table values, so they don't have
     // to be calculated on the fly at runtime. All calculations
-    // are integer division, so should 
+    // are integer division.
     for (ease_index = 0; ease_index < NUM_EASE_VALUES; ++ease_index)
     {
         ease_table[ease_index] = short(ease_index * ease_index * (3 * NUM_EASE_VALUES - 2 * ease_index) / NUM_EASE_VALUES / NUM_EASE_VALUES);

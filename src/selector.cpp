@@ -54,8 +54,8 @@ enum eMiniMenu
 /*  Internal functions  */
 static int can_attack(int);
 static eMiniMenu mini_menu(int mask);
-static void party_add(int id, int lead);
-static void party_remove(int id);
+static void party_add(ePIDX id, int lead);
+static void party_remove(ePIDX id);
 
 /*  Internal variables  */
 static signed int tmpd[NUM_FIGHTERS]; // defined in heroc.h
@@ -261,7 +261,7 @@ static eMiniMenu mini_menu(int omask)
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (cp == MM_OPTIONS_LEAVE)
@@ -280,7 +280,7 @@ static eMiniMenu mini_menu(int omask)
             }
         }
 
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (cp == MM_OPTIONS_JOIN)
@@ -298,12 +298,12 @@ static eMiniMenu mini_menu(int omask)
                 cp = MM_OPTIONS_JOIN;
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return MM_NONE;
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (omask & (1 << cp))
@@ -325,7 +325,7 @@ static eMiniMenu mini_menu(int omask)
  * \param   id - Index of character
  * \param   lead - Whether or not they will lead the party or follow
  */
-static void party_add(int id, int lead)
+static void party_add(ePIDX id, int lead)
 {
     s_entity *t;
 
@@ -348,7 +348,7 @@ static void party_add(int id, int lead)
             pidx[numchrs] = id;
         }
         ++numchrs;
-        t->eid = id;
+        t->eid = (unsigned char)id;
         t->active = 1;
         t->chrx = 0;
     }
@@ -361,7 +361,8 @@ static void party_add(int id, int lead)
 void party_newlead(void)
 {
     unsigned int i;
-    signed int t;
+    unsigned char j;
+    ePIDX t;
 
     for (i = 1; i < numchrs; ++i)
     {
@@ -369,13 +370,13 @@ void party_newlead(void)
         pidx[0] = pidx[i];
         pidx[i] = t;
 
-        t = g_ent[0].eid;
+        j = g_ent[0].eid;
         g_ent[0].eid = g_ent[i].eid;
-        g_ent[i].eid = t;
+        g_ent[i].eid = j;
 
-        t = g_ent[0].chrx;
+        j = g_ent[0].chrx;
         g_ent[0].chrx = g_ent[i].chrx;
-        g_ent[i].chrx = t;
+        g_ent[i].chrx = j;
     }
 }
 
@@ -385,13 +386,13 @@ void party_newlead(void)
  *
  * \param   id - Index of character
  */
-static void party_remove(signed int id)
+static void party_remove(ePIDX id)
 {
     size_t pidx_index;
 
     for (pidx_index = 0; pidx_index < numchrs; ++pidx_index)
     {
-        if (pidx[pidx_index] == (unsigned int)id)
+        if (pidx[pidx_index] == id)
         {
             --numchrs;
             memmove(&pidx[pidx_index], &pidx[pidx_index + 1], sizeof(*pidx) * (numchrs - pidx_index));
@@ -473,7 +474,7 @@ ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
         readcontrols();
         if (csa < TGT_ALLY_ALL)
         {
-            if (left)
+            if (PlayerInput.left)
             {
                 unpress();
                 if (csa == TGT_ALLY_ONE)
@@ -488,7 +489,7 @@ ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
                     }
                 }
             }
-            if (right)
+            if (PlayerInput.right)
             {
                 unpress();
                 if (csa == TGT_ALLY_ONE)
@@ -503,7 +504,7 @@ ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
                     }
                 }
             }
-            if (up)
+            if (PlayerInput.up)
             {
                 unpress();
                 if (ptr > 0)
@@ -512,7 +513,7 @@ ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (down)
+            if (PlayerInput.down)
             {
                 unpress();
                 if (ptr < numchrs - 1)
@@ -522,12 +523,12 @@ ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
                 play_effect(SND_CLICK, 128);
             }
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 2;
@@ -604,17 +605,17 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
         blit2screen(0, 0);
         readcontrols();
 
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return PIDX_UNDEFINED;
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             if (ptr > 0)
@@ -626,7 +627,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
                 ptr = cntr - 1;
             }
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             if (ptr < cntr - 1)
@@ -638,7 +639,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
                 ptr = 0;
             }
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (multi_target == TGT_ALLY_ONE && cntr > 1)
@@ -653,7 +654,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
                 }
             }
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (multi_target == TGT_ALLY_ONE && cntr > 1)
@@ -740,17 +741,17 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
 
         readcontrols();
 
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return PIDX_UNDEFINED;
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             if (ptr > 0)
@@ -762,7 +763,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
                 ptr = cntr - 1;
             }
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             if (ptr < cntr - 1)
@@ -776,7 +777,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
         }
         if (multi_target == TGT_ALLY_ONE && cntr > 1)
         {
-            if (up)
+            if (PlayerInput.up)
             {
                 unpress();
                 if (select_all == 0)
@@ -788,7 +789,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
                     select_all = 0;
                 }
             }
-            if (down)
+            if (PlayerInput.down)
             {
                 unpress();
                 if (select_all == 0)
@@ -827,11 +828,11 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
  * \param   numchrs_max The maximum number of heroes allowed in the party
  * \returns 1 if the party changed, 0 if cancelled
  */
-int select_party(int *avail, size_t n_avail, size_t numchrs_max)
+int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
 {
     static const unsigned int BTN_EXIT = (MAXCHRS + PSIZE);
 
-    unsigned int hero = (unsigned int)PIDX_UNDEFINED;
+    ePIDX hero = PIDX_UNDEFINED;
     eMiniMenu mini_menu_mask;
     size_t pidx_index;
     size_t fighter_index;
@@ -851,9 +852,9 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
     {
         for (pidx_index = 0; pidx_index < numchrs; ++pidx_index)
         {
-            if (avail[fighter_index] == pidx[pidx_index])
+            if (avail[fighter_index] == (ePIDX)pidx[pidx_index])
             {
-                avail[fighter_index] = (unsigned int)PIDX_UNDEFINED;
+                avail[fighter_index] = PIDX_UNDEFINED;
             }
         }
     }
@@ -871,7 +872,7 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
         {
             x = xofs + (320 - 32 * n_avail) / 2 + 32 * fighter_index;
             menubox(double_buffer, x, y, 2, 2, (fighter_index == cur ? DARKRED : DARKBLUE));
-            if (avail[fighter_index] != (unsigned int)PIDX_UNDEFINED)
+            if (avail[fighter_index] != PIDX_UNDEFINED)
             {
                 draw_sprite(double_buffer, frames[avail[fighter_index]][0], x + 8, y + 8);
             }
@@ -882,7 +883,7 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
         for (fighter_index = 0; fighter_index < PSIZE; ++fighter_index)
         {
             menubox(double_buffer, x, y, 2, 2, (cur == MAXCHRS + fighter_index ? DARKRED : DARKBLUE));
-            if (fighter_index < numchrs && pidx[fighter_index] != (unsigned int)PIDX_UNDEFINED)
+            if (fighter_index < numchrs && pidx[fighter_index] != PIDX_UNDEFINED)
             {
                 draw_sprite(double_buffer, frames[pidx[fighter_index]][0], x + 8, y + 8);
             }
@@ -902,10 +903,10 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
         }
         else
         {
-            hero = (unsigned int)PIDX_UNDEFINED;
+            hero = PIDX_UNDEFINED;
         }
         menubox(double_buffer, 92, 152, 18, 5, DARKBLUE);
-        if (hero != (unsigned int)PIDX_UNDEFINED)
+        if (hero != PIDX_UNDEFINED)
         {
             draw_playerstat(double_buffer, hero, 100, 160);
         }
@@ -914,7 +915,7 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
 
         oldcur = cur;
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             /* move between the available row and the party row */
             unpress();
@@ -923,7 +924,7 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
                 cur = 0;
             }
         }
-        if (down)
+        if (PlayerInput.down)
         {
             /* move between the available row and the party row */
             unpress();
@@ -932,7 +933,7 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
                 cur = MAXCHRS;
             }
         }
-        if (left)
+        if (PlayerInput.left)
         {
             /* move between heroes on a row */
             unpress();
@@ -945,7 +946,7 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
                 --cur;
             }
         }
-        if (right)
+        if (PlayerInput.right)
         {
             /* move between heroes on a row */
             unpress();
@@ -958,12 +959,12 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
                 ++cur;
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             running = 0;
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (cur == BTN_EXIT)
@@ -971,7 +972,7 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
                 /* selected the exit button */
                 return 1;
             }
-            if (hero == (unsigned int)PIDX_UNDEFINED)
+            if (hero == PIDX_UNDEFINED)
             {
                 /* Selected a space with no hero in it! */
                 play_effect(SND_BAD, 128);
@@ -995,12 +996,12 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
                     if (mini_menu_mask == MM_JOIN)
                     {
                         party_add(hero, 0);
-                        avail[cur] = (unsigned int)PIDX_UNDEFINED;
+                        avail[cur] = PIDX_UNDEFINED;
                     }
                     else if (mini_menu_mask == MM_LEAD)
                     {
                         party_add(hero, 1);
-                        avail[cur] = (unsigned int)PIDX_UNDEFINED;
+                        avail[cur] = PIDX_UNDEFINED;
                     }
                 }
                 else
@@ -1021,7 +1022,7 @@ int select_party(int *avail, size_t n_avail, size_t numchrs_max)
                         /* and put back on the top row */
                         for (pidx_index = 0; pidx_index < n_avail; ++pidx_index)
                         {
-                            if (avail[pidx_index] == (unsigned int)PIDX_UNDEFINED)
+                            if (avail[pidx_index] == PIDX_UNDEFINED)
                             {
                                 avail[pidx_index] = hero;
                                 break;
@@ -1070,7 +1071,7 @@ int select_player(void)
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (ptr > 0)
@@ -1083,7 +1084,7 @@ int select_player(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (ptr < numchrs - 1)
@@ -1096,12 +1097,12 @@ int select_player(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return PIDX_UNDEFINED;

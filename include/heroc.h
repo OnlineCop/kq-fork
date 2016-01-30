@@ -41,6 +41,8 @@ enum ePIDX
     AYLA              = 6,
     NOSLOM            = 7,
 
+    MAXCHRS,
+
     SEL_ALL_ALLIES,
     SEL_ALL_ENEMIES
 };

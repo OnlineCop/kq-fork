@@ -158,7 +158,7 @@ static void choose_equipment(int c, int slot)
 
         readcontrols();
 
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (yptr == 15)
@@ -178,7 +178,7 @@ static void choose_equipment(int c, int slot)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (yptr == 0)
@@ -195,7 +195,7 @@ static void choose_equipment(int c, int slot)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (equip(pidx[c], t_inv[pptr + yptr], 0) == 1)
@@ -208,7 +208,7 @@ static void choose_equipment(int c, int slot)
                 play_effect(SND_BAD, 128);
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -604,7 +604,7 @@ void equip_menu(unsigned int c)
 
         if (sl == 1)
         {
-            if (left)
+            if (PlayerInput.left)
             {
                 unpress();
                 eqp_act--;
@@ -614,7 +614,7 @@ void equip_menu(unsigned int c)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (right)
+            if (PlayerInput.right)
             {
                 unpress();
                 eqp_act++;
@@ -627,7 +627,7 @@ void equip_menu(unsigned int c)
         }
         else
         {
-            if (down)
+            if (PlayerInput.down)
             {
                 unpress();
                 yptr++;
@@ -637,7 +637,7 @@ void equip_menu(unsigned int c)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (up)
+            if (PlayerInput.up)
             {
                 unpress();
                 yptr--;
@@ -648,7 +648,7 @@ void equip_menu(unsigned int c)
                 play_effect(SND_CLICK, 128);
             }
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (sl == 1)
@@ -706,7 +706,7 @@ void equip_menu(unsigned int c)
                 }
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             if (sl == 0)

@@ -168,14 +168,14 @@ void config_menu(void)
         citem(row[1], _("Stretch Display:"), stretch_view == 1 ? _("YES") : _("NO"), FNORMAL);
         citem(row[2], _("Show Frame Rate:"), show_frate == 1 ? _("YES") : _("NO"), FNORMAL);
         citem(row[3], _("Wait for Retrace:"), wait_retrace == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[4], _("Up Key:"), kq_keyname(kup), FNORMAL);
-        citem(row[5], _("Down Key:"), kq_keyname(kdown), FNORMAL);
-        citem(row[6], _("Left Key:"), kq_keyname(kleft), FNORMAL);
-        citem(row[7], _("Right Key:"), kq_keyname(kright), FNORMAL);
-        citem(row[8], _("Confirm Key:"), kq_keyname(kalt), FNORMAL);
-        citem(row[9], _("Cancel Key:"), kq_keyname(kctrl), FNORMAL);
-        citem(row[10], _("Menu Key:"), kq_keyname(kenter), FNORMAL);
-        citem(row[11], _("System Menu Key:"), kq_keyname(kesc), FNORMAL);
+        citem(row[4], _("Up Key:"), kq_keyname(PlayerInput.kup), FNORMAL);
+        citem(row[5], _("Down Key:"), kq_keyname(PlayerInput.kdown), FNORMAL);
+        citem(row[6], _("Left Key:"), kq_keyname(PlayerInput.kleft), FNORMAL);
+        citem(row[7], _("Right Key:"), kq_keyname(PlayerInput.kright), FNORMAL);
+        citem(row[8], _("Confirm Key:"), kq_keyname(PlayerInput.kalt), FNORMAL);
+        citem(row[9], _("Cancel Key:"), kq_keyname(PlayerInput.kctrl), FNORMAL);
+        citem(row[10], _("Menu Key:"), kq_keyname(PlayerInput.kenter), FNORMAL);
+        citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.kesc), FNORMAL);
         citem(row[12], _("Sound System:"), is_sound ? _("ON") : _("OFF"), FNORMAL);
 
         fontColor = FNORMAL;
@@ -233,7 +233,7 @@ void config_menu(void)
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             // "jump" over unusable options
@@ -251,7 +251,7 @@ void config_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             // "jump" over unusable options
@@ -269,7 +269,7 @@ void config_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             switch (ptr)
@@ -322,59 +322,59 @@ void config_menu(void)
                     break;
                 case 4:
                     while ((temp_key = getakey()) == 0) {}
-                    kup = temp_key;
+                    PlayerInput.kup = temp_key;
                     unpress();
                     temp_key = 0;
-                    set_config_int(NULL, "kup", kup);
+                    set_config_int(NULL, "kup", PlayerInput.kup);
                     break;
                 case 5:
                     while ((temp_key = getakey()) == 0) {}
-                    kdown = temp_key;
+                    PlayerInput.kdown = temp_key;
                     unpress();
                     temp_key = 0;
-                    set_config_int(NULL, "kdown", kdown);
+                    set_config_int(NULL, "kdown", PlayerInput.kdown);
                     break;
                 case 6:
                     while ((temp_key = getakey()) == 0) {}
-                    kleft = temp_key;
+                    PlayerInput.kleft = temp_key;
                     unpress();
                     temp_key = 0;
-                    set_config_int(NULL, "kleft", kleft);
+                    set_config_int(NULL, "kleft", PlayerInput.kleft);
                     break;
                 case 7:
                     while ((temp_key = getakey()) == 0) {}
-                    kright = temp_key;
+                    PlayerInput.kright = temp_key;
                     unpress();
                     temp_key = 0;
-                    set_config_int(NULL, "kright", kright);
+                    set_config_int(NULL, "kright", PlayerInput.kright);
                     break;
                 case 8:
                     while ((temp_key = getakey()) == 0) {}
-                    kalt = temp_key;
+                    PlayerInput.kalt = temp_key;
                     unpress();
                     temp_key = 0;
-                    set_config_int(NULL, "kalt", kalt);
+                    set_config_int(NULL, "kalt", PlayerInput.kalt);
                     break;
                 case 9:
                     while ((temp_key = getakey()) == 0) {}
-                    kctrl = temp_key;
+                    PlayerInput.kctrl = temp_key;
                     unpress();
                     temp_key = 0;
-                    set_config_int(NULL, "kctrl", kctrl);
+                    set_config_int(NULL, "kctrl", PlayerInput.kctrl);
                     break;
                 case 10:
                     while ((temp_key = getakey()) == 0) {}
-                    kenter = temp_key;
+                    PlayerInput.kenter = temp_key;
                     unpress();
                     temp_key = 0;
-                    set_config_int(NULL, "kenter", kenter);
+                    set_config_int(NULL, "kenter", PlayerInput.kenter);
                     break;
                 case 11:
                     while ((temp_key = getakey()) == 0) {}
-                    kesc = temp_key;
+                    PlayerInput.kesc = temp_key;
                     unpress();
                     temp_key = 0;
-                    set_config_int(NULL, "kesc", kesc);
+                    set_config_int(NULL, "kesc", PlayerInput.kesc);
                     break;
                 case 12:
                     if (is_sound == 2)
@@ -460,7 +460,7 @@ void config_menu(void)
 #endif
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -574,7 +574,7 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, int sp)
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             cv--;
@@ -584,7 +584,7 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, int sp)
             }
             IF_VOLUME_ALERT();
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             cv++;
@@ -594,12 +594,12 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, int sp)
             }
             IF_VOLUME_ALERT();
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return -1;
@@ -709,14 +709,14 @@ static void parse_allegro_setup(void)
         set_config_int(NULL, "use_joy", use_joy);
         set_config_int(NULL, "slow_computer", slow_computer);
 
-        set_config_int(NULL, "kup", kup);
-        set_config_int(NULL, "kdown", kdown);
-        set_config_int(NULL, "kleft", kleft);
-        set_config_int(NULL, "kright", kright);
-        set_config_int(NULL, "kesc", kesc);
-        set_config_int(NULL, "kalt", kalt);
-        set_config_int(NULL, "kctrl", kctrl);
-        set_config_int(NULL, "kenter", kenter);
+        set_config_int(NULL, "kup", PlayerInput.kup);
+        set_config_int(NULL, "kdown", PlayerInput.kdown);
+        set_config_int(NULL, "kleft", PlayerInput.kleft);
+        set_config_int(NULL, "kright", PlayerInput.kright);
+        set_config_int(NULL, "kesc", PlayerInput.kesc);
+        set_config_int(NULL, "kalt", PlayerInput.kalt);
+        set_config_int(NULL, "kctrl", PlayerInput.kctrl);
+        set_config_int(NULL, "kenter", PlayerInput.kenter);
 
 #ifdef DEBUGMODE
         set_config_int(NULL, "debugging", debugging);
@@ -748,14 +748,14 @@ static void parse_allegro_setup(void)
     debugging = get_config_int(NULL, "debugging", 0);
 #endif
 
-    kup = get_config_int(NULL, "kup", KEY_UP);
-    kdown = get_config_int(NULL, "kdown", KEY_DOWN);
-    kleft = get_config_int(NULL, "kleft", KEY_LEFT);
-    kright = get_config_int(NULL, "kright", KEY_RIGHT);
-    kesc = get_config_int(NULL, "kesc", KEY_ESC);
-    kalt = get_config_int(NULL, "kalt", KEY_ALT);
-    kctrl = get_config_int(NULL, "kctrl", KEY_LCONTROL);
-    kenter = get_config_int(NULL, "kenter", KEY_ENTER);
+    PlayerInput.kup = get_config_int(NULL, "kup", KEY_UP);
+    PlayerInput.kdown = get_config_int(NULL, "kdown", KEY_DOWN);
+    PlayerInput.kleft = get_config_int(NULL, "kleft", KEY_LEFT);
+    PlayerInput.kright = get_config_int(NULL, "kright", KEY_RIGHT);
+    PlayerInput.kesc = get_config_int(NULL, "kesc", KEY_ESC);
+    PlayerInput.kalt = get_config_int(NULL, "kalt", KEY_ALT);
+    PlayerInput.kctrl = get_config_int(NULL, "kctrl", KEY_LCONTROL);
+    PlayerInput.kenter = get_config_int(NULL, "kenter", KEY_ENTER);
     pop_config_state();
 }
 
@@ -776,18 +776,18 @@ static void parse_jb_setup(void)
     int dab = 0;
 
     /* Default key assignments */
-    kup = KEY_UP;
-    kdown = KEY_DOWN;
-    kright = KEY_RIGHT;
-    kleft = KEY_LEFT;
-    kalt = KEY_ALT;
-    kctrl = KEY_LCONTROL;
-    kenter = KEY_ENTER;
-    kesc = KEY_ESC;
-    jbalt = 0;
-    jbctrl = 1;
-    jbenter = 2;
-    jbesc = 3;
+    PlayerInput.kup = KEY_UP;
+    PlayerInput.kdown = KEY_DOWN;
+    PlayerInput.kright = KEY_RIGHT;
+    PlayerInput.kleft = KEY_LEFT;
+    PlayerInput.kalt = KEY_ALT;
+    PlayerInput.kctrl = KEY_LCONTROL;
+    PlayerInput.kenter = KEY_ENTER;
+    PlayerInput.kesc = KEY_ESC;
+    PlayerInput.jbalt = 0;
+    PlayerInput.jbctrl = 1;
+    PlayerInput.jbenter = 2;
+    PlayerInput.jbesc = 3;
     /* PH Why in the world doesn't he use Allegro cfg functions here? */
     if (!(s = fopen(kqres(SETTINGS_DIR, "setup.cfg"), "r")))
     {
@@ -872,42 +872,42 @@ static void parse_jb_setup(void)
         if (!strcmp(strbuf, "rightkey"))
         {
             fscanf(s, "%s", strbuf);
-            kright = atoi(strbuf);
+            PlayerInput.kright = atoi(strbuf);
         }
         if (!strcmp(strbuf, "leftkey"))
         {
             fscanf(s, "%s", strbuf);
-            kleft = atoi(strbuf);
+            PlayerInput.kleft = atoi(strbuf);
         }
         if (!strcmp(strbuf, "upkey"))
         {
             fscanf(s, "%s", strbuf);
-            kup = atoi(strbuf);
+            PlayerInput.kup = atoi(strbuf);
         }
         if (!strcmp(strbuf, "downkey"))
         {
             fscanf(s, "%s", strbuf);
-            kdown = atoi(strbuf);
+            PlayerInput.kdown = atoi(strbuf);
         }
         if (!strcmp(strbuf, "sysmenukey"))
         {
             fscanf(s, "%s", strbuf);
-            kesc = atoi(strbuf);
+            PlayerInput.kesc = atoi(strbuf);
         }
         if (!strcmp(strbuf, "cancelkey"))
         {
             fscanf(s, "%s", strbuf);
-            kctrl = atoi(strbuf);
+            PlayerInput.kctrl = atoi(strbuf);
         }
         if (!strcmp(strbuf, "confirmkey"))
         {
             fscanf(s, "%s", strbuf);
-            kalt = atoi(strbuf);
+            PlayerInput.kalt = atoi(strbuf);
         }
         if (!strcmp(strbuf, "chrmenukey"))
         {
             fscanf(s, "%s", strbuf);
-            kenter = atoi(strbuf);
+            PlayerInput.kenter = atoi(strbuf);
         }
         fscanf(s, "%s", strbuf);
     }
@@ -1077,20 +1077,20 @@ void show_help(void)
     menubox(double_buffer, xofs, 216 + yofs, 38, 1, BLUE);
     print_font(double_buffer, 16 + xofs, 224 + yofs,
                _("Press CONFIRM to exit this screen"), FNORMAL);
-    citem(72, _("Up Key:"), kq_keyname(kup), FNORMAL);
-    citem(80, _("Down Key:"), kq_keyname(kdown), FNORMAL);
-    citem(88, _("Left Key:"), kq_keyname(kleft), FNORMAL);
-    citem(96, _("Right Key:"), kq_keyname(kright), FNORMAL);
-    citem(104, _("Confirm Key:"), kq_keyname(kalt), FNORMAL);
-    citem(112, _("Cancel Key:"), kq_keyname(kctrl), FNORMAL);
-    citem(120, _("Menu Key:"), kq_keyname(kenter), FNORMAL);
-    citem(128, _("System Menu Key:"), kq_keyname(kesc), FNORMAL);
+    citem(72, _("Up Key:"), kq_keyname(PlayerInput.kup), FNORMAL);
+    citem(80, _("Down Key:"), kq_keyname(PlayerInput.kdown), FNORMAL);
+    citem(88, _("Left Key:"), kq_keyname(PlayerInput.kleft), FNORMAL);
+    citem(96, _("Right Key:"), kq_keyname(PlayerInput.kright), FNORMAL);
+    citem(104, _("Confirm Key:"), kq_keyname(PlayerInput.kalt), FNORMAL);
+    citem(112, _("Cancel Key:"), kq_keyname(PlayerInput.kctrl), FNORMAL);
+    citem(120, _("Menu Key:"), kq_keyname(PlayerInput.kenter), FNORMAL);
+    citem(128, _("System Menu Key:"), kq_keyname(PlayerInput.kesc), FNORMAL);
     do
     {
         blit2screen(xofs, yofs);
         readcontrols();
     }
-    while (!balt && !bctrl);
+    while (!PlayerInput.balt && !PlayerInput.bctrl);
     unpress();
 }
 

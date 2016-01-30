@@ -713,7 +713,7 @@ static int do_combat(char *bg, char *mus, int is_rnd)
         }
         else
         {
-            if (numchrs > 1 && (in_party(AYLA) > 0))
+            if (numchrs > 1 && (in_party(AYLA) < MAXCHRS))
             {
                 hs = rand() % 20 + 1;
                 ms = rand() % 5 + 1;

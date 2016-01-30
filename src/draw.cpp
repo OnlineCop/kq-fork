@@ -535,7 +535,6 @@ static void draw_char(int xw, int yw)
              && g_ent[fighter_index].tiley >= view_y1
              && g_ent[fighter_index].tiley <= view_y2)
             {
-                
                 if (dx >= TILE_W * -1 && dx <= TILE_W * WINDOW_TILES_W
                  && dy >= TILE_H * -1 && dy <= TILE_H * WINDOW_TILES_H)
                 {
@@ -1189,7 +1188,7 @@ static void generic_text(int who, int box_style, int isPort)
         }
         blit2screen(xofs, yofs);
         readcontrols();
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
@@ -1700,7 +1699,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             ptr--;
@@ -1710,7 +1709,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
             }
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             ptr++;
@@ -1720,7 +1719,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
@@ -1834,26 +1833,26 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
                 blit2screen(xofs, yofs);
 
                 readcontrols();
-                if (up && curopt > 0)
+                if (PlayerInput.up && curopt > 0)
                 {
                     play_effect(SND_CLICK, 128);
                     unpress();
                     --curopt;
                 }
-                else if (down && curopt < (n_opt - 1))
+                else if (PlayerInput.down && curopt < (n_opt - 1))
                 {
                     play_effect(SND_CLICK, 128);
                     unpress();
                     ++curopt;
                 }
-                else if (balt)
+                else if (PlayerInput.balt)
                 {
                     /* Selected an option */
                     play_effect(SND_CLICK, 128);
                     unpress();
                     running = 0;
                 }
-                else if (bctrl)
+                else if (PlayerInput.bctrl)
                 {
                     /* Just go "ow!" */
                     unpress();

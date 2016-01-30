@@ -62,8 +62,5 @@ enum eCommands
 };
 
 
-#define ENTITY_NONE -1
-
-
 #endif  /* __ENTITY_H */
 

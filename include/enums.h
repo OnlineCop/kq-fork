@@ -78,7 +78,6 @@ enum eGlobalInventory
 
 #define MAX_TILES        1024
 #define MAXE               41
-#define MAXCHRS             8
 #define PSIZE               2U
 #define MAXFRAMES          12
 #define MAXEFRAMES         12
@@ -100,8 +99,6 @@ enum eGlobalInventory
 #define NUM_STATS          13
 #define MISS             9999
 #define NODISPLAY        9998
-//#define SEL_ALL_ALLIES   9997
-//#define SEL_ALL_ENEMIES  9996
 #define SCANALL          9995
 #define NO_STS_CHECK     9994
 #define CURE_CHECK       9993

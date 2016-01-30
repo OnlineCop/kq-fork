@@ -415,7 +415,7 @@ static int combat_item_menu(int whom)
         blit2screen(0, 0);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             ptr--;
@@ -425,7 +425,7 @@ static int combat_item_menu(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             ptr++;
@@ -435,7 +435,7 @@ static int combat_item_menu(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             pptr--;
@@ -445,7 +445,7 @@ static int combat_item_menu(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             pptr++;
@@ -455,7 +455,7 @@ static int combat_item_menu(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (items[inventory].tgt >= TGT_ENEMY_ONE)
@@ -486,7 +486,7 @@ static int combat_item_menu(int whom)
                 }
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -544,7 +544,7 @@ int combat_spell_menu(int c)
 
         readcontrols();
 
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             ptr++;
@@ -554,7 +554,7 @@ int combat_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             ptr--;
@@ -564,7 +564,7 @@ int combat_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             pgno++;
@@ -574,7 +574,7 @@ int combat_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             pgno--;
@@ -584,7 +584,7 @@ int combat_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (combat_castable(c, pgno * NUM_SPELLS_PER_PAGE + ptr) == 1)
@@ -593,7 +593,7 @@ int combat_spell_menu(int c)
                 stop = 2;
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -852,7 +852,7 @@ void hero_choose_action(size_t fighter_index)
         blit2screen(0, 0);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (ptr > 0)
@@ -865,7 +865,7 @@ void hero_choose_action(size_t fighter_index)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (ptr < my - 1)
@@ -878,7 +878,7 @@ void hero_choose_action(size_t fighter_index)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             if (sptr > 0)
@@ -886,7 +886,7 @@ void hero_choose_action(size_t fighter_index)
                 sptr--;
             }
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             sptr++;
@@ -906,7 +906,7 @@ void hero_choose_action(size_t fighter_index)
                     sptr = 1 + can_run;
                 }
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (sptr == 0)
@@ -1113,7 +1113,7 @@ static int hero_invoke(int whom)
         blit2screen(0, 0);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             ptr--;
@@ -1123,7 +1123,7 @@ static int hero_invoke(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             ptr++;
@@ -1133,7 +1133,7 @@ static int hero_invoke(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (can_invoke_item(party[dud].eqp[ptr]))
@@ -1148,7 +1148,7 @@ static int hero_invoke(int whom)
                 play_effect(SND_BAD, 128);
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;

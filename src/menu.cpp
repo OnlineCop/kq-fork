@@ -303,7 +303,7 @@ void menu(void)
         draw_sprite(double_buffer, menuptr, 204 + xofs, ptr * 8 + 73 + yofs);
         blit2screen(xofs, yofs);
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             ptr--;
@@ -313,7 +313,7 @@ void menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             ptr++;
@@ -324,7 +324,7 @@ void menu(void)
             play_effect(SND_CLICK, 128);
         }
         /* Allow player to rearrange the party at any time by pressing LEFT */
-        if (left)
+        if (PlayerInput.left)
         {
             z = select_player();
             if (z > 0)
@@ -332,7 +332,7 @@ void menu(void)
                 party_newlead();
             }
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             switch (ptr)
@@ -366,7 +366,7 @@ void menu(void)
                     break;
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -631,25 +631,25 @@ static void quest_info(void)
         }
         blit2screen(xofs, yofs);
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             --ii;
             play_effect(SND_CLICK, 128);
             unpress();
         }
-        if (down)
+        if (PlayerInput.down)
         {
             ++ii;
             play_effect(SND_CLICK, 128);
             unpress();
         }
-        if (left)
+        if (PlayerInput.left)
         {
             ii -= 10;
             play_effect(SND_CLICK, 128);
             unpress();
         }
-        if (right)
+        if (PlayerInput.right)
         {
             ii += 10;
             play_effect(SND_CLICK, 128);
@@ -663,7 +663,7 @@ static void quest_info(void)
         {
             ii = 0;
         }
-        if (balt || bctrl)
+        if (PlayerInput.balt || PlayerInput.bctrl)
         {
             unpress();
             return;
@@ -778,19 +778,19 @@ void spec_items(void)
         blit2screen(xofs, yofs);
         readcontrols();
 
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             ptr = (ptr + 1) % num_items;
             play_effect(SND_CLICK, 128);
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             ptr = (ptr - 1 + num_items) % num_items;
             play_effect(SND_CLICK, 128);
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -923,21 +923,21 @@ static void status_screen(size_t fighter_index)
         blit2screen(xofs, yofs);
         readcontrols();
 
-        if (left && fighter_index > 0)
+        if (PlayerInput.left && fighter_index > 0)
         {
             unpress();
             fighter_index--;
             pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
-        if (right && fighter_index < numchrs - 1)
+        if (PlayerInput.right && fighter_index < numchrs - 1)
         {
             unpress();
             fighter_index++;
             pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             play_effect(SND_MENU, 128);

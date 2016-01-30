@@ -79,13 +79,7 @@ char curmap[16];
  * Seems to use some kind of homebrew Hungarian notation; I assume 'b' means
  * bool.  Most if not all of these are updated in readcontrols() below ....
  */
-int right, left, up, down, besc, balt, bctrl, benter, bhelp, bcheat;
-
-/*!  Scan codes for the keys (help is always F1)*/
-int kright, kleft, kup, kdown, kesc, kenter, kalt, kctrl;
-
-/*! Joystick buttons */
-int jbalt, jbctrl, jbenter, jbesc;
+s_player_input PlayerInput;
 
 /*! View and character positions */
 int vx, vy, mx, my;
@@ -137,7 +131,7 @@ s_anim adata[MAX_ANIM];
 unsigned int noe = 0;
 
 /*! Identifies characters in the party */
-unsigned int pidx[MAXCHRS];
+ePIDX pidx[MAXCHRS];
 
 /*! Number of characters in the party */
 unsigned int numchrs = 0;
@@ -1082,10 +1076,9 @@ char *get_timer_event(void)
  * Determine whether the specified character is currently in play.
  *
  * \param   pn Character to ask about
- * \returns 1 more than the ID of the member, if found in the party,
- *          else 0 to indicate NOT in party.
+ * \returns index of member's ID if found, else MAXCHRS if NOT in party.
  */
-unsigned int in_party(unsigned int pn)
+size_t in_party(ePIDX pn)
 {
     size_t pidx_index;
 
@@ -1093,11 +1086,11 @@ unsigned int in_party(unsigned int pn)
     {
         if (pidx[pidx_index] == pn)
         {
-            return pidx_index + 1;
+            return pidx_index;
         }
     }
 
-    return 0;
+    return MAXCHRS;
 }
 
 
@@ -1365,12 +1358,12 @@ static void load_map(const char *map_name)
 int main(int argc, const char *argv[])
 {
     int stop, game_on, skip_splash;
-    int i;
+    size_t i;
 
     setlocale(LC_ALL, "");
 
     skip_splash = 0;
-    for (i = 1; i < argc; i++)
+    for (i = 1; i < (size_t)argc; i++)
     {
         if (!strcmp(argv[i], "-nosplash") || !strcmp(argv[i], "--nosplash"))
         {
@@ -1421,11 +1414,11 @@ int main(int argc, const char *argv[])
                 blit2screen(xofs, yofs);
                 poll_music();
 
-                if (key[kesc])
+                if (key[PlayerInput.kesc])
                 {
                     stop = system_menu();
                 }
-                if (bhelp)
+                if (PlayerInput.bhelp)
                 {
                     /* TODO: In-game help system. */
                 }
@@ -1726,17 +1719,17 @@ void readcontrols(void)
         poll_keyboard();
     }
 
-    balt = key[kalt];
-    besc = key[kesc];
-    bctrl = key[kctrl];
-    benter = key[kenter];
-    bhelp = key[KEY_F1];
-    bcheat = key[KEY_F10];
+    PlayerInput.balt = key[PlayerInput.kalt];
+    PlayerInput.besc = key[PlayerInput.kesc];
+    PlayerInput.bctrl = key[PlayerInput.kctrl];
+    PlayerInput.benter = key[PlayerInput.kenter];
+    PlayerInput.bhelp = key[KEY_F1];
+    PlayerInput.bcheat = key[KEY_F10];
 
-    up = key[kup];
-    down = key[kdown];
-    left = key[kleft];
-    right = key[kright];
+    PlayerInput.up = key[PlayerInput.kup];
+    PlayerInput.down = key[PlayerInput.kdown];
+    PlayerInput.left = key[PlayerInput.kleft];
+    PlayerInput.right = key[PlayerInput.kright];
 
     /* Emergency kill-game set. */
     /* PH modified - need to hold down for 0.50 sec */
@@ -1776,15 +1769,15 @@ void readcontrols(void)
     if (use_joy > 0 && maybe_poll_joystick() == 0)
     {
         stk = &joy[use_joy - 1];
-        left |= stk->stick[0].axis[0].d1;
-        right |= stk->stick[0].axis[0].d2;
-        up |= stk->stick[0].axis[1].d1;
-        down |= stk->stick[0].axis[1].d2;
+        PlayerInput.left |= stk->stick[0].axis[0].d1;
+        PlayerInput.right |= stk->stick[0].axis[0].d2;
+        PlayerInput.up |= stk->stick[0].axis[1].d1;
+        PlayerInput.down |= stk->stick[0].axis[1].d2;
 
-        balt |= stk->button[0].b;
-        bctrl |= stk->button[1].b;
-        benter |= stk->button[2].b;
-        besc |= stk->button[3].b;
+        PlayerInput.balt |= stk->button[0].b;
+        PlayerInput.bctrl |= stk->button[1].b;
+        PlayerInput.benter |= stk->button[2].b;
+        PlayerInput.besc |= stk->button[3].b;
 
     }
 }
@@ -2110,7 +2103,7 @@ void unpress(void)
     while (timer_count < 20)
     {
         readcontrols();
-        if (!(balt || bctrl || benter || besc || up || down || right || left || bcheat))
+        if (!(PlayerInput.balt || PlayerInput.bctrl || PlayerInput.benter || PlayerInput.besc || PlayerInput.up || PlayerInput.down || PlayerInput.right || PlayerInput.left || PlayerInput.bcheat))
         {
             break;
         }
@@ -2133,7 +2126,7 @@ void wait_enter(void)
     while (!stop)
     {
         readcontrols();
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;

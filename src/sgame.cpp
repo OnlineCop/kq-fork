@@ -112,12 +112,12 @@ static int confirm_action(void)
     while (!stop)
     {
         readcontrols();
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             return 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return 0;
@@ -193,7 +193,7 @@ static void delete_game(void)
     while (!stop)
     {
         readcontrols();
-        if (balt || bctrl)
+        if (PlayerInput.balt || PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -274,7 +274,7 @@ int load_game_91(PACKFILE *sdat)
     kmin = pack_igetl(sdat);
     for (a = 0; a < PSIZE; a++)
     {
-        pidx[a] = pack_igetl(sdat);
+        pidx[a] = (ePIDX)pack_igetl(sdat);
         g_ent[a].active = 0;
         if (a < numchrs)
         {
@@ -650,7 +650,7 @@ static int load_game_92(PACKFILE *sdat)
     }
     for (a = 0; a < numchrs; a++)
     {
-        pidx[a] = pack_igetw(sdat);
+        pidx[a] = (ePIDX)pack_igetw(sdat);
         g_ent[a].eid = pidx[a];
         g_ent[a].active = 1;
     }
@@ -658,7 +658,7 @@ static int load_game_92(PACKFILE *sdat)
     /* Zero set empty party character(s), if any */
     for (; a < PSIZE; a++)
     {
-        pidx[a] = 0;
+        pidx[a] = PIDX_UNDEFINED;
         g_ent[a].active = 0;
     }
 
@@ -1032,18 +1032,18 @@ static int save_game(void)
     pack_putc(windowed, sdat);
     pack_putc(stretch_view, sdat);
     pack_putc(wait_retrace, sdat);
-    pack_iputl(kup, sdat);
-    pack_iputl(kdown, sdat);
-    pack_iputl(kleft, sdat);
-    pack_iputl(kright, sdat);
-    pack_iputl(kalt, sdat);
-    pack_iputl(kctrl, sdat);
-    pack_iputl(kenter, sdat);
-    pack_iputl(kesc, sdat);
-    pack_iputl(jbalt, sdat);
-    pack_iputl(jbctrl, sdat);
-    pack_iputl(jbenter, sdat);
-    pack_iputl(jbesc, sdat);
+    pack_iputl(PlayerInput.kup, sdat);
+    pack_iputl(PlayerInput.kdown, sdat);
+    pack_iputl(PlayerInput.kleft, sdat);
+    pack_iputl(PlayerInput.kright, sdat);
+    pack_iputl(PlayerInput.kalt, sdat);
+    pack_iputl(PlayerInput.kctrl, sdat);
+    pack_iputl(PlayerInput.kenter, sdat);
+    pack_iputl(PlayerInput.kesc, sdat);
+    pack_iputl(PlayerInput.jbalt, sdat);
+    pack_iputl(PlayerInput.jbctrl, sdat);
+    pack_iputl(PlayerInput.jbenter, sdat);
+    pack_iputl(PlayerInput.jbesc, sdat);
     /* End worthless */
     pack_iputw(g_ent[0].tilex, sdat);
     pack_iputw(g_ent[0].tiley, sdat);
@@ -1245,7 +1245,7 @@ static int saveload(int am_saving)
         blit2screen(0, 0);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             save_ptr--;
@@ -1266,7 +1266,7 @@ static int saveload(int am_saving)
 
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             save_ptr++;
@@ -1287,7 +1287,7 @@ static int saveload(int am_saving)
 
             play_effect(SND_CLICK, 128);
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             if (am_saving < 2)
@@ -1295,7 +1295,7 @@ static int saveload(int am_saving)
                 am_saving = am_saving + 2;
             }
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             if (am_saving >= 2)
@@ -1303,7 +1303,7 @@ static int saveload(int am_saving)
                 am_saving = am_saving - 2;
             }
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             switch (am_saving)
@@ -1346,7 +1346,7 @@ static int saveload(int am_saving)
                     break;
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -1574,13 +1574,13 @@ int start_menu(int skip_splash)
         display_credits(double_buffer);
         blit2screen(0, 0);
         readcontrols();
-        if (bhelp)
+        if (PlayerInput.bhelp)
         {
             unpress();
             show_help();
             redraw = 1;
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (ptr > 0)
@@ -1594,7 +1594,7 @@ int start_menu(int skip_splash)
             play_effect(SND_CLICK, 128);
             redraw = 1;
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (ptr < 3)
@@ -1608,7 +1608,7 @@ int start_menu(int skip_splash)
             play_effect(SND_CLICK, 128);
             redraw = 1;
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (ptr == 0)          /* User selected "Continue" */
@@ -1725,9 +1725,9 @@ int system_menu(void)
         // When pressed, 'up' or 'down' == 1.  Otherwise, they equal 0.  So:
         //    ptr = ptr - up + down;
         // will correctly modify the pointer, but with less code.
-        if (up || down)
+        if (PlayerInput.up || PlayerInput.down)
         {
-            ptr = ptr + up - down;
+            ptr = ptr + PlayerInput.up - PlayerInput.down;
             if (ptr < 0)
             {
                 ptr = 3;
@@ -1740,7 +1740,7 @@ int system_menu(void)
             unpress();
         }
 
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
 
@@ -1781,7 +1781,7 @@ int system_menu(void)
             }
         }
 
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             stop = 1;
             unpress();

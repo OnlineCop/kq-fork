@@ -24,6 +24,7 @@
 #include "draw.h"
 #include "kq.h"
 #include "music.h"
+#include "structs.h"
 
 
 /*! \file
@@ -252,6 +253,6 @@ void run_console(void)
     {
         readcontrols();
     }
-    while (benter);
+    while (PlayerInput.benter);
 }
 

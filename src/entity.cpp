@@ -781,11 +781,11 @@ static void player_move(void)
 
     readcontrols();
 
-    if (balt)
+    if (PlayerInput.balt)
     {
         activate();
     }
-    if (benter)
+    if (PlayerInput.benter)
     {
         menu();
     }
@@ -796,7 +796,7 @@ static void player_move(void)
     }
 #endif
 
-    move(0, right ? 1 : left ? -1 : 0, down ? 1 : up ? -1 : 0);
+    move(0, PlayerInput.right ? 1 : PlayerInput.left ? -1 : 0, PlayerInput.down ? 1 : PlayerInput.up ? -1 : 0);
     if (g_ent[0].moving)
     {
         follow(oldx, oldy);
@@ -1034,7 +1034,7 @@ static void speed_adjust(t_entity target_entity)
             break;
     }
     /* TT: This is to see if the player is "running" */
-    if (key[kctrl] && target_entity < PSIZE)
+    if (key[PlayerInput.kctrl] && target_entity < PSIZE)
     {
         process_entity(target_entity);
     }

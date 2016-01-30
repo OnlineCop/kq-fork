@@ -59,7 +59,7 @@ void death_animation(size_t target_fighter_index, int target_all_flag)
     int dx, dy, p;
     int color_range;
     size_t fighter_index;
-    size_t start_fighter_index, num_targets; 
+    size_t start_fighter_index, num_targets;
 
     // TT: used for the slow_computer routine
     int count;

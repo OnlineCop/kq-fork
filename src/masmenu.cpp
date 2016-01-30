@@ -162,7 +162,7 @@ void camp_spell_menu(int c)
         }
         blit2screen(xofs, yofs);
         readcontrols();
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             ptr[smove]++;
@@ -172,7 +172,7 @@ void camp_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             ptr[smove]--;
@@ -182,7 +182,7 @@ void camp_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             pg[smove]++;
@@ -192,7 +192,7 @@ void camp_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             pg[smove]--;
@@ -202,7 +202,7 @@ void camp_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (smove == 1)
@@ -242,7 +242,7 @@ void camp_spell_menu(int c)
                 }
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             if (smove == 1)

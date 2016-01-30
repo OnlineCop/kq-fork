@@ -904,6 +904,8 @@ int skill_use(size_t attack_fighter_index)
             enemy_index = (unsigned int)tgt;
             reveal(enemy_index);
             break;
+        default:
+            break;
     }
     return 1;
 }

@@ -98,12 +98,12 @@ static void buy_item(int how_many, int item_no)
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return;
@@ -200,7 +200,7 @@ static void buy_menu(void)
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (yptr > 0)
@@ -213,7 +213,7 @@ static void buy_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (yptr < num_shop_items - 1)
@@ -226,19 +226,19 @@ static void buy_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (left && xptr > 1)
+        if (PlayerInput.left && xptr > 1)
         {
             unpress();
             xptr--;
             play_effect(SND_CLICK, 128);
         }
-        if (right && xptr < max_x)
+        if (PlayerInput.right && xptr < max_x)
         {
             unpress();
             xptr++;
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             blit(double_buffer, back, xofs, 192 + yofs, 0, 0, 320, 48);
@@ -249,7 +249,7 @@ static void buy_menu(void)
             }
             buy_item(max, yptr);
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -526,7 +526,7 @@ void inn(const char *iname, unsigned int gold_per_character, int pay)
         draw_sprite(double_buffer, menuptr, 220 + xofs, my * 8 + 104 + yofs);
         blit2screen(xofs, yofs);
         readcontrols();
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (my == 0)
@@ -539,7 +539,7 @@ void inn(const char *iname, unsigned int gold_per_character, int pay)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (my == 0)
@@ -552,7 +552,7 @@ void inn(const char *iname, unsigned int gold_per_character, int pay)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (my == 0)
@@ -616,7 +616,7 @@ static void sell_howmany(int item_no, size_t inv_page)
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (up || right)
+        if (PlayerInput.up || PlayerInput.right)
         {
             if (my < max_items)
             {
@@ -629,7 +629,7 @@ static void sell_howmany(int item_no, size_t inv_page)
                 my = 1;
             }
         }
-        if (down || left)
+        if (PlayerInput.down || PlayerInput.left)
         {
             if (my > 1)
             {
@@ -642,7 +642,7 @@ static void sell_howmany(int item_no, size_t inv_page)
                 my = max_items;
             }
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, DARKBLUE);
@@ -651,7 +651,7 @@ static void sell_howmany(int item_no, size_t inv_page)
             sell_item(inv_page * NUM_ITEMS_PER_PAGE + item_no, my);
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -681,7 +681,7 @@ static void sell_item(int itno, int ni)
     while (!stop)
     {
         readcontrols();
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             gp += sp;
@@ -700,7 +700,7 @@ static void sell_item(int itno, int ni)
             remove_item(itno, ni);
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -783,7 +783,7 @@ static void sell_menu(void)
 
         readcontrols();
 
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (yptr < (NUM_ITEMS_PER_PAGE - 1))
@@ -796,7 +796,7 @@ static void sell_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (yptr > 0)
@@ -809,7 +809,7 @@ static void sell_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             if (inv_page > 0)
@@ -822,7 +822,7 @@ static void sell_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             if (inv_page < (MAX_INV / NUM_ITEMS_PER_PAGE - 1))
@@ -835,7 +835,7 @@ static void sell_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_ITEM] > 0 && items[g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_ITEM]].price > 0)
@@ -843,7 +843,7 @@ static void sell_menu(void)
                 sell_howmany(yptr, inv_page);
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -913,19 +913,19 @@ int shop(int shop_num)
 
         readcontrols();
 
-        if (left && ptr > 0)
+        if (PlayerInput.left && ptr > 0)
         {
             unpress();
             ptr--;
             play_effect(SND_CLICK, 128);
         }
-        if (right && ptr < 2)
+        if (PlayerInput.right && ptr < 2)
         {
             unpress();
             ptr++;
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (ptr == 0)
@@ -941,7 +941,7 @@ int shop(int shop_num)
                 stop = 1;
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
