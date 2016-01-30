@@ -74,8 +74,8 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 # When enabled, hitting F10 will open 'cheat.lua' if it exists, and then call the cheat() function there.
 #add_definitions(-DKQ_CHEATS)
 
-#set(CMAKE_C_FLAGS "-O0 -g -ggdb3 -DDEBUG -DKQ_CHEATS -Wall -Wextra -Wpedantic -std=c99")
-set(CMAKE_C_FLAGS "-O0 -g -ggdb3 -Wall -Wextra -Wpedantic -std=c99")
+#set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -DDEBUG -DKQ_CHEATS -Wall -Wextra -Wpedantic -std=c++14")
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -Wall -Wextra -Wpedantic -std=c++14")
 #set(ALLEGRO_LIBRARY "-lalleg")
 #set(DUMB_LIBRARY "-laldmb -ldumb")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
