@@ -1289,7 +1289,7 @@ void draw_menubars(void)
     print_sfont(column[0], row[1], strbuf, double_buffer);
 
     /* Give the default song played when the map is entered */
-    sprintf(strbuf, "Song: %s", gmap.song_file);
+    sprintf(strbuf, "Song: %s", gmap.song_file.c_str());
     print_sfont(column[0], row[2], strbuf, double_buffer);
 
     /* Allow the map to treat Zone 0 like a normal zone */
@@ -3597,7 +3597,7 @@ void process_menu_bottom(const int cx, const int cy)
         {
             return;
         }
-        strcpy(gmap.song_file, strbuf);
+        gmap.song_file = strbuf;
         return;
     }
 

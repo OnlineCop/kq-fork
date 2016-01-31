@@ -567,13 +567,9 @@ void check_map(void)
     _extra_sdword2 = gmap1.extra_sdword2 != gmap2.extra_sdword2 ? 1 : 0;
 
     _song_file = 0;
-    for (i = 0; i < 16; i++)
+    if (gmap1.song_file != gmap2.song_file)
     {
-        if (gmap1.song_file[i] != gmap2.song_file[i])
-        {
-            _song_file = 1;
-            break;
-        }
+        _song_file = 1;
     }
 
     _map_desc = 0;
@@ -673,7 +669,7 @@ void check_map(void)
     }
     if (_song_file)
     {
-        fprintf(stdout, "  song_file:  \t%s\t\t%s\n", gmap1.song_file, gmap2.song_file);
+        fprintf(stdout, "  song_file:  \t%s\t\t%s\n", gmap1.song_file.c_str(), gmap2.song_file.c_str());
     }
     if (_map_desc)
     {

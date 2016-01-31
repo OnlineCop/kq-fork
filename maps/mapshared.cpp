@@ -858,7 +858,7 @@ void textual_map_json(s_show showing)
     printf(",\n\t\"warpy\":%d", gmap.warpy);
     printf(",\n\t\"revision\":%d", gmap.revision);
     printf(",\n\t\"extra_sdword2\":%d", gmap.extra_sdword2);
-    printf(",\n\t\"song_file\":\"%s\"", gmap.song_file);
+    printf(",\n\t\"song_file\":\"%s\"", gmap.song_file.c_str());
     printf(",\n\t\"map_desc\":\"%s\"", gmap.map_desc);
     printf("\n},\n");
 

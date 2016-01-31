@@ -31,6 +31,7 @@
  */
 
 #include <allegro.h>
+#include <string>
 
 #include "bounds.h"
 #include "markers.h"
@@ -60,7 +61,7 @@ struct s_map
     int warpy;                   /*!< y-coord where warp spell takes you to (see special_spells()) */
     int revision;                /*!< Internal revision number for the map file */
     int extra_sdword2;           /*!< Not used */
-    char song_file[16];          /*!< Base file name for map song */
+    std::string song_file;       /*!< Base file name for map song */
     char map_desc[40];           /*!< Map name (shown when map first appears) */
     s_marker_array markers;      /*!< Marker array and marker size */
     s_bound_array bounds;        /*!< Bound array and bound size */

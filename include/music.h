@@ -36,7 +36,7 @@ void poll_music(void);
 
 void set_music_volume(float volume);
 
-void play_music(const char *music_name, long position);
+void play_music(const std::string &music_name, long position);
 void pause_music(void);
 void resume_music(void);
 void stop_music(void);

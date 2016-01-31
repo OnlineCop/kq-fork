@@ -397,7 +397,7 @@ int new_map(void)
     gmap.warpy = 0;
     gmap.revision = 2;
     gmap.extra_sdword2 = 0;
-    gmap.song_file[0] = 0;
+    gmap.song_file = "";
     gmap.map_desc[0] = 0;
     gmap.markers.size = 0;
     gmap.markers.array = NULL;

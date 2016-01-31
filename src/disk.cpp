@@ -132,7 +132,11 @@ int load_s_map(s_map *sm, PACKFILE *f)
     sm->warpy = pack_igetl(f);
     sm->revision = pack_igetl(f);
     sm->extra_sdword2 = pack_igetl(f);
-    pack_fread(sm->song_file, sizeof(sm->song_file), f);
+    char *buf = new char[16]; // was hard-coded to be 16
+    pack_fread(buf, 16, f);
+    buf[15] = '\0';
+    sm->song_file = buf;
+    delete[] buf;
     pack_fread(sm->map_desc, sizeof(sm->map_desc), f);
 
     if (sm->revision >= 1)
@@ -188,7 +192,7 @@ int save_s_map(s_map *sm, PACKFILE *f)
 
     pack_iputl(sm->revision, f);         /* Revision 2 */
     pack_iputl(sm->extra_sdword2, f);
-    pack_fwrite(sm->song_file, sizeof(sm->song_file), f);
+    pack_fwrite(sm->song_file.c_str(), sm->song_file.length(), f);
     pack_fwrite(sm->map_desc, sizeof(sm->map_desc), f);
 
     /* Markers */

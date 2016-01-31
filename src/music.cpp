@@ -29,6 +29,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <string>
 
 #include "kq.h"
 #include "music.h"
@@ -128,14 +129,14 @@ void poll_music(void)
  * \param   music_name The relative filename of the song to be played
  * \param   position The position of the file to begin at
  */
-void play_music(const char *music_name, long position)
+void play_music(const std::string &music_name, long position)
 {
     if (is_sound != 0)
     {
         char filename[2048];
 
         stop_music();
-        strcpy(filename, kqres(MUSIC_DIR, music_name));
+        strcpy(filename, kqres(MUSIC_DIR, music_name.c_str()));
         if (exists(filename))
         {
             if (strstr(filename, ".mod"))
