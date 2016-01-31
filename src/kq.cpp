@@ -68,10 +68,11 @@
 #include "sgame.h"
 #include "shopmenu.h"
 #include "structs.h"
+#include <string>
 
 
 /*! Name of the current map */
-char curmap[16];
+std::string curmap;
 
 /*! \brief Which keys are pressed.
  *
@@ -247,7 +248,7 @@ static void data_dump(void);
 
 static void allocate_stuff(void);
 static void load_heroes(void);
-static void load_map(const char *);
+static void load_map(const std::string &);
 static void map_alloc(void);
 static void my_counter(void);
 static void prepare_map(int, int, int, int);
@@ -748,7 +749,7 @@ void calc_viewport(int center)
  *              to use the default: s_map::stx and s_map::sty)
  * \param   mvy New y-coord for camera
  */
-void change_map(const char *map_name, int msx, int msy, int mvx, int mvy)
+void change_map(const std::string &map_name, int msx, int msy, int mvx, int mvy)
 {
     load_map(map_name);
     prepare_map(msx, msy, mvx, mvy);
@@ -771,7 +772,7 @@ void change_map(const char *map_name, int msx, int msy, int mvx, int mvy)
  * \param   offset_x Push player left/right this many tiles from the marker
  * \param   offset_y Push player up/down this many tiles from the marker
  */
-void change_mapm(const char *map_name, const char *marker_name, int offset_x, int offset_y)
+void change_mapm(const std::string &map_name, const std::string &marker_name, int offset_x, int offset_y)
 {
     int msx = 0, msy = 0, mvx = 0, mvy = 0;
     s_marker *m;
@@ -782,7 +783,7 @@ void change_mapm(const char *map_name, const char *marker_name, int offset_x, in
      */
     for (m = g_map.markers.array; m < g_map.markers.array + g_map.markers.size; ++m)
     {
-        if (!strcmp(marker_name, m->name))
+        if (marker_name == m->name)
         {
             msx = mvx = m->x + offset_x;
             msy = mvy = m->y + offset_y;
@@ -1289,7 +1290,7 @@ void load_heroes(void)
  *
  * \param   map_name - The name of the map and accompanying LUA file
  */
-static void load_map(const char *map_name)
+static void load_map(const std::string &map_name)
 {
     int i;
     PACKFILE *pf;
@@ -1300,7 +1301,8 @@ static void load_map(const char *map_name)
         do_transition(TRANS_FADE_OUT, 4);
     }
 
-    sprintf(strbuf, "%s.map", map_name);
+    std::string full_name = map_name + ".map";
+    strcpy(strbuf, full_name.c_str());
 
     pf = pack_fopen(kqres(MAP_DIR, strbuf), F_READ_PACKED);
 
@@ -1314,7 +1316,7 @@ static void load_map(const char *map_name)
             do_transition(TRANS_FADE_IN, 16);
         }
 
-        sprintf(strbuf, _("Could not load map %s!"), map_name);
+        sprintf(strbuf, _("Could not load map %s!"), map_name.c_str());
         program_death(strbuf);
     }
 
@@ -1346,7 +1348,7 @@ static void load_map(const char *map_name)
     pack_fread(o_seg, (g_map.xsize * g_map.ysize), pf);
 
     pack_fclose(pf);
-    strcpy(curmap, map_name);
+    curmap = map_name;
 }
 
 
@@ -1660,7 +1662,7 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     do_luakill();
-    do_luainit(curmap, 1);
+    do_luainit(curmap.c_str(), 1);
     do_autoexec();
 
     if (hold_fade == 0 && numchrs > 0)
@@ -2277,7 +2279,7 @@ void zone_check(void)
 
     if (save_spells[P_REPULSE] > 0)
     {
-        if (!strcmp(curmap, "main"))
+        if (curmap == "main")
         {
             save_spells[P_REPULSE]--;
         }

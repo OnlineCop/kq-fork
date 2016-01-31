@@ -286,7 +286,15 @@ int load_game_91(PACKFILE *sdat)
     {
         load_s_player(&party[a], sdat);
     }
-    pack_fread(curmap, 16, sdat);
+    /* Number of characters for the map name does NOT include the trailing \0.
+     * It will have to be appended to the 'buf' array.
+     * Version 91 had a fixed '16' map name length.
+     */
+    char *buf = new char[16 + 1];
+    pack_fread(buf, 16, sdat);
+    buf[16] = '\0'; // Force the last character to be '\0'
+    curmap = buf;
+    delete[] buf;
     for (a = 0; a < SIZE_PROGRESS; a++)     /* 1750 */
     {
         progress[a] = pack_getc(sdat);
@@ -663,21 +671,25 @@ static int load_game_92(PACKFILE *sdat)
     }
 
     /* Load number of, and data on all characters in game */
-    pack_igetw(sdat);            /* max number of characters is fixed in KQ */
-    for (a = 0; a < MAXCHRS; a++)
+    size_t maxchrs = pack_igetw(sdat);            /* max number of characters is fixed in KQ */
+    if (maxchrs != MAXCHRS) {
+        message(_("Error. MAXCHRS != maxchrs"), 255, 0, 0, 0);
+        return 0;
+    }
+    for (a = 0; a < maxchrs; a++)
     {
         load_s_player(&party[a], sdat);
     }
 
-    /* Load map name and location */
+    /* Number of characters for the map name does NOT include the trailing \0.
+     * It will have to be appended to the 'buf' array.
+     */
     a = pack_igetw(sdat);
-    if (a > sizeof(curmap))
-    {
-        message(_("Error. number of chars in saved game > sizeof(curmap)"), 255, 0, 0, 0);
-        return 0;
-    }
-    pack_fread(curmap, a, sdat);
-    curmap[a] = 0;               // pack_fread does not append a NULL to the end of a string.
+    char *buf = new char[a + 1]; // One character more to deal with the '\0'
+    pack_fread(buf, a, sdat);
+    buf[a] = '\0';
+    curmap = buf;
+    delete[] buf;
 
     g_ent[0].tilex = pack_igetw(sdat);
     g_ent[0].tiley = pack_igetw(sdat);
@@ -694,8 +706,9 @@ static int load_game_92(PACKFILE *sdat)
         progress[a] = pack_getc(sdat);
     }
 
-    /* zero-set blank Quest Info */
-    for (; a < sizeof(progress); a++)
+    /* Zero out all "unused" progress values */
+    b = sizeof(progress);
+    for (; a < b; a++)
     {
         progress[a] = 0;
     }
@@ -712,8 +725,9 @@ static int load_game_92(PACKFILE *sdat)
         treasure[a] = pack_getc(sdat);
     }
 
-    /* zero-set blank treasure info */
-    for (; a < sizeof(treasure); a++)
+    /* Zero out all unused treasure values */
+    b = sizeof(treasure);
+    for (; a < b; a++)
     {
         treasure[a] = 0;
     }
@@ -730,8 +744,9 @@ static int load_game_92(PACKFILE *sdat)
         save_spells[a] = pack_getc(sdat);
     }
 
-    /* zero-set empty spell slots */
-    for (; a < sizeof(save_spells); a++)
+    /* Zero out all unused save_spell values*/
+    b = sizeof(save_spells);
+    for (; a < b; a++)
     {
         save_spells[a] = 0;
     }
@@ -750,8 +765,9 @@ static int load_game_92(PACKFILE *sdat)
         g_inv[a][GLOBAL_INVENTORY_QUANTITY] = pack_igetw(sdat);
     }
 
-    /* zero-set empty inventory slots */
-    for (; a < MAX_INV; a++)
+    /* Zero out all unused inventory values */
+    b = MAX_INV;
+    for (; a < b; a++)
     {
         g_inv[a][GLOBAL_INVENTORY_ITEM] = 0;
         g_inv[a][GLOBAL_INVENTORY_QUANTITY] = 0;
@@ -770,8 +786,9 @@ static int load_game_92(PACKFILE *sdat)
         player_special_items[a] = pack_getc(sdat);    /* index */
     }
 
-    /* zero-set empty special item slots */
-    for (; a < MAX_SPECIAL_ITEMS; a++)
+    /* Zero out unused special item values */
+    b = MAX_SPECIAL_ITEMS;
+    for (; a < b; a++)
     {
         player_special_items[a] = 0;
     }
@@ -804,7 +821,8 @@ static int load_game_92(PACKFILE *sdat)
         }
     }
     /* Replenish all shops that were not saved (haven't been visited yet) */
-    for (a = b; a < NUMSHOPS; a++)
+    b = NUMSHOPS;
+    for (; a < b; a++)
     {
         for (d = 0; d < SHOPITEMS; d++)
         {
@@ -941,114 +959,7 @@ static int save_game_92(void);
  */
 static int save_game(void)
 {
-    PACKFILE *sdat;
-    size_t a, b;
-
     return save_game_92();
-
-    /* Rest of this function is no longer used */
-
-    for (b = 0; b < PSIZE; b++)
-    {
-        sid[save_ptr][b] = 0;
-        shp[save_ptr][b] = 0;
-        smp[save_ptr][b] = 0;
-        slv[save_ptr][b] = 0;
-    }
-    for (b = 0; b < numchrs; b++)
-    {
-        sid[save_ptr][b] = pidx[b];
-        shp[save_ptr][b] = party[pidx[b]].hp * 100 / party[pidx[b]].mhp;
-        if (party[pidx[b]].mmp > 0)
-        {
-            smp[save_ptr][b] = party[pidx[b]].mp * 100 / party[pidx[b]].mmp;
-        }
-        slv[save_ptr][b] = party[pidx[b]].lvl;
-    }
-    savegame_num_characters[save_ptr] = numchrs;
-    savegame_gold[save_ptr] = gp;
-    savegame_time_minutes[save_ptr] = kmin;
-    savegame_time_hours[save_ptr] = khr;
-    sprintf(strbuf, "sg%d.sav", save_ptr);
-    sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_WRITE_PACKED);
-    if (!sdat)
-    {
-        message(_("Could not save game data."), 255, 0, 0, 0);
-        return 0;
-    }
-
-    pack_putc(kq_version, sdat);
-    pack_iputl(numchrs, sdat);
-    pack_iputl(gp, sdat);
-    pack_iputl(savegame_time_hours[save_ptr], sdat);
-    pack_iputl(savegame_time_minutes[save_ptr], sdat);
-
-    for (a = 0; a < PSIZE; a++)
-    {
-        pack_iputl(pidx[a], sdat);
-    }
-    for (a = 0; a < MAXCHRS; a++)
-    {
-        save_s_player(&party[a], sdat);
-    }
-    pack_fwrite(curmap, 16, sdat);
-    for (a = 0; a < sizeof(progress); a++)     /* sizeof(progress) is 1750 */
-    {
-        pack_putc(progress[a], sdat);
-    }
-    for (a = 0; a < NUMSHOPS; a++)             /* NUMSHOPS is 50 */
-    {
-        pack_putc(shop_time[a], sdat);
-    }
-    for (a = 0; a < SIZE_SAVE_RESERVE1; a++)   /* SAVE_RESERVE_SIZE1 is 150 */
-    {
-        pack_putc(0, sdat);
-    }
-    for (a = 0; a < sizeof(save_spells); a++)    /* sizeof(save_spells) is 50 */
-    {
-        pack_putc(save_spells[a], sdat);
-    }
-    for (a = 0; a < sizeof(treasure); a++)       /* sizeof(treasure) is 1000 */
-    {
-        pack_putc(treasure[a], sdat);
-    }
-    for (a = 0; a < NUMSHOPS; a++)
-    {
-        for (b = 0; b < SHOPITEMS; b++)
-        {
-            pack_iputw(shops[a].items_current[b], sdat);
-        }
-    }
-    for (a = 0; a < MAX_INV; a++)
-    {
-        pack_iputw(g_inv[a][GLOBAL_INVENTORY_ITEM], sdat);
-        pack_iputw(g_inv[a][GLOBAL_INVENTORY_QUANTITY], sdat);
-    }
-    /* PH FIXME: do we _really_ want things like controls and screen */
-    /* mode to be saved/loaded ? */
-    /* WK: No. */
-    pack_iputl(gsvol, sdat);
-    pack_iputl(gmvol, sdat);
-    pack_putc(windowed, sdat);
-    pack_putc(stretch_view, sdat);
-    pack_putc(wait_retrace, sdat);
-    pack_iputl(PlayerInput.kup, sdat);
-    pack_iputl(PlayerInput.kdown, sdat);
-    pack_iputl(PlayerInput.kleft, sdat);
-    pack_iputl(PlayerInput.kright, sdat);
-    pack_iputl(PlayerInput.kalt, sdat);
-    pack_iputl(PlayerInput.kctrl, sdat);
-    pack_iputl(PlayerInput.kenter, sdat);
-    pack_iputl(PlayerInput.kesc, sdat);
-    pack_iputl(PlayerInput.jbalt, sdat);
-    pack_iputl(PlayerInput.jbctrl, sdat);
-    pack_iputl(PlayerInput.jbenter, sdat);
-    pack_iputl(PlayerInput.jbesc, sdat);
-    /* End worthless */
-    pack_iputw(g_ent[0].tilex, sdat);
-    pack_iputw(g_ent[0].tiley, sdat);
-    pack_fclose(sdat);
-    return 1;
 }
 
 
@@ -1084,8 +995,8 @@ static int save_game_92(void)
     }
     savegame_num_characters[save_ptr] = numchrs;
     savegame_gold[save_ptr] = gp;
-    savegame_time_minutes[save_ptr] = kmin;
     savegame_time_hours[save_ptr] = khr;
+    savegame_time_minutes[save_ptr] = kmin;
     sprintf(strbuf, "sg%d.sav", save_ptr);
     sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_WRITE_PACKED);
     if (!sdat)
@@ -1114,8 +1025,8 @@ static int save_game_92(void)
     }
 
     /* Save map name and location */
-    pack_iputw(strlen(curmap), sdat);
-    pack_fwrite(curmap, strlen(curmap), sdat);
+    pack_iputw(curmap.length(), sdat);
+    pack_fwrite(curmap.c_str(), curmap.length(), sdat);
 
     pack_iputw(g_ent[0].tilex, sdat);
     pack_iputw(g_ent[0].tiley, sdat);
@@ -1167,9 +1078,9 @@ static int save_game_92(void)
     }
 
     /* Save special items */
-    for (a = MAX_SPECIAL_ITEMS + 1; a > 0; a--)
+    for (a = MAX_SPECIAL_ITEMS; a > 0; a--)
     {
-        if (player_special_items[a - 1])
+        if (player_special_items[a - 1] != 0)
         {
             break;
         }

@@ -1619,7 +1619,7 @@ static void special_spells(size_t caster_fighter_index, size_t spell_number)
             }
             else
             {
-                if (!strcmp(curmap, "main"))
+                if (curmap == "main")
                 {
                     /* TT: I would like to have a check here: if the player casts Warp,
                      * the player can select WHERE to warp to, instead of just to the

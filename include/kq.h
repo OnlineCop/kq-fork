@@ -62,10 +62,11 @@
 #include "heroc.h"
 #include "maps.h"
 #include "structs.h"
+#include <string>
 
 
-void change_map(const char *, int, int, int, int);    /*  intrface.c, magic.c  */
-void change_mapm(const char *, const char *, int, int);       /*  intrface.c */
+void change_map(const std::string &, int, int, int, int);    /*  intrface.c, magic.c  */
+void change_mapm(const std::string &, const std::string &, int, int);       /*  intrface.c */
 void readcontrols(void);        /*  everywhere ;)  */
 void calc_viewport(int);        /*  entity.c, intrface.c  */
 void zone_check(void);          /*  entity.c  */
@@ -87,7 +88,7 @@ void reset_world(void);         /*  sgame.c  */
 
 
 
-extern char curmap[16];         /*  sgame.c, draw.c, magic.c */
+extern std::string curmap;         /*  sgame.c, draw.c, magic.c */
 extern s_player_input PlayerInput;
 extern int vx, vy, mx, my, steps, lastm[PSIZE];
 

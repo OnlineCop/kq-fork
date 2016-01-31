@@ -1215,7 +1215,7 @@ int is_forestsquare(int fx, int fy)
 {
     int f;
 
-    if (strcmp(curmap, "main"))
+    if (curmap != "main")
     {
         return 0;
     }
