@@ -508,9 +508,9 @@ static int move(t_entity target_entity, int dx, int dy)
         ent->facing = FACE_UP;
     }
     if (tile_x + dx == -1
-     || tile_x + dx == g_map.xsize
+     || tile_x + dx == (int)g_map.xsize
      || tile_y + dy == -1
-     || tile_y + dy == g_map.ysize)
+     || tile_y + dy == (int)g_map.ysize)
     {
         return 0;
     }
@@ -650,8 +650,8 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
     // Block entity if it tries to walk off the map
     if ((origin_x == 0 && move_x < 0)
      || (origin_y == 0 && move_y < 0)
-     || (origin_x == g_map.xsize - 1 && move_x > 0)
-     || (origin_y == g_map.ysize - 1 && move_y > 0))
+     || (origin_x == (int)g_map.xsize - 1 && move_x > 0)
+     || (origin_y == (int)g_map.ysize - 1 && move_y > 0))
     {
         return 1;
     }

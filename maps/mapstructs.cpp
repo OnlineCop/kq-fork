@@ -228,25 +228,25 @@ void bound_rect(BITMAP *where, s_bound b, int color)
 {
     s_bound rectb;
 
-    rectb.left = (b.left - window_x) * 16;
-    rectb.top = (b.top - window_y) * 16;
+    rectb.left = (b.left - window_x) * TILE_W;
+    rectb.top = (b.top - window_y) * TILE_H;
 
-    if (b.left < window_x + htiles)
+    if ((unsigned int)b.left < window_x + htiles)
     {
-        rectb.right = (b.right - window_x) * 16 + 15;
+        rectb.right = (b.right - window_x + 1) * TILE_W - 1;
     }
     else
     {
-        rectb.right = htiles * 16;
+        rectb.right = htiles * TILE_W;
     }
 
-    if (b.top < window_y + htiles)
+    if ((unsigned int)b.top < window_y + htiles)
     {
-        rectb.bottom = (b.bottom - window_y) * 16 + 15;
+        rectb.bottom = (b.bottom - window_y + 1) * TILE_H - 1;
     }
     else
     {
-        rectb.bottom = vtiles * 16;
+        rectb.bottom = vtiles * TILE_H;
     }
 
     rect(where, rectb.left, rectb.top, rectb.right, rectb.bottom, color);
@@ -280,7 +280,11 @@ int find_bound(int direction, unsigned int *current)
     else if (direction == -1)
     {
         /* Previous box */
-        if (--*current < 0)
+        if (*current > 0)
+        {
+            --*current;
+        }
+        else
         {
             *current = gmap.bounds.size - 1;
         }
@@ -342,7 +346,11 @@ int find_next_marker(int direction, unsigned int *current)
     else if (direction == -1)
     {
         /* Previous Marker */
-        if (--*current < 0)
+        if (*current > 0)
+        {
+            --*current;
+        }
+        else
         {
             *current = gmap.markers.size - 1;
         }
@@ -389,38 +397,35 @@ int is_contained_marker(s_marker m, int x, int y)
 
 
 
-/*! \brief Move the window so we can see the currenly-selected box
+/*! \brief Move the window so we can see the currently-selected box
  *
  * \param   current - Number of bounding boxes currently defined
  * \modify  global coords "window_[xy]" will be updated
  */
-void orient_bounds(int current)
+void orient_bounds(size_t current)
 {
-    int width, height;
+    unsigned int width, height;
+    unsigned int curbound_bottom = (unsigned int)gmap.bounds.array[current].bottom;
+    unsigned int curbound_left = (unsigned int)gmap.bounds.array[current].left;
+    unsigned int curbound_right = (unsigned int)gmap.bounds.array[current].right;
+    unsigned int curbound_top = (unsigned int)gmap.bounds.array[current].top;
 
-    width = gmap.bounds.array[current].right - gmap.bounds.array[current].left;
-    height = gmap.bounds.array[current].bottom - gmap.bounds.array[current].top;
+    width = curbound_right - curbound_left;
+    height = curbound_bottom - curbound_top;
 
     if (width > htiles - 1)
     {
         /* Boundary is larger than window's width */
 
         /* Move window's left edge to the box's left edge */
-        window_x = gmap.bounds.array[current].left;
+        window_x = curbound_left;
     }
     else
     {
         /* Boundary fits inside viewable window */
 
         /* Move window just enough to see the entire box */
-        if (gmap.bounds.array[current].left < window_x)
-        {
-            window_x = gmap.bounds.array[current].left;
-        }
-        else if (gmap.bounds.array[current].right > window_x + htiles - 1)
-        {
-            window_x = gmap.bounds.array[current].right - htiles + 1;
-        }
+        window_x = std::max(std::min((unsigned int)window_x, curbound_left), curbound_right - htiles + 1);
     }
 
     if (height > vtiles - 1)
@@ -428,21 +433,14 @@ void orient_bounds(int current)
         /* Boundary is larger than window's height */
 
         /* Move window's top edge to the box's top edge */
-        window_y = gmap.bounds.array[current].top;
+        window_y = curbound_top;
     }
     else
     {
         /* Boundary fits inside viewable window */
 
         /* Move window just enough to see the entire box */
-        if (gmap.bounds.array[current].top < window_y)
-        {
-            window_y = gmap.bounds.array[current].top;
-        }
-        else if (gmap.bounds.array[current].bottom > window_y + vtiles - 1)
-        {
-            window_y = gmap.bounds.array[current].bottom - vtiles + 1;
-        }
+        window_y = std::max(std::min((unsigned int)window_y, curbound_top), curbound_bottom - vtiles + 1);
     }
 }
 
@@ -453,26 +451,14 @@ void orient_bounds(int current)
  * \param   current - Number of markers currently defined
  * \modify  global coords "window_[xy]" will be updated
  */
-void orient_markers(int current)
+void orient_markers(size_t current)
 {
-    /* Move view-window enough to show marker */
-    if (gmap.markers.array[current].x < window_x)
-    {
-        window_x = gmap.markers.array[current].x;
-    }
-    else if (gmap.markers.array[current].x > window_x + htiles - 1)
-    {
-        window_x = gmap.markers.array[current].x - htiles + 1;
-    }
+    size_t curmarker_x = (size_t)gmap.markers.array[current].x;
+    size_t curmarker_y = (size_t)gmap.markers.array[current].y;
 
-    if (gmap.markers.array[current].y < window_y)
-    {
-        window_y = gmap.markers.array[current].y;
-    }
-    else if (gmap.markers.array[current].y > window_y + vtiles - 1)
-    {
-        window_y = gmap.markers.array[current].y - vtiles + 1;
-    }
+    /* Move view-window enough to show marker */
+    window_x = std::min(std::max((size_t)window_x, curmarker_x), (size_t)window_x + htiles - 1);
+    window_y = std::min(std::max((size_t)window_y, curmarker_y), (size_t)window_y + vtiles - 1);
 }
 
 
@@ -484,7 +470,7 @@ void orient_markers(int current)
 void rename_bound_tile(s_bound *box)
 {
     int response, done;
-    int selected_tile = 0;
+    unsigned int selected_tile = 0;
 
     make_rect(double_buffer, 2, 32);
     sprintf(strbuf, "Tile: %d", box->btile);
@@ -509,9 +495,9 @@ void rename_bound_tile(s_bound *box)
             selected_tile = atoi(strbuf);
 
             /* Make sure the value is valid */
-            if (selected_tile < 0 || selected_tile >= ICONSET_SIZE * max_sets)
+            if (selected_tile >= ICONSET_SIZE * max_sets)
             {
-                sprintf(strbuf, "Invalid tile: %d", selected_tile);
+                sprintf(strbuf, "Invalid tile: %d", (int)selected_tile);
                 cmessage(strbuf);
                 wait_enter();
             }

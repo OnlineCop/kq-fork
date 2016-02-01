@@ -144,7 +144,7 @@ void make_mapfrompcx(s_show &showing)
     }
 
     pcx_bitmap = load_bitmap(fname, pal);
-    if (pcx_bitmap->w < gmap.xsize)
+    if (pcx_bitmap->w < (int)gmap.xsize)
     {
         w = pcx_bitmap->w;
     }
@@ -153,7 +153,7 @@ void make_mapfrompcx(s_show &showing)
         w = gmap.xsize;
     }
 
-    if (pcx_bitmap->h < gmap.ysize)
+    if (pcx_bitmap->h < (int)gmap.ysize)
     {
         h = pcx_bitmap->h;
     }
@@ -186,7 +186,7 @@ void maptopcx(int format)
 {
     /* Foreground, middle, and background */
     BITMAP *pcx_foreground, *pcx_middleground, *pcx_background;
-    int jx, jy;
+    size_t jx, jy;
 
     /* Background PCX image */
     pcx_background = create_bitmap(gmap.xsize, gmap.ysize);
@@ -239,7 +239,8 @@ void maptopcx(int format)
 int new_map(s_show &showing)
 {
     int response;
-    int new_height = 0, new_width = 0, new_tileset = 0;
+    signed int user_input;
+    size_t new_height = 0, new_width = 0, new_tileset = 0;
     int done;
     s_marker *m;
 
@@ -287,7 +288,7 @@ int new_map(s_show &showing)
     /* This is so incase we need to redraw the map, it'll have the information
      * that the user passed into it
      */
-    sprintf(strbuf, "%d", new_width);
+    sprintf(strbuf, "%d", (int)new_width);
     print_sfont(48, 18, strbuf, double_buffer);
     print_sfont(6, 26, "Height: ", double_buffer);
 
@@ -323,7 +324,7 @@ int new_map(s_show &showing)
     /* This is incase we need to redraw the map, the information will still be
      * visible to the user
      */
-    sprintf(strbuf, "%d", new_height);
+    sprintf(strbuf, "%d", (int)new_height);
     print_sfont(54, 26, strbuf, double_buffer);
     sprintf(strbuf, "Choose a tile set (0-%d):", NUM_TILESETS - 1);
     print_sfont(6, 34, strbuf, double_buffer);
@@ -343,10 +344,10 @@ int new_map(s_show &showing)
         /* Make sure the line isn't blank */
         if (strlen(strbuf) > 0)
         {
-            new_tileset = atoi(strbuf);
-
+            user_input = atoi(strbuf);
+            
             /* Make sure the value is valid */
-            if (new_tileset < 0 || new_tileset > NUM_TILESETS - 1)
+            if (user_input < 0 || (size_t)user_input > NUM_TILESETS - 1)
             {
                 /* TT TODO: The only bug I see so far is if the user enters a "bad"
                  * value, such as "Q" or "-"... it thinks the user entered "0"
@@ -356,6 +357,7 @@ int new_map(s_show &showing)
             }
             else
             {
+                new_tileset = (size_t)user_input;
                 sprintf(strbuf, "Load %s? (y/n)", icon_files[new_tileset]);
                 cmessage(strbuf);
                 if (yninput())
@@ -535,7 +537,7 @@ void prompt_save_map(void)
  */
 void save_map(const char *fname)
 {
-    int p, q;
+    size_t p, q;
     PACKFILE *pf;
 
     strcpy(map_fname, fname);

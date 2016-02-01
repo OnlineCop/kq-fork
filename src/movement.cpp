@@ -64,8 +64,8 @@ static int compose_path(AL_CONST int *map, unsigned int target_x, unsigned int t
 {
     char temp[1024];
     int index = 0;
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
     int value;
 
     x = target_x;
@@ -125,7 +125,7 @@ static int compose_path(AL_CONST int *map, unsigned int target_x, unsigned int t
  */
 static void copy_map(int *map)
 {
-    register int x, y;
+    register size_t x, y;
     size_t index, entity_index;
 
     for (y = 0; y < g_map.ysize; y++)

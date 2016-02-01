@@ -45,22 +45,20 @@
 #include "../include/structs.h"
 
 
-#define MIN_WIDTH       5
-#define MIN_HEIGHT      5
-#define MAX_WIDTH       1024
-#define MAX_HEIGHT      800
+#define MIN_WIDTH       5U
+#define MIN_HEIGHT      5U
+#define MAX_WIDTH       1024U
+#define MAX_HEIGHT      800U
 
-#define MAX_TILES       1024
-#define NUM_TILESETS    8
-#define MAX_EPICS       41
-#define MAX_ZONES       256
-#define MAX_SHADOWS     12
-#define MAX_OBSTACLES   5        // Obstacles are 1-based, with '0' meaning "no obstacle"
-#define MAX_MARKERS     256
-#define SW              800     // Must be a multiple of 16
-#define SH              600     // Must be a multiple of 16
-#define TH              16      // Tile Height
-#define TW              16      // Tile Width
+#define NUM_TILESETS    8U
+#define MAX_EPICS       41U
+#define MAX_ZONES       256U
+#define MAX_OBSTACLES   5U      // Obstacles are 1-based, with '0' meaning "no obstacle"
+#define MAX_MARKERS     256U
+#define SW              800U    // Must be a multiple of 16
+#define SH              600U    // Must be a multiple of 16
+#define TH              16U     // Tile Height
+#define TW              16U     // Tile Width
 #define WBUILD          1
 
 #define MAP_LAYER1      (1 << 0)      // Map (sea-level)
@@ -76,8 +74,8 @@
 #define MAP_MARKERS     (1 << 10)     // Markers mode
 #define MAP_BOUNDS      (1 << 11)     // Boundary mode
 
-#define ICONSET_SIZE    20            // Number of icons shown in the icon map */
-#define ICONSET_SIZE2   (ICONSET_SIZE / 2)  // Half of the above number
+#define ICONSET_SIZE    20U           // Number of icons shown in the icon map */
+#define ICONSET_SIZE2   (ICONSET_SIZE / 2U) // Half of the above number
 
 
 /* Something for allegro version compatibility */
@@ -113,7 +111,7 @@ void center_window(int, int);
 extern void cleanup(void);
 void cmessage(const char *);
 void draw_map(s_show &);
-unsigned int get_line(const int, const int, char *, const int);
+unsigned int get_line(const int, const int, char *, const size_t);
 void make_rect(BITMAP *, const int, const int);
 void normalize_view(void);
 void print_sfont(const int, const int, const char *, BITMAP *);
@@ -157,8 +155,8 @@ void bound_rect(BITMAP *, s_bound, int);
 int find_next_marker(int, unsigned int *);
 int find_bound(int, unsigned int *);
 int is_contained_marker(s_marker, int, int);
-void orient_bounds(int);
-void orient_markers(int);
+void orient_bounds(size_t);
+void orient_markers(size_t);
 void rename_bound_tile(s_bound *);
 void rename_marker(s_marker *);
 
@@ -175,7 +173,7 @@ extern unsigned int icon_set;
 
 extern const char *icon_files[NUM_TILESETS];
 
-extern const int htiles, vtiles;
+extern const unsigned int htiles, vtiles;
 extern unsigned int number_of_ents, current_ent;
 
 extern s_entity gent[];
@@ -187,7 +185,7 @@ extern s_anim adata[MAX_ANIM];
 
 extern int column[8], row[8];
 
-extern short window_x, window_y;
+extern unsigned int window_x, window_y;
 extern unsigned int max_sets;
 
 extern unsigned short *map, *b_map, *f_map, *c_map, *cf_map, *cb_map;

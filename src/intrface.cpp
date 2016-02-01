@@ -1687,8 +1687,8 @@ static int KQ_chest(lua_State *L)
     int tno = (int) lua_tonumber(L, 1);
     int ino = (int) lua_tonumber(L, 2);
     int amt = (int) lua_tonumber(L, 3);
-    int chestx = (int) lua_tonumber(L, 4);
-    int chesty = (int) lua_tonumber(L, 5);
+    unsigned int chestx = (unsigned int) lua_tonumber(L, 4);
+    unsigned int chesty = (unsigned int) lua_tonumber(L, 5);
     int tile = (int) lua_tonumber(L, 6);
 
     if (tno > -1 && treasure[tno] != 0)
@@ -1711,8 +1711,7 @@ static int KQ_chest(lua_State *L)
          * tile to the given value, and set the zone zero (so we can't search
          * in the same place twice.
          */
-        if ((chestx >= 0 && chestx < g_map.xsize)
-         || (chesty >= 0 && chesty < g_map.ysize))
+        if (chestx < g_map.xsize || chesty < g_map.ysize)
         {
             set_mtile(chestx, chesty, tile);
         }

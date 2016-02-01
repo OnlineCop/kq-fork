@@ -1292,7 +1292,7 @@ void load_heroes(void)
  */
 static void load_map(const std::string &map_name)
 {
-    int i;
+    size_t i;
     PACKFILE *pf;
 
     reset_timer_events();

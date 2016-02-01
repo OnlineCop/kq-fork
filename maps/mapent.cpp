@@ -22,7 +22,8 @@ unsigned int current_ent = 0;
  */
 void displace_entities(void)
 {
-    int response, displace_x, displace_y, a;
+    int response, displace_x, displace_y;
+    size_t a;
 
     /* Draw a box and ask for x-coord adjustment */
     make_rect(double_buffer, 3, 17);
@@ -66,7 +67,7 @@ void displace_entities(void)
     for (a = 0; a < number_of_ents; a++)
     {
         /* Confirm that the input x-coords are within the map */
-        if (gent[a].tilex + displace_x >= gmap.xsize)
+        if (gent[a].tilex + displace_x >= (signed int)gmap.xsize)
         {
             gent[a].tilex = gmap.xsize - 1;
         }
@@ -82,7 +83,7 @@ void displace_entities(void)
         gent[a].x = gent[a].tilex * TILE_W;
 
         /* Confirm that the input y-coords are within the map */
-        if (gent[a].tiley + displace_y >= gmap.ysize)
+        if (gent[a].tiley + displace_y >= (signed int)gmap.ysize)
         {
             gent[a].tiley = gmap.ysize - 1;
         }
@@ -185,7 +186,7 @@ void draw_entdata(s_show &showing, const int ent_index)
  */
 void draw_ents(void)
 {
-    int d, x0, y0;
+    unsigned int d, x0, y0;
     BITMAP *ent;
 
     x0 = window_x * TILE_W;
@@ -223,7 +224,8 @@ void draw_ents(void)
  */
 void erase_entity(const int ent_x, const int ent_y)
 {
-    int a, ent_index = -1;
+    size_t a;
+    int ent_index = -1;
 
     /* This function does nothing if there aren't already entities to remove */
     if (number_of_ents == 0)
@@ -356,7 +358,7 @@ void init_entities(void)
  */
 void place_entity(int ent_x, int ent_y)
 {
-    int a, someone_there = 0;
+    unsigned int a, someone_there = 0;
 
     /* Don't allow too many NPCs on the map */
     if (number_of_ents >= MAX_ENTITIES_PER_MAP)

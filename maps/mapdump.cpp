@@ -90,7 +90,7 @@ void cleanup(void)
  * Display an error message for a file that doesn't exist.
  *
  */
-void error_load(s_show &showing, const char *problem_file)
+void error_load(s_show &/*showing*/, const char *problem_file)
 {
     char err_msg[80];
     ASSERT(problem_file);
