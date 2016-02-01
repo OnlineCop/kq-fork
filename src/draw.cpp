@@ -1132,8 +1132,8 @@ void drawmap(void)
     }
     if (display_desc == 1)
     {
-        menubox(double_buffer, 152 - (strlen(g_map.map_desc) * 4) + xofs, 8 + yofs, strlen(g_map.map_desc), 1, BLUE);
-        print_font(double_buffer, 160 - (strlen(g_map.map_desc) * 4) + xofs, 16 + yofs, g_map.map_desc, FNORMAL);
+        menubox(double_buffer, 152 - (g_map.map_desc.length() * 4) + xofs, 8 + yofs, g_map.map_desc.length(), 1, BLUE);
+        print_font(double_buffer, 160 - (g_map.map_desc.length() * 4) + xofs, 16 + yofs, g_map.map_desc.c_str(), FNORMAL);
     }
 }
 

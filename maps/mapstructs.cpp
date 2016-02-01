@@ -20,7 +20,7 @@
  * \param   mouse_b - Which mouse button (left/right) was pressed
  * \param   current - Number of bounding areas currently defined
  */
-void add_change_bounding(int x, int y, int mouse_b, int *current)
+void add_change_bounding(int x, int y, int mouse_b, unsigned int *current)
 {
     s_bound *b;
     s_bound *found = NULL;
@@ -155,7 +155,7 @@ void add_change_bounding(int x, int y, int mouse_b, int *current)
  * \param   mouse_b - Whether to add or remove marker (1 to add, 2 to remove)
  * \param   current - Number of markers currently defined
  */
-void add_change_marker(int x, int y, int mouse_b, int *current)
+void add_change_marker(int x, int y, int mouse_b, unsigned int *current)
 {
     s_marker *m;
     s_marker *found = NULL;
@@ -263,7 +263,7 @@ void bound_rect(BITMAP *where, s_bound b, int color)
  *                    - 3 means last box
  * \param   current - Number of bounded areas currently defined
  */
-int find_bound(int direction, int *current)
+int find_bound(int direction, unsigned int *current)
 {
     // No bounding areas; nothing to do, so return 'not found'
     if (gmap.bounds.size < 1)
@@ -325,7 +325,7 @@ int find_bound(int direction, int *current)
  *                    - 3 means last marker
  * \param   current - Number of markers currently defined
  */
-int find_next_marker(int direction, int *current)
+int find_next_marker(int direction, unsigned int *current)
 {
     // No markers; nothing to do, so return 'not found'
     if (gmap.markers.size < 1)

@@ -9,6 +9,7 @@
  * maps.                                                                   *
 \***************************************************************************/
 
+#include <allegro.h>
 #include <locale.h>
 
 #include "mapdraw.h"
@@ -23,7 +24,7 @@
 void check_entities(void);
 void check_layers(void);
 void check_map(void);
-void load_maps(const char *, const char *);
+void load_maps(s_show &, const char *, const char *);
 
 
 /* All these are here because we need two versions of everything in order to
@@ -542,8 +543,8 @@ void check_layers(void)
 /*! \brief Check both maps for differences in the maps */
 void check_map(void)
 {
-    int i;
-    int _map_no, _zero_zone, _map_mode, _can_save, _tileset, _use_sstone, _can_warp, _extra_byte, _xsize, _ysize, _pmult, _pdiv, _stx, _sty, _warpx, _warpy, _revision, _extra_sdword2, _song_file, _map_desc, _num_markers, _num_markers1, _num_markers2, marker_num, _num_bound_boxes, _num_bound_boxes1, _num_bound_boxes2, bound_box_num;
+    int _map_no, _zero_zone, _map_mode, _can_save, _tileset, _use_sstone, _can_warp, _extra_byte, _xsize, _ysize, _pmult, _pdiv, _stx, _sty, _warpx, _warpy, _revision, _extra_sdword2, _song_file, _map_desc;
+    size_t _num_markers, _num_markers1, _num_markers2, _num_bound_boxes, _num_bound_boxes1, _num_bound_boxes2, bound_box_num;
     s_marker *_m1, *_m2;
     s_bound *_b1, *_b2;
 
@@ -573,13 +574,9 @@ void check_map(void)
     }
 
     _map_desc = 0;
-    for (i = 0; i < 40; i++)
+    if (gmap1.map_desc != gmap2.map_desc)
     {
-        if (gmap1.map_desc[i] != gmap2.map_desc[i])
-        {
-            _map_desc = 1;
-            break;
-        }
+        _map_desc = 1;
     }
 
     _num_markers1 = gmap1.markers.size;
@@ -673,18 +670,18 @@ void check_map(void)
     }
     if (_map_desc)
     {
-        fprintf(stdout, "  map_desc:   \t%s\t\t%s\n", gmap1.map_desc, gmap2.map_desc);
+        fprintf(stdout, "  map_desc:   \t%s\t\t%s\n", gmap1.map_desc.c_str(), gmap2.map_desc.c_str());
     }
 
     _m1 = gmap1.markers.array;
     _m2 = gmap2.markers.array;
 
-    marker_num = 0;
+    size_t marker_num = 0;
     if (_num_markers1 != _num_markers2)
     {
-        fprintf(stdout, "  num_markers:\t%d\t\t%d\n", _num_markers1, _num_markers2);
+        fprintf(stdout, "  num_markers:\t%d\t\t%d\n", (int)_num_markers1, (int)_num_markers2);
     }
-
+    
     // Loop through every marker on whichever map which has more (if inequal).
     while (marker_num < (_num_markers1 > _num_markers2 ? _num_markers1 : _num_markers2))
     {
@@ -702,12 +699,12 @@ void check_map(void)
             // The other map does not have that marker, print "only in map #"
             if (gmap1.markers.size <= marker_num)
             {
-                fprintf(stdout, "  Marker #%d only in Map #2\n", marker_num + 1);
+                fprintf(stdout, "  Marker #%d only in Map #2\n", (int)(marker_num + 1));
                 fprintf(stdout, "  - Map2: (%d, %d), \"%s\"\n", _m2[marker_num].x, _m2[marker_num].y, _m2[marker_num].name);
             }
             else if (gmap2.markers.size <= marker_num)
             {
-                fprintf(stdout, "  Marker #%d only in Map #1\n", marker_num + 1);
+                fprintf(stdout, "  Marker #%d only in Map #1\n", (int)(marker_num + 1));
                 fprintf(stdout, "  - Map1: (%d, %d), \"%s\"\n", _m1[marker_num].x, _m1[marker_num].y, _m1[marker_num].name);
             }
         }
@@ -720,7 +717,7 @@ void check_map(void)
     bound_box_num = 0;
     if (_num_bound_boxes1 != _num_bound_boxes2)
     {
-        fprintf(stdout, "  num_bound_boxes:\t%d\t\t%d\n", _num_bound_boxes1, _num_bound_boxes2);
+        fprintf(stdout, "  num_bound_boxes:\t%d\t\t%d\n", (int)_num_bound_boxes1, (int)_num_bound_boxes2);
     }
 
     if (gmap1.revision >= 2 && gmap2.revision >= 2)
@@ -733,8 +730,8 @@ void check_map(void)
                 // The other map has the same number of bounding boxes; compare the values.
                 if ((_b1[bound_box_num].left != _b2[bound_box_num].left) || (_b1[bound_box_num].top != _b2[bound_box_num].top) || (_b1[bound_box_num].right != _b2[bound_box_num].right) || (_b1[bound_box_num].bottom != _b2[bound_box_num].bottom))
                 {
-                    fprintf(stdout, "  - Map1 Boundary #%d: (%d, %d), (%d, %d)\n", bound_box_num, _b1[bound_box_num].left, _b1[bound_box_num].top, _b1[bound_box_num].right, _b1[bound_box_num].bottom);
-                    fprintf(stdout, "  - Map2 Boundary #%d: (%d, %d), (%d, %d)\n", bound_box_num, _b2[bound_box_num].left, _b2[bound_box_num].top, _b2[bound_box_num].right, _b2[bound_box_num].bottom);
+                    fprintf(stdout, "  - Map1 Boundary #%d: (%d, %d), (%d, %d)\n", (int)bound_box_num, _b1[bound_box_num].left, _b1[bound_box_num].top, _b1[bound_box_num].right, _b1[bound_box_num].bottom);
+                    fprintf(stdout, "  - Map2 Boundary #%d: (%d, %d), (%d, %d)\n", (int)bound_box_num, _b2[bound_box_num].left, _b2[bound_box_num].top, _b2[bound_box_num].right, _b2[bound_box_num].bottom);
                 }
             }
             else
@@ -742,12 +739,12 @@ void check_map(void)
                 // The other map does not have that bounding box, print "only in map #"
                 if (gmap1.bounds.size <= bound_box_num)
                 {
-                    fprintf(stdout, "  Bound Box #%d only in Map #2\n", bound_box_num + 1);
+                    fprintf(stdout, "  Bound Box #%d only in Map #2\n", (int)(bound_box_num + 1));
                     fprintf(stdout, "  - Map2: (%d, %d), (%d, %d)\n", _b2[bound_box_num].left, _b2[bound_box_num].top, _b2[bound_box_num].right, _b2[bound_box_num].bottom);
                 }
                 else if (gmap2.bounds.size <= bound_box_num)
                 {
-                    fprintf(stdout, "  Bound Box #%d only in Map #1\n", bound_box_num + 1);
+                    fprintf(stdout, "  Bound Box #%d only in Map #1\n", (int)(bound_box_num + 1));
                     fprintf(stdout, "  - Map1: (%d, %d), (%d, %d)\n", _b1[bound_box_num].left, _b1[bound_box_num].top, _b1[bound_box_num].right, _b1[bound_box_num].bottom);
                 }
             }
@@ -785,7 +782,7 @@ void cleanup(void)
  * Display an error message for a file that doesn't exist.
  *
  */
-void error_load(const char *problem_file)
+void error_load(s_show &showing, const char *problem_file)
 {
     char err_msg[80];
     ASSERT(problem_file);
@@ -803,7 +800,7 @@ void error_load(const char *problem_file)
  * \param   filename1 1st file to load
  * \param   filename2 2nd file to load
  */
-void load_maps(const char *filename1, const char *filename2)
+void load_maps(s_show &showing, const char *filename1, const char *filename2)
 {
     int i;
     char load_fname1[PATH_MAX], load_fname2[PATH_MAX];
@@ -817,7 +814,7 @@ void load_maps(const char *filename1, const char *filename2)
         replace_extension(load_fname1, filename1, "map", sizeof(load_fname1));
         if (!exists(load_fname1))
         {
-            error_load(load_fname1);
+            error_load(showing, load_fname1);
             return;
         }
     }
@@ -827,7 +824,7 @@ void load_maps(const char *filename1, const char *filename2)
         replace_extension(load_fname2, filename2, "map", sizeof(load_fname2));
         if (!exists(load_fname2))
         {
-            error_load(load_fname2);
+            error_load(showing, load_fname2);
             return;
         }
     }
@@ -837,7 +834,7 @@ void load_maps(const char *filename1, const char *filename2)
     pf1 = pack_fopen(load_fname1, F_READ_PACKED);
     if (!pf1)
     {
-        error_load(load_fname1);
+        error_load(showing, load_fname1);
         return;
     }
 
@@ -872,14 +869,14 @@ void load_maps(const char *filename1, const char *filename2)
     pf2 = pack_fopen(load_fname2, F_READ_PACKED);
     if (!pf2)
     {
-        error_load(load_fname2);
+        error_load(showing, load_fname2);
         return;
     }
 
     pf2 = pack_fopen(load_fname2, F_READ_PACKED);
     if (!pf2)
     {
-        error_load(load_fname1);
+        error_load(showing, load_fname1);
         return;
     }
 
@@ -953,10 +950,11 @@ void usage(const char *argv)
 
 
 
-int main(unsigned int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-    unsigned int i, number_of_files = 0;
+    size_t i, number_of_files = 0;
     char *filenames[PATH_MAX];
+    s_show showing;
 
     setlocale(LC_ALL, "");
     //    bindtextdomain(PACKAGE, KQ_LOCALE);
@@ -973,7 +971,7 @@ int main(unsigned int argc, char *argv[])
         return (EXIT_SUCCESS);
     }
 
-    for (i = 1; i < argc; i++)
+    for (i = 1; i < (size_t)argc; i++)
     {
         if (!strcmp(argv[i], "--help") || !strcmp(argv[i], "-h"))
         {
@@ -982,7 +980,7 @@ int main(unsigned int argc, char *argv[])
         }
     }
 
-    for (i = 1; i < argc; i++)
+    for (i = 1; i < (size_t)argc; i++)
     {
         if (exists(argv[i]))
         {
@@ -990,12 +988,12 @@ int main(unsigned int argc, char *argv[])
         }
         else
         {
-            error_load(argv[i]);   //fprintf(stderr, "Bad file name: %s\n", argv[i]);
+            error_load(showing, argv[i]);   //fprintf(stderr, "Bad file name: %s\n", argv[i]);
             return (EXIT_FAILURE);
         }
     }
 
-    load_maps(filenames[0], filenames[1]);
+    load_maps(showing, filenames[0], filenames[1]);
     check_entities();
     check_map();
     check_layers();

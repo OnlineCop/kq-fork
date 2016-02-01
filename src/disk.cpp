@@ -114,6 +114,7 @@ int save_s_entity(s_entity *s, PACKFILE *f)
 
 int load_s_map(s_map *sm, PACKFILE *f)
 {
+    char *buf = NULL;
     sm->map_no = pack_getc(f);
     sm->zero_zone = pack_getc(f);
     sm->map_mode = pack_getc(f);
@@ -132,12 +133,18 @@ int load_s_map(s_map *sm, PACKFILE *f)
     sm->warpy = pack_igetl(f);
     sm->revision = pack_igetl(f);
     sm->extra_sdword2 = pack_igetl(f);
-    char *buf = new char[16]; // was hard-coded to be 16
+
+    buf = new char[16 + 1]; // was hard-coded to be 16
+    memset(&buf[0], 0, 16 + 1); // Clear all garbage values to '0'
     pack_fread(buf, 16, f);
-    buf[15] = '\0';
     sm->song_file = buf;
     delete[] buf;
-    pack_fread(sm->map_desc, sizeof(sm->map_desc), f);
+
+    buf = new char[40 + 1]; // was hard-coded to be 40
+    memset(&buf[0], 0, 40 + 1); // Clear all garbage values to '0'
+    pack_fread(buf, 40, f);
+    sm->map_desc = buf;
+    delete[] buf;
 
     if (sm->revision >= 1)
     {
@@ -193,7 +200,7 @@ int save_s_map(s_map *sm, PACKFILE *f)
     pack_iputl(sm->revision, f);         /* Revision 2 */
     pack_iputl(sm->extra_sdword2, f);
     pack_fwrite(sm->song_file.c_str(), sm->song_file.length(), f);
-    pack_fwrite(sm->map_desc, sizeof(sm->map_desc), f);
+    pack_fwrite(sm->map_desc.c_str(), sm->map_desc.length(), f);
 
     /* Markers */
     save_markers(&sm->markers, f);

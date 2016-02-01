@@ -62,7 +62,7 @@ struct s_map
     int revision;                /*!< Internal revision number for the map file */
     int extra_sdword2;           /*!< Not used */
     std::string song_file;       /*!< Base file name for map song */
-    char map_desc[40];           /*!< Map name (shown when map first appears) */
+    std::string map_desc;        /*!< Map name (shown when map first appears) */
     s_marker_array markers;      /*!< Marker array and marker size */
     s_bound_array bounds;        /*!< Bound array and bound size */
 };

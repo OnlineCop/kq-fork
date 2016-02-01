@@ -107,7 +107,7 @@ void displace_entities(void)
  *
  * \param   ent_index Index of current entity
  */
-void draw_entdata(const int ent_index)
+void draw_entdata(s_show &showing, const int ent_index)
 {
     int ent_x, ent_y;
     const char *dir_facing[4] = { "S", "N", "W", "E" };
@@ -124,7 +124,7 @@ void draw_entdata(const int ent_index)
 
     normalize_view();
     clear(double_buffer);
-    draw_map();
+    draw_map(showing);
 
     /* The white horizontal line that seperates the bottom menu */
     hline(double_buffer, 0, vtiles * TILE_H + 1, htiles * TILE_W + 1, 255);
@@ -402,7 +402,7 @@ void place_entity(int ent_x, int ent_y)
  *
  * Allow the user to give each entity its own personality
  */
-void update_entities(void)
+void update_entities(s_show &showing)
 {
     int response, done;
 
@@ -426,7 +426,7 @@ void update_entities(void)
     done = 0;
     while (!done)
     {
-        draw_entdata(et);
+        draw_entdata(showing, et);
         c = (readkey() >> 8);
 
         /* Stop updating entities */

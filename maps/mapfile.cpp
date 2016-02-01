@@ -22,14 +22,14 @@
  * Display an error message for a file that doesn't exist.
  *
  */
-void error_load(const char *problem_file)
+void error_load(s_show &showing, const char *problem_file)
 {
     int i = 0;
 
     ASSERT(problem_file);
 
     sprintf(strbuf, "Could not load \"%s\"", problem_file);
-    draw_map();
+    draw_map(showing);
     blit2screen();
 
     i = (strlen(strbuf) + 1) * 6;
@@ -49,7 +49,7 @@ void error_load(const char *problem_file)
  * 20040129 PH improved so you can reload pcx onto any layer
  *          used to be only background or foreground
  */
-void make_mapfrompcx(void)
+void make_mapfrompcx(s_show &showing)
 {
     /* TT TODO: This is still very buggy, as the PCX image only has 255 values;
      * the particular tile on the map may actually exceed this; when we import
@@ -61,7 +61,7 @@ void make_mapfrompcx(void)
     BITMAP *pcx_bitmap;
     unsigned short *tm;
 
-    draw_map();
+    draw_map(showing);
     rectfill(double_buffer, 0, 0, 238, 29, 0);
     rect(double_buffer, 2, 2, 236, 27, 255);
     print_sfont(6, 6, "Make map from pcx", double_buffer);
@@ -87,7 +87,7 @@ void make_mapfrompcx(void)
                 replace_extension(fname, fname, "pcx", sizeof(fname));
                 if (!exists(fname))
                 {
-                    error_load(fname);
+                    error_load(showing, fname);
                     return;
                 }
             }
@@ -101,7 +101,7 @@ void make_mapfrompcx(void)
         }
     }
 
-    draw_map();
+    draw_map(showing);
     rectfill(double_buffer, 0, 0, 238, 29, 0);
     rect(double_buffer, 2, 2, 236, 27, 255);
     print_sfont(6, 6, "Which layer do you want to put it to:", double_buffer);
@@ -236,7 +236,7 @@ void maptopcx(int format)
  *
  * Create a new, blank map
  */
-int new_map(void)
+int new_map(s_show &showing)
 {
     int response;
     int new_height = 0, new_width = 0, new_tileset = 0;
@@ -249,7 +249,7 @@ int new_map(void)
         return D_O_K;
     }
 
-    draw_map();
+    draw_map(showing);
     rect(double_buffer, 2, 2, 317, 43, 255);
     rectfill(double_buffer, 3, 3, 316, 42, 0);
     print_sfont(6, 6, "New map", double_buffer);
@@ -372,7 +372,7 @@ int new_map(void)
     // Remove the markers from the map
     for (m = gmap.markers.array + gmap.markers.size; m > gmap.markers.array; --m)
     {
-        int curmarker = gmap.markers.size;
+        unsigned int curmarker = gmap.markers.size;
 
         // This removes the marker
         add_change_marker(m->x, m->y, 2, &curmarker);
@@ -398,7 +398,7 @@ int new_map(void)
     gmap.revision = 2;
     gmap.extra_sdword2 = 0;
     gmap.song_file = "";
-    gmap.map_desc[0] = 0;
+    gmap.map_desc = "";
     gmap.markers.size = 0;
     gmap.markers.array = NULL;
     gmap.bounds.size = 0;
@@ -422,7 +422,7 @@ int new_map(void)
  * same name.
  *
  */
-void prompt_load_map(void)
+void prompt_load_map(s_show &showing)
 {
     char path[MAX_PATH];
     int response;
@@ -454,8 +454,8 @@ void prompt_load_map(void)
 
     if (yninput())
     {
-        draw_map();
-        load_map(path);
+        draw_map(showing);
+        load_map(showing, path);
     }
     return;
 }                               /* prompt_load_map() */

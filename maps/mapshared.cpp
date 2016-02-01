@@ -123,7 +123,6 @@ unsigned int number_of_ents = 0;
 
 s_map gmap;
 s_entity gent[MAX_ENTITIES_PER_MAP];
-s_show showing;
 
 unsigned short *map, *b_map, *f_map, *c_map, *cf_map, *cb_map;
 unsigned char *z_map, *sh_map, *o_map, *cz_map, *csh_map, *co_map;
@@ -167,7 +166,7 @@ void load_iconsets(PALETTE pal)
  *
  * \param   filename File to load
  */
-void load_map(const char *path)
+void load_map(s_show &showing, const char *path)
 {
     int p, q, i;
     PACKFILE *pf;
@@ -181,7 +180,7 @@ void load_map(const char *path)
         replace_extension(load_fname, load_fname, "map", sizeof(load_fname));
         if (!exists(load_fname))
         {
-            error_load(load_fname);
+            error_load(showing, load_fname);
             return;
         }
     }
@@ -189,7 +188,7 @@ void load_map(const char *path)
     pf = pack_fopen(load_fname, F_READ_PACKED);
     if (!pf)
     {
-        error_load(load_fname);
+        error_load(showing, load_fname);
         return;
     }
 
@@ -859,7 +858,7 @@ void textual_map_json(s_show showing)
     printf(",\n\t\"revision\":%d", gmap.revision);
     printf(",\n\t\"extra_sdword2\":%d", gmap.extra_sdword2);
     printf(",\n\t\"song_file\":\"%s\"", gmap.song_file.c_str());
-    printf(",\n\t\"map_desc\":\"%s\"", gmap.map_desc);
+    printf(",\n\t\"map_desc\":\"%s\"", gmap.map_desc.c_str());
     printf("\n},\n");
 
     /* Show marker flags */

@@ -5,7 +5,7 @@ DISK_H=../include/structs.h ../include/disk.h
 
 LDFLAGS += -lalleg
 
-CFLAGS+=-I../include
+CXXFLAGS+=-I../include
 
 all: mapdraw$(EXE_SUFFIX) mapdump$(EXE_SUFFIX) mapdiff$(EXE_SUFFIX)
 

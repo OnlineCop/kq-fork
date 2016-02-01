@@ -90,7 +90,7 @@ void cleanup(void)
  * Display an error message for a file that doesn't exist.
  *
  */
-void error_load(const char *problem_file)
+void error_load(s_show &showing, const char *problem_file)
 {
     char err_msg[80];
     ASSERT(problem_file);
@@ -338,7 +338,7 @@ int main(int argc, char *argv[])
             {
                 fprintf(stdout, "  - %s replaced by extension .%s: %s\n", filenames[i], output_ext, fn);
             }
-            load_map(filenames[i]);
+            load_map(showing, filenames[i]);
             if (!exists(fn) || force_overwrite)
             {
                 if (verbose)
@@ -352,7 +352,7 @@ int main(int argc, char *argv[])
                 }
                 else if (output_ext == extensions[3])
                 {
-                    textual_map_json();
+                    textual_map_json(showing);
                 }
                 else
                 {
@@ -375,7 +375,7 @@ int main(int argc, char *argv[])
     return 0;
 }                               /* main() */
 
-END_OF_MAIN();
+END_OF_MAIN()
 
 /* Local Variables:     */
 /* mode: c              */

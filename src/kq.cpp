@@ -1652,7 +1652,7 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
 
     set_view(0, 0, 0, 0, 0);
 
-    if (strlen(g_map.map_desc) > 1)
+    if (g_map.map_desc.length() > 0)
     {
         display_desc = 1;
     }

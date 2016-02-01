@@ -112,50 +112,50 @@ extern void bufferize(void);
 void center_window(int, int);
 extern void cleanup(void);
 void cmessage(const char *);
-void draw_map(void);
+void draw_map(s_show &);
 unsigned int get_line(const int, const int, char *, const int);
 void make_rect(BITMAP *, const int, const int);
 void normalize_view(void);
 void print_sfont(const int, const int, const char *, BITMAP *);
-int startup(void);
+int startup(s_show &);
 void update_tileset(void);
 void wait_enter(void);
 int yninput(void);
 
 /* From mapent.c */
 void displace_entities(void);
-void draw_entdata(const int);
+void draw_entdata(s_show &, const int);
 void draw_ents(void);
 void erase_entity(const int, const int);
 void init_entities(void);
 void place_entity(int, int);
-void update_entities(void);
+void update_entities(s_show &);
 
 /* From mapfile.c */
-void make_mapfrompcx(void);
+void make_mapfrompcx(s_show &);
 void maptopcx(int format);
-int new_map(void);
-void prompt_load_map(void);
+int new_map(s_show &showing);
+void prompt_load_map(s_show &);
 void prompt_save_map(void);
 void save_map(const char *);
 
 /* From mapshared.c */
 void blit2screen(void);
 void load_iconsets(PALETTE);
-void load_map(const char *);
+void load_map(s_show &, const char *);
 void set_pcx(BITMAP **, const char *, PALETTE, const int);
 void shared_cleanup(void);
 void shared_startup(void);
 void visual_map(s_show, const char *);
 void textual_map(s_show, const char *);
-void textual_map_json();
+void textual_map_json(s_show);
 
 /* From mapstructs.c */
-void add_change_bounding(int, int, int, int *);
-void add_change_marker(int, int, int, int *);
+void add_change_bounding(int, int, int, unsigned int *);
+void add_change_marker(int, int, int, unsigned int *);
 void bound_rect(BITMAP *, s_bound, int);
-int find_next_marker(int, int *);
-int find_bound(int, int *);
+int find_next_marker(int, unsigned int *);
+int find_bound(int, unsigned int *);
 int is_contained_marker(s_marker, int, int);
 void orient_bounds(int);
 void orient_markers(int);
@@ -163,7 +163,7 @@ void rename_bound_tile(s_bound *);
 void rename_marker(s_marker *);
 
 /* One in each of: mapdiff.c, mapdump.c, and mapfile.c */
-void error_load(const char *);
+void error_load(s_show &, const char *);
 
 
 extern BITMAP *double_buffer, *pcx_buffer, *icons[MAX_TILES], *eframes[MAX_EPICS][NUM_FACING_DIRECTIONS *ENT_FRAMES_PER_DIR];
@@ -180,7 +180,6 @@ extern unsigned int number_of_ents, current_ent;
 
 extern s_entity gent[];
 extern s_map gmap;
-extern s_show showing;
 
 extern unsigned short tilex[MAX_TILES];
 extern s_anim tanim[NUM_TILESETS][MAX_ANIM];

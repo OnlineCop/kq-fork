@@ -42,7 +42,7 @@ unsigned int count_current_shadows(void);
 unsigned int count_current_zones(void);
 void describe_map(void);
 void draw_layer(short *, const int);
-void draw_menubars(void);
+void draw_menubars(s_show &);
 int find_cursor(int);
 void get_tile(void);
 void global_change(void);
@@ -53,19 +53,19 @@ void paste(void);
 void paste_region(const int, const int);
 void paste_region_special(const int, const int);
 void preview_map(void);
-int process_keyboard(const int);
+int process_keyboard(s_show &, const int);
 void process_menu_bottom(const int, const int);
 void process_menu_right(const int, const int);
 void process_mouse(const int);
-void process_movement(int);
+void process_movement(s_show &, int);
 void process_movement_joy(void);
 int prompt_BMP_PCX(void);
-void read_controls(void);
+void read_controls(s_show &);
 void resize_map(const int);
-void select_only(const int, const int);
-int show_all(void);
+void select_only(s_show &, const int, const int);
+int show_all(s_show &);
 int show_help(void);
-int show_preview(void);
+int show_preview(s_show &);
 void wipe_map(void);
 
 
@@ -157,11 +157,11 @@ const int vtiles = (SH - 48) / TILE_H;
 int column[8], row[8];
 
 /*! Markers in use in this map */
-int curmarker;
+unsigned int curmarker;
 int cpu_usage = 2;              // Default to rest(1)
 
 /*! Bounding areas on the map */
-int curbound_box;
+unsigned int curbound_box;
 
 /*! Joystick-related stuff */
 
@@ -302,9 +302,9 @@ void center_window_y(int center_y)
  */
 unsigned int check_last_zone(void)
 {
-    unsigned int a = 0, p;
+    size_t a = 0, p;
 
-    for (p = 0; p < gmap.xsize * gmap.ysize; p++)
+    for (p = 0; p < (size_t)(gmap.xsize * gmap.ysize); p++)
     {
         if (z_map[p] > a)
         {
@@ -365,7 +365,7 @@ void cleanup(void)
  */
 void clear_layer(void)
 {
-    unsigned int response, i, done;
+    unsigned int response, done;
     int selected_layer = 0;
 
     make_rect(double_buffer, 2, 15);
@@ -579,7 +579,7 @@ void copy_layer(void)
     }
 
     b = 0;
-    for (a = 0; a < gmap.xsize * gmap.ysize; a++)
+    for (a = 0; a < (size_t)(gmap.xsize * gmap.ysize); a++)
     {
         if (from_layer == 1)
         {
@@ -674,9 +674,9 @@ void copy_region(void)
  */
 unsigned int count_current_obstacles(void)
 {
-    unsigned int i = 0, j;
+    size_t i = 0, j;
 
-    for (j = 0; j < gmap.xsize * gmap.ysize; j++)
+    for (j = 0; j < (size_t)(gmap.xsize * gmap.ysize); j++)
     {
         if (o_map[j] == curobs)
         {
@@ -694,9 +694,9 @@ unsigned int count_current_obstacles(void)
  */
 unsigned int count_current_shadows(void)
 {
-    unsigned int i = 0, j;
+    size_t i = 0, j;
 
-    for (j = 0; j < gmap.xsize * gmap.ysize; j++)
+    for (j = 0; j < (size_t)(gmap.xsize * gmap.ysize); j++)
     {
         if (sh_map[j] == curshadow)
         {
@@ -714,9 +714,9 @@ unsigned int count_current_shadows(void)
  */
 unsigned int count_current_zones(void)
 {
-    unsigned int i = 0, j;
+    size_t i = 0, j;
 
-    for (j = 0; j < gmap.xsize * gmap.ysize; j++)
+    for (j = 0; j < (size_t)(gmap.xsize * gmap.ysize); j++)
     {
         if (z_map[j] == curzone)
         {
@@ -738,7 +738,7 @@ void describe_map(void)
 
     make_rect(double_buffer, 3, 57);
     print_sfont(6, 6, "Enter map description", double_buffer);
-    sprintf(strbuf, "Current: %s", gmap.map_desc);
+    sprintf(strbuf, "Current: %s", gmap.map_desc.c_str());
     print_sfont(6, 12, strbuf, double_buffer);
     print_sfont(6, 18, "New description: ", double_buffer);
 
@@ -768,7 +768,7 @@ void describe_map(void)
             done = 1;
         }
     }
-    strcpy(gmap.map_desc, strbuf);
+    gmap.map_desc = strbuf;
 }                               /* describe_map() */
 
 
@@ -837,7 +837,7 @@ void draw_layer(short *layer, const int parallax)
  *
  * Update the screen after all controls taken care of.
  */
-void draw_map(void)
+void draw_map(s_show &showing)
 {
     /* Coordinates inside the view-window */
     int dx, dy;
@@ -1118,12 +1118,13 @@ void draw_map(void)
  *
  * Process both the menus on the side and bottom of the screen
  */
-void draw_menubars(void)
+void draw_menubars(s_show &showing)
 {
     int p, xp = 0, yp = 0;
     int draw_mode_display, draw_mode_last, draw_the_rect;
     int mouse_tile_x = mouse_x / TILE_W;
     int mouse_tile_y = mouse_y / TILE_H;
+    size_t i;
 
     /* Description for the current draw_mode (could use work) */
     char dt[][12] =
@@ -1373,11 +1374,11 @@ void draw_menubars(void)
         xp = mouse_tile_x + window_x;
         yp = mouse_tile_y + window_y;
 
-        for (p = 0; p < number_of_ents; p++)
+        for (i = 0; i < number_of_ents; i++)
         {
-            if (gent[p].tilex == xp && gent[p].tiley == yp)
+            if (gent[i].tilex == xp && gent[i].tiley == yp)
             {
-                sprintf(strbuf, "Current Ent: %d", p);
+                sprintf(strbuf, "Current Ent: %d", (int)i);
                 print_sfont(column[4], row[1], strbuf, double_buffer);
             }
         }
@@ -1458,13 +1459,13 @@ void draw_menubars(void)
         print_sfont(column[4], row[0], strbuf, double_buffer);
         xp = mouse_tile_x + window_x;
         yp = mouse_tile_y + window_y;
-        for (p = 0; p < gmap.markers.size; p++)
+        for (i = 0; i < gmap.markers.size; i++)
         {
-            if (gmap.markers.array[p].x == xp && gmap.markers.array[p].y == yp)
+            if (gmap.markers.array[i].x == xp && gmap.markers.array[i].y == yp)
             {
                 sprintf(strbuf, "Current Marker:");
                 print_sfont(column[4], row[1], strbuf, double_buffer);
-                sprintf(strbuf, "Marker #%d: \"%s\"", p, gmap.markers.array[p].name);
+                sprintf(strbuf, "Marker #%d: \"%s\"", (int)i, gmap.markers.array[i].name);
                 print_sfont(column[4] + 24, row[2], strbuf, double_buffer);
             }
         }
@@ -1477,11 +1478,11 @@ void draw_menubars(void)
         print_sfont(column[4], row[0], strbuf, double_buffer);
         xp = mouse_tile_x + window_x;
         yp = mouse_tile_y + window_y;
-        for (p = 0; p < gmap.bounds.size; p++)
+        for (i = 0; i < gmap.bounds.size; i++)
         {
-            if ((xp >= gmap.bounds.array[p].left && xp <= gmap.bounds.array[p].right) && (yp >= gmap.bounds.array[p].top && yp <= gmap.bounds.array[p].bottom))
+            if ((xp >= gmap.bounds.array[i].left && xp <= gmap.bounds.array[i].right) && (yp >= gmap.bounds.array[i].top && yp <= gmap.bounds.array[i].bottom))
             {
-                sprintf(strbuf, "Area #%d: (%d, %d) (%d, %d), tile=%d", p, gmap.bounds.array[p].left, gmap.bounds.array[p].top, gmap.bounds.array[p].right, gmap.bounds.array[p].bottom, gmap.bounds.array[p].btile);
+                sprintf(strbuf, "Area #%d: (%d, %d) (%d, %d), tile=%d", (int)i, gmap.bounds.array[i].left, gmap.bounds.array[i].top, gmap.bounds.array[i].right, gmap.bounds.array[i].bottom, gmap.bounds.array[i].btile);
                 print_sfont(column[4], row[1], strbuf, double_buffer);
             }
         }
@@ -2308,7 +2309,7 @@ void global_change(void)
         }
     }
 
-    for (i = 0; i < gmap.xsize * gmap.ysize; i++)
+    for (i = 0; i < (size_t)(gmap.xsize * gmap.ysize); i++)
     {
         if (p1)
         {
@@ -2508,6 +2509,7 @@ void kq_yield(void)
 int main(int argc, char *argv[])
 {
     int main_stop = 0, oldmouse_x = 0, oldmouse_y = 0;
+    s_show showing;
     int i;
 
     setlocale(LC_ALL, "");
@@ -2528,14 +2530,14 @@ int main(int argc, char *argv[])
 
     needupdate = 0;
 
-    if (!startup())
+    if (!startup(showing))
     {
         return 1;
     }
 
     if (argc > 1)
     {
-        load_map(argv[1]);
+        load_map(showing, argv[1]);
         active_bound = 0;
         curmarker = 0;
         curbound_box = 0;
@@ -2543,7 +2545,7 @@ int main(int argc, char *argv[])
 
     while (!main_stop)
     {
-        read_controls();
+        read_controls(showing);
         if (needupdate)
         {
             if (draw_mode == MAP_PREVIEW)
@@ -2552,9 +2554,9 @@ int main(int argc, char *argv[])
             }
             else
             {
-                draw_map();
+                draw_map(showing);
             }
-            draw_menubars();
+            draw_menubars(showing);
         }
 
         if ((needupdate) || (mouse_x != oldmouse_x) || (mouse_y != oldmouse_y))
@@ -2878,7 +2880,7 @@ void print_sfont(const int print_x, const int print_y, const char *string, BITMA
  *
  * \param   k The keyboard key to process
  */
-int process_keyboard(const int k)
+int process_keyboard(s_show &showing, const int k)
 {
     unsigned int response;
 
@@ -2887,42 +2889,42 @@ int process_keyboard(const int k)
     {
         case (KEY_1):
             /* Layer 1 */
-            select_only(1, MAP_LAYER1);
+            select_only(showing, 1, MAP_LAYER1);
             break;
 
         case (KEY_2):
             /* Layer 2 */
-            select_only(1, MAP_LAYER2);
+            select_only(showing, 1, MAP_LAYER2);
             break;
 
         case (KEY_3):
             /* Layer 3 */
-            select_only(1, MAP_LAYER3);
+            select_only(showing, 1, MAP_LAYER3);
             break;
 
         case (KEY_4):
             /* Show Layers 1+2 */
-            select_only(1, MAP_LAYER1 | MAP_LAYER2);
+            select_only(showing, 1, MAP_LAYER1 | MAP_LAYER2);
             break;
 
         case (KEY_5):
             /* Show Layers 1+3 */
-            select_only(1, MAP_LAYER1 | MAP_LAYER3);
+            select_only(showing, 1, MAP_LAYER1 | MAP_LAYER3);
             break;
 
         case (KEY_6):
             /* Show Layers 2+3 */
-            select_only(1, MAP_LAYER2 | MAP_LAYER3);
+            select_only(showing, 1, MAP_LAYER2 | MAP_LAYER3);
             break;
 
         case (KEY_7):
             /* Show Layers 1+2+3 */
-            select_only(1, MAP_LAYER1 | MAP_LAYER2 | MAP_LAYER3);
+            select_only(showing, 1, MAP_LAYER1 | MAP_LAYER2 | MAP_LAYER3);
             break;
 
         case (KEY_A):
             /* Display Layers 1+2+3 and all Attributes */
-            show_all();
+            show_all(showing);
             break;
 
         case (KEY_B):
@@ -2968,7 +2970,7 @@ int process_keyboard(const int k)
             /* View Layers 1+2+3, plus Entities and Shadows, as the player would see
              * the map in the game
              */
-            show_preview();
+            show_preview(showing);
             break;
 
         case (KEY_D):
@@ -3125,7 +3127,7 @@ int process_keyboard(const int k)
 
         case (KEY_N):
             /* Create a new map; you can choose the tileset to use for it */
-            new_map();
+            new_map(showing);
             grab_tile = 0;
             break;
 
@@ -3321,7 +3323,7 @@ int process_keyboard(const int k)
 
         case (KEY_F2):
             /* Load a map */
-            prompt_load_map();
+            prompt_load_map(showing);
             active_bound = 0;
             curmarker = 0;
             curbound_box = 0;
@@ -3345,7 +3347,7 @@ int process_keyboard(const int k)
 
         case (KEY_F5):
             /* Load a [mini] PCX file to become a map */
-            make_mapfrompcx();
+            make_mapfrompcx(showing);
             break;
 
         case (KEY_F6):
@@ -3379,7 +3381,7 @@ int process_keyboard(const int k)
             showing.boundaries = 0;
             draw_mode = MAP_ENTITIES;
             grab_tile = 0;
-            update_entities();
+            update_entities(showing);
             break;
 
         case (KEY_ESC):
@@ -4272,7 +4274,7 @@ void process_mouse(const int mouse_button)
  *
  * This is a feeble attempt to support joysticks, but untested
  */
-void process_movement(int val)
+void process_movement(s_show &showing, int val)
 {
     switch (val)
     {
@@ -4506,7 +4508,7 @@ int prompt_BMP_PCX(void)
  *
  * Detect input from either the keyboard or mouse (sorry, no joystick support)
  */
-void read_controls(void)
+void read_controls(s_show &showing)
 {
     int mouse_button, oldx, oldy;
     int val;
@@ -4519,8 +4521,8 @@ void read_controls(void)
     if (keypressed())
     {
         val = readkey() >> 8;
-        process_keyboard(val);
-        process_movement(val);
+        process_keyboard(showing, val);
+        process_movement(showing, val);
         normalize_view();
 
         needupdate = 1;
@@ -4671,7 +4673,8 @@ void resize_map(const int selection)
     unsigned int response, done;
     unsigned int size_both = gmap.xsize * gmap.ysize;
     int old_height, old_width, new_height, new_width;
-    int i, ix, iy, coord1, coord2;
+    int ix, iy, coord1, coord2;
+    size_t i;
     s_marker *m;
     size_t ssize = sizeof(unsigned short);
     size_t csize = sizeof(unsigned char);
@@ -4902,7 +4905,7 @@ void resize_map(const int selection)
  *                    0 otherwise
  * \param   which_layer Which layer we are going to change to
  */
-void select_only(const int lastlayer, const int which_layer)
+void select_only(s_show &showing, const int lastlayer, const int which_layer)
 {
     draw_mode = which_layer;
     showing.entities = 0;
@@ -4920,7 +4923,7 @@ void select_only(const int lastlayer, const int which_layer)
 
 
 
-int show_all(void)
+int show_all(s_show &showing)
 {
     draw_mode = (MAP_LAYER1 | MAP_LAYER2 | MAP_LAYER3);
     showing.entities = 1;
@@ -5020,7 +5023,7 @@ int show_help(void)
 /*! \brief Show a preview of the map that the player would see during the game
  * including parallax, layers, NPCs, and attributes
  */
-int show_preview(void)
+int show_preview(s_show &showing)
 {
     draw_mode = MAP_PREVIEW;
     showing.entities = 1;
@@ -5041,7 +5044,7 @@ int show_preview(void)
  *
  * Inits everything needed for user input, graphics, etc.
  */
-int startup(void)
+int startup(s_show &showing)
 {
     int a, i, kx, ky;
     COLOR_MAP cmap;

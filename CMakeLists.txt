@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(kq-fork)
 
-set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}")
+set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR};${CMAKE_CURRENT_SOURCE_DIR}/maps")
 
 find_package(Allegro REQUIRED)
 find_package(Lua REQUIRED)
@@ -65,7 +65,35 @@ set(kq-fork_SRCS
 	src/unix.cpp
 )
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(mapdraw_SRCS
+	maps/mapdata.cpp
+	maps/mapedit.cpp
+	maps/mapent.cpp
+	maps/mapfile.cpp
+	maps/mapshared.cpp
+	maps/mapstructs.cpp
+	src/bounds.cpp
+	src/disk.cpp
+	src/markers.cpp
+)
+
+set(mapdump_SRCS
+	maps/mapdata.cpp
+	maps/mapdump.cpp
+	maps/mapshared.cpp
+	src/bounds.cpp
+	src/disk.cpp
+	src/markers.cpp
+)
+
+set(mapdiff_SRCS
+	maps/mapdiff.cpp
+	src/bounds.cpp
+	src/disk.cpp
+	src/markers.cpp
+)
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/maps")
 
 # DEBUGMODE lets players alter options in the ESC->Config menu (including seeing obstacles and zones)
 #add_definitions(-DDEBUGMODE)
@@ -81,14 +109,29 @@ set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -Wall -Wextra -Wpedantic -
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(kq-fork ${kq-fork_SRCS})
+add_executable(mapdraw ${mapdraw_SRCS})
+add_executable(mapdump ${mapdump_SRCS})
+add_executable(mapdiff ${mapdiff_SRCS})
 
 if(KQ_DEBUGGING)
 set_target_properties(kq-fork PROPERTIES COMPILE_DEFINITIONS DEBUGMODE)
 endif(KQ_DEBUGGING)
 
-target_link_libraries(kq-fork 
-  ${ALLEGRO_LIBRARIES} 
-  ${LUA_LIBRARY} 
-  ${AL_DUMB_LIBRARIES} 
-  ${DUMB_LIBRARIES} 
-  ${M_LIB})
+target_link_libraries(kq-fork
+	${ALLEGRO_LIBRARIES}
+	${LUA_LIBRARY}
+	${AL_DUMB_LIBRARIES}
+	${DUMB_LIBRARIES}
+	${M_LIB})
+
+target_link_libraries(mapdraw
+	${ALLEGRO_LIBRARIES}
+	${M_LIB})
+
+target_link_libraries(mapdump
+	${ALLEGRO_LIBRARIES}
+	${M_LIB})
+
+target_link_libraries(mapdiff
+	${ALLEGRO_LIBRARIES}
+	${M_LIB})
