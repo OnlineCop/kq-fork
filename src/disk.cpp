@@ -135,6 +135,8 @@ int load_s_map(s_map *sm, PACKFILE *f)
     sm->revision = pack_igetl(f);
     sm->extra_sdword2 = pack_igetl(f);
 
+    // FIXME: We should read in the number of string bytes, and then the string.
+    // Unfortunately, this version of the map hard-codes '16' and '40' characters.
     buf = new char[16 + 1]; // was hard-coded to be 16
     memset(&buf[0], 0, 16 + 1); // Clear all garbage values to '0'
     pack_fread(buf, 16, f);
@@ -206,8 +208,11 @@ int save_s_map(s_map *sm, PACKFILE *f)
 
     pack_iputl(sm->revision, f);         /* Revision 2 */
     pack_iputl(sm->extra_sdword2, f);
-    pack_fwrite(sm->song_file.c_str(), sm->song_file.length(), f);
-    pack_fwrite(sm->map_desc.c_str(), sm->map_desc.length(), f);
+
+    // FIXME: These should write the string length, then the string, to the packfile.
+    // Hard-coding 16 and 40 are the only way to know how many characters to read back in.
+    pack_fwrite(sm->song_file.c_str(), 16/*sm->song_file.length()*/, f);
+    pack_fwrite(sm->map_desc.c_str(), 40/*sm->map_desc.length()*/, f);
 
     /* Markers */
     save_markers(&sm->markers, f);
