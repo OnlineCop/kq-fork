@@ -40,6 +40,7 @@
 #include <string>
 
 
+
 int load_s_entity(s_entity *s, PACKFILE *f)
 {
     s->chrx = pack_getc(f);
@@ -123,8 +124,8 @@ int load_s_map(s_map *sm, PACKFILE *f)
     sm->use_sstone = pack_getc(f);
     sm->can_warp = pack_getc(f);
     sm->extra_byte = pack_getc(f);
-    sm->xsize = pack_igetl(f);
-    sm->ysize = pack_igetl(f);
+    sm->xsize = (size_t)pack_igetl(f);
+    sm->ysize = (size_t)pack_igetl(f);
     sm->pmult = pack_igetl(f);
     sm->pdiv = pack_igetl(f);
     sm->stx = pack_igetl(f);
@@ -137,13 +138,19 @@ int load_s_map(s_map *sm, PACKFILE *f)
     buf = new char[16 + 1]; // was hard-coded to be 16
     memset(&buf[0], 0, 16 + 1); // Clear all garbage values to '0'
     pack_fread(buf, 16, f);
-    sm->song_file = buf;
+    if (strlen(buf) > 0)
+    {
+        sm->song_file = buf;
+    }
     delete[] buf;
 
     buf = new char[40 + 1]; // was hard-coded to be 40
     memset(&buf[0], 0, 40 + 1); // Clear all garbage values to '0'
     pack_fread(buf, 40, f);
-    sm->map_desc = buf;
+    if (strlen(buf) > 0)
+    {
+        sm->map_desc = buf;
+    }
     delete[] buf;
 
     if (sm->revision >= 1)

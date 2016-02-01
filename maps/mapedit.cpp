@@ -13,6 +13,7 @@
 
 #include <assert.h>
 #include <locale.h>
+#include <algorithm>
 
 #include "../include/bounds.h"
 #include "../include/enums.h"
@@ -87,9 +88,11 @@ short nomouse = 0;
 /* window_x and window_y are view-window coords
  * x and y are everything else
  */
-short window_x = 0, window_y = 0, x = 0, y = 0;
+unsigned int window_x = 0, window_y = 0;
+unsigned int x = 0, y = 0;
 
-static int draw_mode = (MAP_LAYER1 | MAP_LAYER2 | MAP_LAYER3), curtile = 0, dmode = 0;
+static int draw_mode = (MAP_LAYER1 | MAP_LAYER2 | MAP_LAYER3);
+static unsigned int curtile = 0, dmode = 0;
 static unsigned int curzone = 0, curshadow = 0, curobs = 0;
 static int curobs_x = -1, curobs_y = -1;
 static int curshadow_x = -1, curshadow_y = -1;
@@ -152,8 +155,8 @@ static const char *map_mode_text[] =
 /*! Current sequence position of animated tiles */
 unsigned short tilex[MAX_TILES];
 
-const int htiles = (SW - 80) / TILE_W;
-const int vtiles = (SH - 48) / TILE_H;
+const unsigned int htiles = (SW - 80) / TILE_W;
+const unsigned int vtiles = (SH - 48) / TILE_H;
 int column[8], row[8];
 
 /*! Markers in use in this map */
@@ -175,6 +178,8 @@ int use_joy = 1;
 
 
 /****************************************************************************/
+
+
 
 /*! \brief Animation
  *
@@ -787,46 +792,39 @@ void describe_map(void)
  */
 void draw_layer(short *layer, const int parallax)
 {
-    int layer_x, j;
-    int layer_x1, layer_x2, layer_y1, layer_y2;
-    int x0, y0;
+    unsigned int layer_x, layer_y;
+    unsigned int layer_x1, layer_x2, layer_y1, layer_y2;
+    unsigned int x0, y0;
+    signed int parallax_x = 0;
+    signed int parallax_y = 0;
+    int ss;
+
+    if (gmap.pdiv != 0)
+    {
+        parallax_x = window_x * gmap.pmult / gmap.pdiv;
+        parallax_y = window_y * gmap.pmult / gmap.pdiv;
+    }
 
     /* Calculate the top left, taking parallax into account */
-    layer_x1 = parallax ? window_x * gmap.pmult / gmap.pdiv : window_x;
-    layer_y1 = parallax ? window_y * gmap.pmult / gmap.pdiv : window_y;
+    layer_x1 = parallax ? std::max(0, parallax_x) : window_x;
+    layer_y1 = parallax ? std::max(0, parallax_y) : window_y;
 
     /* Calculate bottom right */
-    layer_x2 = layer_x1 + htiles;
-    layer_y2 = layer_y1 + vtiles;
-
-    /* Make sure these don't step off the edges of the map */
-    if (layer_x1 < 0)
-    {
-        layer_x1 = 0;
-    }
-    if (layer_y1 < 0)
-    {
-        layer_y1 = 0;
-    }
-    if (layer_x2 > gmap.xsize)
-    {
-        layer_x2 = gmap.xsize;
-    }
-    if (layer_y2 > gmap.ysize)
-    {
-        layer_y2 = gmap.ysize;
-    }
+    layer_x2 = std::min(layer_x1 + htiles, gmap.xsize);
+    layer_y2 = std::min(layer_y1 + vtiles, gmap.ysize);
 
     /* Calculate the pixel-based coordinate of the top left */
     x0 = layer_x1 * TILE_W;
     y0 = layer_y1 * TILE_H;
 
     /* ...And draw the tilemap */
-    for (j = layer_y1; j < layer_y2; ++j)
+    for (layer_y = layer_y1; layer_y < layer_y2; ++layer_y)
     {
         for (layer_x = layer_x1; layer_x < layer_x2; ++layer_x)
         {
-            draw_sprite(double_buffer, icons[tilex[layer[layer_x + j * gmap.xsize]]], layer_x * TILE_W - x0, j * TILE_W - y0);
+            ss = layer[layer_y * gmap.xsize + layer_x];
+            size_t icon_index_x = tilex[ss];
+            draw_sprite(double_buffer, icons[icon_index_x], layer_x * TILE_W - x0, layer_y * TILE_W - y0);
         }
     }
 }                               /* draw_layer() */
@@ -840,13 +838,13 @@ void draw_layer(short *layer, const int parallax)
 void draw_map(s_show &showing)
 {
     /* Coordinates inside the view-window */
-    int dx, dy;
+    unsigned int dx, dy;
 
     /* Index for tiles inside the view-window */
     int w;
 
     /* Size of the map or view-window, whichever is smaller */
-    int maxx, maxy;
+    unsigned int maxx, maxy;
     unsigned int i;
 
     /* Make sure we reset the visible attributes */
@@ -992,7 +990,7 @@ void draw_map(s_show &showing)
             // Try to hilight the currently-selected attrib
             if (curr_x != NULL && curr_y != NULL)
             {
-                if ((window_x + dx == *curr_x && window_y + dy == *curr_y) && (draw_mode == MAP_OBSTACLES || draw_mode == MAP_SHADOWS || draw_mode == MAP_ZONES))
+                if ((window_x + dx == (unsigned int)*curr_x && window_y + dy == (unsigned int)*curr_y) && (draw_mode == MAP_OBSTACLES || draw_mode == MAP_SHADOWS || draw_mode == MAP_ZONES))
                 {
                     draw_sprite(double_buffer, mesh_h, dx * TILE_W, dy * TILE_H);
                 }
@@ -1018,7 +1016,10 @@ void draw_map(s_show &showing)
     {
         for (i = 0; i < gmap.markers.size; ++i)
         {
-            if ((gmap.markers.array[i].x >= window_x) && (gmap.markers.array[i].x < window_x + htiles) && (gmap.markers.array[i].y >= window_y) && (gmap.markers.array[i].y < window_y + vtiles))
+            if (((unsigned int)gmap.markers.array[i].x >= window_x) &&
+                ((unsigned int)gmap.markers.array[i].x < window_x + htiles) &&
+                ((unsigned int)gmap.markers.array[i].y >= window_y) &&
+                ((unsigned int)gmap.markers.array[i].y < window_y + vtiles))
             {
                 draw_sprite(double_buffer, marker_image, (gmap.markers.array[i].x - window_x) * TILE_W + TILE_W / 2, (gmap.markers.array[i].y - window_y) * TILE_H - TILE_H / 2);
             }                      /* If marker is visible */
@@ -1057,12 +1058,12 @@ void draw_map(s_show &showing)
     if (draw_mode == BLOCK_COPY && copyx1 != -1 && copyy1 != -1)
     {
         // Using this simply because it will hold our 4 coords easier
-        short x1, y1, x2, y2;
+        unsigned short x1, y1, x2, y2;
 
-        x1 = (copyx1 - window_x) * TILE_W;
-        y1 = (copyy1 - window_y) * TILE_H;
-        x2 = (copyx2 < window_x + htiles ? (copyx2 + 1 - window_x) * TILE_W - 1 : htiles * TILE_W);
-        y2 = (copyy2 < window_y + vtiles ? (copyy2 + 1 - window_y) * TILE_H - 1 : vtiles * TILE_H);
+        x1 = std::max(0U, (copyx1 - window_x) * TILE_W);
+        y1 = std::max(0U, (copyy1 - window_y) * TILE_H);
+        x2 = ((unsigned int)copyx2 < window_x + htiles) ? (copyx2 - window_x + 1) * TILE_W - 1 : htiles * TILE_W;
+        y2 = ((unsigned int)copyy2 < window_y + vtiles) ? (copyy2 - window_y + 1) * TILE_H - 1 : vtiles * TILE_H;
 
         if (copying == 0)
         {
@@ -1122,8 +1123,8 @@ void draw_menubars(s_show &showing)
 {
     int p, xp = 0, yp = 0;
     int draw_mode_display, draw_mode_last, draw_the_rect;
-    int mouse_tile_x = mouse_x / TILE_W;
-    int mouse_tile_y = mouse_y / TILE_H;
+    unsigned int mouse_tile_x = std::max(0, mouse_x / TILE_W);
+    unsigned int mouse_tile_y = std::max(0, mouse_y / TILE_H);
     size_t i;
 
     /* Description for the current draw_mode (could use work) */
@@ -1524,35 +1525,35 @@ void draw_menubars(s_show &showing)
 
 
     /* Add a border around the iconset on the right */
-    for (p = 0; p < 8; p++)
+    for (i = 0; i < 8; i++)
     {
         // OC TODO: What does "173" represent, and can it be made more dynamic?
-        rect(double_buffer, htiles * TILE_W + p + 2, p, (htiles + 5) * TILE_W - (p + 1), 173 - p, 24 - p);
+        rect(double_buffer, htiles * TILE_W + i + 2, i, (htiles + 5) * TILE_W - (i + 1), 173 - i, 24 - i);
     }
 
     /* Display the iconset in the right menu */
     if (icon_set != 999)
     {
-        for (p = 0; p < ICONSET_SIZE2; p++)
+        for (i = 0; i < ICONSET_SIZE2; i++)
         {
             /* Left 20 icons */
-            blit(icons[icon_set * ICONSET_SIZE + p], double_buffer, 0, 0, htiles * TILE_W + TILE_W / 2 + 1, p * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_H);
-            blit(icons[icon_set * ICONSET_SIZE + p + ICONSET_SIZE2], double_buffer, 0, 0, (htiles + 1) * TILE_W + TILE_W / 2 + 1, p * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_H);
+            blit(icons[icon_set * ICONSET_SIZE + i], double_buffer, 0, 0, htiles * TILE_W + TILE_W / 2 + 1, i * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_H);
+            blit(icons[icon_set * ICONSET_SIZE + i + ICONSET_SIZE2], double_buffer, 0, 0, (htiles + 1) * TILE_W + TILE_W / 2 + 1, i * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_H);
             /* Right 20 icons */
-            if ((icon_set + 1) * ICONSET_SIZE + p < max_sets * ICONSET_SIZE)
+            if ((icon_set + 1) * ICONSET_SIZE + i < max_sets * ICONSET_SIZE)
             {
-                blit(icons[(icon_set + 1) * ICONSET_SIZE + p], double_buffer, 0, 0, (htiles + 2) * TILE_W + TILE_W / 2 + 1, p * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_H);
-                blit(icons[(icon_set + 1) * ICONSET_SIZE + p + ICONSET_SIZE2], double_buffer, 0, 0, (htiles + 3) * TILE_W + TILE_W / 2 + 1, p * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_H);
+                blit(icons[(icon_set + 1) * ICONSET_SIZE + i], double_buffer, 0, 0, (htiles + 2) * TILE_W + TILE_W / 2 + 1, i * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_H);
+                blit(icons[(icon_set + 1) * ICONSET_SIZE + i + ICONSET_SIZE2], double_buffer, 0, 0, (htiles + 3) * TILE_W + TILE_W / 2 + 1, i * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_H);
             }
             else
             {
                 /* This loops the first 20 icons around when you're at the end of
                  * the icon_set
                  */
-                blit(icons[p], double_buffer, 0, 0, (htiles + 2) * TILE_W + TILE_W / 2 + 1, p * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_W);
-                blit(icons[ICONSET_SIZE2 + p], double_buffer, 0, 0, (htiles + 3) * TILE_W + TILE_W / 2 + 1, p * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_H);
+                blit(icons[i], double_buffer, 0, 0, (htiles + 2) * TILE_W + TILE_W / 2 + 1, i * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_W);
+                blit(icons[ICONSET_SIZE2 + i], double_buffer, 0, 0, (htiles + 3) * TILE_W + TILE_W / 2 + 1, i * TILE_H + TILE_H / 2 - 1, TILE_W, TILE_H);
             }                      // if..else ()
-        }                         // for (p)
+        }                         // for (i)
     }                            // if (icon_set)
 
     draw_the_rect = 0;
@@ -1565,7 +1566,7 @@ void draw_menubars(s_show &showing)
 
         draw_the_rect = 1;
     }
-    else if (curtile >= 0 && curtile < ICONSET_SIZE && (icon_set == max_sets - 1))
+    else if (curtile < ICONSET_SIZE && (icon_set == max_sets - 1))
     {
         /* These are the right 20: */
         xp = (curtile / ICONSET_SIZE2) + 2;
@@ -1706,50 +1707,40 @@ void draw_menubars(s_show &showing)
  */
 static void draw_shadow(const int parallax)
 {
-    int layer_x, j;
-    int layer_x1, layer_y1, layer_x2, layer_y2;
-    int x0, y0;
+    unsigned int layer_x, layer_y;
+    unsigned int layer_x1, layer_y1, layer_x2, layer_y2;
+    unsigned int x0, y0;
+    signed int parallax_x = 0;
+    signed int parallax_y = 0;
     int ss;
 
+    if (gmap.pdiv != 0)
+    {
+        parallax_x = window_x * gmap.pmult / gmap.pdiv;
+        parallax_y = window_y * gmap.pmult / gmap.pdiv;
+    }
+
     /* Calculate the top left, taking parallax into account */
-    layer_x1 = parallax ? window_x * gmap.pmult / gmap.pdiv : window_x;
-    layer_y1 = parallax ? window_y * gmap.pmult / gmap.pdiv : window_y;
+    layer_x1 = parallax ? std::max(0, parallax_x) : window_x;
+    layer_y1 = parallax ? std::max(0, parallax_y) : window_y;
 
     /* Calculate bottom right */
-    layer_x2 = layer_x1 + htiles;
-    layer_y2 = layer_y1 + vtiles;
-
-    /* Make sure these don't step off the edges of the map */
-    if (layer_x1 < 0)
-    {
-        layer_x1 = 0;
-    }
-    if (layer_y1 < 0)
-    {
-        layer_y1 = 0;
-    }
-    if (layer_x2 > gmap.xsize)
-    {
-        layer_x2 = gmap.xsize;
-    }
-    if (layer_y2 > gmap.ysize)
-    {
-        layer_y2 = gmap.ysize;
-    }
+    layer_x2 = std::min(layer_x1 + htiles, gmap.xsize);
+    layer_y2 = std::min(layer_y1 + vtiles, gmap.ysize);
 
     /* Calculate the pixel-based coordinate of the top left */
     x0 = window_x * TILE_W;
     y0 = window_y * TILE_H;
 
     /* ...And draw the tilemap */
-    for (j = layer_y1; j < layer_y2; ++j)
+    for (layer_y = layer_y1; layer_y < layer_y2; ++layer_y)
     {
         for (layer_x = layer_x1; layer_x < layer_x2; ++layer_x)
         {
-            ss = sh_map[j * gmap.xsize + layer_x];
+            ss = sh_map[layer_y * gmap.xsize + layer_x];
             if (ss > 0)
             {
-                draw_trans_sprite(double_buffer, shadow[ss], layer_x * TILE_W - x0, j * TILE_H - y0);
+                draw_trans_sprite(double_buffer, shadow[ss], layer_x * TILE_W - x0, layer_y * TILE_H - y0);
             }
         }
     }
@@ -1772,7 +1763,7 @@ static void draw_shadow(const int parallax)
  */
 int find_cursor(int direction)
 {
-    int col, row;                // Used to scan the map
+    unsigned int col, row;                // Used to scan the map
     int first_x, first_y, prev_x, prev_y, next_x, next_y, last_x, last_y;
     int the_attrib;              // Which attrib we're going to look for
 
@@ -1856,7 +1847,7 @@ int find_cursor(int direction)
         return 0;
     }
 
-    if ((*curr_x < 0 || *curr_x > gmap.xsize) || (*curr_y < 0 || *curr_y > gmap.ysize))
+    if ((*curr_x < 0 || *curr_x > (int)gmap.xsize) || (*curr_y < 0 || *curr_y > (int)gmap.ysize))
     {
         *curr_x = 0;
         *curr_y = 0;
@@ -1906,14 +1897,14 @@ int find_cursor(int direction)
             }
 
             /* Set prev_[xy] as close to curr_[xy] as possible */
-            if (row < *curr_y || (row == *curr_y && col < *curr_x))
+            if ((int)row < *curr_y || ((int)row == *curr_y && (int)col < *curr_x))
             {
                 prev_x = col;
                 prev_y = row;
             }
 
             /* Check for anything after the curr_[xy] coords */
-            if (row > *curr_y || (row == *curr_y && col > *curr_x))
+            if ((int)row > *curr_y || ((int)row == *curr_y && (int)col > *curr_x))
             {
                 /* Only set the first-found attrib after the curr_[xy] coords; all
                  * others will be ignored
@@ -2005,11 +1996,11 @@ int find_cursor(int direction)
     }
 
     /* Step 5a: Center on attrib if outside the window; focus-only if inside */
-    if (*curr_x < window_x || *curr_x > window_x + htiles - 1)
+    if (*curr_x < (int)window_x || *curr_x > (int)(window_x + htiles - 1))
     {
         center_window_x(*curr_x);
     }
-    if (*curr_y < window_y || *curr_y > window_y + vtiles - 1)
+    if (*curr_y < (int)window_y || *curr_y > (int)(window_y + vtiles - 1))
     {
         center_window_y(*curr_y);
     }
@@ -2034,7 +2025,7 @@ int find_cursor(int direction)
  * \returns 0 if user hits ESC (cancel)
  * \returns 1 if user hits ENTER
  */
-unsigned int get_line(const int line_x, const int line_y, char *buffer, const int max_len)
+unsigned int get_line(const int line_x, const int line_y, char *buffer, const size_t max_len)
 {
     unsigned int done = 0, index = 0, ch;
     BITMAP *under;
@@ -2200,7 +2191,7 @@ void get_tile(void)
 void global_change(void)
 {
     unsigned int response, done;
-    int tile_from = 0, tile_to = 0, i;
+    unsigned int tile_from = 0, tile_to = 0, i;
 
     /* Layers and attributes */
     int p1 = 0, p2 = 0, p3 = 0, ps = 0, po = 0, pz = 0;
@@ -2226,7 +2217,7 @@ void global_change(void)
             tile_from = atoi(strbuf);
 
             /* Make sure the value is valid */
-            if (!(tile_from >= 0 && tile_from < ICONSET_SIZE * max_sets))
+            if (!(tile_from < ICONSET_SIZE * max_sets))
             {
                 sprintf(strbuf, "Invalid tile: %d", tile_from);
                 cmessage(strbuf);
@@ -2264,7 +2255,7 @@ void global_change(void)
             tile_to = atoi(strbuf);
 
             /* Make sure the value is valid */
-            if (!(tile_to >= 0 && tile_to < ICONSET_SIZE * max_sets))
+            if (!(tile_to < ICONSET_SIZE * max_sets))
             {
                 sprintf(strbuf, "Invalid tile: %d", tile_to);
                 cmessage(strbuf);
@@ -2396,7 +2387,7 @@ void goto_coords(void)
         else
         {
             new_x = atoi(strbuf);
-            if (new_x < 0 || new_x >= gmap.xsize)
+            if (new_x < 0 || new_x >= (int)gmap.xsize)
             {
                 new_x = window_x;
             }
@@ -2432,7 +2423,7 @@ void goto_coords(void)
         else
         {
             new_y = atoi(strbuf);
-            if (new_y < 0 || new_y >= gmap.ysize)
+            if (new_y < 0 || new_y >= (int)gmap.ysize)
             {
                 new_y = window_y;
             }
@@ -2614,22 +2605,8 @@ void make_rect(BITMAP *where, const int rect_height, const int rect_width)
 void normalize_view(void)
 {
     /* These prevent the user from moving past the map's edge */
-    if (window_x > gmap.xsize - htiles)
-    {
-        window_x = gmap.xsize - htiles;
-    }
-    if (window_y > gmap.ysize - vtiles)
-    {
-        window_y = gmap.ysize - vtiles;
-    }
-    if (window_x < 0)
-    {
-        window_x = 0;
-    }
-    if (window_y < 0)
-    {
-        window_y = 0;
-    }
+    window_x = std::max(0U, std::min(gmap.xsize - htiles, window_x));
+    window_y = std::max(0U, std::min(gmap.ysize - vtiles, window_y));
 }                               /* normalize_view() */
 
 
@@ -2686,7 +2663,7 @@ void paste_region(const int tx, const int ty)
     {
         for (zx = 0; zx <= cbw; zx++)
         {
-            if (ty + zy < gmap.ysize && tx + zx < gmap.xsize)
+            if (ty + zy < (int)gmap.ysize && tx + zx < (int)gmap.xsize)
             {
                 coord1 = (ty + zy) * gmap.xsize + tx + zx;
                 coord2 = zy * gmap.xsize + zx;
@@ -2756,7 +2733,7 @@ void paste_region_special(const int tx, const int ty)
             {
                 for (zx = 0; zx <= cbw; zx++)
                 {
-                    if (ty + zy < gmap.ysize && tx + zx < gmap.xsize)
+                    if (ty + zy < (int)gmap.ysize && tx + zx < (int)gmap.xsize)
                     {
                         coord1 = (ty + zy) * gmap.xsize + tx + zx;
                         coord2 = zy * gmap.xsize + zx;
@@ -3562,7 +3539,7 @@ int process_keyboard(s_show &showing, const int k)
 void process_menu_bottom(const int cx, const int cy)
 {
     unsigned int response;
-    int displacement;
+    signed int displacement;
 
     scare_mouse();
 
@@ -3581,7 +3558,9 @@ void process_menu_bottom(const int cx, const int cy)
         update_tileset();
 
         while (mouse_b & 1)
-        {}
+        {
+            // Do nothing
+        }
         return;
     }
 
@@ -3608,7 +3587,9 @@ void process_menu_bottom(const int cx, const int cy)
     {
         gmap.zero_zone = 1 - gmap.zero_zone;
         while (mouse_b & 1)
-        {}
+        {
+            // Do nothing
+        }
         return;
     }
 
@@ -3647,7 +3628,9 @@ void process_menu_bottom(const int cx, const int cy)
             gmap.map_mode = 0;
         }
         while (mouse_b & 1)
-        {}
+        {
+            // Do nothing
+        }
         return;
     }
 
@@ -3656,7 +3639,9 @@ void process_menu_bottom(const int cx, const int cy)
     {
         gmap.can_save = 1 - gmap.can_save;
         while (mouse_b & 1)
-        {}
+        {
+            // Do nothing
+        }
         return;
     }
 
@@ -3665,7 +3650,9 @@ void process_menu_bottom(const int cx, const int cy)
     {
         gmap.can_warp = 1 - gmap.can_warp;
         while (mouse_b & 1)
-        {}
+        {
+            // Do nothing
+        }
         return;
     }
 
@@ -3708,7 +3695,7 @@ void process_menu_bottom(const int cx, const int cy)
         /* If we get here, value is a specific coordinate on the map; check
          * that it is within the map bounds
          */
-        if (displacement >= gmap.xsize)
+        if (displacement >= (int)gmap.xsize)
         {
             sprintf(strbuf, "Invalid x-coordinate for warp: %d", displacement);
             cmessage(strbuf);
@@ -3759,7 +3746,7 @@ void process_menu_bottom(const int cx, const int cy)
         /* If we get here, value is a specific coordinate on the map; check
          * that it is within the map bounds
          */
-        if (displacement >= gmap.ysize)
+        if (displacement >= (int)gmap.ysize)
         {
             sprintf(strbuf, "Invalid y-coordinate for warp: %d", displacement);
             cmessage(strbuf);
@@ -3802,7 +3789,7 @@ void process_menu_bottom(const int cx, const int cy)
                 return;
             }
         }
-        else if (!(atoi(strbuf) >= 0 && atoi(strbuf) < gmap.xsize))
+        else if (!(atoi(strbuf) >= 0 && atoi(strbuf) < (int)gmap.xsize))
         {
             sprintf(strbuf, "Invalid starting x-position: %d", response);
             cmessage(strbuf);
@@ -3844,7 +3831,7 @@ void process_menu_bottom(const int cx, const int cy)
                 return;
             }
         }
-        else if (!(atoi(strbuf) >= 0 && atoi(strbuf) < gmap.ysize))
+        else if (!(atoi(strbuf) >= 0 && atoi(strbuf) < (int)gmap.ysize))
         {
             sprintf(strbuf, "Invalid starting y-position: %d", response);
             cmessage(strbuf);
@@ -3876,7 +3863,9 @@ void process_menu_bottom(const int cx, const int cy)
     {
         gmap.use_sstone = 1 - gmap.use_sstone;
         while (mouse_b & 1)
-        {}
+        {
+            // Do nothing
+        }
         return;
     }
 
@@ -3978,12 +3967,14 @@ void process_menu_bottom(const int cx, const int cy)
  *
  * Selects one of the tiles from the menu on the right
  *
- * \param   cx X-coord of the tile
- * \param   cy Y-coord of the tile
+ * \param   current_mouse_x X-coord of the tile
+ * \param   current_mouse_y Y-coord of the tile
  */
-void process_menu_right(const int cx, const int cy)
+void process_menu_right(const int current_mouse_x, const int current_mouse_y)
 {
     int xp, yp;
+    unsigned int cx = std::max(0, current_mouse_x);
+    unsigned int cy = std::max(0, current_mouse_y);
 
     /* Check whether the mouse is over one if the selectable tiles */
     if (cy > 8 && cy < 168 && cx >= htiles * TILE_W + TILE_W / 2 && cx < (htiles + 4) * TILE_W + TILE_W / 2)
@@ -4256,16 +4247,8 @@ void process_mouse(const int mouse_button)
         }                         /* if (dmode) */
     }                            // if (mouse_button == 2)
 
-    x = mouse_x / TILE_W;
-    y = mouse_y / TILE_H;
-    if (y > (vtiles - 1))
-    {
-        y = vtiles - 1;
-    }
-    if (x > (htiles - 1))
-    {
-        x = htiles - 1;
-    }
+    x = std::min(htiles - 1, (unsigned int)mouse_x / TILE_W);
+    y = std::min(vtiles - 1, (unsigned int)mouse_y / TILE_H);
 }                               /* process_mouse() */
 
 
@@ -4274,7 +4257,7 @@ void process_mouse(const int mouse_button)
  *
  * This is a feeble attempt to support joysticks, but untested
  */
-void process_movement(s_show &showing, int val)
+void process_movement(s_show &/*showing*/, int val)
 {
     switch (val)
     {
@@ -4367,6 +4350,7 @@ void process_movement(s_show &showing, int val)
  */
 void process_movement_joy(void)
 {
+    return;
     JOYSTICK_INFO *stk;
 
     /* Process joystick movement as if it were the mouse or keyboard used */
@@ -4510,7 +4494,8 @@ int prompt_BMP_PCX(void)
  */
 void read_controls(s_show &showing)
 {
-    int mouse_button, oldx, oldy;
+    int mouse_button;
+    unsigned int oldx, oldy;
     int val;
 
     needupdate = 0;
@@ -4672,8 +4657,8 @@ void resize_map(const int selection)
 {
     unsigned int response, done;
     unsigned int size_both = gmap.xsize * gmap.ysize;
-    int old_height, old_width, new_height, new_width;
-    int ix, iy, coord1, coord2;
+    size_t old_height, old_width, new_height, new_width;
+    unsigned int ix, iy, coord1, coord2;
     size_t i;
     s_marker *m;
     size_t ssize = sizeof(unsigned short);
@@ -4707,17 +4692,18 @@ void resize_map(const int selection)
                 /* Allow "+3" or "-16" to change relative to current size */
                 if (strbuf[0] == '-' || strbuf[0] == '+')
                 {
-                    new_width = gmap.xsize + atoi(strbuf);
+                    // atoi() accepts leading '-' and '+'
+                    new_width = (size_t)(gmap.xsize + atoi(strbuf));
                 }
                 else
                 {
-                    new_width = atoi(strbuf);
+                    new_width = (size_t)atoi(strbuf);
                 }
 
                 /* Make sure the value is valid */
                 if (new_width < MIN_WIDTH || new_width > MAX_WIDTH)
                 {
-                    sprintf(strbuf, "Invalid width: %d", new_width);
+                    sprintf(strbuf, "Invalid width: %d", (int)new_width);
                     cmessage(strbuf);
                     wait_enter();
                 }
@@ -4753,17 +4739,17 @@ void resize_map(const int selection)
                 /* Allow "+3" or "-16" to change relative to current size */
                 if (strbuf[0] == '-' || strbuf[0] == '+')
                 {
-                    new_height = gmap.ysize + atoi(strbuf);
+                    new_height = (size_t)(gmap.ysize + atoi(strbuf));
                 }
                 else
                 {
-                    new_height = atoi(strbuf);
+                    new_height = (size_t)atoi(strbuf);
                 }
 
                 /* Make sure the value is valid */
                 if (new_height < MIN_HEIGHT || new_height > MAX_HEIGHT)
                 {
-                    sprintf(strbuf, "%d is an invalid height!", new_height);
+                    sprintf(strbuf, "%d is an invalid height!", (int)new_height);
                     cmessage(strbuf);
                     wait_enter();
                 }
@@ -4779,7 +4765,7 @@ void resize_map(const int selection)
     done = 0;
     for (m = gmap.markers.array; m < gmap.markers.array + gmap.markers.size; ++m)
     {
-        if (m->x >= new_width || m->y >= new_height)
+        if (m->x >= (int)new_width || m->y >= (int)new_height)
         {
             done++;
         }
@@ -4802,7 +4788,7 @@ void resize_map(const int selection)
             // They chose to remove the markers
             for (m = gmap.markers.array + gmap.markers.size; m > gmap.markers.array; --m)
             {
-                if (m->x >= new_width || m->y >= new_height)
+                if (m->x >= (int)new_width || m->y >= (int)new_height)
                 {
                     // This removes the marker
                     add_change_marker(m->x, m->y, 2, &curmarker);

@@ -129,6 +129,7 @@ unsigned char *z_map, *sh_map, *o_map, *cz_map, *csh_map, *co_map;
 unsigned char *search_map;
 
 
+
 /*! \brief Blit to screen
  *
  * Since this is called repeatedly, make a function; if we ever have to make
@@ -168,7 +169,7 @@ void load_iconsets(PALETTE pal)
  */
 void load_map(s_show &showing, const char *path)
 {
-    int p, q, i;
+    unsigned int p, q, i;
     PACKFILE *pf;
     char load_fname[PATH_MAX];
 
@@ -345,7 +346,7 @@ void set_pcx(BITMAP **pcx_buf, const char *pcx_file, PALETTE pcx_pal, const int 
 /*! \brief Cleanup scripts used in mapedit.c and mapdump.c */
 void shared_cleanup(void)
 {
-    int i;
+    size_t i;
 
     destroy_bitmap(font6);
     destroy_bitmap(marker_image);
@@ -369,7 +370,7 @@ void shared_cleanup(void)
 /*! \brief Startup scripts used in mapedit.c and mapdump.c */
 void shared_startup(void)
 {
-    int i, x, y;
+    unsigned int i, x, y;
 
     set_palette(pal);
 
@@ -481,11 +482,10 @@ void shared_startup(void)
  */
 void visual_map(s_show showing, const char *save_fname)
 {
-    int i, j, w;
+    size_t i, j, w;
     BITMAP *bmp;
     const unsigned int xsize = gmap.xsize * TILE_W;
     const unsigned int ysize = gmap.ysize * TILE_H;
-    unsigned char *layer_c;
     unsigned short *layer_s;
 
     /* Create a bitmap the same size as the map */
@@ -647,7 +647,7 @@ void visual_map(s_show showing, const char *save_fname)
  * \param   showing Struct detailing which layers/attributes to output.
  * \param   output_filename File to save the map to.
  */
-void textual_map(s_show showing, const char *output_filename)
+void textual_map(s_show showing, const char */*output_filename*/)
 {
     unsigned int row, col;
     size_t tile_index;
@@ -745,14 +745,31 @@ void textual_map(s_show showing, const char *output_filename)
     if (showing.entities)
     {
         printf("Entities:\n");
-        printf("index:\tchrx,x,y,tilex,tiley,eid,active,facing,moving,movcnt,framectr,movemode,obsmode,delay,"
-               "delayctr,speed,scount,cmd,sidx,extra,chasing,cmdnum,atype,snapback,facehero,transl,"
-               "script,target_x,target_y\n");
+        bool active_entities_found = FALSE;
         for (entity_index = 0; entity_index < MAX_ENTITIES_PER_MAP; entity_index++)
         {
             if (gent[entity_index].active)
             {
-                printf("%d:\t", entity_index);
+                active_entities_found = TRUE;
+                break;
+            }
+        }
+        if (active_entities_found)
+        {
+            printf("index:\tchrx,x,y,tilex,tiley,eid,active,facing,moving,movcnt,framectr,movemode,obsmode,delay,"
+               "delayctr,speed,scount,cmd,sidx,extra,chasing,cmdnum,atype,snapback,facehero,transl,"
+               "script,target_x,target_y\n");
+        }
+        else
+        {
+            printf("No active entities found.");
+        }
+
+        for (entity_index = 0; entity_index < MAX_ENTITIES_PER_MAP; entity_index++)
+        {
+            if (gent[entity_index].active)
+            {
+                printf("%d:\t", (int)entity_index);
                 printf("%d,", gent[entity_index].chrx);
                 printf("%d,", gent[entity_index].x);
                 printf("%d,", gent[entity_index].y);
@@ -804,7 +821,7 @@ void textual_map(s_show showing, const char *output_filename)
         for (boundary_index = 0; boundary_index < gmap.bounds.size; boundary_index++)
         {
             printf("%d:\t%d, %d, %d, %d, %d\n",
-                boundary_index,
+                (int)boundary_index,
                 gmap.bounds.array[boundary_index].left,
                 gmap.bounds.array[boundary_index].top,
                 gmap.bounds.array[boundary_index].right,
@@ -828,7 +845,7 @@ void textual_map(s_show showing, const char *output_filename)
  * \author OC
  * \date 20151226
  */
-void textual_map_json(s_show showing)
+void textual_map_json(s_show /*showing*/)
 {
     unsigned int row, col;
     size_t tile_index;

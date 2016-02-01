@@ -313,6 +313,7 @@ int every_hit_999 = 0;
 /*! The number of frames per second */
 #define KQ_TICKS 100
 
+
 /*! \brief Timer Event structure
  *
  * Holds the information relating to a forthcoming event
@@ -513,6 +514,7 @@ int add_timer_event(const char *n, int delta)
 #ifdef DEBUGMODE
 BITMAP *alloc_bmp(int, int, const char *);  // Get rid of "no prev prototype" warning
 
+
 /*! \brief Creates a bitmap, giving an error message with the specified name if it fails.
  *
  * This function is wrapped in an #if..#endif guard so it only gets called
@@ -659,11 +661,9 @@ static void allocate_stuff(void)
  *
  * \param   center Unused variable
  */
-void calc_viewport(int center)
+void calc_viewport(int /*center*/)
 {
     int sx, sy, bl, br, bu, bd, zx, zy;
-
-    (void) center;               // ML,2002.09.21: unused variable right now, casting to void to prevent warnings
 
     if (vfollow && numchrs > 0)
     {
@@ -1292,7 +1292,7 @@ void load_heroes(void)
  */
 static void load_map(const std::string &map_name)
 {
-    int i;
+    size_t i;
     PACKFILE *pf;
 
     reset_timer_events();
@@ -1495,8 +1495,7 @@ static void my_counter(void)
 
     animation_count++;
     timer_count++;
-}
-END_OF_FUNCTION(my_counter)
+} END_OF_FUNCTION(my_counter)
 
 
 
@@ -1515,7 +1514,7 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     size_t o;
     DATAFILE *pb;
 
-    mapsize = (size_t) g_map.xsize * (size_t) g_map.ysize;
+    mapsize = (size_t)g_map.xsize * (size_t)g_map.ysize;
 
     draw_background = draw_middle = draw_foreground = draw_shadow = 0;
 
@@ -1555,7 +1554,7 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    for (i = 0; i < (size_t) numchrs; i++)
+    for (i = 0; i < (size_t)numchrs; i++)
     {
         /* This allows us to either go to the map's default starting coords
          * or specify exactly where on the map to go to (like when there
@@ -1595,9 +1594,9 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     pb = load_datafile_object(PCX_DATAFILE, tilesets[g_map.tileset].icon_set);
     pcxb = (BITMAP *) pb->dat;
 
-    for (o = 0; o < (size_t) pcxb->h / 16; o++)
+    for (o = 0; o < (size_t)pcxb->h / 16; o++)
     {
-        for (i = 0; i < (size_t) pcxb->w / 16; i++)
+        for (i = 0; i < (size_t)pcxb->w / 16; i++)
         {
             blit((BITMAP *) pb->dat, map_icons[o * (pcxb->w / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
         }
@@ -1638,7 +1637,7 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     noe = 0;
-    for (i = 0; i < (size_t) numchrs; i++)
+    for (i = 0; i < (size_t)numchrs; i++)
     {
         g_ent[i].active = 1;
     }
@@ -1914,7 +1913,7 @@ static void startup(void)
         }
     }
 
-    srand((unsigned) time(&t));
+    srand((unsigned)time(&t));
     pcxb = load_datafile_object(PCX_DATAFILE, "MISC_PCX");
 
     if (!pcxb)
@@ -2086,8 +2085,7 @@ static void time_counter(void)
         ++khr;
     }
 
-}
-END_OF_FUNCTION(time_counter)
+} END_OF_FUNCTION(time_counter)
 
 
 

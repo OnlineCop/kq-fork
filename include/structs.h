@@ -55,7 +55,8 @@ enum eHeroBitFlags
 
 
 
-struct s_player_input {
+struct s_player_input
+{
     // Flags for determining keypresses and player movement.
     int right, left, up, down;
     int besc, balt, bctrl, benter;

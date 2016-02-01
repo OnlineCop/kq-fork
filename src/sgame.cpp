@@ -88,6 +88,7 @@ static int saveload(int);
 static int confirm_action(void);
 
 
+
 /*! \brief Confirm save
  *
  * If the save slot selected already has a saved game in it, confirm that we
@@ -672,7 +673,8 @@ static int load_game_92(PACKFILE *sdat)
 
     /* Load number of, and data on all characters in game */
     size_t maxchrs = pack_igetw(sdat);            /* max number of characters is fixed in KQ */
-    if (maxchrs != MAXCHRS) {
+    if (maxchrs != MAXCHRS)
+    {
         message(_("Error. MAXCHRS != maxchrs"), 255, 0, 0, 0);
         return 0;
     }

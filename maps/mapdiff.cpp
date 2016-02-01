@@ -265,7 +265,7 @@ void check_entities(void)
 /*! \brief Check all map layers on both maps for differences */
 void check_layers(void)
 {
-    int i, j, k, l;
+    unsigned int i, j, k, l;
     int _map = 0, _bmap = 0, _fmap = 0, _omap = 0, _smap = 0, _zmap = 0;
 
     for (i = 0; i < gmap1.xsize * gmap1.ysize; i++)
@@ -681,7 +681,7 @@ void check_map(void)
     {
         fprintf(stdout, "  num_markers:\t%d\t\t%d\n", (int)_num_markers1, (int)_num_markers2);
     }
-    
+
     // Loop through every marker on whichever map which has more (if inequal).
     while (marker_num < (_num_markers1 > _num_markers2 ? _num_markers1 : _num_markers2))
     {
@@ -782,7 +782,7 @@ void cleanup(void)
  * Display an error message for a file that doesn't exist.
  *
  */
-void error_load(s_show &showing, const char *problem_file)
+void error_load(s_show &/*showing*/, const char *problem_file)
 {
     char err_msg[80];
     ASSERT(problem_file);
@@ -802,7 +802,7 @@ void error_load(s_show &showing, const char *problem_file)
  */
 void load_maps(s_show &showing, const char *filename1, const char *filename2)
 {
-    int i;
+    size_t i;
     char load_fname1[PATH_MAX], load_fname2[PATH_MAX];
     PACKFILE *pf1, *pf2;
 

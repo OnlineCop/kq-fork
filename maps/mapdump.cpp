@@ -44,6 +44,7 @@ const char OPTION_HELP[]           = "-H";
 const char OPTION_HELP_LONG[]      = "--help";
 
 
+
 /*! \brief Memory allocation
  *
  * Allocation of memory, etc. for the maps
@@ -68,6 +69,7 @@ void bufferize(void)
 }                               /* bufferize() */
 
 
+
 /*! \brief Code shutdown and memory deallocation
  *
  * Called at the end of main(), closes everything
@@ -85,12 +87,13 @@ void cleanup(void)
 }                               /* cleanup() */
 
 
+
 /*! \brief Error in loading a map
  *
  * Display an error message for a file that doesn't exist.
  *
  */
-void error_load(s_show &showing, const char *problem_file)
+void error_load(s_show &/*showing*/, const char *problem_file)
 {
     char err_msg[80];
     ASSERT(problem_file);
@@ -99,6 +102,7 @@ void error_load(s_show &showing, const char *problem_file)
     TRACE("%s: could not load %s\n", allegro_error, problem_file);
     allegro_message("%s", err_msg);
 }                               /* error_load() */
+
 
 
 /*! \brief Display help on the command syntax */
@@ -135,6 +139,7 @@ void usage(const char *argv)
     fprintf(stdout, "    and Zones showing.\n");
     fprintf(stdout, "  Layers 2 and 3, Entities, and Shadows will NOT be included.\n");
 }                               /* usage() */
+
 
 
 int main(int argc, char *argv[])

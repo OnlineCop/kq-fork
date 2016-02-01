@@ -526,6 +526,7 @@ static lua_State *theL;
 static char tmap_name[16];
 static char marker_name[255];
 
+
 static enum
 {
     NOT_CHANGING,
@@ -618,6 +619,8 @@ void do_entity(int en_num)
 
 
 #ifdef KQ_CHEATS
+
+
 
 /*! \brief Load cheat code
  *
@@ -1264,9 +1267,6 @@ static int KQ_remove_special_item(lua_State *L)
 #if 0
 void add_special_item(int index, int quantity)
 {
-
-
-
 }
 
 
@@ -1299,6 +1299,8 @@ void remove_special_item(int index)
     }
 }
 #endif
+
+
 
 static int KQ_add_timer(lua_State *L)
 {
@@ -1687,8 +1689,8 @@ static int KQ_chest(lua_State *L)
     int tno = (int) lua_tonumber(L, 1);
     int ino = (int) lua_tonumber(L, 2);
     int amt = (int) lua_tonumber(L, 3);
-    int chestx = (int) lua_tonumber(L, 4);
-    int chesty = (int) lua_tonumber(L, 5);
+    unsigned int chestx = (unsigned int) lua_tonumber(L, 4);
+    unsigned int chesty = (unsigned int) lua_tonumber(L, 5);
     int tile = (int) lua_tonumber(L, 6);
 
     if (tno > -1 && treasure[tno] != 0)
@@ -1711,8 +1713,7 @@ static int KQ_chest(lua_State *L)
          * tile to the given value, and set the zone zero (so we can't search
          * in the same place twice.
          */
-        if ((chestx >= 0 && chestx < g_map.xsize)
-         || (chesty >= 0 && chesty < g_map.ysize))
+        if (chestx < g_map.xsize || chesty < g_map.ysize)
         {
             set_mtile(chestx, chesty, tile);
         }
@@ -3816,9 +3817,7 @@ static int KQ_set_marker(lua_State *L)
     if (m == NULL)
     {
         /* Need to add a new marker */
-        g_map.markers.array =
-            (s_marker *) realloc(g_map.markers.array, sizeof(s_marker) *
-                                 (g_map.markers.size + 1));
+        g_map.markers.array = (s_marker *) realloc(g_map.markers.array, sizeof(s_marker) * (g_map.markers.size + 1));
         m = &g_map.markers.array[g_map.markers.size++];
         strcpy(m->name, marker_name);
     }
@@ -4559,8 +4558,7 @@ static int KQ_traceback(lua_State *theL)
         printf(_("#%d Line %d in (%s %s) %s\n"), level, ar.currentline, ar.what, ar.namewhat, ar.name);
         ++level;
     }
-    message
-    (_("Script error. If KQ was compiled with DEBUGMODE, see allegro.log"), 255, 0, xofs, yofs);
+    message(_("Script error. If KQ was compiled with DEBUGMODE, see allegro.log"), 255, 0, xofs, yofs);
     return 1;
 }
 
@@ -4723,8 +4721,8 @@ int lua_dofile(lua_State *L, const char *filename)
  */
 static int kq_dostring(lua_State *L, const char *cmd)
 {
-  int retval, nrets, top;
-  int i;
+    int retval, nrets, top;
+    int i;
 
     top = lua_gettop(L);
     /* Parse the command into an anonymous function on the stack */
@@ -4743,35 +4741,36 @@ static int kq_dostring(lua_State *L, const char *cmd)
     }
     nrets = lua_gettop(L) - top;
     for (i = -nrets; i < 0; ++i)
-      {
-	if (lua_isboolean(L, i))
-	  {
-	    scroll_console(lua_toboolean(L, i) ? "true" : "false");
-	  }
-	else if (lua_isstring(L, i))
-	  {
-	    scroll_console(lua_tostring(L, i));
-	  }
-	else if (lua_isfunction(L, i))
-	  {
-	    scroll_console("<FUNCTION>");
-	  } else if (lua_isuserdata(L, i))
-	  {
-	    scroll_console("<USERDATA>");
-	  }
-	else if (lua_istable(L, i))
-	  {
-	    scroll_console("<TABLE>");
-	  }
-	else if (lua_isnil(L, i))
-	  {
-	    scroll_console("<NIL>");
-	  }
-	else
-	  {
-	    scroll_console("<OTHER>");
-	  }
-      }
+    {
+        if (lua_isboolean(L, i))
+        {
+            scroll_console(lua_toboolean(L, i) ? "true" : "false");
+        }
+        else if (lua_isstring(L, i))
+        {
+            scroll_console(lua_tostring(L, i));
+        }
+        else if (lua_isfunction(L, i))
+        {
+            scroll_console("<FUNCTION>");
+        }
+        else if (lua_isuserdata(L, i))
+        {
+            scroll_console("<USERDATA>");
+        }
+        else if (lua_istable(L, i))
+        {
+            scroll_console("<TABLE>");
+        }
+        else if (lua_isnil(L, i))
+        {
+            scroll_console("<NIL>");
+        }
+        else
+        {
+            scroll_console("<OTHER>");
+        }
+    }
     lua_pop(L, nrets);
     return 0;
 }

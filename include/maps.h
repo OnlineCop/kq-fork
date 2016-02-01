@@ -51,8 +51,8 @@ struct s_map
     unsigned char use_sstone;    /*!< Non-zero if sunstone works on this map */
     unsigned char can_warp;      /*!< Non-zero if Warp is allowed in this map */
     unsigned char extra_byte;    /*!< Currently unused */
-    int xsize;                   /*!< Map width */
-    int ysize;                   /*!< Map height */
+    unsigned int xsize;          /*!< Map width */
+    unsigned int ysize;          /*!< Map height */
     int pmult;                   /*!< Parallax multiplier */
     int pdiv;                    /*!< Parallax divider */
     int stx;                     /*!< Default start x-coord */
