@@ -790,7 +790,7 @@ static void player_move(void)
         menu();
     }
 #ifdef KQ_CHEATS
-    if (bcheat)
+    if (PlayerInput.bcheat)
     {
         do_luacheat();
     }
