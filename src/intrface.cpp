@@ -1105,7 +1105,7 @@ static void init_obj(lua_State *L)
 
 static int KQ_add_chr(lua_State *L)
 {
-    ePIDX a = (ePIDX) lua_tonumber(L, 1);
+    ePIDX a = (ePIDX) static_cast<int>(lua_tonumber(L, 1));
 
     if (numchrs < PSIZE)
     {
@@ -3335,7 +3335,7 @@ static int KQ_remove_chr(lua_State *L)
 
     if (numchrs > 0)
     {
-        party_index = in_party((ePIDX) lua_tonumber(L, 1));
+        party_index = in_party((ePIDX) static_cast<int>(lua_tonumber(L, 1)));
         if (party_index < MAXCHRS)
         {
             pidx[party_index] = PIDX_UNDEFINED;
@@ -3399,7 +3399,7 @@ static int KQ_select_team(lua_State *L)
         }
         else
         {
-            team[i] = (ePIDX) lua_tonumber(L, (int)PIDX_UNDEFINED);
+            team[i] = (ePIDX) static_cast<int>(lua_tonumber(L, (int)PIDX_UNDEFINED));
             lua_pushnil(L);
             lua_rawseti(L, 1, i + 1);
         }
