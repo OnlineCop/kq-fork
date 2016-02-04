@@ -95,15 +95,7 @@ set(mapdiff_SRCS
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/maps")
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.1")
-        set(STD_VERSION c++1y)
-    else()
-    	set(STD_VERSION c++14)
-    endif()
-else()
-    set(STD_VERSION c++14)
-endif()
+set(CMAKE_CXX_STANDARD 14)
 # DEBUGMODE lets players alter options in the ESC->Config menu (including seeing obstacles and zones)
 #add_definitions(-DDEBUGMODE)
 
