@@ -104,7 +104,7 @@ set(CMAKE_CXX_STANDARD 14)
 #add_definitions(-DKQ_CHEATS)
 
 #set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -DDEBUG -DKQ_CHEATS -Wall -Wextra -Wpedantic -std=c++14")
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -Wall -Wextra -Wpedantic -std=${STD_VERSION}")
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -Wall -Wextra -Wpedantic")
 #set(ALLEGRO_LIBRARY "-lalleg")
 #set(DUMB_LIBRARY "-laldmb -ldumb")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
