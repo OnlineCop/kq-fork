@@ -1,4 +1,3 @@
-# Object files
 *.o
 *.ko
 *.obj
@@ -94,3 +93,11 @@ CMakeFiles
 cmake_install.cmake
 CMakeCache.txt
 compile_commands.json
+
+# Vim files
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
