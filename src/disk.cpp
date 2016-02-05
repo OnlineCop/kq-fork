@@ -140,19 +140,13 @@ int load_s_map(s_map *sm, PACKFILE *f)
     buf = new char[16 + 1]; // was hard-coded to be 16
     memset(&buf[0], 0, 16 + 1); // Clear all garbage values to '0'
     pack_fread(buf, 16, f);
-    if (strlen(buf) > 0)
-    {
-        sm->song_file = buf;
-    }
+    sm->song_file = std::string(buf);
     delete[] buf;
 
     buf = new char[40 + 1]; // was hard-coded to be 40
     memset(&buf[0], 0, 40 + 1); // Clear all garbage values to '0'
     pack_fread(buf, 40, f);
-    if (strlen(buf) > 0)
-    {
-        sm->map_desc = buf;
-    }
+    sm->map_desc = std::string(buf);
     delete[] buf;
 
     if (sm->revision >= 1)
