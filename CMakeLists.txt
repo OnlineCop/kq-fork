@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 project(kq-fork)
 
@@ -95,13 +95,7 @@ set(mapdiff_SRCS
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/maps")
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.1")
-        set(STD_VERSION c++1y)
-    endif()
-else()
-    set(STD_VERSION c++14)
-endif()
+set(CMAKE_CXX_STANDARD 14)
 # DEBUGMODE lets players alter options in the ESC->Config menu (including seeing obstacles and zones)
 #add_definitions(-DDEBUGMODE)
 
@@ -110,7 +104,7 @@ endif()
 #add_definitions(-DKQ_CHEATS)
 
 #set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -DDEBUG -DKQ_CHEATS -Wall -Wextra -Wpedantic -std=c++14")
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -Wall -Wextra -Wpedantic -std=${STD_VERSION}")
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -Wall -Wextra -Wpedantic")
 #set(ALLEGRO_LIBRARY "-lalleg")
 #set(DUMB_LIBRARY "-laldmb -ldumb")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
