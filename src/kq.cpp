@@ -1863,7 +1863,6 @@ static void startup(void)
 
     map_seg = b_seg = f_seg = NULL;
     s_seg = z_seg = o_seg = NULL;
-    memset(&g_map, 0, sizeof(s_map));
 
     allocate_stuff();
     install_keyboard();
