@@ -65,6 +65,9 @@ struct s_map
     std::string map_desc;        /*!< Map name (shown when map first appears) */
     s_marker_array markers;      /*!< Marker array and marker size */
     s_bound_array bounds;        /*!< Bound array and bound size */
+	BITMAP* map_tiles;
+	BITMAP* misc_tiles;
+	BITMAP* entity_tiles;
 };
 
 

@@ -1256,7 +1256,6 @@ void kwait(int dtime)
 void load_heroes(void)
 {
     PACKFILE *f;
-    DATAFILE *pcxb;
     size_t player_index;
 
     /* Hero stats */
@@ -1271,20 +1270,14 @@ void load_heroes(void)
     pack_fclose(f);
 
     /* portraits */
-    pcxb = load_datafile_object(PCX_DATAFILE, "KQFACES_PCX");
-
-    if (!pcxb)
-    {
-        program_death(_("Could not load kqfaces.pcx!"));
-    }
+	BITMAP* faces = get_cached_image("kqfaces.png");
 
     for (player_index = 0; player_index < 4; ++player_index)
     {
-        blit((BITMAP *) pcxb->dat, players[player_index].portrait, 0, player_index * 40, 0, 0, 40, 40);
-        blit((BITMAP *) pcxb->dat, players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
+        blit(faces, players[player_index].portrait, 0, player_index * 40, 0, 0, 40, 40);
+        blit(faces, players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
     }
 
-    unload_datafile_object(pcxb);
 }
 
 
@@ -1515,7 +1508,6 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     size_t i;
     size_t mapsize;
     size_t o;
-    DATAFILE *pb;
 
     mapsize = (size_t)g_map.xsize * (size_t)g_map.ysize;
 
@@ -1594,18 +1586,14 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    pb = load_datafile_object(PCX_DATAFILE, tilesets[g_map.tileset].icon_set);
-    pcxb = (BITMAP *) pb->dat;
-
+	pcxb = g_map.map_tiles;
     for (o = 0; o < (size_t)pcxb->h / 16; o++)
     {
         for (i = 0; i < (size_t)pcxb->w / 16; i++)
         {
-            blit((BITMAP *) pb->dat, map_icons[o * (pcxb->w / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
+            blit(pcxb, map_icons[o * (pcxb->w / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
         }
     }
-
-    unload_datafile_object(pb);
 
     for (o = 0; o < MAX_ANIM; o++)
     {
@@ -1855,8 +1843,6 @@ static void startup(void)
 {
     int p, i, q;
     time_t t;
-    DATAFILE *pcxb;
-    DATAFILE *pb;
     PACKFILE *pf;
 
     allegro_init();
@@ -1916,26 +1902,20 @@ static void startup(void)
     }
 
     srand((unsigned)time(&t));
-    pcxb = load_datafile_object(PCX_DATAFILE, "MISC_PCX");
-
-    if (!pcxb)
-    {
-        program_death(_("Could not load misc.pcx!"));
-    }
-
-    blit((BITMAP *) pcxb->dat, menuptr, 24, 0, 0, 0, 16, 8);
-    blit((BITMAP *) pcxb->dat, sptr, 0, 0, 0, 0, 8, 8);
-    blit((BITMAP *) pcxb->dat, mptr, 8, 0, 0, 0, 8, 8);
-    blit((BITMAP *) pcxb->dat, upptr, 0, 8, 0, 0, 8, 8);
-    blit((BITMAP *) pcxb->dat, dnptr, 8, 8, 0, 0, 8, 8);
-    blit((BITMAP *) pcxb->dat, bptr, 24, 8, 0, 0, 16, 8);
-    blit((BITMAP *) pcxb->dat, noway, 64, 16, 0, 0, 16, 16);
-    blit((BITMAP *) pcxb->dat, missbmp, 0, 16, 0, 0, 20, 6);
-    blit((BITMAP *) pcxb->dat, b_shield, 0, 80, 0, 0, 48, 48);
-    blit((BITMAP *) pcxb->dat, b_shell, 48, 80, 0, 0, 48, 48);
-    blit((BITMAP *) pcxb->dat, b_repulse, 0, 64, 0, 0, 16, 16);
-    blit((BITMAP *) pcxb->dat, b_mp, 0, 24, 0, 0, 10, 8);
-    blit((BITMAP *) pcxb->dat, sfonts[0], 0, 128, 0, 0, 60, 8);
+	BITMAP* misc = get_cached_image("misc.png");
+    blit(misc, menuptr, 24, 0, 0, 0, 16, 8);
+    blit(misc, sptr, 0, 0, 0, 0, 8, 8);
+    blit(misc, mptr, 8, 0, 0, 0, 8, 8);
+    blit(misc, upptr, 0, 8, 0, 0, 8, 8);
+    blit(misc, dnptr, 8, 8, 0, 0, 8, 8);
+    blit(misc, bptr, 24, 8, 0, 0, 16, 8);
+    blit(misc, noway, 64, 16, 0, 0, 16, 16);
+    blit(misc, missbmp, 0, 16, 0, 0, 20, 6);
+    blit(misc, b_shield, 0, 80, 0, 0, 48, 48);
+    blit(misc, b_shell, 48, 80, 0, 0, 48, 48);
+    blit(misc, b_repulse, 0, 64, 0, 0, 16, 16);
+    blit(misc, b_mp, 0, 24, 0, 0, 10, 8);
+    blit(misc, sfonts[0], 0, 128, 0, 0, 60, 8);
 
     for (i = 0; i < 8; i++)
     {
@@ -1960,59 +1940,55 @@ static void startup(void)
 
     for (p = 0; p < 27; p++)
     {
-        blit((BITMAP *) pcxb->dat, stspics, p * 8 + 40, 0, 0, p * 8, 8, 8);
+        blit(misc, stspics, p * 8 + 40, 0, 0, p * 8, 8, 8);
     }
 
     for (p = 0; p < 40; p++)
     {
-        blit((BITMAP *) pcxb->dat, sicons, p * 8, 32, 0, p * 8, 8, 8);
+        blit(misc, sicons, p * 8, 32, 0, p * 8, 8, 8);
     }
 
     for (p = 0; p < 40; p++)
     {
-        blit((BITMAP *) pcxb->dat, sicons, p * 8, 40, 0, p * 8 + 320, 8, 8);
+        blit(misc, sicons, p * 8, 40, 0, p * 8 + 320, 8, 8);
     }
 
     for (p = 0; p < MAX_SHADOWS; p++)
     {
-        blit((BITMAP *) pcxb->dat, shadow[p], p * 16, 160, 0, 0, 16, 16);
+        blit(misc, shadow[p], p * 16, 160, 0, 0, 16, 16);
     }
 
     for (p = 0; p < 8; p++)
     {
-        blit((BITMAP *) pcxb->dat, bub[p], p * 16, 144, 0, 0, 16, 16);
+        blit(misc, bub[p], p * 16, 144, 0, 0, 16, 16);
     }
 
     for (p = 0; p < 3; p++)
     {
-        blit((BITMAP *) pcxb->dat, bord[p], p * 8 + 96, 64, 0, 0, 8, 8);
-        blit((BITMAP *) pcxb->dat, bord[5 + p], p * 8 + 96, 84, 0, 0, 8, 8);
+        blit(misc, bord[p], p * 8 + 96, 64, 0, 0, 8, 8);
+        blit(misc, bord[5 + p], p * 8 + 96, 84, 0, 0, 8, 8);
     }
 
-    blit((BITMAP *) pcxb->dat, bord[3], 96, 72, 0, 0, 8, 12);
-    blit((BITMAP *) pcxb->dat, bord[4], 112, 72, 0, 0, 8, 12);
+    blit(misc, bord[3], 96, 72, 0, 0, 8, 12);
+    blit(misc, bord[4], 112, 72, 0, 0, 8, 12);
 
     for (i = 0; i < 9; i++)
     {
-        blit((BITMAP *) pcxb->dat, pgb[i], i * 16, 48, 0, 0, 9, 9);
+        blit(misc, pgb[i], i * 16, 48, 0, 0, 9, 9);
     }
 
-    unload_datafile_object(pcxb);
     load_heroes();
 
-    pb = load_datafile_object(PCX_DATAFILE, "ALLFONTS_PCX");
-    blit((BITMAP *) pb->dat, kfonts, 0, 0, 0, 0, 1024, 60);
-    unload_datafile_object(pb);
-
-    pb = load_datafile_object(PCX_DATAFILE, "ENTITIES_PCX");
+	BITMAP* allfonts = get_cached_image("fonts.png");
+    blit(allfonts, kfonts, 0, 0, 0, 0, 1024, 60);
+	BITMAP* entities = get_cached_image("entities.png");
     for (q = 0; q < MAXE; q++)
     {
         for (p = 0; p < MAXEFRAMES; p++)
         {
-            blit((BITMAP *) pb->dat, eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
+            blit(entities, eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
         }
     }
-    unload_datafile_object(pb);
 
     /* Initialize tilesets */
     pf = pack_fopen(kqres(DATA_DIR, "tileset.kq"), F_READ_PACKED);

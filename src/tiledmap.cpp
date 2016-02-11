@@ -93,7 +93,7 @@ struct tmx_map {
 	vector<s_marker> markers;
 	vector<s_entity> entities;
 	vector<tmx_layer> layers;
-	void set_current();
+	void set_current(); 
 	const tmx_tileset& find_tileset(const string&) const;
 };
 
@@ -522,17 +522,22 @@ void tmx_map::set_current()
 	// Zones
 	free(z_seg);
 	z_seg = static_cast<unsigned char *>(calloc(xsize * ysize, sizeof(unsigned char)));
-		for (auto &&zone : zones) {
-			for (int i = 0; i < zone.w; ++i) {
-				for (int j = 0; j < zone.h; ++j) {
-					z_seg[(i + zone.x) + xsize * (j + zone.y)] = zone.n;
-				}
+	for (auto &&zone : zones) {
+		for (int i = 0; i < zone.w; ++i) {
+			for (int j = 0; j < zone.h; ++j) {
+				z_seg[(i + zone.x) + xsize * (j + zone.y)] = zone.n;
 			}
 		}
+	}
 	
 	// Entities
 	memset(&g_ent[PSIZE], 0, &g_ent[MAX_ENTITIES] - &g_ent[PSIZE]);
 	copy(begin(entities), end(entities), make_checked_array_iterator(g_ent, MAX_ENTITIES, PSIZE));
+	
+	// Tilemaps
+	g_map.map_tiles = find_tileset(primary_tileset_name).imagedata;
+	g_map.misc_tiles = find_tileset("misc").imagedata;
+	g_map.entity_tiles = find_tileset("entities").imagedata;
 }
 
 const tmx_tileset & tmx_map::find_tileset(const string & name) const

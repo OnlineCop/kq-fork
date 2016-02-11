@@ -49,6 +49,7 @@
 #include "setup.h"
 #include "structs.h"
 #include "timing.h"
+#include "imgcache.h"
 
 
 /*! \name global variables  */
@@ -63,7 +64,7 @@ int deffect[NUM_FIGHTERS];
 int rcount;
 unsigned char vspell;
 unsigned char ms;
-DATAFILE *backart;
+BITMAP *backart;
 
 /* Internal variables */
 static int curw;
@@ -319,7 +320,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
     }
 
     clear_bitmap(double_buffer);
-    blit((BITMAP *) backart->dat, double_buffer, 0, 0, 0, 0, 320, 240);
+    blit(backart, double_buffer, 0, 0, 0, 0, 320, 240);
 
     if ((sall == 0) && (curx > -1) && (cury > -1))
     {
@@ -703,7 +704,7 @@ static int do_combat(char *bg, char *mus, int is_rnd)
     int zoom_step;
 
     in_combat = 1;
-    backart = load_datafile_object(PCX_DATAFILE, bg);
+    backart = get_cached_image(bg);
     if (is_rnd)
     {
         if ((numchrs == 1) && (pidx[0] == AYLA))
@@ -797,7 +798,6 @@ static int do_combat(char *bg, char *mus, int is_rnd)
 
     /*  RB: execute combat  */
     do_round();
-    unload_datafile_object(backart);
     set_music_volume(gmvol / 250.0);
     resume_music();
     if (alldead)
