@@ -19,4 +19,4 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-void load_tmx(const char *);
+void load_tmx(const std::string&);

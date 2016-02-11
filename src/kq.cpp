@@ -70,6 +70,7 @@
 #include "structs.h"
 #include <string>
 #include "tiledmap.h"
+#include "imgcache.h"
 
 
 /*! Name of the current map */
@@ -752,8 +753,8 @@ void calc_viewport(int /*center*/)
  */
 void change_map(const std::string &map_name, int msx, int msy, int mvx, int mvy)
 {
-    load_tmx(map_name);
-    prepare_map(msx, msy, mvx, mvy);
+	load_tmx(map_name);
+	prepare_map(msx, msy, mvx, mvy);
 }
 
 
@@ -1013,6 +1014,7 @@ static void deallocate_stuff(void)
         free_samples();
     }
     deallocate_credits();
+	clear_image_cache();
 
 #ifdef DEBUGMODE
     destroy_bitmap(obj_mesh);

@@ -2,16 +2,31 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
+#include <iterator>
 #include "kq.h"
+#include "platform.h"
 #include "tiledmap.h"
 #include "structs.h"
 #include "enums.h"
 #include "fade.h"
+#include "imgcache.h"
 
 using std::string;
 using std::map;
 using std::vector;
+using std::unique_ptr;
 using namespace tinyxml2;
+
+// Compatibility as VC insists we use these for safety
+#ifdef _MSC_VER
+using stdext::make_checked_array_iterator;
+#else
+template <typename T> 
+T* make_checked_array_iterator(T* ptr, size_t size, size_t offset = 0) {
+	return ptr + offset;
+}
+#endif
 
 struct s_zone {
 	int x;
@@ -33,7 +48,7 @@ struct tmx_tileset {
 	uint32_t firstgid;
 	string name;
 	string sourceimage;
-	void* imagedata;
+	BITMAP* imagedata;
 	vector<tmx_animation> animations;
 	int width;
 	int height;
@@ -43,8 +58,13 @@ struct tmx_layer {
 	string name;
 	int width;
 	int height;
-	vector<uint32_t> data;
+	int size() const { return width * height; }
+	unique_ptr<uint32_t[]> data;
 };
+// Ranged-for support
+uint32_t* begin(tmx_layer& l) { return l.data.get(); }
+uint32_t* end(tmx_layer& l) { return l.data.get() + l.size(); }
+
 struct tmx_map {
 	tmx_map() : map_no(0), zero_zone(false), map_mode(0), can_save(false), tileset(0), use_sstone(false), can_warp(false), xsize(0), ysize(0), pmult(1), pdiv(1), stx(0), sty(0), warpx(0), warpy(0), revision(1) {}
 	string name;
@@ -66,6 +86,7 @@ struct tmx_map {
 	int revision;                /*!< Internal revision number for the map file */
 	string song_file;            /*!< Base file name for map song */
 	string description;          /*!< Map name (shown when map first appears) */
+	string primary_tileset_name;  /*!< The name of the primary tileset (the one with gid=1)*/
 	vector<tmx_tileset> tilesets; /*!< Tilesets defined within this tilemap */
 	vector<s_bound> bounds;
 	vector<s_zone> zones;
@@ -75,6 +96,7 @@ struct tmx_map {
 	void set_current();
 	const tmx_tileset& find_tileset(const string&) const;
 };
+
 static const unsigned short SHADOW_OFFSET = 200;
 static tmx_map load_tmx_map(XMLElement const *root);
 static XMLElement const *find_tmx_element(XMLElement const *, const char *, const char *);
@@ -84,7 +106,6 @@ static vector<s_zone> load_tmx_zones(XMLElement const *);
 static tmx_layer load_tmx_layer(XMLElement const *el);
 static vector<s_entity> load_tmx_entities(XMLElement const *);
 static tmx_tileset load_tmx_tileset(XMLElement const*);
-static map<string, tmx_tileset> load_tilesets(XMLElement const*);
 static XMLElement const *find_layer(XMLElement const *root, const char *name) {
 	return find_tmx_element(root, "layer", name);
 }
@@ -96,12 +117,12 @@ static XMLElement const *find_objectgroup(XMLElement const *root, const char *na
  * Make it the current map for the game
  * \param name the filename
  */
-void load_tmx(const char *name) {
+void load_tmx(const string& name) {
 	XMLDocument tmx;
-	string path = string("maps/") + string(name) + string(".tmx");
-	tmx.LoadFile(path.c_str());
-	if (tmx.LoadFile(path.c_str()) != XML_NO_ERROR) {
-		TRACE("Error loading %s\n%s\n%s\n", name, tmx.GetErrorStr1(),
+	string path = name + string(".tmx");
+	tmx.LoadFile(kqres(MAP_DIR, path.c_str()));
+	if (tmx.Error()) {
+		TRACE("Error loading %s\n%s\n%s\n", name.c_str(), tmx.GetErrorStr1(),
 			tmx.GetErrorStr2());
 		program_death("Could not load map file ");
 	}
@@ -112,7 +133,7 @@ void load_tmx(const char *name) {
 
 	auto loaded_map = load_tmx_map(tmx.RootElement());
 	loaded_map.set_current();
-	strcpy(curmap, name);
+	curmap = name;
 }
 // Convert pointer-to-char to string,
 // converting NULL to the empty string.
@@ -147,7 +168,12 @@ static tmx_map load_tmx_map(XMLElement const *root) {
 	}
 	// Tilesets
 	for (auto xtileset = root->FirstChildElement("tileset"); xtileset; xtileset = xtileset->NextSiblingElement("tileset")) {
-		smap.tilesets.push_back(load_tmx_tileset(xtileset));
+		auto tileset = load_tmx_tileset(xtileset);
+		
+		if (tileset.firstgid == 1) {
+			smap.primary_tileset_name = tileset.name;
+		}
+		smap.tilesets.push_back(std::move(tileset));
 	}
 	// Markers
 	smap.markers = load_tmx_markers(find_objectgroup(root, "markers"));
@@ -182,8 +208,15 @@ vector<s_bound> load_tmx_bounds(XMLElement const *el) {
 				bound.top = i->IntAttribute("y") / 16;
 				bound.right = i->IntAttribute("width") / 16 + bound.left - 1;
 				bound.bottom = i->IntAttribute("height") / 16 + bound.top - 1;
+				bound.btile = 0;
 				auto props = i->FirstChildElement("properties");
-				bound.btile = props ? props->IntAttribute("btile") : 0;
+				if (props) {
+					for (auto property = props->FirstChildElement("property"); property; property = property->NextSiblingElement("property")) {
+						if (property->Attribute("name", "btile")) {
+							bound.btile = property->IntAttribute("value");
+						}
+					}
+				}
 				bounds.push_back(bound);
 			}
 		}
@@ -217,13 +250,13 @@ static XMLElement const *find_tmx_element(XMLElement const *root, const char *ty
 vector<s_marker> load_tmx_markers(XMLElement const *el) {
 	vector<s_marker> markers;
 	if (el) {
-		for (auto i = el->FirstChildElement("object"); i;
-		i = i->NextSiblingElement("object")) {
-			if (i->Attribute("type", "marker")) {
+		for (auto obj = el->FirstChildElement("object"); obj;
+		obj = obj->NextSiblingElement("object")) {
+			if (obj->Attribute("type", "marker")) {
 				s_marker marker;
-				marker.x = i->IntAttribute("x") / 16;
-				marker.y = i->IntAttribute("y") / 16;
-				const char *name = i->Attribute("name");
+				marker.x = obj->IntAttribute("x") / 16;
+				marker.y = obj->IntAttribute("y") / 16;
+				const char *name = obj->Attribute("name");
 				memcpy(marker.name, name, sizeof(marker.name));
 				markers.push_back(marker);
 			}
@@ -244,22 +277,21 @@ static tmx_layer load_tmx_layer(XMLElement const *el) {
 	layer.width = el->IntAttribute("width");
 	auto data = el->FirstChildElement("data");
 	if (data->Attribute("encoding", "csv")) {
-		layer.data.reserve(layer.width * layer.height);
+		layer.data = unique_ptr<uint32_t[]>(new uint32_t[layer.width*layer.height]);
 		const char *raw = data->GetText();
-		while (raw) {
+		for (auto& tile : layer) {
 			const char *next = strchr(raw, ',');
-			uint32_t tile =
-				static_cast<uint32_t>(strtol(raw, nullptr, 10));
+			tile = static_cast<uint32_t>(strtol(raw, nullptr, 10));
 			if (next) {
 				raw = next + 1;
 			}
 			else {
-				raw = nullptr;
+				break;
 			}
-			layer.data.push_back(tile);
 		}
 	}
 	else {
+		// TODO implement compressed layer data (maybe?)
 		program_death("Layer's encoding not supported");
 	}
 	return layer;
@@ -342,30 +374,37 @@ static vector<s_entity> load_tmx_entities(XMLElement const *el) {
 tmx_tileset load_tmx_tileset(XMLElement const * el)
 {
 	tmx_tileset tileset;
-	tileset.name = el->Attribute("name");
 	tileset.firstgid = el->IntAttribute("firstgid");
-	XMLElement const * source;
+	XMLElement const * tsx;
 	XMLDocument sourcedoc;
-	if (el->Attribute("source")) {
-		// Specified 'source' so it's an external tileset
-		string sourcefile = string("maps/") + string(el->Attribute("source"));
-		if (sourcedoc.LoadFile(sourcefile.c_str()) == XML_SUCCESS) {
-			source = sourcedoc.RootElement();
-		}
-		else {
-			TRACE("Loading %s\n", sourcefile.c_str());
+	auto source = el->Attribute("source");
+	if (source) {
+		// Specified 'source' so it's an external tileset. Load it.
+		sourcedoc.LoadFile(kqres(MAP_DIR, source));
+		if (sourcedoc.Error()) {
+			TRACE("Error loading %s\n%s\n%s\n", source, sourcedoc.GetErrorStr1(),
+				sourcedoc.GetErrorStr2());
 			program_death("Couldn't load external tileset");
 		}
+		tsx = sourcedoc.RootElement();
 	}
 	else {
-		// No 'source' so use this element itself
-		source = el;
+		// No 'source' so it's internal; use the element itself
+		tsx = el;
 	}
-	XMLElement const * image = source->FirstChildElement("image");
+	
+	auto name = tsx->Attribute("name");
+	if (name) {
+		tileset.name = name;
+	}
+	// Get the image 
+	XMLElement const * image = tsx->FirstChildElement("image");
 	tileset.sourceimage = image->Attribute("source");
 	tileset.width = image->IntAttribute("width");
 	tileset.height = image->IntAttribute("height");
-	for (auto xtile = source->FirstChildElement("tile"); xtile; xtile = xtile->NextSiblingElement("tile")) {
+	tileset.imagedata = get_cached_image(tileset.sourceimage);
+	// Get the animation data
+	for (auto xtile = tsx->FirstChildElement("tile"); xtile; xtile = xtile->NextSiblingElement("tile")) {
 		tmx_animation anim;
 		anim.tilenumber = xtile->IntAttribute("id");
 		auto xanim = xtile->FirstChildElement("animation");
@@ -383,9 +422,14 @@ tmx_tileset load_tmx_tileset(XMLElement const * el)
 	return tileset;
 }
 
-
+/*! \brief Make this map the current one.
+ * Make this map the one in play by copying its information into the 
+ * global structures. This function is the 'bridge' between the
+ * TMX loader and the original KQ code.
+ */
 void tmx_map::set_current()
 {
+	// general map properties
 	g_map.xsize = xsize;
 	g_map.ysize = ysize;
 	g_map.map_no = map_no;
@@ -401,33 +445,35 @@ void tmx_map::set_current()
 	g_map.tileset = tileset;
 	g_map.use_sstone = use_sstone;
 	g_map.zero_zone = zero_zone;
-	description.copy(g_map.map_desc, sizeof(g_map.map_desc));
-	song_file.copy(g_map.song_file, sizeof(g_map.song_file));
+	g_map.map_desc = description;
+	g_map.song_file = song_file;
 	// Markers
+	free(g_map.markers.array);
 	g_map.markers.size = markers.size();
 	g_map.markers.array = static_cast<s_marker*>(calloc(g_map.markers.size, sizeof(s_marker)));
-	copy(begin(markers), end(markers), g_map.markers.array);
+	copy(begin(markers), end(markers), make_checked_array_iterator(g_map.markers.array, g_map.markers.size));
 	// Bounding boxes
+	free(g_map.bounds.array);
 	g_map.bounds.size = bounds.size();
 	g_map.bounds.array =
-		static_cast<s_bound *>(malloc(sizeof(s_bound) * g_map.bounds.size));
-	copy(begin(bounds), end(bounds), g_map.bounds.array);
+		static_cast<s_bound *>(calloc(g_map.bounds.size, sizeof(s_bound)));
+	copy(begin(bounds), end(bounds), make_checked_array_iterator(g_map.bounds.array, g_map.bounds.size));
 	// Allocate space for layers
 	for (auto&& layer : layers) {
 		if (layer.name == "map") {
 			// map layers - these always have tile offset == 1
 			free(map_seg);
 			unsigned short *ptr = map_seg =
-				static_cast<unsigned short *>(calloc(layer.data.size(), sizeof(*map_seg)));
-			for (auto t : layer.data) {
+				static_cast<unsigned short *>(calloc(layer.size(), sizeof(*map_seg)));
+			for (auto t : layer) {
 				if (t > 0) { --t; }
 				*ptr++ = static_cast<unsigned short>(t);
 			}
 		}
 		else if (layer.name == "bmap") {
 			free(b_seg);
-			unsigned short *ptr = b_seg = static_cast<unsigned short *>(calloc(layer.data.size(), sizeof(*b_seg)));
-			for (auto t : layer.data) {
+			unsigned short *ptr = b_seg = static_cast<unsigned short *>(calloc(layer.size(), sizeof(*b_seg)));
+			for (auto t : layer) {
 				if (t > 0) {
 					--t;
 				}
@@ -436,8 +482,8 @@ void tmx_map::set_current()
 		}
 		else if (layer.name == "fmap") {
 			free(f_seg);
-			unsigned short *ptr = f_seg = static_cast<unsigned short *>(calloc(layer.data.size(), sizeof(*f_seg)));
-			for (auto t : layer.data) {
+			unsigned short *ptr = f_seg = static_cast<unsigned short *>(calloc(layer.size(), sizeof(*f_seg)));
+			for (auto t : layer) {
 				if (t > 0) {
 					--t;
 				}
@@ -449,8 +495,8 @@ void tmx_map::set_current()
 			unsigned short shadow_offset = find_tileset("misc").firstgid + SHADOW_OFFSET;
 			free(s_seg);
 			auto sptr = s_seg =
-				static_cast<unsigned char *>(calloc(layer.data.size(), sizeof(*s_seg)));
-			for (auto t : layer.data) {
+				static_cast<unsigned char *>(calloc(layer.size(), sizeof(*s_seg)));
+			for (auto t : layer) {
 				if (t > 0) {
 					t -= shadow_offset;
 				}
@@ -462,9 +508,9 @@ void tmx_map::set_current()
 			unsigned short obstacle_offset = find_tileset("obstacles").firstgid - 1;
 			free(o_seg);
 			auto sptr = o_seg =
-				static_cast<unsigned char *>(calloc(layer.data.size(), sizeof(o_seg)));
+				static_cast<unsigned char *>(calloc(layer.size(), sizeof(o_seg)));
 
-			for (auto t : layer.data) {
+			for (auto t : layer) {
 				if (t > 0) {
 					t -= obstacle_offset;
 				}
@@ -472,10 +518,10 @@ void tmx_map::set_current()
 			}
 		}
 	}
+	
 	// Zones
 	free(z_seg);
 	z_seg = static_cast<unsigned char *>(calloc(xsize * ysize, sizeof(unsigned char)));
-	if (z_seg) {
 		for (auto &&zone : zones) {
 			for (int i = 0; i < zone.w; ++i) {
 				for (int j = 0; j < zone.h; ++j) {
@@ -483,10 +529,10 @@ void tmx_map::set_current()
 				}
 			}
 		}
-	}
+	
 	// Entities
 	memset(&g_ent[PSIZE], 0, &g_ent[MAX_ENTITIES] - &g_ent[PSIZE]);
-	copy(begin(entities), end(entities), &g_ent[PSIZE]);
+	copy(begin(entities), end(entities), make_checked_array_iterator(g_ent, MAX_ENTITIES, PSIZE));
 }
 
 const tmx_tileset & tmx_map::find_tileset(const string & name) const
@@ -496,5 +542,6 @@ const tmx_tileset & tmx_map::find_tileset(const string & name) const
 			return ans;
 	}
 	// not found
+	TRACE("Tileset '%s' not found in map.\n", name.c_str());
 	program_death("No such tileset");
 }
