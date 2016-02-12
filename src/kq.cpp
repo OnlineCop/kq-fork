@@ -44,6 +44,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <vector>
 
 
 #include "console.h"
@@ -71,6 +72,7 @@
 #include <string>
 #include "tiledmap.h"
 #include "imgcache.h"
+#include "animation.h"
 
 
 /*! Name of the current map */
@@ -805,38 +807,10 @@ void change_mapm(const std::string &map_name, const std::string &marker_name, in
  */
 void check_animation(void)
 {
-    size_t animation_index, animation_tile;
-    int diff = animation_count;
-
-    animation_count -= diff;
-    if (!diff)
-    {
-        return;
-    }
-    for (animation_index = 0; animation_index < MAX_ANIM; animation_index++)
-    {
-        if (adata[animation_index].start != 0)
-        {
-            if (adata[animation_index].delay && adata[animation_index].delay < adelay[animation_index])
-            {
-                adelay[animation_index] %= adata[animation_index].delay;
-                for (animation_tile = adata[animation_index].start; animation_tile <= adata[animation_index].end; animation_tile++)
-                {
-                    if (tilex[animation_tile] < adata[animation_index].end)
-                    {
-                        tilex[animation_tile]++;
-                    }
-                    else
-                    {
-                        tilex[animation_tile] = adata[animation_index].start;
-                    }
-                }
-            }
-            adelay[animation_index] += diff;
-        }
-    }
+	int millis = (1000 * animation_count) / KQ_TICKS;
+	animation_count -= (KQ_TICKS * millis) / 1000;
+	check_animation(millis);
 }
-
 
 
 #ifdef DEBUGMODE

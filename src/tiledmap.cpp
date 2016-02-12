@@ -11,6 +11,7 @@
 #include "enums.h"
 #include "fade.h"
 #include "imgcache.h"
+#include "animation.h"
 
 using std::string;
 using std::map;
@@ -36,14 +37,7 @@ struct s_zone {
 	int n;
 };
 
-struct tmx_animation_frame {
-	int tile;
-	int delay;
-};
-struct tmx_animation {
-	int tilenumber;
-	vector<tmx_animation_frame> frames;
-};
+
 struct tmx_tileset {
 	uint32_t firstgid;
 	string name;
@@ -55,15 +49,16 @@ struct tmx_tileset {
 };
 
 struct tmx_layer {
+	tmx_layer(int w, int h) : width(w), height(h), size(w * h), data(new uint32_t[size]) { }
 	string name;
-	int width;
-	int height;
-	int size() const { return width * height; }
+	const int width;
+	const int height;
+	const int size;
 	unique_ptr<uint32_t[]> data;
 };
 // Ranged-for support
 uint32_t* begin(tmx_layer& l) { return l.data.get(); }
-uint32_t* end(tmx_layer& l) { return l.data.get() + l.size(); }
+uint32_t* end(tmx_layer& l) { return l.data.get() + l.size; }
 
 struct tmx_map {
 	tmx_map() : map_no(0), zero_zone(false), map_mode(0), can_save(false), tileset(0), use_sstone(false), can_warp(false), xsize(0), ysize(0), pmult(1), pdiv(1), stx(0), sty(0), warpx(0), warpy(0), revision(1) {}
@@ -271,10 +266,11 @@ vector<s_marker> load_tmx_markers(XMLElement const *el) {
  * \returns the raw data
  */
 static tmx_layer load_tmx_layer(XMLElement const *el) {
-	tmx_layer layer;
+	
+	auto h = el->IntAttribute("height");
+	auto w = el->IntAttribute("width");
+	tmx_layer layer(w, h);
 	layer.name = el->Attribute("name");
-	layer.height = el->IntAttribute("height");
-	layer.width = el->IntAttribute("width");
 	auto data = el->FirstChildElement("data");
 	if (data->Attribute("encoding", "csv")) {
 		layer.data = unique_ptr<uint32_t[]>(new uint32_t[layer.width*layer.height]);
@@ -410,8 +406,8 @@ tmx_tileset load_tmx_tileset(XMLElement const * el)
 		auto xanim = xtile->FirstChildElement("animation");
 		if (xanim) {
 			for (auto xframe = xanim->FirstChildElement("frame"); xframe; xframe = xframe->NextSiblingElement("frame")) {
-				tmx_animation_frame frame;
-				frame.delay = xframe->IntAttribute("delay");
+				tmx_animation::animation_frame frame;
+				frame.delay = xframe->IntAttribute("duration");
 				frame.tile = xframe->IntAttribute("tileid");
 				anim.frames.push_back(frame);
 			}
@@ -538,6 +534,12 @@ void tmx_map::set_current()
 	g_map.map_tiles = find_tileset(primary_tileset_name).imagedata;
 	g_map.misc_tiles = find_tileset("misc").imagedata;
 	g_map.entity_tiles = find_tileset("entities").imagedata;
+
+	// Animations
+	clear_animations();
+	for (auto&& a : find_tileset(primary_tileset_name).animations) {
+		add_animation(a);
+	}
 }
 
 const tmx_tileset & tmx_map::find_tileset(const string & name) const
