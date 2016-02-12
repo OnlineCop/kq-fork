@@ -129,6 +129,9 @@ BITMAP * image_cache::get(const std::string & name)
 			TRACE("Cannot load bitmap '%s'\n", name.c_str());
 			program_death("Error loading image.");
 		}
+		else {
+			TRACE("Loading '%s' into image cache\n", name.c_str());
+		}
 		cache.insert(std::make_pair(name, BITMAP_PTR(bmp)));
 		return bmp;
 	}

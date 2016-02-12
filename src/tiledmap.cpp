@@ -168,12 +168,12 @@ static tmx_map load_tmx_map(XMLElement const *root) {
 	}
 	// Tilesets
 	for (auto xtileset = root->FirstChildElement("tileset"); xtileset; xtileset = xtileset->NextSiblingElement("tileset")) {
-		auto tileset = load_tmx_tileset(xtileset);
-		
+		smap.tilesets.push_back(load_tmx_tileset(xtileset));
+		// Make a note of the tileset with gid=1 for later
+		const tmx_tileset& tileset = smap.tilesets.back();
 		if (tileset.firstgid == 1) {
 			smap.primary_tileset_name = tileset.name;
 		}
-		smap.tilesets.push_back(std::move(tileset));
 	}
 	// Markers
 	smap.markers = load_tmx_markers(find_objectgroup(root, "markers"));
