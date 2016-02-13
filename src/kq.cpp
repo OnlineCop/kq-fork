@@ -126,12 +126,6 @@ s_map g_map;
 /*! Current entities (players+NPCs) */
 s_entity g_ent[MAX_ENTITIES];
 
-s_tileset tilesets[MAX_TILESETS];
-int num_tilesets = 0;
-
-/*! Tile animation specifiers for the current tileset */
-s_anim adata[MAX_ANIM];
-
 /*! Number of enemies */
 unsigned int noe = 0;
 
@@ -1596,10 +1590,6 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     {
         tilex[i] = (unsigned short)i;
     }
-    for (i = 0; i < MAX_ANIM; i++)
-    {
-        adata[i] = tilesets[g_map.tileset].tanim[i];
-    }
 
     noe = 0;
     for (i = 0; i < (size_t)numchrs; i++)
@@ -1817,7 +1807,6 @@ static void startup(void)
 {
     int p, i, q;
     time_t t;
-    PACKFILE *pf;
 
     allegro_init();
 
@@ -1963,24 +1952,6 @@ static void startup(void)
             blit(entities, eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
         }
     }
-
-    /* Initialize tilesets */
-    pf = pack_fopen(kqres(DATA_DIR, "tileset.kq"), F_READ_PACKED);
-    if (!pf)
-    {
-        program_death(_("Could not load tileset.kq"));
-    }
-    while (!pack_feof(pf))
-    {
-        load_s_tileset(&tilesets[num_tilesets], pf);
-        TRACE("%d. %s\n", num_tilesets, tilesets[num_tilesets].icon_set);
-        num_tilesets++;
-        if (num_tilesets > MAX_TILESETS)
-        {
-            program_death(_("Too many tilesets defined in tileset.kq"));
-        }
-    }
-    pack_fclose(pf);
 
     /* Initialise players */
     init_players();
