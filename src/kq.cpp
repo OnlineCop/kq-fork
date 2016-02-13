@@ -246,8 +246,6 @@ static void data_dump(void);
 
 static void allocate_stuff(void);
 static void load_heroes(void);
-static void load_map(const std::string &);
-static void map_alloc(void);
 static void my_counter(void);
 static void prepare_map(int, int, int, int);
 static void startup(void);
@@ -1248,75 +1246,6 @@ void load_heroes(void)
 
 }
 
-
-
-/*! \brief Load the map
- *
- * \param   map_name - The name of the map and accompanying LUA file
- */
-static void load_map(const std::string &map_name)
-{
-    size_t i;
-    PACKFILE *pf;
-
-    reset_timer_events();
-    if (hold_fade == 0)
-    {
-        do_transition(TRANS_FADE_OUT, 4);
-    }
-
-    std::string full_name = map_name + ".map";
-    strcpy(strbuf, full_name.c_str());
-
-    pf = pack_fopen(kqres(MAP_DIR, strbuf), F_READ_PACKED);
-
-    if (!pf)
-    {
-        clear_bitmap(screen);
-        clear_bitmap(double_buffer);
-
-        if (hold_fade == 0)
-        {
-            do_transition(TRANS_FADE_IN, 16);
-        }
-
-        sprintf(strbuf, _("Could not load map %s!"), map_name.c_str());
-        program_death(strbuf);
-    }
-
-    load_s_map(&g_map, pf);
-    for (i = 0; i < MAX_ENTITIES_PER_MAP; ++i)
-    {
-        /* g_ent[0] and g_ent[1] are the player's avatars. All
-         * the rest on the map (PSIZE..MAX_ENTITIES_PER_MAP) are loaded from
-         * the map's data.
-         */
-        load_s_entity(&g_ent[PSIZE + i], pf);
-    }
-    map_alloc();
-    for (i = 0; i < g_map.xsize * g_map.ysize; ++i)
-    {
-        map_seg[i] = pack_igetw(pf);
-    }
-    for (i = 0; i < g_map.xsize * g_map.ysize; ++i)
-    {
-        b_seg[i] = pack_igetw(pf);
-    }
-    for (i = 0; i < g_map.xsize * g_map.ysize; ++i)
-    {
-        f_seg[i] = pack_igetw(pf);
-    }
-
-    pack_fread(z_seg, (g_map.xsize * g_map.ysize), pf);
-    pack_fread(s_seg, (g_map.xsize * g_map.ysize), pf);
-    pack_fread(o_seg, (g_map.xsize * g_map.ysize), pf);
-
-    pack_fclose(pf);
-    curmap = map_name;
-}
-
-
-
 /*! \brief Main function
  *
  * Well, this one is pretty obvious.
@@ -1409,39 +1338,6 @@ int main(int argc, const char *argv[])
     deallocate_stuff();
     return EXIT_SUCCESS;
 } END_OF_MAIN()
-
-
-
-/*! \brief allocate memory for map
- *
- * Allocate memory arrays for the map, shadows, obstacles etc.
- * according to the size specified in g_map
- * \author  PH 20031010
- */
-static void map_alloc(void)
-{
-    int tiles = g_map.xsize * g_map.ysize;
-
-    free(map_seg);
-    map_seg = (unsigned short *) malloc(tiles * sizeof(short));
-
-    free(b_seg);
-    b_seg = (unsigned short *) malloc(tiles * sizeof(short));
-
-    free(f_seg);
-    f_seg = (unsigned short *) malloc(tiles * sizeof(short));
-
-    free(z_seg);
-    z_seg = (unsigned char *) malloc(tiles);
-
-    free(s_seg);
-    s_seg = (unsigned char *) malloc(tiles);
-
-    free(o_seg);
-    o_seg = (unsigned char *) malloc(tiles);
-}
-
-
 
 /*! \brief Allegro timer callback
  *

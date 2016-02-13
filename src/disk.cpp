@@ -39,44 +39,6 @@
 #include <stdio.h>
 #include <string>
 
-
-
-int load_s_entity(s_entity *s, PACKFILE *f)
-{
-    s->chrx = pack_getc(f);
-    pack_getc(f);                /* alignment */
-    s->x = pack_igetw(f);
-    s->y = pack_igetw(f);
-    s->tilex = pack_igetw(f);
-    s->tiley = pack_igetw(f);
-    s->eid = pack_getc(f);
-    s->active = pack_getc(f);
-    s->facing = pack_getc(f);
-    s->moving = pack_getc(f);
-    s->movcnt = pack_getc(f);
-    s->framectr = pack_getc(f);
-    s->movemode = pack_getc(f);
-    s->obsmode = pack_getc(f);
-    s->delay = pack_getc(f);
-    s->delayctr = pack_getc(f);
-    s->speed = pack_getc(f);
-    s->scount = pack_getc(f);
-    s->cmd = pack_getc(f);
-    s->sidx = pack_getc(f);
-    s->extra = pack_getc(f);
-    s->chasing = pack_getc(f);
-    pack_igetw(f);               /* alignment */
-    s->cmdnum = pack_igetl(f);
-    s->atype = pack_getc(f);
-    s->snapback = pack_getc(f);
-    s->facehero = pack_getc(f);
-    s->transl = pack_getc(f);
-    pack_fread(s->script, sizeof(s->script), f);
-    return 0;
-}
-
-
-
 int save_s_entity(s_entity *s, PACKFILE *f)
 {
     pack_putc(s->chrx, f);
@@ -112,65 +74,6 @@ int save_s_entity(s_entity *s, PACKFILE *f)
 }
 
 
-
-int load_s_map(s_map *sm, PACKFILE *f)
-{
-    char *buf = NULL;
-    sm->map_no = pack_getc(f);
-    sm->zero_zone = pack_getc(f);
-    sm->map_mode = pack_getc(f);
-    sm->can_save = pack_getc(f);
-    sm->tileset = pack_getc(f);
-    sm->use_sstone = pack_getc(f);
-    sm->can_warp = pack_getc(f);
-    sm->extra_byte = pack_getc(f);
-    sm->xsize = (size_t)pack_igetl(f);
-    sm->ysize = (size_t)pack_igetl(f);
-    sm->pmult = pack_igetl(f);
-    sm->pdiv = pack_igetl(f);
-    sm->stx = pack_igetl(f);
-    sm->sty = pack_igetl(f);
-    sm->warpx = pack_igetl(f);
-    sm->warpy = pack_igetl(f);
-    sm->revision = pack_igetl(f);
-    sm->extra_sdword2 = pack_igetl(f);
-
-    // FIXME: We should read in the number of string bytes, and then the string.
-    // Unfortunately, this version of the map hard-codes '16' and '40' characters.
-    buf = new char[16 + 1]; // was hard-coded to be 16
-    memset(&buf[0], 0, 16 + 1); // Clear all garbage values to '0'
-    pack_fread(buf, 16, f);
-    sm->song_file = std::string(buf);
-    delete[] buf;
-
-    buf = new char[40 + 1]; // was hard-coded to be 40
-    memset(&buf[0], 0, 40 + 1); // Clear all garbage values to '0'
-    pack_fread(buf, 40, f);
-    sm->map_desc = std::string(buf);
-    delete[] buf;
-
-    if (sm->revision >= 1)
-    {
-        /* Markers stuff */
-        load_markers(&sm->markers, f);
-
-        if (sm->revision >= 2)
-        {
-            /* Bounding boxes stuff */
-            load_bounds(&sm->bounds, f);
-        }
-        else
-        {
-            sm->bounds.size = 0;
-        }
-    }
-    else
-    {
-        sm->markers.size = 0;
-        sm->bounds.size = 0;
-    }
-    return 0;
-}
 
 
 
