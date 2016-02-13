@@ -68,6 +68,7 @@ set(kq-fork_SRCS
 	src/unix.cpp
 	src/tiledmap.cpp
 	src/imgcache.cpp
+	src/animation.cpp
 )
 
 set(mapdraw_SRCS

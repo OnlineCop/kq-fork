@@ -25,6 +25,7 @@ using stdext::make_checked_array_iterator;
 #else
 template <typename T> 
 T* make_checked_array_iterator(T* ptr, size_t size, size_t offset = 0) {
+  (void) size;
 	return ptr + offset;
 }
 #endif
@@ -101,9 +102,6 @@ static vector<s_zone> load_tmx_zones(XMLElement const *);
 static tmx_layer load_tmx_layer(XMLElement const *el);
 static vector<s_entity> load_tmx_entities(XMLElement const *);
 static tmx_tileset load_tmx_tileset(XMLElement const*);
-static XMLElement const *find_layer(XMLElement const *root, const char *name) {
-	return find_tmx_element(root, "layer", name);
-}
 static XMLElement const *find_objectgroup(XMLElement const *root, const char *name) {
 	return find_tmx_element(root, "objectgroup", name);
 }
@@ -460,7 +458,7 @@ void tmx_map::set_current()
 			// map layers - these always have tile offset == 1
 			free(map_seg);
 			unsigned short *ptr = map_seg =
-				static_cast<unsigned short *>(calloc(layer.size(), sizeof(*map_seg)));
+				static_cast<unsigned short *>(calloc(layer.size, sizeof(*map_seg)));
 			for (auto t : layer) {
 				if (t > 0) { --t; }
 				*ptr++ = static_cast<unsigned short>(t);
@@ -468,7 +466,7 @@ void tmx_map::set_current()
 		}
 		else if (layer.name == "bmap") {
 			free(b_seg);
-			unsigned short *ptr = b_seg = static_cast<unsigned short *>(calloc(layer.size(), sizeof(*b_seg)));
+			unsigned short *ptr = b_seg = static_cast<unsigned short *>(calloc(layer.size, sizeof(*b_seg)));
 			for (auto t : layer) {
 				if (t > 0) {
 					--t;
@@ -478,7 +476,7 @@ void tmx_map::set_current()
 		}
 		else if (layer.name == "fmap") {
 			free(f_seg);
-			unsigned short *ptr = f_seg = static_cast<unsigned short *>(calloc(layer.size(), sizeof(*f_seg)));
+			unsigned short *ptr = f_seg = static_cast<unsigned short *>(calloc(layer.size, sizeof(*f_seg)));
 			for (auto t : layer) {
 				if (t > 0) {
 					--t;
@@ -491,7 +489,7 @@ void tmx_map::set_current()
 			unsigned short shadow_offset = find_tileset("misc").firstgid + SHADOW_OFFSET;
 			free(s_seg);
 			auto sptr = s_seg =
-				static_cast<unsigned char *>(calloc(layer.size(), sizeof(*s_seg)));
+				static_cast<unsigned char *>(calloc(layer.size, sizeof(*s_seg)));
 			for (auto t : layer) {
 				if (t > 0) {
 					t -= shadow_offset;
@@ -504,7 +502,7 @@ void tmx_map::set_current()
 			unsigned short obstacle_offset = find_tileset("obstacles").firstgid - 1;
 			free(o_seg);
 			auto sptr = o_seg =
-				static_cast<unsigned char *>(calloc(layer.size(), sizeof(o_seg)));
+				static_cast<unsigned char *>(calloc(layer.size, sizeof(o_seg)));
 
 			for (auto t : layer) {
 				if (t > 0) {
