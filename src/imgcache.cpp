@@ -172,6 +172,10 @@ BITMAP *image_cache::get(const std::string &name) {
   if (entry == cache.end()) {
     // Not found, try to load
     BITMAP *bmp = bmp_from_png(kqres(DATA_DIR, name.c_str()));
+	if (!bmp) {
+		// Try also in maps because it may be a tileset graphic
+		bmp = bmp_from_png(kqres(MAP_DIR, name.c_str()));
+	}
     if (!bmp) {
       TRACE("Cannot load bitmap '%s'\n", name.c_str());
       program_death("Error loading image.");
