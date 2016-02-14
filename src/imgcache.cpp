@@ -80,7 +80,7 @@ static int palindex(uint8_t *ptr) {
   return bestindex;
 }
 // For libpng 1.6 and above there's a high-level image loader
-#if PNG_LIBPNG_VER >= 10600
+#ifdef PNG_SIMPLIFIED_READ_SUPPORTED
 /*! \brief Load a bitmap from a file
   * Allocate space for and load a bitmap in PNG format.
   * Assumed that we're running in 8bpp mode using KQ's palette.
@@ -115,7 +115,7 @@ static BITMAP *bmp_from_png(const char *path) {
   png_image_free(&image);
   return bitmap;
 }
-#else // PNG_LIBPNG_VER < 1.6
+#else // !PNG_SIMPLIFIED_READ_SUPPORTED
 #include <cstdio>
 static BITMAP *bmp_from_png(const char *path) {
   FILE *fp = std::fopen(path, "rb");
