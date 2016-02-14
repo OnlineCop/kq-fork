@@ -29,13 +29,10 @@
 #include "maps.h"
 #include "structs.h"
 
-int load_s_map(s_map *, PACKFILE *);
 int save_s_map(s_map *, PACKFILE *);
-int load_s_entity(s_entity *, PACKFILE *);
 int save_s_entity(s_entity *, PACKFILE *);
 int load_s_player(s_player *, PACKFILE *);
 int save_s_player(s_player *, PACKFILE *);
-int load_s_tileset(s_tileset *, PACKFILE *);
 int save_s_tileset(s_tileset *, PACKFILE *);
 
 

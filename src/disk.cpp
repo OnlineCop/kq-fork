@@ -211,24 +211,6 @@ int save_s_player(s_player *s, PACKFILE *f)
     return 0;
 }
 
-
-
-int load_s_tileset(s_tileset *s, PACKFILE *f)
-{
-    size_t animation_index;
-
-    pack_fread(s->icon_set, sizeof(s->icon_set), f);
-    for (animation_index = 0; animation_index < MAX_ANIM; ++animation_index)
-    {
-        s->tanim[animation_index].start = pack_igetw(f);
-        s->tanim[animation_index].end = pack_igetw(f);
-        s->tanim[animation_index].delay = pack_igetw(f);
-    }
-    return 0;
-}
-
-
-
 int save_s_tileset(s_tileset *s, PACKFILE *f)
 {
     size_t animation_index;
