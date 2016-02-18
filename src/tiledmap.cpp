@@ -546,7 +546,7 @@ void tmx_map::set_current()
 	}
 	
 	// Entities
-	memset(&g_ent[PSIZE], 0, &g_ent[MAX_ENTITIES] - &g_ent[PSIZE]);
+	memset(&g_ent[PSIZE], 0, (MAX_ENTITIES - PSIZE) * sizeof(s_entity));
 	copy(begin(entities), end(entities), make_checked_array_iterator(g_ent, MAX_ENTITIES, PSIZE));
 	
 	// Tilemaps
