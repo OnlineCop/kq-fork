@@ -1465,7 +1465,7 @@ int start_menu(int skip_splash)
     }
 #endif
     reset_world();
-	BITMAP* title = get_cached_image("title.png");
+
     /* Draw menu and handle menu selection */
     while (!stop)
     {
