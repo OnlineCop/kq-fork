@@ -291,6 +291,9 @@ static tmx_layer load_tmx_layer(XMLElement const *el) {
 	  vector<uint8_t> bytes = b64decode(data->GetText());
 	  if (data->Attribute("compression", "zlib")) {
 	    vector<uint8_t> raw = uncompress(bytes);
+		if (raw.size() != layer.size * sizeof(uint32_t)) {
+			program_death("Layer size mismatch");
+		}
 	    auto iter = begin(raw);
 	    for (auto& tile : layer) {
 	      uint32_t v = *iter++;
@@ -580,7 +583,11 @@ const tmx_tileset & tmx_map::find_tileset(const string & name) const
  * PAD forever
  */
 struct b64 {
-  b64(const char *_ptr) : ptr(_ptr), errbit(false) {}
+  b64(const char *_ptr) : ptr(_ptr), errbit(false) {
+	  while (isspace(*ptr)) {
+		  ++ptr;
+	  }
+  }
   uint8_t operator()() {
     if (ptr) {
       const char *pos = strchr(validchars, *ptr++);
