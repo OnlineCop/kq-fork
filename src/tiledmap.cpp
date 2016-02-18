@@ -4,6 +4,8 @@
 #include <map>
 #include <memory>
 #include <iterator>
+#define ZLIB_CONST
+#include <zlib.h>
 #include "kq.h"
 #include "platform.h"
 #include "tiledmap.h"
@@ -105,6 +107,8 @@ static tmx_tileset load_tmx_tileset(XMLElement const*);
 static XMLElement const *find_objectgroup(XMLElement const *root, const char *name) {
 	return find_tmx_element(root, "objectgroup", name);
 }
+std::vector<uint8_t> b64decode(const char *);
+std::vector<uint8_t> uncompress(const std::vector<uint8_t> &data);
 
 /** \brief Load a TMX format map from disk.
  * Make it the current map for the game
@@ -271,7 +275,6 @@ static tmx_layer load_tmx_layer(XMLElement const *el) {
 	layer.name = el->Attribute("name");
 	auto data = el->FirstChildElement("data");
 	if (data->Attribute("encoding", "csv")) {
-		layer.data = unique_ptr<uint32_t[]>(new uint32_t[layer.width*layer.height]);
 		const char *raw = data->GetText();
 		for (auto& tile : layer) {
 			const char *next = strchr(raw, ',');
@@ -284,8 +287,23 @@ static tmx_layer load_tmx_layer(XMLElement const *el) {
 			}
 		}
 	}
+	else if (data->Attribute("encoding", "base64")) {
+	  vector<uint8_t> bytes = b64decode(data->GetText());
+	  if (data->Attribute("compression", "zlib")) {
+	    vector<uint8_t> raw = uncompress(bytes);
+	    auto iter = begin(raw);
+	    for (auto& tile : layer) {
+	      uint32_t v = *iter++;
+	      v |= (*iter++) << 8;
+	      v |= (*iter++) << 16;
+	      v |= (*iter++) << 24;
+	      tile = v;
+	    }
+	  } else {
+	    program_death("Layer's compression not supported");
+	  }
+	}
 	else {
-		// TODO implement compressed layer data (maybe?)
 		program_death("Layer's encoding not supported");
 	}
 	return layer;
@@ -550,3 +568,136 @@ const tmx_tileset & tmx_map::find_tileset(const string & name) const
 	TRACE("Tileset '%s' not found in map.\n", name.c_str());
 	program_death("No such tileset");
 }
+
+/*! \brief BASE64 scanner.
+ * This iterates through some BASE64 characters, returning
+ * each 6-bit segment in turn.
+ * If it gets an '=' character it returns PAD.
+ * It ignores whitespace.
+ * Any other characters return ERROR and set the
+ * error bit.
+ * When it reaches the end of the string it returns
+ * PAD forever
+ */
+struct b64 {
+  b64(const char *_ptr) : ptr(_ptr), errbit(false) {}
+  uint8_t operator()() {
+    if (ptr) {
+      const char *pos = strchr(validchars, *ptr++);
+      while (isspace(*ptr)) {
+        ++ptr;
+      }
+      if (*ptr == 0) {
+        ptr = nullptr;
+      }
+      if (pos) {
+        return static_cast<uint8_t>(pos - validchars);
+      } else {
+        errbit = true;
+        ptr = nullptr;
+        return ERROR;
+      }
+    } else {
+      return PAD;
+    }
+  }
+  bool error() const { return errbit; }
+  void seterror() { errbit = true; }
+  operator bool() const { return ptr != nullptr; }
+  static const char *validchars;
+  static const uint8_t PAD = 0x40;
+  static const uint8_t ERROR = 0xff;
+  const char *ptr;
+  bool errbit;
+};
+const char *b64::validchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                              "abcdefghijklmnopqrstuvwxyz"
+                              "0123456789"
+                              "+/=";
+/// Return true if a byte is a valid 6-bit block.
+static bool valid(uint8_t v) { return v < b64::PAD; }
+
+/*! \brief Decode BASE64.
+ * Convert a string of characters into a vector of bytes.
+ * If there is an error, returns an empty vector.
+ * \param text the input characters
+ * \returns the converted bytes
+ */
+vector<uint8_t> b64decode(const char *text) {
+  vector<uint8_t> data;
+  b64 nextc(text);
+  while (nextc) {
+    uint8_t b0 = nextc();
+    if (valid(b0)) {
+      uint8_t b1 = nextc();
+      if (valid(b1)) {
+        data.push_back(b0 << 2 | b1 >> 4);
+        uint8_t b2 = nextc();
+        if (valid(b2)) {
+          data.push_back(b1 << 4 | b2 >> 2);
+          uint8_t b3 = nextc();
+          if (valid(b3)) {
+            data.push_back(b2 << 6 | b3);
+          }
+        } else {
+          //  if b2 is pad then b3 has to be too.
+          if (b2 == b64::PAD && nextc() != b64::PAD) {
+            nextc.seterror();
+          }
+        }
+      } else {
+        //  if b1 is pad this is an error
+        nextc.seterror();
+      }
+    } else {
+      // if b0 is pad this is an error
+      nextc.seterror();
+    }
+  }
+  if (!nextc.error()) {
+    return data;
+  } else {
+    return vector<uint8_t>();
+  }
+}
+
+/*! \brief Uncompress a sequence of bytes.
+ * Uses the zlib to uncompress.
+ * \param data the input compressed data
+ * \returns the uncompressed data
+ */
+vector<uint8_t> uncompress(const vector<uint8_t> &data) {
+  z_stream stream;
+  vector<uint8_t> out;
+  stream.zalloc = Z_NULL;
+  stream.zfree = Z_NULL;
+  stream.opaque = Z_NULL;
+  stream.avail_in = data.size();
+  stream.next_in = reinterpret_cast<z_const Bytef *>(data.data());
+
+  if (inflateInit(&stream) == Z_OK) {
+    uint8_t buffer[256];
+    stream.avail_out = sizeof(buffer);
+    stream.next_out = buffer;
+    while (true) {
+      int rc = inflate(&stream, Z_NO_FLUSH);
+      if (rc < 0) {
+        // Error
+        out.clear();
+        break;
+      }
+      if (stream.avail_out < sizeof(buffer)) {
+        std::copy(buffer, buffer + sizeof(buffer) - stream.avail_out,
+                  back_inserter(out));
+        stream.avail_out = sizeof(buffer);
+        stream.next_out = buffer;
+      }
+      if (rc == Z_STREAM_END) {
+        break;
+      };
+    }
+    inflateEnd(&stream);
+  }
+  return out;
+}
+

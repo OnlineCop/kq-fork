@@ -8,6 +8,7 @@ find_package(Allegro REQUIRED)
 find_package(Lua REQUIRED)
 find_package(DUMB REQUIRED)
 find_package(PNG REQUIRED)
+find_package(ZLIB REQUIRED)
 
 find_library(M_LIB m)
 find_library(TINYXML2 tinyxml2)
@@ -29,7 +30,7 @@ endif(DUMB_FOUND)
 if (DUMB_FOUND AND ALLEGRO_FOUND)
 endif(DUMB_FOUND AND ALLEGRO_FOUND)
 
-include_directories( ${ALLEGRO_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS})
+include_directories( ${ALLEGRO_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 add_definitions(${PNG_DEFINITIONS})
 #set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
 set(KQ_DEBUGGING 0 CACHE BOOL "Features for debugging the game")
@@ -131,7 +132,8 @@ target_link_libraries(kq-fork
 	${DUMB_LIBRARIES}
 	${TINYXML2}
 	${M_LIB}
-	${PNG_LIBRARIES})
+	${PNG_LIBRARIES}
+	${ZLIB_LIBRARIES})
 
 target_link_libraries(mapdraw
 	${ALLEGRO_LIBRARIES}
