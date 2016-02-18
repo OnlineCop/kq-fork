@@ -1395,7 +1395,7 @@ int start_menu(int skip_splash)
     int stop = 0, ptr = 0, redraw = 1, a, b;
     unsigned int fade_color;
     BITMAP *staff, *dudes, *tdudes;
-
+	BITMAP* title = get_cached_image("title.png");
 #ifdef DEBUGMODE
     if (debugging == 0)
     {
@@ -1445,7 +1445,7 @@ int start_menu(int skip_splash)
         clear_to_color(double_buffer, 15);
         blit2screen(0, 0);
         set_palette(pal);
-		BITMAP* title = get_cached_image("title.png");
+		
         for (fade_color = 0; fade_color < 16; fade_color++)
         {
             clear_to_color(double_buffer, 15 - fade_color);
