@@ -698,7 +698,7 @@ static void parse_allegro_setup(void)
         /* Transitional code */
         parse_jb_setup();
         push_config_state();
-        set_config_file(cfg);
+        set_config_file(kqres(SETTINGS_DIR, "kq.cfg"));
 
         set_config_int(NULL, "skip_intro", skip_intro);
         set_config_int(NULL, "windowed", windowed);
