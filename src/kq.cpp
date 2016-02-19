@@ -44,6 +44,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <vector>
 
 
 #include "console.h"
@@ -69,6 +70,9 @@
 #include "shopmenu.h"
 #include "structs.h"
 #include <string>
+#include "tiledmap.h"
+#include "imgcache.h"
+#include "animation.h"
 
 
 /*! Name of the current map */
@@ -121,12 +125,6 @@ s_map g_map;
 
 /*! Current entities (players+NPCs) */
 s_entity g_ent[MAX_ENTITIES];
-
-s_tileset tilesets[MAX_TILESETS];
-int num_tilesets = 0;
-
-/*! Tile animation specifiers for the current tileset */
-s_anim adata[MAX_ANIM];
 
 /*! Number of enemies */
 unsigned int noe = 0;
@@ -248,8 +246,6 @@ static void data_dump(void);
 
 static void allocate_stuff(void);
 static void load_heroes(void);
-static void load_map(const std::string &);
-static void map_alloc(void);
 static void my_counter(void);
 static void prepare_map(int, int, int, int);
 static void startup(void);
@@ -751,8 +747,8 @@ void calc_viewport(int /*center*/)
  */
 void change_map(const std::string &map_name, int msx, int msy, int mvx, int mvy)
 {
-    load_map(map_name);
-    prepare_map(msx, msy, mvx, mvy);
+	load_tmx(map_name);
+	prepare_map(msx, msy, mvx, mvy);
 }
 
 
@@ -777,7 +773,7 @@ void change_mapm(const std::string &map_name, const std::string &marker_name, in
     int msx = 0, msy = 0, mvx = 0, mvy = 0;
     s_marker *m;
 
-    load_map(map_name);
+    load_tmx(map_name);
     /* Search for the marker with the name passed into the function. Both
      * player's starting position and camera position will be the same
      */
@@ -803,38 +799,10 @@ void change_mapm(const std::string &map_name, const std::string &marker_name, in
  */
 void check_animation(void)
 {
-    size_t animation_index, animation_tile;
-    int diff = animation_count;
-
-    animation_count -= diff;
-    if (!diff)
-    {
-        return;
-    }
-    for (animation_index = 0; animation_index < MAX_ANIM; animation_index++)
-    {
-        if (adata[animation_index].start != 0)
-        {
-            if (adata[animation_index].delay && adata[animation_index].delay < adelay[animation_index])
-            {
-                adelay[animation_index] %= adata[animation_index].delay;
-                for (animation_tile = adata[animation_index].start; animation_tile <= adata[animation_index].end; animation_tile++)
-                {
-                    if (tilex[animation_tile] < adata[animation_index].end)
-                    {
-                        tilex[animation_tile]++;
-                    }
-                    else
-                    {
-                        tilex[animation_tile] = adata[animation_index].start;
-                    }
-                }
-            }
-            adelay[animation_index] += diff;
-        }
-    }
+	int millis = (1000 * animation_count) / KQ_TICKS;
+	animation_count -= (KQ_TICKS * millis) / 1000;
+	check_animation(millis);
 }
-
 
 
 #ifdef DEBUGMODE
@@ -1012,6 +980,7 @@ static void deallocate_stuff(void)
         free_samples();
     }
     deallocate_credits();
+	clear_image_cache();
 
 #ifdef DEBUGMODE
     destroy_bitmap(obj_mesh);
@@ -1253,7 +1222,6 @@ void kwait(int dtime)
 void load_heroes(void)
 {
     PACKFILE *f;
-    DATAFILE *pcxb;
     size_t player_index;
 
     /* Hero stats */
@@ -1268,90 +1236,15 @@ void load_heroes(void)
     pack_fclose(f);
 
     /* portraits */
-    pcxb = load_datafile_object(PCX_DATAFILE, "KQFACES_PCX");
-
-    if (!pcxb)
-    {
-        program_death(_("Could not load kqfaces.pcx!"));
-    }
+	BITMAP* faces = get_cached_image("kqfaces.png");
 
     for (player_index = 0; player_index < 4; ++player_index)
     {
-        blit((BITMAP *) pcxb->dat, players[player_index].portrait, 0, player_index * 40, 0, 0, 40, 40);
-        blit((BITMAP *) pcxb->dat, players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
+        blit(faces, players[player_index].portrait, 0, player_index * 40, 0, 0, 40, 40);
+        blit(faces, players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
     }
 
-    unload_datafile_object(pcxb);
 }
-
-
-
-/*! \brief Load the map
- *
- * \param   map_name - The name of the map and accompanying LUA file
- */
-static void load_map(const std::string &map_name)
-{
-    size_t i;
-    PACKFILE *pf;
-
-    reset_timer_events();
-    if (hold_fade == 0)
-    {
-        do_transition(TRANS_FADE_OUT, 4);
-    }
-
-    std::string full_name = map_name + ".map";
-    strcpy(strbuf, full_name.c_str());
-
-    pf = pack_fopen(kqres(MAP_DIR, strbuf), F_READ_PACKED);
-
-    if (!pf)
-    {
-        clear_bitmap(screen);
-        clear_bitmap(double_buffer);
-
-        if (hold_fade == 0)
-        {
-            do_transition(TRANS_FADE_IN, 16);
-        }
-
-        sprintf(strbuf, _("Could not load map %s!"), map_name.c_str());
-        program_death(strbuf);
-    }
-
-    load_s_map(&g_map, pf);
-    for (i = 0; i < MAX_ENTITIES_PER_MAP; ++i)
-    {
-        /* g_ent[0] and g_ent[1] are the player's avatars. All
-         * the rest on the map (PSIZE..MAX_ENTITIES_PER_MAP) are loaded from
-         * the map's data.
-         */
-        load_s_entity(&g_ent[PSIZE + i], pf);
-    }
-    map_alloc();
-    for (i = 0; i < g_map.xsize * g_map.ysize; ++i)
-    {
-        map_seg[i] = pack_igetw(pf);
-    }
-    for (i = 0; i < g_map.xsize * g_map.ysize; ++i)
-    {
-        b_seg[i] = pack_igetw(pf);
-    }
-    for (i = 0; i < g_map.xsize * g_map.ysize; ++i)
-    {
-        f_seg[i] = pack_igetw(pf);
-    }
-
-    pack_fread(z_seg, (g_map.xsize * g_map.ysize), pf);
-    pack_fread(s_seg, (g_map.xsize * g_map.ysize), pf);
-    pack_fread(o_seg, (g_map.xsize * g_map.ysize), pf);
-
-    pack_fclose(pf);
-    curmap = map_name;
-}
-
-
 
 /*! \brief Main function
  *
@@ -1446,39 +1339,6 @@ int main(int argc, const char *argv[])
     return EXIT_SUCCESS;
 } END_OF_MAIN()
 
-
-
-/*! \brief allocate memory for map
- *
- * Allocate memory arrays for the map, shadows, obstacles etc.
- * according to the size specified in g_map
- * \author  PH 20031010
- */
-static void map_alloc(void)
-{
-    int tiles = g_map.xsize * g_map.ysize;
-
-    free(map_seg);
-    map_seg = (unsigned short *) malloc(tiles * sizeof(short));
-
-    free(b_seg);
-    b_seg = (unsigned short *) malloc(tiles * sizeof(short));
-
-    free(f_seg);
-    f_seg = (unsigned short *) malloc(tiles * sizeof(short));
-
-    free(z_seg);
-    z_seg = (unsigned char *) malloc(tiles);
-
-    free(s_seg);
-    s_seg = (unsigned char *) malloc(tiles);
-
-    free(o_seg);
-    o_seg = (unsigned char *) malloc(tiles);
-}
-
-
-
 /*! \brief Allegro timer callback
  *
  * New interrupt handler set to keep game time.
@@ -1512,7 +1372,6 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     size_t i;
     size_t mapsize;
     size_t o;
-    DATAFILE *pb;
 
     mapsize = (size_t)g_map.xsize * (size_t)g_map.ysize;
 
@@ -1591,18 +1450,14 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    pb = load_datafile_object(PCX_DATAFILE, tilesets[g_map.tileset].icon_set);
-    pcxb = (BITMAP *) pb->dat;
-
+	pcxb = g_map.map_tiles;
     for (o = 0; o < (size_t)pcxb->h / 16; o++)
     {
         for (i = 0; i < (size_t)pcxb->w / 16; i++)
         {
-            blit((BITMAP *) pb->dat, map_icons[o * (pcxb->w / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
+            blit(pcxb, map_icons[o * (pcxb->w / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
         }
     }
-
-    unload_datafile_object(pb);
 
     for (o = 0; o < MAX_ANIM; o++)
     {
@@ -1630,10 +1485,6 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     for (i = 0; i < MAX_TILES; i++)
     {
         tilex[i] = (unsigned short)i;
-    }
-    for (i = 0; i < MAX_ANIM; i++)
-    {
-        adata[i] = tilesets[g_map.tileset].tanim[i];
     }
 
     noe = 0;
@@ -1852,9 +1703,6 @@ static void startup(void)
 {
     int p, i, q;
     time_t t;
-    DATAFILE *pcxb;
-    DATAFILE *pb;
-    PACKFILE *pf;
 
     allegro_init();
 
@@ -1913,26 +1761,20 @@ static void startup(void)
     }
 
     srand((unsigned)time(&t));
-    pcxb = load_datafile_object(PCX_DATAFILE, "MISC_PCX");
-
-    if (!pcxb)
-    {
-        program_death(_("Could not load misc.pcx!"));
-    }
-
-    blit((BITMAP *) pcxb->dat, menuptr, 24, 0, 0, 0, 16, 8);
-    blit((BITMAP *) pcxb->dat, sptr, 0, 0, 0, 0, 8, 8);
-    blit((BITMAP *) pcxb->dat, mptr, 8, 0, 0, 0, 8, 8);
-    blit((BITMAP *) pcxb->dat, upptr, 0, 8, 0, 0, 8, 8);
-    blit((BITMAP *) pcxb->dat, dnptr, 8, 8, 0, 0, 8, 8);
-    blit((BITMAP *) pcxb->dat, bptr, 24, 8, 0, 0, 16, 8);
-    blit((BITMAP *) pcxb->dat, noway, 64, 16, 0, 0, 16, 16);
-    blit((BITMAP *) pcxb->dat, missbmp, 0, 16, 0, 0, 20, 6);
-    blit((BITMAP *) pcxb->dat, b_shield, 0, 80, 0, 0, 48, 48);
-    blit((BITMAP *) pcxb->dat, b_shell, 48, 80, 0, 0, 48, 48);
-    blit((BITMAP *) pcxb->dat, b_repulse, 0, 64, 0, 0, 16, 16);
-    blit((BITMAP *) pcxb->dat, b_mp, 0, 24, 0, 0, 10, 8);
-    blit((BITMAP *) pcxb->dat, sfonts[0], 0, 128, 0, 0, 60, 8);
+	BITMAP* misc = get_cached_image("misc.png");
+    blit(misc, menuptr, 24, 0, 0, 0, 16, 8);
+    blit(misc, sptr, 0, 0, 0, 0, 8, 8);
+    blit(misc, mptr, 8, 0, 0, 0, 8, 8);
+    blit(misc, upptr, 0, 8, 0, 0, 8, 8);
+    blit(misc, dnptr, 8, 8, 0, 0, 8, 8);
+    blit(misc, bptr, 24, 8, 0, 0, 16, 8);
+    blit(misc, noway, 64, 16, 0, 0, 16, 16);
+    blit(misc, missbmp, 0, 16, 0, 0, 20, 6);
+    blit(misc, b_shield, 0, 80, 0, 0, 48, 48);
+    blit(misc, b_shell, 48, 80, 0, 0, 48, 48);
+    blit(misc, b_repulse, 0, 64, 0, 0, 16, 16);
+    blit(misc, b_mp, 0, 24, 0, 0, 10, 8);
+    blit(misc, sfonts[0], 0, 128, 0, 0, 60, 8);
 
     for (i = 0; i < 8; i++)
     {
@@ -1957,77 +1799,55 @@ static void startup(void)
 
     for (p = 0; p < 27; p++)
     {
-        blit((BITMAP *) pcxb->dat, stspics, p * 8 + 40, 0, 0, p * 8, 8, 8);
+        blit(misc, stspics, p * 8 + 40, 0, 0, p * 8, 8, 8);
     }
 
     for (p = 0; p < 40; p++)
     {
-        blit((BITMAP *) pcxb->dat, sicons, p * 8, 32, 0, p * 8, 8, 8);
+        blit(misc, sicons, p * 8, 32, 0, p * 8, 8, 8);
     }
 
     for (p = 0; p < 40; p++)
     {
-        blit((BITMAP *) pcxb->dat, sicons, p * 8, 40, 0, p * 8 + 320, 8, 8);
+        blit(misc, sicons, p * 8, 40, 0, p * 8 + 320, 8, 8);
     }
 
     for (p = 0; p < MAX_SHADOWS; p++)
     {
-        blit((BITMAP *) pcxb->dat, shadow[p], p * 16, 160, 0, 0, 16, 16);
+        blit(misc, shadow[p], p * 16, 160, 0, 0, 16, 16);
     }
 
     for (p = 0; p < 8; p++)
     {
-        blit((BITMAP *) pcxb->dat, bub[p], p * 16, 144, 0, 0, 16, 16);
+        blit(misc, bub[p], p * 16, 144, 0, 0, 16, 16);
     }
 
     for (p = 0; p < 3; p++)
     {
-        blit((BITMAP *) pcxb->dat, bord[p], p * 8 + 96, 64, 0, 0, 8, 8);
-        blit((BITMAP *) pcxb->dat, bord[5 + p], p * 8 + 96, 84, 0, 0, 8, 8);
+        blit(misc, bord[p], p * 8 + 96, 64, 0, 0, 8, 8);
+        blit(misc, bord[5 + p], p * 8 + 96, 84, 0, 0, 8, 8);
     }
 
-    blit((BITMAP *) pcxb->dat, bord[3], 96, 72, 0, 0, 8, 12);
-    blit((BITMAP *) pcxb->dat, bord[4], 112, 72, 0, 0, 8, 12);
+    blit(misc, bord[3], 96, 72, 0, 0, 8, 12);
+    blit(misc, bord[4], 112, 72, 0, 0, 8, 12);
 
     for (i = 0; i < 9; i++)
     {
-        blit((BITMAP *) pcxb->dat, pgb[i], i * 16, 48, 0, 0, 9, 9);
+        blit(misc, pgb[i], i * 16, 48, 0, 0, 9, 9);
     }
 
-    unload_datafile_object(pcxb);
     load_heroes();
 
-    pb = load_datafile_object(PCX_DATAFILE, "ALLFONTS_PCX");
-    blit((BITMAP *) pb->dat, kfonts, 0, 0, 0, 0, 1024, 60);
-    unload_datafile_object(pb);
-
-    pb = load_datafile_object(PCX_DATAFILE, "ENTITIES_PCX");
+	BITMAP* allfonts = get_cached_image("fonts.png");
+    blit(allfonts, kfonts, 0, 0, 0, 0, 1024, 60);
+	BITMAP* entities = get_cached_image("entities.png");
     for (q = 0; q < MAXE; q++)
     {
         for (p = 0; p < MAXEFRAMES; p++)
         {
-            blit((BITMAP *) pb->dat, eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
+            blit(entities, eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
         }
     }
-    unload_datafile_object(pb);
-
-    /* Initialize tilesets */
-    pf = pack_fopen(kqres(DATA_DIR, "tileset.kq"), F_READ_PACKED);
-    if (!pf)
-    {
-        program_death(_("Could not load tileset.kq"));
-    }
-    while (!pack_feof(pf))
-    {
-        load_s_tileset(&tilesets[num_tilesets], pf);
-        TRACE("%d. %s\n", num_tilesets, tilesets[num_tilesets].icon_set);
-        num_tilesets++;
-        if (num_tilesets > MAX_TILESETS)
-        {
-            program_death(_("Too many tilesets defined in tileset.kq"));
-        }
-    }
-    pack_fclose(pf);
 
     /* Initialise players */
     init_players();

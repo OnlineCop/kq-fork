@@ -55,6 +55,7 @@
 #include "shopmenu.h"
 #include "structs.h"
 #include "timing.h"
+#include "imgcache.h"
 
 /*! \brief No game-wide globals in this file. */
 
@@ -1393,9 +1394,8 @@ int start_menu(int skip_splash)
 {
     int stop = 0, ptr = 0, redraw = 1, a, b;
     unsigned int fade_color;
-    DATAFILE *bg;
     BITMAP *staff, *dudes, *tdudes;
-
+	BITMAP* title = get_cached_image("title.png");
 #ifdef DEBUGMODE
     if (debugging == 0)
     {
@@ -1404,12 +1404,12 @@ int start_menu(int skip_splash)
         /* Play splash (with the staff and the heroes in circle */
         if (skip_splash == 0)
         {
-            bg = load_datafile_object(PCX_DATAFILE, "KQT_PCX");
+			BITMAP* splash = get_cached_image("kqt.png");
             staff = create_bitmap_ex(8, 72, 226);
             dudes = create_bitmap_ex(8, 112, 112);
             tdudes = create_bitmap_ex(8, 112, 112);
-            blit((BITMAP *) bg->dat, staff, 0, 7, 0, 0, 72, 226);
-            blit((BITMAP *) bg->dat, dudes, 80, 0, 0, 0, 112, 112);
+            blit(splash, staff, 0, 7, 0, 0, 72, 226);
+            blit(splash, dudes, 80, 0, 0, 0, 112, 112);
             clear_bitmap(double_buffer);
             blit(staff, double_buffer, 0, 0, 124, 22, 72, 226);
             blit2screen(0, 0);
@@ -1434,7 +1434,6 @@ int start_menu(int skip_splash)
             destroy_bitmap(staff);
             destroy_bitmap(dudes);
             destroy_bitmap(tdudes);
-            unload_datafile_object(bg);
             /*
                 TODO: this fade should actually be to white
                 if (_color_depth == 8)
@@ -1446,11 +1445,11 @@ int start_menu(int skip_splash)
         clear_to_color(double_buffer, 15);
         blit2screen(0, 0);
         set_palette(pal);
-        bg = load_datafile_object(PCX_DATAFILE, "TITLE_PCX");
+		
         for (fade_color = 0; fade_color < 16; fade_color++)
         {
             clear_to_color(double_buffer, 15 - fade_color);
-            masked_blit((BITMAP *) bg->dat, double_buffer, 0, 0, 0, 60 - (fade_color * 4), 320, 124);
+            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), 320, 124);
             blit2screen(0, 0);
             kq_wait(fade_color == 0 ? 500 : 100);
         }
@@ -1463,10 +1462,8 @@ int start_menu(int skip_splash)
     else
     {
         set_palette(pal);
-        bg = load_datafile_object(PCX_DATAFILE, "TITLE_PCX");
     }
 #endif
-
     reset_world();
 
     /* Draw menu and handle menu selection */
@@ -1475,7 +1472,7 @@ int start_menu(int skip_splash)
         if (redraw)
         {
             clear_bitmap(double_buffer);
-            masked_blit((BITMAP *) bg->dat, double_buffer, 0, 0, 0, 0, 320, 124);
+            masked_blit(title, double_buffer, 0, 0, 0, 0, 320, 124);
             menubox(double_buffer, 112, 116, 10, 4, BLUE);
             print_font(double_buffer, 128, 124, _("Continue"), FNORMAL);
             print_font(double_buffer, 128, 132, _("New Game"), FNORMAL);
@@ -1551,13 +1548,11 @@ int start_menu(int skip_splash)
             }
             else if (ptr == 3)     /* Exit */
             {
-                unload_datafile_object(bg);
                 klog(_("Then exit you shall!"));
                 return 2;
             }
         }
     }
-    unload_datafile_object(bg);
     if (stop == 2)
     {
         /* New game init */

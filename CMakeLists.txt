@@ -7,8 +7,11 @@ set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR};${CMAKE
 find_package(Allegro REQUIRED)
 find_package(Lua REQUIRED)
 find_package(DUMB REQUIRED)
+find_package(PNG REQUIRED)
+find_package(ZLIB REQUIRED)
 
 find_library(M_LIB m)
+find_library(TINYXML2 tinyxml2)
 
 if(ALLEGRO_FOUND)
 	message(STATUS "Allegro found at ${ALLEGRO_INCLUDE_DIR}")
@@ -27,7 +30,8 @@ endif(DUMB_FOUND)
 if (DUMB_FOUND AND ALLEGRO_FOUND)
 endif(DUMB_FOUND AND ALLEGRO_FOUND)
 
-include_directories( ${ALLEGRO_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} )
+include_directories( ${ALLEGRO_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
+add_definitions(${PNG_DEFINITIONS})
 #set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
 set(KQ_DEBUGGING 0 CACHE BOOL "Features for debugging the game")
 
@@ -63,6 +67,9 @@ set(kq-fork_SRCS
 	src/shopmenu.cpp
 	src/timing.cpp
 	src/unix.cpp
+	src/tiledmap.cpp
+	src/imgcache.cpp
+	src/animation.cpp
 )
 
 set(mapdraw_SRCS
@@ -123,7 +130,10 @@ target_link_libraries(kq-fork
 	${LUA_LIBRARY}
 	${AL_DUMB_LIBRARIES}
 	${DUMB_LIBRARIES}
-	${M_LIB})
+	${TINYXML2}
+	${M_LIB}
+	${PNG_LIBRARIES}
+	${ZLIB_LIBRARIES})
 
 target_link_libraries(mapdraw
 	${ALLEGRO_LIBRARIES}

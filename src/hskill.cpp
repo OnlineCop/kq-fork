@@ -536,8 +536,8 @@ int skill_use(size_t attack_fighter_index)
             }
             enemy_index = (unsigned int)tgt;
             temp = create_bitmap(320, 240);
-            blit((BITMAP *) backart->dat, temp, 0, 0, 0, 0, 320, 240);
-            color_scale(temp, (BITMAP *) backart->dat, 16, 31);
+            blit( backart, temp, 0, 0, 0, 0, 320, 240);
+            color_scale(temp, backart, 16, 31);
             b = fighter[attack_fighter_index].mhp / 20;
             strcpy(attack_string, _("Rage"));
             display_attack_string = 1;
@@ -569,7 +569,7 @@ int skill_use(size_t attack_fighter_index)
             fighter[attack_fighter_index].hp -= (b * 2);
             ta[attack_fighter_index] = (b * 2);
             display_attack_string = 0;
-            blit(temp, (BITMAP *) backart->dat, 0, 0, 0, 0, 320, 240);
+            blit(temp, backart, 0, 0, 0, 0, 320, 240);
             display_amount(attack_fighter_index, FDECIDE, 0);
             if (fighter[attack_fighter_index].sts[S_DEAD] == 0
              && fighter[attack_fighter_index].hp <= 0)

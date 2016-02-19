@@ -65,7 +65,7 @@ extern int deffect[NUM_FIGHTERS];       /*  effects.c, hskill.c  */
 extern int rcount;              /*  magic.c  */
 extern unsigned char vspell;    /*  magic.c  */
 extern unsigned char ms;        /*  heroc.c  */
-extern struct DATAFILE *backart;        /*  hskill.c  */
+extern struct BITMAP *backart;        /*  hskill.c  */
 
 
 #endif  /* __COMBAT_H */
