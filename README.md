@@ -24,7 +24,13 @@ How to install KQ
 
 First, download the latest stable version of KQ on the **[Releases](https://github.com/grrk-bzzt/kq-fork/releases)** page.
 
-Check that you have installed Allegro v4, Lua v5.2, TinyXML2 and [DUMB](http://sourceforge.net/projects/dumb/).
+Check that you have these libraries installed:
+* Allegro v4
+* Lua v5.2
+* TinyXML2
+* [DUMB](http://sourceforge.net/projects/dumb/).
+* libpng v1.2
+* zlib
 
 Then, you can compile the project using the following commands:
 ```
