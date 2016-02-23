@@ -52,6 +52,7 @@
 #include "setup.h"
 #include "skills.h"
 #include "timing.h"
+#include "imgcache.h"
 
 /* External variables */
 int can_use_item = 1;
@@ -987,8 +988,6 @@ void hero_choose_action(size_t fighter_index)
  */
 void hero_init(void)
 {
-    DATAFILE *pb;
-
     size_t fighter_index;
     size_t frame_index;
     size_t current_line;
@@ -999,7 +998,7 @@ void hero_init(void)
     unsigned int fighter_weapon_index;
 
     update_equipstats();
-    pb = load_datafile_object(PCX_DATAFILE, "USBAT_PCX");
+    BITMAP* eb = get_cached_image("usbat.png");
 
     // Load all 8 fighters' stances into the `cframes` array.
     // cframes[fighter's index][]
@@ -1015,26 +1014,26 @@ void hero_init(void)
         fighter_y = current_fighter_index * 32;
 
         // Facing away from screen (see only the fighter's back)
-        blit((BITMAP *) pb->dat, cframes[fighter_index][0], 0, fighter_y, 0, 0, 32, 32);
+        blit(eb, cframes[fighter_index][0], 0, fighter_y, 0, 0, 32, 32);
         // Facing toward the screen (see only the fighter's front)
-        blit((BITMAP *) pb->dat, cframes[fighter_index][1], 32, fighter_y, 0, 0, 32, 32);
+        blit(eb, cframes[fighter_index][1], 32, fighter_y, 0, 0, 32, 32);
         // Arms out (casting a spell)
-        blit((BITMAP *) pb->dat, cframes[fighter_index][2], 64, fighter_y, 0, 0, 32, 32);
+        blit(eb, cframes[fighter_index][2], 64, fighter_y, 0, 0, 32, 32);
         // Dead
-        blit((BITMAP *) pb->dat, cframes[fighter_index][3], 96, fighter_y, 0, 0, 32, 32);
+        blit(eb, cframes[fighter_index][3], 96, fighter_y, 0, 0, 32, 32);
         // Victory: Facing toward the screen (cheering at end of a battle)
-        blit((BITMAP *) pb->dat, cframes[fighter_index][4], 128, fighter_y, 0, 0, 32, 32);
+        blit(eb, cframes[fighter_index][4], 128, fighter_y, 0, 0, 32, 32);
         // Blocking: Facing away from the screen (pushed back from enemy attack)
-        blit((BITMAP *) pb->dat, cframes[fighter_index][5], 160, fighter_y, 0, 0, 32, 32);
+        blit(eb, cframes[fighter_index][5], 160, fighter_y, 0, 0, 32, 32);
 
         fighter_x = current_fighter_index * 64 + 192;
         fighter_y = fighter[fighter_index].current_weapon_type * 32;
 
         // Attack stances, column 6 (0-based): weapon held up to strike
-        blit((BITMAP *) pb->dat, cframes[fighter_index][6], fighter_x, fighter_y, 0, 0, 32, 32);
+        blit(eb, cframes[fighter_index][6], fighter_x, fighter_y, 0, 0, 32, 32);
 
         // Attack stances, column 7 (0-based): weapon forward, striking
-        blit((BITMAP *) pb->dat, cframes[fighter_index][7], fighter_x + 32, fighter_y, 0, 0, 32, 32);
+        blit(eb, cframes[fighter_index][7], fighter_x + 32, fighter_y, 0, 0, 32, 32);
 
         fighter_weapon_index = party[current_fighter_index].eqp[0];
 
@@ -1084,7 +1083,6 @@ void hero_init(void)
         fighter[fighter_index].cl = 32;
         fighter[fighter_index].aframe = 0;
     }
-    unload_datafile_object(pb);
 }
 
 
