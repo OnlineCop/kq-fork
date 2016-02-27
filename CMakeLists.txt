@@ -72,34 +72,6 @@ set(kq-fork_SRCS
 	src/animation.cpp
 )
 
-set(mapdraw_SRCS
-	maps/mapdata.cpp
-	maps/mapedit.cpp
-	maps/mapent.cpp
-	maps/mapfile.cpp
-	maps/mapshared.cpp
-	maps/mapstructs.cpp
-	src/bounds.cpp
-	src/disk.cpp
-	src/markers.cpp
-)
-
-set(mapdump_SRCS
-	maps/mapdata.cpp
-	maps/mapdump.cpp
-	maps/mapshared.cpp
-	src/bounds.cpp
-	src/disk.cpp
-	src/markers.cpp
-)
-
-set(mapdiff_SRCS
-	maps/mapdiff.cpp
-	src/bounds.cpp
-	src/disk.cpp
-	src/markers.cpp
-)
-
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/maps")
 
 set(CMAKE_CXX_STANDARD 14)
@@ -117,9 +89,6 @@ set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -Wall -Wextra -Wpedantic")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(kq-fork ${kq-fork_SRCS})
-add_executable(mapdraw ${mapdraw_SRCS})
-add_executable(mapdump ${mapdump_SRCS})
-add_executable(mapdiff ${mapdiff_SRCS})
 
 if(KQ_DEBUGGING)
 set_target_properties(kq-fork PROPERTIES COMPILE_DEFINITIONS DEBUGMODE)
@@ -134,15 +103,3 @@ target_link_libraries(kq-fork
 	${M_LIB}
 	${PNG_LIBRARIES}
 	${ZLIB_LIBRARIES})
-
-target_link_libraries(mapdraw
-	${ALLEGRO_LIBRARIES}
-	${M_LIB})
-
-target_link_libraries(mapdump
-	${ALLEGRO_LIBRARIES}
-	${M_LIB})
-
-target_link_libraries(mapdiff
-	${ALLEGRO_LIBRARIES}
-	${M_LIB})
