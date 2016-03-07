@@ -95,10 +95,10 @@ def extract_zones(data, width, height):
 # make a string from an array maybe with nulls in it.
 def nps(d):
     ix = d.find(b'\0')
-    if ix <0:
-        return str(d)
+    if ix < 0:
+        return d.decode()
     else:
-        return str(d[:ix])
+        return d[:ix].decode()
 
 # List of all the tilesets names and images
 class Tileset:
@@ -211,8 +211,7 @@ class SMap:
         m.entities = []
         for i in range(MAX_ENTITIES_PER_MAP):
             (ent, offset) = Entity.from_data(data, offset)
-            if ent.eid > 0:
-                m.entities.append(ent)
+            m.entities.append(ent)
         for (i, e) in enumerate(m.entities):
             e.name = "Entity %d" % i
         # Tilemaps for each layer
@@ -513,20 +512,20 @@ class Bounds:
         obj.append(mkprops({"btile":str(self.btile)}))
         return obj
 
-
-parser = argparse.ArgumentParser()
-parser.add_argument('input_file', type=argparse.FileType('rb'), help="Input map file for conversion")
-parser.add_argument('-o', '--output', type=argparse.FileType('wt'), default=sys.stdout, help="Output tmx file, default standard output")
-args = parser.parse_args()
-fd = args.input_file
-raw = fd.read()
-fd.close()
-(magic,) = struct.unpack('<I', raw[:4])
-data = decompress(raw)
-(m,_) = SMap.from_data(data, 0)
-outxml = m.as_xml()
-if PY3:
-    ET.ElementTree(outxml).write(args.output, encoding='unicode')
-else:
-    ET.ElementTree(outxml).write(args.output)
-args.output.close()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input_file', type=argparse.FileType('rb'), help="Input map file for conversion")
+    parser.add_argument('-o', '--output', type=argparse.FileType('wt'), default=sys.stdout, help="Output tmx file, default standard output")
+    args = parser.parse_args()
+    fd = args.input_file
+    raw = fd.read()
+    fd.close()
+    (magic,) = struct.unpack('<I', raw[:4])
+    data = decompress(raw)
+    (m,_) = SMap.from_data(data, 0)
+    outxml = m.as_xml()
+    if PY3:
+        ET.ElementTree(outxml).write(args.output, encoding='unicode')
+    else:
+        ET.ElementTree(outxml).write(args.output)
+    args.output.close()
