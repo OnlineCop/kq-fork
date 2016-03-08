@@ -45,6 +45,7 @@
 #include "res.h"
 #include "setup.h"
 #include "timing.h"
+#include "gfx.h"
 
 /* Globals */
 #define MSG_ROWS 4
@@ -55,7 +56,7 @@ eBubbleStemStyle bubble_stem_style;
 unsigned char BLUE = 2, DARKBLUE = 0, DARKRED = 4;
 
 /*  Internal prototypes  */
-static void border(BITMAP *, int, int, int, int);
+static void border(Raster *, int, int, int, int);
 static void draw_backlayer(void);
 static void draw_char(int, int);
 static void draw_forelayer(void);
@@ -104,20 +105,34 @@ void blit2screen(int xw, int yw)
         char fbuf[16];
 
         sprintf(fbuf, "%3d", frate);
-        rectfill(double_buffer, xofs, yofs, xofs + 24, yofs + 8, makecol(0, 0, 0));
-        print_font(double_buffer, xofs, yofs, fbuf, FNORMAL);
+        double_buffer->fill( xw, yw, xw + 24, yw + 8, 0);
+        print_font(double_buffer, xw, yw, fbuf, FNORMAL);
     }
 #ifdef DEBUGMODE
     display_console(xw, yw);
 #endif
+	acquire_screen();
     if (stretch_view == 1)
     {
-        stretch_blit(double_buffer, screen, xw, yw, 320, 240, 0, 0, 640, 480);
+		for (int j = 0; j < 480;  ++j) {
+			uint8_t* lptr = reinterpret_cast<uint8_t*>(bmp_write_line(screen, j));
+			for (int i = 0; i < 640; i += 2) {
+				lptr[i] = lptr[i+1] = double_buffer->ptr(xw + i/2, yw + j/2);
+			}
+			bmp_unwrite_line(screen);
+		}
     }
     else
     {
-        blit(double_buffer, screen, xw, yw, 0, 0, 320, 240);
+		for (int j = 0; j < 240; ++j) {
+			uint8_t* lptr = reinterpret_cast<uint8_t*>(bmp_write_line(screen, j));
+			for (int i = 0; i < 320; ++i) {
+				lptr[i] = double_buffer->ptr(xw + i, yw + j);
+			}
+			bmp_unwrite_line(screen);
+		}
     }
+	release_screen();
     frate = limit_frame_rate(25);
 }
 
@@ -136,7 +151,7 @@ void blit2screen(int xw, int yw)
  * \param   right Bottom-right x-coord
  * \param   bottom Bottom-right y-coord
  */
-static void border(BITMAP *where, int left, int top, int right, int bottom)
+static void border(Raster *where, int left, int top, int right, int bottom)
 {
     vline(where, left + 1, top + 3, bottom - 3, GREY2);
     vline(where, left + 2, top + 3, bottom - 3, GREY3);
@@ -187,7 +202,7 @@ static void border(BITMAP *where, int left, int top, int right, int bottom)
  * \param   output_range_start Start of output color range
  * \param   output_range_end End of output color range
  */
-void color_scale(BITMAP *src, BITMAP *dest, int output_range_start, int output_range_end)
+void color_scale(Raster *src, Raster *dest, int output_range_start, int output_range_end)
 {
     int ix, iy, z;
     int current_pixel_color;
@@ -198,11 +213,11 @@ void color_scale(BITMAP *src, BITMAP *dest, int output_range_start, int output_r
     }
 
     clear_bitmap(dest);
-    for (iy = 0; iy < dest->h; iy++)
+    for (iy = 0; iy < dest->height; iy++)
     {
-        for (ix = 0; ix < dest->w; ix++)
+        for (ix = 0; ix < dest->width; ix++)
         {
-            current_pixel_color = src->line[iy][ix];
+			current_pixel_color = src->getpixel(ix, iy);
             if (current_pixel_color > 0)
             {
                 z = pal[current_pixel_color].r;
@@ -210,7 +225,7 @@ void color_scale(BITMAP *src, BITMAP *dest, int output_range_start, int output_r
                 z += pal[current_pixel_color].b;
                 // 192 is '64*3' (max value for each of R, G and B).
                 z = z * (output_range_end - output_range_start) / 192;
-                dest->line[iy][ix] = output_range_start + z;
+                dest->setpixel(ix, iy, output_range_start + z);
             }
         }
     }
@@ -278,24 +293,24 @@ void convert_cframes(size_t fighter_index, int output_range_start, int output_ra
  * \param   source Bitmap to copy from
  * \returns target or a new bitmap.
  */
-BITMAP *copy_bitmap(BITMAP *target, BITMAP *source)
+Raster *copy_bitmap(Raster *target, Raster *source)
 {
     if (target)
     {
-        if (target->w < source->w || target->h < source->h)
+        if (target->width < source->width || target->height < source->height)
         {
             /* too small */
-            destroy_bitmap(target);
-            target = create_bitmap(source->w, source->h);
+            delete(target);
+            target = new Raster(source->width, source->height);
         }
     }
     else
     {
         /* create new */
-        target = create_bitmap(source->w, source->h);
+        target = new Raster(source->width, source->height);
     }
     /* ...and copy */
-    blit(source, target, 0, 0, 0, 0, source->w, source->h);
+	source->blitTo(target);
     return target;
 }
 
@@ -382,8 +397,8 @@ static void draw_char(int xw, int yw)
     int x, y;
     signed int horiz, vert;
     unsigned int here, there;
-    BITMAP **sprite_base;
-    BITMAP *spr = NULL;
+    Raster **sprite_base;
+    Raster *spr = NULL;
     size_t follower_fighter_index;
     size_t fighter_index;
     size_t fighter_frame, fighter_frame_add;
@@ -447,8 +462,8 @@ static void draw_char(int xw, int yw)
             }
             else
             {
-                draw_trans_sprite(double_buffer, spr, dx, dy);
-            }
+				draw_trans_sprite(double_buffer, spr, dx, dy);
+			}
 
             /* After we draw the player's character, we have to know whether they
              * are moving diagonally. If so, we need to draw both layers 1&2 on
@@ -627,26 +642,13 @@ static void draw_forelayer(void)
                         if (z_seg[here] == 0)
                         {
                             // Do nothing
-                        }
-                        else if (z_seg[here] < 10)
-                        {
-                            /* The zone's number is single-digit, center vert+horiz */
-                            textprintf_ex(double_buffer, font, dx * 16 + 4 + xofs, dy * 16 + 4 + yofs, makecol(255, 255, 255), 0, "%d", z_seg[here]);
-                        }
-                        else if (z_seg[here] < 100)
-                        {
-                            /* The zone's number is double-digit, center only vert */
-                            textprintf_ex(double_buffer, font, dx * 16 + xofs, dy * 16 + 4 + yofs, makecol(255, 255, 255), 0, "%d", z_seg[here]);
-                        }
-                        else if (z_seg[here] < 10)
-                        {
-                            /* The zone's number is triple-digit.  Print the 100's
-                             * digit in top-center of the square; the 10's and 1's
-                             * digits on bottom of the square
-                             */
-                            textprintf_ex(double_buffer, font, dx * 16 + 4 + xofs, dy * 16 + yofs, makecol(255, 255, 255), 0, "%d", (int)(z_seg[here] / 100));
-                            textprintf_ex(double_buffer, font, dx * 16 + xofs, dy * 16 + 8 + yofs, makecol(255, 255, 255), 0, "%02d", (int)(z_seg[here] % 100));
-                        }
+						}
+						else {
+							char buf[8];
+							sprintf(buf, "%d", z_seg[here]);
+							size_t l = strlen(buf) * 8;
+							print_num(double_buffer, dx * 16 + 8 + xofs - l / 2, dy * 16 + 4 + yofs, buf, FNORMAL);
+						}
 #else
                         if (z_seg[here] == 0)
                         {
@@ -693,7 +695,7 @@ static void draw_forelayer(void)
  * \param   icx x-coord
  * \param   icy y-coord
  */
-void draw_icon(BITMAP *where, int ino, int icx, int icy)
+void draw_icon(Raster *where, int ino, int icx, int icy)
 {
     masked_blit(sicons, where, 0, ino * 8, icx, icy, 8, 8);
 }
@@ -717,7 +719,7 @@ void draw_icon(BITMAP *where, int ino, int icx, int icy)
  * \param   bg Colour/style of background
  * \param   bstyle Style of border
  */
-static void draw_kq_box(BITMAP *where, int x1, int y1, int x2, int y2, int bg, int bstyle)
+static void draw_kq_box(Raster *where, int x1, int y1, int x2, int y2, int bg, int bstyle)
 {
     int a;
 
@@ -964,7 +966,7 @@ static void draw_shadows(void)
  * \param   icx x-coord to draw to
  * \param   icy y-coord to draw to
  */
-void draw_stsicon(BITMAP *where, int cc, int who, int inum, int icx, int icy)
+void draw_stsicon(Raster* where, int cc, int who, int inum, int icx, int icy)
 {
     int j, st = 0, s;
 
@@ -1002,7 +1004,7 @@ void draw_stsicon(BITMAP *where, int cc, int who, int inum, int icx, int icy)
 static void draw_textbox(int bstyle)
 {
     int wid, hgt, a;
-    BITMAP *stem;
+    Raster *stem;
 
     wid = gbbw * 8 + 16;
     hgt = gbbh * 12 + 16;
@@ -1252,7 +1254,7 @@ int is_forestsquare(int fx, int fy)
  * \param   h Height
  * \param   c Colour (see note above)
  */
-void menubox(BITMAP *where, int x, int y, int w, int h, int c)
+void menubox(Raster *where, int x, int y, int w, int h, int c)
 {
     draw_kq_box(where, x, y, x + w * 8 + 16, y + h * 8 + 16, c, B_TEXT);
 }
@@ -1570,7 +1572,7 @@ static int get_glyph_index(unsigned int cp)
  * \param   msg String to draw
  * \param   cl Font index (0..6)
  */
-void print_font(BITMAP *where, int sx, int sy, const char *msg, eFontColor cl)
+void print_font(Raster* where, int sx, int sy, const char *msg, eFontColor cl)
 {
     int z = 0, hgt = 8;
     unsigned int cc = 0;
@@ -1613,7 +1615,7 @@ void print_font(BITMAP *where, int sx, int sy, const char *msg, eFontColor cl)
  * \param   msg String to draw
  * \param   cl Font index (0..4)
  */
-void print_num(BITMAP *where, int sx, int sy, char *msg, int cl)
+void print_num(Raster *where, int sx, int sy, char *msg, int cl)
 {
     int z, cc;
     assert(where && "where == NULL");
@@ -1819,7 +1821,7 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
                 {
                     print_font(double_buffer, winx + 8, winy + i * 12, opt[i + topopt], FBIG);
                 }
-                draw_sprite(double_buffer, menuptr, winx + 8 - menuptr->w, (curopt - topopt) * 12 + winy + 4);
+                draw_sprite(double_buffer, menuptr, winx + 8 - menuptr->width, (curopt - topopt) * 12 + winy + 4);
                 /* Draw the 'up' and 'down' markers if there are more options than will fit in the window */
                 if (topopt > 0)
                 {

@@ -41,7 +41,7 @@
 #include "setup.h"
 #include "shopmenu.h"
 #include "timing.h"
-
+#include "gfx.h"
 
 /* Winter Knight: I'm making it so shops are declared in scripts, rather than
 in the code. It is part of my "separate the engine and the data" campaign. */
@@ -91,7 +91,7 @@ static void buy_item(int how_many, int item_no)
     while (!stop)
     {
         check_animation();
-        blit(back, double_buffer, 0, 0, xofs, 192 + yofs, 320, 48);
+        back->blitTo( double_buffer, 0, 0, xofs, 192 + yofs, 320, 48);
         menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, DARKBLUE);
         print_font(double_buffer, 104 + xofs, 176 + yofs, _("Confirm/Cancel"), FNORMAL);
         draw_sideshot(shops[shop_no].items[item_no]);

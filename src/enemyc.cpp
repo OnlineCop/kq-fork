@@ -29,6 +29,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <memory>
 
 #include "combat.h"
 #include "draw.h"
@@ -41,6 +42,7 @@
 #include "res.h"
 #include "selector.h"
 #include "skills.h"
+#include "gfx.h"
 
 /*! Index related to enemies in an encounter */
 int cf[NUM_FIGHTERS];
@@ -417,11 +419,11 @@ void enemy_init(void)
             /* If, in a previous combat, we made a bitmap, destroy it now */
             if (cframes[fighter_index + PSIZE][frame_index])
             {
-                destroy_bitmap(cframes[fighter_index + PSIZE][frame_index]);
+                delete(cframes[fighter_index + PSIZE][frame_index]);
             }
             /* and create a new one */
-            cframes[fighter_index + PSIZE][frame_index] = create_bitmap(f->img->w, f->img->h);
-            blit(f->img, cframes[fighter_index + PSIZE][frame_index], 0, 0, 0, 0, f->img->w, f->img->h);
+            cframes[fighter_index + PSIZE][frame_index] = new Raster(f->img->width, f->img->height);
+            blit(f->img, cframes[fighter_index + PSIZE][frame_index], 0, 0, 0, 0, f->img->width, f->img->height);
             tcframes[fighter_index + PSIZE][frame_index] = copy_bitmap(tcframes[fighter_index + PSIZE][frame_index], f->img);
         }
     }
@@ -810,8 +812,10 @@ static void load_enemies(void)
         // Imbued stat type (Spd, Spi, Att, Hit, Def, Evd, Mag)
         fscanf(edat, "%d", &tmp);
         f->imb_a = tmp;
-        f->img =
-            create_sub_bitmap((BITMAP *) enemy_pcx->dat, lx, ly, f->cw, f->cl);
+		f->img =
+			new Raster(f->cw, f->cl);
+		std::unique_ptr<Raster> temp(raster_from_bitmap((BITMAP *)enemy_pcx->dat));
+		temp->blitTo(f->img, lx, ly, 0, 0, f->cw, f->cl);
         for (p = 0; p < 2; p++)
         {
             fscanf(edat, "%d", &tmp);
@@ -1134,7 +1138,7 @@ void unload_enemies(void)
     {
         for (i = 0; i < enemies_n; ++i)
         {
-            destroy_bitmap(enemy_fighters[i]->img);
+            delete(enemy_fighters[i]->img);
             free(enemy_fighters[i]);
         }
         free(enemy_fighters);

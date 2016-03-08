@@ -33,7 +33,7 @@
 #include "res.h"
 #include "selector.h"
 #include "setup.h"
-
+#include "gfx.h"
 /*! \file
  * \brief Menus for spells
  *

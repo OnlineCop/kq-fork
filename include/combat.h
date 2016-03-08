@@ -42,7 +42,7 @@
 #define ROUND_MAX    400
 #define DMG_RND_MIN    2
 
-
+class Raster;
 
 /*! \name combat function prototypes  */
 int combat_check(int, int);     /*  entity.c  */
@@ -65,7 +65,7 @@ extern int deffect[NUM_FIGHTERS];       /*  effects.c, hskill.c  */
 extern int rcount;              /*  magic.c  */
 extern unsigned char vspell;    /*  magic.c  */
 extern unsigned char ms;        /*  heroc.c  */
-extern struct BITMAP *backart;        /*  hskill.c  */
+extern Raster *backart;        /*  hskill.c  */
 
 
 #endif  /* __COMBAT_H */

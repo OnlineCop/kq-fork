@@ -3,7 +3,7 @@
 
 
 #include <allegro.h>
-
+class Raster;
 /*! \brief Fighter
  *
  * s_player is transformed into a s_fighter during combat.
@@ -62,7 +62,7 @@ typedef struct
     int imb_s;
     int imb_a;
     int imb[2];
-    BITMAP *img;
+    Raster *img;
 } s_fighter;
 
 

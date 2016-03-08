@@ -63,7 +63,7 @@
 #include "maps.h"
 #include "structs.h"
 #include <string>
-
+class Raster;
 
 void change_map(const std::string &, int, int, int, int);    /*  intrface.c, magic.c  */
 void change_mapm(const std::string &, const std::string &, int, int);       /*  intrface.c */
@@ -92,22 +92,22 @@ extern std::string curmap;         /*  sgame.c, draw.c, magic.c */
 extern s_player_input PlayerInput;
 extern int vx, vy, mx, my, steps, lastm[PSIZE];
 
-extern BITMAP *double_buffer, *fx_buffer;
-extern BITMAP *map_icons[MAX_TILES];
+extern Raster *double_buffer, *fx_buffer;
+extern Raster *map_icons[MAX_TILES];
 
 
-extern BITMAP *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse, *b_mp;
-extern BITMAP *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES];
-extern BITMAP *eframes[MAXE][MAXEFRAMES], *pgb[9], *sfonts[5], *bord[8];
-extern BITMAP *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr;
-extern BITMAP *shadow[MAX_SHADOWS];     /*  draw.c  */
+extern Raster *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse, *b_mp;
+extern Raster *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES];
+extern Raster *eframes[MAXE][MAXEFRAMES], *pgb[9], *sfonts[5], *bord[8];
+extern Raster *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr;
+extern Raster *shadow[MAX_SHADOWS];     /*  draw.c  */
 extern unsigned short *map_seg;
 extern unsigned short *b_seg, *f_seg;
 extern unsigned char *z_seg, *s_seg, *o_seg;
 extern unsigned char progress[SIZE_PROGRESS];
 extern unsigned char treasure[SIZE_TREASURE];
 extern unsigned char save_spells[SIZE_SAVE_SPELL];
-extern BITMAP *kfonts;
+extern Raster *kfonts;
 extern s_map g_map;
 extern s_entity g_ent[MAX_ENTITIES];
 extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
@@ -150,7 +150,7 @@ extern int no_monsters;
 void kq_yield(void);
 
 #ifdef DEBUGMODE
-extern BITMAP *obj_mesh;
+extern Raster *obj_mesh;
 #endif
 
 

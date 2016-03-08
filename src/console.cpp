@@ -25,7 +25,7 @@
 #include "kq.h"
 #include "music.h"
 #include "structs.h"
-
+#include "gfx.h"
 
 /*! \file
 * \brief Lua console for debugging
@@ -102,12 +102,12 @@ void display_console(unsigned int xofs, unsigned int yofs)
     {
         if (g_console.lines[i])
         {
-            textout_ex(double_buffer, font, g_console.lines[i], xofs, y, makecol(255, 255, 255), makecol(0, 0, 0));
+			print_font(double_buffer, xofs, y, g_console.lines[i], FGREEN);
         }
         y -= text_height(font);
         --i;
     }
-    textout_ex(double_buffer, font, g_console.inputline, xofs, yofs + 240 - text_height(font), makecol(255, 255, 255), makecol(0, 0, 0));
+	print_font(double_buffer, xofs, yofs + 240 - 8, g_console.inputline, FNORMAL);
     rectfill(double_buffer, xofs + text_length(font, g_console.inputline), yofs + 238, xofs + text_length(font, g_console.inputline) + text_length(font, "_"), yofs + 240, makecol(192, 192, 192));
 }
 

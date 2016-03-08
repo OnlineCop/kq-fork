@@ -39,7 +39,7 @@
 #include "menu.h"
 #include "res.h"
 #include "setup.h"
-
+#include "gfx.h"
 
 /* Globals  */
 int tstats[13], tres[R_TOTAL_RES];

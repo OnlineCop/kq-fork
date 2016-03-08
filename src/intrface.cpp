@@ -69,6 +69,7 @@ extern "C" {
 #include "sgame.h"
 #include "shopmenu.h"
 #include "timing.h"
+#include "gfx.h"
 
 /* Defines */
 #define LUA_ENT_KEY "_ent"
@@ -516,8 +517,9 @@ fields[] =
  * also want it to change dynamically
  */
 
-static BITMAP *g_bmp[5];
+static Raster *g_bmp[5];
 static DATAFILE *g_df;
+static Raster *g_bmf;
 static int g_keys[8];
 static int tmx, tmy, tmvx, tmvy;
 static lua_State *theL;
@@ -1851,7 +1853,7 @@ static int KQ_create_bmp(lua_State *L)
 
     if (a >= 0 && a <= 4)
     {
-        g_bmp[a] = create_bitmap((int) lua_tonumber(L, 2), (int) lua_tonumber(L, 3));
+        g_bmp[a] = new Raster((int) lua_tonumber(L, 2), (int) lua_tonumber(L, 3));
     }
     return 0;
 }
@@ -1861,6 +1863,7 @@ static int KQ_create_bmp(lua_State *L)
 static int KQ_create_df(lua_State *L)
 {
     g_df = load_datafile_object(kqres(DATA_DIR, lua_tostring(L, 1)), lua_tostring(L, 2));
+	g_bmf = raster_from_bitmap(static_cast<BITMAP*>(g_df->dat));
     return 0;
 }
 
@@ -1886,7 +1889,7 @@ static int KQ_destroy_bmp(lua_State *L)
 
     if (a >= 0 && a <= 4)
     {
-        destroy_bitmap(g_bmp[a]);
+        delete(g_bmp[a]);
     }
     return 0;
 }
@@ -1897,6 +1900,7 @@ static int KQ_destroy_df(lua_State *L)
 {
     (void) L;
     unload_datafile_object(g_df);
+	delete g_bmf;
     return 0;
 }
 
@@ -1908,7 +1912,8 @@ static int KQ_df2bmp(lua_State *L)
 
     if (a >= 0 && a <= 4)
     {
-        blit((BITMAP *) g_df->dat,
+
+        blit(g_bmf,
             g_bmp[a],
             (int) lua_tonumber(L, 2),
             (int) lua_tonumber(L, 3),

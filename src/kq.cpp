@@ -45,7 +45,8 @@
 #include <string.h>
 #include <time.h>
 #include <vector>
-
+#include <string>
+#include <memory>
 
 #include "console.h"
 #include "credits.h"
@@ -69,11 +70,10 @@
 #include "sgame.h"
 #include "shopmenu.h"
 #include "structs.h"
-#include <string>
 #include "tiledmap.h"
 #include "imgcache.h"
 #include "animation.h"
-
+#include "gfx.h"
 
 /*! Name of the current map */
 std::string curmap;
@@ -93,7 +93,7 @@ int vx, vy, mx, my;
 int steps = 0;
 
 /*! 23: various global bitmaps */
-BITMAP *double_buffer, *fx_buffer, *map_icons[MAX_TILES], *back, *tc, *tc2,
+Raster *double_buffer, *fx_buffer, *map_icons[MAX_TILES], *back, *tc, *tc2,
        *bub[8], *b_shield, *b_shell, *b_repulse, *b_mp,
        *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES],
        *frames[MAXCHRS][MAXFRAMES], *eframes[MAXE][MAXEFRAMES], *pgb[9],
@@ -101,7 +101,7 @@ BITMAP *double_buffer, *fx_buffer, *map_icons[MAX_TILES], *back, *tc, *tc2,
        *missbmp, *noway, *upptr, *dnptr, *shadow[MAX_SHADOWS], *kfonts;
 
 #ifdef DEBUGMODE
-BITMAP *obj_mesh;
+Raster *obj_mesh;
 #endif
 
 /*! Layers in the map */
@@ -508,7 +508,7 @@ int add_timer_event(const char *n, int delta)
 
 
 #ifdef DEBUGMODE
-BITMAP *alloc_bmp(int, int, const char *);  // Get rid of "no prev prototype" warning
+Raster *alloc_bmp(int, int, const char *);  // Get rid of "no prev prototype" warning
 
 
 /*! \brief Creates a bitmap, giving an error message with the specified name if it fails.
@@ -525,11 +525,10 @@ BITMAP *alloc_bmp(int, int, const char *);  // Get rid of "no prev prototype" wa
  * \param   bitmap_name Name of bitmap
  * \returns the pointer to the created bitmap
  */
-BITMAP *alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name)
+Raster *alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name)
 {
-    BITMAP *tmp;
+    Raster *tmp = new Raster(bitmap_width, bitmap_height);
 
-    tmp = create_bitmap(bitmap_width, bitmap_height);
 
     if (!tmp)
     {
@@ -540,7 +539,10 @@ BITMAP *alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name)
     return tmp;
 }
 #else
-#define alloc_bmp(w, h, n) create_bitmap((w), (h))
+inline Raster* alloc_bmp(int w, int h, const char* n) {
+	(void)n;
+	return new Raster(w, h);
+}
 #endif
 
 
@@ -860,41 +862,41 @@ static void deallocate_stuff(void)
 {
     int i, p;
 
-    destroy_bitmap(kfonts);
+    delete kfonts;
 
     for (i = 0; i < 5; i++)
     {
-        destroy_bitmap(sfonts[i]);
+        delete(sfonts[i]);
     }
 
-    destroy_bitmap(menuptr);
-    destroy_bitmap(sptr);
-    destroy_bitmap(mptr);
-    destroy_bitmap(upptr);
-    destroy_bitmap(dnptr);
-    destroy_bitmap(stspics);
-    destroy_bitmap(sicons);
-    destroy_bitmap(bptr);
-    destroy_bitmap(noway);
-    destroy_bitmap(missbmp);
+    delete(menuptr);
+    delete(sptr);
+    delete(mptr);
+    delete(upptr);
+    delete(dnptr);
+    delete(stspics);
+    delete(sicons);
+    delete(bptr);
+    delete(noway);
+    delete(missbmp);
 
     for (i = 0; i < 9; i++)
     {
-        destroy_bitmap(pgb[i]);
+        delete(pgb[i]);
     }
 
-    destroy_bitmap(tc);
-    destroy_bitmap(tc2);
-    destroy_bitmap(b_shield);
-    destroy_bitmap(b_shell);
-    destroy_bitmap(b_repulse);
-    destroy_bitmap(b_mp);
+    delete(tc);
+    delete(tc2);
+    delete(b_shield);
+    delete(b_shell);
+    delete(b_repulse);
+    delete(b_mp);
 
     for (p = 0; p < MAXE; p++)
     {
         for (i = 0; i < MAXEFRAMES; i++)
         {
-            destroy_bitmap(eframes[p][i]);
+            delete(eframes[p][i]);
         }
     }
 
@@ -902,7 +904,7 @@ static void deallocate_stuff(void)
     {
         for (p = 0; p < MAXCHRS; p++)
         {
-            destroy_bitmap(frames[p][i]);
+            delete(frames[p][i]);
         }
     }
 
@@ -910,38 +912,38 @@ static void deallocate_stuff(void)
     {
         for (p = 0; p < NUM_FIGHTERS; p++)
         {
-            destroy_bitmap(cframes[p][i]);
-            destroy_bitmap(tcframes[p][i]);
+            delete(cframes[p][i]);
+            delete(tcframes[p][i]);
         }
     }
 
-    destroy_bitmap(double_buffer);
-    destroy_bitmap(back);
-    destroy_bitmap(fx_buffer);
+    delete(double_buffer);
+    delete(back);
+    delete(fx_buffer);
 
     for (p = 0; p < MAX_SHADOWS; p++)
     {
-        destroy_bitmap(shadow[p]);
+        delete(shadow[p]);
     }
 
     for (p = 0; p < 8; p++)
     {
-        destroy_bitmap(bub[p]);
+        delete(bub[p]);
     }
 
     for (p = 0; p < 8; p++)
     {
-        destroy_bitmap(bord[p]);
+        delete(bord[p]);
     }
 
     for (p = 0; p < MAXCHRS; p++)
     {
-        destroy_bitmap(players[p].portrait);
+        delete(players[p].portrait);
     }
 
     for (p = 0; p < MAX_TILES; p++)
     {
-        destroy_bitmap(map_icons[p]);
+        delete(map_icons[p]);
     }
 
     if (map_seg)
@@ -983,7 +985,7 @@ static void deallocate_stuff(void)
 	clear_image_cache();
 
 #ifdef DEBUGMODE
-    destroy_bitmap(obj_mesh);
+    delete(obj_mesh);
 #endif
 }
 
@@ -1073,7 +1075,7 @@ size_t in_party(ePIDX pn)
 void init_players(void)
 {
     DATAFILE *pb;
-    size_t i, party_index, frame_index;
+    unsigned int i, party_index, frame_index;
 
     for (party_index = 0; party_index < MAXCHRS; party_index++)
     {
@@ -1110,7 +1112,8 @@ void init_players(void)
     {
         for (frame_index = 0; frame_index < MAXFRAMES; frame_index++)
         {
-            blit((BITMAP *) pb->dat, frames[party_index][frame_index], frame_index * 16, party_index * 16, 0, 0, 16, 16);
+			std::unique_ptr<Raster> r(raster_from_bitmap((BITMAP *)pb->dat));
+			r->blitTo(frames[party_index][frame_index], frame_index * 16, party_index * 16, 0, 0, 16, 16, false);
         }
     }
 
@@ -1222,7 +1225,7 @@ void kwait(int dtime)
 void load_heroes(void)
 {
     PACKFILE *f;
-    size_t player_index;
+    int player_index;
 
     /* Hero stats */
     if ((f = pack_fopen(kqres(DATA_DIR, "hero.kq"), F_READ_PACKED)) == NULL)
@@ -1236,12 +1239,12 @@ void load_heroes(void)
     pack_fclose(f);
 
     /* portraits */
-	BITMAP* faces = get_cached_image("kqfaces.png");
+	Raster* faces = get_cached_image("kqfaces.png");
 
     for (player_index = 0; player_index < 4; ++player_index)
     {
-        blit(faces, players[player_index].portrait, 0, player_index * 40, 0, 0, 40, 40);
-        blit(faces, players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
+		faces->blitTo(players[player_index].portrait, 0, player_index * 40, 0, 0, 40, 40);
+		faces->blitTo(players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
     }
 
 }
@@ -1368,10 +1371,10 @@ static void my_counter(void)
  */
 static void prepare_map(int msx, int msy, int mvx, int mvy)
 {
-    BITMAP *pcxb;
-    size_t i;
+    Raster *pcxb;
+    unsigned int i;
     size_t mapsize;
-    size_t o;
+    unsigned int o;
 
     mapsize = (size_t)g_map.xsize * (size_t)g_map.ysize;
 
@@ -1451,11 +1454,11 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
 	pcxb = g_map.map_tiles;
-    for (o = 0; o < (size_t)pcxb->h / 16; o++)
+    for (o = 0; o < (size_t)pcxb->height / 16; o++)
     {
-        for (i = 0; i < (size_t)pcxb->w / 16; i++)
+        for (i = 0; i < (size_t)pcxb->width / 16; i++)
         {
-            blit(pcxb, map_icons[o * (pcxb->w / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
+            pcxb->blitTo(map_icons[o * (pcxb->width / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
         }
     }
 
@@ -1761,91 +1764,88 @@ static void startup(void)
     }
 
     srand((unsigned)time(&t));
-	BITMAP* misc = get_cached_image("misc.png");
-    blit(misc, menuptr, 24, 0, 0, 0, 16, 8);
-    blit(misc, sptr, 0, 0, 0, 0, 8, 8);
-    blit(misc, mptr, 8, 0, 0, 0, 8, 8);
-    blit(misc, upptr, 0, 8, 0, 0, 8, 8);
-    blit(misc, dnptr, 8, 8, 0, 0, 8, 8);
-    blit(misc, bptr, 24, 8, 0, 0, 16, 8);
-    blit(misc, noway, 64, 16, 0, 0, 16, 16);
-    blit(misc, missbmp, 0, 16, 0, 0, 20, 6);
-    blit(misc, b_shield, 0, 80, 0, 0, 48, 48);
-    blit(misc, b_shell, 48, 80, 0, 0, 48, 48);
-    blit(misc, b_repulse, 0, 64, 0, 0, 16, 16);
-    blit(misc, b_mp, 0, 24, 0, 0, 10, 8);
-    blit(misc, sfonts[0], 0, 128, 0, 0, 60, 8);
+	Raster* misc = get_cached_image("misc.png");
+    misc->blitTo(menuptr, 24, 0, 0, 0, 16, 8);
+    misc->blitTo(sptr, 0, 0, 0, 0, 8, 8);
+    misc->blitTo(mptr, 8, 0, 0, 0, 8, 8);
+    misc->blitTo(upptr, 0, 8, 0, 0, 8, 8);
+    misc->blitTo(dnptr, 8, 8, 0, 0, 8, 8);
+    misc->blitTo(bptr, 24, 8, 0, 0, 16, 8);
+    misc->blitTo(noway, 64, 16, 0, 0, 16, 16);
+    misc->blitTo(missbmp, 0, 16, 0, 0, 20, 6);
+    misc->blitTo(b_shield, 0, 80, 0, 0, 48, 48);
+    misc->blitTo(b_shell, 48, 80, 0, 0, 48, 48);
+    misc->blitTo(b_repulse, 0, 64, 0, 0, 16, 16);
+    misc->blitTo(b_mp, 0, 24, 0, 0, 10, 8);
+    misc->blitTo(sfonts[0], 0, 128, 0, 0, 60, 8);
 
-    for (i = 0; i < 8; i++)
+	sfonts[0]->blitTo(sfonts[1]);
+	sfonts[0]->blitTo(sfonts[2]);
+	sfonts[0]->blitTo(sfonts[3]);
+	sfonts[0]->blitTo(sfonts[4]);
+	for (i = 0; i < 8; i++)
     {
         for (p = 0; p < 60; p++)
         {
-            if (sfonts[0]->line[i][p] == 15)
+            if (sfonts[0]->getpixel(p, i) == 15)
             {
-                sfonts[1]->line[i][p] = 22;
-                sfonts[2]->line[i][p] = 105;
-                sfonts[3]->line[i][p] = 39;
-                sfonts[4]->line[i][p] = 8;
-            }
-            else
-            {
-                sfonts[1]->line[i][p] = sfonts[0]->line[i][p];
-                sfonts[2]->line[i][p] = sfonts[0]->line[i][p];
-                sfonts[3]->line[i][p] = sfonts[0]->line[i][p];
-                sfonts[4]->line[i][p] = sfonts[0]->line[i][p];
+                sfonts[1]->setpixel(p,i, 22);
+                sfonts[2]->setpixel(p, i, 105);
+                sfonts[3]->setpixel(p, i, 39);
+                sfonts[4]->setpixel(p, i, 8);
             }
         }
     }
 
     for (p = 0; p < 27; p++)
     {
-        blit(misc, stspics, p * 8 + 40, 0, 0, p * 8, 8, 8);
+        misc->blitTo(stspics, p * 8 + 40, 0, 0, p * 8, 8, 8);
     }
 
     for (p = 0; p < 40; p++)
     {
-        blit(misc, sicons, p * 8, 32, 0, p * 8, 8, 8);
+        misc->blitTo(sicons, p * 8, 32, 0, p * 8, 8, 8);
     }
 
     for (p = 0; p < 40; p++)
     {
-        blit(misc, sicons, p * 8, 40, 0, p * 8 + 320, 8, 8);
+        misc->blitTo(sicons, p * 8, 40, 0, p * 8 + 320, 8, 8);
     }
 
     for (p = 0; p < MAX_SHADOWS; p++)
     {
-        blit(misc, shadow[p], p * 16, 160, 0, 0, 16, 16);
+        misc->blitTo(shadow[p], p * 16, 160, 0, 0, 16, 16);
     }
 
     for (p = 0; p < 8; p++)
     {
-        blit(misc, bub[p], p * 16, 144, 0, 0, 16, 16);
+        misc->blitTo( bub[p], p * 16, 144, 0, 0, 16, 16);
     }
 
     for (p = 0; p < 3; p++)
     {
-        blit(misc, bord[p], p * 8 + 96, 64, 0, 0, 8, 8);
-        blit(misc, bord[5 + p], p * 8 + 96, 84, 0, 0, 8, 8);
+        misc->blitTo(bord[p], p * 8 + 96, 64, 0, 0, 8, 8);
+        misc->blitTo(bord[5 + p], p * 8 + 96, 84, 0, 0, 8, 8);
     }
 
-    blit(misc, bord[3], 96, 72, 0, 0, 8, 12);
-    blit(misc, bord[4], 112, 72, 0, 0, 8, 12);
+    misc->blitTo(bord[3], 96, 72, 0, 0, 8, 12);
+    misc->blitTo(bord[4], 112, 72, 0, 0, 8, 12);
 
     for (i = 0; i < 9; i++)
     {
-        blit(misc, pgb[i], i * 16, 48, 0, 0, 9, 9);
+        misc->blitTo(pgb[i], i * 16, 48, 0, 0, 9, 9);
     }
 
     load_heroes();
 
-	BITMAP* allfonts = get_cached_image("fonts.png");
-    blit(allfonts, kfonts, 0, 0, 0, 0, 1024, 60);
-	BITMAP* entities = get_cached_image("entities.png");
+	Raster* allfonts = get_cached_image("fonts.png");
+    allfonts->blitTo(kfonts, 0, 0, 0, 0, 1024, 60);
+	Raster* entities = get_cached_image("entities.png");
     for (q = 0; q < MAXE; q++)
     {
         for (p = 0; p < MAXEFRAMES; p++)
         {
-            blit(entities, eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
+            entities->blitTo(eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
         }
     }
 
@@ -1870,8 +1870,8 @@ static void startup(void)
 
 #ifdef DEBUGMODE
     /* TT: Create the mesh object to see 4-way obstacles (others ignored) */
-    obj_mesh = create_bitmap(16, 16);
-    clear(obj_mesh);
+    obj_mesh = new Raster(16, 16);
+    clear_bitmap(obj_mesh);
     for (q = 0; q < 16; q += 2)
     {
         for (p = 0; p < 16; p += 2)

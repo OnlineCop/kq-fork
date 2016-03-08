@@ -25,6 +25,7 @@
 
 
 #include <allegro.h>
+class Raster;
 
 // TODO: Find out whether these values paired to any color defined within PALETTE 'pal'
 #define GREY1      4
@@ -80,7 +81,7 @@ enum eBubbleStemStyle
 void blit2screen(int, int);
 
 /*  hskill.c, sgame.c  */
-void color_scale(BITMAP *, BITMAP *, int, int);
+void color_scale(Raster *, Raster *, int, int);
 
 /*  combat.c, effects.c, hskill.c  */
 void convert_cframes(size_t, int, int, int);
@@ -89,10 +90,10 @@ void convert_cframes(size_t, int, int, int);
 void revert_cframes(size_t, int);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, menu.c, selector.c  */
-void draw_icon(BITMAP *, int, int, int);
+void draw_icon(Raster *, int, int, int);
 
 /*  combat.c, menu.c  */
-void draw_stsicon(BITMAP *, int, int, int, int, int);
+void draw_stsicon(Raster *, int, int, int, int, int);
 
 /*  intrface.c  */
 int is_forestsquare(int, int);
@@ -103,14 +104,14 @@ void drawmap(void);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, hskill.c,  */
 /*  menu.c, selector.c, setup.c, sgame.c, intrface.c  */
-void menubox(BITMAP *, int, int, int, int, int);
+void menubox(Raster *, int, int, int, int, int);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, hskill.c,  */
 /*  intrface.c, selector.c, setup.c, sgame.c, menu.c  */
-void print_font(BITMAP *, int, int, const char *, eFontColor);
+void print_font(Raster *, int, int, const char *, eFontColor);
 
 /*  effects.c -> only place (RB IDEA: moving it there?)  */
-void print_num(BITMAP *, int, int, char *, int);
+void print_num(Raster *, int, int, char *, int);
 
 /*  intrface.c, setup.c  */
 void text_ex(int, int, const char *);
@@ -126,7 +127,7 @@ void message(const char *, int, int, int, int);
 /*  intrface.c, kq.c  */
 void set_view(int, int, int, int, int);
 
-BITMAP *copy_bitmap(BITMAP *, BITMAP *);
+Raster *copy_bitmap(Raster *, Raster *);
 
 /*  global variables  */
 extern unsigned char BLUE;

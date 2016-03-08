@@ -45,7 +45,7 @@ struct tmx_tileset {
 	uint32_t firstgid;
 	string name;
 	string sourceimage;
-	BITMAP* imagedata;
+	Raster* imagedata;
 	vector<tmx_animation> animations;
 	int width;
 	int height;

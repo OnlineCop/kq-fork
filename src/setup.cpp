@@ -39,7 +39,7 @@
 #include "res.h"
 #include "setup.h"
 #include "timing.h"
-
+#include "gfx.h"
 
 /*! \name Globals */
 

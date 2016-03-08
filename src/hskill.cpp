@@ -29,6 +29,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <memory>
 
 #include "kq.h"
 #include "combat.h"
@@ -43,7 +44,7 @@
 #include "selector.h"
 #include "setup.h"
 #include "timing.h"
-
+#include "gfx.h"
 
 /* Internal function */
 static void infusion(int, int);
@@ -523,8 +524,7 @@ int skill_use(size_t attack_fighter_index)
     int tgt, found_item, a, b, c, p, cts, tx, ty, next_target = 0, nn[NUM_FIGHTERS];
     size_t enemy_index;
     size_t fighter_index;
-    BITMAP *temp;
-
+	std::unique_ptr<Raster> temp;
     tempa = status_adjust(attack_fighter_index);
     switch (pidx[attack_fighter_index])
     {
@@ -535,9 +535,9 @@ int skill_use(size_t attack_fighter_index)
                 return 0;
             }
             enemy_index = (unsigned int)tgt;
-            temp = create_bitmap(320, 240);
-            blit( backart, temp, 0, 0, 0, 0, 320, 240);
-            color_scale(temp, backart, 16, 31);
+			temp = std::unique_ptr<Raster> (new Raster(320, 240));
+            blit( backart, temp.get(), 0, 0, 0, 0, 320, 240);
+            color_scale(temp.get(), backart, 16, 31);
             b = fighter[attack_fighter_index].mhp / 20;
             strcpy(attack_string, _("Rage"));
             display_attack_string = 1;
@@ -569,7 +569,7 @@ int skill_use(size_t attack_fighter_index)
             fighter[attack_fighter_index].hp -= (b * 2);
             ta[attack_fighter_index] = (b * 2);
             display_attack_string = 0;
-            blit(temp, backart, 0, 0, 0, 0, 320, 240);
+            blit(temp.get(), backart, 0, 0, 0, 0, 320, 240);
             display_amount(attack_fighter_index, FDECIDE, 0);
             if (fighter[attack_fighter_index].sts[S_DEAD] == 0
              && fighter[attack_fighter_index].hp <= 0)
@@ -577,7 +577,6 @@ int skill_use(size_t attack_fighter_index)
                 fkill(attack_fighter_index);
                 death_animation(attack_fighter_index, 0);
             }
-            destroy_bitmap(temp);
             break;
 
         case SARINA:

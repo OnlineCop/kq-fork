@@ -37,7 +37,7 @@
 #include "selector.h"
 #include "setup.h"
 #include "structs.h"
-
+#include "gfx.h"
 
 enum eMiniMenu
 {

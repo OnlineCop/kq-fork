@@ -42,6 +42,7 @@
 #include "selector.h"
 #include "setup.h"
 #include "skills.h"
+#include "gfx.h"
 
 char item_act;
 

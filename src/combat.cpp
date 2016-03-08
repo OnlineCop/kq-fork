@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <memory>
 
 #include "combat.h"
 #include "draw.h"
@@ -50,7 +51,7 @@
 #include "structs.h"
 #include "timing.h"
 #include "imgcache.h"
-
+#include "gfx.h"
 
 /*! \name global variables  */
 
@@ -64,7 +65,7 @@ int deffect[NUM_FIGHTERS];
 int rcount;
 unsigned char vspell;
 unsigned char ms;
-BITMAP *backart;
+Raster *backart;
 
 /* Internal variables */
 static int curw;
@@ -749,43 +750,21 @@ static int do_combat(char *bg, char *mus, int is_rnd)
          * of the screen.  Instead, it's going to zoom into the location where the player
          * is, so if he's on the side of the map somewhere...
          */
+		std::unique_ptr<Raster> temp(copy_bitmap(nullptr, double_buffer));
         for (zoom_step = 0; zoom_step < 9; zoom_step++)
         {
-            poll_music();
-
-            /*  RB FIXME: stretching when 640x480, stretching when 320x240?  */
-            /*            shouldn't one of those be the "common" size, and   */
-            /*            therefore not needing to stretch it?               */
-            /*            320x240 is the double_buffer size...               */
-            if (stretch_view == 1)
-            {
-                stretch_blit(
-                    double_buffer,
-                    screen,
-                    zoom_step * 16 + xofs,
-                    zoom_step * 12 + yofs,
-                    320 - (zoom_step * 32),
-                    240 - (zoom_step * 24),
-                    0, 0,
-                    640, 480
-                );
-            }
-            else
-            {
-                stretch_blit(
-                    double_buffer,
-                    screen,
-                    zoom_step * 16 + xofs,
-                    zoom_step * 12 + yofs,
-                    320 - (zoom_step * 32),
-                    240 - (zoom_step * 24),
-                    0, 0,
-                    320, 240
-                );
-            }
-
-            /*  RB FIXME: should we vsync here rather than rest?  */
-            kq_wait(100);
+			poll_music();
+			stretch_blit(
+				temp.get(),
+				double_buffer,
+				zoom_step * 16 + xofs,
+				zoom_step * 12 + yofs,
+				320 - (zoom_step * 32),
+				240 - (zoom_step * 24),
+				0, 0,
+				320, 240
+				);
+			blit2screen(xofs, yofs);
         }
     }
 
@@ -1042,22 +1021,22 @@ void draw_fighter(size_t fighter_index, size_t dcur)
         if (fighter_index < PSIZE)
         {
             // Your party
-            BITMAP *shad = create_bitmap(cframes[fighter_index][ff]->w * 2 / 3, cframes[fighter_index][ff]->h / 4);
+            Raster *shad = new Raster(cframes[fighter_index][ff]->width * 2 / 3, cframes[fighter_index][ff]->height / 4);
 
             clear_bitmap(shad);
-            ellipsefill(shad, shad->w / 2, shad->h / 2, shad->w / 2, shad->h / 2, makecol(128, 128, 128));
-            draw_trans_sprite(double_buffer, shad, xx + (shad->w / 3) - 2, yy + cframes[fighter_index][ff]->h - shad->h / 2);
-            destroy_bitmap(shad);
+            ellipsefill(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2, makecol(128, 128, 128));
+            draw_trans_sprite(double_buffer, shad, xx + (shad->width / 3) - 2, yy + cframes[fighter_index][ff]->height - shad->height / 2);
+			delete shad;
         }
         else
         {
             // Enemy
-            BITMAP *shad = create_bitmap(cframes[fighter_index][ff]->w, cframes[fighter_index][ff]->h / 4);
+            Raster *shad = new Raster(cframes[fighter_index][ff]->width, cframes[fighter_index][ff]->height / 4);
 
             clear_bitmap(shad);
-            ellipsefill(shad, shad->w / 2, shad->h / 2, shad->w / 2, shad->h / 2, makecol(128, 128, 128));
-            draw_trans_sprite(double_buffer, shad, xx, yy + cframes[fighter_index][ff]->h - shad->h / 2);
-            destroy_bitmap(shad);
+            ellipsefill(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2, makecol(128, 128, 128));
+            draw_trans_sprite(double_buffer, shad, xx, yy + cframes[fighter_index][ff]->height - shad->height / 2);
+            delete(shad);
         }
 
         draw_sprite(double_buffer, cframes[fighter_index][ff], xx, yy);

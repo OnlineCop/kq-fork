@@ -35,6 +35,7 @@
 #include "selector.h"
 #include "setup.h"
 #include "structs.h"
+#include "gfx.h"
 
 /*! \file
  * \brief Main menu functions
@@ -158,11 +159,10 @@ void draw_mainmenu(int swho)
  * \param   dx x-coord of stats view
  * \param   dy y-coord of stats view
  */
-void draw_playerstat(BITMAP *where, int i, int dx, int dy)
+void draw_playerstat(Raster* where, int i, int dx, int dy)
 {
     int j;
-
-    draw_sprite(where, players[i].portrait, dx, dy);
+	players[i].portrait->maskedBlitTo(where, dx, dy);
     print_font(where, dx + 48, dy, party[i].name, FNORMAL);
     draw_stsicon(where, 0, i, 8, dx + 48, dy + 8);
     print_font(where, dx + 48, dy + 16, _("LV"), FGOLD);

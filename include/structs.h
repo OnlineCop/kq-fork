@@ -36,7 +36,7 @@
 #include "enums.h"
 #include "markers.h"
 #include "fighter.h"
-
+class Raster;
 
 enum eHeroBitFlags
 {
@@ -178,9 +178,9 @@ typedef struct
 typedef struct
 {
     s_player plr;                /*!< all other statistics */
-    BITMAP *portrait;            /*!< The hero's portrait for the stats screen */
-    BITMAP *frames[MAXFRAMES];   /*!< Frames for movement */
-    BITMAP *cframes[MAXCFRAMES]; /*!< Frames for combat */
+    Raster *portrait;            /*!< The hero's portrait for the stats screen */
+    Raster *frames[MAXFRAMES];   /*!< Frames for movement */
+    Raster *cframes[MAXCFRAMES]; /*!< Frames for combat */
     int xpi, bxp, hpi, mpi;      /*!< for level_up() */
     int stat_mult[NUM_STATS];    /*!<stats multipliers for level calculations (see player2fighter() ) */
 } s_heroinfo;

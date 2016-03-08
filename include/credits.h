@@ -25,7 +25,7 @@
 
 
 #include <allegro.h>
-
+class Raster;
 
 /*! Allocate memory for credits display */
 void allocate_credits(void);
@@ -34,7 +34,7 @@ void allocate_credits(void);
 void deallocate_credits(void);
 
 /*! Display credits (call in a loop) */
-void display_credits(BITMAP *);
+void display_credits(Raster *);
 
 int ease(signed int);
 

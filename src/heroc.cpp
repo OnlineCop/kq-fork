@@ -34,7 +34,7 @@
 
 #include <stdio.h>
 #include <string.h>
-
+#include <memory>
 #include "combat.h"
 #include "draw.h"
 #include "effects.h"
@@ -52,6 +52,7 @@
 #include "setup.h"
 #include "skills.h"
 #include "timing.h"
+#include "gfx.h"
 
 /* External variables */
 int can_use_item = 1;
@@ -1013,28 +1014,28 @@ void hero_init(void)
         current_fighter_index = pidx[fighter_index];
 
         fighter_y = current_fighter_index * 32;
-
+		std::unique_ptr<Raster> tmpbm(raster_from_bitmap(static_cast<BITMAP*>(pb->dat)));
         // Facing away from screen (see only the fighter's back)
-        blit((BITMAP *) pb->dat, cframes[fighter_index][0], 0, fighter_y, 0, 0, 32, 32);
+        blit(tmpbm.get(), cframes[fighter_index][0], 0, fighter_y, 0, 0, 32, 32);
         // Facing toward the screen (see only the fighter's front)
-        blit((BITMAP *) pb->dat, cframes[fighter_index][1], 32, fighter_y, 0, 0, 32, 32);
+        blit(tmpbm.get(), cframes[fighter_index][1], 32, fighter_y, 0, 0, 32, 32);
         // Arms out (casting a spell)
-        blit((BITMAP *) pb->dat, cframes[fighter_index][2], 64, fighter_y, 0, 0, 32, 32);
+        blit(tmpbm.get(), cframes[fighter_index][2], 64, fighter_y, 0, 0, 32, 32);
         // Dead
-        blit((BITMAP *) pb->dat, cframes[fighter_index][3], 96, fighter_y, 0, 0, 32, 32);
+        blit(tmpbm.get(), cframes[fighter_index][3], 96, fighter_y, 0, 0, 32, 32);
         // Victory: Facing toward the screen (cheering at end of a battle)
-        blit((BITMAP *) pb->dat, cframes[fighter_index][4], 128, fighter_y, 0, 0, 32, 32);
+        blit(tmpbm.get(), cframes[fighter_index][4], 128, fighter_y, 0, 0, 32, 32);
         // Blocking: Facing away from the screen (pushed back from enemy attack)
-        blit((BITMAP *) pb->dat, cframes[fighter_index][5], 160, fighter_y, 0, 0, 32, 32);
+        blit(tmpbm.get(), cframes[fighter_index][5], 160, fighter_y, 0, 0, 32, 32);
 
         fighter_x = current_fighter_index * 64 + 192;
         fighter_y = fighter[fighter_index].current_weapon_type * 32;
 
         // Attack stances, column 6 (0-based): weapon held up to strike
-        blit((BITMAP *) pb->dat, cframes[fighter_index][6], fighter_x, fighter_y, 0, 0, 32, 32);
+        blit(tmpbm.get(), cframes[fighter_index][6], fighter_x, fighter_y, 0, 0, 32, 32);
 
         // Attack stances, column 7 (0-based): weapon forward, striking
-        blit((BITMAP *) pb->dat, cframes[fighter_index][7], fighter_x + 32, fighter_y, 0, 0, 32, 32);
+        blit(tmpbm.get(), cframes[fighter_index][7], fighter_x + 32, fighter_y, 0, 0, 32, 32);
 
         fighter_weapon_index = party[current_fighter_index].eqp[0];
 
@@ -1046,30 +1047,30 @@ void hero_init(void)
         // colors that the weapons should actually be instead.
         if (fighter[fighter_index].current_weapon_type != W_NO_WEAPON && items[fighter_weapon_index].kol > 0)
         {
-            for (current_line = 0; current_line < (unsigned int)cframes[fighter_index][0]->h; current_line++)
+            for (current_line = 0; current_line < (unsigned int)cframes[fighter_index][0]->height; current_line++)
             {
-                for (current_pixel = 0; current_pixel < (unsigned int)cframes[fighter_index][0]->w; current_pixel++)
+                for (current_pixel = 0; current_pixel < (unsigned int)cframes[fighter_index][0]->width; current_pixel++)
                 {
-                    if (cframes[fighter_index][6]->line[current_line][current_pixel] == 168)
+                    if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 168)
                     {
-                        cframes[fighter_index][6]->line[current_line][current_pixel] = items[fighter_weapon_index].kol;
+                        cframes[fighter_index][6]->setpixel(current_pixel, current_line, items[fighter_weapon_index].kol);
                     }
                     else
                     {
-                        if (cframes[fighter_index][6]->line[current_line][current_pixel] == 175)
+                        if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 175)
                         {
-                            cframes[fighter_index][6]->line[current_line][current_pixel] = items[fighter_weapon_index].kol + 4;
+                            cframes[fighter_index][6]->setpixel(current_pixel, current_line, items[fighter_weapon_index].kol + 4);
                         }
                     }
-                    if (cframes[fighter_index][7]->line[current_line][current_pixel] == 168)
+                    if (cframes[fighter_index][7]->getpixel(current_pixel, current_line) == 168)
                     {
-                        cframes[fighter_index][7]->line[current_line][current_pixel] = items[fighter_weapon_index].kol;
+                        cframes[fighter_index][7]->setpixel(current_pixel, current_line, items[fighter_weapon_index].kol);
                     }
                     else
                     {
-                        if (cframes[fighter_index][7]->line[current_line][current_pixel] == 175)
+                        if (cframes[fighter_index][7]->getpixel(current_pixel, current_line) == 175)
                         {
-                            cframes[fighter_index][7]->line[current_line][current_pixel] = items[fighter_weapon_index].kol + 4;
+                            cframes[fighter_index][7]->setpixel(current_pixel, current_line, items[fighter_weapon_index].kol + 4);
                         }
                     }
                 }

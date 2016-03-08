@@ -56,6 +56,7 @@
 #include "structs.h"
 #include "timing.h"
 #include "imgcache.h"
+#include "gfx.h"
 
 /*! \brief No game-wide globals in this file. */
 
@@ -1154,7 +1155,7 @@ static int saveload(int am_saving)
     while (!stop)
     {
         check_animation();
-        clear_bitmap(double_buffer);
+		double_buffer->fill(0);
         show_sgstats(am_saving);
         blit2screen(0, 0);
 
@@ -1394,8 +1395,8 @@ int start_menu(int skip_splash)
 {
     int stop = 0, ptr = 0, redraw = 1, a, b;
     unsigned int fade_color;
-    BITMAP *staff, *dudes, *tdudes;
-	BITMAP* title = get_cached_image("title.png");
+    Raster *staff, *dudes, *tdudes;
+	Raster* title = get_cached_image("title.png");
 #ifdef DEBUGMODE
     if (debugging == 0)
     {
@@ -1404,13 +1405,13 @@ int start_menu(int skip_splash)
         /* Play splash (with the staff and the heroes in circle */
         if (skip_splash == 0)
         {
-			BITMAP* splash = get_cached_image("kqt.png");
-            staff = create_bitmap_ex(8, 72, 226);
-            dudes = create_bitmap_ex(8, 112, 112);
-            tdudes = create_bitmap_ex(8, 112, 112);
+			Raster* splash = get_cached_image("kqt.png");
+            staff = new Raster( 72, 226);
+            dudes = new Raster(112, 112);
+            tdudes = new Raster( 112, 112);
             blit(splash, staff, 0, 7, 0, 0, 72, 226);
             blit(splash, dudes, 80, 0, 0, 0, 112, 112);
-            clear_bitmap(double_buffer);
+            double_buffer->fill(0);
             blit(staff, double_buffer, 0, 0, 124, 22, 72, 226);
             blit2screen(0, 0);
 
@@ -1431,9 +1432,9 @@ int start_menu(int skip_splash)
             draw_sprite(double_buffer, dudes, 106, 64);
             blit2screen(0, 0);
             kq_wait(1000);
-            destroy_bitmap(staff);
-            destroy_bitmap(dudes);
-            destroy_bitmap(tdudes);
+            delete(staff);
+            delete(dudes);
+            delete(tdudes);
             /*
                 TODO: this fade should actually be to white
                 if (_color_depth == 8)
@@ -1540,7 +1541,7 @@ int start_menu(int skip_splash)
             }
             else if (ptr == 2)     /* Config */
             {
-                clear(double_buffer);
+                clear_bitmap(double_buffer);
                 config_menu();
                 redraw = 1;
 

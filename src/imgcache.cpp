@@ -26,20 +26,14 @@ the Free Software Foundation,
 #include "res.h"
 #include "imgcache.h"
 #include "platform.h"
+#include "gfx.h"
 using std::string;
 
-struct bitmap_deleter {
-  void operator()(BITMAP *bm) {
-    if (bm) {
-      destroy_bitmap(bm);
-    }
-  }
-};
-typedef std::unique_ptr<BITMAP, bitmap_deleter> BITMAP_PTR;
+typedef std::unique_ptr<Raster> BITMAP_PTR;
 
 class image_cache {
 public:
-  BITMAP *get(const string &name);
+  Raster *get(const string &name);
   void clear();
 
 private:
@@ -88,26 +82,25 @@ static int palindex(uint8_t *ptr) {
   * \param path the filename
   * \returns the bitmap
 */
-static BITMAP *bmp_from_png(const char *path) {
+static Raster *bmp_from_png(const char *path) {
   png_image image;
   image.version = PNG_IMAGE_VERSION;
   image.opaque = nullptr;
   png_image_begin_read_from_file(&image, path);
-  BITMAP *bitmap = nullptr;
+  Raster *bitmap = nullptr;
   if (!PNG_IMAGE_FAILED(image)) {
     // Force load in true colour with alpha format
     image.format = PNG_FORMAT_RGBA;
     std::unique_ptr<uint8_t[]> imagedata(new uint8_t[PNG_IMAGE_SIZE(image)]);
     png_image_finish_read(&image, nullptr, imagedata.get(),
                           PNG_IMAGE_ROW_STRIDE(image), nullptr);
-    bitmap = create_bitmap_ex(8, image.width, image.height);
+    bitmap = new Raster( image.width, image.height);
     // Then convert to paletted.
     // This can be optimised or go away later
     for (auto y = 0u; y < image.height; ++y) {
       auto pptr = &imagedata[y * PNG_IMAGE_ROW_STRIDE(image)];
-      auto lptr = bitmap->line[y];
       for (auto x = 0u; x < image.width; ++x) {
-        lptr[x] = palindex(pptr);
+        bitmap->setpixel(x, y, palindex(pptr));
         pptr += PNG_IMAGE_PIXEL_SIZE(PNG_FORMAT_RGBA);
       }
     }
@@ -167,11 +160,11 @@ static BITMAP *bmp_from_png(const char *path) {
  * \param name the file base name
  * \returns the bitmap
 */
-BITMAP *image_cache::get(const std::string &name) {
+Raster *image_cache::get(const std::string &name) {
   auto entry = cache.find(name);
   if (entry == cache.end()) {
     // Not found, try to load
-    BITMAP *bmp = bmp_from_png(kqres(DATA_DIR, name.c_str()));
+    Raster *bmp = bmp_from_png(kqres(DATA_DIR, name.c_str()));
 	if (!bmp) {
 		// Try also in maps because it may be a tileset graphic
 		bmp = bmp_from_png(kqres(MAP_DIR, name.c_str()));
@@ -194,7 +187,7 @@ void image_cache::clear() { cache.clear(); }
  * \param name the name of the image file
  * \returns a bitmap
  */
-BITMAP *get_cached_image(const std::string &name) { return global.get(name); }
+Raster *get_cached_image(const std::string &name) { return global.get(name); }
 /*! \brief clear the global cache.
 */
 void clear_image_cache() { global.clear(); }
