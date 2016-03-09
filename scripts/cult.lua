@@ -218,38 +218,33 @@ end
 function LOC_avatar_abounds()
   local a, b, dx, dy
   local ax, ay, z
-  local x, y
-
-  create_df("mpcx.dat", "LFLAME_PCX")
-  create_bmp(0, 24, 24)
-  df2bmp(0, 0, 16, 0, 0, 24, 24)
-  create_bmp(1, 64, 16)
-  df2bmp(1, 0, 0, 0, 0, 64, 16)
-  destroy_df()
+  local x, y, i
+  local flames = {make_sprite("lflame.png", 0, 0, 16, 16),
+    make_sprite("lflame.png", 32, 0, 16, 16)}
+  local avatar = make_sprite("lflame.png", 0, 16, 24, 24)
 
   ax = get_vx()
   ay = get_vy()
   move_camera(1032, 576, 1)
 
-  for a = 1, 23, 1 do
-    for b = 0, 3, 3 do
+  for a = 0, avatar.height do
+    for i,b in ipairs(flames) do
       drawmap()
-      for dx = 0, 6, 1 do
-        for dy = 1, 5, 1 do
-          maskblit(1, b * 16, 0, dx * 16 + 104, dy * 16 + 64, 16, 16)
+      for dx = 0, 6 do
+        for dy = 1, 5 do
+	  drawsprite(b, dx * 16 + 104, dy * 16 + 64)
         end
       end
-      for dx = 1, 5, 1 do
-        maskblit(1, b * 16, 0, dx * 16 + 104, 64, 16, 16)
-        maskblit(1, b * 16, 0, dx * 16 + 104, 160, 16, 16)
+      for dx = 1, 5 do
+        drawsprite(b, dx * 16 + 104, 64)
+        drawsprite(b, dx * 16 + 104, 160)
       end
-      maskblit(0, 0, 0, 148, 128 - a, 24, a)
+      avatar.height = a
+      drawsprite(avatar, 148, 128 - a)
       screen_dump()
-      rest(40)
+      rest(60)
     end
   end
-  destroy_bmp(0)
-  destroy_bmp(1)
 
   for a = 1, 19, 1 do
     set_ent_active(a, 0)

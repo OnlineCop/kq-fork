@@ -1074,7 +1074,6 @@ size_t in_party(ePIDX pn)
  */
 void init_players(void)
 {
-    DATAFILE *pb;
     unsigned int i, party_index, frame_index;
 
     for (party_index = 0; party_index < MAXCHRS; party_index++)
@@ -1099,9 +1098,9 @@ void init_players(void)
 
     gp = 0;
 
-    pb = load_datafile_object(PCX_DATAFILE, "USCHRS_PCX");
+    Raster* eb = get_cached_image("uschrs.png");
 
-    if (!pb)
+    if (!eb)
     {
         program_death(_("Could not load character graphics!"));
     }
@@ -1112,12 +1111,9 @@ void init_players(void)
     {
         for (frame_index = 0; frame_index < MAXFRAMES; frame_index++)
         {
-			std::unique_ptr<Raster> r(raster_from_bitmap((BITMAP *)pb->dat));
-			r->blitTo(frames[party_index][frame_index], frame_index * 16, party_index * 16, 0, 0, 16, 16, false);
+            blit(eb, frames[party_index][frame_index], frame_index * 16, party_index * 16, 0, 0, 16, 16);
         }
     }
-
-    unload_datafile_object(pb);
 }
 
 

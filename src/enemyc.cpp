@@ -43,6 +43,7 @@
 #include "selector.h"
 #include "skills.h"
 #include "gfx.h"
+#include "imgcache.h"
 
 /*! Index related to enemies in an encounter */
 int cf[NUM_FIGHTERS];
@@ -109,8 +110,6 @@ void unload_enemies(void);
 static s_fighter **enemy_fighters = NULL;
 static int enemies_n = 0;
 static int enemies_cap = 0;
-static DATAFILE *enemy_pcx = NULL;
-
 
 /*! \brief Melee attack
  *
@@ -706,10 +705,12 @@ static void load_enemies(void)
         /* Already done the loading */
         return;
     }
-    enemy_pcx = load_datafile_object(PCX_DATAFILE, "ENEMY_PCX");
-    if (enemy_pcx == NULL)
+    
+    Raster* enemy_gfx = get_cached_image("enemy.png");
+
+    if (!enemy_gfx)
     {
-        program_death(_("Could not load enemy sprites from datafile!"));
+        program_death(_("Could not load enemy sprites!"));
     }
     edat = fopen(kqres(DATA_DIR, "allstat.mon"), "r");
     if (!edat)
@@ -814,8 +815,7 @@ static void load_enemies(void)
         f->imb_a = tmp;
 		f->img =
 			new Raster(f->cw, f->cl);
-		std::unique_ptr<Raster> temp(raster_from_bitmap((BITMAP *)enemy_pcx->dat));
-		temp->blitTo(f->img, lx, ly, 0, 0, f->cw, f->cl);
+		enemy_gfx->blitTo(f->img, lx, ly, 0, 0, f->cw, f->cl);
         for (p = 0; p < 2; p++)
         {
             fscanf(edat, "%d", &tmp);
@@ -1143,7 +1143,6 @@ void unload_enemies(void)
         }
         free(enemy_fighters);
         enemy_fighters = NULL;
-        unload_datafile_object(enemy_pcx);
     }
 }
 

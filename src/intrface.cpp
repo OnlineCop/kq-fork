@@ -70,6 +70,7 @@ extern "C" {
 #include "shopmenu.h"
 #include "timing.h"
 #include "gfx.h"
+#include "imgcache.h"
 
 /* Defines */
 #define LUA_ENT_KEY "_ent"
@@ -94,7 +95,6 @@ static int KQ_add_quest_item(lua_State *);
 static int KQ_add_special_item(lua_State *);
 static int KQ_add_timer(lua_State *);
 static int KQ_battle(lua_State *);
-static int KQ_blit(lua_State *);
 static int KQ_bubble_ex(lua_State *);
 static int KQ_calc_viewport(lua_State *);
 static int KQ_change_map(lua_State *);
@@ -104,13 +104,8 @@ static int KQ_clear_buffer(lua_State *);
 static int KQ_combat(lua_State *);
 static int KQ_copy_ent(lua_State *);
 static int KQ_copy_tile_all(lua_State *);
-static int KQ_create_bmp(lua_State *);
-static int KQ_create_df(lua_State *);
 static int KQ_create_special_item(lua_State *);
 static int KQ_dark_mbox(lua_State *);
-static int KQ_destroy_bmp(lua_State *);
-static int KQ_destroy_df(lua_State *);
-static int KQ_df2bmp(lua_State *);
 static int KQ_do_fadein(lua_State *);
 static int KQ_do_fadeout(lua_State *);
 static int KQ_do_inn_effects(lua_State *);
@@ -173,10 +168,10 @@ static int KQ_krnd(lua_State *);
 static int KQ_light_mbox(lua_State *);
 static int KQ_log(lua_State *);
 static int KQ_marker(lua_State *);
-static int KQ_maskblit(lua_State *);
 static int KQ_mbox(lua_State *);
 static int KQ_move_camera(lua_State *);
 static int KQ_move_entity(lua_State *);
+static int KQ_make_sprite(lua_State*);
 static int KQ_msg(lua_State *);
 static int KQ_orient_heroes(lua_State *);
 static int KQ_pause_song(lua_State *);
@@ -296,7 +291,6 @@ static const struct luaL_Reg lrs[] =
     {"add_special_item", KQ_add_special_item},
     {"add_timer",        KQ_add_timer},
     {"battle",           KQ_battle},
-    {"blit",             KQ_blit},
     {"bubble_ex",        KQ_bubble_ex},
     {"calc_viewport",    KQ_calc_viewport},
     {"change_map",       KQ_change_map},
@@ -306,13 +300,8 @@ static const struct luaL_Reg lrs[] =
     {"combat",           KQ_combat},
     {"copy_ent",         KQ_copy_ent},
     {"copy_tile_all",    KQ_copy_tile_all},
-    {"create_bmp",       KQ_create_bmp},
-    {"create_df",        KQ_create_df},
     {"create_special_item", KQ_create_special_item},
     {"dark_mbox",        KQ_dark_mbox},
-    {"destroy_bmp",      KQ_destroy_bmp},
-    {"destroy_df",       KQ_destroy_df},
-    {"df2bmp",           KQ_df2bmp},
     {"do_fadein",        KQ_do_fadein},
     {"do_fadeout",       KQ_do_fadeout},
     {"do_inn_effects",   KQ_do_inn_effects},
@@ -375,8 +364,8 @@ static const struct luaL_Reg lrs[] =
     {"light_mbox",       KQ_light_mbox},
     {"log",              KQ_log},
     {"marker",           KQ_marker},
-    {"maskblit",         KQ_maskblit},
     {"mbox",             KQ_mbox},
+    {"make_sprite",      KQ_make_sprite},
     {"move_camera",      KQ_move_camera},
     {"move_entity",      KQ_move_entity},
     {"msg",              KQ_msg},
@@ -518,7 +507,6 @@ fields[] =
  */
 
 static Raster *g_bmp[5];
-static DATAFILE *g_df;
 static Raster *g_bmf;
 static int g_keys[8];
 static int tmx, tmy, tmvx, tmvy;
@@ -1334,29 +1322,6 @@ static int KQ_battle(lua_State *L)
     return 1;
 }
 
-
-
-static int KQ_blit(lua_State *L)
-{
-    int a = (int) lua_tonumber(L, 1);
-
-    if (a >= 0 && a <= 4)
-    {
-        blit(g_bmp[a],
-            double_buffer,
-            (int) lua_tonumber(L, 2),
-            (int) lua_tonumber(L, 3),
-            (int) lua_tonumber(L, 4) + xofs,
-            (int) lua_tonumber(L, 5) + yofs,
-            (int) lua_tonumber(L, 6),
-            (int) lua_tonumber(L, 7)
-        );
-    }
-    return 0;
-}
-
-
-
 /* The text_ex function just takes one string, and does the line breaks automatically.
  * The old bubble/thought functions which took four strings are handled by
  * code in global.lua. This is for backward compatibility with the old scripts.
@@ -1846,29 +1811,6 @@ static int KQ_copy_tile_all(lua_State *L)
 }
 
 
-
-static int KQ_create_bmp(lua_State *L)
-{
-    int a = (int) lua_tonumber(L, 1);
-
-    if (a >= 0 && a <= 4)
-    {
-        g_bmp[a] = new Raster((int) lua_tonumber(L, 2), (int) lua_tonumber(L, 3));
-    }
-    return 0;
-}
-
-
-
-static int KQ_create_df(lua_State *L)
-{
-    g_df = load_datafile_object(kqres(DATA_DIR, lua_tostring(L, 1)), lua_tostring(L, 2));
-	g_bmf = raster_from_bitmap(static_cast<BITMAP*>(g_df->dat));
-    return 0;
-}
-
-
-
 static int KQ_dark_mbox(lua_State *L)
 {
     menubox(double_buffer,
@@ -1880,53 +1822,6 @@ static int KQ_dark_mbox(lua_State *L)
     );
     return 0;
 }
-
-
-
-static int KQ_destroy_bmp(lua_State *L)
-{
-    int a = (int) lua_tonumber(L, 1);
-
-    if (a >= 0 && a <= 4)
-    {
-        delete(g_bmp[a]);
-    }
-    return 0;
-}
-
-
-
-static int KQ_destroy_df(lua_State *L)
-{
-    (void) L;
-    unload_datafile_object(g_df);
-	delete g_bmf;
-    return 0;
-}
-
-
-
-static int KQ_df2bmp(lua_State *L)
-{
-    int a = (int) lua_tonumber(L, 1);
-
-    if (a >= 0 && a <= 4)
-    {
-
-        blit(g_bmf,
-            g_bmp[a],
-            (int) lua_tonumber(L, 2),
-            (int) lua_tonumber(L, 3),
-            (int) lua_tonumber(L, 4),
-            (int) lua_tonumber(L, 5),
-            (int) lua_tonumber(L, 6),
-            (int) lua_tonumber(L, 7)
-        );
-    }
-    return 0;
-}
-
-
 
 static int KQ_do_fadein(lua_State *L)
 {
@@ -2073,23 +1968,6 @@ static int KQ_drawmap(lua_State *L)
 {
     (void) L;
     drawmap();
-    return 0;
-}
-
-
-
-static int KQ_drawsprite(lua_State *L)
-{
-    int a = (int) lua_tonumber(L, 1);
-
-    if (a >= 0 && a <= 4)
-    {
-        draw_sprite(double_buffer,
-            g_bmp[a],
-            (int) lua_tonumber(L, 2) + xofs,
-            (int) lua_tonumber(L, 3) + yofs
-        );
-    }
     return 0;
 }
 
@@ -2896,29 +2774,6 @@ static int KQ_marker(lua_State *L)
         return 1;
     }
 }
-
-
-
-static int KQ_maskblit(lua_State *L)
-{
-    int a = (int) lua_tonumber(L, 1);
-
-    if (a >= 0 && a <= 4)
-    {
-        masked_blit(g_bmp[a],
-            double_buffer,
-            (int) lua_tonumber(L, 2),
-            (int) lua_tonumber(L, 3),
-            (int) lua_tonumber(L, 4) + xofs,
-            (int) lua_tonumber(L, 5) + yofs,
-            (int) lua_tonumber(L, 6),
-            (int) lua_tonumber(L, 7)
-        );
-    }
-    return 0;
-}
-
-
 
 static int KQ_mbox(lua_State *L)
 {
@@ -4914,7 +4769,87 @@ static int KQ_party_setter(lua_State *L)
     return 0;
 }
 
+/*! \brief Create a bitmap sprite.
+ * Loads a bitmap from disk and (optionally) makes a
+ * sub-image from it.
+ * Call as make_sprite(filename, [x, y, width, height]).
+ * If dimensions are omitted it means the whole bitmap.
+ * \param L Lua state
+ * \returns 1 (the bitmap table object)
+ */
+static int KQ_make_sprite(lua_State*L) {
+  int nel = lua_gettop(L);
+  if (nel >= 1) {
+    const char* filename = lua_tostring(L, 1);
+    Raster* bm = get_cached_image(filename);
+    if (nel == 1) {
+      // Push x, y, w, h
+      lua_pushnumber(L, 0);
+      lua_pushnumber(L, 0);
+      lua_pushnumber(L, bm ? bm->width : 0);
+      lua_pushnumber(L, bm ? bm->height : 0);
+    } else if (nel == 5) {
+      // They're already on the stack
+    } else {
+      // Not 1 or 5 args
+      lua_pushnil(L);
+      return 1;
+    }
+    lua_newtable(L);
+    lua_pushliteral(L, "bitmap");
+    lua_pushlightuserdata(L, bm);
+    lua_rawset(L, 6);
+    lua_pushliteral(L, "x");
+    lua_pushvalue(L, 2);
+    lua_rawset(L, 6);
+    lua_pushliteral(L, "y");
+    lua_pushvalue(L, 3);
+    lua_rawset(L, 6);
+    lua_pushliteral(L, "width");
+    lua_pushvalue(L, 4);
+    lua_rawset(L, 6);
+    lua_pushliteral(L, "height");
+    lua_pushvalue(L, 5);
+    lua_rawset(L, 6);
+  } else {
+    lua_pushnil(L);
+  }
+  return 1;
+}
 
+static int KQ_drawsprite(lua_State* L) {
+  if (lua_istable(L, 1)) {
+    int dx = lua_tonumber(L, 2);
+    int dy = lua_tonumber(L, 3);
+    lua_pushliteral(L, "bitmap");
+    lua_rawget(L, 1);
+    Raster* bm = reinterpret_cast<Raster*>(lua_touserdata(L, -1));
+    lua_pop(L, 1);
+
+    lua_pushliteral(L, "x");
+    lua_rawget(L, 1);
+    int sx = static_cast<int>(lua_tonumber(L, -1));
+    lua_pop(L, 1);
+
+    lua_pushliteral(L, "y");
+    lua_rawget(L, 1);
+    int sy = static_cast<int>(lua_tonumber(L, -1));
+    lua_pop(L, 1);
+
+    lua_pushliteral(L, "width");
+    lua_rawget(L, 1);
+    int width = static_cast<int>(lua_tonumber(L, -1));
+    lua_pop(L, 1);
+
+    lua_pushliteral(L, "height");
+    lua_rawget(L, 1);
+    int height = static_cast<int>(lua_tonumber(L, -1));
+    lua_pop(L, 1);
+
+    masked_blit(bm, double_buffer, sx, sy, dx + xofs, dy + yofs, width, height);
+  }
+  return 0;
+}
 
 /*! \brief Process HERO1 and HERO2 pseudo-entity numbers
  *

@@ -44,6 +44,7 @@
 #include "ssprites.h"
 #include "timing.h"
 #include "gfx.h"
+#include "imgcache.h"
 
 
 /*! \brief Draw death animation
@@ -255,9 +256,8 @@ void draw_attacksprite(size_t target_fighter_index, int multiple_target, size_t 
     int a, dx, dy;
     size_t fighter_index;
     size_t num_fighters, start_fighter_index;
-    DATAFILE *pb;
+    Raster* eb = get_cached_image(eff[magic_effect_index].ename);
 
-    pb = load_datafile_object(SPELL_DATAFILE, eff[magic_effect_index].ename);
     if (multiple_target == 1)
     {
         if (target_fighter_index < PSIZE)
@@ -322,9 +322,8 @@ void draw_attacksprite(size_t target_fighter_index, int multiple_target, size_t 
                         fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - 24
                     );
                 }
-				std::unique_ptr<Raster> tmppb(raster_from_bitmap(static_cast<BITMAP*>(pb->dat)));
-				masked_blit(
-					tmppb.get(),
+                masked_blit(
+                    eb,
                     double_buffer,
                     0,
                     eff[magic_effect_index].ysize * a,
@@ -344,7 +343,6 @@ void draw_attacksprite(size_t target_fighter_index, int multiple_target, size_t 
             fighter[fighter_index].aframe = 0;
         }
     }
-    unload_datafile_object(pb);
 }
 
 
@@ -363,11 +361,7 @@ void draw_castersprite(size_t caster_fighter_index, int new_pal_color)
     int dx, dy;
     unsigned int frame_index;
     unsigned int pixel_row, pixel_col;
-    DATAFILE *cd;
-
-    cd = load_datafile_object(SPELL_DATAFILE, "CASTER2_PCX");
-
-	std::unique_ptr<Raster> cs(raster_from_bitmap(static_cast<BITMAP*>(cd->dat)));
+    Raster* cs = get_cached_image("caster2.png");
 
     // Re-colorize the two-tone image by replacing its value in the palette
     // with another palette color entry.
@@ -403,13 +397,12 @@ void draw_castersprite(size_t caster_fighter_index, int new_pal_color)
             dx = fighter[caster_fighter_index].cx + (fighter[caster_fighter_index].cw / 2);
             dy = fighter[caster_fighter_index].cy + (fighter[caster_fighter_index].cl / 2);
             draw_fighter(caster_fighter_index, 0);
-            masked_blit(cs.get(), double_buffer, 0, frame_index * 32, dx - 16, dy - 16, 32, 32);
+            masked_blit(cs, double_buffer, 0, frame_index * 32, dx - 16, dy - 16, 32, 32);
         }
         blit2screen(0, 0);
         kq_wait(120);
         fullblit(back, double_buffer);
     }
-    unload_datafile_object(cd);
     fighter[caster_fighter_index].aframe = 0;
 }
 
@@ -434,9 +427,9 @@ void draw_hugesprite(size_t target_fighter_index, int hx, int hy, size_t effect_
     size_t frame_index;
     size_t fighter_index;
     size_t start_fighter_index, num_fighters;
-    DATAFILE *pb = load_datafile_object(SPELL_DATAFILE, eff[effect_index].ename);
-	std::unique_ptr<Raster> pbr(raster_from_bitmap(static_cast<BITMAP*>(pb->dat)));
-	convert_cframes(target_fighter_index, eff[effect_index].kolor - 3, eff[effect_index].kolor + 3, 1);
+    Raster* eb = get_cached_image(eff[effect_index].ename);
+
+    convert_cframes(target_fighter_index, eff[effect_index].kolor - 3, eff[effect_index].kolor + 3, 1);
     if (target_fighter_index < PSIZE)
     {
         start_fighter_index = 0;
@@ -458,7 +451,7 @@ void draw_hugesprite(size_t target_fighter_index, int hx, int hy, size_t effect_
     {
         if (eff[effect_index].orient == 0)
         {
-            masked_blit(pbr.get(), double_buffer, 0, eff[effect_index].ysize * frame_index, hx, hy, eff[effect_index].xsize, eff[effect_index].ysize);
+            masked_blit(eb, double_buffer, 0, eff[effect_index].ysize * frame_index, hx, hy, eff[effect_index].xsize, eff[effect_index].ysize);
         }
         for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighters; fighter_index++)
         {
@@ -473,14 +466,13 @@ void draw_hugesprite(size_t target_fighter_index, int hx, int hy, size_t effect_
         }
         if (eff[effect_index].orient == 1)
         {
-            masked_blit(pbr.get(), double_buffer, 0, eff[effect_index].ysize * frame_index, hx, hy, eff[effect_index].xsize, eff[effect_index].ysize);
+            masked_blit(eb, double_buffer, 0, eff[effect_index].ysize * frame_index, hx, hy, eff[effect_index].xsize, eff[effect_index].ysize);
         }
         blit2screen(0, 0);
         kq_wait(eff[effect_index].delay);
         fullblit(back, double_buffer);
     }
     revert_cframes(target_fighter_index, 1);
-    unload_datafile_object(pb);
 }
 
 
@@ -507,8 +499,7 @@ void draw_spellsprite(size_t target_fighter_index, int multiple_target, size_t e
     int dx, dy = 0;
     size_t num_frames;
     size_t start_fighter_index, num_fighers, fighter_index;
-    DATAFILE *pb = load_datafile_object(SPELL_DATAFILE, eff[effect_index].ename);
-	std::unique_ptr<Raster> pbr(raster_from_bitmap(static_cast<BITMAP*>(pb->dat)));
+    Raster* eb = get_cached_image(eff[effect_index].ename);
 
     convert_cframes(target_fighter_index, eff[effect_index].kolor - 3, eff[effect_index].kolor + 3, multiple_target);
     if (multiple_target == 1)
@@ -560,7 +551,7 @@ void draw_spellsprite(size_t target_fighter_index, int multiple_target, size_t e
                 {
                     draw_trans_sprite(double_buffer, b_shell, fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) - 24, fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - 24);
                 }
-                masked_blit(pbr.get(), double_buffer, 0, eff[effect_index].ysize * num_frames, dx, dy, eff[effect_index].xsize, eff[effect_index].ysize);
+                masked_blit(eb, double_buffer, 0, eff[effect_index].ysize * num_frames, dx, dy, eff[effect_index].xsize, eff[effect_index].ysize);
             }
         }
         blit2screen(0, 0);
@@ -568,7 +559,6 @@ void draw_spellsprite(size_t target_fighter_index, int multiple_target, size_t e
         fullblit(back, double_buffer);
     }
     revert_cframes(target_fighter_index, multiple_target);
-    unload_datafile_object(pb);
 }
 
 
