@@ -106,11 +106,6 @@ void Raster::fill(uint8_t color)
 	fill(0, 0, width, height, color);
 }
 
-uint8_t & Raster::ptr(int16_t x, int16_t y)
-{
-	return data[x + y * stride];
-}
-
 void ellipsefill(Raster * r, int x, int y, int rx, int ry, int color)
 {
 	for (int i = 0; i < rx; ++i) {
