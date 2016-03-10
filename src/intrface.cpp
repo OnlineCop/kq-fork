@@ -506,8 +506,6 @@ fields[] =
  * also want it to change dynamically
  */
 
-static Raster *g_bmp[5];
-static Raster *g_bmf;
 static int g_keys[8];
 static int tmx, tmy, tmvx, tmvy;
 static lua_State *theL;

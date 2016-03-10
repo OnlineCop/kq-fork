@@ -49,6 +49,7 @@ set(kq-fork_SRCS
 	src/eqpmenu.cpp
 	src/eskill.cpp
 	src/fade.cpp
+	src/gfx.cpp
 	src/heroc.cpp
 	src/hskill.cpp
 	src/intrface.cpp

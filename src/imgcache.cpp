@@ -110,7 +110,7 @@ static Raster *bmp_from_png(const char *path) {
 }
 #else // !PNG_SIMPLIFIED_READ_SUPPORTED
 #include <cstdio>
-static BITMAP *bmp_from_png(const char *path) {
+static Raster *bmp_from_png(const char *path) {
   FILE *fp = std::fopen(path, "rb");
   if (!fp) {
     return nullptr;
@@ -137,14 +137,13 @@ static BITMAP *bmp_from_png(const char *path) {
   auto row_pointers = png_get_rows(png_ptr, info_ptr);
   auto width = png_get_image_width(png_ptr, info_ptr);
   auto height = png_get_image_height(png_ptr, info_ptr);
-  BITMAP *bitmap = create_bitmap_ex(8, width, height);
+  Raster *bitmap = new Raster(width, height);
   // Then convert to paletted.
   // This can be optimised or go away later
   for (auto y = 0u; y < height; ++y) {
     auto pptr = row_pointers[y];
-    auto lptr = bitmap->line[y];
     for (auto x = 0u; x < width; ++x) {
-      lptr[x] = palindex(pptr);
+      bitmap->ptr(x, y) = palindex(pptr);
       pptr += sizeof(uint32_t);
     }
   }
@@ -155,7 +154,7 @@ static BITMAP *bmp_from_png(const char *path) {
 #endif
 /*! \brief Get or load an image.
  * Return the image from the cache or load it.
- * The returned BITMAP is owned by the cache so do not delete it.
+ * The returned Raster is owned by the cache so do not delete it.
  * It's program_death if the image can't be loaded.
  * \param name the file base name
  * \returns the bitmap
