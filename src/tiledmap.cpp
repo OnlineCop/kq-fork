@@ -523,7 +523,7 @@ void tmx_map::set_current()
 			unsigned short obstacle_offset = find_tileset("obstacles").firstgid - 1;
 			free(o_seg);
 			auto sptr = o_seg =
-				static_cast<unsigned char *>(calloc(layer.size, sizeof(o_seg)));
+				static_cast<unsigned char *>(calloc(layer.size, sizeof(*o_seg)));
 
 			for (auto t : layer) {
 				if (t > 0) {
