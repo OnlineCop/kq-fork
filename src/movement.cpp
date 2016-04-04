@@ -147,7 +147,7 @@ static void copy_map(int *map)
     {
         if (g_ent[entity_index].active)
         {
-            map[g_ent[entity_index].tiley * g_map.xsize + g_ent[entity_index].tilex] = -1;
+            map[g_ent[entity_index].tilex * g_map.ysize + g_ent[entity_index].tiley] = -1;
         }
     }
 }
