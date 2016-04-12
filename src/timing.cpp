@@ -149,28 +149,27 @@ void kq_wait(long ms)
 
 int limit_frame_rate(int fps)
 {
-    static long last_exec = 0;
-    long now, delay;
+	static DWORD last_exec;
+	static bool initialised = false;
+	DWORD now = GetTickCount();
+	if (!initialised) {
+		initialised = true;
+		last_exec = now;
+	}
+	DWORD next_exec = last_exec + 1000 / fps;
 
-    now = GetTickCount();
-    delay = last_exec - now + 1000 / fps;
-//   skips = delay;
-    if (delay < 0)
-    {
-        last_exec = now;
-    }
-    else
-    {
-        last_exec += 1000 / fps;
-        Sleep(delay);
-    }
-    if (now / 1000 != last_exec / 1000)
-    {
-        mfrate = frate;
-        frate = 0;
-    }
-    ++frate;
-    return mfrate;
+	// Sleep if current time is before next due time.
+	if (now < next_exec) {
+		Sleep(next_exec - now);
+	}
+	if (now / 1000 != last_exec / 1000)
+	{
+		mfrate = frate;
+		frate = 0;
+	}
+	last_exec = now;
+	++frate;
+	return mfrate;
 }
 #else
 
