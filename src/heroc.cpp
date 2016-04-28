@@ -1173,26 +1173,25 @@ static int hero_invoke(int whom)
  */
 static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 {
-    ePIDX defender_fighter_index = PIDX_UNDEFINED;
-    unsigned int random_fighter_index;
-    size_t fighter_index;
+    ePIDX defender_fighter_index;
 
     if (items[item_index].tgt <= TGT_ALLY_ALL && items[item_index].tgt >= TGT_ALLY_ONE)
     {
         defender_fighter_index = select_hero(attacker_fighter_index, (eTarget)(items[item_index].tgt - TGT_ALLY_ONE), 0);
-        if (defender_fighter_index == PIDX_UNDEFINED)
-        {
-            return 0;
-        }
     }
-    if (items[item_index].tgt >= TGT_ENEMY_ONE)
+    else if (items[item_index].tgt >= TGT_ENEMY_ONE)
     {
         defender_fighter_index = select_enemy(attacker_fighter_index, (eTarget)(items[item_index].tgt - TGT_ENEMY_ONE ));
-        if (defender_fighter_index == PIDX_UNDEFINED)
-        {
-            return 0;
-        }
-    }
+	}
+	else {
+		defender_fighter_index = PIDX_UNDEFINED;
+	}
+
+	if (defender_fighter_index == PIDX_UNDEFINED)
+	{
+		return 0;
+	}
+
     if (items[item_index].imb > 0)
     {
         cast_imbued_spell(attacker_fighter_index, items[item_index].imb, items[item_index].stats[A_ATT], defender_fighter_index);
@@ -1206,7 +1205,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
     {
         strcpy(attack_string, _("Neutralize Poison"));
         draw_spellsprite(0, 1, 27, 0);
-        for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+        for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
         {
             if (fighter[fighter_index].sts[S_DEAD] == 0)
             {
@@ -1216,11 +1215,11 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
     }
     if (item_index == I_ROD1)
     {
-        random_fighter_index = rand() % 3 + 1;
+        unsigned int random_fighter_index = rand() % 3 + 1;
         strcpy(attack_string, _("Magic Missiles"));
         display_attack_string = 1;
         ta[defender_fighter_index] = 0;
-        for (fighter_index = 0; fighter_index < random_fighter_index; fighter_index++)
+        for (unsigned fighter_index = 0; fighter_index < random_fighter_index; fighter_index++)
         {
             if (fighter[defender_fighter_index].sts[S_DEAD] == 0)
             {

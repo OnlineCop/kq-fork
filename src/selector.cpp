@@ -567,7 +567,7 @@ ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
  */
 ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 {
-    unsigned int cntr = 0, stop, select_all;
+    unsigned int cntr = 0;
     size_t fighter_index, ptr;
 
     for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
@@ -577,23 +577,19 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
             tmpd[cntr++] = fighter_index;
         }
     }
-
-    if (multi_target == TGT_ALLY_ONEALL)
-    {
-        select_all = 1;
-    }
-    else
-    {
-        select_all = 0;
-    }
+	// If there are no enemies (shouldn't happen) then return early
+	if (cntr == 0) {
+		return PIDX_UNDEFINED;
+	}
+	bool select_all = (multi_target == TGT_ALLY_ONEALL);
 
     ptr = 0;
-    stop = 0;
+    bool stop = false;
 
     while (!stop)
     {
         check_animation();
-        if (multi_target > TGT_NONE && select_all == 1)
+        if (multi_target > TGT_NONE && select_all)
         {
             battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 2);
         }
@@ -608,7 +604,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
         if (PlayerInput.balt)
         {
             unpress();
-            stop = 1;
+            stop = true;
         }
         if (PlayerInput.bctrl)
         {
@@ -639,44 +635,21 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
                 ptr = 0;
             }
         }
-        if (PlayerInput.up)
+        if (PlayerInput.up || PlayerInput.down)
         {
             unpress();
             if (multi_target == TGT_ALLY_ONE && cntr > 1)
             {
-                if (select_all == 0)
-                {
-                    select_all = 1;
-                }
-                else
-                {
-                    select_all = 0;
-                }
-            }
-        }
-        if (PlayerInput.down)
-        {
-            unpress();
-            if (multi_target == TGT_ALLY_ONE && cntr > 1)
-            {
-                if (select_all == 0)
-                {
-                    select_all = 1;
-                }
-                else
-                {
-                    select_all = 0;
-                }
+				select_all = !select_all;
             }
         }
     }
-    if (select_all == 0)
+	if (select_all) {
+		return SEL_ALL_ENEMIES;
+	} 
+	else 
     {
         return (ePIDX)tmpd[ptr];
-    }
-    else
-    {
-        return SEL_ALL_ENEMIES;
     }
 }
 
@@ -698,18 +671,9 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
  */
 ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_select_dead)
 {
-    unsigned int cntr = 0, ptr = 0, stop = 0, select_all;
-    size_t fighter_index;
-
-    if (multi_target == TGT_ALLY_ONEALL)
-    {
-        select_all = 1;
-    }
-    else
-    {
-        select_all = 0;
-    }
-    for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+    unsigned int cntr = 0, ptr = 0;
+	bool select_all = (multi_target == TGT_ALLY_ONEALL);
+    for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
     {
         if (fighter[fighter_index].sts[S_DEAD] == 0)
         {
@@ -726,10 +690,15 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
             }
         }
     }
+	// Early exit if there are no heroes (again, shouldn't happen)
+	if (cntr == 0) {
+		return PIDX_UNDEFINED;
+	}
+	bool stop = false;
     while (!stop)
     {
         check_animation();
-        if (multi_target > TGT_NONE && select_all == 1)
+        if (multi_target > TGT_NONE && select_all )
         {
             battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 1);
         }
@@ -744,7 +713,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
         if (PlayerInput.balt)
         {
             unpress();
-            stop = 1;
+            stop = true;
         }
         if (PlayerInput.bctrl)
         {
@@ -777,39 +746,20 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
         }
         if (multi_target == TGT_ALLY_ONE && cntr > 1)
         {
-            if (PlayerInput.up)
+            if (PlayerInput.up || PlayerInput.down)
             {
                 unpress();
-                if (select_all == 0)
-                {
-                    select_all = 1;
-                }
-                else
-                {
-                    select_all = 0;
-                }
-            }
-            if (PlayerInput.down)
-            {
-                unpress();
-                if (select_all == 0)
-                {
-                    select_all = 1;
-                }
-                else
-                {
-                    select_all = 0;
-                }
+				select_all = !select_all;
             }
         }
     }
-    if (select_all == 0)
-    {
-        return (ePIDX)tmpd[ptr];
-    }
-    else
+    if (select_all)
     {
         return SEL_ALL_ALLIES;
+    }
+	else
+	{
+        return (ePIDX)tmpd[ptr];
     }
 }
 
