@@ -291,7 +291,7 @@ static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_numbe
         }
         if (spell_number != M_WARP && spell_number != M_REPULSE)
         {
-            tg = select_any_player(magic[spell_number].tgt - 1, magic[spell_number].icon, magic[spell_number].name);
+            tg = select_any_player((eTarget) magic[spell_number].tgt, magic[spell_number].icon, magic[spell_number].name);
             if (tg == PIDX_UNDEFINED)
             {
                 return;

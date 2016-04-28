@@ -529,7 +529,7 @@ int skill_use(size_t attack_fighter_index)
     switch (pidx[attack_fighter_index])
     {
         case SENSAR:
-            tgt = select_enemy(attack_fighter_index, TGT_NONE);
+            tgt = select_enemy(attack_fighter_index, TGT_ENEMY_ONE);
             if (tgt == -1)
             {
                 return 0;
@@ -783,7 +783,7 @@ int skill_use(size_t attack_fighter_index)
             break;
 
         case AYLA:
-            tgt = select_enemy(attack_fighter_index, TGT_NONE);
+            tgt = select_enemy(attack_fighter_index, TGT_ENEMY_ONE);
             if (tgt == -1)
             {
                 return 0;
@@ -895,7 +895,7 @@ int skill_use(size_t attack_fighter_index)
             break;
 
         case NOSLOM:
-            tgt = select_enemy(attack_fighter_index, TGT_NONE);
+            tgt = select_enemy(attack_fighter_index, TGT_ENEMY_ONE);
             if (tgt == -1)
             {
                 return 0;

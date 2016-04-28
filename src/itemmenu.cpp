@@ -246,7 +246,7 @@ static void camp_item_targetting(int pp)
     while (1)
     {
         update_equipstats();
-        tg = select_any_player(items[t1].tgt - 1, items[t1].icon, items[t1].name);
+        tg = select_any_player((eTarget) items[t1].tgt, items[t1].icon, items[t1].name);
         if (tg != PIDX_UNDEFINED)
         {
             z = item_effects(0, tg, t1);
@@ -260,7 +260,8 @@ static void camp_item_targetting(int pp)
                 if (z == 1)
                 {
                     play_effect(SND_ITEM, 128);
-                    select_any_player(3, 0, "");
+					// TODO what does this do?
+                    select_any_player(TGT_ALLY_ALL, 0, "");
                 }
                 if (items[t1].use != USE_ANY_INF && items[t1].use != USE_CAMP_INF)
                 {

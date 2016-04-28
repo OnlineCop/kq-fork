@@ -462,17 +462,17 @@ static int combat_item_menu(int whom)
             unpress();
             if (items[inventory].tgt >= TGT_ENEMY_ONE)
             {
-                z = select_enemy(whom, (eTarget)(items[inventory].tgt - 4));
+                z = select_enemy(whom, (eTarget)(items[inventory].tgt));
             }
             else
             {
                 if (inventory == I_LTONIC)
                 {
-                    z = select_hero(whom, (eTarget)(items[inventory].tgt - 1), 1);
+                    z = select_hero(whom, (eTarget)(items[inventory].tgt), 1);
                 }
                 else
                 {
-                    z = select_hero(whom, (eTarget)(items[inventory].tgt - 1), 0);
+                    z = select_hero(whom, (eTarget)(items[inventory].tgt), 0);
                 }
             }
             if (z > -1)
@@ -647,11 +647,11 @@ static int combat_spell_targeting(int whom)
     {
         if (a == M_LIFE || a == M_FULLLIFE)
         {
-            tg = select_hero(whom, (eTarget)(magic[a].tgt - 1), NO_STS_CHECK);
+            tg = select_hero(whom, (eTarget)(magic[a].tgt), NO_STS_CHECK);
         }
         else
         {
-            tg = select_hero(whom, (eTarget)(magic[a].tgt - 1), 0);
+            tg = select_hero(whom, (eTarget)(magic[a].tgt), 0);
         }
         if (tg == -1)
         {
@@ -664,7 +664,7 @@ static int combat_spell_targeting(int whom)
     }
     else
     {
-        tg = select_enemy(whom, (eTarget)(magic[a].tgt - 4));
+        tg = select_enemy(whom, (eTarget)(magic[a].tgt));
         if (tg == -1)
         {
             return 0;
@@ -715,7 +715,7 @@ static int hero_attack(int whom)
 
     if (fighter[whom].sts[S_CHARM] == 0)
     {
-        tgt = select_enemy(whom, TGT_NONE);
+        tgt = select_enemy(whom, TGT_ENEMY_ONE);
     }
     else
     {
@@ -1164,14 +1164,14 @@ static int hero_invoke(int whom)
 static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 {
     ePIDX defender_fighter_index;
-
-    if (items[item_index].tgt <= TGT_ALLY_ALL && items[item_index].tgt >= TGT_ALLY_ONE)
+	eTarget tgt = (eTarget) items[item_index].tgt;
+    if (tgt <= TGT_ALLY_ALL && tgt >= TGT_ALLY_ONE)
     {
-        defender_fighter_index = select_hero(attacker_fighter_index, (eTarget)(items[item_index].tgt - TGT_ALLY_ONE), 0);
+        defender_fighter_index = select_hero(attacker_fighter_index, tgt, 0);
     }
-    else if (items[item_index].tgt >= TGT_ENEMY_ONE)
+    else if (tgt >= TGT_ENEMY_ONE && tgt <= TGT_ENEMY_ALL)
     {
-        defender_fighter_index = select_enemy(attacker_fighter_index, (eTarget)(items[item_index].tgt - TGT_ENEMY_ONE ));
+        defender_fighter_index = select_enemy(attacker_fighter_index, tgt);
 	}
 	else {
 		defender_fighter_index = PIDX_UNDEFINED;

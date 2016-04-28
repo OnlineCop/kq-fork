@@ -57,9 +57,6 @@ static eMiniMenu mini_menu(int mask);
 static void party_add(ePIDX id, int lead);
 static void party_remove(ePIDX id);
 
-/*  Internal variables  */
-static signed int tmpd[NUM_FIGHTERS]; // defined in heroc.h
-
 
 /*! \brief  Select an enemy automatically
  * \author  Josh Bolduc
@@ -80,7 +77,7 @@ static signed int tmpd[NUM_FIGHTERS]; // defined in heroc.h
 int auto_select_enemy(int whom, int csts)
 {
     unsigned int i, number_enemies = 0;
-
+	int tmpd[NUM_FIGHTERS];
     for (i = PSIZE; i < PSIZE + num_enemies; i++)
     {
         if (fighter[i].sts[S_DEAD] == 0)
@@ -150,7 +147,7 @@ int auto_select_enemy(int whom, int csts)
 int auto_select_hero(int whom, int csts)
 {
     unsigned int a, cntr = 0;
-
+	int tmpd[NUM_FIGHTERS];
     /*  RB TODO  */
     whom = whom;
     if (numchrs == 1)
@@ -411,8 +408,6 @@ static void party_remove(ePIDX id)
  * This is used to select a recipient or recipients for items/spells.
  * Used in itemmenu.c and masmenu.c
  *
- * \todo PH Should use TGT_* constants (in kq.h) to compare to csa
- *          for an example, see camp_item_targetting() in itemmenu.c
  * \todo PH This seems awfully complicated for what it does. Is there
  *          any visual clue as to whether you can select all or not?
  *          Should there be?
@@ -426,20 +421,13 @@ static void party_remove(ePIDX id)
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled or
  *          SEL_ALL_ALLIES if 'all' was selected (by pressing L or R)
  */
-ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
+ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
 {
-    unsigned int stop = 0, ptr, k, select_all;
+    unsigned int  ptr = 0;
     int shy = 120 - (numchrs * 28);
+	bool select_all = (csa == TGT_ALLY_ALL);
+	bool stop = false;
 
-    if (csa == 2)
-    {
-        select_all = 1;
-    }
-    else
-    {
-        select_all = 0;
-    }
-    ptr = 0;
     while (!stop)
     {
         check_animation();
@@ -450,60 +438,30 @@ ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
             draw_icon(double_buffer, icn, 160 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs);
             print_font(double_buffer, 168 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs, msg, FNORMAL);
         }
-        for (k = 0; k < numchrs; k++)
+        for (unsigned int k = 0; k < numchrs; k++)
         {
             menubox(double_buffer, 80 + xofs, k * 56 + shy + yofs, 18, 5, BLUE);
             draw_playerstat(double_buffer, pidx[k], 88 + xofs, k * 56 + shy + 8 + yofs);
-            if (csa < TGT_ALLY_ALL)
-            {
-                if (select_all == 0)
-                {
-                    if (k == ptr)
-                    {
-                        draw_sprite(double_buffer, menuptr, 72 + xofs, k * 56 + shy + 24 + yofs);
-                    }
-                }
-                else
-                {
-                    draw_sprite(double_buffer, menuptr, 72 + xofs, k * 56 + shy + 24 + yofs);
-                }
-            }
+			// Draw the pointer
+			if (select_all || k == ptr)
+			{
+				draw_sprite(double_buffer, menuptr, 72 + xofs, k * 56 + shy + 24 + yofs);
+			}
         }
         blit2screen(xofs, yofs);
 
         readcontrols();
         if (csa < TGT_ALLY_ALL)
         {
-            if (PlayerInput.left)
+            if (PlayerInput.left||PlayerInput.right)
             {
                 unpress();
-                if (csa == TGT_ALLY_ONE)
+                if (csa == TGT_ALLY_ONEALL)
                 {
-                    if (select_all == 0)
-                    {
-                        select_all = 1;
-                    }
-                    else
-                    {
-                        select_all = 0;
-                    }
+					select_all = !select_all;
                 }
             }
-            if (PlayerInput.right)
-            {
-                unpress();
-                if (csa == TGT_ALLY_ONE)
-                {
-                    if (select_all == 0)
-                    {
-                        select_all = 1;
-                    }
-                    else
-                    {
-                        select_all = 0;
-                    }
-                }
-            }
+            
             if (PlayerInput.up)
             {
                 unpress();
@@ -526,21 +484,16 @@ ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
         if (PlayerInput.balt)
         {
             unpress();
-            stop = 1;
+            stop = true;
         }
         if (PlayerInput.bctrl)
         {
             unpress();
-            stop = 2;
+			return PIDX_UNDEFINED;
         }
     }
 
-    if (csa == TGT_ALLY_ALL || stop == 2)
-    {
-        return PIDX_UNDEFINED;
-    }
-
-    return (select_all == 0 ? (ePIDX)ptr : SEL_ALL_ALLIES);
+    return (select_all ? SEL_ALL_ALLIES : (ePIDX)ptr );
 }
 
 
@@ -552,13 +505,10 @@ ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
  * whether selected one or all enemies this is the function to use.
  *
  * Multi specifies what we can select:
- *   0 indicates that we can select one target only.
- *   1 indicates that we can select one target or all.
- *   2 indicates that we can only select all enemies.
+ *   TGT_ENEMY_ONE indicates that we can select one target only.
+ *   TGT_ENEMY_ONEALL indicates that we can select one target or all.
+ *   TGT_ENEMY_ALL indicates that we can only select all enemies.
  * Used in: heroc.c hskill.c
- *
- * \note fixme PH Should use TGT_* constants (in kq.h) to compare to multi
- * \todo PH tmpd should be a local var?
  *
  * \param   attack_fighter_index Attacker (person doing the action)
  * \param   multi_target Target(s)
@@ -567,10 +517,14 @@ ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
  */
 ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 {
-    unsigned int cntr = 0;
-    size_t fighter_index, ptr;
-
-    for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+	if (!(multi_target == TGT_ENEMY_ONE || multi_target == TGT_ENEMY_ONEALL || multi_target == TGT_ENEMY_ALL)) {
+		program_death("Invalid enemy target mode");
+		return PIDX_UNDEFINED;
+	}
+	unsigned int cntr = 0;
+    size_t  ptr;
+	int tmpd[NUM_FIGHTERS];
+    for (unsigned int fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
     {
         if (can_attack(fighter_index) == 1)
         {
@@ -581,7 +535,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 	if (cntr == 0) {
 		return PIDX_UNDEFINED;
 	}
-	bool select_all = (multi_target == TGT_ALLY_ONEALL);
+	bool select_all = (multi_target == TGT_ENEMY_ALL);
 
     ptr = 0;
     bool stop = false;
@@ -589,7 +543,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
     while (!stop)
     {
         check_animation();
-        if (multi_target > TGT_NONE && select_all)
+        if (select_all)
         {
             battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 2);
         }
@@ -638,7 +592,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
         if (PlayerInput.up || PlayerInput.down)
         {
             unpress();
-            if (multi_target == TGT_ALLY_ONE && cntr > 1)
+            if (multi_target == TGT_ENEMY_ONEALL && cntr > 1)
             {
 				select_all = !select_all;
             }
@@ -661,18 +615,21 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
  * The multi parameter works the same here as it does for select_target above.
  * Used in heroc.c
  *
- * \todo PH tmpd should be a local var?
- *
  * \param   target_fighter_index - person that is doing the action ??
- * \param   multi_target - mode (target one=0, one/all=1 or all=2)
+ * \param   multi_target - mode (TGT_ALLY_ONE, TGT_ALLY_ONEALL, TGT_ALLY_ALL)
  * \param   can_select_dead - non-zero allows you to select a dead character
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled
  *          or SEL_ALL_ALLIES if 'all' was selected (by pressing U or D)
  */
 ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_select_dead)
 {
+	if (!(multi_target == TGT_ALLY_ALL || multi_target == TGT_ALLY_ONE || multi_target == TGT_ALLY_ONEALL)) {
+		program_death("Invalid hero target mode");
+		return PIDX_UNDEFINED;
+	}
     unsigned int cntr = 0, ptr = 0;
-	bool select_all = (multi_target == TGT_ALLY_ONEALL);
+	int tmpd[NUM_FIGHTERS];
+	bool select_all = (multi_target == TGT_ALLY_ALL);
     for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
     {
         if (fighter[fighter_index].sts[S_DEAD] == 0)
@@ -698,7 +655,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
     while (!stop)
     {
         check_animation();
-        if (multi_target > TGT_NONE && select_all )
+        if (select_all)
         {
             battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 1);
         }
@@ -744,7 +701,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
                 ptr = 0;
             }
         }
-        if (multi_target == TGT_ALLY_ONE && cntr > 1)
+        if (multi_target == TGT_ALLY_ONEALL && cntr > 1)
         {
             if (PlayerInput.up || PlayerInput.down)
             {
