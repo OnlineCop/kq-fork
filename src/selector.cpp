@@ -406,16 +406,15 @@ static void party_remove(ePIDX id)
 /*! \brief Select player or players
  *
  * This is used to select a recipient or recipients for items/spells.
- * Used in itemmenu.c and masmenu.c
+ * Used in itemmenu.c and masmenu.c.
  *
- * \todo PH This seems awfully complicated for what it does. Is there
- *          any visual clue as to whether you can select all or not?
- *          Should there be?
+ * If targetting mode is TGT_NONE, just show the player but don't allow
+ * any change in selection.
  *
  * \sa draw_icon()
  * \sa camp_item_targetting()
  *
- * \param   csa - Mode (target one, one/all or all)
+ * \param   csa - Mode (TGT_ALLY_ONE, TGT_ALLY_ONEALL, TGT_ALLY_ALL or TGT_NONE)
  * \param   icn - Icon to draw (see also draw_icon() in draw.c)
  * \param   msg - Prompt message
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled or
@@ -432,7 +431,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
     {
         check_animation();
         drawmap();
-        if (csa < TGT_ALLY_ALL)
+        if (csa != TGT_NONE)
         {
             menubox(double_buffer, 152 - ((strlen(msg) + 1) * 4) + xofs, 8 + yofs, strlen(msg) + 1, 1, BLUE);
             draw_icon(double_buffer, icn, 160 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs);
@@ -451,46 +450,57 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (csa < TGT_ALLY_ALL)
-        {
-            if (PlayerInput.left||PlayerInput.right)
-            {
-                unpress();
-                if (csa == TGT_ALLY_ONEALL)
-                {
+		if (csa == TGT_NONE)
+		{
+			if (PlayerInput.balt | PlayerInput.bctrl) {
+				unpress();
+				return PIDX_UNDEFINED;
+			}
+			if (PlayerInput.left || PlayerInput.right || PlayerInput.down || PlayerInput.up)
+			{
+				unpress();
+			}
+		}
+		else {
+			if (PlayerInput.left || PlayerInput.right)
+			{
+				unpress();
+				if (csa == TGT_ALLY_ONEALL)
+				{
 					select_all = !select_all;
-                }
-            }
-            
-            if (PlayerInput.up)
-            {
-                unpress();
-                if (ptr > 0)
-                {
-                    ptr--;
-                }
-                play_effect(SND_CLICK, 128);
-            }
-            if (PlayerInput.down)
-            {
-                unpress();
-                if (ptr < numchrs - 1)
-                {
-                    ptr++;
-                }
-                play_effect(SND_CLICK, 128);
-            }
-        }
-        if (PlayerInput.balt)
-        {
-            unpress();
-            stop = true;
-        }
-        if (PlayerInput.bctrl)
-        {
-            unpress();
-			return PIDX_UNDEFINED;
-        }
+				}
+			}
+
+			if (PlayerInput.up)
+			{
+				unpress();
+				if (ptr > 0)
+				{
+					ptr--;
+				}
+				play_effect(SND_CLICK, 128);
+			}
+			if (PlayerInput.down)
+			{
+				unpress();
+				if (ptr < numchrs - 1)
+				{
+					ptr++;
+				}
+				play_effect(SND_CLICK, 128);
+			}
+
+			if (PlayerInput.balt)
+			{
+				unpress();
+				stop = true;
+			}
+			if (PlayerInput.bctrl)
+			{
+				unpress();
+				return PIDX_UNDEFINED;
+			}
+		}
     }
 
     return (select_all ? SEL_ALL_ALLIES : (ePIDX)ptr );

@@ -230,10 +230,7 @@ void camp_item_menu(void)
  */
 static void camp_item_targetting(int pp)
 {
-    int t1, z;
-    ePIDX tg;
-
-    t1 = g_inv[pp][GLOBAL_INVENTORY_ITEM];
+    int t1 = g_inv[pp][GLOBAL_INVENTORY_ITEM];
     if (items[t1].use == USE_NOT || items[t1].use > USE_CAMP_INF)
     {
         return;
@@ -245,22 +242,21 @@ static void camp_item_targetting(int pp)
     while (1)
     {
         update_equipstats();
-        tg = select_any_player((eTarget) items[t1].tgt, items[t1].icon, items[t1].name);
+        ePIDX tg = select_any_player((eTarget) items[t1].tgt, items[t1].icon, items[t1].name);
         if (tg != PIDX_UNDEFINED)
         {
-            z = item_effects(0, tg, t1);
-            if (z == 0)
+            eItemEffectResult z = item_effects(0, tg, t1);
+            if (z == ITEM_EFFECT_INEFFECTIVE)
             {
                 play_effect(SND_BAD, 128);
             }
             else
             {
                 revert_equipstats();
-                if (z == 1)
+                if (z == ITEM_EFFECT_SUCCESS_SINGLE)
                 {
                     play_effect(SND_ITEM, 128);
-					// TODO what does this do?
-                    select_any_player(TGT_ALLY_ALL, 0, "");
+                    select_any_player(TGT_NONE, 0, "");
                 }
                 if (items[t1].use != USE_ANY_INF && items[t1].use != USE_CAMP_INF)
                 {
@@ -416,9 +412,9 @@ static void draw_itemmenu(int ptr, int pg, int sl)
  * \param   attack_fighter_index Index of attacker
  * \param   fighter_index  Index of item to use
  * \param   ti Index of target(s)
- * \returns 0 if ineffective (cannot use item)
- * \returns 1 if success (1 target)
- * \returns 2 if success (multiple targets)
+ * \returns ITEM_EFFECT_INEFFECTIVE if ineffective (cannot use item)
+ * \returns ITEM_EFFECT_SUCCESS_SINGLE if success (1 target)
+ * \returns ITEM_EFFECT_SUCCESS_MULTIPLE if success (multiple targets)
  */
 eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index, int ti)
 {
