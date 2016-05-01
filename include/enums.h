@@ -46,6 +46,7 @@ enum eSize
     ENT_H  = 16U,
     NUM_SPELLS_PER_PAGE = 12U,
     NUM_ITEMS_PER_PAGE = 16U,
+    NUM_SPELLS = 60U,
 };
 
 
@@ -97,6 +98,8 @@ enum eGlobalInventory
 #define NUM_FIGHTERS        7
 #define MAX_ANIM            5
 #define NUM_STATS          13
+#define NUM_RES            16
+#define NUM_SPELLTYPES     24
 #define MISS             9999
 #define NODISPLAY        9998
 #define SCANALL          9995

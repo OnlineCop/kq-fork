@@ -23,9 +23,7 @@
 #ifndef __BOUNDS_H
 #define __BOUNDS_H 1
 
-
-#include <allegro.h>
-
+struct PACKFILE;
 
 /*! \file
  * \brief Contains functions specific to bounded areas

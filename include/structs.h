@@ -162,10 +162,10 @@ typedef struct
     int mp;                      /*!< Magic points */
     int mmp;                     /*!< Maximum magic points */
     int stats[NUM_STATS];
-    char res[16];                /*!< eResistance: See R_* constants */
-    unsigned char sts[24];       /*!< eSpellType */
+    char res[NUM_RES];                  /*!< eResistance: See R_* constants */
+    unsigned char sts[NUM_SPELLTYPES];  /*!< eSpellType */
     unsigned char eqp[NUM_EQUIPMENT];   /*!< eEquipment: Weapons, armor, etc. equipped */
-    unsigned char spells[60];    /*!< Known spells */
+    unsigned char spells[NUM_SPELLS];           /*!< Known spells */
 } s_player;
 
 

@@ -34,7 +34,7 @@ int save_s_entity(s_entity *, PACKFILE *);
 int load_s_player(s_player *, PACKFILE *);
 int save_s_player(s_player *, PACKFILE *);
 int save_s_tileset(s_tileset *, PACKFILE *);
-
-
+int load_heroes_xml(s_heroinfo*, const char*);
+int save_players_xml(s_player*, int, const char*);
 #endif  /* __DISK_H */
 

@@ -30,8 +30,6 @@
  * \date ??????
  */
 
-#include <allegro.h>
-
 /* Have to undef some stuff because Allegro defines it - thanks guys
 */
 #ifdef HAVE_CONFIG_H
@@ -164,7 +162,8 @@ extern Raster *obj_mesh;
 #define SCREEN_W2 (320 + 2 * TILE_W)
 #define SCREEN_H2 (240 + 2 * TILE_H)
 #define fullblit(a,b) blit((a), (b), 0, 0, 0, 0, SCREEN_W2, SCREEN_H2)
-
-
+#ifndef TRACE
+extern void TRACE(const char* message, ...);
+#endif
 #endif  /* __KQ_H */
 

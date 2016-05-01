@@ -151,7 +151,7 @@ s_bound *is_contained_bound(
  * \param[in]     pf - PACKFILE from whence data are pulled
  * \return        Non-0 on error, 0 on success
  */
-size_t load_bounds(
+/*size_t load_bounds(
     s_bound_array *barray,
     PACKFILE *pf)
 {
@@ -163,14 +163,14 @@ size_t load_bounds(
 
     if (!barray || !pf)
     {
-        allegro_message("NULL passed into load_bounds()\n");
+        TRACE("NULL passed into load_bounds()\n");
         return 1;
     }
 
     barray->size = pack_igetw(pf);
     if (pack_feof(pf))
     {
-        allegro_message("Expected value for number of bounds. Instead, received EOF.\n");
+        TRACE("Expected value for number of bounds. Instead, received EOF.\n");
         return 2;
     }
 
@@ -189,7 +189,7 @@ size_t load_bounds(
 
             if (pack_feof(pf))
             {
-                /*printf ("Encountered EOF during bound #%d read.\n", i);*/
+                //printf ("Encountered EOF during bound #%d read.\n", i);
                 return 3;
             }
         }
@@ -201,7 +201,7 @@ size_t load_bounds(
 
     return 0;
 }
-
+*/
 
 
 /*! \brief Save all bounds out to packfile
@@ -212,6 +212,7 @@ size_t load_bounds(
  * \param[out] pf - PACKFILE to where data is written
  * \return     Non-0 on error, 0 on success
  */
+/*
 size_t save_bounds(
     s_bound_array *barray,
     PACKFILE *pf)
@@ -254,7 +255,7 @@ size_t save_bounds(
 
     return 0;
 }
-
+*/
 
 
 /* Assign the given bounding area with the x and y coords.

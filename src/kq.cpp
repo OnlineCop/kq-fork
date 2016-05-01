@@ -1220,29 +1220,18 @@ void kwait(int dtime)
  */
 void load_heroes(void)
 {
-    PACKFILE *f;
-    int player_index;
-
     /* Hero stats */
-    if ((f = pack_fopen(kqres(DATA_DIR, "hero.kq"), F_READ_PACKED)) == NULL)
-    {
-        program_death(_("Cannot open hero data file"));
+    if (!load_heroes_xml(players, kqres(DATA_DIR, "hero.xml"))) {
+      program_death(_("Cannot open hero data file"));
     }
-    for (player_index = 0; player_index < MAXCHRS; ++player_index)
-    {
-        load_s_player(&players[player_index].plr, f);
-    }
-    pack_fclose(f);
-
     /* portraits */
-	Raster* faces = get_cached_image("kqfaces.png");
+    Raster* faces = get_cached_image("kqfaces.png");
 
-    for (player_index = 0; player_index < 4; ++player_index)
-    {
-		faces->blitTo(players[player_index].portrait, 0, player_index * 40, 0, 0, 40, 40);
-		faces->blitTo(players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
-    }
-
+    for (int player_index = 0; player_index < 4; ++player_index)
+      {
+	faces->blitTo(players[player_index].portrait, 0, player_index * 40, 0, 0, 40, 40);
+	faces->blitTo(players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
+      }
 }
 
 /*! \brief Main function
