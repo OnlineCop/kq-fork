@@ -49,7 +49,38 @@ using tinyxml2::XMLDocument;
 using std::vector;
 using std::fill_n;
 using std::copy;
+/*! Iteration helper class.
+ * Allows use of C++11's range-based for syntax to iterate
+ * through child elements.
+ */
+class xiterable {
+public:
+  class iterator {
+  public:
+    bool operator==(const iterator &other) const { return elem == other.elem; }
+    bool operator!=(const iterator &other) const { return elem != other.elem; }
+    tinyxml2::XMLElement *operator*() { return elem; }
+    iterator &operator++() {
+      elem = elem->NextSiblingElement(tag);
+      return *this;
+    }
+    tinyxml2::XMLElement *operator->() { return elem; }
 
+  private:
+    iterator(tinyxml2::XMLElement *e, const char *t) : elem(e), tag(t) {}
+    friend class xiterable;
+    tinyxml2::XMLElement *elem;
+    const char *tag;
+  };
+  xiterable(tinyxml2::XMLElement *e, const char *t = nullptr)
+      : elem(e), tag(t) {}
+  iterator begin() { return iterator(elem->FirstChildElement(tag), tag); }
+  iterator end() { return iterator(nullptr, nullptr); }
+
+private:
+  tinyxml2::XMLElement *elem;
+  const char *tag;
+};
 /** Convert a comma-separated list of ints into a vector.
  * Supplied string can be null or empty
  * \param str a string containing the list
@@ -72,21 +103,57 @@ static vector<int> parse_list(const char* str) {
  * a range specified by two iterators
  * \param begin the start of the range (inclusive)
  * \param end the end of the range (exclusive)
- * \returns a new comma-separated list*/
-template <class T>
-static std::string make_list(T begin, T end) {
+ * \returns a new comma-separated list
+ */
+template <typename _InputIterator>
+static std::string make_list(_InputIterator begin, _InputIterator end) {
   bool first = true;
   std::string ans;
   for (auto i = begin; i!=end; ++i) {
-    int v = static_cast<int>(*i);
-    char tmp[12];
-    sprintf(tmp, first ? "%d" : ",%d", v);
-    first = false;
-    ans += tmp;
+    if (first) {
+      first = false;
+    } else {
+      ans += ',';
+    }
+    ans += std::to_string(static_cast<int>(*i));
   }
   return ans;
 }
-
+/** Trim a range.
+ * Shorten the given range to exclude any zero elements at the end.
+ * \returns a new 'end' iterator
+ */
+template <typename _InputIterator>
+_InputIterator trim_range(_InputIterator begin, _InputIterator end) {
+  typedef typename std::iterator_traits<_InputIterator>::value_type vt;
+  while (end != begin) {
+    _InputIterator n = std::prev(end);
+    if (*n != vt()) {
+      return end;
+    } else {
+      end = n;
+    }
+  }
+  return begin;  
+}
+/*! Check if a range is all default.
+ * Scan a range, return true if all the elements are
+ * the same as their 'default' values (e.g. 0 for integers)
+ */
+template <typename _InputIterator>
+bool range_is_default(_InputIterator first, _InputIterator last) {
+  typedef typename std::iterator_traits<_InputIterator>::value_type vt;
+  vt v0 = vt();
+  while (first != last) {
+    if (*first != v0) { return false; }
+    else {
+      ++first;
+    }
+  }
+  return true;
+}
+  
+  
 int save_s_entity(s_entity *s, PACKFILE *f)
 {
     pack_putc(s->chrx, f);
@@ -429,7 +496,13 @@ int save_s_tileset(s_tileset *s, PACKFILE *f)
     }
     return 0;
 }
-static const std::map<const char*, ePIDX> id_lookup = {
+struct cstring_less {
+  bool operator()(const char* const& a, const char* const&b) const {
+    return strcmp(a, b) < 0;
+  }
+};
+
+static const std::map<const char*, ePIDX, cstring_less> id_lookup = {
   {"sensar", SENSAR},
   {"sarina", SARINA},
   {"corin", CORIN},
@@ -442,23 +515,23 @@ static const std::map<const char*, ePIDX> id_lookup = {
 int load_heroes_xml(  s_heroinfo* heroes, XMLElement* root) {    
   for (auto hero = root->FirstChildElement("hero"); hero; hero = hero->NextSiblingElement("hero")) {
     const char* attr = hero->Attribute("id");
-    auto it = id_lookup.find(hero->Attribute("id"));
-    if (it != std::end(id_lookup)) {
-      load_s_player(&heroes[it->second].plr, hero);
-    } else {
-      program_death("Unknown hero in file");
+    if (attr) {
+      auto it = id_lookup.find(attr);
+      if (it != std::end(id_lookup)) {
+	load_s_player(&heroes[it->second].plr, hero);
+      } 
     }
   }
-    // bogus test code
-    XMLDocument outdoc;
-    XMLElement* hs = outdoc.InsertFirstChild(outdoc.NewElement("heroes"))->ToElement();
-    for (int i=0; i<MAXCHRS; ++i) {
-      XMLElement* hero = hs->InsertEndChild(outdoc.NewElement("hero"))->ToElement();
-      s_player* ptr= &heroes[i].plr;
-      save_s_player(ptr, hero);
-    }
-    outdoc.Print();
-    return 1;
+  // bogus test code
+  XMLDocument outdoc;
+  XMLElement* hs = outdoc.InsertFirstChild(outdoc.NewElement("heroes"))->ToElement();
+  for (int i=0; i<MAXCHRS; ++i) {
+    XMLElement* hero = hs->InsertEndChild(outdoc.NewElement("hero"))->ToElement();
+    s_player* ptr= &heroes[i].plr;
+    save_s_player(ptr, hero);
+  }
+  outdoc.Print();
+  return 1;
 }
 
 /** Initial load of hero stats
@@ -512,3 +585,43 @@ int save_players_xml(s_player* player, int n, const char* filename)
   doc.SaveFile(filename);
   return 1;
 }
+
+int save_game_xml(XMLElement* node) {
+  XMLDocument* doc = node->GetDocument();
+  node->SetAttribute("version", "93");
+  
+  XMLElement* properties = doc->NewElement("properties");
+  node->InsertEndChild(properties);
+  XMLElement* treasures = doc->NewElement("treasures");
+  treasures->SetAttribute("values", make_list(std::begin(treasure), std::end(treasure)).c_str());
+  node->InsertEndChild(treasures);
+  XMLElement* progresses = doc->NewElement("progress");
+  progresses->SetAttribute("values", make_list(std::begin(progress), std::end(treasure)).c_str());
+  node->InsertEndChild(progresses);
+  XMLElement* specials = doc->NewElement("special");
+  specials->SetAttribute("values", make_list(std::begin(player_special_items), std::end(player_special_items)).c_str());
+  node->InsertEndChild(specials);
+  XMLElement* spells = doc->NewElement("spells");
+  spells->SetAttribute("values", make_list(std::begin(save_spells), std::end(save_spells)).c_str());
+  node->InsertEndChild(spells);
+  XMLElement* heroes = doc->NewElement("heroes");
+  for (int i=0; i<MAXCHRS; ++i) {
+    XMLElement* hero = doc->NewElement("hero");
+    save_s_player(&players[i].plr, hero);
+    heroes->InsertEndChild(hero);
+  }
+  doc->InsertFirstChild(heroes);
+  return 0;
+}
+
+
+int save_game_xml() {
+  XMLDocument doc;
+  XMLElement* save = doc.NewElement("save");
+  int k = save_game_xml(save);
+  doc.InsertFirstChild(save);
+  doc.Print();
+  return k;
+}
+
+  

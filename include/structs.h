@@ -172,7 +172,7 @@ typedef struct
 
 /*! \brief Hero information
  *
- * This holds static or constant information about a hero. PH: It's not fully used yet
+ * This holds static or constant information about a hero. 
  * the intention is to cut down on some of those globals.
  */
 typedef struct
@@ -181,8 +181,6 @@ typedef struct
     Raster *portrait;            /*!< The hero's portrait for the stats screen */
     Raster *frames[MAXFRAMES];   /*!< Frames for movement */
     Raster *cframes[MAXCFRAMES]; /*!< Frames for combat */
-    int xpi, bxp, hpi, mpi;      /*!< for level_up() */
-    int stat_mult[NUM_STATS];    /*!<stats multipliers for level calculations (see player2fighter() ) */
 } s_heroinfo;
 
 

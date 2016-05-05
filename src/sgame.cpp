@@ -961,8 +961,10 @@ static int save_game_92(void);
  *
  * \returns 0 if save failed, 1 if success
  */
+extern int save_game_xml();
 static int save_game(void)
 {
+  save_game_xml();
     return save_game_92();
 }
 
