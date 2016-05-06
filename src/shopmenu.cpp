@@ -131,13 +131,15 @@ static void buy_item(int how_many, int item_no)
  */
 static void buy_menu(void)
 {
-    int stop = 0, cost;
-    size_t shop_item_index, item_index, xptr = 1, yptr = 0;
-    eFontColor font_color;
-    unsigned int max, max_x = 0;
-    unsigned short item_no;
-
-    for (shop_item_index = 0; shop_item_index < num_shop_items; shop_item_index++)
+	bool stop = false;
+    unsigned short xptr = 1, yptr = 0;
+    unsigned int max_x = 0;
+	if (num_shop_items < 1) {
+		// This function should not be called with 0 shop items anyway, but 
+		// this silences an analysis warning.
+		return;
+	}
+    for (unsigned int shop_item_index = 0; shop_item_index < num_shop_items; shop_item_index++)
     {
         if (shops[shop_no].items_current[shop_item_index] > max_x)
         {
@@ -160,24 +162,17 @@ static void buy_menu(void)
         menubox(double_buffer, 32 + xofs, 24 + yofs, 30, 16, BLUE);
         menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, BLUE);
         draw_shopgold();
-        for (shop_item_index = 0; shop_item_index < num_shop_items; shop_item_index++)
+        for (unsigned int shop_item_index = 0; shop_item_index < num_shop_items; shop_item_index++)
         {
-            item_index = shops[shop_no].items[shop_item_index];
-            max = shops[shop_no].items_current[shop_item_index];
+            unsigned short item_index = shops[shop_no].items[shop_item_index];
+            unsigned short max = shops[shop_no].items_current[shop_item_index];
             if (xptr <= max)
             {
                 max = xptr;
             }
             draw_icon(double_buffer, items[item_index].icon, 48 + xofs, shop_item_index * 8 + 32 + yofs);
-            cost = max * items[item_index].price;
-            if (cost > gp)
-            {
-                font_color = FDARK;
-            }
-            else
-            {
-                font_color = FNORMAL;
-            }
+            int cost = max * items[item_index].price;
+			eFontColor font_color = cost <= gp ? FNORMAL : FDARK;
             print_font(double_buffer, 56 + xofs, shop_item_index * 8 + 32 + yofs, items[item_index].name, font_color);
             if (max > 1)
             {
@@ -193,7 +188,7 @@ static void buy_menu(void)
                 print_font(double_buffer, 200 + xofs, shop_item_index * 8 + 32 + yofs, _("Sold Out!"), font_color);
         }
 
-        item_no = shops[shop_no].items[yptr];
+        unsigned short item_no = shops[shop_no].items[yptr];
         print_font(double_buffer, 160 - (strlen(items[item_no].desc) * 4) + xofs, 176 + yofs, items[item_no].desc, FNORMAL);
         draw_sideshot(item_no);
         draw_sprite(double_buffer, menuptr, 32 + xofs, yptr * 8 + 32 + yofs);
@@ -242,8 +237,8 @@ static void buy_menu(void)
         {
             unpress();
             blit(double_buffer, back, xofs, 192 + yofs, 0, 0, 320, 48);
-            max = shops[shop_no].items_current[yptr];
-            if (xptr <= max)
+            unsigned short max = shops[shop_no].items_current[yptr];
+            if (xptr < max)
             {
                 max = xptr;
             }
@@ -252,7 +247,7 @@ static void buy_menu(void)
         if (PlayerInput.bctrl)
         {
             unpress();
-            stop = 1;
+            stop = true;
         }
     }
 }
