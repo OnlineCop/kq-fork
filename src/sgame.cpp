@@ -1029,7 +1029,6 @@ static int save_game_92(void)
     {
         save_s_player(&party[a], sdat);
     }
-    //    save_players_xml(party, MAXCHRS, "/tmp/party.xml");
     /* Save map name and location */
     pack_iputw(curmap.length(), sdat);
     pack_fwrite(curmap.c_str(), curmap.length(), sdat);
