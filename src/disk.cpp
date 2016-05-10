@@ -35,6 +35,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <iterator>
 #include <tinyxml2.h>
 
 #include "kq.h"
@@ -43,44 +44,39 @@
 #include "markers.h"
 #include "platform.h"
 #include "heroc.h"
+#include "shopmenu.h"
 
 using tinyxml2::XMLElement;
 using tinyxml2::XMLDocument;
 using std::vector;
-using std::fill_n;
 using std::copy;
+using std::begin;
+using std::end;
+
 /*! Iteration helper class.
  * Allows use of C++11's range-based for syntax to iterate
  * through child elements.
  */
-class xiterable {
-public:
-  class iterator {
-  public:
-    bool operator==(const iterator &other) const { return elem == other.elem; }
-    bool operator!=(const iterator &other) const { return elem != other.elem; }
-    tinyxml2::XMLElement *operator*() { return elem; }
-    iterator &operator++() {
-      elem = elem->NextSiblingElement(tag);
-      return *this;
-    }
-    tinyxml2::XMLElement *operator->() { return elem; }
-
-  private:
-    iterator(tinyxml2::XMLElement *e, const char *t) : elem(e), tag(t) {}
-    friend class xiterable;
-    tinyxml2::XMLElement *elem;
-    const char *tag;
-  };
-  xiterable(tinyxml2::XMLElement *e, const char *t = nullptr)
-      : elem(e), tag(t) {}
-  iterator begin() { return iterator(elem->FirstChildElement(tag), tag); }
-  iterator end() { return iterator(nullptr, nullptr); }
-
-private:
-  tinyxml2::XMLElement *elem;
-  const char *tag;
+typedef std::pair<XMLElement*, const char*> xiterator;
+struct xiterable : public std::pair<XMLElement*, const char*> {
+	using std::pair<XMLElement*, const char*>::pair;
+	xiterator begin() {
+		return xiterator(first->FirstChildElement(second), second);
+	}
+	xiterator end() {
+		return xiterator(nullptr, second);
+	}
 };
+
+
+xiterator& operator++(xiterator& it) {
+	it.first = it.first->NextSiblingElement(it.second);
+	return it;
+}
+XMLElement* operator*(xiterator& it) {
+	return it.first;
+}
+
 xiterable children(XMLElement* parent, const char* tag = nullptr) {
   return xiterable(parent, tag);
 }
@@ -192,53 +188,6 @@ int save_s_entity(s_entity *s, PACKFILE *f)
     return 0;
 }
 
-
-
-
-/*
-int save_s_map(s_map *sm, PACKFILE *f)
-{
-    assert(sm && "sm == NULL");
-    assert(f && "f == NULL");
-
-    // pack_putc (sm->map_no, f);
-    pack_putc(0, f);             // To maintain compatibility. 
-
-    pack_putc(sm->zero_zone, f);
-    pack_putc(sm->map_mode, f);
-    pack_putc(sm->can_save, f);
-    pack_putc(sm->tileset, f);
-    pack_putc(sm->use_sstone, f);
-    pack_putc(sm->can_warp, f);
-    pack_putc(sm->extra_byte, f);
-    pack_iputl(sm->xsize, f);
-    pack_iputl(sm->ysize, f);
-    pack_iputl(sm->pmult, f);
-    pack_iputl(sm->pdiv, f);
-    pack_iputl(sm->stx, f);
-    pack_iputl(sm->sty, f);
-    pack_iputl(sm->warpx, f);
-    pack_iputl(sm->warpy, f);
-    //pack_iputl (1, f);           // Revision 1 
-    sm->revision = 2;            // Force new revision: 2
-
-    pack_iputl(sm->revision, f);         // Revision 2 
-    pack_iputl(sm->extra_sdword2, f);
-
-    // FIXME: These should write the string length, then the string, to the packfile.
-    // Hard-coding 16 and 40 are the only way to know how many characters to read back in.
-    pack_fwrite(sm->song_file.c_str(), 16, f); // sm->song_file.length()
-    pack_fwrite(sm->map_desc.c_str(), 40, f); //sm->map_desc.length()
-
-    // Markers 
-    save_markers(&sm->markers, f);
-
-    // Bounding boxes 
-    save_bounds(&sm->bounds, f);
-
-    return 0;
-}
-*/
 /** Get player (hero) data from an XML node.
  * @param s the structure to write to
  * @param node a node within an XML document.
@@ -323,7 +272,7 @@ int load_s_player(s_player* s, XMLElement* node) {
     }
   }
   // resistance
-  fill_n(s->res, NUM_RES, 0);
+  std::fill(std::begin(s->res), std::end(s->res), 0);
   XMLElement* resistances = node->FirstChildElement("resistances");
   if (resistances) {
     auto values = parse_list(resistances->Attribute("values"));
@@ -401,8 +350,7 @@ pack_getc(f);                // alignment
 // Helper function - insert a property element.
 template <typename T>
 static XMLElement* addprop(XMLElement* parent, const char* name, T value) {
-  XMLDocument* doc = parent->GetDocument();
-  XMLElement* property = doc->NewElement("property");
+  XMLElement* property = parent->GetDocument()->NewElement("property");
   property->SetAttribute("name", name);
   property->SetAttribute("value", value);
   parent->InsertEndChild(property);
@@ -527,19 +475,6 @@ pack_putc(0, f);             // alignment
     return 0;
 }
 
-int save_s_tileset(s_tileset *s, PACKFILE *f)
-{
-    size_t animation_index;
-
-    pack_fwrite(s->icon_set, sizeof(s->icon_set), f);
-    for (animation_index = 0; animation_index < MAX_ANIM; ++animation_index)
-    {
-        pack_iputw(s->tanim[animation_index].start, f);
-        pack_iputw(s->tanim[animation_index].end, f);
-        pack_iputw(s->tanim[animation_index].delay, f);
-    }
-    return 0;
-}
 struct cstring_less {
   bool operator()(const char* const& a, const char* const&b) const {
     return strcmp(a, b) < 0;
@@ -601,6 +536,7 @@ int save_players(XMLElement* node)
   node->InsertEndChild(hs);
   return 1;
 }
+// Helper functions for various chunks of data that need saving or loading
 static int save_treasures(XMLElement* node) {
   auto startp = std::begin(treasure);
   auto endp = std::end(treasure);
@@ -610,6 +546,24 @@ static int save_treasures(XMLElement* node) {
     node->InsertEndChild(treasures);
   }
   return 1;
+}
+static int load_treasures(XMLElement* node) {
+	auto startp = std::begin(treasure);
+	auto endp = std::end(treasure);
+	std::fill(startp, endp, 0);
+	XMLElement* treasure = node->FirstChildElement("treasure");
+	if (treasure) {
+		auto vs = parse_list(treasure->Attribute("values"));
+		auto it = startp;
+		for (auto& v : vs) {
+			*it++ = v;
+			if (it == endp) {
+				// Too much data supplied...
+				program_death("Error when loading treasure data");
+			}
+		}
+	}
+	return 1;
 }
 static int save_progress(XMLElement* node) {
   auto startp = std::begin(progress);
@@ -641,6 +595,47 @@ int save_specials(XMLElement* node) {
   }
   return 1;
 }
+int save_global_inventory(XMLElement* node) {
+	std::vector<int> items;
+	std::vector<int> quantities;
+	for (auto& iq : g_inv) {
+		items.push_back(iq[GLOBAL_INVENTORY_ITEM]);
+		quantities.push_back(iq[GLOBAL_INVENTORY_QUANTITY]);
+	}
+	bool items_default = range_is_default(items.begin(), items.end());
+	bool quantities_default = range_is_default(quantities.begin(), quantities.end());
+	if (!items_default || !quantities_default) {
+		XMLElement* inventory = node->GetDocument()->NewElement("inventory");
+		inventory->SetAttribute("items", make_list(items.begin(), items.end()).c_str());
+		inventory->SetAttribute("quantities", make_list(quantities.begin(), quantities.end()).c_str());
+		node->InsertEndChild(inventory);
+	}
+	return 1;
+}
+int save_shop_info(XMLElement* node) {
+	bool visited = false;
+	// Check if any shops have been visited
+	for (int i = 0; i < num_shops; ++i) {
+		if (shop_time[i] > 0) { visited = true; break; }
+	}
+	// If so, we've got something to save.
+	if (visited) {
+		XMLDocument* doc = node->GetDocument();
+		XMLElement* shops_elem = doc->NewElement("shops");
+		for (int i = 0; i < num_shops; ++i) {
+			s_shop& shop = shops[i];
+			if (shop_time[i] > 0) {
+				XMLElement* shop_elem = doc->NewElement("shop");
+				shop_elem->SetAttribute("id", i);
+				shop_elem->SetAttribute("time", shop_time[i]);
+				shop_elem->SetAttribute("quantities", make_list(std::begin(shop.items_current), std::end(shop.items_current)).c_str());
+				shops_elem->InsertEndChild(shop_elem);
+			}
+		}
+		node->InsertEndChild(shops_elem);
+	}
+	return 0;
+}
 /** Save everything into a node
  */
 int save_game_xml(XMLElement* node) {
@@ -650,6 +645,8 @@ int save_game_xml(XMLElement* node) {
   save_progress(node);
   save_spell(node);
   save_specials(node);
+  save_global_inventory(node);
+  save_shop_info(node);
   return 1;
 }
 
@@ -659,6 +656,7 @@ int save_game_xml() {
   int k = save_game_xml(save);
   doc.InsertFirstChild(save);
   doc.Print();
+  doc.SaveFile("test-save.xml");
   return k;
 }
 
