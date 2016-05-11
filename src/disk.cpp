@@ -407,32 +407,7 @@ static int store_stats(const s_player*s, XMLElement* node) {
   }
   return 0;
 }
-/** Store player inside a node that you supply.
- */
-static int save_player(const s_player * s, XMLElement* node) {
-  XMLDocument* doc = node->GetDocument();
-  XMLElement* hero = doc->NewElement("hero");
-  node->InsertEndChild(hero);
-  XMLElement* properties = doc->NewElement("properties");
-  hero->InsertFirstChild(properties);
-  // Core properties
-  addprop(properties, "name", s->name);
-  addprop(properties, "hp", s->hp);
-  addprop(properties, "xp", s->xp);
-  addprop(properties, "next",s->next);
-  addprop(properties, "lvl", s->lvl);
-  addprop(properties, "mhp", s->mhp);
-  addprop(properties, "mp",s->mp);
-  addprop(properties, "mmp", s->mmp);
-  addprop(properties, "mrp", s->mrp);
-  // All other data
-  store_stats(s, hero);
-  store_resistances(s, hero);
-  store_spelltypes(s, hero);
-  store_equipment(s, hero);
-  store_spells(s, hero);
-  return 0;
-}
+
 
 int save_s_player(s_player *s, PACKFILE *f)
 {
@@ -491,6 +466,41 @@ static const std::map<const char*, ePIDX, cstring_less> id_lookup = {
   {"ayla", AYLA},
   {"noslom", NOSLOM}
 };
+/** Store player inside a node that you supply.
+ */
+static int save_player(const s_player * s, XMLElement* node) {
+  XMLDocument* doc = node->GetDocument();
+  XMLElement* hero = doc->NewElement("hero");
+  // Crufty way to get the ID of a party member
+  ePIDX pid = static_cast<ePIDX>(s - party);
+  for (const auto& entry : id_lookup) {
+    if (entry.second == pid) {
+      hero->SetAttribute("id", entry.first);
+      break;
+    }
+  }
+  node->InsertEndChild(hero);
+  XMLElement* properties = doc->NewElement("properties");
+  hero->InsertFirstChild(properties);
+  // Core properties
+  addprop(properties, "name", s->name);
+  addprop(properties, "hp", s->hp);
+  addprop(properties, "xp", s->xp);
+  addprop(properties, "next",s->next);
+  addprop(properties, "lvl", s->lvl);
+  addprop(properties, "mhp", s->mhp);
+  addprop(properties, "mp",s->mp);
+  addprop(properties, "mmp", s->mmp);
+  addprop(properties, "mrp", s->mrp);
+  // All other data
+  store_stats(s, hero);
+  store_resistances(s, hero);
+  store_spelltypes(s, hero);
+  store_equipment(s, hero);
+  store_spells(s, hero);
+  return 0;
+}
+// TODO this function might go away.
 static int load_players(  s_heroinfo* heroes, XMLElement* root) {
   for (auto hero : children(root, "hero")) {
     const char* attr = hero->Attribute("id");
@@ -503,7 +513,18 @@ static int load_players(  s_heroinfo* heroes, XMLElement* root) {
   }
   return 1;
 }
-
+static int load_players(XMLElement* root) {
+  for (auto hero : children(root, "hero")) {
+    const char* attr = hero->Attribute("id");
+    if (attr) {
+      auto it = id_lookup.find(attr);
+      if (it != std::end(id_lookup)) {
+	load_s_player(&party[it->second], hero);
+      } 
+    }
+  }
+  return 1;
+}
 /** Initial load of hero stats
  * \param players an array in which to place the loaded players
  * \param filename XML file to load from
@@ -530,8 +551,8 @@ int save_players(XMLElement* node)
 {
   XMLDocument* doc = node->GetDocument();
   XMLElement* hs = doc->NewElement("heroes");
-  for (const auto& p : players) {
-    save_player(&p.plr, hs);
+  for (const auto& p : party) {
+    save_player(&p, hs);
   }
   node->InsertEndChild(hs);
   return 1;
@@ -634,12 +655,24 @@ int save_shop_info(XMLElement* node) {
 		}
 		node->InsertEndChild(shops_elem);
 	}
-	return 0;
+	return 1;
+}
+int save_general_props(XMLElement* node) {
+  XMLElement* properties = node->GetDocument()->NewElement("properties");
+  addprop(properties, "gold", gp);
+  addprop(properties, "time", khr * 60 + kmin);
+  addprop(properties, "mapname", curmap.c_str());
+  addprop(properties, "mapx", g_ent[0].tilex);
+  addprop(properties, "mapy", g_ent[0].tiley);
+  addprop(properties, "party", make_list(std::begin(pidx), std::end(pidx)).c_str());
+  node->InsertEndChild(properties);
+  return 1;
 }
 /** Save everything into a node
  */
 int save_game_xml(XMLElement* node) {
   node->SetAttribute("version", "93");
+  save_general_props(node);
   save_players(node);
   save_treasures(node);
   save_progress(node);
@@ -659,5 +692,42 @@ int save_game_xml() {
   doc.SaveFile("test-save.xml");
   return k;
 }
+int load_general_props(XMLElement* node) {
+  // TODO
+  return 0;
+}
 
-  
+int  load_progress(XMLElement* node){
+  // TODO
+  return 0;
+}
+int  load_spells(XMLElement* node){
+  // TODO
+  return 0;
+}
+int  load_specials(XMLElement* node){
+  // TODO
+  return 0;
+}
+int  load_global_inventory(XMLElement* node){
+  // TODO
+  return 0;
+}
+int  load_shop_info(XMLElement* node){
+  // TODO
+  return 0;
+}
+/** Load everything from a node
+ */
+int load_game_xml(XMLElement* node) {
+  load_general_props(node);
+  load_players(node);
+  load_treasures(node);
+  load_progress(node);
+  load_spells(node);
+  load_specials(node);
+  load_global_inventory(node);
+  load_shop_info(node);
+  return 1;
+}
+
