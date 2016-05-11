@@ -637,7 +637,7 @@ int save_shop_info(XMLElement* node) {
 	bool visited = false;
 	// Check if any shops have been visited
 	for (int i = 0; i < num_shops; ++i) {
-		if (shop_time[i] > 0) { visited = true; break; }
+		if (shops[i].time > 0) { visited = true; break; }
 	}
 	// If so, we've got something to save.
 	if (visited) {
@@ -645,10 +645,10 @@ int save_shop_info(XMLElement* node) {
 		XMLElement* shops_elem = doc->NewElement("shops");
 		for (int i = 0; i < num_shops; ++i) {
 			s_shop& shop = shops[i];
-			if (shop_time[i] > 0) {
+			if (shop.time > 0) {
 				XMLElement* shop_elem = doc->NewElement("shop");
 				shop_elem->SetAttribute("id", i);
-				shop_elem->SetAttribute("time", shop_time[i]);
+				shop_elem->SetAttribute("time", shop.time);
 				shop_elem->SetAttribute("quantities", make_list(std::begin(shop.items_current), std::end(shop.items_current)).c_str());
 				shops_elem->InsertEndChild(shop_elem);
 			}

@@ -304,7 +304,7 @@ int load_game_91(PACKFILE *sdat)
     }
     for (a = 0; a < NUMSHOPS; a++)          /* 50 */
     {
-        shop_time[a] = pack_getc(sdat);
+        shops[a].time = pack_getc(sdat);
     }
     for (a = 0; a < SIZE_SAVE_RESERVE1; a++)   /* 150 */
     {
@@ -811,7 +811,7 @@ static int load_game_92(PACKFILE *sdat)
      * d = current item index */
     for (a = 0; a < b; a++)
     {
-        shop_time[a] = pack_igetw(sdat);
+        shops[a].time = pack_igetw(sdat);
         c = pack_igetw(sdat);
 
         for (d = 0; d < c; d++)
@@ -1101,7 +1101,7 @@ static int save_game_92(void)
     /* Find last index of shop that the player has visited. */
     for (a = num_shops; a > 0; a--)
     {
-        if (shop_time[a - 1] > 0)
+        if (shops[a - 1].time > 0)
         {
             break;
         }
@@ -1110,7 +1110,7 @@ static int save_game_92(void)
     pack_iputw(a, sdat);
     for (b = 0; b < a; b++)
     {
-        pack_iputw(shop_time[b], sdat);
+        pack_iputw(shops[b].time, sdat);
 
         /* Find last valid (non-zero) shop item for this shop */
         for (c = SHOPITEMS; c > 0; c--)

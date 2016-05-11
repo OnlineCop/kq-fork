@@ -41,13 +41,12 @@ typedef struct
 
     /* Amount of time, in minutes, it takes for this shop to replenish this item */
     unsigned short items_replenish_time[SHOPITEMS];
+	unsigned short time; /* The last time (in minutes) that you visited this shop */
 } s_shop;
 
 
 extern s_shop shops[NUMSHOPS];      /* sgame.c intrface.c */
 extern unsigned short num_shops;    /* sgame.c intrface.c */
-extern unsigned short shop_time[NUMSHOPS];
-
 
 #endif  /* __SHOPMENU_H */
 

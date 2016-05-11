@@ -868,7 +868,7 @@ int shop(int shop_num)
     {
         if (shops[shop_no].items_replenish_time[a] > 0)
         {
-            if ((khr * 60) + kmin - shop_time[shop_no] > shops[shop_no].items_replenish_time[a])
+            if ((khr * 60) + kmin - shops[shop_no].time > shops[shop_no].items_replenish_time[a])
             {
                 shops[shop_no].items_current[a] = shops[shop_no].items_max[a];
             }
@@ -942,7 +942,7 @@ int shop(int shop_num)
             stop = 1;
         }
     }
-    shop_time[shop_no] = khr * 60 + kmin;
+    shops[shop_no].time = khr * 60 + kmin;
     return 0;
 }
 
