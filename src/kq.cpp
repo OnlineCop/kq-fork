@@ -1067,57 +1067,6 @@ size_t in_party(ePIDX pn)
 
 
 
-/*! \brief Initialise all players
- *
- * Set up the player characters and load data specific
- * to them. This happens at the start of every game.
- */
-void init_players(void)
-{
-    unsigned int i, party_index, frame_index;
-
-    for (party_index = 0; party_index < MAXCHRS; party_index++)
-    {
-        for (i = 0; i < 24; i++)
-        {
-            party[party_index].sts[i] = 0;
-        }
-
-        for (i = 0; i < 6; i++)
-        {
-            party[party_index].eqp[i] = 0;
-        }
-
-        for (i = 0; i < 60; i++)
-        {
-            party[party_index].spells[i] = 0;
-        }
-
-        learn_new_spells(party_index);
-    }
-
-    gp = 0;
-
-    Raster* eb = get_cached_image("uschrs.png");
-
-    if (!eb)
-    {
-        program_death(_("Could not load character graphics!"));
-    }
-
-    set_palette(pal);
-
-    for (party_index = 0; party_index < MAXCHRS; party_index++)
-    {
-        for (frame_index = 0; frame_index < MAXFRAMES; frame_index++)
-        {
-            blit(eb, frames[party_index][frame_index], frame_index * 16, party_index * 16, 0, 0, 16, 16);
-        }
-    }
-}
-
-
-
 /*! \brief Log events
  *
  * This is for logging events within the program.  Very
@@ -1220,10 +1169,22 @@ void kwait(int dtime)
  */
 void load_heroes(void)
 {
-    /* Hero stats */
-    if (!load_heroes_xml(players, kqres(DATA_DIR, "hero.xml"))) {
-      program_death(_("Cannot open hero data file"));
-    }
+	Raster* eb = get_cached_image("uschrs.png");
+
+	if (!eb)
+	{
+		program_death(_("Could not load character graphics!"));
+	}
+
+	set_palette(pal);
+
+	for (int party_index = 0; party_index < MAXCHRS; party_index++)
+	{
+		for (int frame_index = 0; frame_index < MAXFRAMES; frame_index++)
+		{
+			blit(eb, frames[party_index][frame_index], frame_index * 16, party_index * 16, 0, 0, 16, 16);
+		}
+	}
     /* portraits */
     Raster* faces = get_cached_image("kqfaces.png");
 
@@ -1833,9 +1794,6 @@ static void startup(void)
             entities->blitTo(eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
         }
     }
-
-    /* Initialise players */
-    init_players();
 
     LOCK_VARIABLE(timer);
     LOCK_VARIABLE(timer_count);

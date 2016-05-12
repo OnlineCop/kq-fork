@@ -568,46 +568,26 @@ static int save_player(const s_player * s, XMLElement* node) {
   store_spells(s, hero);
   return 0;
 }
-// TODO this function might go away.
-static int load_players(  s_heroinfo* heroes, XMLElement* root) {
-  for (auto hero : children(root, "hero")) {
-    const char* attr = hero->Attribute("id");
-    if (attr) {
-      auto it = id_lookup.find(attr);
-      if (it != std::end(id_lookup)) {
-	load_s_player(&heroes[it->second].plr, hero);
-      } 
-    }
-  }
-  return 1;
-}
+
 static int load_players(XMLElement* root) {
-  for (auto hero : children(root, "hero")) {
-    const char* attr = hero->Attribute("id");
-    if (attr) {
-      auto it = id_lookup.find(attr);
-      if (it != std::end(id_lookup)) {
-	load_s_player(&party[it->second], hero);
-      } 
-    }
-  }
-  return 1;
+	XMLElement* heroes_elem = root->FirstChildElement("heroes");
+	if (heroes_elem) {
+		for (auto hero : children(heroes_elem, "hero")) {
+			const char* attr = hero->Attribute("id");
+			if (attr) {
+				auto it = id_lookup.find(attr);
+				if (it != std::end(id_lookup)) {
+					load_s_player(&party[it->second], hero);
+				}
+			}
+		}
+	}
+	else {
+		program_death("Error loading heroes");
+	}
+	return 1;
 }
-/** Initial load of hero stats
- * \param players an array in which to place the loaded players
- * \param filename XML file to load from
- * \returns 0 if error otherwise 1
- */
-int load_heroes_xml(s_heroinfo* heroes, const char* filename) {
-  XMLDocument xml;
-  if (xml.LoadFile(filename) == tinyxml2::XML_NO_ERROR) {
-    XMLElement* root = xml.RootElement();
-    if (root) {
-      return load_players(heroes, root);
-    }
-  }
-  return 1;
-}
+
 
 
 /** Save all hero data into an XML node.
@@ -833,3 +813,15 @@ int load_game_xml(XMLElement* node) {
   return 1;
 }
 
+/** Load everything from a file */
+int load_game_xml(const char* filename) {
+	XMLDocument doc;
+	doc.LoadFile(filename);
+	if (!doc.Error()) {
+		return load_game_xml(doc.RootElement());
+	}
+	else {
+		program_death("Unable to load XML file");
+	}
+	return 0;
+}

@@ -1394,7 +1394,7 @@ static void show_sgstats(int saving)
  */
 int start_menu(int skip_splash)
 {
-    int stop = 0, ptr = 0, redraw = 1, a, b;
+    int stop = 0, ptr = 0, redraw = 1, a;
     unsigned int fade_color;
     Raster *staff, *dudes, *tdudes;
 	Raster* title = get_cached_image("title.png");
@@ -1558,28 +1558,8 @@ int start_menu(int skip_splash)
     if (stop == 2)
     {
         /* New game init */
-        for (a = 0; a < MAXCHRS; a++)
-        {
-            memcpy(&party[a], &players[a].plr, sizeof(s_player));
-        }
-        init_players();
-        memset(progress, 0, SIZE_PROGRESS);
-        memset(treasure, 0, SIZE_TREASURE);
-        numchrs = 0;
-        for (a = 0; a < NUMSHOPS; a++)
-        {
-            for (b = 0; b < SHOPITEMS; b++)
-            {
-                shops[a].items_current[b] = shops[a].items_max[b];
-            }
-        }
-        for (b = 0; b < 2; b++)
-        {
-            for (a = 0; a < MAX_INV; a++)
-            {
-                g_inv[a][b] = 0;
-            }
-        }
+		extern int load_game_xml(const char* filename);
+		load_game_xml(kqres(eDirectories::DATA_DIR, "starting.xml"));
     }
     return stop - 1;
 }

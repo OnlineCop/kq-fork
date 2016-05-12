@@ -74,7 +74,6 @@ void activate(void);            /*  only in entity.c  */
 void unpress(void);             /*  everywhere ;)  */
 void wait_enter(void);          /*  everywhere ;)  */
 void klog(const char *);        /*  draw.c, intrface.c, magic.c, setup.c  */
-void init_players(void);        /*  sgame.c  */
 void kwait(int);                /*  intrface.c  */
 NORETURN void program_death(const char *);     /*  everywhere ;)  */
 size_t in_party(ePIDX);     /*  combat.c, intrface.c  */
