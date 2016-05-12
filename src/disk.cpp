@@ -119,6 +119,14 @@ static std::string make_list(_InputIterator begin, _InputIterator end) {
   }
   return ans;
 }
+/* Insert a list of things into the content of an element */
+template <typename _InputIterator>
+static XMLElement* value_list(XMLElement* elem, _InputIterator begin, _InputIterator end) {
+	tinyxml2::XMLText* content = elem->GetDocument()->NewText(make_list(begin, end).c_str());
+	elem->DeleteChildren();
+	elem->InsertFirstChild(content);
+	return elem;
+}
 /** Trim a range.
  * Shorten the given range to exclude any zero elements at the end.
  * \returns a new 'end' iterator
@@ -188,118 +196,174 @@ int save_s_entity(s_entity *s, PACKFILE *f)
     return 0;
 }
 
+static int load_resistances(s_player* s, XMLElement* node) {
+	std::fill(std::begin(s->res), std::end(s->res), 0);
+	XMLElement* resistances = node->FirstChildElement("resistances");
+	if (resistances) {
+		auto values = parse_list(resistances->FirstChild()->Value());
+		if (!values.empty()) {
+			// Gave some, has to be the right number of elements
+			if (values.size() == NUM_RES) {
+				copy(values.begin(), values.end(), s->res);
+			}
+			else {
+				TRACE("Wrong number of resistances, expected %d and got %d", NUM_RES, values.size());
+				program_death("Error loading XML");
+			}
+		}
+	}
+	return 0;
+}
+static int load_spelltypes(s_player* s, XMLElement* node) {
+	std::fill(std::begin(s->sts), std::end(s->sts), 0);
+	XMLElement* spelltypes = node->FirstChildElement("spelltypes");
+	if (spelltypes) {
+		auto values = parse_list(spelltypes->FirstChild()->Value());
+		if (!values.empty()) {
+			if (values.size() == NUM_SPELLTYPES) {
+				copy(values.begin(), values.end(), s->sts);
+			}
+			else {
+				TRACE("Wrong number of spelltypes, expected %d and got %d", NUM_SPELLTYPES, values.size());
+				program_death("Error loading XML");
+			}
+		}
+	}
+	return 0;
+}
+static int load_spells(s_player* s, XMLElement* node) {
+	std::fill(std::begin(s->spells), std::end(s->spells), 0);
+	XMLElement* spells = node->FirstChildElement("spells");
+	if (spells) {
+		auto values = parse_list(spells->FirstChild()->Value());
+		if (!values.empty()) {
+			if (values.size() == NUM_SPELLS) {
+				copy(values.begin(), values.end(), s->spells);
+			}
+			else {
+				TRACE("Wrong number of spells, expected %d and got %d", NUM_SPELLS, values.size());
+				program_death("Error loading XML");
+			}
+		}
+	}
+	return 0;
+}
+static int load_equipment(s_player* s, XMLElement* node) {
+	std::fill(std::begin(s->eqp), std::end(s->eqp), 0);
+	XMLElement* eqp = node->FirstChildElement("equipment");
+	if (eqp) {
+		auto values = parse_list(eqp->FirstChild()->Value());
+		if (!values.empty()) {
+			if (values.size() == NUM_EQUIPMENT) {
+				copy(values.begin(), values.end(), s->sts);
+			}
+			else {
+				TRACE("Wrong number of equipment, expected %d and got %d", NUM_EQUIPMENT, values.size());
+				program_death("Error loading XML");
+			}
+		}
+	}
+	return 0;
+}
+static int load_attributes(s_player* s, XMLElement* node) {
+	XMLElement* attributes = node->FirstChildElement("attributes");
+	if (attributes) {
+		for (auto property : children(attributes, "property")) {
+			if (property->Attribute("name", "str")) {
+				s->stats[A_STR] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "agi")) {
+				s->stats[A_AGI] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "vit")) {
+				s->stats[A_VIT] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "int")) {
+				s->stats[A_INT] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "sag")) {
+				s->stats[A_SAG] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "spd")) {
+				s->stats[A_SPD] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "aur")) {
+				s->stats[A_AUR] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "spi")) {
+				s->stats[A_SPI] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "att")) {
+				s->stats[A_ATT] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "hit")) {
+				s->stats[A_HIT] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "def")) {
+				s->stats[A_DEF] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "evd")) {
+				s->stats[A_EVD] = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "mag")) {
+				s->stats[A_MAG] = property->IntAttribute("value");
+			}
+		}
+	}
+	return 0;
+}
+static int load_core_properties(s_player* s, XMLElement* node) {
+	XMLElement* properties = node->FirstChildElement("properties");
+	if (properties) {
+		for (auto property : children(properties, "property")) {
+			if (property->Attribute("name", "name")) {
+				const char* name = property->Attribute("value");
+				strncpy(s->name, name, sizeof(s->name) - 1);
+			}
+			else if (property->Attribute("name", "xp")) {
+				s->xp = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "next")) {
+				s->next = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "lvl")) {
+				s->lvl = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "mrp")) {
+				s->mrp = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "hp")) {
+				s->hp = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "mhp")) {
+				s->mhp = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "mp")) {
+				s->mp = property->IntAttribute("value");
+			}
+			else if (property->Attribute("name", "mmp")) {
+				s->mmp = property->IntAttribute("value");
+			}
+		}
+	}
+	else {
+		program_death("Core properties missing from XML");
+	}
+	return 0;
+}
 /** Get player (hero) data from an XML node.
  * @param s the structure to write to
  * @param node a node within an XML document.
  * @returns 0 if OK otherwise -1
  */
 int load_s_player(s_player* s, XMLElement* node) {
-  XMLElement* properties = node->FirstChildElement("properties");
-  if (properties) {
-    for (auto property : children(properties, "property")) {
-      if (property->Attribute("name", "name")) {
-	const char* name = property->Attribute("value");
-	strncpy(s->name, name, sizeof(s->name) - 1);
-      }
-      else if (property->Attribute("name", "xp")) {
-	s->xp = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "next")) {
-	s->next = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "lvl")) {
-	s->lvl = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "mrp")) {
-	s->mrp = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "hp")) {
-	s->hp = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "mhp")) {
-	s->mhp = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "mp")) {
-	s->mp = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "mmp")) {
-	s->mmp = property->IntAttribute("value");
-      }
-    }
-    XMLElement* attributes = node->FirstChildElement("attributes");
-    if (attributes) {
-      for (auto property : children(attributes, "property")) {
-      if (property->Attribute("name", "str")) {
-	s->stats[A_STR] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "agi")) {
-	s->stats[A_AGI] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "vit")) {
-	s->stats[A_VIT] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "int")) {
-	s->stats[A_INT] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "sag")) {
-	s->stats[A_SAG] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "spd")) {
-	s->stats[A_SPD] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "aur")) {
-	s->stats[A_AUR] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "spi")) {
-	s->stats[A_SPI] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "att")) {
-	s->stats[A_ATT] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "hit")) {
-	s->stats[A_HIT] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "def")) {
-	s->stats[A_DEF] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "evd")) {
-	s->stats[A_EVD] = property->IntAttribute("value");
-      }
-      else if (property->Attribute("name", "mag")) {
-	s->stats[A_MAG] = property->IntAttribute("value");
-      }
-      }
-    }
-  }
-  // resistance
-  std::fill(std::begin(s->res), std::end(s->res), 0);
-  XMLElement* resistances = node->FirstChildElement("resistances");
-  if (resistances) {
-    auto values = parse_list(resistances->Attribute("values"));
-    if (!values.empty()) {
-      // Gave some, has to be the right number of elements
-      if (values.size() == NUM_RES) {
-	copy(values.begin(), values.end(), s->res);
-      } else {
-	TRACE("Wrong number of resistances, expected %d and got %d", NUM_RES, values.size());
+	load_core_properties(s, node);
+	load_attributes(s, node);
+	load_resistances(s, node);
+	load_spelltypes(s, node);
+	load_spells(s, node);
+	load_equipment(s, node);
 	return 0;
-      }
-  }
-  }
-    XMLElement* spelltypes = node->FirstChildElement("spelltypes");
-    if (spelltypes) {
-    auto values = parse_list(spelltypes->Attribute("values"));
-    if (!values.empty()) {
-      if (values.size() == NUM_SPELLTYPES) {
-	copy(values.begin(), values.end(), s->sts);
-      } else {
-	TRACE("Wrong number of spelltypes, expected %d and got %d", NUM_SPELLTYPES, values.size());
-      }
-    }
-    }
-  // TODO equipment
-  // TODO spells
-  return 0;
 }
 
 int load_s_player(s_player *s, PACKFILE *f)
@@ -356,13 +420,17 @@ static XMLElement* addprop(XMLElement* parent, const char* name, T value) {
   parent->InsertEndChild(property);
   return property;
 }
+
+static XMLElement* addprop(XMLElement* parent, const char* name, const std::string& value) {
+	return addprop(parent, name, value.c_str());
+}
 // Store spell info or nothing if all spells are 'zero'
 static int store_spells(const s_player*s, XMLElement* node) {
   auto startp = std::begin(s->spells);
   auto endp = std::end(s->spells);
   if (!range_is_default(startp, endp)) {
     XMLElement* elem = node->GetDocument()->NewElement("spells");
-    elem->SetAttribute("values", make_list(startp, endp).c_str());
+	value_list(elem, startp, endp);
     node->InsertEndChild(elem);
   }
   return 0;
@@ -372,7 +440,7 @@ static int store_equipment(const s_player*s, XMLElement* node) {
   auto endp = std::end(s->eqp);
   if (!range_is_default(startp, endp)) {
     XMLElement* elem = node->GetDocument()->NewElement("equipment");
-    elem->SetAttribute("values", make_list(startp, endp).c_str());
+	value_list(elem, startp, endp);
     node->InsertEndChild(elem);
   }
   return 0;
@@ -382,8 +450,8 @@ static int store_spelltypes(const s_player*s, XMLElement* node) {
   auto endp = std::end(s->sts);
   if (!range_is_default(startp, endp)) {
     XMLElement* elem = node->GetDocument()->NewElement("spelltypes");
-    elem->SetAttribute("values", make_list(startp, endp).c_str());
-    node->InsertEndChild(elem);
+	value_list(elem, startp, endp);
+	node->InsertEndChild(elem);
   }
   return 0;
 }
@@ -392,8 +460,8 @@ static int store_resistances(const s_player*s, XMLElement* node) {
   auto endp = std::end(s->res);
   if (!range_is_default(startp, endp)) {
     XMLElement* elem = node->GetDocument()->NewElement("resistances");
-    elem->SetAttribute("values", make_list(startp, endp).c_str());
-    node->InsertEndChild(elem);
+	value_list(elem, startp, endp);
+	node->InsertEndChild(elem);
   }
   return 0;
 }
@@ -402,8 +470,8 @@ static int store_stats(const s_player*s, XMLElement* node) {
   auto endp = std::end(s->stats);
   if (!range_is_default(startp, endp)) {
     XMLElement* elem = node->GetDocument()->NewElement("attributes");
-    elem->SetAttribute("values", make_list(startp, endp).c_str());
-    node->InsertEndChild(elem);
+	value_list(elem, startp, endp);
+	node->InsertEndChild(elem);
   }
   return 0;
 }
@@ -562,9 +630,9 @@ static int save_treasures(XMLElement* node) {
   auto startp = std::begin(treasure);
   auto endp = std::end(treasure);
   if (!range_is_default(startp, endp)) {
-    XMLElement* treasures = node->GetDocument()->NewElement("treasures");
-    treasures->SetAttribute("values", make_list(startp, endp).c_str());
-    node->InsertEndChild(treasures);
+    XMLElement* elem = node->GetDocument()->NewElement("treasures");
+	value_list(elem, startp, endp);
+	node->InsertEndChild(elem);
   }
   return 1;
 }
@@ -574,6 +642,7 @@ static int load_treasures(XMLElement* node) {
 	std::fill(startp, endp, 0);
 	XMLElement* treasure = node->FirstChildElement("treasure");
 	if (treasure) {
+		// TODO this isn't right any more
 		auto vs = parse_list(treasure->Attribute("values"));
 		auto it = startp;
 		for (auto& v : vs) {
@@ -590,33 +659,45 @@ static int save_progress(XMLElement* node) {
   auto startp = std::begin(progress);
   auto endp = std::end(progress);
   if (!range_is_default(startp, endp)) {
-    XMLElement* progresses = node->GetDocument()->NewElement("progress");
-    progresses->SetAttribute("values", make_list(startp, endp).c_str());
-    node->InsertEndChild(progresses);
+    XMLElement* elem = node->GetDocument()->NewElement("progress");
+	value_list(elem, startp, endp);
+	node->InsertEndChild(elem);
   }
   return 1;
 }
-int save_spell(XMLElement* node) {
+static int  load_progress(XMLElement* node) {
+	// TODO
+	return 0;
+}
+static int save_save_spells(XMLElement* node) {
   auto startp = std::begin(save_spells);
   auto endp = std::end(save_spells);
   if (!range_is_default(startp, endp)) {
-      XMLElement* spells = node->GetDocument()->NewElement("spells");
-      spells->SetAttribute("values", make_list(startp, endp).c_str());
-      node->InsertEndChild(spells);
+      XMLElement* elem = node->GetDocument()->NewElement("save-spells");
+	  value_list(elem, startp, endp);
+	  node->InsertEndChild(elem);
   }
   return 1;
 }
-int save_specials(XMLElement* node) {
+static int  load_save_spells(XMLElement* node) {
+	// TODO
+	return 0;
+}
+static int save_specials(XMLElement* node) {
   auto startp = std::begin(player_special_items);
   auto endp = std::end(player_special_items);
   if (!range_is_default(startp, endp)) {
-    XMLElement* specials = node->GetDocument()->NewElement("special");
-    specials->SetAttribute("values", make_list(startp, endp).c_str());
-    node->InsertEndChild(specials);
+    XMLElement* elem = node->GetDocument()->NewElement("special");
+	value_list(elem, startp, endp);
+	node->InsertEndChild(elem);
   }
   return 1;
 }
-int save_global_inventory(XMLElement* node) {
+static int  load_specials(XMLElement* node) {
+	// TODO
+	return 0;
+}
+static int save_global_inventory(XMLElement* node) {
 	std::vector<int> items;
 	std::vector<int> quantities;
 	for (auto& iq : g_inv) {
@@ -626,14 +707,23 @@ int save_global_inventory(XMLElement* node) {
 	bool items_default = range_is_default(items.begin(), items.end());
 	bool quantities_default = range_is_default(quantities.begin(), quantities.end());
 	if (!items_default || !quantities_default) {
-		XMLElement* inventory = node->GetDocument()->NewElement("inventory");
-		inventory->SetAttribute("items", make_list(items.begin(), items.end()).c_str());
-		inventory->SetAttribute("quantities", make_list(quantities.begin(), quantities.end()).c_str());
+		XMLDocument* doc = node->GetDocument();
+		XMLElement* inventory = doc->NewElement("inventory");
+		XMLElement* items_elem = doc->NewElement("items");
+		XMLElement* quantities_elem = doc->NewElement("quantities");
+		value_list(items_elem, items.begin(), items.end());
+		value_list(quantities_elem, quantities.begin(), quantities.end());
+		inventory->InsertFirstChild(items_elem);
+		inventory->InsertEndChild(quantities_elem);
 		node->InsertEndChild(inventory);
 	}
 	return 1;
 }
-int save_shop_info(XMLElement* node) {
+static int  load_global_inventory(XMLElement* node) {
+	// TODO
+	return 0;
+}
+static int save_shop_info(XMLElement* node) {
 	bool visited = false;
 	// Check if any shops have been visited
 	for (int i = 0; i < num_shops; ++i) {
@@ -649,7 +739,7 @@ int save_shop_info(XMLElement* node) {
 				XMLElement* shop_elem = doc->NewElement("shop");
 				shop_elem->SetAttribute("id", i);
 				shop_elem->SetAttribute("time", shop.time);
-				shop_elem->SetAttribute("quantities", make_list(std::begin(shop.items_current), std::end(shop.items_current)).c_str());
+				value_list(shop_elem, std::begin(shop.items_current), std::end(shop.items_current));
 				shops_elem->InsertEndChild(shop_elem);
 			}
 		}
@@ -657,16 +747,46 @@ int save_shop_info(XMLElement* node) {
 	}
 	return 1;
 }
-int save_general_props(XMLElement* node) {
+static int  load_shop_info(XMLElement* node) {
+	// TODO
+	return 0;
+}
+static int save_general_props(XMLElement* node) {
   XMLElement* properties = node->GetDocument()->NewElement("properties");
   addprop(properties, "gold", gp);
   addprop(properties, "time", khr * 60 + kmin);
-  addprop(properties, "mapname", curmap.c_str());
+  addprop(properties, "mapname", curmap);
   addprop(properties, "mapx", g_ent[0].tilex);
   addprop(properties, "mapy", g_ent[0].tiley);
-  addprop(properties, "party", make_list(std::begin(pidx), std::end(pidx)).c_str());
+  addprop(properties, "party", make_list(std::begin(pidx), std::end(pidx)));
+  // Save-Game Stats - id, level, hp (as a % of mhp), mp% for each member of the party
+  vector<int> sgs;
+  for (auto id : pidx) {
+	  int hp_pct = 0;
+	  int mp_pct = 0;
+	  int lvl = 0;
+	  if (id >= 0 && id < MAXCHRS) {
+		  auto& p = party[id];
+		  lvl = p.lvl;
+		  if (p.mhp > 0) {
+			  hp_pct = p.hp * 100 / p.mhp;
+		  }
+		  if (p.mmp > 0) {
+			  mp_pct = p.mp * 100 / p.mmp;
+		  }
+	  }
+	  sgs.push_back(id);
+	  sgs.push_back(lvl);
+	  sgs.push_back(hp_pct);
+	  sgs.push_back(mp_pct);
+  }
+  addprop(properties, "sgstats", make_list(sgs.begin(), sgs.end()));
   node->InsertEndChild(properties);
   return 1;
+}
+static int load_general_props(XMLElement* node) {
+	// TODO
+	return 0;
 }
 /** Save everything into a node
  */
@@ -676,7 +796,7 @@ int save_game_xml(XMLElement* node) {
   save_players(node);
   save_treasures(node);
   save_progress(node);
-  save_spell(node);
+  save_save_spells(node);
   save_specials(node);
   save_global_inventory(node);
   save_shop_info(node);
@@ -692,31 +812,13 @@ int save_game_xml() {
   doc.SaveFile("test-save.xml");
   return k;
 }
-int load_general_props(XMLElement* node) {
-  // TODO
-  return 0;
-}
 
-int  load_progress(XMLElement* node){
-  // TODO
-  return 0;
-}
-int  load_spells(XMLElement* node){
-  // TODO
-  return 0;
-}
-int  load_specials(XMLElement* node){
-  // TODO
-  return 0;
-}
-int  load_global_inventory(XMLElement* node){
-  // TODO
-  return 0;
-}
-int  load_shop_info(XMLElement* node){
-  // TODO
-  return 0;
-}
+
+
+
+
+
+
 /** Load everything from a node
  */
 int load_game_xml(XMLElement* node) {
@@ -724,7 +826,7 @@ int load_game_xml(XMLElement* node) {
   load_players(node);
   load_treasures(node);
   load_progress(node);
-  load_spells(node);
+  load_save_spells(node);
   load_specials(node);
   load_global_inventory(node);
   load_shop_info(node);
