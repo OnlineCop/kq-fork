@@ -106,10 +106,10 @@ static void calc_possible_equip(int c, int slot)
     for (k = 0; k < MAX_INV; k++)
     {
         // Check if we have any items at all
-        if (g_inv[k][GLOBAL_INVENTORY_ITEM] > 0 && g_inv[k][GLOBAL_INVENTORY_QUANTITY] > 0)
+        if (g_inv[k].item > 0 && g_inv[k].quantity > 0)
         {
-            if (items[g_inv[k][GLOBAL_INVENTORY_ITEM]].type == slot
-             && items[g_inv[k][GLOBAL_INVENTORY_ITEM]].eq[pidx[c]] != 0)
+            if (items[g_inv[k].item].type == slot
+             && items[g_inv[k].item].eq[pidx[c]] != 0)
             {
                 t_inv[tot] = k;
                 tot++;
@@ -143,7 +143,7 @@ static void choose_equipment(int c, int slot)
             play_effect(SND_BAD, 128);
             return;
         }
-        draw_equippreview(c, slot, g_inv[t_inv[pptr + yptr]][0]);
+        draw_equippreview(c, slot, g_inv[t_inv[pptr + yptr]].item);
         draw_sprite(double_buffer, menuptr, 12 + xofs, yptr * 8 + 100 + yofs);
         blit2screen(xofs, yofs);
         if (tot < NUM_ITEMS_PER_PAGE)
@@ -351,9 +351,9 @@ static void draw_equippable(unsigned int c, unsigned int slot, unsigned int pptr
     for (k = 0; k < sm; k++)
     {
         // j == item index #
-        j = g_inv[t_inv[pptr + k]][0];
+        j = g_inv[t_inv[pptr + k]].item;
         // z == number of items
-        z = g_inv[t_inv[pptr + k]][1];
+        z = g_inv[t_inv[pptr + k]].quantity;
         draw_icon(double_buffer, items[j].icon, 28 + xofs, k * 8 + 100 + yofs);
         print_font(double_buffer, 36 + xofs, k * 8 + 100 + yofs, items[j].name,
                    FNORMAL);
@@ -484,7 +484,7 @@ static int equip(unsigned int c, unsigned int selected_item, unsigned int forced
 
     if (forced == 0)
     {
-        d = g_inv[selected_item][GLOBAL_INVENTORY_ITEM];
+        d = g_inv[selected_item].item;
     }
     else
     {
@@ -523,17 +523,17 @@ static int equip(unsigned int c, unsigned int selected_item, unsigned int forced
         for (i = 0; i < MAX_INV; i++)
         {
             // Check if we have any items at all
-            if (g_inv[selected_item][GLOBAL_INVENTORY_ITEM] > 0 && g_inv[selected_item][GLOBAL_INVENTORY_QUANTITY] > 0)
+            if (g_inv[selected_item].item > 0 && g_inv[selected_item].quantity > 0)
             {
                 n++;
             }
         }
         // this first argument checks to see if there's one of given item
-        if (g_inv[selected_item][GLOBAL_INVENTORY_QUANTITY] == 1 && n == MAX_INV && forced == 0)
+        if (g_inv[selected_item].quantity == 1 && n == MAX_INV && forced == 0)
         {
             party[c].eqp[a] = d;
-            g_inv[selected_item][GLOBAL_INVENTORY_ITEM] = b;
-            g_inv[selected_item][GLOBAL_INVENTORY_QUANTITY] = 1;
+            g_inv[selected_item].item = b;
+            g_inv[selected_item].quantity = 1;
             return 1;
         }
         else
@@ -753,7 +753,7 @@ static void optimize_equip(int c)
     calc_possible_equip(c, 0);
     for (a = 0; a < tot; a++)
     {
-        b = g_inv[t_inv[a]][0];
+        b = g_inv[t_inv[a]].item;
         if (items[b].stats[A_ATT] > maxx)
         {
             maxx = items[b].stats[A_ATT];
@@ -774,7 +774,7 @@ static void optimize_equip(int c)
         calc_possible_equip(c, z);
         for (a = 0; a < tot; a++)
         {
-            b = g_inv[t_inv[a]][0];
+            b = g_inv[t_inv[a]].item;
             if (items[b].stats[A_DEF] + items[b].stats[A_MAG] > maxx)
             {
                 maxx = items[b].stats[A_DEF] + items[b].stats[A_MAG];
@@ -794,7 +794,7 @@ static void optimize_equip(int c)
     calc_possible_equip(c, 5);
     for (a = 0; a < tot; a++)
     {
-        b = g_inv[t_inv[a]][0];
+        b = g_inv[t_inv[a]].item;
         for (z = 0; z < NUM_STATS; z++)
         {
             v += items[b].stats[z];

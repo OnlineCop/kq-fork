@@ -130,7 +130,7 @@ extern unsigned short lup[MAXCHRS][20];
 extern COLOR_MAP cmap;
 extern unsigned char can_run, display_desc;
 extern unsigned char draw_background, draw_middle, draw_foreground, draw_shadow;
-extern unsigned short g_inv[MAX_INV][NUM_GLOBAL_INVENTORY]; // [0] is the inventory item ID, [1] is the quantity
+extern s_inventory g_inv[MAX_INV]; 
 extern s_special_item special_items[MAX_SPECIAL_ITEMS];
 extern short player_special_items[MAX_SPECIAL_ITEMS];
 extern int view_x1, view_y1, view_x2, view_y2, view_on, in_combat;

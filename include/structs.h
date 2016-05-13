@@ -196,6 +196,13 @@ typedef struct
     short icon;
 } s_special_item;
 
+/*! \brief Inventory 
+* An item ID and the quantity of that thing in the inventory.
+*/
+typedef struct {
+	unsigned short item;
+	unsigned short quantity;
+} s_inventory;
 
 #endif  /* __STRUCTS_H */
 

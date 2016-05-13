@@ -160,7 +160,7 @@ void camp_item_menu(void)
             }
             else
             {
-                if (g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM] > 0)
+                if (g_inv[pptr * 16 + ptr].item > 0)
                 {
                     // Player's cursor was over the USE menu
                     if (item_act == 0)
@@ -199,7 +199,7 @@ void camp_item_menu(void)
                             if (stop2 == 2)
                             {
                                 // Drop ALL of the selected items
-                                remove_item(pptr * 16 + ptr, g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_QUANTITY]);
+                                remove_item(pptr * 16 + ptr, g_inv[pptr * 16 + ptr].quantity);
                             }
                         }
                     }
@@ -231,7 +231,7 @@ void camp_item_menu(void)
  */
 static void camp_item_targetting(int pp)
 {
-    int t1 = g_inv[pp][GLOBAL_INVENTORY_ITEM];
+    int t1 = g_inv[pp].item;
     if (items[t1].use == USE_NOT || items[t1].use > USE_CAMP_INF)
     {
         return;
@@ -297,14 +297,14 @@ int check_inventory(size_t inventory_index, int item_quantity)
     for (n = MAX_INV - 1; n >= 0; n--)
     {
         // There is nothing in this item slot in our inventory
-        if (g_inv[n][GLOBAL_INVENTORY_ITEM] == 0)
+        if (g_inv[n].item == 0)
         {
             v = n;
         }
         /* Check if this item index == inventory_index, and if it is,
          * check if there is enough room in that slot to fit all of item_quantity.
          */
-        if (g_inv[n][GLOBAL_INVENTORY_ITEM] == inventory_index && g_inv[n][GLOBAL_INVENTORY_QUANTITY] <= MAX_ITEMS - item_quantity)
+        if (g_inv[n].item == inventory_index && g_inv[n].quantity <= MAX_ITEMS - item_quantity)
         {
             d = n;
         }
@@ -318,15 +318,15 @@ int check_inventory(size_t inventory_index, int item_quantity)
     if (d < MAX_INV)
     {
         // This is redundant, but it is a good error-check
-        g_inv[d][GLOBAL_INVENTORY_ITEM] = (unsigned short)inventory_index;
+        g_inv[d].item = (unsigned short)inventory_index;
         // Add item_quantity to this item's quantity
-        g_inv[d][GLOBAL_INVENTORY_QUANTITY] += item_quantity;
+        g_inv[d].quantity += item_quantity;
         return 1;
     }
     // Add item to new slot
-    g_inv[v][GLOBAL_INVENTORY_ITEM] = (unsigned short)inventory_index;
+    g_inv[v].item = (unsigned short)inventory_index;
     // Fill in item's quantity too
-    g_inv[v][GLOBAL_INVENTORY_QUANTITY] += item_quantity;
+    g_inv[v].quantity += item_quantity;
     return 2;
 }
 
@@ -372,8 +372,8 @@ static void draw_itemmenu(int ptr, int pg, int sl)
     for (k = 0; k < 16; k++)
     {
         // item_index == item index #
-        item_index = g_inv[pg * 16 + k][GLOBAL_INVENTORY_ITEM];
-        item_quantity = g_inv[pg * 16 + k][GLOBAL_INVENTORY_QUANTITY];
+        item_index = g_inv[pg * 16 + k].item;
+        item_quantity = g_inv[pg * 16 + k].quantity;
         draw_icon(double_buffer, items[item_index].icon, 88 + xofs, k * 8 + 68 + yofs);
         if (items[item_index].use >= USE_ANY_ONCE && items[item_index].use <= USE_CAMP_INF)
         {
@@ -397,8 +397,8 @@ static void draw_itemmenu(int ptr, int pg, int sl)
     menubox(double_buffer, 72 + xofs, 204 + yofs, 20, 1, BLUE);
     if (sl == 0)
     {
-        item_name_length = strlen(items[g_inv[pg * 16 + ptr][GLOBAL_INVENTORY_ITEM]].desc) * 4;
-        print_font(double_buffer, 160 - item_name_length + xofs, 212 + yofs, items[g_inv[pg * 16 + ptr][GLOBAL_INVENTORY_ITEM]].desc, FNORMAL);
+        item_name_length = strlen(items[g_inv[pg * 16 + ptr].item].desc) * 4;
+        print_font(double_buffer, 160 - item_name_length + xofs, 212 + yofs, items[g_inv[pg * 16 + ptr].item].desc, FNORMAL);
         draw_sprite(double_buffer, menuptr, 72 + xofs, ptr * 8 + 68 + yofs);
     }
     draw_sprite(double_buffer, pgb[pg], 238 + xofs, 194 + yofs);
@@ -778,9 +778,9 @@ static void join_items(void)
         /* foreach instance of item, put the quantity into inventory_index temp
          * inventory then remove that item from the real inventory
          */
-        t_inv[g_inv[inventory_index][GLOBAL_INVENTORY_ITEM]] += g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY];
-        g_inv[inventory_index][GLOBAL_INVENTORY_ITEM] = 0;
-        g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY] = 0;
+        t_inv[g_inv[inventory_index].item] += g_inv[inventory_index].quantity;
+        g_inv[inventory_index].item = 0;
+        g_inv[inventory_index].quantity = 0;
     }
     for (inventory_index = 1; inventory_index < NUM_ITEMS; inventory_index++)
     {
@@ -815,13 +815,13 @@ static void join_items(void)
 void remove_item(size_t inventory_index, int qi)
 {
     // Remove a certain quantity (qi) of this item
-    g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY] -= qi;
+    g_inv[inventory_index].quantity -= qi;
 
     // Check to see if that was the last one in the slot
-    if (g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY] < 1)
+    if (g_inv[inventory_index].quantity < 1)
     {
-        g_inv[inventory_index][GLOBAL_INVENTORY_ITEM] = 0;
-        g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY] = 0;
+        g_inv[inventory_index].item = 0;
+        g_inv[inventory_index].quantity = 0;
         // We don't have to sort if it's the last slot
         if (inventory_index == MAX_INV - 1)
         {
@@ -845,23 +845,23 @@ static void sort_inventory(void)
     for (old_inventory_index = 0; old_inventory_index < MAX_INV - 1; old_inventory_index++)
     {
         // This slot is empty
-        if (g_inv[old_inventory_index][GLOBAL_INVENTORY_ITEM] == 0)
+        if (g_inv[old_inventory_index].item == 0)
         {
             new_inventory_index = old_inventory_index + 1;
             stop = 0;
             while (!stop)
             {
                 // Check if there is something in the next slot
-                if (g_inv[new_inventory_index][GLOBAL_INVENTORY_ITEM] > 0)
+                if (g_inv[new_inventory_index].item > 0)
                 {
                     // Move the item in the next slot into this one
-                    g_inv[old_inventory_index][GLOBAL_INVENTORY_ITEM] = g_inv[new_inventory_index][GLOBAL_INVENTORY_ITEM];
+                    g_inv[old_inventory_index].item = g_inv[new_inventory_index].item;
                     // Move its quantity as well
-                    g_inv[old_inventory_index][GLOBAL_INVENTORY_QUANTITY] = g_inv[new_inventory_index][GLOBAL_INVENTORY_QUANTITY];
+                    g_inv[old_inventory_index].quantity = g_inv[new_inventory_index].quantity;
                     // Clear the next slot of items now
-                    g_inv[new_inventory_index][GLOBAL_INVENTORY_ITEM] = 0;
+                    g_inv[new_inventory_index].item = 0;
                     // Clear if quantity as well
-                    g_inv[new_inventory_index][GLOBAL_INVENTORY_QUANTITY] = 0;
+                    g_inv[new_inventory_index].quantity = 0;
                     // Break out of the "check the slot ahead" loop
                     stop = 1;
                 }
@@ -897,11 +897,11 @@ static void sort_items(void)
     for (old_inventory_index = 0; old_inventory_index < MAX_INV; old_inventory_index++)
     {
         // Temporary item index #
-        t_inv[old_inventory_index][0] = g_inv[old_inventory_index][GLOBAL_INVENTORY_ITEM];
+        t_inv[old_inventory_index][0] = g_inv[old_inventory_index].item;
         // Temporary item quantity
-        t_inv[old_inventory_index][1] = g_inv[old_inventory_index][GLOBAL_INVENTORY_QUANTITY];
-        g_inv[old_inventory_index][GLOBAL_INVENTORY_ITEM] = 0;
-        g_inv[old_inventory_index][GLOBAL_INVENTORY_QUANTITY] = 0;
+        t_inv[old_inventory_index][1] = g_inv[old_inventory_index].quantity;
+        g_inv[old_inventory_index].item = 0;
+        g_inv[old_inventory_index].quantity = 0;
     }
     for (old_inventory_index = 0; old_inventory_index < 7; old_inventory_index++)
     {
@@ -911,9 +911,9 @@ static void sort_items(void)
             if (inventory > 0 && items[inventory].type == tt[old_inventory_index])
             {
                 // Re-assign group's inventory items
-                g_inv[inventory_index][GLOBAL_INVENTORY_ITEM] = inventory;
+                g_inv[inventory_index].item = inventory;
                 // ...and item quantities
-                g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY] = t_inv[new_inventory_index][1];
+                g_inv[inventory_index].quantity = t_inv[new_inventory_index][1];
                 t_inv[new_inventory_index][0] = 0;
                 t_inv[new_inventory_index][1] = 0;
                 inventory_index++;
@@ -939,7 +939,7 @@ int useup_item(int item_id)
 
     for (inventory_index = 0; inventory_index < MAX_INV; ++inventory_index)
     {
-        if (g_inv[inventory_index][GLOBAL_INVENTORY_ITEM] == item_id)
+        if (g_inv[inventory_index].item == item_id)
         {
             remove_item(inventory_index, 1);
             return 1;

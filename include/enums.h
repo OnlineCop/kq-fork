@@ -69,14 +69,6 @@ enum eShadow
 };
 
 
-enum eGlobalInventory
-{
-    GLOBAL_INVENTORY_ITEM = 0,
-    GLOBAL_INVENTORY_QUANTITY = 1,
-
-    NUM_GLOBAL_INVENTORY // always last
-};
-
 #define MAX_TILES        1024
 #define MAXE               41
 #define PSIZE               2U

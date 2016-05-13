@@ -328,8 +328,8 @@ int load_game_91(PACKFILE *sdat)
     }
     for (a = 0; a < MAX_INV; a++)
     {
-        g_inv[a][GLOBAL_INVENTORY_ITEM] = pack_igetw(sdat);
-        g_inv[a][GLOBAL_INVENTORY_QUANTITY] = pack_igetw(sdat);
+        g_inv[a].item = pack_igetw(sdat);
+        g_inv[a].quantity = pack_igetw(sdat);
     }
     /* Bunch of 0s for alignment */
     pack_igetl(sdat);
@@ -765,16 +765,16 @@ static int load_game_92(PACKFILE *sdat)
     }
     for (a = 0; a < b; a++)
     {
-        g_inv[a][GLOBAL_INVENTORY_ITEM] = pack_igetw(sdat);
-        g_inv[a][GLOBAL_INVENTORY_QUANTITY] = pack_igetw(sdat);
+        g_inv[a].item = pack_igetw(sdat);
+        g_inv[a].quantity = pack_igetw(sdat);
     }
 
     /* Zero out all unused inventory values */
     b = MAX_INV;
     for (; a < b; a++)
     {
-        g_inv[a][GLOBAL_INVENTORY_ITEM] = 0;
-        g_inv[a][GLOBAL_INVENTORY_QUANTITY] = 0;
+        g_inv[a].item = 0;
+        g_inv[a].quantity = 0;
     }
 
     /* Load special items info */
@@ -1078,8 +1078,8 @@ static int save_game_92(void)
     pack_iputw(MAX_INV, sdat);
     for (a = 0; a < MAX_INV; a++)
     {
-        pack_iputw(g_inv[a][GLOBAL_INVENTORY_ITEM], sdat);
-        pack_iputw(g_inv[a][GLOBAL_INVENTORY_QUANTITY], sdat);
+        pack_iputw(g_inv[a].item, sdat);
+        pack_iputw(g_inv[a].quantity, sdat);
     }
 
     /* Save special items */

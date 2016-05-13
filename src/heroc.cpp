@@ -260,9 +260,9 @@ static void combat_draw_items(int pg)
     for (a = 0; a < 16; a++)
     {
         // b == item index #
-        b = g_inv[pg * 16 + a][GLOBAL_INVENTORY_ITEM];
+        b = g_inv[pg * 16 + a].item;
         // c == quantity of item
-        c = g_inv[pg * 16 + a][GLOBAL_INVENTORY_QUANTITY];
+        c = g_inv[pg * 16 + a].quantity;
         draw_icon(double_buffer, items[b].icon, 88, a * 8 + 16);
         if (combat_item_usable(b) == 1)
         {
@@ -402,7 +402,7 @@ static int combat_item(int ss, int t1, int tg)
 static int combat_item_menu(int whom)
 {
     int z, stop = 0, ptr = 0, pptr = 0;
-    unsigned short inventory = g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM];
+    unsigned short inventory = g_inv[pptr * 16 + ptr].item;
 
     fullblit(double_buffer, back);
     while (!stop)
@@ -413,7 +413,7 @@ static int combat_item_menu(int whom)
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 16);
         /* put description of selected item */
         menubox(double_buffer, 72, 152, 20, 1, BLUE);
-        print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16][GLOBAL_INVENTORY_ITEM]].desc, FNORMAL);
+        print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16].item].desc, FNORMAL);
         blit2screen(0, 0);
 
         readcontrols();

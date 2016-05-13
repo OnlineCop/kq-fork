@@ -620,16 +620,15 @@ static int load_treasures(XMLElement* node) {
 	auto startp = std::begin(treasure);
 	auto endp = std::end(treasure);
 	std::fill(startp, endp, 0);
-	XMLElement* treasure = node->FirstChildElement("treasure");
-	if (treasure) {
-		// TODO this isn't right any more
-		auto vs = parse_list(treasure->Attribute("values"));
+	XMLElement* elem = node->FirstChildElement("treasure");
+	if (elem && !elem->NoChildren()) {
+		auto vs = parse_list(elem->FirstChild()->Value());
 		auto it = startp;
 		for (auto& v : vs) {
 			*it++ = v;
 			if (it == endp) {
 				// Too much data supplied...
-				program_death("Error when loading treasure data");
+				program_death("Too much data supplied");
 			}
 		}
 	}
@@ -646,7 +645,22 @@ static int save_progress(XMLElement* node) {
   return 1;
 }
 static int  load_progress(XMLElement* node) {
-	// TODO
+	auto startp = std::begin(progress);
+	auto endp = std::end(progress);
+	std::fill(startp, endp, 0);
+	XMLElement* elem = node->FirstChildElement("progress");
+	if (elem && !elem->NoChildren()) {
+		auto vs = parse_list(elem->FirstChild()->Value());
+		auto it = startp;
+		for (auto& v : vs) {
+			*it++ = v;
+			if (it == endp) {
+				// Too much data supplied...
+				program_death("Too much data supplied");
+			}
+		}
+	}
+	return 1;
 	return 0;
 }
 static int save_save_spells(XMLElement* node) {
@@ -660,8 +674,22 @@ static int save_save_spells(XMLElement* node) {
   return 1;
 }
 static int  load_save_spells(XMLElement* node) {
-	// TODO
-	return 0;
+	auto startp = std::begin(save_spells);
+	auto endp = std::end(save_spells);
+	std::fill(startp, endp, 0);
+	XMLElement* elem = node->FirstChildElement("save-spells");
+	if (elem && !elem->NoChildren()) {
+		auto vs = parse_list(elem->FirstChild()->Value());
+		auto it = startp;
+		for (auto& v : vs) {
+			*it++ = v;
+			if (it == endp) {
+				// Too much data supplied...
+				program_death("Too much data supplied");
+			}
+		}
+	}
+	return 1;
 }
 static int save_specials(XMLElement* node) {
   auto startp = std::begin(player_special_items);
@@ -674,33 +702,51 @@ static int save_specials(XMLElement* node) {
   return 1;
 }
 static int  load_specials(XMLElement* node) {
-	// TODO
-	return 0;
-}
-static int save_global_inventory(XMLElement* node) {
-	std::vector<int> items;
-	std::vector<int> quantities;
-	for (auto& iq : g_inv) {
-		items.push_back(iq[GLOBAL_INVENTORY_ITEM]);
-		quantities.push_back(iq[GLOBAL_INVENTORY_QUANTITY]);
-	}
-	bool items_default = range_is_default(items.begin(), items.end());
-	bool quantities_default = range_is_default(quantities.begin(), quantities.end());
-	if (!items_default || !quantities_default) {
-		XMLDocument* doc = node->GetDocument();
-		XMLElement* inventory = doc->NewElement("inventory");
-		XMLElement* items_elem = doc->NewElement("items");
-		XMLElement* quantities_elem = doc->NewElement("quantities");
-		value_list(items_elem, items.begin(), items.end());
-		value_list(quantities_elem, quantities.begin(), quantities.end());
-		inventory->InsertFirstChild(items_elem);
-		inventory->InsertEndChild(quantities_elem);
-		node->InsertEndChild(inventory);
+	auto startp = std::begin(treasure);
+	auto endp = std::end(treasure);
+	std::fill(startp, endp, 0);
+	XMLElement* elem = node->FirstChildElement("treasure");
+	if (elem && !elem->NoChildren()) {
+		auto vs = parse_list(elem->FirstChild()->Value());
+		auto it = startp;
+		for (auto& v : vs) {
+			*it++ = v;
+			if (it == endp) {
+				// Too much data supplied...
+				program_death("Too much data supplied");
+			}
+		}
 	}
 	return 1;
 }
+static int save_global_inventory(XMLElement* node) {
+	XMLDocument* doc = node->GetDocument();
+	XMLElement* inventory = doc->NewElement("inventory");
+	for (auto& item : g_inv) {
+		if (item.quantity > 0) {
+			XMLElement* item_elem = doc->NewElement("item");
+			item_elem->SetAttribute("id", item.item);
+			item_elem->SetAttribute("quantity", item.quantity);
+			inventory->InsertEndChild(item_elem);
+		}
+	}
+	node->InsertEndChild(inventory);
+	return 1;
+}
 static int  load_global_inventory(XMLElement* node) {
-	// TODO
+	for (auto& item : g_inv) {
+		item.item = 0;
+		item.quantity = 0;
+	}
+	XMLElement* inventory = node->FirstChildElement("inventory");
+	if (inventory) {
+		auto gptr = g_inv;
+		for (auto item : children(inventory, "item")) {
+			gptr->item = item->IntAttribute("id");
+			gptr->quantity = item->IntAttribute("quantity");
+			++gptr;
+		}
+	}
 	return 0;
 }
 static int save_shop_info(XMLElement* node) {

@@ -273,8 +273,8 @@ unsigned char display_desc = 0;
  */
 unsigned char draw_background = 1, draw_middle = 1, draw_foreground = 1, draw_shadow = 1;
 
-/*! Items in inventory. g_inv[][0] is the item id, g_inv[][1] is the quantity */
-unsigned short g_inv[MAX_INV][NUM_GLOBAL_INVENTORY];
+/*! Items in inventory.  */
+s_inventory g_inv[MAX_INV];
 
 /*! An array to hold all of the special items and descriptions in the game */
 s_special_item special_items[MAX_SPECIAL_ITEMS];
