@@ -46,6 +46,7 @@ enum eSize
     ENT_H  = 16U,
     NUM_SPELLS_PER_PAGE = 12U,
     NUM_ITEMS_PER_PAGE = 16U,
+	NUM_LUP = 20U,
     NUM_SPELLS = 60U,
 };
 

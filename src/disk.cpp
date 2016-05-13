@@ -351,6 +351,18 @@ static int load_core_properties(s_player* s, XMLElement* node) {
 	}
 	return 0;
 }
+static int load_lup(s_player* s, XMLElement* node) {
+	XMLElement* elem = node->FirstChildElement("level-up");
+	if (elem && !elem->NoChildren()) {
+		auto vals = parse_list(elem->FirstChild()->Value());
+		copy(vals.begin(), vals.end(), s->lup);
+		return 0;
+	}
+	else {
+		   // ???
+		return 1;
+	}
+}
 /** Get player (hero) data from an XML node.
  * @param s the structure to write to
  * @param node a node within an XML document.
@@ -363,6 +375,7 @@ int load_s_player(s_player* s, XMLElement* node) {
 	load_spelltypes(s, node);
 	load_spells(s, node);
 	load_equipment(s, node);
+	load_lup(s, node);
 	return 0;
 }
 
@@ -476,7 +489,12 @@ static int store_stats(const s_player*s, XMLElement* node) {
   return 0;
 }
 
-
+static int store_lup(const s_player* s, XMLElement* node) {
+	XMLElement* elem = node->GetDocument()->NewElement("level-up");
+	value_list(elem, std::begin(s->lup), std::end(s->lup));
+	node->InsertEndChild(elem);
+	return 0;
+}
 int save_s_player(s_player *s, PACKFILE *f)
 {
     size_t i;
@@ -566,6 +584,7 @@ static int save_player(const s_player * s, XMLElement* node) {
   store_spelltypes(s, hero);
   store_equipment(s, hero);
   store_spells(s, hero);
+  store_lup(s, hero);
   return 0;
 }
 
@@ -777,6 +796,7 @@ static int  load_shop_info(XMLElement* node) {
 	// TODO
 	return 0;
 }
+
 static int save_general_props(XMLElement* node) {
   XMLElement* properties = node->GetDocument()->NewElement("properties");
   addprop(properties, "gold", gp);
@@ -788,23 +808,16 @@ static int save_general_props(XMLElement* node) {
   // Save-Game Stats - id, level, hp (as a % of mhp), mp% for each member of the party
   vector<int> sgs;
   for (auto id : pidx) {
-	  int hp_pct = 0;
-	  int mp_pct = 0;
-	  int lvl = 0;
 	  if (id >= 0 && id < MAXCHRS) {
 		  auto& p = party[id];
-		  lvl = p.lvl;
-		  if (p.mhp > 0) {
-			  hp_pct = p.hp * 100 / p.mhp;
-		  }
-		  if (p.mmp > 0) {
-			  mp_pct = p.mp * 100 / p.mmp;
-		  }
+		  sgs.push_back(id);
+		  sgs.push_back(p.lvl);
+		  sgs.push_back(p.mhp > 0 ? p.hp * 100 / p.mhp : 0);
+		  sgs.push_back(p.mmp > 0 ? p.mp * 100 / p.mmp : 0);
 	  }
-	  sgs.push_back(id);
-	  sgs.push_back(lvl);
-	  sgs.push_back(hp_pct);
-	  sgs.push_back(mp_pct);
+	  else {
+		  break;
+	  }
   }
   addprop(properties, "sgstats", make_list(sgs.begin(), sgs.end()));
   node->InsertEndChild(properties);

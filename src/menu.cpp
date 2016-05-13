@@ -265,19 +265,20 @@ static void level_up(int pr)
     float z;
     int bxp, xpi;
     s_fighter tmpf;
+	unsigned short* lup = party[pr].lup;
 
     player2fighter(pr, &tmpf);
-    xpi = lup[pr][0];
-    bxp = lup[pr][1];
+    xpi = lup[0];
+    bxp = lup[1];
     party[pr].lvl++;
     a = party[pr].lvl + 1;
     z = ((a / 3) + (xpi * (a / 20 + 1) - 1)) * (((a - 2) / 2) * (a - 1));
     z += (bxp * (a / 20 + 1) * (a - 1));
     party[pr].next += (int) z;
-    a = (rand() % (lup[pr][2] / 2)) + lup[pr][2] + (tmpf.stats[A_VIT] / 5);
+    a = (rand() % (lup[2]/ 2)) + lup[2] + (tmpf.stats[A_VIT] / 5);
     party[pr].hp += a;
     party[pr].mhp += a;
-    b = (rand() % (lup[pr][3] / 2)) + lup[pr][3];
+    b = (rand() % (lup[3]/ 2)) + lup[3];
     b += (tmpf.stats[A_INT] + tmpf.stats[A_SAG]) / 25;
     party[pr].mp += b;
     party[pr].mmp += b;
@@ -393,42 +394,39 @@ void menu(void)
  */
 s_fighter *player2fighter(int who, s_fighter *pf)
 {
-    int j, a, b;
-    int z[5] = { EQP_SPECIAL, EQP_ARMOR, EQP_HELMET, EQP_SHIELD, EQP_HAND };
     s_fighter tf;
-    size_t current_equipment_slot;
-    size_t weapon_index;
+	s_player& plr = party[who];
 
     tf.imb_s = 0;
     tf.imb_a = 0;
     tf.imb[0] = 0;
     tf.imb[1] = 0;
-    strcpy(tf.name, party[who].name);
-    tf.xp = party[who].xp;
-    tf.lvl = party[who].lvl;
-    tf.hp = party[who].hp;
-    tf.mhp = party[who].mhp;
-    tf.mp = party[who].mp;
-    tf.mmp = party[who].mmp;
-    for (j = 0; j < 24; j++)
+    strcpy(tf.name, plr.name);
+    tf.xp = plr.xp;
+    tf.lvl = plr.lvl;
+    tf.hp = plr.hp;
+    tf.mhp = plr.mhp;
+    tf.mp = plr.mp;
+    tf.mmp = plr.mmp;
+    for (int j = 0; j < 8; j++)
     {
-        tf.sts[j] = 0;
+        tf.sts[j] = plr.sts[j];
     }
-    for (j = 0; j < 8; j++)
+	for (int j = 8; j < NUM_SPELLTYPES; j++)
+	{
+		tf.sts[j] = 0;
+	}
+	for (int j = 0; j < NUM_ATTRIBUTES; j++)
     {
-        tf.sts[j] = party[who].sts[j];
+        tf.stats[j] = ((plr.lvl - 1) * plr.lup[j + 4] + plr.stats[j]) / 100;
     }
-    for (j = 0; j < NUM_ATTRIBUTES; j++)
+    for (int j = 0; j < R_TOTAL_RES; j++)
     {
-        tf.stats[j] = ((party[who].lvl - 1) * lup[who][j + 4] + party[who].stats[j]) / 100;
-    }
-    for (j = 0; j < R_TOTAL_RES; j++)
-    {
-        tf.res[j] = party[who].res[j];
+        tf.res[j] = plr.res[j];
     }
 
     /* set weapon elemental power and imbuements for easy use in combat */
-    weapon_index = party[who].eqp[EQP_WEAPON];
+    int weapon_index = plr.eqp[EQP_WEAPON];
     tf.welem = items[weapon_index].elem;
     if (items[weapon_index].use == USE_ATTACK)
     {
@@ -442,12 +440,13 @@ s_fighter *player2fighter(int who, s_fighter *pf)
      * that can be imbued, so some item types get priority over
      * others... hence the need to run through each in this loop.
      */
-    for (a = 0; a < 5; a++)
+    for (int a = 0; a < 5; a++)
     {
-        current_equipment_slot = party[who].eqp[z[a]];
+		static const int z[5] = { EQP_SPECIAL, EQP_ARMOR, EQP_HELMET, EQP_SHIELD, EQP_HAND };
+        int current_equipment_slot = plr.eqp[z[a]];
         if (items[current_equipment_slot].use == USE_IMBUED)
         {
-            for (b = 0; b < 2; b++)
+            for (int b = 0; b < 2; b++)
             {
                 if (tf.imb[b] == 0)
                 {
@@ -467,9 +466,9 @@ s_fighter *player2fighter(int who, s_fighter *pf)
     {
         tf.welem = R_WHITE + 1;
     }
-    for (j = 0; j < 6; j++)
+    for (int j = 0; j < NUM_EQUIPMENT; j++)
     {
-        a = party[who].eqp[j];
+        int a = plr.eqp[j];
         if (j == 0)
         {
             if (a == 0)
@@ -498,7 +497,7 @@ s_fighter *player2fighter(int who, s_fighter *pf)
                 tf.current_weapon_type = W_SWORD;
             }
         }
-        for (b = 0; b < 13; b++)
+        for (int b = 0; b < NUM_STATS; b++)
         {
             if (b == A_SPI && who == TEMMIN)
             {
@@ -512,7 +511,7 @@ s_fighter *player2fighter(int who, s_fighter *pf)
                 tf.stats[b] += items[a].stats[b];
             }
         }
-        for (b = 0; b < R_TOTAL_RES; b++)
+        for (int b = 0; b < R_TOTAL_RES; b++)
         {
             tf.res[b] += items[a].res[b];
         }
@@ -524,20 +523,20 @@ s_fighter *player2fighter(int who, s_fighter *pf)
         tf.res[R_AIR] += tf.lvl / 4;
         tf.res[R_WATER] += tf.lvl / 4;
     }
-    if (party[who].eqp[5] == I_AGRAN)
+    if (plr.eqp[5] == I_AGRAN)
     {
-        a = 0;
-        for (j = 0; j < R_TOTAL_RES; j++)
+        int a = 0;
+        for (int j = 0; j < R_TOTAL_RES; j++)
         {
             a += tf.res[j];
         }
-        b = ((a * 10) / 16 + 5) / 10;
-        for (j = 0; j < R_TOTAL_RES; j++)
+        int b = ((a * 10) / 16 + 5) / 10;
+        for (int j = 0; j < R_TOTAL_RES; j++)
         {
             tf.res[j] = b;
         }
     }
-    for (j = 0; j < 8; j++)
+    for (int j = 0; j < 8; j++)
     {
         if (tf.res[j] < -10)
         {
@@ -548,7 +547,7 @@ s_fighter *player2fighter(int who, s_fighter *pf)
             tf.res[j] = 20;
         }
     }
-    for (j = 8; j < R_TOTAL_RES; j++)
+    for (int j = 8; j < R_TOTAL_RES; j++)
     {
         if (tf.res[j] < 0)
         {
@@ -559,20 +558,20 @@ s_fighter *player2fighter(int who, s_fighter *pf)
             tf.res[j] = 10;
         }
     }
-    if (party[who].eqp[5] == I_MANALOCKET)
+    if (plr.eqp[5] == I_MANALOCKET)
     {
-        tf.mrp = party[who].mrp / 2;
+        tf.mrp = plr.mrp / 2;
     }
     else
     {
-        tf.mrp = party[who].mrp;
+        tf.mrp = plr.mrp;
     }
     tf.stats[A_HIT] += tf.stats[A_STR] / 5;
     tf.stats[A_HIT] += tf.stats[A_AGI] / 5;
     tf.stats[A_DEF] += tf.stats[A_VIT] / 8;
     tf.stats[A_EVD] += tf.stats[A_AGI] / 5;
     tf.stats[A_MAG] += (tf.stats[A_INT] + tf.stats[A_SAG]) / 20;
-    for (j = 0; j < 13; j++)
+    for (int j = 0; j < NUM_STATS; j++)
     {
         if (tf.stats[j] < 1)
         {

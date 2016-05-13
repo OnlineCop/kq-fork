@@ -126,7 +126,6 @@ extern int shin[12], display_attack_string;
 extern char shop_name[39];
 extern char attack_string[39];
 extern volatile int timer, ksec, kmin, khr, animation_count, timer_count;
-extern unsigned short lup[MAXCHRS][20];
 extern COLOR_MAP cmap;
 extern unsigned char can_run, display_desc;
 extern unsigned char draw_background, draw_middle, draw_foreground, draw_shadow;

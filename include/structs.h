@@ -166,6 +166,7 @@ typedef struct
     unsigned char sts[NUM_SPELLTYPES];  /*!< eSpellType */
     unsigned char eqp[NUM_EQUIPMENT];   /*!< eEquipment: Weapons, armor, etc. equipped */
     unsigned char spells[NUM_SPELLS];           /*!< Known spells */
+	unsigned short lup[NUM_LUP]; /*!< Level up information */
 } s_player;
 
 
