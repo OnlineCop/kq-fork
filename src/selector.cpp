@@ -146,45 +146,24 @@ int auto_select_enemy(int whom, int csts)
  */
 int auto_select_hero(int whom, int csts)
 {
-    unsigned int a, cntr = 0;
+	unsigned int cntr = 0;
 	int tmpd[NUM_FIGHTERS];
-    /*  RB TODO  */
-    whom = whom;
-    if (numchrs == 1)
-    {
-        if (can_attack(0))
-        {
-            return 0;
-        }
-        else
-        {
-            return PIDX_UNDEFINED;
-        }
-    }
-    for (a = 0; a < numchrs; a++)
-    {
-        if (can_attack(a))
-        {
-            if (csts == NO_STS_CHECK)
-            {
-                tmpd[cntr] = a;
-                cntr++;
-            }
-            else
-            {
-                if (fighter[a].sts[csts] == 0)
-                {
-                    tmpd[cntr] = a;
-                    cntr++;
-                }
-            }
-        }
-    }
-    if (cntr < 2)
-    {
-        return tmpd[0];
-    }
-    return tmpd[rand() % cntr];
+	/*  RB TODO  */
+	(void)whom;
+	if (numchrs == 0) {
+		return PIDX_UNDEFINED;
+	}
+
+	for (unsigned int a = 0; a < numchrs; a++)
+	{
+		if ((csts == NO_STS_CHECK || fighter[a].sts[csts] == 0) && can_attack(a))
+		{
+			tmpd[cntr] = a;
+			cntr++;
+		}
+	}
+
+	return tmpd[rand() % cntr];
 }
 
 
