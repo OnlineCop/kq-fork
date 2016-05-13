@@ -150,9 +150,6 @@ int auto_select_hero(int whom, int csts)
 	int tmpd[NUM_FIGHTERS];
 	/*  RB TODO  */
 	(void)whom;
-	if (numchrs == 0) {
-		return PIDX_UNDEFINED;
-	}
 
 	for (unsigned int a = 0; a < numchrs; a++)
 	{
@@ -163,7 +160,7 @@ int auto_select_hero(int whom, int csts)
 		}
 	}
 
-	return tmpd[rand() % cntr];
+	return cntr == 0 ? PIDX_UNDEFINED : tmpd[rand() % cntr];
 }
 
 
@@ -610,38 +607,30 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled
  *          or SEL_ALL_ALLIES if 'all' was selected (by pressing U or D)
  */
-ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_select_dead)
+ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_select_dead)
 {
-	if (!(multi_target == TGT_ALLY_ALL || multi_target == TGT_ALLY_ONE || multi_target == TGT_ALLY_ONEALL)) {
-		program_death("Invalid hero target mode");
-		return PIDX_UNDEFINED;
-	}
-    unsigned int cntr = 0, ptr = 0;
-	int tmpd[NUM_FIGHTERS];
-	bool select_all = (multi_target == TGT_ALLY_ALL);
-    for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
-    {
-        if (fighter[fighter_index].sts[S_DEAD] == 0)
-        {
-            tmpd[fighter_index] = fighter_index;
-            cntr++;
-        }
-        else
-        {
-            if (can_select_dead != 0)
-            {
-                tmpd[fighter_index] = fighter_index;
-                cntr++;
-                ptr = fighter_index;    /* default: select a dead char if there is one */
-            }
-        }
+  if (!(multi_target == TGT_ALLY_ALL || multi_target == TGT_ALLY_ONE || multi_target == TGT_ALLY_ONEALL)) {
+    program_death("Invalid hero target mode");
+    return PIDX_UNDEFINED;
+  }
+  unsigned int cntr = 0, ptr = 0;
+  int tmpd[NUM_FIGHTERS];
+  bool select_all = (multi_target == TGT_ALLY_ALL);
+  for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++) {
+    if (can_select_dead || fighter[fighter_index].sts[S_DEAD] == 0) {
+      tmpd[cntr] = fighter_index;
+      if (fighter[cntr].sts[S_DEAD]) {
+	ptr = cntr;    /* default: select a dead char if there is one */
+      }
+      cntr++;
     }
-	// Early exit if there are no heroes (again, shouldn't happen)
-	if (cntr == 0) {
-		return PIDX_UNDEFINED;
-	}
-	bool stop = false;
-    while (!stop)
+  }
+  // Early exit if there are no heroes (again, shouldn't happen)
+  if (cntr == 0) {
+    return PIDX_UNDEFINED;
+  }
+  bool stop = false;
+  while (!stop)
     {
         check_animation();
         if (select_all)

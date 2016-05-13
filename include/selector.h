@@ -30,7 +30,7 @@
 
 int select_player(void);                    /*  menu.c  */
 ePIDX select_any_player(eTarget, unsigned int, const char *);  /*  (item|mas)menu.c  */
-ePIDX select_hero(size_t, eTarget, int);    /*  enemyc.c, heroc.c  */
+ePIDX select_hero(size_t, eTarget, bool);    /*  enemyc.c, heroc.c  */
 ePIDX select_enemy(size_t, eTarget);        /*  enemyc.c, heroc.c, hskill.c  */
 int auto_select_hero(int, int);             /*  enemyc.c, heroc.c  */
 int auto_select_enemy(int, int);            /*  enemyc.c, heroc.c  */
