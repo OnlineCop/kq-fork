@@ -824,8 +824,36 @@ static int save_general_props(XMLElement* node) {
   return 1;
 }
 static int load_general_props(XMLElement* node) {
-	// TODO
-	return 0;
+  XMLElement* properties = node->FirstChildElement("properties");
+  if (properties) {
+    for (auto property : children(properties, "property")) {
+      if (property->Attribute("name", "gold")) {
+	gp = property->IntAttribute("value");
+      } else if (property->Attribute("name", "time")) {
+	int tt = property->IntAttribute("value");
+	kmin = tt % 60;
+	khr = (tt - kmin)/60;
+      } else if (property->Attribute("name", "mapname")) {
+	curmap = std::string(property->Attribute("value"));
+      } else if (property->Attribute("name", "mapx")) {
+	g_ent[0].tilex = property->IntAttribute("value");
+      } else if (property->Attribute("name", "mapy")) {
+	g_ent[0].tiley = property->IntAttribute("value");
+      } else if (property->Attribute("name", "party")) {
+	auto pps = parse_list(property->Attribute("value"));
+	auto it = pps.begin();
+	for (int i=0; i<MAXCHRS; ++i) {
+	  if (it != pps.end()) {
+	    pidx[i] = static_cast<ePIDX>(*it++);
+	  } else {
+	    pidx[i] = PIDX_UNDEFINED;
+	  }
+	}
+      } 
+      // Don't need to restore anything from <sgstats>
+    }
+  }
+  return 0;
 }
 /** Save everything into a node
  */
