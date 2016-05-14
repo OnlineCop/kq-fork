@@ -859,28 +859,31 @@ static void sell_menu(void)
  */
 int shop(int shop_num)
 {
-    int ptr = 0, stop = 0, a;
-
+  int ptr = 0;
+  bool stop = false;
+    s_shop& shop = shops[shop_num];
     shop_no = shop_num;
-    strcpy(shop_name, shops[shop_no].name);
+    strcpy(shop_name, shop.name);
 
     /* If enough time has passed, fully replenish this shop's stock of an item */
-    for (a = 0; a < SHOPITEMS; a++)
+    int replenish_time = (khr * 60) + kmin - shop.time;
+    bool first_visit = (shop.time == 0);
+    for (int a = 0; a < SHOPITEMS; a++)
     {
-        if (shops[shop_no].items_replenish_time[a] > 0)
+        if (shop.items_replenish_time[a] > 0)
         {
-            if ((khr * 60) + kmin - shops[shop_no].time > shops[shop_no].items_replenish_time[a])
+            if (first_visit || replenish_time >  shop.items_replenish_time[a])
             {
-                shops[shop_no].items_current[a] = shops[shop_no].items_max[a];
+                shop.items_current[a] = shop.items_max[a];
             }
         }
     }
 
     /* Return 1 if shop has no items to sell */
     num_shop_items = SHOPITEMS - 1;
-    for (a = SHOPITEMS; a > 0; a--)
+    for (int a = SHOPITEMS; a > 0; a--)
     {
-        if (shops[shop_no].items[a - 1] == 0)
+        if (shop.items[a - 1] == 0)
         {
             num_shop_items = a - 1;
         }
@@ -934,16 +937,16 @@ int shop(int shop_num)
             }
             if (ptr == 2)
             {
-                stop = 1;
+                stop = true;
             }
         }
         if (PlayerInput.bctrl)
         {
             unpress();
-            stop = 1;
+            stop = true;
         }
     }
-    shops[shop_no].time = khr * 60 + kmin;
+    shop.time = khr * 60 + kmin;
     return 0;
 }
 
