@@ -7,6 +7,7 @@
   <property name="map_no" value="1"/>
   <property name="pdiv" value="1"/>
   <property name="pmult" value="1"/>
+  <property name="song_file" value="enfero.xm"/>
   <property name="stx" value="15"/>
   <property name="sty" value="20"/>
   <property name="tileset" value="1"/>

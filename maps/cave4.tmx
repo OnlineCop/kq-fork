@@ -6,6 +6,7 @@
   <property name="map_mode" value="1"/>
   <property name="map_no" value="24"/>
   <property name="pdiv" value="1"/>
+  <property name="song_file" value="dag_4.xm"/>
   <property name="pmult" value="1"/>
   <property name="stx" value="18"/>
   <property name="sty" value="98"/>

@@ -8,6 +8,7 @@
   <property name="pdiv" value="0"/>
   <property name="pmult" value="0"/>
   <property name="stx" value="19"/>
+  <property name="song_file" value="town.mod"/>
   <property name="sty" value="23"/>
   <property name="tileset" value="1"/>
   <property name="use_sstone" value="1"/>

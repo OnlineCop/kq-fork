@@ -7,6 +7,7 @@
   <property name="map_no" value="28"/>
   <property name="pdiv" value="1"/>
   <property name="pmult" value="1"/>
+  <property name="song_file" value="comeback.mod"/>
   <property name="stx" value="18"/>
   <property name="sty" value="25"/>
   <property name="tileset" value="2"/>

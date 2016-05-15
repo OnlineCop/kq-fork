@@ -7,7 +7,7 @@
   <property name="map_no" value="0"/>
   <property name="pdiv" value="1"/>
   <property name="pmult" value="1"/>
-  <property name="song_file" value="water.xm"/>
+  <property name="song_file" value="waterw.xm"/>
   <property name="stx" value="106"/>
   <property name="sty" value="43"/>
   <property name="tileset" value="0"/>

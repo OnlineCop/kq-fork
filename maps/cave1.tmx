@@ -9,6 +9,7 @@
   <property name="pmult" value="0"/>
   <property name="stx" value="10"/>
   <property name="sty" value="12"/>
+  <property name="song_file" value="dag_4.xm"/>
   <property name="tileset" value="3"/>
   <property name="use_sstone" value="0"/>
   <property name="warpx" value="10"/>
