@@ -82,7 +82,7 @@ xiterable children(XMLElement* parent, const char* tag = nullptr) {
 }
 
 /** Convert a comma-separated list of ints into a vector.
- * Supplied string can be null or empty
+ * Supplied string can be null or empty (giving an empty list)
  * \param str a string containing the list
  * \returns the numbers in a vector
  */ 
@@ -793,8 +793,27 @@ static int save_shop_info(XMLElement* node) {
 	return 1;
 }
 static int  load_shop_info(XMLElement* node) {
-	// TODO
-	return 0;
+  for (auto& shop : shops) {
+    shop.time = 0;
+    std::fill(std::begin(shop.items_current), std::end(shop.items_current), 0);
+  }
+  XMLElement* shops_elem = node->FirstChildElement("shops");
+  if (shops_elem) {
+    for (auto el : children(shops_elem, "shop")) {
+      int index = el->IntAttribute("id");
+      auto items = parse_list(el->FirstChild()->Value());
+      s_shop& shop = shops[index];
+      shop.time = el->IntAttribute("time");
+      int item_index = 0;
+      for (auto& item : items) {
+	if (item_index < SHOPITEMS) {
+	  shop.items_current[item_index] = item;
+	  ++item_index;
+	}
+      }
+    }
+  }
+  return 1;
 }
 
 static int save_general_props(XMLElement* node) {
