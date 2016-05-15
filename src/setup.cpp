@@ -54,23 +54,20 @@ static DATAFILE *sfx[MAX_SAMPLES];
 
 /*  Internal functions  */
 static int load_samples(void);
-static int getavalue(const char *, int, int, int, int);
+static int getavalue(const char *, int, int, int, bool, void (*)(int));
 static int getakey(void);
 static void parse_allegro_setup(void);
 static void parse_jb_setup(void);
 
 
 /*! \brief Play sound effects / music if adjusting it */
-
-/* TT: looks like a hack to me! :-) */
-/* PH: I cannot tell a lie: it was Matthew... */
-#define IF_VOLUME_ALERT() \
-    if (!strcmp (capt, "Sound Volume")) {\
-        set_volume (cv * 10, 0);\
-        play_effect (1, 127);\
-    } else if (!strcmp (capt, "Music Volume"))\
-        set_music_volume (cv / 25.5);
-
+static void sound_feedback(int val) {
+  set_volume(val * 10, 0);
+  play_effect (1, 127);
+}
+static void music_feedback(int val) {
+  set_music_volume (float(val * 10)/250.0f);
+}
 
 /*! \brief Draw a setting and its title
  *
@@ -398,7 +395,7 @@ void config_menu(void)
                 case 13:
                     if (is_sound == 2)
                     {
-                        p = getavalue(_("Sound Volume"), 0, 25, gsvol / 10, 1);
+		      p = getavalue(_("Sound Volume"), 0, 25, gsvol / 10, true, sound_feedback);
                         if (p != -1)
                         {
                             gsvol = p * 10;
@@ -417,7 +414,7 @@ void config_menu(void)
                 case 14:
                     if (is_sound == 2)
                     {
-                        p = getavalue(_("Music Volume"), 0, 25, gmvol / 10, 1);
+		      p = getavalue(_("Music Volume"), 0, 25, gmvol / 10, true, music_feedback);
                         if (p != -1)
                         {
                             gmvol = p * 10;
@@ -528,24 +525,26 @@ static int getakey(void)
 
 /*! \brief Get value for option
  *
- * Display a bar and allow the user to adjust between fixed limits
+ * Display a bar and allow the user to adjust between fixed limits.
+ * You can specify a feedback function with the signature
+ * void (*fb)(int)
+ * which is called whenever the value changes.
  *
  * \param   capt Caption
  * \param   minu Minimum value of option
  * \param   maxu Maximum vlaue of option
  * \param   cv Current value (initial value)
- * \param   sp Show percent. If sp==1, show as a percentage of maxu
+ * \param   sp Show percent. If sp is true, show as a percentage of maxu
+ * \param   fb Feedback function (or NULL for no feedback)
  * \returns the new value for option, or -1 if cancelled.
  */
-static int getavalue(const char *capt, int minu, int maxu, int cv, int sp)
+static int getavalue(const char *capt, int minu, int maxu, int cv, bool sp, void (*fb)(int))
 {
-    int stop = 0, a, b;
-
-    if (maxu == 0)
+  if (maxu <= 0 || maxu >= 40)
     {
         return -1;
     }
-
+    bool stop;
     while (!stop)
     {
         check_animation();
@@ -553,15 +552,16 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, int sp)
         print_font(double_buffer, 160 - (strlen(capt) * 4) + xofs, 108 + yofs, capt, FGOLD);
         print_font(double_buffer, 152 - (maxu * 4) + xofs, 116 + yofs, "<", FNORMAL);
         print_font(double_buffer, 160 + (maxu * 4) + xofs, 116 + yofs, ">", FNORMAL);
-        b = 160 - (maxu * 4) + xofs;
-        for (a = 0; a < cv; a++)
+        int b = 160 - (maxu * 4) + xofs;
+        for (int a = 0; a < cv; a++)
         {
             rectfill(double_buffer, a * 8 + b + 1, 117 + yofs, a * 8 + b + 7,
                      123 + yofs, 50);
             rectfill(double_buffer, a * 8 + b, 116 + yofs, a * 8 + b + 6,
                      122 + yofs, 21);
         }
-        if (sp == 1)
+	char strbuf[10];
+        if (sp)
         {
             sprintf(strbuf, "%d%%", cv * 100 / maxu);
         }
@@ -582,7 +582,9 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, int sp)
             {
                 cv = minu;
             }
-            IF_VOLUME_ALERT();
+            if (fb) {
+	      fb(cv);
+	    }
         }
         if (PlayerInput.right)
         {
@@ -592,12 +594,14 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, int sp)
             {
                 cv = maxu;
             }
-            IF_VOLUME_ALERT();
+            if (fb) {
+	      fb(cv);
+	    }
         }
         if (PlayerInput.balt)
         {
             unpress();
-            stop = 1;
+            stop = true;
         }
         if (PlayerInput.bctrl)
         {
@@ -735,6 +739,8 @@ static void parse_allegro_setup(void)
     wait_retrace = get_config_int(NULL, "wait_retrace", 1);
     show_frate = get_config_int(NULL, "show_frate", 0);
     is_sound = get_config_int(NULL, "is_sound", 1);
+    gmvol = get_config_int(NULL, "gmvol", 250);
+    gsvol = get_config_int(NULL, "gsvol", 250);
     use_joy = get_config_int(NULL, "use_joy", 0);
     slow_computer = get_config_int(NULL, "slow_computer", 0);
     cpu_usage = get_config_int(NULL, "cpu_usage", 2);

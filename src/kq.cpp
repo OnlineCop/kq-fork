@@ -141,7 +141,7 @@ int gp = 0;
 /*! pixel offset in the current map view */
 int xofs, yofs;
 
-/*! Sound and music volume */
+/*! Sound and music volume, 250 = as loud as possible */
 int gsvol = 250, gmvol = 250;
 
 /*! Is the party under 'automatic' (i.e. scripted) control */
