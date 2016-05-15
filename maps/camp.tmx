@@ -11,6 +11,7 @@
   <property name="sty" value="11"/>
   <property name="tileset" value="1"/>
   <property name="use_sstone" value="1"/>
+  <property name="song_file" value="land.mod"/>
   <property name="warpx" value="17"/>
   <property name="warpy" value="11"/>
   <property name="zero_zone" value="0"/>

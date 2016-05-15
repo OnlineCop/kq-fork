@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="51" height="51" tilewidth="16" tileheight="16" backgroundcolor="#0e0e0e" nextobjectid="18">
  <properties>
+  <property name="description" value="Guard Post"/>
+  <property name="song_file" value="enfero.xm"/>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="0"/>
   <property name="map_mode" value="0"/>

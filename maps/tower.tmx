@@ -6,6 +6,7 @@
   <property name="map_mode" value="0"/>
   <property name="map_no" value="15"/>
   <property name="pdiv" value="1"/>
+  <property name="song_file" value="comeback.mod"/>
   <property name="pmult" value="1"/>
   <property name="stx" value="22"/>
   <property name="sty" value="34"/>

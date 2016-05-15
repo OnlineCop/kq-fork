@@ -301,7 +301,9 @@ class SMap:
             "stx": self.stx,
             "sty": self.sty,
             "warpx": self.warpx,
-            "warpy": self.warpy
+            "warpy": self.warpy,
+            "description": self.map_desc,
+            "song_file":self.song_file
         }))
         root.extend([self.tsx.as_xml(), entity_tileset.as_xml(), misc_tileset.as_xml(), obstacle_tileset.as_xml()])
         layer = ET.SubElement(root, "layer",

@@ -9,6 +9,7 @@
   <property name="pmult" value="1"/>
   <property name="stx" value="30"/>
   <property name="sty" value="28"/>
+  <property name="song_file" value="town.mod"/>
   <property name="tileset" value="1"/>
   <property name="use_sstone" value="0"/>
   <property name="warpx" value="30"/>

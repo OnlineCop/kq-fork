@@ -7,6 +7,7 @@
   <property name="map_no" value="13"/>
   <property name="pdiv" value="1"/>
   <property name="pmult" value="1"/>
+  <property name="song_file" value="dag_4.xm"/>
   <property name="stx" value="13"/>
   <property name="sty" value="7"/>
   <property name="tileset" value="3"/>

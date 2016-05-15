@@ -2,6 +2,8 @@
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="150" height="60" tilewidth="16" tileheight="16" backgroundcolor="#0e0e0e" nextobjectid="137">
  <properties>
   <property name="can_save" value="0"/>
+  <property name="description" value="Randen"/>
+  <property name="song_file" value="town.mod"/>
   <property name="can_warp" value="0"/>
   <property name="map_mode" value="0"/>
   <property name="map_no" value="4"/>

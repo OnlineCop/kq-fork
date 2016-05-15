@@ -3,6 +3,8 @@
  <properties>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="0"/>
+  <property name="description" value="Maldea"/>
+  <property name="song_file" value="town.mod"/>
   <property name="map_mode" value="0"/>
   <property name="map_no" value="17"/>
   <property name="pdiv" value="1"/>
