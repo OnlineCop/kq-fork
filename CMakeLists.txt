@@ -60,6 +60,7 @@ set(kq-fork_SRCS
 	src/menu.cpp
 	src/movement.cpp
 	src/music.cpp
+	src/random.cpp
 	src/res.cpp
 	src/selector.cpp
 	src/setup.cpp
