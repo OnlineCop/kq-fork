@@ -38,6 +38,7 @@
 #include "setup.h"
 #include "structs.h"
 #include "gfx.h"
+#include "random.h"
 
 enum eMiniMenu
 {
@@ -118,7 +119,7 @@ int auto_select_enemy(int whom, int csts)
     {
         for (i = 0; i < number_enemies; i++)
         {
-            if (tmpd[i] == whom && rand() % 4 != 3)
+            if (tmpd[i] == whom && kq_rnd(4) != 3)
             {
                 return whom;
             }
@@ -128,7 +129,7 @@ int auto_select_enemy(int whom, int csts)
     {
         return tmpd[0];
     }
-    return tmpd[rand() % number_enemies];
+    return tmpd[kq_rnd(number_enemies)];
 }
 
 
@@ -160,7 +161,7 @@ int auto_select_hero(int whom, int csts)
 		}
 	}
 
-	return cntr == 0 ? PIDX_UNDEFINED : tmpd[rand() % cntr];
+	return cntr == 0 ? PIDX_UNDEFINED : tmpd[kq_rnd(cntr)];
 }
 
 

@@ -38,7 +38,7 @@
 #include "setup.h"
 #include "ssprites.h"
 #include "structs.h"
-
+#include "random.h"
 
 /*! \file
  * \brief Magic spells
@@ -196,7 +196,7 @@ static void beffect_all_enemies(size_t caster_fighter_index, size_t spell_number
                     && fighter[fighter_index].sts[S_SLEEP] == 0
                     && fighter[fighter_index].sts[S_STONE] == 0)
                 {
-                    fighter[fighter_index].sts[S_SLEEP] = rand() % 2 + 4;
+					fighter[fighter_index].sts[S_SLEEP] = kq_rnd(4, 6);
                     ta[fighter_index] = NODISPLAY;
                 }
                 else
@@ -250,7 +250,7 @@ static void beffect_one_enemy(size_t caster_fighter_index, size_t target_fighter
         case M_CONFUSE:
             if (non_dmg_save(target_fighter_index, sp_hit) == 0 && fighter[target_fighter_index].sts[S_CHARM] == 0)
             {
-                fighter[target_fighter_index].sts[S_CHARM] = rand() % 3 + 3;
+				fighter[target_fighter_index].sts[S_CHARM] = kq_rnd(3, 6);
             }
             else
             {
@@ -267,7 +267,7 @@ static void beffect_one_enemy(size_t caster_fighter_index, size_t target_fighter
                         fighter[target_fighter_index].sts[stats_index] = 0;
                     }
                 }
-                fighter[target_fighter_index].sts[S_STONE] = rand() % 3 + 3;
+                fighter[target_fighter_index].sts[S_STONE] = kq_rnd(3, 6);
             }
             else
             {
@@ -316,7 +316,7 @@ static void beffect_one_enemy(size_t caster_fighter_index, size_t target_fighter
         case M_HOLD:
             if (non_dmg_save(target_fighter_index, sp_hit) == 0 && fighter[target_fighter_index].sts[S_STOP] == 0)
             {
-                fighter[target_fighter_index].sts[S_STOP] = rand() % 3 + 2;
+                fighter[target_fighter_index].sts[S_STOP] = kq_rnd(2, 5);
             }
             else
             {
@@ -336,7 +336,7 @@ static void beffect_one_enemy(size_t caster_fighter_index, size_t target_fighter
         case M_SLEEP:
             if (non_dmg_save(target_fighter_index, sp_hit) == 0 && fighter[target_fighter_index].sts[S_SLEEP] == 0)
             {
-                fighter[target_fighter_index].sts[S_SLEEP] = rand() % 2 + 4;
+                fighter[target_fighter_index].sts[S_SLEEP] = kq_rnd(4, 6);
             }
             else
             {
@@ -499,7 +499,7 @@ int cast_spell(size_t caster_fighter_index, int is_item)
         if (magic[spell_number].dmg == 0 && magic[spell_number].bon == 0
                 && magic[spell_number].hit == 0)
         {
-            if (rand() % 100 + 1 >
+            if (kq_rnd(1,101) >
                     fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat])
             {
 
@@ -821,11 +821,11 @@ static void cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spel
          magic[spell_number].bon / 100);
     if (spwr < DMG_RND_MIN * 5)
     {
-        b = rand() % DMG_RND_MIN + spwr;
+        b = kq_rnd(DMG_RND_MIN) + spwr;
     }
     else
     {
-        b = rand() % (spwr / 5) + spwr;
+        b = kq_rnd(spwr / 5) + spwr;
     }
     a = fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat];
     b = b * a / 100;
@@ -1009,7 +1009,7 @@ static void geffect_all_allies(size_t caster_fighter_index, size_t spell_number)
         end_fighter_index = num_enemies;
         start_fighter_index = PSIZE;
     }
-    if (rand() % 100 + 1 > fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat])
+    if (kq_rnd(1, 101) > fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat])
     {
         for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
         {
@@ -1222,19 +1222,7 @@ static void heal_one_ally(size_t caster_fighter_index, size_t target_fighter_ind
 {
     size_t stat_index;
 
-    /*  DS: Because these lines, sometimes when you cast restore or others */
-    /*      spells, the spell don't work correctly. In cast_spell() this */
-    /*      is tested, so don't need to test again. */
-#if 0
-    if (rand() % 100 + 1 > fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat])
-    {
-        ta[target_fighter_index] = MISS;
-        return;
-    }
-#endif
-
-    /*  DS: Now the 'caster_fighter_index' argument isn't used, so I'm doing this: */
-    caster_fighter_index = caster_fighter_index;
+    (void) caster_fighter_index;
     switch (spell_number)
     {
         case M_RESTORE:
@@ -1330,14 +1318,8 @@ int mp_needed(size_t fighter_index, int spell_number)
  */
 int non_dmg_save(int tgt, int per)
 {
-
-    /*  RB TODO:  */
-    tgt = tgt;
-    if (per == 0)
-    {
-        return 1;
-    }
-    if (rand() % 100 < per)
+	(void)tgt;
+    if (kq_rnd(100) < per)
     {
         return 0;
     }
@@ -1418,7 +1400,7 @@ int res_throw(int tgt, int rs)
     {
         return 1;
     }
-    if (rand() % 10 < tf.res[rs])
+    if (kq_rnd(10) < tf.res[rs])
     {
         return 1;
     }
@@ -1504,11 +1486,11 @@ void special_damage_oneall_enemies(size_t caster_index, int spell_dmg, int rune_
 
     if (spell_dmg < DMG_RND_MIN * 5)
     {
-        average_damage = rand() % DMG_RND_MIN + spell_dmg;
+        average_damage = kq_rnd(DMG_RND_MIN) + spell_dmg;
     }
     else
     {
-        average_damage = rand() % (spell_dmg / 5) + spell_dmg;
+        average_damage = kq_rnd(spell_dmg / 5) + spell_dmg;
     }
 
     if (number_of_enemies > 1 && split == 0)
@@ -1695,11 +1677,11 @@ static void spell_damage(size_t caster_fighter_index, int spell_number, size_t s
          magic[spell_number].bon / 100);
     if (ad < DMG_RND_MIN * 5)
     {
-        ad += rand() % DMG_RND_MIN;
+        ad += kq_rnd(DMG_RND_MIN);
     }
     else
     {
-        ad += rand() % (ad / 5);
+        ad += kq_rnd(ad / 5);
     }
     if (ad < 1)
     {

@@ -544,7 +544,7 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, bool sp, void
     {
         return -1;
     }
-    bool stop;
+    bool stop = false;
     while (!stop)
     {
         check_animation();

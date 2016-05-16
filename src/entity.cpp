@@ -42,7 +42,7 @@
 #include "kq.h"
 #include "menu.h"
 #include "setup.h"
-
+#include "random.h"
 
 
 /*  internal functions  */
@@ -77,7 +77,7 @@ static void chase(t_entity target_entity)
     if (g_ent[target_entity].chasing == 0)
     {
         if (entity_near(target_entity, 0, 3) == 1
-         && rand() % 100 <= g_ent[target_entity].extra)
+         && kq_rnd(100) <= g_ent[target_entity].extra)
         {
             g_ent[target_entity].chasing = 1;
             if (g_ent[target_entity].speed < 7)
@@ -123,7 +123,7 @@ static void chase(t_entity target_entity)
             {
                 g_ent[target_entity].speed--;
             }
-            g_ent[target_entity].delay = 25 + rand() % 25;
+            g_ent[target_entity].delay = kq_rnd(25, 50);
             wander(target_entity);
         }
     }
@@ -1140,7 +1140,7 @@ static void wander(t_entity target_entity)
         return;
     }
     g_ent[target_entity].delayctr = 0;
-    switch (rand() % 8)
+    switch (kq_rnd(8))
     {
         case 0:
             move(target_entity, 0, -1);

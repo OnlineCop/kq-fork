@@ -36,6 +36,7 @@
 #include "menu.h"
 #include "res.h"
 #include "setup.h"
+#include "random.h"
 
 /*! \file
  * \brief Enemy skills
@@ -142,7 +143,7 @@ void combat_skill(size_t fighter_index)
             {
                 if (res_throw(target_fighter_index, R_PETRIFY) == 0 && non_dmg_save(target_fighter_index, 75) == 0)
                 {
-                    fighter[target_fighter_index].sts[S_STONE] = rand() % 3 + 2;
+					fighter[target_fighter_index].sts[S_STONE] = kq_rnd(2, 5);
                     ta[target_fighter_index] = NODISPLAY;
                 }
                 else
@@ -161,7 +162,7 @@ void combat_skill(size_t fighter_index)
     case 9:
         affected_targets = 0;
         strcpy(attack_string, _("Zemmel Rod"));
-        if (rand() % 4 < 2)
+        if (kq_rnd(4) < 2)
         {
             draw_spellsprite(0, 1, 11, 1);
             /*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
@@ -227,7 +228,7 @@ void combat_skill(size_t fighter_index)
         {
             if (res_throw(target_fighter_index, S_STOP) == 0 && non_dmg_save(target_fighter_index, 65) == 0 && fighter[target_fighter_index].sts[S_STONE] == 0)
             {
-                fighter[target_fighter_index].sts[S_STOP] = 2 + rand() % 2;
+                fighter[target_fighter_index].sts[S_STOP] = kq_rnd(2, 4);
                 ta[target_fighter_index] = NODISPLAY;
             }
             else
@@ -281,7 +282,7 @@ void combat_skill(size_t fighter_index)
             {
                 if (res_throw(target_fighter_index, S_CHARM) == 0 && non_dmg_save(target_fighter_index, 65) == 0 && fighter[target_fighter_index].sts[S_STONE] == 0)
                 {
-                    fighter[target_fighter_index].sts[S_CHARM] = 2 + rand() % 2;
+                    fighter[target_fighter_index].sts[S_CHARM] = kq_rnd(2, 4);
                     ta[target_fighter_index] = NODISPLAY;
                 }
                 else
