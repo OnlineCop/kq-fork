@@ -41,6 +41,7 @@
 #include "res.h"
 #include "selector.h"
 #include "skills.h"
+#include "random.h"
 
 /*! Index related to enemies in an encounter */
 int cf[NUM_FIGHTERS];
@@ -127,7 +128,7 @@ static void enemy_attack(size_t target_fighter_index)
 
     if (fighter[target_fighter_index].hp < (fighter[target_fighter_index].mhp / 5) && fighter[target_fighter_index].sts[S_CHARM] == 0)
     {
-        if (rand() % 4 == 0)
+        if (kq_rnd(4) == 0)
         {
             fighter[target_fighter_index].defend = 1;
             cact[target_fighter_index] = 0;
@@ -250,7 +251,7 @@ void enemy_charmaction(size_t fighter_index)
             fighter[fighter_index].atrack[a]--;
         }
     }
-    a = rand() % 4;
+    a = kq_rnd(4);
     if (a == 0)
     {
         cact[fighter_index] = 0;
@@ -300,7 +301,7 @@ void enemy_chooseaction(size_t fighter_index)
     }
     fighter[fighter_index].defend = 0;
     fighter[fighter_index].facing = 1;
-    if (fighter[fighter_index].hp < fighter[fighter_index].mhp * 2 / 3 && rand() % 100 < 50 && fighter[fighter_index].sts[S_MUTE] == 0)
+    if (fighter[fighter_index].hp < fighter[fighter_index].mhp * 2 / 3 && kq_rnd(100) < 50 && fighter[fighter_index].sts[S_MUTE] == 0)
     {
         enemy_curecheck(fighter_index);
         if (cact[fighter_index] == 0)
@@ -309,7 +310,7 @@ void enemy_chooseaction(size_t fighter_index)
         }
     }
 
-    ap = rand() % 100;
+    ap = kq_rnd(100);
     for (a = 0; a < 8; a++)
     {
         if (ap < fighter[fighter_index].aip[a])
@@ -924,7 +925,7 @@ int select_encounter(int en, int etid)
     }
     if (etid == 99)
     {
-        i = rand() % 100 + 1;
+        i = kq_rnd(1, 101);
         while (entry < 0)
         {
             if (i <= erows[where].per)
@@ -1081,7 +1082,7 @@ static int spell_setup(int whom, int z)
             }
             else
             {
-                if (rand() % 4 < 2)
+                if (kq_rnd(4) < 2)
                 {
                     fighter[whom].ctmem = SEL_ALL_ALLIES;
                 }
@@ -1098,7 +1099,7 @@ static int spell_setup(int whom, int z)
             fighter[whom].ctmem = SEL_ALL_ENEMIES;
             break;
         case TGT_ENEMY_ONEALL:
-            if (rand() % 4 < 3)
+            if (kq_rnd(4) < 3)
             {
                 fighter[whom].ctmem = SEL_ALL_ENEMIES;
             }

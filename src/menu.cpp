@@ -35,6 +35,7 @@
 #include "selector.h"
 #include "setup.h"
 #include "structs.h"
+#include "random.h"
 
 /*! \file
  * \brief Main menu functions
@@ -274,10 +275,10 @@ static void level_up(int pr)
     z = ((a / 3) + (xpi * (a / 20 + 1) - 1)) * (((a - 2) / 2) * (a - 1));
     z += (bxp * (a / 20 + 1) * (a - 1));
     party[pr].next += (int) z;
-    a = (rand() % (lup[pr][2] / 2)) + lup[pr][2] + (tmpf.stats[A_VIT] / 5);
+    a = (kq_rnd(lup[pr][2] / 2)) + lup[pr][2] + (tmpf.stats[A_VIT] / 5);
     party[pr].hp += a;
     party[pr].mhp += a;
-    b = (rand() % (lup[pr][3] / 2)) + lup[pr][3];
+    b = (kq_rnd(lup[pr][3] / 2)) + lup[pr][3];
     b += (tmpf.stats[A_INT] + tmpf.stats[A_SAG]) / 25;
     party[pr].mp += b;
     party[pr].mmp += b;

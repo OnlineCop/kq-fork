@@ -69,6 +69,7 @@ extern "C" {
 #include "sgame.h"
 #include "shopmenu.h"
 #include "timing.h"
+#include "random.h"
 
 /* Defines */
 #define LUA_ENT_KEY "_ent"
@@ -2833,7 +2834,7 @@ static int KQ_krnd(lua_State *L)
 
     if (a > 0)
     {
-        lua_pushnumber(L, rand() % a);
+        lua_pushnumber(L, kq_rnd(a));
     }
     else
     {

@@ -73,6 +73,7 @@
 #include "tiledmap.h"
 #include "imgcache.h"
 #include "animation.h"
+#include "random.h"
 
 
 /*! Name of the current map */
@@ -1283,6 +1284,7 @@ int main(int argc, const char *argv[])
                 break;
             case 1:                  /* New game */
                 change_map("starting", 0, 0, 0, 0);
+				kq_init_random();
                 break;
             default:                 /* Exit */
                 game_on = 0;
@@ -1440,13 +1442,13 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
         if (g_ent[i].chrx == 38 && g_ent[i].active == 1)
         {
             g_ent[i].eid = ID_ENEMY;
-            g_ent[i].speed = rand() % 4 + 1;
+            g_ent[i].speed = kq_rnd(1, 5);
             g_ent[i].obsmode = 1;
             g_ent[i].moving = 0;
             g_ent[i].movemode = MM_CHASE;
             g_ent[i].chasing = 0;
-            g_ent[i].extra = 50 + rand() % 50;
-            g_ent[i].delay = rand() % 25 + 25;
+            g_ent[i].extra = kq_rnd(50, 100);
+			g_ent[i].delay = kq_rnd(25, 50);
         }
     }
 

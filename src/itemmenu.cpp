@@ -42,6 +42,7 @@
 #include "selector.h"
 #include "setup.h"
 #include "skills.h"
+#include "random.h"
 
 char item_act;
 
@@ -447,7 +448,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
             {
                 return ITEM_EFFECT_INEFFECTIVE;
             }
-            tmp = rand() % (items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
+            tmp = kq_rnd(items[ti].stats[A_ATT] / 2)  + items[ti].stats[A_ATT];
             if (in_combat == 0)
             {
                 adjust_hp(fighter_index, tmp);
@@ -470,7 +471,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
             {
                 return ITEM_EFFECT_INEFFECTIVE;
             }
-            tmp = rand() % (items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
+            tmp = kq_rnd(items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
             if (in_combat == 0)
             {
                 adjust_mp(fighter_index, tmp);
@@ -581,7 +582,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
                 if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].sts[S_STONE] == 0)
                 {
                     b = fighter[fighter_index].lvl * items[ti].stats[A_ATT];
-                    tmp = rand() % b + b + 1;
+                    tmp = kq_rnd(b) + b + 1;
                     if (in_combat == 0)
                     {
                         adjust_hp(fighter_index, tmp);
@@ -616,7 +617,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
                 if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].mhp > 0)
                 {
                     b = fighter[fighter_index].lvl * items[ti].stats[A_ATT];
-                    a = rand() % b + b + 20;
+                    a = kq_rnd(b) + b + 20;
                     if (a > 250)
                     {
                         a = 250;
@@ -655,7 +656,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
             return ITEM_EFFECT_INEFFECTIVE;
         }
         z = items[ti].bst; //eAttribute
-        party[pidx[fighter_index]].stats[z] += (rand() % 3 + 1) * 100;
+        party[pidx[fighter_index]].stats[z] += kq_rnd(1,4) * 100;
         play_effect(SND_TWINKLE, 128);
         switch (z)
         {
@@ -724,7 +725,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         {
             return ITEM_EFFECT_INEFFECTIVE;
         }
-        i = rand() % 11 + 10;
+        i = kq_rnd(10, 21);
         party[pidx[fighter_index]].mhp += i;
         fighter[fighter_index].hp += i;
     }
@@ -734,7 +735,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         {
             return ITEM_EFFECT_INEFFECTIVE;
         }
-        i = rand() % 11 + 10;
+        i = kq_rnd(10, 21);
         party[pidx[fighter_index]].mmp += i;
         fighter[fighter_index].mp += i;
     }

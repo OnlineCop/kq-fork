@@ -52,6 +52,7 @@
 #include "setup.h"
 #include "skills.h"
 #include "timing.h"
+#include "random.h"
 
 /* External variables */
 int can_use_item = 1;
@@ -103,7 +104,7 @@ void auto_herochooseact(int who)
         return;
     }
     fighter[who].facing = 0;
-    eact = rand() % 4;
+    eact = kq_rnd(4);
     if (eact == 0)
     {
         cact[who] = 0;
@@ -1215,7 +1216,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
     }
     if (item_index == I_ROD1)
     {
-        unsigned int random_fighter_index = rand() % 3 + 1;
+        unsigned int random_fighter_index = kq_rnd(1, 4);
         strcpy(attack_string, _("Magic Missiles"));
         display_attack_string = 1;
         ta[defender_fighter_index] = 0;
@@ -1295,9 +1296,9 @@ static void hero_run(void)
     {
         a -= 25;
     }
-    if (rand() % 100 < a)
+    if (kq_rnd(100) < a)
     {
-        if (rand() % 100 < (100 - a))
+        if (kq_rnd(100) < (100 - a))
         {
             g = b * fighter[PSIZE].lvl * c;
             if (gp < g)

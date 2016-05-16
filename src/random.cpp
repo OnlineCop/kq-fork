@@ -27,11 +27,11 @@ static std::minstd_rand engine;
 
 /*! \brief Get random integer.
  * \param v0 lowest number
- * \param v1 highest number
- * \returns new random between v0 and v1 inclusive
+ * \param v1 highest number + 1
+ * \returns new random greater than or equal to v0 but less than v1
  */
 int kq_rnd(int v0, int v1) {
-  std::uniform_int_distribution<int> rnd(v0, v1);
+  std::uniform_int_distribution<int> rnd(v0, v1 - 1);
   return rnd(engine);
 }
 
