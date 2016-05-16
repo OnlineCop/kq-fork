@@ -901,13 +901,13 @@ int save_game_xml(XMLElement* node) {
   return 1;
 }
 
-int save_game_xml() {
+int save_game_xml(const char* filename) {
   XMLDocument doc;
   XMLElement* save = doc.NewElement("save");
   int k = save_game_xml(save);
   doc.InsertFirstChild(save);
   doc.Print();
-  doc.SaveFile("test-save.xml");
+  doc.SaveFile(filename);
   return k;
 }
 

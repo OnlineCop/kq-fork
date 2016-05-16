@@ -225,7 +225,7 @@ static int load_game(void)
     PACKFILE *sdat;
     int a;
     unsigned char tv;
-
+#if 0
     sprintf(strbuf, "sg%d.sav", save_ptr);
     sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_READ_PACKED);
     if (!sdat)
@@ -254,7 +254,10 @@ static int load_game(void)
     {
         return 0;
     }
-
+#else
+    sprintf(strbuf, "sg%d.xml", save_ptr);
+    load_game_xml(kqres(SAVE_DIR, strbuf));
+#endif
     timer_count = 0;
     ksec = 0;
     hold_fade = 0;
@@ -961,10 +964,10 @@ static int save_game_92(void);
  *
  * \returns 0 if save failed, 1 if success
  */
-extern int save_game_xml();
 static int save_game(void)
 {
-  save_game_xml();
+  sprintf(strbuf, "sg%d.xml", save_ptr);
+  save_game_xml(kqres(SAVE_DIR, strbuf));
     return save_game_92();
 }
 

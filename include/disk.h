@@ -33,6 +33,7 @@ int save_s_map(s_map *, PACKFILE *);
 int save_s_entity(s_entity *, PACKFILE *);
 int load_s_player(s_player *, PACKFILE *);
 int save_s_player(s_player *, PACKFILE *);
-int load_heroes_xml(s_heroinfo*, const char*);
+int load_game_xml(const char*);
+int save_game_xml(const char*);
 #endif  /* __DISK_H */
 
