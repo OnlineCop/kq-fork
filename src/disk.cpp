@@ -670,18 +670,17 @@ static int  load_progress(XMLElement* node) {
 	std::fill(startp, endp, 0);
 	XMLElement* elem = node->FirstChildElement("progress");
 	if (elem && !elem->NoChildren()) {
-		auto vs = parse_list(elem->FirstChild()->Value());
-		auto it = startp;
-		for (auto& v : vs) {
-			*it++ = v;
-			if (it == endp) {
-				// Too much data supplied...
-				program_death("Too much data supplied");
-			}
-		}
+	  auto vs = parse_list(elem->FirstChild()->Value());
+	  auto it = startp;
+	  for (auto& v : vs) {
+	    if (it == endp) {
+	      // Too much data supplied...
+	      program_death("Too much data supplied");
+	    }
+	    *it++ = v;
+	  }
 	}
 	return 1;
-	return 0;
 }
 static int save_save_spells(XMLElement* node) {
   auto startp = std::begin(save_spells);
@@ -702,11 +701,11 @@ static int  load_save_spells(XMLElement* node) {
 		auto vs = parse_list(elem->FirstChild()->Value());
 		auto it = startp;
 		for (auto& v : vs) {
-			*it++ = v;
 			if (it == endp) {
 				// Too much data supplied...
 				program_death("Too much data supplied");
 			}
+			*it++ = v;
 		}
 	}
 	return 1;
@@ -730,11 +729,11 @@ static int  load_specials(XMLElement* node) {
 		auto vs = parse_list(elem->FirstChild()->Value());
 		auto it = startp;
 		for (auto& v : vs) {
-			*it++ = v;
 			if (it == endp) {
 				// Too much data supplied...
 				program_death("Too much data supplied");
 			}
+			*it++ = v;
 		}
 	}
 	return 1;
@@ -824,7 +823,9 @@ static int save_general_props(XMLElement* node) {
   addprop(properties, "mapname", curmap);
   addprop(properties, "mapx", g_ent[0].tilex);
   addprop(properties, "mapy", g_ent[0].tiley);
-  addprop(properties, "party", make_list(std::begin(pidx), std::end(pidx)));
+  auto pbegin = std::begin(pidx);
+  auto pend = std::next(pbegin, numchrs);
+  addprop(properties, "party", make_list(pbegin, pend));
   addprop(properties, "random-state", kq_get_random_state());
   // Save-Game Stats - id, level, hp (as a % of mhp), mp% for each member of the party
   vector<int> sgs;
@@ -872,12 +873,17 @@ static int load_general_props(XMLElement* node) {
 			else if (property->Attribute("name", "party")) {
 				auto pps = parse_list(property->Attribute("value"));
 				auto it = pps.begin();
+				numchrs = 0;
 				for (int i = 0; i < MAXCHRS; ++i) {
 					if (it != pps.end()) {
 						pidx[i] = static_cast<ePIDX>(*it++);
+						g_ent[i].eid = pidx[i];
+						g_ent[i].active = 1;
+						++numchrs;
 					}
 					else {
 						pidx[i] = PIDX_UNDEFINED;
+						g_ent[i].active = 0;
 					}
 				}
 			}
