@@ -256,7 +256,7 @@ static int load_equipment(s_player* s, XMLElement* node) {
 		auto values = parse_list(eqp->FirstChild()->Value());
 		if (!values.empty()) {
 			if (values.size() == NUM_EQUIPMENT) {
-				copy(values.begin(), values.end(), s->sts);
+				copy(values.begin(), values.end(), s->eqp);
 			}
 			else {
 				TRACE("Wrong number of equipment, expected %d and got %d", NUM_EQUIPMENT, values.size());
