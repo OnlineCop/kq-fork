@@ -37,7 +37,6 @@ void do_luakill(void);          /*  kq.c  */
 void do_postexec(void);         /*  kq.c  */
 void do_timefunc(const char *);
 void do_zone(int);              /*  kq.c  */
-void init_shops(void);          /* sgame.c */
 void lua_user_init(void);       /*  kq.c */
 
 

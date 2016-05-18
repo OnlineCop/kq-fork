@@ -24,7 +24,6 @@
 #define __MARKERS_H 1
 
 
-#include <allegro.h>
 
 
 /*! \file
@@ -68,8 +67,6 @@ typedef struct _marker_array
 
 
 unsigned int find_marker(const s_marker_array *, const char *);
-size_t load_markers(s_marker_array *, PACKFILE *);
-size_t save_markers(s_marker_array *, PACKFILE *);
 
 
 #endif  /* __MARKERS_H */

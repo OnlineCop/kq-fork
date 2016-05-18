@@ -23,8 +23,6 @@
 #ifndef __CREDITS_H
 #define __CREDITS_H 1
 
-
-#include <allegro.h>
 class Raster;
 
 /*! Allocate memory for credits display */
@@ -35,9 +33,6 @@ void deallocate_credits(void);
 
 /*! Display credits (call in a loop) */
 void display_credits(Raster *);
-
-int ease(signed int);
-
 
 #endif  /* __CREDITS_H */
 

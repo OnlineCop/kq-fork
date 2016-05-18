@@ -30,8 +30,6 @@
  * \date ????????
  */
 
-#include <allegro.h>
-
 /*!\name Size of resource tables */
 /*\{*/
 #define NUM_ITEMS     191

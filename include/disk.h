@@ -24,7 +24,6 @@
 #define __DISK_H 1
 
 
-#include <allegro.h>
 #include "entity.h"
 #include "maps.h"
 #include "structs.h"

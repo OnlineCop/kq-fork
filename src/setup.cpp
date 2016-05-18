@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <string>
 
 #include "combat.h"
 #include "draw.h"
@@ -668,10 +669,10 @@ static int load_samples(void)
     {
         return 1;
     }
-
+	std::string sound_datafile(kqres(DATA_DIR, "kqsnd.dat"));
     for (index = 0; index < MAX_SAMPLES; index++)
     {
-        sfx[index] = load_datafile_object(SOUND_DATAFILE, sndfiles[index]);
+        sfx[index] = load_datafile_object(sound_datafile.c_str(), sndfiles[index]);
         if (sfx[index] == NULL)
         {
             sprintf(strbuf, _("Error loading .WAV file: %s.\n"),

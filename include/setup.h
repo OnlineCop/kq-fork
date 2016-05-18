@@ -26,7 +26,6 @@
 
 /*! \file */
 
-#include <allegro.h>
 
 /*  RB IDEA: We can use the COUNT definition of the new datafile  */
 /*           dump rather than hardcoding the value here.          */

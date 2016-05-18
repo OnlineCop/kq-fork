@@ -28,8 +28,6 @@
    we are using dumb, and it doesn't make sense to have to include aldumb
    individually */
 
-//#include <aldumb.h>
-
 void init_music(void);
 void shutdown_music(void);
 void poll_music(void);

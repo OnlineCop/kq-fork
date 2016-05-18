@@ -28,6 +28,7 @@
  */
 
 #include <string.h>
+#include <allegro.h>
 #include "credits.h"
 #include "draw.h"
 #include "gettext.h"
@@ -35,6 +36,7 @@
 
 #define _(s) gettext(s)
 
+static int ease(int);
 
 /*! Array of strings */
 
@@ -66,7 +68,7 @@ static const char *credits[] =
 
 
 // Compiler doesn't like "const unsigned int", so it's this or a #define.
-#define NUM_EASE_VALUES 32U
+#define NUM_EASE_VALUES 32
 
 static const char **cc = NULL;
 static short int ease_table[NUM_EASE_VALUES];
@@ -84,14 +86,11 @@ END_OF_FUNCTION(ticker)
 void allocate_credits(void)
 {
     unsigned int tlen = 0;
-    const char **credits_current_line = NULL;
-    size_t current_line_length = 0;
-    size_t ease_index;
 
     // Determine the longest text in the credits.
-    for (credits_current_line = credits; *credits_current_line; ++credits_current_line)
+    for (const char ** credits_current_line = credits; *credits_current_line; ++credits_current_line)
     {
-        current_line_length = strlen(*credits_current_line);
+        size_t current_line_length = strlen(*credits_current_line);
         if (current_line_length > tlen)
         {
             tlen = current_line_length;
@@ -102,7 +101,7 @@ void allocate_credits(void)
     // Pre-generate the ease_table values, so they don't have
     // to be calculated on the fly at runtime. All calculations
     // are integer division.
-    for (ease_index = 0; ease_index < NUM_EASE_VALUES; ++ease_index)
+    for (int ease_index = 0; ease_index < NUM_EASE_VALUES; ++ease_index)
     {
         ease_table[ease_index] = short(ease_index * ease_index * (3 * NUM_EASE_VALUES - 2 * ease_index) / NUM_EASE_VALUES / NUM_EASE_VALUES);
     }
@@ -186,20 +185,19 @@ void display_credits(Raster *double_buffer)
  * \param   x Where to evaluate the function
  * \returns Clamped integer value between 0 and NUM_EASE_VALUES, inclusive.
  */
-int ease(signed int x)
+static int ease(int x)
 {
-    unsigned int abs_x = (unsigned int)x;
     if (x <= 0)
     {
         return 0;
     }
-    else if (abs_x >= NUM_EASE_VALUES)
+    else if (x >= NUM_EASE_VALUES)
     {
         return NUM_EASE_VALUES;
     }
     else
     {
-        return ease_table[abs_x];
+        return ease_table[x];
     }
 }
 

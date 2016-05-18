@@ -41,19 +41,11 @@ enum eDirectories
     SETTINGS_DIR    = 5,
 };
 
-
-#define PCX_DATAFILE   kqres(DATA_DIR, "mpcx.dat")
-#define SPELL_DATAFILE kqres(DATA_DIR, "ssprites.dat")
-#define SOUND_DATAFILE kqres(DATA_DIR, "kqsnd.dat")
-
-
-
 /* Get the directory for application data (music, gfx, etc.)
    or user data (screenshots, prefs, saved games)
  */
 const char *kqres(enum eDirectories, const char *);
 
-const char *get_lua_file_path(const char *, const char *);
 const char *get_resource_file_path(const char *, const char *, const char *);
 
 
