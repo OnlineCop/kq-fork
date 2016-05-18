@@ -23,6 +23,8 @@
 #include <sstream>
 #include <time.h>
 
+#include "random.h"
+
 // Name a specific engine here rather than default
 // just in case different platforms have different 
 // implementations of default.

@@ -222,8 +222,8 @@ static int load_game_92(PACKFILE *);
  */
 static int load_game(void)
 {
-  #if 0
-    PACKFILE *sdat;
+#if 0
+	PACKFILE *sdat;
     int a;
     unsigned char tv;
     sprintf(strbuf, "sg%d.sav", save_ptr);
@@ -254,10 +254,10 @@ static int load_game(void)
     {
         return 0;
     }
-    #else
+#else
     sprintf(strbuf, "sg%d.xml", save_ptr);
     load_game_xml(kqres(SAVE_DIR, strbuf));
-    #endif
+#endif
     timer_count = 0;
     ksec = 0;
     hold_fade = 0;
@@ -1561,6 +1561,7 @@ int start_menu(int skip_splash)
     if (stop == 2)
     {
         /* New game init */
+		extern int load_game_xml(const char* filename);
 		load_game_xml(kqres(eDirectories::DATA_DIR, "starting.xml"));
     }
     return stop - 1;

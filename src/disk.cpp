@@ -949,3 +949,91 @@ int load_game_xml(const char* filename) {
 	}
 	return 0;
 }
+
+static void printprop(tinyxml2::XMLPrinter& out, const char* name, int value) {
+	out.OpenElement("property");
+	out.PushAttribute("name", name);
+	out.PushAttribute("value", value);
+	out.CloseElement();
+}
+static void printprop(tinyxml2::XMLPrinter& out, const char* name, const char* value) {
+	out.OpenElement("property");
+	out.PushAttribute("name", name);
+	out.PushAttribute("value", value);
+	out.CloseElement();
+}
+static int save_s_fighter(tinyxml2::XMLPrinter& out, const s_fighter& f) {
+	out.OpenElement("fighter");
+	out.PushAttribute("id", f.name);
+	out.OpenElement("properties");
+	printprop(out, "name", f.name);
+	printprop(out, "xp", f.xp);
+	printprop(out, "gp", f.gp);
+	printprop(out, "lvl", f.lvl);
+	printprop(out, "cx", f.cx);
+	printprop(out, "cy", f.cy);
+	printprop(out, "cw", f.cw);
+	printprop(out, "cl", f.cl);
+	printprop(out, "hp", f.hp);
+	printprop(out, "mhp", f.mhp);
+	printprop(out, "mp", f.mp);
+	printprop(out, "mmp", f.mmp);
+	printprop(out, "dip", f.dip);
+	printprop(out, "defeat-item-common", f.defeat_item_common);
+	printprop(out, "defeat-item-rare", f.defeat_item_rare);
+	printprop(out, "steal-item-common", f.steal_item_common);
+	printprop(out, "steal-item-rare", f.steal_item_rare);
+	printprop(out, "facing", f.facing);
+	printprop(out, "aframe", f.aframe);
+	printprop(out, "crit", f.crit);
+	printprop(out, "defend", f.defend);
+	printprop(out, "csmem", f.csmem);
+	printprop(out, "ctmem", f.ctmem);
+	printprop(out, "current-weapon-type", f.current_weapon_type);
+	printprop(out, "welem", f.welem);
+	printprop(out, "unl", f.unl);
+	printprop(out, "aux", f.aux);
+	printprop(out, "bonus", f.bonus);
+	printprop(out, "bstat", f.bstat);
+	printprop(out, "mrp", f.mrp);
+	out.CloseElement(/*properties*/); 
+	out.OpenElement("stats");
+	out.PushText(make_list(std::begin(f.stats), std::end(f.stats)).c_str());
+	out.CloseElement(/*stats*/);
+	out.OpenElement("res");
+	out.PushText(make_list(std::begin(f.res), std::end(f.res)).c_str());
+	out.CloseElement(/*res*/);
+	out.OpenElement("sts");
+	out.PushText(make_list(std::begin(f.sts), std::end(f.sts)).c_str());
+	out.CloseElement(/*sts*/);
+	out.OpenElement("ai");
+	out.PushText(make_list(std::begin(f.ai), std::end(f.ai)).c_str());
+	out.CloseElement();
+	out.OpenElement("aip");
+	out.PushText(make_list(std::begin(f.aip), std::end(f.aip)).c_str());
+	out.CloseElement(); 
+	out.OpenElement("atrack");
+	out.PushText(make_list(std::begin(f.atrack), std::end(f.atrack)).c_str());
+	out.CloseElement();
+	out.OpenElement("imb");
+	vector<int> imb{ f.imb_s, f.imb_a, f.imb[0], f.imb[1] };
+	out.PushText(make_list(imb.begin(), imb.end()).c_str());
+	out.CloseElement(/*imb*/);
+	out.CloseElement(/*fighter*/); 
+	return 0;
+}
+
+int save_fighters(const char* filename, s_fighter* fighters, int count) {
+	FILE* f = fopen(filename, "wb");
+	if (f) {
+		tinyxml2::XMLPrinter out(f);
+		out.OpenElement("fighters");
+		for (int i = 0; i < count; ++i) {
+			s_fighter& fighter = fighters[i];
+			save_s_fighter(out, fighter);
+		}
+		out.CloseElement();
+		fclose(f);
+	}
+	return 0;
+}

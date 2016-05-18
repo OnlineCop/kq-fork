@@ -39,11 +39,11 @@ typedef struct
                                   * If Ayla steals something, she will get this item 5% of the time.
                                   */
     int stats[NUM_STATS];        /*!<\brief See A_* constants in kq.h */
-    char res[16];                /*!<\brief eResistance: See R_* constants */
+    char res[NUM_RES];                /*!<\brief eResistance: See R_* constants */
     unsigned char facing;        /*!<\brief Direction character's sprite faces */
     unsigned char aframe;        /*!<\brief Battle sprite to display (standing, casting, attacking) */
     unsigned char crit;
-    unsigned char sts[24];       /*!< eSpellType */
+    unsigned char sts[NUM_SPELLTYPES];       /*!< eSpellType */
     unsigned char defend;
     unsigned char ai[8];
     unsigned char aip[8];

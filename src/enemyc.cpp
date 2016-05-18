@@ -687,7 +687,14 @@ static int enemy_stscheck(int ws, int s)
     return 0;
 }
 
-
+static void dump_en() {
+	extern int save_fighters(const char*, s_fighter*, int);
+	std::unique_ptr<s_fighter[]> tmp(new s_fighter[enemies_n]);
+	for (int i = 0; i < enemies_n; ++i) {
+		tmp[i] = *enemy_fighters[i];
+	}
+	save_fighters("save-f.xml", tmp.get(), enemies_n);
+}
 
 /*! \brief Load all enemies from disk
  *
@@ -860,6 +867,7 @@ static void load_enemies(void)
         f->mrp = 100;
     }
     fclose(edat);
+	dump_en();
 }
 
 

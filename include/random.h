@@ -19,8 +19,8 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __RANDOM_H__
-#define __RANDOM_H__
+#ifndef __RANDOM_H
+#define __RANDOM_H
 #include <string>
 void kq_init_random();
 int kq_rnd(int v0, int v1);
