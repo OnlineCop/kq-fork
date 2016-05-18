@@ -911,8 +911,8 @@ int save_game_xml(const char* filename) {
   XMLDocument doc;
   XMLElement* save = doc.NewElement("save");
   int k = save_game_xml(save);
-  doc.InsertFirstChild(save);
-  doc.Print();
+  doc.InsertFirstChild(doc.NewDeclaration());
+  doc.InsertEndChild(save);
   doc.SaveFile(filename);
   return k;
 }
@@ -1027,6 +1027,7 @@ int save_fighters(const char* filename, s_fighter* fighters, int count) {
 	FILE* f = fopen(filename, "wb");
 	if (f) {
 		tinyxml2::XMLPrinter out(f);
+		out.PushHeader(false, true);
 		out.OpenElement("fighters");
 		for (int i = 0; i < count; ++i) {
 			s_fighter& fighter = fighters[i];
