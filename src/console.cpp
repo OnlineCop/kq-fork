@@ -19,7 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
+#include <stddef.h>
 #include "console.h"
 #include "draw.h"
 #include "kq.h"
