@@ -5,7 +5,6 @@
         <property name="mapname" value="main"/>
         <property name="mapx" value="132"/>
         <property name="mapy" value="30"/>
-        <property name="party" value="-1,0,0,0,0,0,0,0"/>
         <property name="sgstats" value="-1,1,100,100,-1,0,0,0,0,1,100,0,0,1,100,0,0,1,100,0,0,1,100,0,0,1,100,0,0,1,100,0"/>
     </properties>
     <heroes>
