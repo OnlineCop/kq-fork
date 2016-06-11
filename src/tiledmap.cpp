@@ -27,7 +27,7 @@ using stdext::make_checked_array_iterator;
 #else
 template <typename T> 
 T* make_checked_array_iterator(T* ptr, size_t size, size_t offset = 0) {
-  (void) size;
+	(void) size;
 	return ptr + offset;
 }
 #endif
@@ -95,7 +95,7 @@ struct tmx_map {
 	const tmx_tileset& find_tileset(const string&) const;
 };
 
-static const unsigned short SHADOW_OFFSET = 200;
+static const uint16_t SHADOW_OFFSET = 200;
 static tmx_map load_tmx_map(XMLElement const *root);
 static XMLElement const *find_tmx_element(XMLElement const *, const char *, const char *);
 static vector<s_bound> load_tmx_bounds(XMLElement const *);
@@ -201,10 +201,10 @@ vector<s_bound> load_tmx_bounds(XMLElement const *el) {
 		i = i->NextSiblingElement("object")) {
 			if (i->Attribute("type", "bounds")) {
 				s_bound bound;
-				bound.left = i->IntAttribute("x") / 16;
-				bound.top = i->IntAttribute("y") / 16;
-				bound.right = i->IntAttribute("width") / 16 + bound.left - 1;
-				bound.bottom = i->IntAttribute("height") / 16 + bound.top - 1;
+				bound.left = i->IntAttribute("x") / TILE_W;
+				bound.top = i->IntAttribute("y") / TILE_H;
+				bound.right = i->IntAttribute("width") / TILE_W + bound.left - 1;
+				bound.bottom = i->IntAttribute("height") / TILE_H + bound.top - 1;
 				bound.btile = 0;
 				auto props = i->FirstChildElement("properties");
 				if (props) {
@@ -251,8 +251,8 @@ vector<s_marker> load_tmx_markers(XMLElement const *el) {
 		obj = obj->NextSiblingElement("object")) {
 			if (obj->Attribute("type", "marker")) {
 				s_marker marker;
-				marker.x = obj->IntAttribute("x") / 16;
-				marker.y = obj->IntAttribute("y") / 16;
+				marker.x = obj->IntAttribute("x") / TILE_W;
+				marker.y = obj->IntAttribute("y") / TILE_H;
 				const char *name = obj->Attribute("name");
 				memcpy(marker.name, name, sizeof(marker.name));
 				markers.push_back(marker);
@@ -322,10 +322,10 @@ static vector<s_zone> load_tmx_zones(XMLElement const *el) {
 		i = i->NextSiblingElement("object")) {
 			if (i->Attribute("type", "zone")) {
 				s_zone zone;
-				zone.x = i->IntAttribute("x") / 16;
-				zone.y = i->IntAttribute("y") / 16;
-				zone.w = i->IntAttribute("width") / 16;
-				zone.h = i->IntAttribute("height") / 16;
+				zone.x = i->IntAttribute("x") / TILE_W;
+				zone.y = i->IntAttribute("y") / TILE_H;
+				zone.w = i->IntAttribute("width") / TILE_W;
+				zone.h = i->IntAttribute("height") / TILE_H;
 				// TODO name might not always be an integer in future.
 				zone.n = i->IntAttribute("name");
 				zones.push_back(zone);
@@ -347,8 +347,8 @@ static vector<s_entity> load_tmx_entities(XMLElement const *el) {
 		memset(&entity, 0, sizeof(entity));
 		entity.x = i->IntAttribute("x");
 		entity.y = i->IntAttribute("y");
-		entity.tilex = entity.x / 16;
-		entity.tiley = entity.y / 16;
+		entity.tilex = entity.x / TILE_W;
+		entity.tiley = entity.y / TILE_H;
 		if (properties) {
 			for (auto xprop = properties->FirstChildElement("property"); xprop; xprop = xprop->NextSiblingElement("property")) {
 				auto value = xprop->FindAttribute("value");
@@ -478,16 +478,16 @@ void tmx_map::set_current()
 		if (layer.name == "map") {
 			// map layers - these always have tile offset == 1
 			free(map_seg);
-			unsigned short *ptr = map_seg =
-				static_cast<unsigned short *>(calloc(layer.size, sizeof(*map_seg)));
+			uint16_t *ptr = map_seg =
+				static_cast<uint16_t *>(calloc(layer.size, sizeof(*map_seg)));
 			for (auto t : layer) {
 				if (t > 0) { --t; }
-				*ptr++ = static_cast<unsigned short>(t);
+				*ptr++ = static_cast<uint16_t>(t);
 			}
 		}
 		else if (layer.name == "bmap") {
 			free(b_seg);
-			unsigned short *ptr = b_seg = static_cast<unsigned short *>(calloc(layer.size, sizeof(*b_seg)));
+			uint16_t *ptr = b_seg = static_cast<uint16_t *>(calloc(layer.size, sizeof(*b_seg)));
 			for (auto t : layer) {
 				if (t > 0) {
 					--t;
@@ -497,7 +497,7 @@ void tmx_map::set_current()
 		}
 		else if (layer.name == "fmap") {
 			free(f_seg);
-			unsigned short *ptr = f_seg = static_cast<unsigned short *>(calloc(layer.size, sizeof(*f_seg)));
+			uint16_t *ptr = f_seg = static_cast<uint16_t *>(calloc(layer.size, sizeof(*f_seg)));
 			for (auto t : layer) {
 				if (t > 0) {
 					--t;
@@ -507,36 +507,36 @@ void tmx_map::set_current()
 		}
 		else if (layer.name == "shadows") {
 			// Shadows
-			unsigned short shadow_offset = find_tileset("misc").firstgid + SHADOW_OFFSET;
+			uint16_t shadow_offset = find_tileset("misc").firstgid + SHADOW_OFFSET;
 			free(s_seg);
 			auto sptr = s_seg =
-				static_cast<unsigned char *>(calloc(layer.size, sizeof(*s_seg)));
+				static_cast<uint8_t *>(calloc(layer.size, sizeof(*s_seg)));
 			for (auto t : layer) {
 				if (t > 0) {
 					t -= shadow_offset;
 				}
-				*sptr++ = static_cast<unsigned char>(t);
+				*sptr++ = static_cast<uint8_t>(t);
 			}
 		}
 		else if (layer.name == "obstacles") {
 			// Obstacles
-			unsigned short obstacle_offset = find_tileset("obstacles").firstgid - 1;
+			uint16_t obstacle_offset = find_tileset("obstacles").firstgid - 1;
 			free(o_seg);
 			auto sptr = o_seg =
-				static_cast<unsigned char *>(calloc(layer.size, sizeof(o_seg)));
+				static_cast<uint8_t *>(calloc(layer.size, sizeof(o_seg)));
 
 			for (auto t : layer) {
 				if (t > 0) {
 					t -= obstacle_offset;
 				}
-				*sptr++ = static_cast<unsigned char>(t);
+				*sptr++ = static_cast<uint8_t>(t);
 			}
 		}
 	}
 	
 	// Zones
 	free(z_seg);
-	z_seg = static_cast<unsigned char *>(calloc(xsize * ysize, sizeof(unsigned char)));
+	z_seg = static_cast<uint8_t *>(calloc(xsize * ysize, sizeof(uint8_t)));
 	for (auto &&zone : zones) {
 		for (int i = 0; i < zone.w; ++i) {
 			for (int j = 0; j < zone.h; ++j) {

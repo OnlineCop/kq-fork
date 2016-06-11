@@ -728,7 +728,7 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
  */
 static void parsems(t_entity target_entity)
 {
-    unsigned int p = 0;
+    uint32_t p = 0;
     char tok[10];
     char s;
 

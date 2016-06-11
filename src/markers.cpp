@@ -26,30 +26,30 @@
  * \date 20100222
  */
 
-#include <assert.h>
-#include <ctype.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cassert>
+#include <cctype>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <string>
 
 #include "../include/markers.h"
 
 
-unsigned int find_marker(const s_marker_array *marray, const char *name)
+uint32_t find_marker(const s_marker_array *marray, std::string name)
 {
-    unsigned int i;
+    uint32_t i;
 
     assert(marray && "s_marker_array is NULL");
 
-    if (name == NULL)
+	if (name.empty())
     {
         return -1;    // An empty name is not an error; it is simply not found
     }
 
     for (i = 0; i < marray->size; ++i)
     {
-        if (strcmp(name, marray->array[i].name)) // no match; keep going
+        if (name != marray->array[i].name) // no match; keep going
         {
             continue;
         }
@@ -60,108 +60,65 @@ unsigned int find_marker(const s_marker_array *marray, const char *name)
     return -1; // no match
 }
 
-
-/*! \brief Load all markers in from packfile
- *
- * Loads individual \sa s_marker objects from the specified PACKFILE.
- *
- * \param[in,out] marray - Current array of markers to be reallocated
- * \param[in]     pf - PACKFILE from whence data are pulled
- * \return        Non-0 on error, 0 on success
- */
-size_t load_markers(s_marker_array *marray, PACKFILE *pf)
+Markers::Markers()
 {
-    s_marker *mmarker = NULL;
-    size_t i;
 
-    assert(marray && "marray == NULL");
-    assert(pf && "pf == NULL");
-
-    if (!marray || !pf)
-    {
-        printf("NULL passed into load_markers()\n");
-        return 1;
-    }
-
-    marray->size = pack_igetw(pf);
-    if (pack_feof(pf))
-    {
-        assert(0 && "pack_igetw() for marray->size received EOF signal.");
-        printf("Expected value for number of markers. Instead, received EOF.\n");
-        return 2;
-    }
-    else if (marray->size == 0)
-    {
-        marray->array = NULL;
-        return 0; // Success: okay to have 0 markers in a map
-    }
-
-    marray->array = (s_marker *) realloc
-                    (marray->array, marray->size * sizeof(s_marker));
-    for (i = 0; i < marray->size; ++i)
-    {
-        mmarker = &marray->array[i];
-
-        pack_fread(mmarker->name, sizeof(mmarker->name), pf);
-        mmarker->x = pack_igetw(pf);
-        mmarker->y = pack_igetw(pf);
-
-        if (pack_feof(pf))
-        {
-            assert(0 && "pack_igetw() for marker->[xy] received EOF signal.");
-            printf("Encountered EOF during marker read.\n");
-            return 3;
-        }
-    }
-
-    return 0; // Success
 }
 
-
-
-/*! \brief Save all markers out to packfile
- *
- * Saves individual \sa s_marker objects to the specified PACKFILE.
- *
- * \param[out] marray - Current array of markers from whence data are pulled
- * \param[out] pf - PACKFILE to where data is written
- * \return     Non-0 on error, 0 on success
- */
-size_t save_markers(s_marker_array *marray, PACKFILE *pf)
+Markers::~Markers()
 {
-    size_t marker_index;
-
-    assert(marray && "marray == NULL");
-    assert(pf && "pf == NULL");
-
-    if (!marray || !pf)
-    {
-        printf("NULL passed into save_markers()\n");
-        return 1;
-    }
-
-    pack_iputw(marray->size, pf);
-    if (pack_feof(pf))
-    {
-        assert(0 && "pack_iputw() for marray->size received EOF signal.");
-        printf("Encountered EOF when writing marker array size.\n");
-        return 2;
-    }
-
-    for (marker_index = 0; marker_index < marray->size; ++marker_index)
-    {
-        pack_fwrite(marray->array[marker_index].name, sizeof(marray->array[marker_index].name), pf);
-        pack_iputw(marray->array[marker_index].x, pf);
-        pack_iputw(marray->array[marker_index].y, pf);
-
-        if (pack_feof(pf))
-        {
-            assert(0 && "pack_iputw() for marker->[xy] received EOF signal.");
-            printf("Encountered EOF when writing marker %usize.\n", (unsigned int)marker_index);
-            return 3;
-        }
-    }
-
-    return 0;
+	for (auto marker : m_markers)
+	{
+		marker = nullptr;
+	}
 }
 
+bool Markers::Add(std::shared_ptr<Marker> marker)
+{
+	m_markers.push_back(marker);
+	return true;
+}
+
+bool Markers::Remove(std::shared_ptr<Marker> marker)
+{
+	auto found = std::find(m_markers.begin(), m_markers.end(), marker);
+	if (found != m_markers.end())
+	{
+		m_markers.erase(found);
+		return true;
+	}
+	return false;
+}
+
+std::shared_ptr<Marker> Markers::GetMarker(size_t index)
+{
+	if (index < m_markers.size())
+	{
+		return m_markers[index];
+	}
+	return nullptr;
+}
+
+std::shared_ptr<Marker> Markers::GetMarker(std::string name)
+{
+	for (auto it = m_markers.begin(); it != m_markers.end(); it++)
+	{
+		if ((*it)->name == name)
+		{
+			return *it;
+		}
+	}
+	return nullptr;
+}
+
+std::shared_ptr<Marker> Markers::GetMarker(int32_t x, int32_t y)
+{
+	for (auto it = m_markers.begin(); it != m_markers.end(); it++)
+	{
+		if ((*it)->x == x && (*it)->y == y)
+		{
+			return *it;
+		}
+	}
+	return nullptr;
+}

@@ -400,7 +400,7 @@ static int combat_item(int ss, int t1, int tg)
 static int combat_item_menu(int whom)
 {
     int z, stop = 0, ptr = 0, pptr = 0;
-    unsigned short inventory = g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM];
+    uint16_t inventory = g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM];
 
     fullblit(double_buffer, back);
     while (!stop)
@@ -756,7 +756,7 @@ void hero_choose_action(size_t fighter_index)
     int stop = 0, amy;
     size_t equipment_index;
     size_t ca_index;
-    unsigned int sptr = 1, ptr = 0, my = 0, tt, chi[9];
+    uint32_t sptr = 1, ptr = 0, my = 0, tt, chi[9];
 
     // This is going to blow up if we translate _(...) text into a language
     // where the text is longer than 8 characters.
@@ -993,10 +993,10 @@ void hero_init(void)
     size_t frame_index;
     size_t current_line;
     size_t current_pixel;
-    unsigned int current_fighter_index;
-    unsigned int fighter_x;
-    unsigned int fighter_y;
-    unsigned int fighter_weapon_index;
+    uint32_t current_fighter_index;
+    uint32_t fighter_x;
+    uint32_t fighter_y;
+    uint32_t fighter_weapon_index;
 
     update_equipstats();
     pb = load_datafile_object(PCX_DATAFILE, "USBAT_PCX");
@@ -1046,9 +1046,9 @@ void hero_init(void)
         // colors that the weapons should actually be instead.
         if (fighter[fighter_index].current_weapon_type != W_NO_WEAPON && items[fighter_weapon_index].kol > 0)
         {
-            for (current_line = 0; current_line < (unsigned int)cframes[fighter_index][0]->h; current_line++)
+            for (current_line = 0; current_line < (uint32_t)cframes[fighter_index][0]->h; current_line++)
             {
-                for (current_pixel = 0; current_pixel < (unsigned int)cframes[fighter_index][0]->w; current_pixel++)
+                for (current_pixel = 0; current_pixel < (uint32_t)cframes[fighter_index][0]->w; current_pixel++)
                 {
                     if (cframes[fighter_index][6]->line[current_line][current_pixel] == 168)
                     {
@@ -1174,7 +1174,7 @@ static int hero_invoke(int whom)
 static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 {
     ePIDX defender_fighter_index = PIDX_UNDEFINED;
-    unsigned int random_fighter_index;
+    uint32_t random_fighter_index;
     size_t fighter_index;
 
     if (items[item_index].tgt <= TGT_ALLY_ALL && items[item_index].tgt >= TGT_ALLY_ONE)

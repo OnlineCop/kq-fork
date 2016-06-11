@@ -155,7 +155,7 @@ static void enemy_attack(size_t target_fighter_index)
         cact[target_fighter_index] = 0;
         return;
     }
-    if ((unsigned int)b < PSIZE && numchrs > 1)
+    if ((uint32_t)b < PSIZE && numchrs > 1)
     {
         c = 0;
         for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
@@ -193,7 +193,7 @@ static void enemy_attack(size_t target_fighter_index)
 static int enemy_cancast(size_t target_fighter_index, size_t sp)
 {
     size_t a;
-    unsigned int z = 0;
+    uint32_t z = 0;
 
     /* Enemy is mute; cannot cast the spell */
     if (fighter[target_fighter_index].sts[S_MUTE] != 0)
@@ -651,7 +651,7 @@ static void enemy_spellcheck(size_t attack_fighter_index, size_t defend_fighter_
  */
 static int enemy_stscheck(int ws, int s)
 {
-    unsigned int fighter_affected = 0;
+    uint32_t fighter_affected = 0;
     size_t fighter_index;
 
     if (s == PSIZE)
@@ -794,7 +794,7 @@ static void load_enemies(void)
         f->bstat = 0;
         // Current weapon type
         fscanf(edat, "%d", &tmp);
-        f->current_weapon_type = (unsigned int)tmp;
+        f->current_weapon_type = (uint32_t)tmp;
         // Weapon elemental type
         fscanf(edat, "%d", &tmp);
         f->welem = tmp;

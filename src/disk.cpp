@@ -29,11 +29,10 @@
  */
 
 
-// This '../' handles being compiled along with the map editor under the maps/ directory.
-#include "../include/bounds.h"
-#include "../include/disk.h"
-#include "../include/markers.h"
-#include "../include/platform.h"
+#include "bounds.h"
+#include "disk.h"
+#include "markers.h"
+#include "platform.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -70,53 +69,6 @@ int save_s_entity(s_entity *s, PACKFILE *f)
     pack_putc(s->facehero, f);
     pack_putc(s->transl, f);
     pack_fwrite(s->script, sizeof(s->script), f);
-    return 0;
-}
-
-
-
-
-
-int save_s_map(s_map *sm, PACKFILE *f)
-{
-    assert(sm && "sm == NULL");
-    assert(f && "f == NULL");
-
-    /* pack_putc (sm->map_no, f); */
-    pack_putc(0, f);             /* To maintain compatibility. */
-
-    pack_putc(sm->zero_zone, f);
-    pack_putc(sm->map_mode, f);
-    pack_putc(sm->can_save, f);
-    pack_putc(sm->tileset, f);
-    pack_putc(sm->use_sstone, f);
-    pack_putc(sm->can_warp, f);
-    pack_putc(sm->extra_byte, f);
-    pack_iputl(sm->xsize, f);
-    pack_iputl(sm->ysize, f);
-    pack_iputl(sm->pmult, f);
-    pack_iputl(sm->pdiv, f);
-    pack_iputl(sm->stx, f);
-    pack_iputl(sm->sty, f);
-    pack_iputl(sm->warpx, f);
-    pack_iputl(sm->warpy, f);
-    //pack_iputl (1, f);           /* Revision 1 */
-    sm->revision = 2;            // Force new revision: 2
-
-    pack_iputl(sm->revision, f);         /* Revision 2 */
-    pack_iputl(sm->extra_sdword2, f);
-
-    // FIXME: These should write the string length, then the string, to the packfile.
-    // Hard-coding 16 and 40 are the only way to know how many characters to read back in.
-    pack_fwrite(sm->song_file.c_str(), 16/*sm->song_file.length()*/, f);
-    pack_fwrite(sm->map_desc.c_str(), 40/*sm->map_desc.length()*/, f);
-
-    /* Markers */
-    save_markers(&sm->markers, f);
-
-    /* Bounding boxes */
-    save_bounds(&sm->bounds, f);
-
     return 0;
 }
 

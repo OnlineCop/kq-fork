@@ -35,6 +35,7 @@
  */
 
 
+#include <allegro.h>
 #include "enums.h"
 
 
@@ -55,16 +56,16 @@ void fkill(size_t);             /*  heroc.c, hskill.c, magic.c  */
 
 
 /*!  global combat related variables  */
-extern unsigned int combatend;           /*  heroc.c, magic.c  */
+extern uint32_t combatend;           /*  heroc.c, magic.c  */
 extern int cact[NUM_FIGHTERS];  /*  enemyc.c, heroc.c, hskill.c  */
 extern int curx;                /*  effects.c, heroc.c, hskill.c  */
 extern int cury;                /*  effects.c, heroc.c, hskill.c  */
-extern unsigned int num_enemies; /*  draw.c, effects.c, enemyc.c  */
+extern uint32_t num_enemies; /*  draw.c, effects.c, enemyc.c  */
 extern int ta[NUM_FIGHTERS];    /*  effects.c, [he]skill.c, hero.c, (item|mas)menu.c, kq.c, magic.c  */
 extern int deffect[NUM_FIGHTERS];       /*  effects.c, hskill.c  */
 extern int rcount;              /*  magic.c  */
-extern unsigned char vspell;    /*  magic.c  */
-extern unsigned char ms;        /*  heroc.c  */
+extern uint8_t vspell;    /*  magic.c  */
+extern uint8_t ms;        /*  heroc.c  */
 extern struct BITMAP *backart;        /*  hskill.c  */
 
 

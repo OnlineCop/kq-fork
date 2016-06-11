@@ -46,14 +46,14 @@
 typedef struct
 {
     char name[17];               /*!< Name of the item */
-    unsigned char icon;          /*!< Small icon */
-    unsigned char kol;           /*!< Colour to draw?? See hero_init() */
+    uint8_t icon;          /*!< Small icon */
+    uint8_t kol;           /*!< Colour to draw?? See hero_init() */
     char desc[40];               /*!< One line description */
-    unsigned char tgt;           /*!< Targetting type for combat items. See TGT_* constants in kq.h */
-    unsigned char type;          /*!< Relates to which slot (hand, etc.) this item goes into */
-    unsigned char use;           /*!< Usage mode  (see USE_* constants in kq.h) */
-    unsigned char ilvl;          /*!< What level this item is */
-    unsigned char hnds;          /*!< This is used to index into the ::magic[] array */
+    uint8_t tgt;           /*!< Targetting type for combat items. See TGT_* constants in kq.h */
+    uint8_t type;          /*!< Relates to which slot (hand, etc.) this item goes into */
+    uint8_t use;           /*!< Usage mode  (see USE_* constants in kq.h) */
+    uint8_t ilvl;          /*!< What level this item is */
+    uint8_t hnds;          /*!< This is used to index into the ::magic[] array */
 
     /*! For seeds, determines what attribute is affected.
      * - 0 Strength
@@ -64,13 +64,13 @@ typedef struct
      *
      * See item_effects()
      */
-    unsigned char bst;
-    unsigned char elem;          /*!< For runes, what element will it affect (see rs parameter of res_adjust() ) */
-    unsigned char imb;           /*!< imbued - What spell is cast when you "use" this item in combat */
-    unsigned char eff;           /*!< Effect ?? */
+    uint8_t bst;
+    uint8_t elem;          /*!< For runes, what element will it affect (see rs parameter of res_adjust() ) */
+    uint8_t imb;           /*!< imbued - What spell is cast when you "use" this item in combat */
+    uint8_t eff;           /*!< Effect ?? */
     int bon;                     /*!< Bonus ?? */
     int price;                   /*!< Default price of this item, in gp */
-    unsigned char eq[8];         /*!< Who can equip this item. See heroc.h */
+    uint8_t eq[8];         /*!< Who can equip this item. See heroc.h */
     int stats[13];               /*!< Stat bonuses for equipping this item See A_ constants in kq.h */
     char res[16];                /*!< Resistances. See R_ constants in kq.h */
 } s_item;
@@ -80,18 +80,18 @@ typedef struct
 typedef struct
 {
     char name[14];               /*!< Name of the spell being used */
-    unsigned char icon;          /*!< Picture used in the spell list (which type of spell) */
+    uint8_t icon;          /*!< Picture used in the spell list (which type of spell) */
     char desc[26];               /*!< Description of what the spell is intended to do */
-    unsigned char stat;
-    unsigned char mpc;
-    unsigned char use;
-    unsigned char tgt;
+    uint8_t stat;
+    uint8_t mpc;
+    uint8_t use;
+    uint8_t tgt;
     int dmg;
     int bon;                     /*!< Bonus for */
     int hit;
-    unsigned char elem;
-    unsigned char dlvl;
-    unsigned char eff;
+    uint8_t elem;
+    uint8_t dlvl;
+    uint8_t eff;
     int clvl[8];
 } s_spell;
 
@@ -99,13 +99,13 @@ typedef struct
 /*! \brief A special effect */
 typedef struct
 {
-    unsigned char numf;         /*!< Number of frames within the sprite */
-    unsigned short xsize;       /*!< Width of each frame */
-    unsigned short ysize;       /*!< Height of each frame */
-    unsigned char orient;       /*!< When 0, draw effect behind fighter; when 1, draw effect in front of fighter */
-    unsigned short delay;       /*!< Time to wait between frame transitions */
-    unsigned char kolor;        /*!< Relates to the nth color entry within the PALETTE pal */
-    unsigned char snd;          /*!< Sound that is played when effect is used */
+    uint8_t numf;         /*!< Number of frames within the sprite */
+    uint16_t xsize;       /*!< Width of each frame */
+    uint16_t ysize;       /*!< Height of each frame */
+    uint8_t orient;       /*!< When 0, draw effect behind fighter; when 1, draw effect in front of fighter */
+    uint16_t delay;       /*!< Time to wait between frame transitions */
+    uint8_t kolor;        /*!< Relates to the nth color entry within the PALETTE pal */
+    uint8_t snd;          /*!< Sound that is played when effect is used */
     char ename[16];
 } s_effect;
 
@@ -113,21 +113,21 @@ typedef struct
 /*! \brief An encounter */
 typedef struct
 {
-    unsigned char tnum;          /*!< Encounter number in the Encounter table */
-    unsigned char lvl;           /*!< Level of monsters */
-    unsigned char per;           /*!< When random encounters are specified, this is the cumulative percentage that this one will be selected */
-    unsigned char idx[5];        /*!< Index of enemies */
+    uint8_t tnum;          /*!< Encounter number in the Encounter table */
+    uint8_t lvl;           /*!< Level of monsters */
+    uint8_t per;           /*!< When random encounters are specified, this is the cumulative percentage that this one will be selected */
+    uint8_t idx[5];        /*!< Index of enemies */
 } s_erow;
 
 
 /*! \brief An actual battle */
 typedef struct
 {
-    unsigned char extra_byte;    /*!< Map where this battle occurs */
-    unsigned char extra_byte2;   /*!< Zone that triggers this battle */
-    unsigned char enc;           /*!< For random encounters, a 1 in enc chance there will not be combat */
-    unsigned char etnum;         /*!< Select rows in the encounter table */
-    unsigned char eidx;          /*!< Select a specific row, or 99 to pick a random one */
+    uint8_t extra_byte;    /*!< Map where this battle occurs */
+    uint8_t extra_byte2;   /*!< Zone that triggers this battle */
+    uint8_t enc;           /*!< For random encounters, a 1 in enc chance there will not be combat */
+    uint8_t etnum;         /*!< Select rows in the encounter table */
+    uint8_t eidx;          /*!< Select a specific row, or 99 to pick a random one */
     char bmusic[16];             /*!< music file to play */
     char backimg[20];            /*!< Background image */
 } s_encounter;

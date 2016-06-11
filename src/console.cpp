@@ -85,10 +85,10 @@ void init_console(void)
 * \param xofs x-offset display position
 * \param yofs y-offset display position
 */
-void display_console(unsigned int xofs, unsigned int yofs)
+void display_console(uint32_t xofs, uint32_t yofs)
 {
-    unsigned int i, y;
-    unsigned int max_y = yofs + 120;
+    uint32_t i, y;
+    uint32_t max_y = yofs + 120;
 
     if (g_console.on != 1)
     {
@@ -147,8 +147,8 @@ void run_console(void)
     int c;
     size_t sl;
     int running;
-    unsigned int string_len;
-    unsigned int i;
+    uint32_t string_len;
+    uint32_t i;
     static const char get[] = "return get_progress(P_";
     static const char ret[] = "return ";
     static const char set[] = "set_progress(P_";

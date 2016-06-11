@@ -66,9 +66,9 @@
 /* These describe the save slots. Number of characters, gp, etc */
 /* They are used to make the save menu prettier. */
 signed int savegame_num_characters[NUMSG]; // -1 indicates "wrong version" of save game
-unsigned int savegame_gold[NUMSG], savegame_time_hours[NUMSG], savegame_time_minutes[NUMSG];
-unsigned int sid[NUMSG][PSIZE], slv[NUMSG][PSIZE];
-unsigned char shp[NUMSG][PSIZE], smp[NUMSG][PSIZE];
+uint32_t savegame_gold[NUMSG], savegame_time_hours[NUMSG], savegame_time_minutes[NUMSG];
+uint32_t sid[NUMSG][PSIZE], slv[NUMSG][PSIZE];
+uint8_t shp[NUMSG][PSIZE], smp[NUMSG][PSIZE];
 
 /* Which save_slot the player is pointing to */
 int save_ptr = 0;
@@ -223,7 +223,7 @@ static int load_game(void)
 {
     PACKFILE *sdat;
     int a;
-    unsigned char tv;
+    uint8_t tv;
 
     sprintf(strbuf, "sg%d.sav", save_ptr);
     sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_READ_PACKED);
@@ -268,7 +268,7 @@ static int load_game(void)
 
 int load_game_91(PACKFILE *sdat)
 {
-    unsigned int a, b;
+    uint32_t a, b;
 
     numchrs = pack_igetl(sdat);
     gp = pack_igetl(sdat);
@@ -847,8 +847,8 @@ void load_sgstats(void)
 {
     PACKFILE *ldat;
     int c;
-    unsigned char vc;
-    unsigned int current_save_game;
+    uint8_t vc;
+    uint32_t current_save_game;
     s_player tpm;
     size_t pidx_index, player_index, temp_player_index;
 
@@ -1393,7 +1393,7 @@ static void show_sgstats(int saving)
 int start_menu(int skip_splash)
 {
     int stop = 0, ptr = 0, redraw = 1, a, b;
-    unsigned int fade_color;
+    uint32_t fade_color;
     BITMAP *staff, *dudes, *tdudes;
 	BITMAP* title = get_cached_image("title.png");
 #ifdef DEBUGMODE

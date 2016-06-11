@@ -33,7 +33,7 @@
  */
 
 
-typedef unsigned int t_entity;
+typedef uint32_t t_entity;
 
 
 void process_entities(void);    /*  kq.c  */

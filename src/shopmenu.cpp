@@ -48,16 +48,16 @@ in the code. It is part of my "separate the engine and the data" campaign. */
 
 /* highest valid shops[] index + 1. Equals number of shops declared if indexes
     are declared in order. */
-unsigned short num_shops = 0;
+uint16_t num_shops = 0;
 
 s_shop shops[NUMSHOPS];         /* Initialized by init.lua:init_shop() */
 
 /*! Number of items in a shop */
-static unsigned int num_shop_items;
+static uint32_t num_shop_items;
 
 /*  internal variables  */
 /*! \brief Current shop index */
-static unsigned char shop_no;
+static uint8_t shop_no;
 
 /*  internal functions  */
 static void draw_sideshot(int);
@@ -134,8 +134,8 @@ static void buy_menu(void)
     int stop = 0, cost;
     size_t shop_item_index, item_index, xptr = 1, yptr = 0;
     eFontColor font_color;
-    unsigned int max, max_x = 0;
-    unsigned short item_no;
+    uint32_t max, max_x = 0;
+    uint16_t item_no;
 
     for (shop_item_index = 0; shop_item_index < num_shop_items; shop_item_index++)
     {
@@ -322,7 +322,7 @@ static void draw_sideshot(int selected_item)
 {
     int wx, wy;
     int cs[13];
-    unsigned int ownd = 0, equipped_items = 0, slot;
+    uint32_t ownd = 0, equipped_items = 0, slot;
     size_t pidx_index, equipment_index, stats_index, cs_index, spell_index, inventory_index;
 
     menubox(double_buffer, 80 + xofs, 192 + yofs, 18, 4, BLUE);
@@ -454,10 +454,10 @@ static void draw_sideshot(int selected_item)
  * \param   gold_per_character Gold per character (base price)
  * \param   pay If 0, staying is free.
  */
-void inn(const char *iname, unsigned int gold_per_character, int pay)
+void inn(const char *iname, uint32_t gold_per_character, int pay)
 {
     int b, my = 0, stop = 0;
-    unsigned int total_gold_cost;
+    uint32_t total_gold_cost;
     size_t pidx_index, party_index;
 
     if (pay == 0)
@@ -506,7 +506,7 @@ void inn(const char *iname, unsigned int gold_per_character, int pay)
         print_font(double_buffer, 256 + xofs, 176 + yofs, _("Gold:"), FGOLD);
         sprintf(strbuf, "%d", gp);
         print_font(double_buffer, 312 - (strlen(strbuf) * 8) + xofs, 184 + yofs, strbuf, FNORMAL);
-        if ((unsigned int)gp >= total_gold_cost)
+        if ((uint32_t)gp >= total_gold_cost)
         {
             menubox(double_buffer, 52 + xofs, 96 + yofs, 25, 2, BLUE);
             print_font(double_buffer, 60 + xofs, 108 + yofs, _("Do you wish to stay?"), FNORMAL);

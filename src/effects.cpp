@@ -141,13 +141,13 @@ void death_animation(size_t target_fighter_index, int target_all_flag)
 void display_amount(size_t target_fighter_index, eFontColor font_color, int multiple_target)
 {
     int dx, dy, sprite_height;
-    unsigned int c, p;
+    uint32_t c, p;
     eFontColor new_font_color;
     size_t fighter_index, start_fighter_index, num_fighters;
     size_t string_length;
 
     /* TT: used for the slow_computer routine */
-    unsigned int pcount, ccount;
+    uint32_t pcount, ccount;
 
     if (multiple_target == 1)
     {
@@ -359,7 +359,7 @@ void draw_attacksprite(size_t target_fighter_index, int multiple_target, size_t 
 void draw_castersprite(size_t caster_fighter_index, int new_pal_color)
 {
     int dx, dy;
-    unsigned int frame_index;
+    uint32_t frame_index;
     size_t pixel_row, pixel_col;
     DATAFILE *cd;
     BITMAP *cs;
@@ -369,9 +369,9 @@ void draw_castersprite(size_t caster_fighter_index, int new_pal_color)
 
     // Re-colorize the two-tone image by replacing its value in the palette
     // with another palette color entry.
-    for (pixel_row = 0; pixel_row < (unsigned int)cs->h; pixel_row++)
+    for (pixel_row = 0; pixel_row < (uint32_t)cs->h; pixel_row++)
     {
-        for (pixel_col = 0; pixel_col < (unsigned int)cs->w; pixel_col++)
+        for (pixel_col = 0; pixel_col < (uint32_t)cs->w; pixel_col++)
         {
             // Pixel color 5 in PALETTE 'pal' equals {20, 20, 20, 0}
             if (cs->line[pixel_row][pixel_col] == 5)

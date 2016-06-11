@@ -29,24 +29,24 @@
 
 void do_inn_effects(int);       /*  only in intrface.c  */
 void draw_shopgold(void);       /*  only in shopmenu.c  */
-void inn(const char *, unsigned int, int);     /*  only in intrface.c  */
+void inn(const char *, uint32_t, int);     /*  only in intrface.c  */
 int shop(int);                  /*  only in intrface.c  */
 
 typedef struct
 {
     char name[40];                            /* Name of this shop */
-    unsigned short items[SHOPITEMS];          /* A list of items in this shop */
-    unsigned short items_current[SHOPITEMS];  /* Quantity of this type of item */
-    unsigned short items_max[SHOPITEMS];      /* Maximum quantity of this type of item */
+    uint16_t items[SHOPITEMS];          /* A list of items in this shop */
+    uint16_t items_current[SHOPITEMS];  /* Quantity of this type of item */
+    uint16_t items_max[SHOPITEMS];      /* Maximum quantity of this type of item */
 
     /* Amount of time, in minutes, it takes for this shop to replenish this item */
-    unsigned short items_replenish_time[SHOPITEMS];
+    uint16_t items_replenish_time[SHOPITEMS];
 } s_shop;
 
 
 extern s_shop shops[NUMSHOPS];      /* sgame.c intrface.c */
-extern unsigned short num_shops;    /* sgame.c intrface.c */
-extern unsigned short shop_time[NUMSHOPS];
+extern uint16_t num_shops;    /* sgame.c intrface.c */
+extern uint16_t shop_time[NUMSHOPS];
 
 
 #endif  /* __SHOPMENU_H */

@@ -809,7 +809,7 @@ static void status_screen(size_t fighter_index)
 {
     int stop = 0;
     int bc = 0;
-    unsigned int rect_fill_amount = 0, curr_fill, res_index, stats_y, equipment_index;
+    uint32_t rect_fill_amount = 0, curr_fill, res_index, stats_y, equipment_index;
     size_t pidx_index, stats_index;
 
     play_effect(SND_MENU, 128);

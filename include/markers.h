@@ -25,6 +25,8 @@
 
 
 #include <allegro.h>
+#include <memory>
+#include <vector>
 
 
 /*! \file
@@ -51,6 +53,18 @@ typedef struct _marker
 } s_marker;
 
 
+class Marker
+{
+public:
+	Marker() {};
+	~Marker() {};
+
+	std::string name;
+	int32_t x;
+	int32_t y;
+};
+
+
 
 /*! \brief Container holding array of markers
  *
@@ -67,9 +81,38 @@ typedef struct _marker_array
 } s_marker_array;
 
 
-unsigned int find_marker(const s_marker_array *, const char *);
-size_t load_markers(s_marker_array *, PACKFILE *);
-size_t save_markers(s_marker_array *, PACKFILE *);
+class Markers
+{
+public:
+	Markers();
+	~Markers();
+
+	// Add a new marker to the map. Returns true on success, or false on failure.
+	bool Add(std::shared_ptr<Marker> marker);
+
+	// Remove the specified marker from the map. Returns true if the marker was removed, or false if the marker was not found.
+	bool Remove(std::shared_ptr<Marker> marker);
+
+	// Return a pointer to the marker at the given @param index. If index is out of bounds, returns null.
+	std::shared_ptr<Marker> GetMarker(size_t index);
+
+	// Return a pointer to the marker that has the given @param name. If no markers by that name are found, returns null.
+	std::shared_ptr<Marker> GetMarker(std::string name);
+
+	// Return a pointer to the marker whose @param x and @param y coordinates match. If no marker is at those coordinates, returns null.
+	std::shared_ptr<Marker> GetMarker(int32_t x, int32_t y);
+
+	// Return the number of markers in the array.
+	inline const size_t NumMarkers() {
+		return m_markers.size();
+	}
+
+protected:
+	std::vector< std::shared_ptr<Marker> > m_markers;
+};
+
+
+uint32_t find_marker(const s_marker_array *, std::string);
 
 
 #endif  /* __MARKERS_H */

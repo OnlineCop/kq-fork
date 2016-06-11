@@ -64,7 +64,7 @@ int hero_skillcheck(size_t fighter_index)
     size_t weapon_index = 0;
     size_t pidx_index = pidx[fighter_index];
     size_t target_fighter_index;
-    unsigned int can_be_affected = 0;
+    uint32_t can_be_affected = 0;
 
     switch (pidx_index)
     {
@@ -446,8 +446,8 @@ static void infusion(int c, int sn)
 
 void reveal(int tgt)
 {
-    unsigned int c, g = 0, b;
-    unsigned int d = 0;
+    uint32_t c, g = 0, b;
+    uint32_t d = 0;
     int draw_x, draw_y;
     char resistance;
 
@@ -534,7 +534,7 @@ int skill_use(size_t attack_fighter_index)
             {
                 return 0;
             }
-            enemy_index = (unsigned int)tgt;
+            enemy_index = (uint32_t)tgt;
             temp = create_bitmap(320, 240);
             blit( backart, temp, 0, 0, 0, 0, 320, 240);
             color_scale(temp, backart, 16, 31);
@@ -789,7 +789,7 @@ int skill_use(size_t attack_fighter_index)
             {
                 return 0;
             }
-            enemy_index = (unsigned int)tgt;
+            enemy_index = (uint32_t)tgt;
             tx = fighter[attack_fighter_index].cx;
             ty = fighter[attack_fighter_index].cy;
             fighter[attack_fighter_index].cx = fighter[enemy_index].cx - 16;
@@ -901,7 +901,7 @@ int skill_use(size_t attack_fighter_index)
             {
                 return 0;
             }
-            enemy_index = (unsigned int)tgt;
+            enemy_index = (uint32_t)tgt;
             reveal(enemy_index);
             break;
         default:

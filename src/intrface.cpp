@@ -944,7 +944,8 @@ static const char *stringreader(lua_State *L, void *data, size_t *size)
  */
 static s_marker *KQ_find_marker(const char *name, int required)
 {
-    unsigned int i = find_marker(&g_map.markers, name);
+	std::string name_string = name;
+    uint32_t i = find_marker(&g_map.markers, name_string);
     if (i < g_map.markers.size)
     {
         return &g_map.markers.array[i];
@@ -1689,8 +1690,8 @@ static int KQ_chest(lua_State *L)
     int tno = (int) lua_tonumber(L, 1);
     int ino = (int) lua_tonumber(L, 2);
     int amt = (int) lua_tonumber(L, 3);
-    unsigned int chestx = (unsigned int) lua_tonumber(L, 4);
-    unsigned int chesty = (unsigned int) lua_tonumber(L, 5);
+    uint32_t chestx = (uint32_t) lua_tonumber(L, 4);
+    uint32_t chesty = (uint32_t) lua_tonumber(L, 5);
     int tile = (int) lua_tonumber(L, 6);
 
     if (tno > -1 && treasure[tno] != 0)
@@ -1819,8 +1820,8 @@ static int KQ_copy_tile_all(lua_State *L)
     int sy = (int) lua_tonumber(L, 2);
     int dx = (int) lua_tonumber(L, 3);
     int dy = (int) lua_tonumber(L, 4);
-    unsigned int wid = (unsigned int) lua_tonumber(L, 5);
-    unsigned int hgt = (unsigned int) lua_tonumber(L, 6);
+    uint32_t wid = (uint32_t) lua_tonumber(L, 5);
+    uint32_t hgt = (uint32_t) lua_tonumber(L, 6);
     size_t os, od, i, j;
 
     /*      sprintf (strbuf, "Copy (%d,%d)x(%d,%d) to (%d,%d)", sx, sy, wid, hgt, dx, dy);
@@ -2164,8 +2165,8 @@ static int KQ_get_autoparty(lua_State *L)
 static int KQ_get_bounds(lua_State *L)
 {
     int a;
-    unsigned short ent_x, ent_y;
-    unsigned int found_index;
+    uint16_t ent_x, ent_y;
+    uint32_t found_index;
 
     if (lua_isnumber(L, 1))
     {
@@ -2407,8 +2408,8 @@ static int KQ_get_numchrs(lua_State *L)
  */
 static int KQ_get_party_eqp(lua_State *L)
 {
-    unsigned int a = (unsigned int) lua_tonumber(L, 1);
-    unsigned int b = (unsigned int) lua_tonumber(L, 2);
+    uint32_t a = (uint32_t) lua_tonumber(L, 1);
+    uint32_t b = (uint32_t) lua_tonumber(L, 2);
 
     if (a < MAXCHRS && b < NUM_EQUIPMENT)
     {
@@ -2674,7 +2675,7 @@ static int KQ_get_progress(lua_State *L)
 
     if (lua_isnumber(L, 1))
     {
-        unsigned int progress_index = (unsigned int) lua_tonumber(L, 1);
+        uint32_t progress_index = (uint32_t) lua_tonumber(L, 1);
 
         if (progress_index < SIZE_PROGRESS)
         {
@@ -3422,8 +3423,8 @@ static int KQ_select_team(lua_State *L)
 
 static int KQ_set_all_equip(lua_State *L)
 {
-    unsigned int a = (unsigned int) lua_tonumber(L, 1);
-    unsigned int b;
+    uint32_t a = (uint32_t) lua_tonumber(L, 1);
+    uint32_t b;
     int c;
 
     if (a > MAXCHRS)
@@ -3877,7 +3878,7 @@ static int KQ_set_mtile(lua_State *L)
 
 static int KQ_set_noe(lua_State *L)
 {
-    unsigned int a = (unsigned int) lua_tonumber(L, 1);
+    uint32_t a = (uint32_t) lua_tonumber(L, 1);
 
     if (a <= MAX_ENTITIES_PER_MAP + PSIZE)
     {
@@ -3936,8 +3937,8 @@ static int KQ_set_obs(lua_State *L)
  */
 static int KQ_set_party_eqp(lua_State *L)
 {
-    unsigned int a = (unsigned int) lua_tonumber(L, 1);
-    unsigned int b = (unsigned int) lua_tonumber(L, 2);
+    uint32_t a = (uint32_t) lua_tonumber(L, 1);
+    uint32_t b = (uint32_t) lua_tonumber(L, 2);
 
     if (a < MAXCHRS && b < NUM_EQUIPMENT)
     {
@@ -4176,7 +4177,7 @@ static int KQ_set_progress(lua_State *L)
 
     if (lua_isnumber(L, 1))
     {
-        unsigned int progress_index = (unsigned int) lua_tonumber(L, 1);
+        uint32_t progress_index = (uint32_t) lua_tonumber(L, 1);
 
         if (progress_index < SIZE_PROGRESS)
         {
@@ -4471,7 +4472,7 @@ static int KQ_shop_add_item(lua_State *L)
     index = (size_t) lua_tonumber(L, 1);
     if (index >= NUMSHOPS)
     {
-        printf(_("Value passed to shop_add_item() L::1 (%u) >= NUMSHOPS\n"), (unsigned int) index);
+        printf(_("Value passed to shop_add_item() L::1 (%u) >= NUMSHOPS\n"), (uint32_t) index);
         return 0;
     }
 
@@ -4821,7 +4822,7 @@ int KQ_print(lua_State *L)
  */
 static int KQ_party_getter(lua_State *L)
 {
-    unsigned int which = (unsigned int)lua_tonumber(L, 2);
+    uint32_t which = (uint32_t)lua_tonumber(L, 2);
 
     if (which < numchrs)
     {

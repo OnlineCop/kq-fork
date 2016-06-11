@@ -129,9 +129,9 @@ void set_view(int, int, int, int, int);
 BITMAP *copy_bitmap(BITMAP *, BITMAP *);
 
 /*  global variables  */
-extern unsigned char BLUE;
-extern unsigned char DARKBLUE;
-extern unsigned char DARKRED;
+extern uint8_t BLUE;
+extern uint8_t DARKBLUE;
+extern uint8_t DARKRED;
 
 
 #endif  /* __DRAW_H */

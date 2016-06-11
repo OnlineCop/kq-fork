@@ -320,13 +320,13 @@ int check_inventory(size_t inventory_index, int item_quantity)
     if (d < MAX_INV)
     {
         // This is redundant, but it is a good error-check
-        g_inv[d][GLOBAL_INVENTORY_ITEM] = (unsigned short)inventory_index;
+        g_inv[d][GLOBAL_INVENTORY_ITEM] = (uint16_t)inventory_index;
         // Add item_quantity to this item's quantity
         g_inv[d][GLOBAL_INVENTORY_QUANTITY] += item_quantity;
         return 1;
     }
     // Add item to new slot
-    g_inv[v][GLOBAL_INVENTORY_ITEM] = (unsigned short)inventory_index;
+    g_inv[v][GLOBAL_INVENTORY_ITEM] = (uint16_t)inventory_index;
     // Fill in item's quantity too
     g_inv[v][GLOBAL_INVENTORY_QUANTITY] += item_quantity;
     return 2;
@@ -392,7 +392,7 @@ static void draw_itemmenu(int ptr, int pg, int sl)
         print_font(double_buffer, 96 + xofs, k * 8 + 68 + yofs, items[item_index].name, palette_color);
         if (item_quantity > 1)
         {
-            sprintf(strbuf, "^%u", (unsigned int)item_quantity);
+            sprintf(strbuf, "^%u", (uint32_t)item_quantity);
             print_font(double_buffer, 224 + xofs, k * 8 + 68 + yofs, strbuf, palette_color);
         }
     }
@@ -768,7 +768,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
  */
 static void join_items(void)
 {
-    unsigned short t_inv[NUM_ITEMS + 1];
+    uint16_t t_inv[NUM_ITEMS + 1];
     size_t inventory_index;
 
     for (inventory_index = 0; inventory_index < NUM_ITEMS; inventory_index++)
@@ -889,7 +889,7 @@ static void sort_inventory(void)
  */
 static void sort_items(void)
 {
-    unsigned short t_inv[MAX_INV][2];
+    uint16_t t_inv[MAX_INV][2];
     int tt[7] = { 6, 0, 1, 2, 3, 4, 5 };
     size_t new_inventory_index;
     size_t old_inventory_index;
@@ -909,7 +909,7 @@ static void sort_items(void)
     {
         for (new_inventory_index = 0; new_inventory_index < MAX_INV; new_inventory_index++)
         {
-            unsigned short inventory = t_inv[new_inventory_index][0];
+            uint16_t inventory = t_inv[new_inventory_index][0];
             if (inventory > 0 && items[inventory].type == tt[old_inventory_index])
             {
                 // Re-assign group's inventory items

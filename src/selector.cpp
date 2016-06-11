@@ -79,7 +79,7 @@ static signed int tmpd[NUM_FIGHTERS]; // defined in heroc.h
  */
 int auto_select_enemy(int whom, int csts)
 {
-    unsigned int i, number_enemies = 0;
+    uint32_t i, number_enemies = 0;
 
     for (i = PSIZE; i < PSIZE + num_enemies; i++)
     {
@@ -149,7 +149,7 @@ int auto_select_enemy(int whom, int csts)
  */
 int auto_select_hero(int whom, int csts)
 {
-    unsigned int a, cntr = 0;
+    uint32_t a, cntr = 0;
 
     /*  RB TODO  */
     whom = whom;
@@ -223,8 +223,8 @@ static int can_attack(int tgt)
  */
 static eMiniMenu mini_menu(int omask)
 {
-    static unsigned int mini_menu_x = 162;
-    static unsigned int mini_menu_y = 180;
+    static uint32_t mini_menu_x = 162;
+    static uint32_t mini_menu_y = 180;
 
     eMiniMenu cp = MM_OPTIONS_JOIN;
 
@@ -348,7 +348,7 @@ static void party_add(ePIDX id, int lead)
             pidx[numchrs] = id;
         }
         ++numchrs;
-        t->eid = (unsigned char)id;
+        t->eid = (uint8_t)id;
         t->active = 1;
         t->chrx = 0;
     }
@@ -360,8 +360,8 @@ static void party_add(ePIDX id, int lead)
  */
 void party_newlead(void)
 {
-    unsigned int i;
-    unsigned char j;
+    uint32_t i;
+    uint8_t j;
     ePIDX t;
 
     for (i = 1; i < numchrs; ++i)
@@ -426,9 +426,9 @@ static void party_remove(ePIDX id)
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled or
  *          SEL_ALL_ALLIES if 'all' was selected (by pressing L or R)
  */
-ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
+ePIDX select_any_player(size_t csa, uint32_t icn, const char *msg)
 {
-    unsigned int stop = 0, ptr, k, select_all;
+    uint32_t stop = 0, ptr, k, select_all;
     int shy = 120 - (numchrs * 28);
 
     if (csa == 2)
@@ -567,7 +567,7 @@ ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
  */
 ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 {
-    unsigned int cntr = 0, stop, select_all;
+    uint32_t cntr = 0, stop, select_all;
     size_t fighter_index, ptr;
 
     for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
@@ -698,7 +698,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
  */
 ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_select_dead)
 {
-    unsigned int cntr = 0, ptr = 0, stop = 0, select_all;
+    uint32_t cntr = 0, ptr = 0, stop = 0, select_all;
     size_t fighter_index;
 
     if (multi_target == TGT_ALLY_ONEALL)
@@ -830,7 +830,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_sel
  */
 int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
 {
-    static const unsigned int BTN_EXIT = (MAXCHRS + PSIZE);
+    static const uint32_t BTN_EXIT = (MAXCHRS + PSIZE);
 
     ePIDX hero = PIDX_UNDEFINED;
     eMiniMenu mini_menu_mask;
@@ -838,8 +838,8 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
     size_t fighter_index;
     size_t cur, oldcur;             /* cursor */
     signed int x, y;
-    unsigned int mask;
-    unsigned int running = 1;
+    uint32_t mask;
+    uint32_t running = 1;
 
     cur = 0;
     if (avail == NULL)
@@ -1056,7 +1056,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
  */
 int select_player(void)
 {
-    unsigned int stop = 0, ptr;
+    uint32_t stop = 0, ptr;
 
     if (numchrs == 1)
     {

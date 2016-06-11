@@ -105,20 +105,20 @@ BITMAP *obj_mesh;
 #endif
 
 /*! Layers in the map */
-unsigned short *map_seg = NULL, *b_seg = NULL, *f_seg = NULL;
+uint16_t *map_seg = NULL, *b_seg = NULL, *f_seg = NULL;
 
 /*! Zone, shadow and obstacle layers */
-unsigned char *z_seg = NULL, *s_seg = NULL, *o_seg = NULL;
+uint8_t *z_seg = NULL, *s_seg = NULL, *o_seg = NULL;
 
 /*! keeps track of tasks completed and treasure chests opened */
-unsigned char progress[SIZE_PROGRESS];
-unsigned char treasure[SIZE_TREASURE];
+uint8_t progress[SIZE_PROGRESS];
+uint8_t treasure[SIZE_TREASURE];
 
 /*! keeps track of when shops were last visited */
-unsigned short shop_time[NUMSHOPS];
+uint16_t shop_time[NUMSHOPS];
 
 /*! keeps track of non-combat spell statuses (currently only repulse) */
-unsigned char save_spells[SIZE_SAVE_SPELL];
+uint8_t save_spells[SIZE_SAVE_SPELL];
 
 /*! Current map */
 s_map g_map;
@@ -127,13 +127,13 @@ s_map g_map;
 s_entity g_ent[MAX_ENTITIES];
 
 /*! Number of enemies */
-unsigned int noe = 0;
+uint32_t noe = 0;
 
 /*! Identifies characters in the party */
 ePIDX pidx[MAXCHRS];
 
 /*! Number of characters in the party */
-unsigned int numchrs = 0;
+uint32_t numchrs = 0;
 
 /*! Current gold */
 int gp = 0;
@@ -145,45 +145,45 @@ int xofs, yofs;
 int gsvol = 250, gmvol = 250;
 
 /*! Is the party under 'automatic' (i.e. scripted) control */
-unsigned char autoparty = 0;
+uint8_t autoparty = 0;
 
 /*! Are all heroes dead? */
-unsigned char alldead = 0;
+uint8_t alldead = 0;
 
 /*! Is sound activated/available? */
-unsigned char is_sound = 1, sound_avail;
+uint8_t is_sound = 1, sound_avail;
 
 /*! Makes is_active() return TRUE even if the character is dead */
-unsigned char deadeffect = 0;
+uint8_t deadeffect = 0;
 
 /*! Does the viewport follow the characters?*/
-unsigned char vfollow = 1;
+uint8_t vfollow = 1;
 
 /*! Whether the sun stone can be used in this map*/
-unsigned char use_sstone = 0;
+uint8_t use_sstone = 0;
 
 /*! Version number (used for version control in sgame.c) */
-const unsigned char kq_version = 92;
+const uint8_t kq_version = 92;
 
 /*! If non-zero, don't do fade effects. The only place this is
  * set is in scripts. */
-unsigned char hold_fade = 0;
+uint8_t hold_fade = 0;
 
 /*! True if player can save at this point */
-unsigned char cansave = 0;
+uint8_t cansave = 0;
 
 /*! True if the intro is to be skipped (the bit where the heroes learn of the quest) */
-unsigned char skip_intro = 0;
+uint8_t skip_intro = 0;
 
 /*! Graphics mode settings */
-unsigned char wait_retrace = 1, windowed = 1, stretch_view = 1, cpu_usage = 1;
+uint8_t wait_retrace = 1, windowed = 1, stretch_view = 1, cpu_usage = 1;
 
 /*! Current sequence position of animated tiles */
-unsigned short tilex[MAX_TILES];
+uint16_t tilex[MAX_TILES];
 
 /*! Current 'time' for animated tiles. When this increments to adata[].delay,
  * the next tile is shown */
-unsigned short adelay[MAX_ANIM];
+uint16_t adelay[MAX_ANIM];
 
 /*! Temporary buffer for string operations (used everywhere!) */
 char *strbuf = NULL;
@@ -207,7 +207,7 @@ s_heroinfo players[MAXCHRS];
 
 
 /*! Table to manage stats for the level up process (see level_up()) */
-unsigned short lup[MAXCHRS][20] =
+uint16_t lup[MAXCHRS][20] =
 {
     {10, 70, 9, 2, 190, 90, 150, 60, 70, 15, 20, 20, 50, 50, 0, 10, 0},
     {10, 70, 8, 4, 120, 120, 120, 90, 80, 10, 50, 45, 25, 45, 0, 25, 0},
@@ -263,18 +263,18 @@ volatile int timer = 0, ksec = 0, kmin = 0, khr = 0, timer_count = 0, animation_
 COLOR_MAP cmap;
 
 /*! Party can run away from combat? */
-unsigned char can_run = 1;
+uint8_t can_run = 1;
 
 /*! Is the map description is displayed on screen? */
-unsigned char display_desc = 0;
+uint8_t display_desc = 0;
 
 /*! Which map layers should be drawn. These are set when the map is loaded;
      see change_map()
  */
-unsigned char draw_background = 1, draw_middle = 1, draw_foreground = 1, draw_shadow = 1;
+uint8_t draw_background = 1, draw_middle = 1, draw_foreground = 1, draw_shadow = 1;
 
 /*! Items in inventory. g_inv[][0] is the item id, g_inv[][1] is the quantity */
-unsigned short g_inv[MAX_INV][NUM_GLOBAL_INVENTORY];
+uint16_t g_inv[MAX_INV][NUM_GLOBAL_INVENTORY];
 
 /*! An array to hold all of the special items and descriptions in the game */
 s_special_item special_items[MAX_SPECIAL_ITEMS];
@@ -398,7 +398,7 @@ void activate(void)
 {
     int zx, zy, looking_at_x = 0, looking_at_y = 0, q, target_char_facing = 0, tf;
 
-    unsigned int p;
+    uint32_t p;
 
     unpress();
 
@@ -431,8 +431,8 @@ void activate(void)
             break;
     }
 
-    zx = g_ent[0].x / 16;
-    zy = g_ent[0].y / 16;
+    zx = g_ent[0].x / TILE_W;
+    zy = g_ent[0].y / TILE_H;
 
     looking_at_x += zx;
     looking_at_y += zy;
@@ -614,7 +614,7 @@ static void allocate_stuff(void)
 
     for (p = 0; p < MAX_SHADOWS; p++)
     {
-        shadow[p] = alloc_bmp(16, 16, "shadow[x]");
+        shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
     }
 
     for (p = 0; p < 8; p++)
@@ -640,7 +640,7 @@ static void allocate_stuff(void)
 
     for (p = 0; p < MAX_TILES; p++)
     {
-        map_icons[p] = alloc_bmp(16, 16, "map_icons[x]");
+        map_icons[p] = alloc_bmp(TILE_W, TILE_H, "map_icons[x]");
     }
     allocate_credits();
 }
@@ -1110,7 +1110,7 @@ void init_players(void)
     {
         for (frame_index = 0; frame_index < MAXFRAMES; frame_index++)
         {
-            blit((BITMAP *) pb->dat, frames[party_index][frame_index], frame_index * 16, party_index * 16, 0, 0, 16, 16);
+            blit((BITMAP *) pb->dat, frames[party_index][frame_index], frame_index * 16, party_index * 16, 0, 0, TILE_W, TILE_H);
         }
     }
 
@@ -1451,11 +1451,11 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
 	pcxb = g_map.map_tiles;
-    for (o = 0; o < (size_t)pcxb->h / 16; o++)
+    for (o = 0; o < (size_t)pcxb->h / TILE_H; o++)
     {
-        for (i = 0; i < (size_t)pcxb->w / 16; i++)
+        for (i = 0; i < (size_t)pcxb->w / TILE_W; i++)
         {
-            blit(pcxb, map_icons[o * (pcxb->w / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
+            blit(pcxb, map_icons[o * (pcxb->w / TILE_W) + i], i * 16, o * 16, 0, 0, TILE_W, TILE_H);
         }
     }
 
@@ -1465,26 +1465,26 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     play_music(g_map.song_file, 0);
-    mx = g_map.xsize * 16 - 304;
+    mx = g_map.xsize * TILE_W - 304;
     /*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
-    my = g_map.ysize * 16 - 256;
+    my = g_map.ysize * TILE_H - 256;
 
     if (mvx == 0 && mvy == 0)
     {
-        vx = g_map.stx * 16;
-        vy = g_map.sty * 16;
+        vx = g_map.stx * TILE_W;
+        vy = g_map.sty * TILE_H;
     }
     else
     {
-        vx = mvx * 16;
-        vy = mvy * 16;
+        vx = mvx * TILE_W;
+        vy = mvy * TILE_H;
     }
 
     calc_viewport(1);
 
     for (i = 0; i < MAX_TILES; i++)
     {
-        tilex[i] = (unsigned short)i;
+        tilex[i] = (uint16_t)i;
     }
 
     noe = 0;
@@ -1814,12 +1814,12 @@ static void startup(void)
 
     for (p = 0; p < MAX_SHADOWS; p++)
     {
-        blit(misc, shadow[p], p * 16, 160, 0, 0, 16, 16);
+        blit(misc, shadow[p], p * 16, 160, 0, 0, TILE_W, TILE_H);
     }
 
     for (p = 0; p < 8; p++)
     {
-        blit(misc, bub[p], p * 16, 144, 0, 0, 16, 16);
+        blit(misc, bub[p], p * 16, 144, 0, 0, TILE_W, TILE_H);
     }
 
     for (p = 0; p < 3; p++)
@@ -1845,7 +1845,7 @@ static void startup(void)
     {
         for (p = 0; p < MAXEFRAMES; p++)
         {
-            blit(entities, eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
+            blit(entities, eframes[q][p], p * 16, q * 16, 0, 0, TILE_W, TILE_H);
         }
     }
 
@@ -1870,15 +1870,15 @@ static void startup(void)
 
 #ifdef DEBUGMODE
     /* TT: Create the mesh object to see 4-way obstacles (others ignored) */
-    obj_mesh = create_bitmap(16, 16);
+    obj_mesh = create_bitmap(TILE_W, TILE_H);
     clear(obj_mesh);
-    for (q = 0; q < 16; q += 2)
+    for (q = 0; q < TILE_H; q += 2)
     {
-        for (p = 0; p < 16; p += 2)
+        for (p = 0; p < TILE_W; p += 2)
         {
             putpixel(obj_mesh, p, q, 255);
         }
-        for (p = 1; p < 16; p += 2)
+        for (p = 1; p < TILE_W; p += 2)
         {
             putpixel(obj_mesh, p, q + 1, 255);
         }
@@ -1973,7 +1973,7 @@ void wait_enter(void)
 void wait_for_entity(size_t first_entity_index, size_t last_entity_index)
 {
     int any_following_entities;
-    unsigned char move_mode;
+    uint8_t move_mode;
     size_t entity_index;
 
     if (first_entity_index > last_entity_index)
@@ -2089,10 +2089,10 @@ void warp(int wtx, int wty, int fspeed)
  */
 void zone_check(void)
 {
-    unsigned short stc, zx, zy;
+    uint16_t stc, zx, zy;
 
-    zx = g_ent[0].x / 16;
-    zy = g_ent[0].y / 16;
+    zx = g_ent[0].x / TILE_W;
+    zy = g_ent[0].y / TILE_H;
 
     if (save_spells[P_REPULSE] > 0)
     {

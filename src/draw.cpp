@@ -52,7 +52,7 @@
 char msgbuf[MSG_ROWS][MSG_COLS];
 int gbx, gby, gbbx, gbby, gbbw, gbbh, gbbs;
 eBubbleStemStyle bubble_stem_style;
-unsigned char BLUE = 2, DARKBLUE = 0, DARKRED = 4;
+uint8_t BLUE = 2, DARKBLUE = 0, DARKRED = 4;
 
 /*  Internal prototypes  */
 static void border(BITMAP *, int, int, int, int);
@@ -67,8 +67,8 @@ static void draw_porttextbox(int, int);
 static void generic_text(int, int, int);
 const char *parse_string(const char *);
 static const char *relay(const char *);
-static void set_textpos(unsigned int);
-static int get_glyph_index(unsigned int);
+static void set_textpos(uint32_t);
+static int get_glyph_index(uint32_t);
 
 
 /*! \brief The internal processing modes during text reformatting
@@ -381,7 +381,7 @@ static void draw_char(int xw, int yw)
     int f;
     int x, y;
     signed int horiz, vert;
-    unsigned int here, there;
+    uint32_t here, there;
     BITMAP **sprite_base;
     BITMAP *spr = NULL;
     size_t follower_fighter_index;
@@ -838,11 +838,11 @@ static void draw_playerbound(void)
 {
     int dx, dy, xtc, ytc;
     s_bound *found = NULL;
-    unsigned short ent_x = g_ent[0].tilex;
-    unsigned short ent_y = g_ent[0].tiley;
+    uint16_t ent_x = g_ent[0].tilex;
+    uint16_t ent_y = g_ent[0].tiley;
 
     /* Is the player standing inside a bounding area? */
-    unsigned int found_index = is_bound(&g_map.bounds, ent_x, ent_y, ent_x, ent_y);
+    uint32_t found_index = is_bound(&g_map.bounds, ent_x, ent_y, ent_x, ent_y);
     if (found_index)
     {
         found = &g_map.bounds.array[found_index - 1];
@@ -1393,7 +1393,7 @@ const char *parse_string(const char *the_string)
  * \author PH
  * \date 20071116
  */
-static const char *decode_utf8(const char *string, unsigned int *cp)
+static const char *decode_utf8(const char *string, uint32_t *cp)
 {
     char ch = *string;
 
@@ -1503,7 +1503,7 @@ static const char *decode_utf8(const char *string, unsigned int *cp)
  * n.b. must be sorted in order of unicode char
  * and terminated by {0, 0}
  */
-static unsigned int glyph_lookup[][2] =
+static uint32_t glyph_lookup[][2] =
 {
     {0x00c9, 'E' - 32},          /* E-acute */
     {0x00d3, 'O' - 32},          /* O-acute */
@@ -1531,7 +1531,7 @@ static unsigned int glyph_lookup[][2] =
  * \date 20071116
  * \note uses inefficient linear search for now.
  */
-static int get_glyph_index(unsigned int cp)
+static int get_glyph_index(uint32_t cp)
 {
     int i;
 
@@ -1573,7 +1573,7 @@ static int get_glyph_index(unsigned int cp)
 void print_font(BITMAP *where, int sx, int sy, const char *msg, eFontColor cl)
 {
     int z = 0, hgt = 8;
-    unsigned int cc = 0;
+    uint32_t cc = 0;
 
     if (cl < 0 || cl > 6)
     {
@@ -1654,7 +1654,7 @@ void print_num(BITMAP *where, int sx, int sy, char *msg, int cl)
 int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, const char *sp3, const char *sp4)
 {
     int ly, stop = 0, ptr = 0, a;
-    unsigned int str_len;
+    uint32_t str_len;
 
     gbbw = 1;
     gbbh = 0;
@@ -2056,7 +2056,7 @@ void revert_cframes(size_t fighter_index, int revert_heroes)
  * \param   entity_index If value is between 0..MAX_ENTITIES (exclusive),
  *              character that is speaking, otherwise 'general'.
  */
-static void set_textpos(unsigned int entity_index)
+static void set_textpos(uint32_t entity_index)
 {
     if (entity_index < MAX_ENTITIES)
     {

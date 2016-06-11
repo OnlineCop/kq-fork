@@ -64,14 +64,14 @@ static const char *credits[] =
 };
 
 
-// Compiler doesn't like "const unsigned int", so it's this or a #define.
+// Compiler doesn't like "const uint32_t", so it's this or a #define.
 #define NUM_EASE_VALUES 32U
 
 static const char **cc = NULL;
 static short int ease_table[NUM_EASE_VALUES];
 static BITMAP *wk = NULL;
 
-static volatile unsigned int ticks = 0;
+static volatile uint32_t ticks = 0;
 static void ticker(void)
 {
     ticks++;
@@ -82,7 +82,7 @@ END_OF_FUNCTION(ticker)
 
 void allocate_credits(void)
 {
-    unsigned int tlen = 0;
+    uint32_t tlen = 0;
     const char **credits_current_line = NULL;
     size_t current_line_length = 0;
     size_t ease_index;
@@ -127,7 +127,7 @@ void display_credits(BITMAP *double_buffer)
     static const char *pressf1;
     static int last_ease_amount = 999;
     int i, x0, ease_amount;
-    unsigned int max_ticks = 640;
+    uint32_t max_ticks = 640;
 
     pressf1 = _("Press F1 for help");
     if (wk == NULL)
@@ -187,7 +187,7 @@ void display_credits(BITMAP *double_buffer)
  */
 int ease(signed int x)
 {
-    unsigned int abs_x = (unsigned int)x;
+    uint32_t abs_x = (uint32_t)x;
     if (x <= 0)
     {
         return 0;

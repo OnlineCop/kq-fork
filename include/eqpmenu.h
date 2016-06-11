@@ -24,7 +24,7 @@
 #define __EQPMENU_H 1
 
 
-void equip_menu(unsigned int);           /*  menu.c  */
+void equip_menu(uint32_t);           /*  menu.c  */
 
 
 #endif  /* __EQPMENU_H */

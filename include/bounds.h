@@ -71,17 +71,11 @@ struct s_bound_array
 };
 
 
-// This line is temporary, but it cuts down a lot of repetition below
-typedef const unsigned short cu_int16;
-
 // Affects a single s_bound object
-s_bound     *is_contained_bound(s_bound *, unsigned int, int, int, int, int);
 void         set_bounds(s_bound *, int, int, int, int, int);
 
 // Affects an entire s_bound_array object array
-unsigned int is_bound(s_bound_array *, cu_int16, cu_int16, cu_int16, cu_int16);
-size_t       load_bounds(s_bound_array *, PACKFILE *);
-size_t       save_bounds(s_bound_array *, PACKFILE *);
+const uint32_t is_bound(s_bound_array *, const uint16_t, const uint16_t, const uint16_t, const uint16_t);
 
 
 #endif  /* __BOUNDS_H */

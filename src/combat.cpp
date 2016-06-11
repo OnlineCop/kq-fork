@@ -54,23 +54,23 @@
 
 /*! \name global variables  */
 
-unsigned int combatend;
+uint32_t combatend;
 int cact[NUM_FIGHTERS];
 int curx;
 int cury;
-unsigned int num_enemies;
+uint32_t num_enemies;
 int ta[NUM_FIGHTERS];
 int deffect[NUM_FIGHTERS];
 int rcount;
-unsigned char vspell;
-unsigned char ms;
+uint8_t vspell;
+uint8_t ms;
 BITMAP *backart;
 
 /* Internal variables */
 static int curw;
 static int nspeed[NUM_FIGHTERS];
 static int bspeed[NUM_FIGHTERS];
-static unsigned char hs;
+static uint8_t hs;
 
 
 enum eAttackResult
@@ -599,7 +599,7 @@ int combat(int bno)
  */
 int combat_check(int comx, int comy)
 {
-    unsigned char zn;
+    uint8_t zn;
     size_t battle_index;
 
     zn = z_seg[comy * g_map.xsize + comx];
@@ -630,8 +630,8 @@ int combat_check(int comx, int comy)
 static void do_action(size_t fighter_index)
 {
     size_t imb_index;
-    unsigned char imbued_item;
-    unsigned char spell_type_status;
+    uint8_t imbued_item;
+    uint8_t spell_type_status;
 
     for (imb_index = 0; imb_index < 2; imb_index++)
     {
@@ -1141,8 +1141,8 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
     int a;
     int tx = -1;
     int ty = -1;
-    unsigned int f;
-    unsigned int ares;
+    uint32_t f;
+    uint32_t ares;
     size_t fighter_index;
     size_t stats_index;
 
@@ -1534,9 +1534,9 @@ void multi_fight(size_t attack_fighter_index)
     size_t spell_index;
     size_t start_fighter_index;
     size_t end_fighter_index;
-    unsigned int deadcount = 0;
-    unsigned int killed_warrior[NUM_FIGHTERS];
-    //unsigned int ares[NUM_FIGHTERS];
+    uint32_t deadcount = 0;
+    uint32_t killed_warrior[NUM_FIGHTERS];
+    //uint32_t ares[NUM_FIGHTERS];
 
     for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
     {

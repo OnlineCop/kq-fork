@@ -415,7 +415,7 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 {
     size_t stats_index;
     size_t figher_index, victim_figher_index = 0;
-    unsigned int affected_targets;
+    uint32_t affected_targets;
 
     if (target_fighter_index < numchrs)
     {
