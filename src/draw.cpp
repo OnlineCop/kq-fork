@@ -1688,13 +1688,6 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
         drawmap();
         draw_textbox(bstyle);
 
-#if 0
-        for (a = 0; a < gbbh; a++)
-        {
-            print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs, msgbuf[a], FBIG);
-        }
-#endif // if 0
-
         draw_sprite(double_buffer, menuptr, gbbx + xofs + 8, ptr * 12 + ly + yofs);
         blit2screen(xofs, yofs);
 

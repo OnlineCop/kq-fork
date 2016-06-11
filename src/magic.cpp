@@ -1222,17 +1222,6 @@ static void heal_one_ally(size_t caster_fighter_index, size_t target_fighter_ind
 {
     size_t stat_index;
 
-    /*  DS: Because these lines, sometimes when you cast restore or others */
-    /*      spells, the spell don't work correctly. In cast_spell() this */
-    /*      is tested, so don't need to test again. */
-#if 0
-    if (rand() % 100 + 1 > fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat])
-    {
-        ta[target_fighter_index] = MISS;
-        return;
-    }
-#endif
-
     /*  DS: Now the 'caster_fighter_index' argument isn't used, so I'm doing this: */
     caster_fighter_index = caster_fighter_index;
     switch (spell_number)

@@ -390,7 +390,7 @@ static void enemy_curecheck(int w)
 
 
 
-/*! \brief Initialise enemy & sprites for combat
+/*! \brief Initialize enemy & sprites for combat
  *
  * If required, load the all the enemies, then
  * init the ones that are going into battle, by calling make_enemy() and
@@ -866,7 +866,7 @@ static void load_enemies(void)
  * \author PH
  * \date 2003????
  * \param   who The numeric id of the enemy to make
- * \param   en Pointer to an s_fighter structure to initialise
+ * \param   en Pointer to an s_fighter structure to initialize
  * \returns the value of en, for convenience, or NULL if an error occurred.
  * \sa make_enemy_by_name()
  */
@@ -886,7 +886,7 @@ static s_fighter *make_enemy(int who, s_fighter *en)
 
 
 
-/*! \brief Enemy initialisation
+/*! \brief Enemy initialization
  *
  * This is the main enemy initialization routine.  This function sets up
  * the enemy types and then loads each one in.  It also calls a helper

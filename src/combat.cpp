@@ -580,46 +580,6 @@ int combat(int bno)
 }
 
 
-#if 0
-/*! \brief Does current location call for combat?
- *
- * This function checks the zone at the specified co-ordinates
- * and calls combat based on the map and zone.
- *
- * PH: it seems that this is rarely used (?) - only called by
- * entityat().
- * WK: I have altered entityat() slightly to bypass this function.
- * This function is no longer used. I have not noticed any
- * negative side effects.
- *
- * \param   comx x-coord of player
- * \param   comy y-coord of player
- * \returns outcome of combat() or 0 if no combat
- *
- */
-int combat_check(int comx, int comy)
-{
-    uint8_t zn;
-    size_t battle_index;
-
-    zn = z_seg[comy * g_map.xsize + comx];
-
-    /*  RB TODO: adding a break will make this a bit faster, plus
-     *           calling combat with the FIRST zone, not the LAST
-     *           one.
-     * PH: done this 20020222
-     */
-    for (battle_index = 0; battle_index < NUM_BATTLES; battle_index++)
-    {
-        /* if (battles[battle_index].mapnum == g_map.map_no && battles[battle_index].zonenum == zn) */
-        return combat(battle_index);
-    }
-
-    return 0;
-}
-#endif
-
-
 /*! \brief Choose an action
  * \author Josh Bolduc
  * \date Created ????????
@@ -1698,25 +1658,6 @@ static void roll_initiative(void)
 
     rcount = 0;
 
-    /* PH: this isn't right because not all members of the fighter[] array
-     * are valid - e.g. if you are attacked by 1 enemy, there are 4 enemy
-     * slots that aren't used. Currently, no enemies use imbued stuff, but
-     * this may change (?)
-     */
-#if 0
-    for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
-    {
-        /*  TODO: Unroll this loop  */
-        for (j = 0; j < 2; j++)
-        {
-            if (fighter[fighter_index].imb[j] > 0)
-            {
-                cast_imbued_spell(fighter_index, fighter[fighter_index].imb[j], 1, TGT_CASTER);
-            }
-        }
-    }
-
-#endif
     /* PH: This should be ok */
     for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
     {

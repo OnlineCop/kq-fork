@@ -1099,7 +1099,7 @@ void show_help(void)
 /*! \brief Initialize sound system
  * \author JB
  * \date ????????
- * \remark On entry is_sound=1 to initialise,
+ * \remark On entry is_sound=1 to initialize,
  *         on exit is_sound=0 (failure) or 2 (success),
  *         is_sound=2 to shutdown,
  *         on exit is_sound=0

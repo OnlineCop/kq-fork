@@ -53,12 +53,12 @@ struct s_map
     uint8_t extra_byte;    /*!< Currently unused */
     uint32_t xsize;          /*!< Map width */
     uint32_t ysize;          /*!< Map height */
-    int pmult;                   /*!< Parallax multiplier */
-    int pdiv;                    /*!< Parallax divider */
-    int stx;                     /*!< Default start x-coord */
-    int sty;                     /*!< Default start y-coord */
-    int warpx;                   /*!< x-coord where warp spell takes you to (see special_spells()) */
-    int warpy;                   /*!< y-coord where warp spell takes you to (see special_spells()) */
+    int32_t pmult;                   /*!< Parallax multiplier */
+    int32_t pdiv;                    /*!< Parallax divider */
+    int32_t stx;                     /*!< Default start x-coord */
+    int32_t sty;                     /*!< Default start y-coord */
+    int32_t warpx;                   /*!< x-coord where warp spell takes you to (see special_spells()) */
+    int32_t warpy;                   /*!< y-coord where warp spell takes you to (see special_spells()) */
     int revision;                /*!< Internal revision number for the map file */
     int extra_sdword2;           /*!< Not used */
     std::string song_file;       /*!< Base file name for map song */

@@ -57,7 +57,7 @@ enum eRunConsoleKeys
 };
 
 
-/*! \brief Initialise the console state
+/*! \brief Initialize the console state
 *
 * Set up the global state ready for using the console
 * \author PH

@@ -150,10 +150,10 @@ void kq_wait(long ms)
 int limit_frame_rate(int fps)
 {
 	static DWORD last_exec;
-	static bool initialised = false;
+	static bool initialized = false;
 	DWORD now = GetTickCount();
-	if (!initialised) {
-		initialised = true;
+	if (!initialized) {
+		initialized = true;
 		last_exec = now;
 	}
 	DWORD next_exec = last_exec + 1000 / fps;

@@ -29,17 +29,15 @@
 #define HERO2             201
 
 
-void do_autoexec(void);         /*  kq.c  */
-void do_entity(int);            /*  kq.c  */
-void do_luacheat(void);         /*  entity.c  */
-void do_luainit(const char *, int);  /*  kq.c  */
-void do_luakill(void);          /*  kq.c  */
-void do_postexec(void);         /*  kq.c  */
-void do_timefunc(const char *);
-void do_zone(int);              /*  kq.c  */
-void init_shops(void);          /* sgame.c */
-void lua_user_init(void);       /*  kq.c */
+void do_autoexec(void);                             /*  kq.c  */
+void do_entity(int en_num);                         /*  kq.c  */
+void do_luacheat(void);                             /*  entity.c  */
+void do_luainit(const char *fname, int global);     /*  kq.c  */
+void do_luakill(void);                              /*  kq.c  */
+void do_postexec(void);			    			    /*  kq.c  */
+void do_timefunc(const char *funcname);             /*  entity.c  */
+void do_zone(int zn_num);                           /*  kq.c  */
+void lua_user_init(void);                           /*  kq.c  */
 
 
 #endif  /* __INTRFACE_H */
-

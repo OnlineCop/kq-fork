@@ -28,7 +28,7 @@
  *
  * This file includes the main() function,
  * most of the global variables, and some other stuff,
- * for example, controls, some initialisation and
+ * for example, controls, some initialization and
  * timing.
  *
  * \note 23: I don't know if we're going to do anything to lessen the number of
@@ -1065,7 +1065,7 @@ size_t in_party(ePIDX pn)
 
 
 
-/*! \brief Initialise all players
+/*! \brief Initialize all players
  *
  * Set up the player characters and load data specific
  * to them. This happens at the start of every game.
@@ -1849,7 +1849,7 @@ static void startup(void)
         }
     }
 
-    /* Initialise players */
+    /* Initialize players */
     init_players();
 
     LOCK_VARIABLE(timer);

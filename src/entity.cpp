@@ -954,7 +954,7 @@ static void process_entity(t_entity target_entity)
 
 
 
-/*! \brief Initialise script
+/*! \brief Initialize script
  *
  * This is used to set up an entity with a movement script so that
  * it can be automatically controlled.

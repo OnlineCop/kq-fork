@@ -154,34 +154,34 @@ void draw_mainmenu(int swho)
  *
  * Draw the terse stats of a single player.
  * \param   where Bitmap to draw onto
- * \param   i Player (index in party array) to show info for
- * \param   dx x-coord of stats view
- * \param   dy y-coord of stats view
+ * \param   player_index_in_party Player (index in party array) to show info for
+ * \param   dx left-most x-coord of stats view
+ * \param   dy top-most y-coord of stats view
  */
-void draw_playerstat(BITMAP *where, int i, int dx, int dy)
+void draw_playerstat(BITMAP *where, int player_index_in_party, int dx, int dy)
 {
     int j;
 
-    draw_sprite(where, players[i].portrait, dx, dy);
-    print_font(where, dx + 48, dy, party[i].name, FNORMAL);
-    draw_stsicon(where, 0, i, 8, dx + 48, dy + 8);
+    draw_sprite(where, players[player_index_in_party].portrait, dx, dy);
+    print_font(where, dx + 48, dy, party[player_index_in_party].name, FNORMAL);
+    draw_stsicon(where, 0, player_index_in_party, 8, dx + 48, dy + 8);
     print_font(where, dx + 48, dy + 16, _("LV"), FGOLD);
-    sprintf(strbuf, "%d", party[i].lvl);
+    sprintf(strbuf, "%d", party[player_index_in_party].lvl);
     print_font(where, dx + 104 - (strlen(strbuf) * 8), dy + 16, strbuf, FNORMAL);
     print_font(where, dx + 48, dy + 24, _("HP"), FGOLD);
     print_font(where, dx + 104, dy + 24, "/", FNORMAL);
-    sprintf(strbuf, "%d", party[i].hp);
+    sprintf(strbuf, "%d", party[player_index_in_party].hp);
     j = strlen(strbuf) * 8;
     print_font(where, dx + 104 - j, dy + 24, strbuf, FNORMAL);
-    sprintf(strbuf, "%d", party[i].mhp);
+    sprintf(strbuf, "%d", party[player_index_in_party].mhp);
     j = strlen(strbuf) * 8;
     print_font(where, dx + 144 - j, dy + 24, strbuf, FNORMAL);
     print_font(where, dx + 48, dy + 32, _("MP"), FGOLD);
     print_font(where, dx + 104, dy + 32, "/", FNORMAL);
-    sprintf(strbuf, "%d", party[i].mp);
+    sprintf(strbuf, "%d", party[player_index_in_party].mp);
     j = strlen(strbuf) * 8;
     print_font(where, dx + 104 - j, dy + 32, strbuf, FNORMAL);
-    sprintf(strbuf, "%d", party[i].mmp);
+    sprintf(strbuf, "%d", party[player_index_in_party].mmp);
     j = strlen(strbuf) * 8;
     print_font(where, dx + 144 - j, dy + 32, strbuf, FNORMAL);
 }

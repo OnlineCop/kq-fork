@@ -29,7 +29,7 @@
 void add_questinfo(const char *key, const char *text);
 void do_questinfo(void);
 void draw_mainmenu(int);        /*  selector.c  */
-void draw_playerstat(BITMAP *, int, int, int);  /*  intrface.c, masmenu.c, menu.c  */
+void draw_playerstat(BITMAP *where, int player_index_in_party, int dx, int dy);  /*  intrface.c, masmenu.c, menu.c  */
 int give_xp(int, int, int);     /*  intrface.c, combat.c  */
 void menu(void);                /*  entity.c  */
 void revert_equipstats(void);   /*  heroc.c, (item|mas)menu.c, magic.c, combat.c  */
