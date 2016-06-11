@@ -32,6 +32,8 @@ intl/
 m4/
 build/
 maps/build/
+Debug/
+Release/
 
 # Auto-generated files
 ABOUT-NLS
@@ -78,7 +80,7 @@ stamp-h1
 
 # This is `Icon` with \r\r after it. In vim, Ctrl+V then press Enter.
 # http://stackoverflow.com/questions/17556250/how-to-ignore-icon-in-git
-Icon
+Icon
 
 # Mac OS X file system files
 .DS_Store
