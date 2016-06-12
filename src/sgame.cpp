@@ -113,18 +113,18 @@ static int confirm_action(void)
     fullblit(back, double_buffer);
     while (!stop)
     {
-        readcontrols();
+		Game.readcontrols();
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             return 1;
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             return 0;
         }
-        kq_yield();
+		Game.kq_yield();
     }
     return 0;
 }
@@ -194,13 +194,13 @@ static void delete_game(void)
 
     while (!stop)
     {
-        readcontrols();
+		Game.readcontrols();
         if (PlayerInput.balt || PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
-        kq_yield();
+		Game.kq_yield();
     }
 
 }
@@ -257,7 +257,7 @@ static int load_game(void)
     timer_count = 0;
     ksec = 0;
     hold_fade = 0;
-    change_map(curmap, g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
+	Game.change_map(curmap, g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
     /* Set music and sound volume */
     set_volume(gsvol, -1);
     set_music_volume(((float) gmvol) / 255.0);
@@ -1005,15 +1005,15 @@ static int saveload(int am_saving)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-        check_animation();
+		Game.do_check_animation();
         clear_bitmap(double_buffer);
         show_sgstats(am_saving);
         blit2screen(0, 0);
 
-        readcontrols();
+		Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             save_ptr--;
             if (save_ptr < 0)
             {
@@ -1034,7 +1034,7 @@ static int saveload(int am_saving)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             save_ptr++;
             if (save_ptr > NUMSG - 1)
             {
@@ -1055,7 +1055,7 @@ static int saveload(int am_saving)
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             if (am_saving < 2)
             {
                 am_saving = am_saving + 2;
@@ -1063,7 +1063,7 @@ static int saveload(int am_saving)
         }
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             if (am_saving >= 2)
             {
                 am_saving = am_saving - 2;
@@ -1071,7 +1071,7 @@ static int saveload(int am_saving)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             switch (am_saving)
             {
                 case 0:               // Load
@@ -1114,7 +1114,7 @@ static int saveload(int am_saving)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -1316,7 +1316,7 @@ int start_menu(int skip_splash)
         set_palette(pal);
     }
 #endif
-    reset_world();
+	Game.reset_world();
 
     /* Draw menu and handle menu selection */
     while (!stop)
@@ -1335,16 +1335,16 @@ int start_menu(int skip_splash)
         }
         display_credits(double_buffer);
         blit2screen(0, 0);
-        readcontrols();
+		Game.readcontrols();
         if (PlayerInput.bhelp)
         {
-            unpress();
+            Game.unpress();
             show_help();
             redraw = 1;
         }
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             if (ptr > 0)
             {
                 ptr--;
@@ -1358,7 +1358,7 @@ int start_menu(int skip_splash)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             if (ptr < 3)
             {
                 ptr++;
@@ -1372,7 +1372,7 @@ int start_menu(int skip_splash)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (ptr == 0)          /* User selected "Continue" */
             {
                 if (savegame_num_characters[0] == 0 && savegame_num_characters[1] == 0 && savegame_num_characters[2] == 0 && savegame_num_characters[3] == 0
@@ -1400,7 +1400,7 @@ int start_menu(int skip_splash)
             }
             else if (ptr == 3)     /* Exit */
             {
-                klog(_("Then exit you shall!"));
+				Game.klog(_("Then exit you shall!"));
                 return 2;
             }
         }
@@ -1412,7 +1412,7 @@ int start_menu(int skip_splash)
         {
             memcpy(&party[a], &players[a].plr, sizeof(s_player));
         }
-        init_players();
+		Game.init_players();
         memset(progress, 0, SIZE_PROGRESS);
         memset(treasure, 0, SIZE_TREASURE);
         numchrs = 0;
@@ -1467,7 +1467,7 @@ int system_menu(void)
 
     while (!stop)
     {
-        check_animation();
+		Game.do_check_animation();
         drawmap();
         menubox(double_buffer, xofs, yofs, 8, 4, BLUE);
 
@@ -1478,7 +1478,7 @@ int system_menu(void)
 
         draw_sprite(double_buffer, menuptr, 0 + xofs, ptr * 8 + 8 + yofs);
         blit2screen(xofs, yofs);
-        readcontrols();
+		Game.readcontrols();
 
 
         // TT:
@@ -1497,12 +1497,12 @@ int system_menu(void)
                 ptr = 0;
             }
             play_effect(SND_CLICK, 128);
-            unpress();
+            Game.unpress();
         }
 
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
 
             if (ptr == 0)
             {
@@ -1544,7 +1544,7 @@ int system_menu(void)
         if (PlayerInput.bctrl)
         {
             stop = 1;
-            unpress();
+            Game.unpress();
         }
     }
 

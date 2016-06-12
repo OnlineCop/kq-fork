@@ -178,7 +178,7 @@ BITMAP *image_cache::get(const std::string &name) {
 	}
     if (!bmp) {
       TRACE("Cannot load bitmap '%s'\n", name.c_str());
-      program_death("Error loading image.");
+	  Game.program_death("Error loading image.");
     }
     cache.insert(std::make_pair(name, BITMAP_PTR(bmp)));
     return bmp;

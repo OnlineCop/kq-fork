@@ -779,11 +779,11 @@ static void player_move(void)
     int oldx = g_ent[0].tilex;
     int oldy = g_ent[0].tiley;
 
-    readcontrols();
+    Game.readcontrols();
 
     if (PlayerInput.balt)
     {
-        activate();
+		Game.activate();
     }
     if (PlayerInput.benter)
     {
@@ -824,7 +824,7 @@ void process_entities(void)
     }
 
     /* Do timers */
-    t_evt = get_timer_event();
+    t_evt = Game.get_timer_event();
     if (t_evt)
     {
         do_timefunc(t_evt);
@@ -941,13 +941,13 @@ static void process_entity(t_entity target_entity)
             }
             if (target_entity == 0)
             {
-                zone_check();
+				Game.zone_check();
             }
         }
 
         if (target_entity == 0 && vfollow == 1)
         {
-            calc_viewport(0);
+			Game.calc_viewport(0);
         }
     }
 }

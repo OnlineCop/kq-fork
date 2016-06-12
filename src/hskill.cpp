@@ -505,7 +505,7 @@ void reveal(int tgt)
     }
     blit2screen(0, 0);
     do_transition(TRANS_FADE_IN, 4);
-    wait_enter();
+	Game.wait_enter();
 }
 
 

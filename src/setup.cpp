@@ -153,12 +153,12 @@ void config_menu(void)
     dc[17] = _("Things you can do only in DebugMode.");
 #endif
 
-    unpress();
+    Game.unpress();
     push_config_state();
     set_config_file(kqres(SETTINGS_DIR, "kq.cfg"));
     while (!stop)
     {
-        check_animation();
+		Game.do_check_animation();
         drawmap();
         menubox(double_buffer, 88 + xofs, yofs, 16, 1, BLUE);
         print_font(double_buffer, 96 + xofs, 8 + yofs, _("KQ Configuration"), FGOLD);
@@ -232,10 +232,10 @@ void config_menu(void)
         print_font(double_buffer, 8 + xofs, 224 + yofs, dc[ptr], FNORMAL);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             // "jump" over unusable options
             if (ptr == 15 && is_sound == 0)
             {
@@ -253,7 +253,7 @@ void config_menu(void)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             // "jump" over unusable options
             if (ptr == 12 && is_sound == 0)
             {
@@ -271,7 +271,7 @@ void config_menu(void)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             switch (ptr)
             {
                 case 0:
@@ -323,56 +323,56 @@ void config_menu(void)
                 case 4:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kup = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kup", PlayerInput.kup);
                     break;
                 case 5:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kdown = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kdown", PlayerInput.kdown);
                     break;
                 case 6:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kleft = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kleft", PlayerInput.kleft);
                     break;
                 case 7:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kright = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kright", PlayerInput.kright);
                     break;
                 case 8:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kalt = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kalt", PlayerInput.kalt);
                     break;
                 case 9:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kctrl = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kctrl", PlayerInput.kctrl);
                     break;
                 case 10:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kenter = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kenter", PlayerInput.kenter);
                     break;
                 case 11:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kesc = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kesc", PlayerInput.kesc);
                     break;
@@ -462,7 +462,7 @@ void config_menu(void)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -548,7 +548,7 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, int sp)
 
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         menubox(double_buffer, 148 - (maxu * 4) + xofs, 100 + yofs, maxu + 1, 3, DARKBLUE);
         print_font(double_buffer, 160 - (strlen(capt) * 4) + xofs, 108 + yofs, capt, FGOLD);
         print_font(double_buffer, 152 - (maxu * 4) + xofs, 116 + yofs, "<", FNORMAL);
@@ -573,10 +573,10 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, int sp)
                    124 + yofs, strbuf, FGOLD);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             cv--;
             if (cv < minu)
             {
@@ -586,7 +586,7 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, int sp)
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             cv++;
             if (cv > maxu)
             {
@@ -596,12 +596,12 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, int sp)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             return -1;
         }
     }
@@ -672,7 +672,7 @@ static int load_samples(void)
         {
             sprintf(strbuf, _("Error loading .WAV file: %s.\n"),
                     sndfiles[index]);
-            klog(strbuf);
+            Game.klog(strbuf);
             return 1;
         }
     }
@@ -791,7 +791,7 @@ static void parse_jb_setup(void)
     /* PH Why in the world doesn't he use Allegro cfg functions here? */
     if (!(s = fopen(kqres(SETTINGS_DIR, "setup.cfg"), "r")))
     {
-        klog(_("Could not open saves/setup.cfg - Using defaults."));
+        Game.klog(_("Could not open saves/setup.cfg - Using defaults."));
         return;
     }
     fscanf(s, "%s", strbuf);
@@ -1088,10 +1088,10 @@ void show_help(void)
     do
     {
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
     }
     while (!PlayerInput.balt && !PlayerInput.bctrl);
-    unpress();
+    Game.unpress();
 }
 
 

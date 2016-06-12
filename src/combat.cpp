@@ -674,7 +674,7 @@ static int do_combat(char *bg, char *mus, int is_rnd)
         }
         else
         {
-            if (numchrs > 1 && (in_party(AYLA) < MAXCHRS))
+            if (numchrs > 1 && (Game.in_party(AYLA) < MAXCHRS))
             {
                 hs = rand() % 20 + 1;
                 ms = rand() % 5 + 1;
@@ -930,7 +930,7 @@ static void do_round(void)
                 }
             }
 
-            readcontrols();
+            Game.readcontrols();
             battle_render(0, 0, 0);
             blit2screen(0, 0);
 
@@ -954,7 +954,7 @@ static void do_round(void)
             timer_count = 0;
         }
 
-        kq_yield();
+		Game.kq_yield();
     }
 }
 
@@ -1076,7 +1076,7 @@ static void enemies_win(void)
     menubox(double_buffer, 152 - (strlen(strbuf) * 4), 48, strlen(strbuf), 1, BLUE);
     print_font(double_buffer, 160 - (strlen(strbuf) * 4), 56, strbuf, FNORMAL);
     blit2screen(0, 0);
-    wait_enter();
+	Game.wait_enter();
     do_transition(TRANS_FADE_OUT, 4);
     alldead = 1;
 }
@@ -1367,7 +1367,7 @@ static void heroes_win(void)
     if (nr > 0)
     {
         blit2screen(0, 0);
-        wait_enter();
+		Game.wait_enter();
         fullblit(back, double_buffer);
     }
 
@@ -1437,7 +1437,7 @@ static void heroes_win(void)
 
     if (ent == 0)
     {
-        wait_enter();
+		Game.wait_enter();
     }
 }
 

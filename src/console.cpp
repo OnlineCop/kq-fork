@@ -169,10 +169,10 @@ void run_console(void)
         /* Get a key */
         while (!keypressed())
         {
-            check_animation();
+            Game.do_check_animation();
             blit2screen(xofs, yofs);
             poll_music();
-            kq_yield();
+			Game.kq_yield();
         }
 
         switch ((c = readkey()) & 0xff)
@@ -251,7 +251,7 @@ void run_console(void)
     /* Wait for enter key up */
     do
     {
-        readcontrols();
+        Game.readcontrols();
     }
     while (PlayerInput.benter);
 }

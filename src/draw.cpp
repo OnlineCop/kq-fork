@@ -1172,11 +1172,11 @@ static void generic_text(int who, int box_style, int isPort)
     {
         return;
     }
-    unpress();
+    Game.unpress();
     timer_count = 0;
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         if (isPort == 0)
         {
@@ -1187,10 +1187,10 @@ static void generic_text(int who, int box_style, int isPort)
             draw_porttextbox(box_style, who);
         }
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -1325,7 +1325,7 @@ void message(const char *m, int icn, int delay, int x_m, int y_m)
         /* Wait for delay time or key press */
         if (delay == 0)
         {
-            wait_enter();
+            Game.wait_enter();
         }
         else
         {
@@ -1489,7 +1489,7 @@ static const char *decode_utf8(const char *string, uint32_t *cp)
 
     if (string == NULL)
     {
-        program_death(_("UTF-8 decode error"));
+        Game.program_death(_("UTF-8 decode error"));
     }
     return string;
 }
@@ -1553,7 +1553,7 @@ static int get_glyph_index(uint32_t cp)
 
     /* didn't find it */
     sprintf(strbuf, _("Invalid glyph index: %d"), cp);
-    klog(strbuf);
+    Game.klog(strbuf);
     return 0;
 }
 
@@ -1578,7 +1578,7 @@ void print_font(BITMAP *where, int sx, int sy, const char *msg, eFontColor cl)
     if (cl < 0 || cl > 6)
     {
         sprintf(strbuf, _("print_font: Bad font index, %d"), cl);
-        klog(strbuf);
+        Game.klog(strbuf);
         return;
     }
     if (cl == FBIG)
@@ -1622,7 +1622,7 @@ void print_num(BITMAP *where, int sx, int sy, char *msg, int cl)
     if (cl < 0 || cl > 4)
     {
         sprintf(strbuf, _("print_num: Bad font index, %d"), cl);
-        klog(strbuf);
+        Game.klog(strbuf);
         return;
     }
     for (z = 0; z < (signed int) strlen(msg); z++)
@@ -1663,7 +1663,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
     strcpy(msgbuf[1], parse_string(sp2));
     strcpy(msgbuf[2], parse_string(sp3));
     strcpy(msgbuf[3], parse_string(sp4));
-    unpress();
+    Game.unpress();
     for (a = 0; a < 4; a++)
     {
         str_len = strlen(msgbuf[a]);
@@ -1684,17 +1684,17 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
     ly = (gbbh - numopt) * 12 + gbby + 10;
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         draw_textbox(bstyle);
 
         draw_sprite(double_buffer, menuptr, gbbx + xofs + 8, ptr * 12 + ly + yofs);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             ptr--;
             if (ptr < 0)
             {
@@ -1704,7 +1704,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             ptr++;
             if (ptr > numopt - 1)
             {
@@ -1714,7 +1714,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -1801,7 +1801,7 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
             running = 1;
             while (running)
             {
-                check_animation();
+                Game.do_check_animation();
                 drawmap();
                 /* Draw the prompt text */
                 set_textpos(who);
@@ -1825,30 +1825,30 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
 
                 blit2screen(xofs, yofs);
 
-                readcontrols();
+                Game.readcontrols();
                 if (PlayerInput.up && curopt > 0)
                 {
                     play_effect(SND_CLICK, 128);
-                    unpress();
+                    Game.unpress();
                     --curopt;
                 }
                 else if (PlayerInput.down && curopt < (n_opt - 1))
                 {
                     play_effect(SND_CLICK, 128);
-                    unpress();
+                    Game.unpress();
                     ++curopt;
                 }
                 else if (PlayerInput.balt)
                 {
                     /* Selected an option */
                     play_effect(SND_CLICK, 128);
-                    unpress();
+                    Game.unpress();
                     running = 0;
                 }
                 else if (PlayerInput.bctrl)
                 {
                     /* Just go "ow!" */
-                    unpress();
+                    Game.unpress();
                     play_effect(SND_BAD, 128);
                 }
 

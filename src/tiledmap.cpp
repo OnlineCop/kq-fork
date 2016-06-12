@@ -121,9 +121,9 @@ void load_tmx(const string& name) {
 	if (tmx.Error()) {
 		TRACE("Error loading %s\n%s\n%s\n", name.c_str(), tmx.GetErrorStr1(),
 			tmx.GetErrorStr2());
-		program_death("Could not load map file ");
+		Game.program_death("Could not load map file ");
 	}
-	reset_timer_events();
+	Game.reset_timer_events();
 	if (hold_fade == 0) {
 		do_transition(TRANS_FADE_OUT, 4);
 	}
@@ -292,7 +292,7 @@ static tmx_layer load_tmx_layer(XMLElement const *el) {
 	  if (data->Attribute("compression", "zlib")) {
 	    vector<uint8_t> raw = uncompress(bytes);
 		if (raw.size() != layer.size * sizeof(uint32_t)) {
-			program_death("Layer size mismatch");
+			Game.program_death("Layer size mismatch");
 		}
 	    auto iter = begin(raw);
 	    for (auto& tile : layer) {
@@ -303,11 +303,11 @@ static tmx_layer load_tmx_layer(XMLElement const *el) {
 	      tile = v;
 	    }
 	  } else {
-	    program_death("Layer's compression not supported");
+		  Game.program_death("Layer's compression not supported");
 	  }
 	}
 	else {
-		program_death("Layer's encoding not supported");
+		Game.program_death("Layer's encoding not supported");
 	}
 	return layer;
 }
@@ -399,7 +399,7 @@ tmx_tileset load_tmx_tileset(XMLElement const * el)
 		if (sourcedoc.Error()) {
 			TRACE("Error loading %s\n%s\n%s\n", source, sourcedoc.GetErrorStr1(),
 				sourcedoc.GetErrorStr2());
-			program_death("Couldn't load external tileset");
+			Game.program_death("Couldn't load external tileset");
 		}
 		tsx = sourcedoc.RootElement();
 	}
@@ -569,7 +569,7 @@ const tmx_tileset & tmx_map::find_tileset(const string & name) const
 	}
 	// not found
 	TRACE("Tileset '%s' not found in map.\n", name.c_str());
-	program_death("No such tileset");
+	Game.program_death("No such tileset");
 }
 
 /*! \brief BASE64 scanner.

@@ -707,12 +707,12 @@ static void load_enemies(void)
     enemy_pcx = load_datafile_object(PCX_DATAFILE, "ENEMY_PCX");
     if (enemy_pcx == NULL)
     {
-        program_death(_("Could not load enemy sprites from datafile!"));
+		Game.program_death(_("Could not load enemy sprites from datafile!"));
     }
     edat = fopen(kqres(DATA_DIR, "allstat.mon"), "r");
     if (!edat)
     {
-        program_death(_("Could not load 1st enemy datafile!"));
+		Game.program_death(_("Could not load 1st enemy datafile!"));
     }
     enemies_n = 0;
     enemies_cap = 128;
@@ -822,7 +822,7 @@ static void load_enemies(void)
     edat = fopen(kqres(DATA_DIR, "resabil.mon"), "r");
     if (!edat)
     {
-        program_death(_("Could not load 2nd enemy datafile!"));
+		Game.program_death(_("Could not load 2nd enemy datafile!"));
     }
     for (i = 0; i < enemies_n; i++)
     {
@@ -919,7 +919,7 @@ int select_encounter(int en, int etid)
         if (where >= NUM_ETROWS)
         {
             sprintf(strbuf, _("There are no rows for encounter table #%d!"), en);
-            program_death(strbuf);
+			Game.program_death(strbuf);
         }
     }
     if (etid == 99)
@@ -937,7 +937,7 @@ int select_encounter(int en, int etid)
             }
             if (erows[where].tnum > en || where >= NUM_ETROWS)
             {
-                program_death(_("Couldn't select random encounter table row!"));
+				Game.program_death(_("Couldn't select random encounter table row!"));
             }
         }
     }
@@ -965,7 +965,7 @@ int select_encounter(int en, int etid)
     }
     if (num_enemies == 0)
     {
-        program_death(_("Empty encounter table row!"));
+        Game.program_death(_("Empty encounter table row!"));
     }
     return entry;
 }

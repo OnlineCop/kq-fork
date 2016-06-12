@@ -842,7 +842,7 @@ static void cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spel
     }
     if (z == 0)
     {
-        klog(_("... the hell, how can there be nobody to cure?"));
+		Game.klog(_("whu... how can there be nobody to cure?"));
         return;
     }
     if (tgt == SEL_ALL_ALLIES)
@@ -1112,7 +1112,7 @@ static void geffect_one_ally(size_t target_fighter_index, size_t spell_number)
     /* Validate the target_fighter_index parameter */
     if (target_fighter_index >= NUM_FIGHTERS)
     {
-        program_death(_("Invalid target parameter in geffect_one_ally"));
+        Game.program_death(_("Invalid target parameter in geffect_one_ally"));
     }
 
     switch (spell_number)
@@ -1585,7 +1585,7 @@ static void special_spells(size_t caster_fighter_index, size_t spell_number)
     if (caster_fighter_index >= PSIZE)
     {
         sprintf(strbuf, _("Enemy %d tried to cast %s?!"), (int)caster_fighter_index, magic[spell_number].name);
-        klog(strbuf);
+        Game.klog(strbuf);
     }
     switch (spell_number)
     {
@@ -1615,11 +1615,11 @@ static void special_spells(size_t caster_fighter_index, size_t spell_number)
                      * house, etc.
                      */
 
-                    change_mapm("town4", "warp", 0, 0);
+                    Game.change_mapm("town4", "warp", 0, 0);
                 }
                 else
                 {
-                    change_map("main", g_map.warpx, g_map.warpy, g_map.warpx, g_map.warpy);
+                    Game.change_map("main", g_map.warpx, g_map.warpy, g_map.warpx, g_map.warpy);
                 }
             }
             break;

@@ -133,7 +133,7 @@ static void choose_equipment(int c, int slot)
 
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         draw_equipmenu(c, 0);
         draw_equippable(c, slot, pptr);
@@ -156,11 +156,11 @@ static void choose_equipment(int c, int slot)
             sm = tot - NUM_ITEMS_PER_PAGE;
         }
 
-        readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             if (yptr == 15)
             {
                 pptr++;
@@ -180,7 +180,7 @@ static void choose_equipment(int c, int slot)
         }
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             if (yptr == 0)
             {
                 pptr--;
@@ -197,7 +197,7 @@ static void choose_equipment(int c, int slot)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (equip(pidx[c], t_inv[pptr + yptr], 0) == 1)
             {
                 play_effect(SND_EQUIP, 128);
@@ -210,7 +210,7 @@ static void choose_equipment(int c, int slot)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -574,7 +574,7 @@ void equip_menu(uint32_t c)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         draw_equipmenu(c, sl);
         if (sl == 0)
@@ -600,13 +600,13 @@ void equip_menu(uint32_t c)
         }
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
 
         if (sl == 1)
         {
             if (PlayerInput.left)
             {
-                unpress();
+                Game.unpress();
                 eqp_act--;
                 if (eqp_act < 0)
                 {
@@ -616,7 +616,7 @@ void equip_menu(uint32_t c)
             }
             if (PlayerInput.right)
             {
-                unpress();
+                Game.unpress();
                 eqp_act++;
                 if (eqp_act > 3)
                 {
@@ -629,7 +629,7 @@ void equip_menu(uint32_t c)
         {
             if (PlayerInput.down)
             {
-                unpress();
+                Game.unpress();
                 yptr++;
                 if (yptr > 5)
                 {
@@ -639,7 +639,7 @@ void equip_menu(uint32_t c)
             }
             if (PlayerInput.up)
             {
-                unpress();
+                Game.unpress();
                 yptr--;
                 if (yptr < 0)
                 {
@@ -650,7 +650,7 @@ void equip_menu(uint32_t c)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (sl == 1)
             {
                 // If the selection is over 'Equip' or 'Remove'
@@ -708,7 +708,7 @@ void equip_menu(uint32_t c)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             if (sl == 0)
             {
                 sl = 1;

@@ -545,12 +545,12 @@ static int KQ_check_map_change(void)
     switch (changing_map)
     {
         case CHANGE_TO_COORDS:
-            change_map(tmap_name, tmx, tmy, tmvx, tmvy);
+            Game.change_map(tmap_name, tmx, tmy, tmvx, tmvy);
             changing_map = NOT_CHANGING;
             break;
 
         case CHANGE_TO_MARKER:
-            change_mapm(tmap_name, marker_name, tmx, tmy);
+            Game.change_mapm(tmap_name, marker_name, tmx, tmy);
             changing_map = NOT_CHANGING;
             break;
 
@@ -680,7 +680,7 @@ void do_luainit(const char *fname, int global)
     theL = luaL_newstate();
     if (theL == NULL)
     {
-        program_death(_("Could not initialize scripting engine"));
+        Game.program_death(_("Could not initialize scripting engine"));
     }
     /* This line breaks compatibility with Lua 5.0. Hopefully, we can do a full
      * upgrade later. */
@@ -699,14 +699,14 @@ void do_luainit(const char *fname, int global)
         if (lua_dofile(theL, kqres(SCRIPT_DIR, "global")) != 0)
         {
             /* lua_dofile already displayed error message */
-            program_death(strbuf);
+            Game.program_death(strbuf);
         }
     }
 
     if (lua_dofile(theL, kqres(SCRIPT_DIR, fname)) != 0)
     {
         /* lua_dofile already displayed error message */
-        program_death(strbuf);
+        Game.program_death(strbuf);
     }
     lua_settop(theL, oldtop);
     changing_map = NOT_CHANGING;
@@ -720,7 +720,7 @@ void do_luainit(const char *fname, int global)
  */
 void do_luakill(void)
 {
-    reset_timer_events();
+	Game.reset_timer_events();
     if (theL)
     {
         lua_close(theL);
@@ -1203,7 +1203,7 @@ static int KQ_add_timer(lua_State *L)
     const char *funcname = lua_tostring(L, 1);
     auto delta = lua_tointeger(L, 2);
 
-    lua_pushnumber(L, add_timer_event(funcname, delta));
+    lua_pushnumber(L, Game.add_timer_event(funcname, delta));
     return 1;
 }
 
@@ -1284,7 +1284,7 @@ static int KQ_portbubble_ex(lua_State *L)
 
 static int KQ_calc_viewport(lua_State *L)
 {
-    calc_viewport((int) lua_tonumber(L, 1));
+	Game.calc_viewport((int) lua_tonumber(L, 1));
     return 0;
 }
 
@@ -1720,7 +1720,7 @@ static int KQ_copy_tile_all(lua_State *L)
     size_t os, od, i, j;
 
     /*      sprintf (strbuf, "Copy (%d,%d)x(%d,%d) to (%d,%d)", sx, sy, wid, hgt, dx, dy);
-        klog(strbuf);
+        Game.klog(strbuf);
      */
     for (j = 0; j < hgt; ++j)
     {
@@ -1890,7 +1890,7 @@ static int KQ_door_in(lua_State *L)
         x = (int) lua_tonumber(L, 1) + (int) lua_tonumber(L, 3);
         y = (int) lua_tonumber(L, 2) + (int) lua_tonumber(L, 4);
     }
-    warp(x, y, 8);
+    Game.warp(x, y, 8);
 
     // Don't forget to set the door tile back to its "unopened" state
     set_btile(hx, hy, db);
@@ -1925,7 +1925,7 @@ static int KQ_door_out(lua_State *L)
         x = (int) lua_tonumber(L, 1) + (int) lua_tonumber(L, 3);
         y = (int) lua_tonumber(L, 2) + (int) lua_tonumber(L, 4);
     }
-    warp(x, y, 8);
+    Game.warp(x, y, 8);
 
     return 0;
 }
@@ -2736,7 +2736,7 @@ static int KQ_light_mbox(lua_State *L)
 
 static int KQ_log(lua_State *L)
 {
-    klog(lua_tostring(L, 1));
+    Game.klog(lua_tostring(L, 1));
     return 0;
 }
 
@@ -2856,7 +2856,7 @@ static int KQ_move_camera(lua_State *L)
                 ytot--;
             }
         }
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         blit2screen(xofs, yofs);
         poll_music();
@@ -3159,45 +3159,45 @@ static int KQ_read_controls(lua_State *L)
         g_keys[z] = 0;
     }
 
-    readcontrols();
+    Game.readcontrols();
     if (PlayerInput.up && a == 1)
     {
-        unpress();
+        Game.unpress();
         g_keys[0] = 1;
     }
     if (PlayerInput.down && b == 1)
     {
-        unpress();
+        Game.unpress();
         g_keys[1] = 1;
     }
     if (PlayerInput.left && c == 1)
     {
-        unpress();
+        Game.unpress();
         g_keys[2] = 1;
     }
     if (PlayerInput.right && d == 1)
     {
-        unpress();
+        Game.unpress();
         g_keys[3] = 1;
     }
     if (PlayerInput.balt && e == 1)
     {
-        unpress();
+        Game.unpress();
         g_keys[4] = 1;
     }
     if (PlayerInput.bctrl && f == 1)
     {
-        unpress();
+        Game.unpress();
         g_keys[5] = 1;
     }
     if (PlayerInput.benter && g == 1)
     {
-        unpress();
+        Game.unpress();
         g_keys[6] = 1;
     }
     if (PlayerInput.besc && h == 1)
     {
-        unpress();
+        Game.unpress();
         g_keys[7] = 1;
     }
     return 0;
@@ -3211,7 +3211,7 @@ static int KQ_remove_chr(lua_State *L)
 
     if (numchrs > 0)
     {
-        party_index = in_party((ePIDX) static_cast<int>(lua_tonumber(L, 1)));
+        party_index = Game.in_party((ePIDX) static_cast<int>(lua_tonumber(L, 1)));
         if (party_index < MAXCHRS)
         {
             pidx[party_index] = PIDX_UNDEFINED;
@@ -4475,7 +4475,7 @@ static int KQ_view_range(lua_State *L)
 
 static int KQ_wait(lua_State *L)
 {
-    kwait((int) lua_tonumber(L, 1));
+    Game.kwait((int) lua_tonumber(L, 1));
     return 0;
 }
 
@@ -4484,7 +4484,7 @@ static int KQ_wait(lua_State *L)
 static int KQ_wait_enter(lua_State *L)
 {
     (void) L;
-    wait_enter();
+    Game.wait_enter();
     return 0;
 }
 
@@ -4495,7 +4495,7 @@ static int KQ_wait_for_entity(lua_State *L)
     int a = real_entity_num(L, 1);
     int b = (lua_gettop(L) > 1 ? real_entity_num(L, 2) : a);
 
-    wait_for_entity(a, b);
+    Game.wait_for_entity(a, b);
     return 0;
 }
 
@@ -4537,7 +4537,7 @@ static int KQ_warp(lua_State *L)
         s = 3;
     }
     warpspeed = (lua_isnil(L, s) ? 8 : (int) lua_tonumber(L, s));
-    warp(x, y, warpspeed);
+    Game.warp(x, y, warpspeed);
     return 0;
 }
 

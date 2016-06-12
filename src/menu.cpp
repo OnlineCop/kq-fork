@@ -297,15 +297,15 @@ void menu(void)
     timer_count = 0;
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         draw_mainmenu(-1);
         draw_sprite(double_buffer, menuptr, 204 + xofs, ptr * 8 + 73 + yofs);
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             ptr--;
             if (ptr < 0)
             {
@@ -315,7 +315,7 @@ void menu(void)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             ptr++;
             if (ptr > 5)
             {
@@ -334,7 +334,7 @@ void menu(void)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             switch (ptr)
             {
                 case 0:
@@ -368,7 +368,7 @@ void menu(void)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
         if (close_menu == 1)
@@ -630,30 +630,30 @@ static void quest_info(void)
             print_font(double_buffer, 96 + xofs, 196 + yofs, quest_list.root[ii].text, FNORMAL);
         }
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
             --ii;
             play_effect(SND_CLICK, 128);
-            unpress();
+            Game.unpress();
         }
         if (PlayerInput.down)
         {
             ++ii;
             play_effect(SND_CLICK, 128);
-            unpress();
+            Game.unpress();
         }
         if (PlayerInput.left)
         {
             ii -= 10;
             play_effect(SND_CLICK, 128);
-            unpress();
+            Game.unpress();
         }
         if (PlayerInput.right)
         {
             ii += 10;
             play_effect(SND_CLICK, 128);
-            unpress();
+            Game.unpress();
         }
         if (ii < 0)
         {
@@ -665,7 +665,7 @@ static void quest_info(void)
         }
         if (PlayerInput.balt || PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             return;
         }
     }
@@ -756,7 +756,7 @@ void spec_items(void)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         menubox(double_buffer, 72 + xofs, 12 + yofs, 20, 1, BLUE);
         print_font(double_buffer, 108 + xofs, 20 + yofs, _("Special Items"), FGOLD);
@@ -776,23 +776,23 @@ void spec_items(void)
         print_font(double_buffer, 160 - a + xofs, 212 + yofs, special_items[list_item_which[ptr]].description, FNORMAL);
         draw_sprite(double_buffer, menuptr, 72 + xofs, ptr * 8 + 44 + yofs);
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             ptr = (ptr + 1) % num_items;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             ptr = (ptr - 1 + num_items) % num_items;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -817,7 +817,7 @@ static void status_screen(size_t fighter_index)
     update_equipstats();
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         // Redraw the map, clearing any menus under this new window
         drawmap();
 
@@ -921,25 +921,25 @@ static void status_screen(size_t fighter_index)
             print_font(double_buffer, 176 + xofs, equipment_index * 8 + 168 + yofs, items[party[pidx_index].eqp[equipment_index]].name, FNORMAL);
         }
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.left && fighter_index > 0)
         {
-            unpress();
+            Game.unpress();
             fighter_index--;
             pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
         if (PlayerInput.right && fighter_index < numchrs - 1)
         {
-            unpress();
+            Game.unpress();
             fighter_index++;
             pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             play_effect(SND_MENU, 128);
             stop = 1;
         }

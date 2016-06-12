@@ -68,17 +68,17 @@ void camp_item_menu(void)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         draw_itemmenu(ptr, pptr, sel);
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
 
         if (sel == 0)
         {
             if (PlayerInput.down)
             {
-                unpress();
+                Game.unpress();
                 ptr++;
                 if (ptr > 15)
                 {
@@ -88,7 +88,7 @@ void camp_item_menu(void)
             }
             if (PlayerInput.up)
             {
-                unpress();
+                Game.unpress();
                 ptr--;
                 if (ptr < 0)
                 {
@@ -99,7 +99,7 @@ void camp_item_menu(void)
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             if (sel == 0)
             {
                 /* One of the 16 items in the list */
@@ -122,7 +122,7 @@ void camp_item_menu(void)
         }
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             if (sel == 0)
             {
                 /* One of the 16 items in the list */
@@ -145,7 +145,7 @@ void camp_item_menu(void)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (sel == 1)
             {
                 if (item_act == 1)
@@ -176,22 +176,22 @@ void camp_item_menu(void)
                             /* Make sure the player really wants to drop the item specified. */
                             while (!stop2)
                             {
-                                check_animation();
+                                Game.do_check_animation();
                                 drawmap();
                                 draw_itemmenu(ptr, pptr, sel);
                                 menubox(double_buffer, 72 + xofs, 204 + yofs, 20, 1, DARKBLUE);
                                 print_font(double_buffer, 104 + xofs, 212 + yofs, _("Confirm/Cancel"), FNORMAL);
                                 blit2screen(xofs, yofs);
-                                readcontrols();
+                                Game.readcontrols();
 
                                 if (PlayerInput.balt)
                                 {
-                                    unpress();
+                                    Game.unpress();
                                     stop2 = 2;
                                 }
                                 if (PlayerInput.bctrl)
                                 {
-                                    unpress();
+                                    Game.unpress();
                                     stop2 = 1;
                                 }
                             }
@@ -207,7 +207,7 @@ void camp_item_menu(void)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             if (sel == 0)
             {
                 sel = 1;
@@ -272,7 +272,7 @@ static void camp_item_targetting(int pp)
         {
             return;
         }
-        kq_yield();
+        Game.kq_yield();
     }
 }
 
