@@ -27,6 +27,12 @@
  *
  * Looks after keeping the music playing whilst the game is 'paused'
  */
+#ifdef _WIN32
+#include <allegro.h>
+# include <winalleg.h>
+# include <stdarg.h>
+#endif
+
 #include "kq.h"
 #include "timing.h"
 #include "music.h"
@@ -89,8 +95,7 @@ int limit_frame_rate(int fps)
 
     gettimeofday(&tv, 0);
     /* The time between now and (last exec + delay) */
-    timeout.tv_usec = last_exec.tv_usec - tv.tv_usec + (1000000 / fps)
-                      + 1000000 * (last_exec.tv_sec - tv.tv_sec);
+    timeout.tv_usec = last_exec.tv_usec - tv.tv_usec + (1000000 / fps) + 1000000 * (last_exec.tv_sec - tv.tv_sec);
     seconds = last_exec.tv_sec;
     /* Negative waits are not yet possible */
     if (timeout.tv_usec < 0 || !last_exec.tv_sec)
@@ -119,10 +124,6 @@ int limit_frame_rate(int fps)
 
 #elif defined(_WIN32)
 
-#include "allegro.h"
-#include "winalleg.h"
-#include <stdarg.h>
-
 void kq_wait(long ms)
 {
     /* dumb's doc says to call poll_music each bufsize / freq seconds */
@@ -148,28 +149,27 @@ void kq_wait(long ms)
 
 int limit_frame_rate(int fps)
 {
-    static long last_exec = 0;
-    long now, delay;
+	static DWORD last_exec;
+	static bool initialised = false;
+	DWORD now = GetTickCount();
+	if (!initialised) {
+		initialised = true;
+		last_exec = now;
+	}
+	DWORD next_exec = last_exec + 1000 / fps;
 
-    now = GetTickCount();
-    delay = last_exec - now + 1000 / fps;
-//   skips = delay;
-    if (delay < 0)
-    {
-        last_exec = now;
-    }
-    else
-    {
-        last_exec += 1000 / fps;
-        Sleep(delay);
-    }
-    if (now / 1000 != last_exec / 1000)
-    {
-        mfrate = frate;
-        frate = 0;
-    }
-    ++frate;
-    return mfrate;
+	// Sleep if current time is before next due time.
+	if (now < next_exec) {
+		Sleep(next_exec - now);
+	}
+	if (now / 1000 != last_exec / 1000)
+	{
+		mfrate = frate;
+		frate = 0;
+	}
+	last_exec = now;
+	++frate;
+	return mfrate;
 }
 #else
 
@@ -198,6 +198,7 @@ void kq_wait(long ms)
 
 int limit_frame_rate(int fps)
 {
+    fps = fps; // prevent "unused param" warnings
     static int last_ksec = 0;
 
     vsync();
@@ -215,9 +216,3 @@ int limit_frame_rate(int fps)
 
 #endif  // HAVE_SYS_SELECT_H
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

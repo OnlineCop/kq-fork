@@ -26,203 +26,15 @@
  * \date 20100222
  */
 
-#include "markers.h"
+#include <assert.h>
+#include <ctype.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <iterator>
+#include "../include/markers.h"
 
-#include <cassert>
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
-
-const std::string& Marker::Name() const
-{
-    return _name;
-}
-
-
-void Marker::Name(const std::string& name)
-{
-    _name = name;
-}
-
-
-const unsigned int Marker::X() const
-{
-    return _x;
-}
-
-
-void Marker::X(const unsigned int x)
-{
-    _x = x;
-}
-
-
-const unsigned int Marker::Y() const
-{
-    return _y;
-}
-
-
-void Marker::Y(const unsigned int y)
-{
-    _y = y;
-}
-
-
-std::vector<Marker*> MarkerArray::Markers() const
-{
-    return _markers;
-}
-
-
-void MarkerArray::Markers(std::vector<Marker*> markers)
-{
-    _markers = markers;
-}
-
-
-void MarkerArray::ClearMarkers()
-{
-    std::vector<Marker*>::iterator it;
-
-    for (it = _markers.begin(); it != _markers.end(); ++it)
-    {
-        Marker* m = *it;
-        delete m;
-    }
-
-    _markers.clear();
-}
-
-
-void MarkerArray::AddMarker(Marker* marker)
-{
-    _markers.push_back(marker);
-}
-
-
-void MarkerArray::RemoveMarker(Marker* marker)
-{
-    std::vector<Marker*>::iterator it;
-
-    for (it = _markers.begin(); it != _markers.end(); ++it)
-    {
-        if (*it == marker)
-        {
-            it = _markers.erase(it);
-            break;
-        }
-    }
-}
-
-
-Marker* MarkerArray::FindMarker(const int x, const int y)
-{
-    Marker* found = NULL;
-    std::vector<Marker*>::iterator it;
-
-    for (it = _markers.begin(); it != _markers.end(); ++it)
-    {
-        Marker* marker = *it;
-        if (marker->X() == x && marker->Y() == y)
-        {
-            found = marker;
-            break;
-        }
-    }
-
-    return found;
-}
-
-
-Marker* MarkerArray::FindMarker(const std::string& name)
-{
-    Marker* marker = NULL;
-    std::vector<Marker*>::iterator it;
-
-    for (it = _markers.begin(); it != _markers.end(); ++it)
-    {
-        Marker* m = *it;
-        if (m->Name() == name)
-        {
-            marker = m;
-            break;
-        }
-    }
-
-    return marker;
-}
-
-
-int MarkerArray::LoadMarkers(PACKFILE* packfile)
-{
-    Marker* marker = NULL;
-    size_t numMarkers = 0;
-    const size_t maxNameLength = 32;
-    char* tempNameBuffer = new char[maxNameLength];
-
-    // Delete all previous markers
-    this->ClearMarkers();
-
-    assert(packfile && "packfile == NULL");
-
-    if (packfile == NULL)
-    {
-        printf("NULL passed into LoadMarkers()\n");
-        return 1;
-    }
-
-    numMarkers = (size_t) pack_igetw(packfile);
-    for (size_t curMarker = 0; curMarker < numMarkers; ++curMarker)
-    {
-        marker = new Marker();
-
-        pack_fread(tempNameBuffer, maxNameLength, packfile);
-        marker->Name(tempNameBuffer);
-        marker->X(pack_igetw(packfile));
-        marker->Y(pack_igetw(packfile));
-
-        _markers.push_back(marker);
-    }
-
-    return 0; // Success
-}
-
-
-int MarkerArray::SaveMarkers(PACKFILE* packfile)
-{
-    std::vector<Marker*>::iterator it;
-    const size_t maxNameLength = 32;
-    size_t i;
-
-    assert(packfile && "packfile == NULL");
-
-    if (packfile == NULL)
-    {
-        printf("NULL passed into SaveMarkers()\n");
-        return 1;
-    }
-
-    pack_iputw(_markers.size(), packfile);
-
-    for (it = _markers.begin(); it != _markers.end(); ++it)
-    {
-        Marker* m = *it;
-        pack_fwrite(m->Name().c_str(), maxNameLength, packfile);
-        pack_iputw(m->X(), packfile);
-        pack_iputw(m->Y(), packfile);
-    }
-
-    return 0; // Success
-}
-
-
-/// Old structures, just so maps/* will still work ///
 
 unsigned int find_marker(const s_marker_array *marray, const char *name)
 {
@@ -317,7 +129,7 @@ size_t load_markers(s_marker_array *marray, PACKFILE *pf)
  */
 size_t save_markers(s_marker_array *marray, PACKFILE *pf)
 {
-    size_t i;
+    size_t marker_index;
 
     assert(marray && "marray == NULL");
     assert(pf && "pf == NULL");
@@ -336,16 +148,16 @@ size_t save_markers(s_marker_array *marray, PACKFILE *pf)
         return 2;
     }
 
-    for (i = 0; i < marray->size; ++i)
+    for (marker_index = 0; marker_index < marray->size; ++marker_index)
     {
-        pack_fwrite(marray->array[i].name, sizeof(marray->array[i].name), pf);
-        pack_iputw(marray->array[i].x, pf);
-        pack_iputw(marray->array[i].y, pf);
+        pack_fwrite(marray->array[marker_index].name, sizeof(marray->array[marker_index].name), pf);
+        pack_iputw(marray->array[marker_index].x, pf);
+        pack_iputw(marray->array[marker_index].y, pf);
 
         if (pack_feof(pf))
         {
             assert(0 && "pack_iputw() for marker->[xy] received EOF signal.");
-            printf("Encountered EOF when writing marker %dsize.\n", i);
+            printf("Encountered EOF when writing marker %usize.\n", (unsigned int)marker_index);
             return 3;
         }
     }
@@ -353,9 +165,3 @@ size_t save_markers(s_marker_array *marray, PACKFILE *pf)
     return 0;
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

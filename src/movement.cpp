@@ -29,17 +29,18 @@
  * \author RB
  * \date March 2005
  */
+
+#include <stdio.h>
+#include <string.h>
 #include "kq.h"
 #include "movement.h"
 
-#include <cstdio>
-#include <cstring>
 
-
-static int compose_path(AL_CONST int *, int, int, char *, int);
+static int compose_path(AL_CONST int *, unsigned int, unsigned int, char *, size_t);
 static void copy_map(int *);
-static int minimize_path(AL_CONST char *, char *, int);
-static int search_paths(int, int *, int, int, int, int, int, int, int, int, int);
+static int minimize_path(AL_CONST char *, char *, size_t);
+static int search_paths(unsigned int, int *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
+
 
 
 /*! \brief Generates the solution path.
@@ -60,13 +61,12 @@ static int search_paths(int, int *, int, int, int, int, int, int, int, int, int)
  *
  * \sa search_paths copy_map find_path minimize_path
  */
-static int compose_path(AL_CONST int *map, int target_x, int target_y,
-                        char *buffer, int size)
+static int compose_path(AL_CONST int *map, unsigned int target_x, unsigned int target_y, char *buffer, size_t size)
 {
     char temp[1024];
     int index = 0;
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
     int value;
 
     x = target_x;
@@ -77,10 +77,8 @@ static int compose_path(AL_CONST int *map, int target_x, int target_y,
 
     while (value > 1)
     {
-
         /*  move as many squares up as possible  */
-        while ((y > 0) && (map[(y - 1) * g_map.xsize + x] == (value - 1))
-                && (value > 1))
+        while ((y > 0) && (map[(y - 1) * g_map.xsize + x] == (value - 1)) && (value > 1))
         {
             value--;
             y--;
@@ -88,8 +86,7 @@ static int compose_path(AL_CONST int *map, int target_x, int target_y,
         }
 
         /*  move as many squares left as possible  */
-        while ((x > 0) && (map[y * g_map.xsize + (x - 1)] == (value - 1))
-                && (value > 1))
+        while ((x > 0) && (map[y * g_map.xsize + (x - 1)] == (value - 1)) && (value > 1))
         {
             value--;
             x--;
@@ -97,9 +94,7 @@ static int compose_path(AL_CONST int *map, int target_x, int target_y,
         }
 
         /*  move as many squares down as possible  */
-        while ((y < g_map.ysize - 1)
-                && (map[(y + 1) * g_map.xsize + x] == (value - 1))
-                && (value > 1))
+        while ((y < g_map.ysize - 1) && (map[(y + 1) * g_map.xsize + x] == (value - 1)) && (value > 1))
         {
             value--;
             y++;
@@ -107,9 +102,7 @@ static int compose_path(AL_CONST int *map, int target_x, int target_y,
         }
 
         /*  move as many squares right as possible  */
-        while ((x < g_map.xsize - 1)
-                && (map[y * g_map.xsize + (x + 1)] == (value - 1))
-                && (value > 1))
+        while ((x < g_map.xsize - 1) && (map[y * g_map.xsize + (x + 1)] == (value - 1)) && (value > 1))
         {
             value--;
             x++;
@@ -133,8 +126,8 @@ static int compose_path(AL_CONST int *map, int target_x, int target_y,
  */
 static void copy_map(int *map)
 {
-    register int x, y;
-    unsigned int index;
+    register size_t x, y;
+    size_t index, entity_index;
 
     for (y = 0; y < g_map.ysize; y++)
     {
@@ -142,7 +135,7 @@ static void copy_map(int *map)
         {
             index = y * g_map.xsize + x;
 
-            if (o_seg[index])
+            if (o_seg[index] != BLOCK_NONE)
             {
                 map[index] = -1;
             }
@@ -150,11 +143,11 @@ static void copy_map(int *map)
     }
 
     /*  RB: faster to do this than to check if there is an entity at every square  */
-    for (index = 0; index < MAX_ENT; index++)
+    for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++)
     {
-        if (g_ent[index].active)
+        if (g_ent[entity_index].active)
         {
-            map[g_ent[index].tilex * g_map.ysize + g_ent[index].tiley] = -1;
+            map[g_ent[entity_index].tilex * g_map.ysize + g_ent[entity_index].tiley] = -1;
         }
     }
 }
@@ -166,7 +159,7 @@ static void copy_map(int *map)
  * Call this function to calculate the shortest path between a given
  * NPC and a target point.
  *
- * \param id [in]        The ID of the entity moving around.
+ * \param entity_id [in] The ID of the entity moving around.
  * \param source_x [in]  The x coordinate of the source point.
  * \param source_y [in]  The y coordinate of the source point.
  * \param target_x [in]  The x coordinate of the target point.
@@ -182,15 +175,14 @@ static void copy_map(int *map)
  *
  * \sa copy_map compose_path search_paths minimize_path
  */
-int find_path(int id, int source_x, int source_y, int target_x, int target_y,
-              char *buffer, int size)
+int find_path(size_t entity_id, unsigned int source_x, unsigned int source_y, unsigned int target_x, unsigned int target_y, char *buffer, unsigned int size)
 {
     int *map = NULL;
-    int result = 0;
+    unsigned int result = 0;
 
     if (buffer == NULL || size == 0)
     {
-        return (3);
+        return 3;
     }
 
     memset(buffer, '\0', size);
@@ -200,15 +192,14 @@ int find_path(int id, int source_x, int source_y, int target_x, int target_y,
     map = (int *) malloc(result);
     if (map == NULL)
     {
-        return (3);
+        return 3;
     }
 
     memset(map, 0, result);
     copy_map(map);
-    result = search_paths(id, map, 1, source_x, source_y, target_x, target_y,
-                          0, 0, g_map.xsize, g_map.ysize);
+    result = search_paths(entity_id, map, 1, source_x, source_y, target_x, target_y, 0, 0, g_map.xsize, g_map.ysize);
 
-    if (!result)
+    if (result == 0)
     {
         result = compose_path(map, target_x, target_y, buffer, size);
     }
@@ -218,7 +209,7 @@ int find_path(int id, int source_x, int source_y, int target_x, int target_y,
     }
 
     free(map);
-    return (result);
+    return result;
 }
 
 
@@ -231,16 +222,15 @@ int find_path(int id, int source_x, int source_y, int target_x, int target_y,
  * \param target [out]The buffer where the result will be stored.
  * \param size   [in] The result buffer size.
  *
- * \returns If the solution was copied.
- *          0 The solution was copied.
- *          1 The buffer was too small for the solution to be copied.
+ * \returns 0 if the solution was copied,
+ *          1 if the buffer was too small for the solution to be copied.
  *
  * \sa search_paths copy_map find_path compose_path
  */
-static int minimize_path(AL_CONST char *source, char *target, int size)
+static int minimize_path(AL_CONST char *source, char *target, size_t size)
 {
-    int source_index = 0;
-    int repetition = 0;
+    size_t source_index = 0;
+    unsigned int repetition = 0;
     char value;
     char temp[16];
     char buffer[512];
@@ -259,18 +249,18 @@ static int minimize_path(AL_CONST char *source, char *target, int size)
         }
 
         /*  FIXME: check to see if the buffer is long enough?  */
-        snprintf(temp, sizeof(temp), "%c%d", value, repetition);
+        snprintf(temp, sizeof(temp), "%c%u", value, repetition);
         strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
     }
 
-    if (strlen(buffer) < (unsigned int) size)
+    if (strlen(buffer) < size)
     {
         strcpy(target, buffer);
-        return (0);
+        return 0;
     }
     else
     {
-        return (1);
+        return 1;
     }
 }
 
@@ -279,9 +269,9 @@ static int minimize_path(AL_CONST char *source, char *target, int size)
 /*! \brief Internal path search routine.
  *
  * This function uses recursivity to find the shortest path to the target
- * point. Once it returns 0,
+ * point. Once it returns 0, a path was successfully found.
  *
- * \param id  [in]     The ID of the entity moving around.
+ * \param entity_id [in]     The ID of the entity moving around.
  * \param map [in,out] The map in where to write the paths.
  * \param step [in]    The current step in recursivity.
  * \param source_x [in] The x coordinate of the source point.
@@ -293,24 +283,15 @@ static int minimize_path(AL_CONST char *source, char *target, int size)
  * \param limit_x [in] The maximum value of the x axis.
  * \param limit_y [in] The maximum value of the y axis.
  *
- * \returns If a path was found.
- *          0 Success.
- *          1 No path found.
+ * \returns 0 if a path was successfully found, otherwise non-zero to indicate failure.
  *
  * \sa copy_map compose_path find_path minimize_path
  */
-static int search_paths(
-    int id,
-    int *map,
-    int step,
-    int source_x,
-    int source_y,
-    int target_x,
-    int target_y,
-    int start_x,
-    int start_y,
-    int limit_x,
-    int limit_y)
+static int search_paths(unsigned int entity_id, int *map, unsigned int step,
+    unsigned int source_x, unsigned int source_y,
+    unsigned int target_x, unsigned int target_y,
+    unsigned int start_x, unsigned int start_y,
+    unsigned int limit_x, unsigned int limit_y)
 {
     int index;
     int value;
@@ -318,44 +299,36 @@ static int search_paths(
 
     index = source_y * limit_x + source_x;
     value = map[index];
-    if ((value != -1) &&
-        (value == 0 || value > step) &&
-        (step == 1 || !entityat(source_x, source_y, id)))
+    if ((value != -1) && (value == 0 || value > (int)step) && (step == 1 || !entityat(source_x, source_y, entity_id)))
     {
         map[index] = step;
 
-        if ((source_x == target_x) && (source_y == target_y))
+        if (source_x == target_x && source_y == target_y)
         {
             return 0;
         }
 
         if (source_x > start_x)
         {
-            result &= search_paths(id, map, step + 1, source_x - 1, source_y, target_x, target_y, start_x, start_y, limit_x, limit_y);
+            result &= search_paths(entity_id, map, step + 1, source_x - 1, source_y, target_x, target_y, start_x, start_y, limit_x, limit_y);
         }
 
         if (source_x < limit_x - 1)
         {
-            result &= search_paths(id, map, step + 1, source_x + 1, source_y, target_x, target_y, start_x, start_y, limit_x, limit_y);
+            result &= search_paths(entity_id, map, step + 1, source_x + 1, source_y, target_x, target_y, start_x, start_y, limit_x, limit_y);
         }
 
         if (source_y > start_y)
         {
-            result &= search_paths(id, map, step + 1, source_x, source_y - 1, target_x, target_y, start_x, start_y, limit_x, limit_y);
+            result &= search_paths(entity_id, map, step + 1, source_x, source_y - 1, target_x, target_y, start_x, start_y, limit_x, limit_y);
         }
 
         if (source_y < limit_y - 1)
         {
-            result &= search_paths(id, map, step + 1, source_x, source_y + 1, target_x, target_y, start_x, start_y, limit_x, limit_y);
+            result &= search_paths(entity_id, map, step + 1, source_x, source_y + 1, target_x, target_y, start_x, start_y, limit_x, limit_y);
         }
     }
 
     return (result);
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

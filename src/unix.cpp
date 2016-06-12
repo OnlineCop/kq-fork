@@ -30,13 +30,13 @@
  * e.g. Linux
  */
 
-#include "platform.h"
-
 #include <allegro.h>
 #include <pwd.h>
-#include <cstdio>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 #include <sys/stat.h>
+
+#include "platform.h"
 
 static int init_path = 0;
 static char user_dir[2048];
@@ -183,9 +183,3 @@ const char *kqres(enum eDirectories dir, const char *file)
     }
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

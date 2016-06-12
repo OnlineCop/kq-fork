@@ -36,7 +36,7 @@
 
 
 #include "enums.h"
-#include <cstring>
+
 
 #define BATTLE_INC    20
 #define ROUND_MAX    400
@@ -47,11 +47,11 @@
 /*! \name combat function prototypes  */
 int combat_check(int, int);     /*  entity.c  */
 int combat(int);                /*  intrface.c  */
-void battle_render(int, int, int);      /*  effects.c, [eh]skill.c, heroc.c, magic.c, selector.c  */
+void battle_render(signed int, size_t, int);      /*  effects.c, [eh]skill.c, heroc.c, magic.c, selector.c  */
 void draw_fighter(size_t, size_t);    /*  effects.c, hskill.c  */
-int fight(int, int, int);       /*  enemyc.c, [eh]skill.c, heroc.c  */
-void multi_fight(int);          /*  hskill.c  */
-void fkill(int);                /*  heroc.c, hskill.c, magic.c  */
+int fight(size_t, size_t, int); /*  enemyc.c, [eh]skill.c, heroc.c  */
+void multi_fight(size_t);       /*  hskill.c  */
+void fkill(size_t);             /*  heroc.c, hskill.c, magic.c  */
 
 
 /*!  global combat related variables  */
@@ -65,14 +65,8 @@ extern int deffect[NUM_FIGHTERS];       /*  effects.c, hskill.c  */
 extern int rcount;              /*  magic.c  */
 extern unsigned char vspell;    /*  magic.c  */
 extern unsigned char ms;        /*  heroc.c  */
-extern struct DATAFILE *backart;        /*  hskill.c  */
+extern struct BITMAP *backart;        /*  hskill.c  */
 
 
 #endif  /* __COMBAT_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

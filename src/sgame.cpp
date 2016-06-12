@@ -33,6 +33,10 @@
  *          mode to be saved/loaded ?
  */
 
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
 #include "combat.h"
 #include "credits.h"
 #include "disk.h"
@@ -51,21 +55,20 @@
 #include "shopmenu.h"
 #include "structs.h"
 #include "timing.h"
-
-#include <cstdio>
-#include <cctype>
-#include <cstring>
+#include "imgcache.h"
 
 /*! \brief No game-wide globals in this file. */
 
 /*! \name Internal variables */
 /* NUMSG is the number of save slots. */
-/* PARTY_SIZE is the maximum party size (2) */
+/* PSIZE is the maximum party size (2) */
 
 /* These describe the save slots. Number of characters, gp, etc */
 /* They are used to make the save menu prettier. */
-int snc[NUMSG], sgp[NUMSG], shr[NUMSG], smin[NUMSG], sid[NUMSG][PARTY_SIZE], slv[NUMSG][PARTY_SIZE];
-unsigned char shp[NUMSG][PARTY_SIZE], smp[NUMSG][PARTY_SIZE];
+signed int savegame_num_characters[NUMSG]; // -1 indicates "wrong version" of save game
+unsigned int savegame_gold[NUMSG], savegame_time_hours[NUMSG], savegame_time_minutes[NUMSG];
+unsigned int sid[NUMSG][PSIZE], slv[NUMSG][PSIZE];
+unsigned char shp[NUMSG][PSIZE], smp[NUMSG][PSIZE];
 
 /* Which save_slot the player is pointing to */
 int save_ptr = 0;
@@ -86,6 +89,7 @@ static int saveload(int);
 static int confirm_action(void);
 
 
+
 /*! \brief Confirm save
  *
  * If the save slot selected already has a saved game in it, confirm that we
@@ -98,7 +102,7 @@ static int confirm_action(void)
     int stop = 0;
     int pointer_offset = (save_ptr - top_pointer) * 48;
 
-    if (snc[save_ptr] == 0)
+    if (savegame_num_characters[save_ptr] == 0)
     {
         return 1;
     }
@@ -110,12 +114,12 @@ static int confirm_action(void)
     while (!stop)
     {
         readcontrols();
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             return 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return 0;
@@ -155,34 +159,35 @@ static int confirm_quit(void)
  */
 static void delete_game(void)
 {
-    int a, stop = 0;
+    int stop = 0;
+    int remove_result;
     int pointer_offset = (save_ptr - top_pointer) * 48;
+    size_t pidx_index;
 
     sprintf(strbuf, "sg%d.sav", save_ptr);
-    a = remove(kqres(SAVE_DIR, strbuf));
-    if (a == 0)
+    remove_result = remove(kqres(SAVE_DIR, strbuf));
+    if (remove_result == 0)
     {
         menubox(double_buffer, 128, pointer_offset + 12, 12, 1, DARKBLUE);
         print_font(double_buffer, 136, pointer_offset + 20, _("File Deleted"), FNORMAL);
 
-        snc[save_ptr] = 0;
-        sgp[save_ptr] = 0;
-        shr[save_ptr] = 0;
-        smin[save_ptr] = 0;
-        for (a = 0; a < PARTY_SIZE; a++)
+        savegame_num_characters[save_ptr] = 0;
+        savegame_gold[save_ptr] = 0;
+        savegame_time_hours[save_ptr] = 0;
+        savegame_time_minutes[save_ptr] = 0;
+        for (pidx_index = 0; pidx_index < PSIZE; pidx_index++)
         {
-            sid[save_ptr][a] = 0;
-            shp[save_ptr][a] = 0;
-            smp[save_ptr][a] = 0;
-            slv[save_ptr][a] = 0;
+            sid[save_ptr][pidx_index] = 0;
+            shp[save_ptr][pidx_index] = 0;
+            smp[save_ptr][pidx_index] = 0;
+            slv[save_ptr][pidx_index] = 0;
         }
 
     }
     else
     {
         menubox(double_buffer, 128, pointer_offset + 12, 16, 1, DARKBLUE);
-        print_font(double_buffer, 136, pointer_offset + 20,
-                   _("File Not Deleted"), FNORMAL);
+        print_font(double_buffer, 136, pointer_offset + 20, _("File Not Deleted"), FNORMAL);
     }
     blit2screen(0, 0);
     fullblit(back, double_buffer);
@@ -190,7 +195,7 @@ static void delete_game(void)
     while (!stop)
     {
         readcontrols();
-        if (balt || bctrl)
+        if (PlayerInput.balt || PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -269,9 +274,9 @@ int load_game_91(PACKFILE *sdat)
     gp = pack_igetl(sdat);
     khr = pack_igetl(sdat);
     kmin = pack_igetl(sdat);
-    for (a = 0; a < PARTY_SIZE; a++)
+    for (a = 0; a < PSIZE; a++)
     {
-        pidx[a] = pack_igetl(sdat);
+        pidx[a] = (ePIDX)pack_igetl(sdat);
         g_ent[a].active = 0;
         if (a < numchrs)
         {
@@ -283,7 +288,15 @@ int load_game_91(PACKFILE *sdat)
     {
         load_s_player(&party[a], sdat);
     }
-    pack_fread(curmap, 16, sdat);
+    /* Number of characters for the map name does NOT include the trailing \0.
+     * It will have to be appended to the 'buf' array.
+     * Version 91 had a fixed '16' map name length.
+     */
+    char *buf = new char[16 + 1];
+    pack_fread(buf, 16, sdat);
+    buf[16] = '\0'; // Force the last character to be '\0'
+    curmap = buf;
+    delete[] buf;
     for (a = 0; a < SIZE_PROGRESS; a++)     /* 1750 */
     {
         progress[a] = pack_getc(sdat);
@@ -314,8 +327,8 @@ int load_game_91(PACKFILE *sdat)
     }
     for (a = 0; a < MAX_INV; a++)
     {
-        g_inv[a][0] = pack_igetw(sdat);
-        g_inv[a][1] = pack_igetw(sdat);
+        g_inv[a][GLOBAL_INVENTORY_ITEM] = pack_igetw(sdat);
+        g_inv[a][GLOBAL_INVENTORY_QUANTITY] = pack_igetw(sdat);
     }
     /* Bunch of 0s for alignment */
     pack_igetl(sdat);
@@ -640,42 +653,46 @@ static int load_game_92(PACKFILE *sdat)
 
     /* Load number of, and which characters in party */
     numchrs = pack_igetw(sdat);
-    if (numchrs > PARTY_SIZE)
+    if (numchrs > PSIZE)
     {
-        message(_("Error. numchrs in saved game > PARTY_SIZE"), 255, 0, 0, 0);
+        message(_("Error. numchrs in saved game > PSIZE"), 255, 0, 0, 0);
         return 0;
     }
     for (a = 0; a < numchrs; a++)
     {
-        pidx[a] = pack_igetw(sdat);
+        pidx[a] = (ePIDX)pack_igetw(sdat);
         g_ent[a].eid = pidx[a];
         g_ent[a].active = 1;
     }
 
     /* Zero set empty party character(s), if any */
-    for (; a < PARTY_SIZE; a++)
+    for (; a < PSIZE; a++)
     {
-        pidx[a] = 0;
+        pidx[a] = PIDX_UNDEFINED;
         g_ent[a].active = 0;
     }
 
     /* Load number of, and data on all characters in game */
-    pack_igetw(sdat);            /* max number of characters is fixed in KQ */
-    for (a = 0; a < MAXCHRS; a++)
+    size_t maxchrs = pack_igetw(sdat);            /* max number of characters is fixed in KQ */
+    if (maxchrs != MAXCHRS)
+    {
+        message(_("Error. MAXCHRS != maxchrs"), 255, 0, 0, 0);
+        return 0;
+    }
+    for (a = 0; a < maxchrs; a++)
     {
         load_s_player(&party[a], sdat);
     }
 
-    /* Load map name and location */
+    /* Number of characters for the map name does NOT include the trailing \0.
+     * It will have to be appended to the 'buf' array.
+     */
     a = pack_igetw(sdat);
-    if (a > sizeof(curmap))
-    {
-        message(_("Error. number of chars in saved game > sizeof(curmap)"), 255,
-                0, 0, 0);
-        return 0;
-    }
-    pack_fread(curmap, a, sdat);
-    curmap[a] = 0;               // pack_fread does not append a NULL to the end of a string.
+    char *buf = new char[a + 1]; // One character more to deal with the '\0'
+    pack_fread(buf, a, sdat);
+    buf[a] = '\0';
+    curmap = buf;
+    delete[] buf;
 
     g_ent[0].tilex = pack_igetw(sdat);
     g_ent[0].tiley = pack_igetw(sdat);
@@ -684,8 +701,7 @@ static int load_game_92(PACKFILE *sdat)
     b = pack_igetw(sdat);
     if (b > sizeof(progress))
     {
-        message(_("Error. number of progress indicators > sizeof(progress)"),
-                255, 0, 0, 0);
+        message(_("Error. number of progress indicators > sizeof(progress)"), 255, 0, 0, 0);
         return 0;
     }
     for (a = 0; a < b; a++)
@@ -693,8 +709,9 @@ static int load_game_92(PACKFILE *sdat)
         progress[a] = pack_getc(sdat);
     }
 
-    /* zero-set blank Quest Info */
-    for (; a < sizeof(progress); a++)
+    /* Zero out all "unused" progress values */
+    b = sizeof(progress);
+    for (; a < b; a++)
     {
         progress[a] = 0;
     }
@@ -703,8 +720,7 @@ static int load_game_92(PACKFILE *sdat)
     b = pack_igetw(sdat);
     if (b > sizeof(treasure))
     {
-        message(_("Error. number of treasure indicators > sizeof(treasure)"),
-                255, 0, 0, 0);
+        message(_("Error. number of treasure indicators > sizeof(treasure)"), 255, 0, 0, 0);
         return 0;
     }
     for (a = 0; a < b; a++)
@@ -712,8 +728,9 @@ static int load_game_92(PACKFILE *sdat)
         treasure[a] = pack_getc(sdat);
     }
 
-    /* zero-set blank treasure info */
-    for (; a < sizeof(treasure); a++)
+    /* Zero out all unused treasure values */
+    b = sizeof(treasure);
+    for (; a < b; a++)
     {
         treasure[a] = 0;
     }
@@ -722,8 +739,7 @@ static int load_game_92(PACKFILE *sdat)
     b = pack_igetw(sdat);
     if (b > sizeof(save_spells))
     {
-        message(_("Error. number of non-combat spell indicators > sizeof(save_spells)"),
-                255, 0, 0, 0);
+        message(_("Error. number of non-combat spell indicators > sizeof(save_spells)"), 255, 0, 0, 0);
         return 0;
     }
     for (a = 0; a < b; a++)
@@ -731,8 +747,9 @@ static int load_game_92(PACKFILE *sdat)
         save_spells[a] = pack_getc(sdat);
     }
 
-    /* zero-set empty spell slots */
-    for (; a < sizeof(save_spells); a++)
+    /* Zero out all unused save_spell values*/
+    b = sizeof(save_spells);
+    for (; a < b; a++)
     {
         save_spells[a] = 0;
     }
@@ -747,23 +764,23 @@ static int load_game_92(PACKFILE *sdat)
     }
     for (a = 0; a < b; a++)
     {
-        g_inv[a][0] = pack_igetw(sdat);
-        g_inv[a][1] = pack_igetw(sdat);
+        g_inv[a][GLOBAL_INVENTORY_ITEM] = pack_igetw(sdat);
+        g_inv[a][GLOBAL_INVENTORY_QUANTITY] = pack_igetw(sdat);
     }
 
-    /* zero-set empty inventory slots */
-    for (; a < MAX_INV; a++)
+    /* Zero out all unused inventory values */
+    b = MAX_INV;
+    for (; a < b; a++)
     {
-        g_inv[a][0] = 0;
-        g_inv[a][1] = 0;
+        g_inv[a][GLOBAL_INVENTORY_ITEM] = 0;
+        g_inv[a][GLOBAL_INVENTORY_QUANTITY] = 0;
     }
 
     /* Load special items info */
     b = pack_igetw(sdat);
     if (b > MAX_SPECIAL_ITEMS)
     {
-        message(_("Error. number of special items > MAX_SPECIAL_ITEMS"), 255, 0,
-                0, 0);
+        message(_("Error. number of special items > MAX_SPECIAL_ITEMS"), 255, 0, 0, 0);
         return 0;
     }
 
@@ -772,8 +789,9 @@ static int load_game_92(PACKFILE *sdat)
         player_special_items[a] = pack_getc(sdat);    /* index */
     }
 
-    /* zero-set empty special item slots */
-    for (; a < MAX_SPECIAL_ITEMS; a++)
+    /* Zero out unused special item values */
+    b = MAX_SPECIAL_ITEMS;
+    for (; a < b; a++)
     {
         player_special_items[a] = 0;
     }
@@ -806,7 +824,8 @@ static int load_game_92(PACKFILE *sdat)
         }
     }
     /* Replenish all shops that were not saved (haven't been visited yet) */
-    for (a = b; a < NUMSHOPS; a++)
+    b = NUMSHOPS;
+    for (; a < b; a++)
     {
         for (d = 0; d < SHOPITEMS; d++)
         {
@@ -827,25 +846,27 @@ static int load_game_92(PACKFILE *sdat)
 void load_sgstats(void)
 {
     PACKFILE *ldat;
-    int a, b, c;
+    int c;
     unsigned char vc;
+    unsigned int current_save_game;
     s_player tpm;
+    size_t pidx_index, player_index, temp_player_index;
 
-    for (a = 0; a < NUMSG; a++)
+    for (current_save_game = 0; current_save_game < NUMSG; current_save_game++)
     {
-        sprintf(strbuf, "sg%d.sav", a);
+        sprintf(strbuf, "sg%u.sav", current_save_game);
         ldat = pack_fopen(kqres(SAVE_DIR, strbuf), F_READ_PACKED);
         if (!ldat)
         {
-            snc[a] = 0;
-            sgp[a] = 0;
-            shr[a] = 0;
-            smin[a] = 0;
-            for (b = 0; b < PARTY_SIZE; b++)
+            savegame_num_characters[current_save_game] = 0;
+            savegame_gold[current_save_game] = 0;
+            savegame_time_hours[current_save_game] = 0;
+            savegame_time_minutes[current_save_game] = 0;
+            for (pidx_index = 0; pidx_index < PSIZE; pidx_index++)
             {
-                sid[a][b] = 0;
-                shp[a][b] = 0;
-                smp[a][b] = 0;
+                sid[current_save_game][pidx_index] = 0;
+                shp[current_save_game][pidx_index] = 0;
+                smp[current_save_game][pidx_index] = 0;
             }
         }
         else
@@ -853,32 +874,35 @@ void load_sgstats(void)
             vc = pack_getc(ldat);
             if (vc == 92)
             {
-                sgp[a] = pack_igetl(ldat);
-                shr[a] = pack_igetw(ldat);
-                smin[a] = pack_igetw(ldat);
-                snc[a] = pack_igetw(ldat);
-                for (b = 0; b < snc[a]; b++)
+                savegame_gold[current_save_game] = pack_igetl(ldat);
+                savegame_time_hours[current_save_game] = pack_igetw(ldat);
+                savegame_time_minutes[current_save_game] = pack_igetw(ldat);
+                savegame_num_characters[current_save_game] = pack_igetw(ldat);
+                if (savegame_num_characters[current_save_game] >= 0)
                 {
-                    sid[a][b] = pack_igetw(ldat);
-                    // sid[a][b] = 0; // Temp: Debugging / Testing
-                }
-                pack_igetw(ldat);   // Number of characters in game. Assume MAXCHRS
-                for (b = 0; b < MAXCHRS; b++)
-                {
-                    load_s_player(&tpm, ldat);
-                    for (c = 0; c < snc[a]; c++)
+                    for (pidx_index = 0; pidx_index < (size_t)savegame_num_characters[current_save_game]; pidx_index++)
                     {
-                        if (b == sid[a][c])
+                        sid[current_save_game][pidx_index] = pack_igetw(ldat);
+                        // sid[current_save_game][pidx_index] = 0; // Temp: Debugging / Testing
+                    }
+                    pack_igetw(ldat);   // Number of characters in game. Assume MAXCHRS
+                    for (player_index = 0; player_index < MAXCHRS; player_index++)
+                    {
+                        load_s_player(&tpm, ldat);
+                        for (c = 0; c < savegame_num_characters[current_save_game]; c++)
                         {
-                            slv[a][c] = tpm.lvl;
-                            shp[a][c] = tpm.hp * 100 / tpm.mhp;
-                            if (tpm.mmp > 0)
+                            if (player_index == sid[current_save_game][c])
                             {
-                                smp[a][c] = tpm.mp * 100 / tpm.mmp;
-                            }
-                            else
-                            {
-                                smp[a][c] = 0;
+                                slv[current_save_game][c] = tpm.lvl;
+                                shp[current_save_game][c] = tpm.hp * 100 / tpm.mhp;
+                                if (tpm.mmp > 0)
+                                {
+                                    smp[current_save_game][c] = tpm.mp * 100 / tpm.mmp;
+                                }
+                                else
+                                {
+                                    smp[current_save_game][c] = 0;
+                                }
                             }
                         }
                     }
@@ -886,30 +910,30 @@ void load_sgstats(void)
             }
             else if (vc == 91)
             {
-                snc[a] = pack_igetl(ldat);
-                sgp[a] = pack_igetl(ldat);
-                shr[a] = pack_igetl(ldat);
-                smin[a] = pack_igetl(ldat);
-                for (b = 0; b < PARTY_SIZE; b++)
+                savegame_num_characters[current_save_game] = pack_igetl(ldat);
+                savegame_gold[current_save_game] = pack_igetl(ldat);
+                savegame_time_hours[current_save_game] = pack_igetl(ldat);
+                savegame_time_minutes[current_save_game] = pack_igetl(ldat);
+                for (pidx_index = 0; pidx_index < PSIZE; pidx_index++)
                 {
-                    sid[a][b] = pack_igetl(ldat);
+                    sid[current_save_game][pidx_index] = pack_igetl(ldat);
                 }
-                for (b = 0; b < MAXCHRS; b++)
+                for (player_index = 0; player_index < MAXCHRS; player_index++)
                 {
                     load_s_player(&tpm, ldat);
-                    for (c = 0; c < PARTY_SIZE; c++)
+                    for (temp_player_index = 0; temp_player_index < PSIZE; temp_player_index++)
                     {
-                        if (b == sid[a][c])
+                        if (player_index == sid[current_save_game][temp_player_index])
                         {
-                            slv[a][c] = tpm.lvl;
-                            shp[a][c] = tpm.hp * 100 / tpm.mhp;
+                            slv[current_save_game][temp_player_index] = tpm.lvl;
+                            shp[current_save_game][temp_player_index] = tpm.hp * 100 / tpm.mhp;
                             if (tpm.mmp > 0)
                             {
-                                smp[a][c] = tpm.mp * 100 / tpm.mmp;
+                                smp[current_save_game][temp_player_index] = tpm.mp * 100 / tpm.mmp;
                             }
                             else
                             {
-                                smp[a][c] = 0;
+                                smp[current_save_game][temp_player_index] = 0;
                             }
                         }
                     }
@@ -917,7 +941,7 @@ void load_sgstats(void)
             }
             else
             {
-                snc[a] = -1;
+                savegame_num_characters[current_save_game] = -1;
             }
             pack_fclose(ldat);
         }
@@ -938,112 +962,7 @@ static int save_game_92(void);
  */
 static int save_game(void)
 {
-    PACKFILE *sdat;
-    size_t a, b;
-
     return save_game_92();
-
-    /* Rest of this function is no longer used */
-
-    for (b = 0; b < PARTY_SIZE; b++)
-    {
-        sid[save_ptr][b] = 0;
-        shp[save_ptr][b] = 0;
-        smp[save_ptr][b] = 0;
-        slv[save_ptr][b] = 0;
-    }
-    for (b = 0; b < numchrs; b++)
-    {
-        sid[save_ptr][b] = pidx[b];
-        shp[save_ptr][b] = party[pidx[b]].hp * 100 / party[pidx[b]].mhp;
-        if (party[pidx[b]].mmp > 0)
-        {
-            smp[save_ptr][b] = party[pidx[b]].mp * 100 / party[pidx[b]].mmp;
-        }
-        slv[save_ptr][b] = party[pidx[b]].lvl;
-    }
-    snc[save_ptr] = numchrs;
-    sgp[save_ptr] = gp;
-    smin[save_ptr] = kmin;
-    shr[save_ptr] = khr;
-    sprintf(strbuf, "sg%d.sav", save_ptr);
-    sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_WRITE_PACKED);
-    if (!sdat)
-    {
-        message(_("Could not save game data."), 255, 0, 0, 0);
-        return 0;
-    }
-    pack_putc(kq_version, sdat);
-    pack_iputl(numchrs, sdat);
-    pack_iputl(gp, sdat);
-    pack_iputl(shr[save_ptr], sdat);
-    pack_iputl(smin[save_ptr], sdat);
-    for (a = 0; a < PARTY_SIZE; a++)
-    {
-        pack_iputl(pidx[a], sdat);
-    }
-    for (a = 0; a < MAXCHRS; a++)
-    {
-        save_s_player(&party[a], sdat);
-    }
-    pack_fwrite(curmap, 16, sdat);
-    for (a = 0; a < sizeof(progress); a++)     /* sizeof(progress) is 1750 */
-    {
-        pack_putc(progress[a], sdat);
-    }
-    for (a = 0; a < NUMSHOPS; a++)             /* NUMSHOPS is 50 */
-    {
-        pack_putc(shop_time[a], sdat);
-    }
-    for (a = 0; a < SIZE_SAVE_RESERVE1; a++)   /* SAVE_RESERVE_SIZE1 is 150 */
-    {
-        pack_putc(0, sdat);
-    }
-    for (a = 0; a < sizeof(save_spells); a++)    /* sizeof(save_spells) is 50 */
-    {
-        pack_putc(save_spells[a], sdat);
-    }
-    for (a = 0; a < sizeof(treasure); a++)       /* sizeof(treasure) is 1000 */
-    {
-        pack_putc(treasure[a], sdat);
-    }
-    for (a = 0; a < NUMSHOPS; a++)
-    {
-        for (b = 0; b < SHOPITEMS; b++)
-        {
-            pack_iputw(shops[a].items_current[b], sdat);
-        }
-    }
-    for (a = 0; a < MAX_INV; a++)
-    {
-        pack_iputw(g_inv[a][0], sdat);
-        pack_iputw(g_inv[a][1], sdat);
-    }
-    /* PH FIXME: do we _really_ want things like controls and screen */
-    /* mode to be saved/loaded ? */
-    /* WK: No. */
-    pack_iputl(gsvol, sdat);
-    pack_iputl(gmvol, sdat);
-    pack_putc(windowed, sdat);
-    pack_putc(stretch_view, sdat);
-    pack_putc(wait_retrace, sdat);
-    pack_iputl(kup, sdat);
-    pack_iputl(kdown, sdat);
-    pack_iputl(kleft, sdat);
-    pack_iputl(kright, sdat);
-    pack_iputl(kalt, sdat);
-    pack_iputl(kctrl, sdat);
-    pack_iputl(kenter, sdat);
-    pack_iputl(kesc, sdat);
-    pack_iputl(jbalt, sdat);
-    pack_iputl(jbctrl, sdat);
-    pack_iputl(jbenter, sdat);
-    pack_iputl(jbesc, sdat);
-    /* End worthless */
-    pack_iputw(g_ent[0].tilex, sdat);
-    pack_iputw(g_ent[0].tiley, sdat);
-    pack_fclose(sdat);
-    return 1;
 }
 
 
@@ -1060,7 +979,7 @@ static int save_game_92(void)
     size_t a, b, c, d;
     PACKFILE *sdat;
 
-    for (b = 0; b < PARTY_SIZE; b++)
+    for (b = 0; b < PSIZE; b++)
     {
         sid[save_ptr][b] = 0;
         shp[save_ptr][b] = 0;
@@ -1077,10 +996,10 @@ static int save_game_92(void)
         }
         slv[save_ptr][b] = party[pidx[b]].lvl;
     }
-    snc[save_ptr] = numchrs;
-    sgp[save_ptr] = gp;
-    smin[save_ptr] = kmin;
-    shr[save_ptr] = khr;
+    savegame_num_characters[save_ptr] = numchrs;
+    savegame_gold[save_ptr] = gp;
+    savegame_time_hours[save_ptr] = khr;
+    savegame_time_minutes[save_ptr] = kmin;
     sprintf(strbuf, "sg%d.sav", save_ptr);
     sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_WRITE_PACKED);
     if (!sdat)
@@ -1089,11 +1008,10 @@ static int save_game_92(void)
         return 0;
     }
 
-
     pack_putc(kq_version, sdat);
     pack_iputl(gp, sdat);
-    pack_iputw(shr[save_ptr], sdat);
-    pack_iputw(smin[save_ptr], sdat);
+    pack_iputw(savegame_time_hours[save_ptr], sdat);
+    pack_iputw(savegame_time_minutes[save_ptr], sdat);
 
     /* Save number of, and which characters are in the party */
     pack_iputw(numchrs, sdat);
@@ -1110,8 +1028,8 @@ static int save_game_92(void)
     }
 
     /* Save map name and location */
-    pack_iputw(strlen(curmap), sdat);
-    pack_fwrite(curmap, strlen(curmap), sdat);
+    pack_iputw(curmap.length(), sdat);
+    pack_fwrite(curmap.c_str(), curmap.length(), sdat);
 
     pack_iputw(g_ent[0].tilex, sdat);
     pack_iputw(g_ent[0].tiley, sdat);
@@ -1158,14 +1076,14 @@ static int save_game_92(void)
     pack_iputw(MAX_INV, sdat);
     for (a = 0; a < MAX_INV; a++)
     {
-        pack_iputw(g_inv[a][0], sdat);
-        pack_iputw(g_inv[a][1], sdat);
+        pack_iputw(g_inv[a][GLOBAL_INVENTORY_ITEM], sdat);
+        pack_iputw(g_inv[a][GLOBAL_INVENTORY_QUANTITY], sdat);
     }
 
     /* Save special items */
-    for (a = MAX_SPECIAL_ITEMS + 1; a > 0; a--)
+    for (a = MAX_SPECIAL_ITEMS; a > 0; a--)
     {
-        if (player_special_items[a - 1])
+        if (player_special_items[a - 1] != 0)
         {
             break;
         }
@@ -1241,7 +1159,7 @@ static int saveload(int am_saving)
         blit2screen(0, 0);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             save_ptr--;
@@ -1262,7 +1180,7 @@ static int saveload(int am_saving)
 
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             save_ptr++;
@@ -1283,7 +1201,7 @@ static int saveload(int am_saving)
 
             play_effect(SND_CLICK, 128);
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             if (am_saving < 2)
@@ -1291,7 +1209,7 @@ static int saveload(int am_saving)
                 am_saving = am_saving + 2;
             }
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             if (am_saving >= 2)
@@ -1299,13 +1217,13 @@ static int saveload(int am_saving)
                 am_saving = am_saving - 2;
             }
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             switch (am_saving)
             {
                 case 0:               // Load
-                    if (snc[save_ptr] != 0)
+                    if (savegame_num_characters[save_ptr] != 0)
                     {
                         if (load_game() == 1)
                         {
@@ -1332,7 +1250,7 @@ static int saveload(int am_saving)
                     break;
                 case 2:               // Delete (was LOAD) previously
                 case 3:               // Delete (was SAVE) previously
-                    if (snc[save_ptr] != 0)
+                    if (savegame_num_characters[save_ptr] != 0)
                     {
                         if (confirm_action() == 1)
                         {
@@ -1342,7 +1260,7 @@ static int saveload(int am_saving)
                     break;
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -1422,18 +1340,19 @@ static void show_sgstats(int saving)
             menubox(double_buffer, 72, pointer_offset, 29, 4, BLUE);
         }
 
-        if (snc[sg] == -1)
-            print_font(double_buffer, 136, pointer_offset + 20,
-                       _("Wrong version"), FNORMAL);
+        if (savegame_num_characters[sg] == -1)
+        {
+            print_font(double_buffer, 136, pointer_offset + 20, _("Wrong version"), FNORMAL);
+        }
         else
         {
-            if (snc[sg] == 0)
+            if (savegame_num_characters[sg] == 0)
             {
                 print_font(double_buffer, 168, pointer_offset + 20, _("Empty"), FNORMAL);
             }
             else
             {
-                for (a = 0; a < snc[sg]; a++)
+                for (a = 0; a < savegame_num_characters[sg]; a++)
                 {
                     hx = a * 72 + 84;
                     hy = pointer_offset + 12;
@@ -1451,9 +1370,9 @@ static void show_sgstats(int saving)
                     b = smp[sg][a] * 32 / 100;
                     rectfill(double_buffer, hx + 32, hy + 17, hx + 32 + b, hy + 21, 25);
                 }
-                sprintf(strbuf, _("T %d:%02d"), shr[sg], smin[sg]);
+                sprintf(strbuf, _("T %u:%02u"), savegame_time_hours[sg], savegame_time_minutes[sg]);
                 print_font(double_buffer, 236, pointer_offset + 12, strbuf, FNORMAL);
-                sprintf(strbuf, _("G %d"), sgp[sg]);
+                sprintf(strbuf, _("G %u"), savegame_gold[sg]);
                 print_font(double_buffer, 236, pointer_offset + 28, strbuf, FNORMAL);
             }
         }
@@ -1474,9 +1393,9 @@ static void show_sgstats(int saving)
 int start_menu(int skip_splash)
 {
     int stop = 0, ptr = 0, redraw = 1, a, b;
-    DATAFILE *bg;
+    unsigned int fade_color;
     BITMAP *staff, *dudes, *tdudes;
-
+	BITMAP* title = get_cached_image("title.png");
 #ifdef DEBUGMODE
     if (debugging == 0)
     {
@@ -1485,12 +1404,12 @@ int start_menu(int skip_splash)
         /* Play splash (with the staff and the heroes in circle */
         if (skip_splash == 0)
         {
-            bg = load_datafile_object(PCX_DATAFILE, "KQT_PCX");
+			BITMAP* splash = get_cached_image("kqt.png");
             staff = create_bitmap_ex(8, 72, 226);
             dudes = create_bitmap_ex(8, 112, 112);
             tdudes = create_bitmap_ex(8, 112, 112);
-            blit((BITMAP *) bg->dat, staff, 0, 7, 0, 0, 72, 226);
-            blit((BITMAP *) bg->dat, dudes, 80, 0, 0, 0, 112, 112);
+            blit(splash, staff, 0, 7, 0, 0, 72, 226);
+            blit(splash, dudes, 80, 0, 0, 0, 112, 112);
             clear_bitmap(double_buffer);
             blit(staff, double_buffer, 0, 0, 124, 22, 72, 226);
             blit2screen(0, 0);
@@ -1498,8 +1417,7 @@ int start_menu(int skip_splash)
             kq_wait(1000);
             for (a = 0; a < 42; a++)
             {
-                stretch_blit(staff, double_buffer, 0, 0, 72, 226, 124 - (a * 32),
-                             22 - (a * 96), 72 + (a * 64), 226 + (a * 192));
+                stretch_blit(staff, double_buffer, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64), 226 + (a * 192));
                 blit2screen(0, 0);
                 kq_wait(100);
             }
@@ -1516,7 +1434,6 @@ int start_menu(int skip_splash)
             destroy_bitmap(staff);
             destroy_bitmap(dudes);
             destroy_bitmap(tdudes);
-            unload_datafile_object(bg);
             /*
                 TODO: this fade should actually be to white
                 if (_color_depth == 8)
@@ -1528,14 +1445,13 @@ int start_menu(int skip_splash)
         clear_to_color(double_buffer, 15);
         blit2screen(0, 0);
         set_palette(pal);
-        bg = load_datafile_object(PCX_DATAFILE, "TITLE_PCX");
-        for (a = 0; a < 16; a++)
+		
+        for (fade_color = 0; fade_color < 16; fade_color++)
         {
-            clear_to_color(double_buffer, 15 - a);
-            masked_blit((BITMAP *) bg->dat, double_buffer, 0, 0, 0, 60 - (a * 4),
-                        320, 124);
+            clear_to_color(double_buffer, 15 - fade_color);
+            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), 320, 124);
             blit2screen(0, 0);
-            kq_wait(a == 0 ? 500 : 100);
+            kq_wait(fade_color == 0 ? 500 : 100);
         }
         if (skip_splash == 0)
         {
@@ -1546,10 +1462,8 @@ int start_menu(int skip_splash)
     else
     {
         set_palette(pal);
-        bg = load_datafile_object(PCX_DATAFILE, "TITLE_PCX");
     }
 #endif
-
     reset_world();
 
     /* Draw menu and handle menu selection */
@@ -1558,7 +1472,7 @@ int start_menu(int skip_splash)
         if (redraw)
         {
             clear_bitmap(double_buffer);
-            masked_blit((BITMAP *) bg->dat, double_buffer, 0, 0, 0, 0, 320, 124);
+            masked_blit(title, double_buffer, 0, 0, 0, 0, 320, 124);
             menubox(double_buffer, 112, 116, 10, 4, BLUE);
             print_font(double_buffer, 128, 124, _("Continue"), FNORMAL);
             print_font(double_buffer, 128, 132, _("New Game"), FNORMAL);
@@ -1567,16 +1481,16 @@ int start_menu(int skip_splash)
             draw_sprite(double_buffer, menuptr, 112, ptr * 8 + 124);
             redraw = 0;
         }
-        display_credits();
+        display_credits(double_buffer);
         blit2screen(0, 0);
         readcontrols();
-        if (bhelp)
+        if (PlayerInput.bhelp)
         {
             unpress();
             show_help();
             redraw = 1;
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (ptr > 0)
@@ -1590,7 +1504,7 @@ int start_menu(int skip_splash)
             play_effect(SND_CLICK, 128);
             redraw = 1;
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (ptr < 3)
@@ -1604,13 +1518,13 @@ int start_menu(int skip_splash)
             play_effect(SND_CLICK, 128);
             redraw = 1;
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (ptr == 0)          /* User selected "Continue" */
             {
-                if (snc[0] == 0 && snc[1] == 0 && snc[2] == 0 && snc[3] == 0
-                        && snc[4] == 0)
+                if (savegame_num_characters[0] == 0 && savegame_num_characters[1] == 0 && savegame_num_characters[2] == 0 && savegame_num_characters[3] == 0
+                        && savegame_num_characters[4] == 0)
                 {
                     stop = 2;
                 }
@@ -1634,13 +1548,11 @@ int start_menu(int skip_splash)
             }
             else if (ptr == 3)     /* Exit */
             {
-                unload_datafile_object(bg);
                 klog(_("Then exit you shall!"));
                 return 2;
             }
         }
     }
-    unload_datafile_object(bg);
     if (stop == 2)
     {
         /* New game init */
@@ -1685,7 +1597,7 @@ int system_menu(void)
 {
     int stop = 0, ptr = 0;
     char save_str[10];
-    int text_color = FNORMAL;
+    eFontColor text_color = FNORMAL;
 
     strcpy(save_str, _("Save  "));
 
@@ -1721,9 +1633,9 @@ int system_menu(void)
         // When pressed, 'up' or 'down' == 1.  Otherwise, they equal 0.  So:
         //    ptr = ptr - up + down;
         // will correctly modify the pointer, but with less code.
-        if (up || down)
+        if (PlayerInput.up || PlayerInput.down)
         {
-            ptr = ptr + up - down;
+            ptr = ptr + PlayerInput.up - PlayerInput.down;
             if (ptr < 0)
             {
                 ptr = 3;
@@ -1736,7 +1648,7 @@ int system_menu(void)
             unpress();
         }
 
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
 
@@ -1777,7 +1689,7 @@ int system_menu(void)
             }
         }
 
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             stop = 1;
             unpress();
@@ -1787,9 +1699,3 @@ int system_menu(void)
     return 0;
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

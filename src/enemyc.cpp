@@ -27,9 +27,13 @@
  * \date ??????
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "combat.h"
 #include "draw.h"
 #include "enemyc.h"
+#include "eskill.h"
 #include "heroc.h"
 #include "kq.h"
 #include "magic.h"
@@ -38,19 +42,16 @@
 #include "selector.h"
 #include "skills.h"
 
-#include <cstdio>
-#include <cstring>
-
 /*! Index related to enemies in an encounter */
 int cf[NUM_FIGHTERS];
 
 
 /*  internal prototypes  */
-static void enemy_attack(int);
-static int enemy_cancast(int, int);
+static void enemy_attack(size_t);
+static int enemy_cancast(size_t, size_t);
 static void enemy_curecheck(int);
 static void enemy_skillcheck(int, int);
-static void enemy_spellcheck(int, int);
+static void enemy_spellcheck(size_t, size_t);
 static int enemy_stscheck(int, int);
 static void load_enemies(void);
 static s_fighter *make_enemy(int, s_fighter *);
@@ -91,7 +92,7 @@ void unload_enemies(void);
  * -# stat[11] (A_EVD)
  * -# stat[12] (A_MAG)
  * -# bonus (bstat set to 0)
- * -# cwt (current weapon type)
+ * -# current_weapon_type (current weapon type)
  * -# welem Weapon elemental power
  * -# unl Undead Level (defense against Undead attacks)
  * -# crit (?)
@@ -103,7 +104,7 @@ void unload_enemies(void);
 
 
 /*! \brief Array of enemy 'fighters'  */
-static s_fighter **enemies = NULL;
+static s_fighter **enemy_fighters = NULL;
 static int enemies_n = 0;
 static int enemies_cap = 0;
 static DATAFILE *enemy_pcx = NULL;
@@ -117,51 +118,53 @@ static DATAFILE *enemy_pcx = NULL;
  * that berserk-type enemies don't defend.  The hero selection is done in
  * a different function, but it all starts here.
  *
- * \param   whom Target
+ * \param   target_fighter_index Target
  */
-static void enemy_attack(int whom)
+static void enemy_attack(size_t target_fighter_index)
 {
-    int a, b, c;
+    int b, c;
+    size_t fighter_index;
 
-    if (fighter[whom].hp < (fighter[whom].mhp / 5)
-            && fighter[whom].sts[S_CHARM] == 0)
+    if (fighter[target_fighter_index].hp < (fighter[target_fighter_index].mhp / 5) && fighter[target_fighter_index].sts[S_CHARM] == 0)
     {
         if (rand() % 4 == 0)
         {
-            fighter[whom].defend = 1;
-            cact[whom] = 0;
+            fighter[target_fighter_index].defend = 1;
+            cact[target_fighter_index] = 0;
             return;
         }
     }
-    if (fighter[whom].sts[S_CHARM] == 0)
+    if (fighter[target_fighter_index].sts[S_CHARM] == 0)
     {
-        b = auto_select_hero(whom, NO_STS_CHECK);
+        b = auto_select_hero(target_fighter_index, NO_STS_CHECK);
     }
     else
     {
-        if (fighter[whom].ctmem == 0)
+        if (fighter[target_fighter_index].ctmem == 0)
         {
-            b = auto_select_hero(whom, NO_STS_CHECK);
+            b = auto_select_hero(target_fighter_index, NO_STS_CHECK);
         }
         else
         {
-            b = auto_select_enemy(whom, NO_STS_CHECK);
+            b = auto_select_enemy(target_fighter_index, NO_STS_CHECK);
         }
     }
-    if (b == -1)
+    if (b < 0)
     {
-        fighter[whom].defend = 1;
-        cact[whom] = 0;
+        fighter[target_fighter_index].defend = 1;
+        cact[target_fighter_index] = 0;
         return;
     }
-    if (b < PARTY_SIZE && numchrs > 1)
+    if ((unsigned int)b < PSIZE && numchrs > 1)
     {
         c = 0;
-        for (a = 0; a < numchrs; a++)
-            if (pidx[a] == TEMMIN && fighter[a].aux == 1)
+        for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+        {
+            if (pidx[fighter_index] == TEMMIN && fighter[fighter_index].aux == 1)
             {
-                c = a + 1;
+                c = fighter_index + 1;
             }
+        }
         if (c != 0)
         {
             if (pidx[b] != TEMMIN)
@@ -171,8 +174,8 @@ static void enemy_attack(int whom)
             }
         }
     }
-    fight(whom, b, 0);
-    cact[whom] = 0;
+    fight(target_fighter_index, b, 0);
+    cact[target_fighter_index] = 0;
 }
 
 
@@ -183,30 +186,33 @@ static void enemy_attack(int whom)
  * return 1 if the enemy has the spell in its list of spells,
  * is not mute, and has enough mp to cast the spell.
  *
- * \param   wh Which enemy
+ * \param   target_fighter_index Which enemy
  * \param   sp Spell to cast
  * \returns 1 if spell can be cast, 0 otherwise
  */
-static int enemy_cancast(int wh, int sp)
+static int enemy_cancast(size_t target_fighter_index, size_t sp)
 {
-    int a, z = 0;
+    size_t a;
+    unsigned int z = 0;
 
     /* Enemy is mute; cannot cast the spell */
-    if (fighter[wh].sts[S_MUTE] != 0)
+    if (fighter[target_fighter_index].sts[S_MUTE] != 0)
     {
         return 0;
     }
 
     for (a = 0; a < 8; a++)
-        if (fighter[wh].ai[a] == sp)
+    {
+        if (fighter[target_fighter_index].ai[a] == sp)
         {
             z++;
         }
+    }
     if (z == 0)
     {
         return 0;
     }
-    if (fighter[wh].mp < mp_needed(wh, sp))
+    if (fighter[target_fighter_index].mp < mp_needed(target_fighter_index, sp))
     {
         return 0;
     }
@@ -222,40 +228,42 @@ static int enemy_cancast(int wh, int sp)
  * fighters never use spells or items.
  *
  * \sa auto_herochooseact()
- * \param   who Target
+ * \param   fighter_index Target
  */
-void enemy_charmaction(int who)
+void enemy_charmaction(size_t fighter_index)
 {
     int a;
 
-    if (cact[who] == 0)
+    if (cact[fighter_index] == 0)
     {
         return;
     }
-    if (fighter[who].sts[S_DEAD] == 1 || fighter[who].hp <= 0)
+    if (fighter[fighter_index].sts[S_DEAD] == 1 || fighter[fighter_index].hp <= 0)
     {
-        cact[who] = 0;
+        cact[fighter_index] = 0;
         return;
     }
     for (a = 0; a < 5; a++)
-        if (fighter[who].atrack[a] > 0)
+    {
+        if (fighter[fighter_index].atrack[a] > 0)
         {
-            fighter[who].atrack[a]--;
+            fighter[fighter_index].atrack[a]--;
         }
+    }
     a = rand() % 4;
     if (a == 0)
     {
-        cact[who] = 0;
+        cact[fighter_index] = 0;
         return;
     }
     if (a == 1)
     {
-        fighter[who].ctmem = 0;
-        enemy_attack(who);
+        fighter[fighter_index].ctmem = 0;
+        enemy_attack(fighter_index);
         return;
     }
-    fighter[who].ctmem = 1;
-    enemy_attack(who);
+    fighter[fighter_index].ctmem = 1;
+    enemy_attack(fighter_index);
 }
 
 
@@ -266,34 +274,36 @@ void enemy_charmaction(int who)
  * magic checking and skill checking functions aren't very smart yet :)
  * \todo PH would be good to have this script-enabled.
  *
- * \param   who Target action will be performed on
+ * \param   fighter_index Target action will be performed on
  */
-void enemy_chooseaction(int who)
+void enemy_chooseaction(size_t fighter_index)
 {
-    int a, ap;
+    int ap;
+    size_t a;
 
-    if (cact[who] == 0)
+    if (cact[fighter_index] == 0)
     {
         return;
     }
-    if (fighter[who].sts[S_DEAD] == 1 || fighter[who].hp <= 0)
+    if (fighter[fighter_index].sts[S_DEAD] == 1 || fighter[fighter_index].hp <= 0)
     {
-        cact[who] = 0;
+        cact[fighter_index] = 0;
         return;
     }
 
     for (a = 0; a < 8; a++)
-        if (fighter[who].atrack[a] > 0)
-        {
-            fighter[who].atrack[a]--;
-        }
-    fighter[who].defend = 0;
-    fighter[who].facing = 1;
-    if (fighter[who].hp < fighter[who].mhp * 2 / 3 && rand() % 100 < 50
-            && fighter[who].sts[S_MUTE] == 0)
     {
-        enemy_curecheck(who);
-        if (cact[who] == 0)
+        if (fighter[fighter_index].atrack[a] > 0)
+        {
+            fighter[fighter_index].atrack[a]--;
+        }
+    }
+    fighter[fighter_index].defend = 0;
+    fighter[fighter_index].facing = 1;
+    if (fighter[fighter_index].hp < fighter[fighter_index].mhp * 2 / 3 && rand() % 100 < 50 && fighter[fighter_index].sts[S_MUTE] == 0)
+    {
+        enemy_curecheck(fighter_index);
+        if (cact[fighter_index] == 0)
         {
             return;
         }
@@ -302,37 +312,38 @@ void enemy_chooseaction(int who)
     ap = rand() % 100;
     for (a = 0; a < 8; a++)
     {
-        if (ap < fighter[who].aip[a])
+        if (ap < fighter[fighter_index].aip[a])
         {
-            if (fighter[who].ai[a] >= 100 && fighter[who].ai[a] <= 253)
+            if (fighter[fighter_index].ai[a] >= 100 && fighter[fighter_index].ai[a] <= 253)
             {
-                enemy_skillcheck(who, a);
-                if (cact[who] == 0)
+                enemy_skillcheck(fighter_index, a);
+                if (cact[fighter_index] == 0)
                 {
                     return;
                 }
                 else
                 {
-                    ap = fighter[who].aip[a] + 1;
+                    ap = fighter[fighter_index].aip[a] + 1;
                 }
             }
-            if (fighter[who].ai[a] >= 1 && fighter[who].ai[a] <= 99
-                    && fighter[who].sts[S_MUTE] == 0)
+            if (fighter[fighter_index].ai[a] >= 1
+             && fighter[fighter_index].ai[a] <= 99
+             && fighter[fighter_index].sts[S_MUTE] == 0)
             {
-                enemy_spellcheck(who, a);
-                if (cact[who] == 0)
+                enemy_spellcheck(fighter_index, a);
+                if (cact[fighter_index] == 0)
                 {
                     return;
                 }
                 else
                 {
-                    ap = fighter[who].aip[a] + 1;
+                    ap = fighter[fighter_index].aip[a] + 1;
                 }
             }
         }
     }
-    enemy_attack(who);
-    cact[who] = 0;
+    enemy_attack(fighter_index);
+    cact[fighter_index] = 0;
 }
 
 
@@ -391,28 +402,27 @@ static void enemy_curecheck(int w)
  */
 void enemy_init(void)
 {
-    int i, p;
+    size_t fighter_index, frame_index;
     s_fighter *f;
 
-    if (enemies == NULL)
+    if (enemy_fighters == NULL)
     {
         load_enemies();
     }
-    for (i = 0; i < num_enemies; ++i)
+    for (fighter_index = 0; fighter_index < num_enemies; ++fighter_index)
     {
-        f = make_enemy(cf[i], &fighter[i + PARTY_SIZE]);
-        for (p = 0; p < MAXCFRAMES; ++p)
+        f = make_enemy(cf[fighter_index], &fighter[fighter_index + PSIZE]);
+        for (frame_index = 0; frame_index < MAXCFRAMES; ++frame_index)
         {
             /* If, in a previous combat, we made a bitmap, destroy it now */
-            if (cframes[i + PARTY_SIZE][p])
+            if (cframes[fighter_index + PSIZE][frame_index])
             {
-                destroy_bitmap(cframes[i + PARTY_SIZE][p]);
+                destroy_bitmap(cframes[fighter_index + PSIZE][frame_index]);
             }
             /* and create a new one */
-            cframes[i + PARTY_SIZE][p] = create_bitmap(f->img->w, f->img->h);
-            blit(f->img, cframes[i + PARTY_SIZE][p], 0, 0, 0, 0, f->img->w,
-                 f->img->h);
-            tcframes[i + PARTY_SIZE][p] = copy_bitmap(tcframes[i + PARTY_SIZE][p], f->img);
+            cframes[fighter_index + PSIZE][frame_index] = create_bitmap(f->img->w, f->img->h);
+            blit(f->img, cframes[fighter_index + PSIZE][frame_index], 0, 0, 0, 0, f->img->w, f->img->h);
+            tcframes[fighter_index + PSIZE][frame_index] = copy_bitmap(tcframes[fighter_index + PSIZE][frame_index], f->img);
         }
     }
 }
@@ -440,8 +450,7 @@ static void enemy_skillcheck(int w, int ws)
             {
                 fighter[w].atrack[ws] = 1;
             }
-            if (numchrs == 2
-                    && (fighter[0].sts[S_DEAD] > 0 || fighter[1].sts[S_DEAD] > 0))
+            if (numchrs == 2 && (fighter[0].sts[S_DEAD] > 0 || fighter[1].sts[S_DEAD] > 0))
             {
                 fighter[w].atrack[ws] = 1;
             }
@@ -465,32 +474,34 @@ static void enemy_skillcheck(int w, int ws)
  * This function looks at the enemy's selected spell and tries to
  * determine whether to bother casting it or not.
  *
- * \param   w Caster
- * \param   ws Target
+ * \param   attack_fighter_index Caster
+ * \param   defend_fighter_index Target
  */
-static void enemy_spellcheck(int w, int ws)
+static void enemy_spellcheck(size_t attack_fighter_index, size_t defend_fighter_index)
 {
-    int z, cs = 0, aux, yes = 0;
+    int cs = 0, aux, yes = 0;
+    size_t fighter_index;
 
-    if (fighter[w].ai[ws] >= 1 && fighter[w].ai[ws] <= 99)
+    if (fighter[attack_fighter_index].ai[defend_fighter_index] >= 1 && fighter[attack_fighter_index].ai[defend_fighter_index] <= 99)
     {
-        cs = fighter[w].ai[ws];
-        if (cs > 0 && enemy_cancast(w, cs) == 1)
+        cs = fighter[attack_fighter_index].ai[defend_fighter_index];
+        if (cs > 0 && enemy_cancast(attack_fighter_index, cs) == 1)
         {
             switch (cs)
             {
                 case M_SHIELD:
                 case M_SHIELDALL:
-                    yes = enemy_stscheck(S_SHIELD, PARTY_SIZE);
+                    yes = enemy_stscheck(S_SHIELD, PSIZE);
                     break;
                 case M_HOLYMIGHT:
                     aux = 0;
-                    for (z = PARTY_SIZE; z < PARTY_SIZE + num_enemies; z++)
-                        if (fighter[z].sts[S_DEAD] == 0
-                                && fighter[z].sts[S_STRENGTH] < 2)
+                    for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+                    {
+                        if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].sts[S_STRENGTH] < 2)
                         {
                             aux++;
                         }
+                    }
                     if (aux > 0)
                     {
                         yes = 1;
@@ -498,30 +509,32 @@ static void enemy_spellcheck(int w, int ws)
                     break;
                 case M_BLESS:
                     aux = 0;
-                    for (z = PARTY_SIZE; z < PARTY_SIZE + num_enemies; z++)
-                        if (fighter[z].sts[S_DEAD] == 0 && fighter[z].sts[S_BLESS] < 3)
+                    for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+                    {
+                        if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].sts[S_BLESS] < 3)
                         {
                             aux++;
                         }
+                    }
                     if (aux > 0)
                     {
                         yes = 1;
                     }
                     break;
                 case M_TRUEAIM:
-                    yes = enemy_stscheck(S_TRUESHOT, PARTY_SIZE);
+                    yes = enemy_stscheck(S_TRUESHOT, PSIZE);
                     break;
                 case M_REGENERATE:
-                    yes = enemy_stscheck(S_REGEN, PARTY_SIZE);
+                    yes = enemy_stscheck(S_REGEN, PSIZE);
                     break;
                 case M_THROUGH:
-                    yes = enemy_stscheck(S_ETHER, PARTY_SIZE);
+                    yes = enemy_stscheck(S_ETHER, PSIZE);
                     break;
                 case M_HASTEN:
                 case M_QUICKEN:
                     aux = 0;
-                    for (z = PARTY_SIZE; z < PARTY_SIZE + num_enemies; z++)
-                        if (fighter[z].sts[S_DEAD] == 0 && fighter[z].sts[S_TIME] != 2)
+                    for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+                        if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].sts[S_TIME] != 2)
                         {
                             aux++;
                         }
@@ -532,10 +545,10 @@ static void enemy_spellcheck(int w, int ws)
                     break;
                 case M_SHELL:
                 case M_WALL:
-                    yes = enemy_stscheck(S_RESIST, PARTY_SIZE);
+                    yes = enemy_stscheck(S_RESIST, PSIZE);
                     break;
                 case M_ABSORB:
-                    if (fighter[w].hp < fighter[w].mhp / 2)
+                    if (fighter[attack_fighter_index].hp < fighter[attack_fighter_index].mhp / 2)
                     {
                         yes = 1;
                     }
@@ -555,8 +568,8 @@ static void enemy_spellcheck(int w, int ws)
                     break;
                 case M_SLOW:
                     aux = 0;
-                    for (z = 0; z < numchrs; z++)
-                        if (fighter[z].sts[S_DEAD] == 0 && fighter[z].sts[S_TIME] != 1)
+                    for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+                        if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].sts[S_TIME] != 1)
                         {
                             aux++;
                         }
@@ -567,8 +580,8 @@ static void enemy_spellcheck(int w, int ws)
                     break;
                 case M_SLEEPALL:
                     aux = 0;
-                    for (z = 0; z < numchrs; z++)
-                        if (fighter[z].sts[S_DEAD] == 0 && fighter[z].sts[S_SLEEP] == 0)
+                    for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+                        if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].sts[S_SLEEP] == 0)
                         {
                             aux++;
                         }
@@ -579,9 +592,9 @@ static void enemy_spellcheck(int w, int ws)
                     break;
                 case M_DIVINEGUARD:
                     aux = 0;
-                    for (z = PARTY_SIZE; z < PARTY_SIZE + num_enemies; z++)
-                        if (fighter[z].sts[S_DEAD] == 0 && fighter[z].sts[S_SHIELD] == 0
-                                && fighter[z].sts[S_RESIST] == 0)
+                    for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+                        if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].sts[S_SHIELD] == 0
+                                && fighter[fighter_index].sts[S_RESIST] == 0)
                         {
                             aux++;
                         }
@@ -592,9 +605,9 @@ static void enemy_spellcheck(int w, int ws)
                     break;
                 case M_DOOM:
                     aux = 0;
-                    for (z = 0; z < numchrs; z++)
-                        if (fighter[z].sts[S_DEAD] == 0
-                                && fighter[z].hp >= fighter[z].mhp / 3)
+                    for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+                        if (fighter[fighter_index].sts[S_DEAD] == 0
+                         && fighter[fighter_index].hp >= fighter[fighter_index].mhp / 3)
                         {
                             aux++;
                         }
@@ -604,7 +617,7 @@ static void enemy_spellcheck(int w, int ws)
                     }
                     break;
                 case M_DRAIN:
-                    if (fighter[w].hp < fighter[w].mhp)
+                    if (fighter[attack_fighter_index].hp < fighter[attack_fighter_index].mhp)
                     {
                         yes = 1;
                     }
@@ -619,10 +632,10 @@ static void enemy_spellcheck(int w, int ws)
     {
         return;
     }
-    if (spell_setup(w, cs) == 1)
+    if (spell_setup(attack_fighter_index, cs) == 1)
     {
-        combat_spell(w, 0);
-        cact[w] = 0;
+        combat_spell(attack_fighter_index, 0);
+        cact[attack_fighter_index] = 0;
     }
 }
 
@@ -638,28 +651,33 @@ static void enemy_spellcheck(int w, int ws)
  */
 static int enemy_stscheck(int ws, int s)
 {
-    int z, a = 0;
+    unsigned int fighter_affected = 0;
+    size_t fighter_index;
 
-    if (s == PARTY_SIZE)
+    if (s == PSIZE)
     {
-        for (z = PARTY_SIZE; z < PARTY_SIZE + num_enemies; z++)
-            if (fighter[z].sts[S_DEAD] == 0 && fighter[z].sts[ws] == 0)
+        for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+        {
+            if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].sts[ws] == 0)
             {
-                a++;
+                fighter_affected++;
             }
-        if (a > 0)
+        }
+        if (fighter_affected > 0)
         {
             return 1;
         }
     }
     else
     {
-        for (z = 0; z < numchrs; z++)
-            if (fighter[z].sts[S_DEAD] == 0 && fighter[z].sts[ws] == 0)
+        for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+        {
+            if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].sts[ws] == 0)
             {
-                a++;
+                fighter_affected++;
             }
-        if (a > 0)
+        }
+        if (fighter_affected > 0)
         {
             return 1;
         }
@@ -681,7 +699,7 @@ static void load_enemies(void)
     FILE *edat;
     s_fighter *f;
 
-    if (enemies != NULL)
+    if (enemy_fighters != NULL)
     {
         /* Already done the loading */
         return;
@@ -698,18 +716,16 @@ static void load_enemies(void)
     }
     enemies_n = 0;
     enemies_cap = 128;
-    enemies = (s_fighter **) malloc(sizeof(s_fighter *) * enemies_cap);
+    enemy_fighters = (s_fighter **) malloc(sizeof(s_fighter *) * enemies_cap);
     // Loop through for every monster in allstat.mon
     while (fscanf(edat, "%s", strbuf) != EOF)
     {
         if (enemies_n >= enemies_cap)
         {
             enemies_cap *= 2;
-            enemies =
-                (s_fighter **) realloc(enemies,
-                                       sizeof(s_fighter *) * enemies_cap);
+            enemy_fighters = (s_fighter **) realloc(enemy_fighters, sizeof(s_fighter *) * enemies_cap);
         }
-        f = enemies[enemies_n++] = (s_fighter *) malloc(sizeof(s_fighter));
+        f = enemy_fighters[enemies_n++] = (s_fighter *) malloc(sizeof(s_fighter));
         memset(f, 0, sizeof(s_fighter));
         // Enemy name
         strncpy(f->name, strbuf, sizeof(f->name));
@@ -778,7 +794,7 @@ static void load_enemies(void)
         f->bstat = 0;
         // Current weapon type
         fscanf(edat, "%d", &tmp);
-        f->cwt = tmp;
+        f->current_weapon_type = (unsigned int)tmp;
         // Weapon elemental type
         fscanf(edat, "%d", &tmp);
         f->welem = tmp;
@@ -810,10 +826,14 @@ static void load_enemies(void)
     }
     for (i = 0; i < enemies_n; i++)
     {
-        f = enemies[i];
+        f = enemy_fighters[i];
         fscanf(edat, "%s", strbuf);
         fscanf(edat, "%d", &tmp);
-        f->resistances.Load(edat);
+        for (p = 0; p < R_TOTAL_RES; p++)
+        {
+            fscanf(edat, "%d", &tmp);
+            f->res[p] = tmp;
+        }
         for (p = 0; p < 8; p++)
         {
             fscanf(edat, "%d", &tmp);
@@ -852,9 +872,9 @@ static void load_enemies(void)
  */
 static s_fighter *make_enemy(int who, s_fighter *en)
 {
-    if (enemies && who >= 0 && who < enemies_n)
+    if (enemy_fighters && who >= 0 && who < enemies_n)
     {
-        memcpy(en, enemies[who], sizeof(s_fighter));
+        memcpy(en, enemy_fighters[who], sizeof(s_fighter));
         return en;
     }
     else
@@ -936,8 +956,10 @@ int select_encounter(int en, int etid)
     }
     num_enemies = p;
     /* adjust 'too hard' combat where player is alone and faced by >2 enemies */
-    if (num_enemies > 2 && numchrs == 1 && erows[entry].lvl + 2 > party[pidx[0]].lvl
-            && etid == 99)
+    if (num_enemies > 2
+     && numchrs == 1
+     && erows[entry].lvl + 2 > party[pidx[0]].lvl
+     && etid == 99)
     {
         num_enemies = 2;
     }
@@ -963,8 +985,13 @@ static int skill_setup(int whom, int sn)
     int sk = fighter[whom].ai[sn] - 100;
 
     fighter[whom].csmem = sn;
-    if (sk == 1 || sk == 2 || sk == 3 || sk == 6 || sk == 7 || sk == 12
-            || sk == 14)
+    if (sk == 1
+     || sk == 2
+     || sk == 3
+     || sk == 6
+     || sk == 7
+     || sk == 12
+     || sk == 14)
     {
         fighter[whom].ctmem = auto_select_hero(whom, NO_STS_CHECK);
         if (fighter[whom].ctmem == -1)
@@ -994,7 +1021,8 @@ static int skill_setup(int whom, int sn)
  */
 static int spell_setup(int whom, int z)
 {
-    int zst = NO_STS_CHECK, aux, a;
+    int zst = NO_STS_CHECK, aux;
+    size_t fighter_index;
 
     switch (z)
     {
@@ -1035,12 +1063,13 @@ static int spell_setup(int whom, int z)
             if (z == M_CURE1 || z == M_CURE2 || z == M_CURE3 || z == M_CURE4)
             {
                 aux = 0;
-                for (a = PARTY_SIZE; a < PARTY_SIZE + num_enemies; a++)
-                    if (fighter[a].sts[S_DEAD] == 0
-                            && fighter[a].hp < fighter[a].mhp * 75 / 100)
+                for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+                {
+                    if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].hp < fighter[fighter_index].mhp * 75 / 100)
                     {
                         aux++;
                     }
+                }
                 if (aux > 1)
                 {
                     fighter[whom].ctmem = SEL_ALL_ALLIES;
@@ -1101,22 +1130,16 @@ void unload_enemies(void)
 {
     int i;
 
-    if (enemies != NULL)
+    if (enemy_fighters != NULL)
     {
         for (i = 0; i < enemies_n; ++i)
         {
-            destroy_bitmap(enemies[i]->img);
-            free(enemies[i]);
+            destroy_bitmap(enemy_fighters[i]->img);
+            free(enemy_fighters[i]);
         }
-        free(enemies);
-        enemies = NULL;
+        free(enemy_fighters);
+        enemy_fighters = NULL;
         unload_datafile_object(enemy_pcx);
     }
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

@@ -29,7 +29,7 @@
  */
 
 /*! \name Hero identifiers */
-typedef enum ePIDX
+enum ePIDX
 {
     PIDX_UNDEFINED   = -1,
     SENSAR            = 0,
@@ -40,12 +40,17 @@ typedef enum ePIDX
     TEMMIN            = 5,
     AYLA              = 6,
     NOSLOM            = 7,
-} ePIDX;
+
+    MAXCHRS,
+
+    SEL_ALL_ALLIES,
+    SEL_ALL_ENEMIES
+};
 
 extern int can_use_item;        /* intrface.c */
 
 void hero_init(void);           /*  combat.c  */
-void hero_choose_action(int);   /*  combat.c  */
+void hero_choose_action(size_t);   /*  combat.c  */
 void auto_herochooseact(int);   /*  combat.c  */
 int available_spells(int);      /*  hskill.c  */
 int combat_spell_menu(int);     /*  hskill.c  */
@@ -53,9 +58,3 @@ int combat_spell_menu(int);     /*  hskill.c  */
 
 #endif  /* __HEROC_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

@@ -27,6 +27,9 @@
  * \date ????????
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "kq.h"
 #include "combat.h"
 #include "draw.h"
@@ -39,9 +42,6 @@
 #include "selector.h"
 #include "setup.h"
 #include "skills.h"
-
-#include <cstdio>
-#include <cstring>
 
 char item_act;
 
@@ -76,7 +76,7 @@ void camp_item_menu(void)
 
         if (sel == 0)
         {
-            if (down)
+            if (PlayerInput.down)
             {
                 unpress();
                 ptr++;
@@ -86,7 +86,7 @@ void camp_item_menu(void)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (up)
+            if (PlayerInput.up)
             {
                 unpress();
                 ptr--;
@@ -97,7 +97,7 @@ void camp_item_menu(void)
                 play_effect(SND_CLICK, 128);
             }
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             if (sel == 0)
@@ -120,7 +120,7 @@ void camp_item_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             if (sel == 0)
@@ -143,7 +143,7 @@ void camp_item_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (sel == 1)
@@ -159,7 +159,7 @@ void camp_item_menu(void)
             }
             else
             {
-                if (g_inv[pptr * 16 + ptr][0] > 0)
+                if (g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_ITEM] > 0)
                 {
                     // Player's cursor was over the USE menu
                     if (item_act == 0)
@@ -179,19 +179,17 @@ void camp_item_menu(void)
                                 check_animation();
                                 drawmap();
                                 draw_itemmenu(ptr, pptr, sel);
-                                menubox(double_buffer, 72 + xofs, 204 + yofs, 20, 1,
-                                        DARKBLUE);
-                                print_font(double_buffer, 104 + xofs, 212 + yofs,
-                                           _("Confirm/Cancel"), FNORMAL);
+                                menubox(double_buffer, 72 + xofs, 204 + yofs, 20, 1, DARKBLUE);
+                                print_font(double_buffer, 104 + xofs, 212 + yofs, _("Confirm/Cancel"), FNORMAL);
                                 blit2screen(xofs, yofs);
                                 readcontrols();
 
-                                if (balt)
+                                if (PlayerInput.balt)
                                 {
                                     unpress();
                                     stop2 = 2;
                                 }
-                                if (bctrl)
+                                if (PlayerInput.bctrl)
                                 {
                                     unpress();
                                     stop2 = 1;
@@ -200,15 +198,14 @@ void camp_item_menu(void)
                             if (stop2 == 2)
                             {
                                 // Drop ALL of the selected items
-                                remove_item(pptr * 16 + ptr,
-                                            g_inv[pptr * 16 + ptr][1]);
+                                remove_item(pptr * 16 + ptr, g_inv[pptr * 16 + ptr][GLOBAL_INVENTORY_QUANTITY]);
                             }
                         }
                     }
                 }
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             if (sel == 0)
@@ -233,9 +230,10 @@ void camp_item_menu(void)
  */
 static void camp_item_targetting(int pp)
 {
-    int t1, tg, z;
+    int t1, z;
+    ePIDX tg;
 
-    t1 = g_inv[pp][0];
+    t1 = g_inv[pp][GLOBAL_INVENTORY_ITEM];
     if (items[t1].use == USE_NOT || items[t1].use > USE_CAMP_INF)
     {
         return;
@@ -247,9 +245,8 @@ static void camp_item_targetting(int pp)
     while (1)
     {
         update_equipstats();
-        tg = select_any_player(items[t1].tgt - 1, items[t1].icon,
-                               items[t1].name);
-        if (tg > -1)
+        tg = select_any_player(items[t1].tgt - 1, items[t1].icon, items[t1].name);
+        if (tg != PIDX_UNDEFINED)
         {
             z = item_effects(0, tg, t1);
             if (z == 0)
@@ -286,30 +283,30 @@ static void camp_item_targetting(int pp)
  * This is a handy function, which checks to see if a certain quantity of a
  * specified item can be stored in the inventory.
  *
- * \param   ii Item index
- * \param   qq Item quantity
+ * \param   inventory_index Item index
+ * \param   item_quantity Item quantity
  * \returns 0 if it was not possible
  * \returns 1 if it was possible, but that we added to an item slot that
  *            already had some of that item
  * \returns 2 if we put the item in a brand-new slot
  */
-int check_inventory(int ii, int qq)
+int check_inventory(size_t inventory_index, int item_quantity)
 {
     // v == "last empty inventory slot"
-    // d == "last inventory slot that will fit all of qq into it"
+    // d == "last inventory slot that will fit all of item_quantity into it"
     int n, v = MAX_INV, d = MAX_INV;
 
     for (n = MAX_INV - 1; n >= 0; n--)
     {
         // There is nothing in this item slot in our inventory
-        if (g_inv[n][0] == 0)
+        if (g_inv[n][GLOBAL_INVENTORY_ITEM] == 0)
         {
             v = n;
         }
-        /* Check if this item index == ii, and if it is,
-         * check if there is enough room in that slot to fit all of qq.
+        /* Check if this item index == inventory_index, and if it is,
+         * check if there is enough room in that slot to fit all of item_quantity.
          */
-        if (g_inv[n][0] == ii && g_inv[n][1] <= MAX_ITEMS - qq)
+        if (g_inv[n][GLOBAL_INVENTORY_ITEM] == inventory_index && g_inv[n][GLOBAL_INVENTORY_QUANTITY] <= MAX_ITEMS - item_quantity)
         {
             d = n;
         }
@@ -319,19 +316,19 @@ int check_inventory(int ii, int qq)
     {
         return 0;
     }
-    // All of qq can fit in this slot, so add them in
+    // All of item_quantity can fit in this slot, so add them in
     if (d < MAX_INV)
     {
         // This is redundant, but it is a good error-check
-        g_inv[d][0] = ii;
-        // Add qq to this item's quantity
-        g_inv[d][1] += qq;
+        g_inv[d][GLOBAL_INVENTORY_ITEM] = (unsigned short)inventory_index;
+        // Add item_quantity to this item's quantity
+        g_inv[d][GLOBAL_INVENTORY_QUANTITY] += item_quantity;
         return 1;
     }
     // Add item to new slot
-    g_inv[v][0] = ii;
+    g_inv[v][GLOBAL_INVENTORY_ITEM] = (unsigned short)inventory_index;
     // Fill in item's quantity too
-    g_inv[v][1] += qq;
+    g_inv[v][GLOBAL_INVENTORY_QUANTITY] += item_quantity;
     return 2;
 }
 
@@ -347,15 +344,18 @@ int check_inventory(int ii, int qq)
  */
 static void draw_itemmenu(int ptr, int pg, int sl)
 {
-    int z, j, k, a, ck;
+    eFontColor palette_color;
+    size_t item_name_length;
+    size_t item_index;
+    size_t k;
+    size_t item_quantity;
 
     menubox(double_buffer, 72 + xofs, 12 + yofs, 20, 1, BLUE);
     print_font(double_buffer, 140 + xofs, 20 + yofs, _("Items"), FGOLD);
     menubox(double_buffer, 72 + xofs, 36 + yofs, 20, 1, BLUE);
     if (sl == 1)
     {
-        menubox(double_buffer, item_act * 56 + 72 + xofs, 36 + yofs, 6, 1,
-                DARKBLUE);
+        menubox(double_buffer, item_act * 56 + 72 + xofs, 36 + yofs, 6, 1, DARKBLUE);
         print_font(double_buffer, 92 + xofs, 44 + yofs, _("Use"), FGOLD);
         print_font(double_buffer, 144 + xofs, 44 + yofs, _("Sort   Drop"), FGOLD);
     }
@@ -373,37 +373,34 @@ static void draw_itemmenu(int ptr, int pg, int sl)
     menubox(double_buffer, 72 + xofs, 60 + yofs, 20, 16, BLUE);
     for (k = 0; k < 16; k++)
     {
-        // j == item index #
-        j = g_inv[pg * 16 + k][0];
-        // z == quantity of item
-        z = g_inv[pg * 16 + k][1];
-        draw_icon(double_buffer, items[j].icon, 88 + xofs, k * 8 + 68 + yofs);
-        if (items[j].use >= USE_ANY_ONCE && items[j].use <= USE_CAMP_INF)
+        // item_index == item index #
+        item_index = g_inv[pg * 16 + k][GLOBAL_INVENTORY_ITEM];
+        item_quantity = g_inv[pg * 16 + k][GLOBAL_INVENTORY_QUANTITY];
+        draw_icon(double_buffer, items[item_index].icon, 88 + xofs, k * 8 + 68 + yofs);
+        if (items[item_index].use >= USE_ANY_ONCE && items[item_index].use <= USE_CAMP_INF)
         {
-            ck = FNORMAL;
+            palette_color = FNORMAL;
         }
         else
         {
-            ck = FDARK;
+            palette_color = FDARK;
         }
-        if (j == I_SSTONE && use_sstone == 0)
+        if (item_index == I_SSTONE && use_sstone == 0)
         {
-            ck = FDARK;
+            palette_color = FDARK;
         }
-        print_font(double_buffer, 96 + xofs, k * 8 + 68 + yofs, items[j].name,
-                   ck);
-        if (z > 1)
+        print_font(double_buffer, 96 + xofs, k * 8 + 68 + yofs, items[item_index].name, palette_color);
+        if (item_quantity > 1)
         {
-            sprintf(strbuf, "^%d", z);
-            print_font(double_buffer, 224 + xofs, k * 8 + 68 + yofs, strbuf, ck);
+            sprintf(strbuf, "^%u", (unsigned int)item_quantity);
+            print_font(double_buffer, 224 + xofs, k * 8 + 68 + yofs, strbuf, palette_color);
         }
     }
     menubox(double_buffer, 72 + xofs, 204 + yofs, 20, 1, BLUE);
     if (sl == 0)
     {
-        a = strlen(items[g_inv[pg * 16 + ptr][0]].desc) * 4;
-        print_font(double_buffer, 160 - a + xofs, 212 + yofs,
-                   items[g_inv[pg * 16 + ptr][0]].desc, FNORMAL);
+        item_name_length = strlen(items[g_inv[pg * 16 + ptr][GLOBAL_INVENTORY_ITEM]].desc) * 4;
+        print_font(double_buffer, 160 - item_name_length + xofs, 212 + yofs, items[g_inv[pg * 16 + ptr][GLOBAL_INVENTORY_ITEM]].desc, FNORMAL);
         draw_sprite(double_buffer, menuptr, 72 + xofs, ptr * 8 + 68 + yofs);
     }
     draw_sprite(double_buffer, pgb[pg], 238 + xofs, 194 + yofs);
@@ -415,27 +412,29 @@ static void draw_itemmenu(int ptr, int pg, int sl)
  *
  * Perform item effects.  This is kind of clunky, but it works.
  *
- * \param   sa Index of attacker
- * \param   t  Index of item to use
+ * \param   attack_fighter_index Index of attacker
+ * \param   fighter_index  Index of item to use
  * \param   ti Index of target(s)
  * \returns 0 if ineffective (cannot use item)
  * \returns 1 if success (1 target)
  * \returns 2 if success (multiple targets)
  */
-int item_effects(int sa, int t, int ti)
+eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index, int ti)
 {
-    int tmp = 0, i, a, b, z, san = 0, se = 0, sen = 0;
+    int tmp = 0, i, a, b, z, san = 0, sen = 0;
+    size_t start_fighter_index = 0;
+    size_t spell_index = 0;
 
-    if (sa == 0)
+    if (attack_fighter_index == 0)
     {
         san = numchrs;
-        se = PARTY_SIZE;
+        start_fighter_index = PSIZE;
         sen = num_enemies;
     }
     else
     {
         san = num_enemies;
-        se = 0;
+        start_fighter_index = 0;
         sen = numchrs;
     }
     switch (ti)
@@ -443,162 +442,166 @@ int item_effects(int sa, int t, int ti)
         case I_MHERB:
         case I_SALVE:
         case I_PCURING:
-            if (fighter[t].sts[S_DEAD] != 0)
+            if (fighter[fighter_index].sts[S_DEAD] != 0)
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
-            if (fighter[t].hp == fighter[t].mhp)
+            if (fighter[fighter_index].hp == fighter[fighter_index].mhp)
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
             tmp = rand() % (items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
             if (in_combat == 0)
             {
-                adjust_hp(t, tmp);
+                adjust_hp(fighter_index, tmp);
             }
             else
             {
-                ta[t] = tmp;
-                draw_spellsprite(t, 0, items[ti].eff, 0);
-                display_amount(t, FYELLOW, 0);
-                adjust_hp(t, ta[t]);
+                ta[fighter_index] = tmp;
+                draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+                display_amount(fighter_index, FYELLOW, 0);
+                adjust_hp(fighter_index, ta[fighter_index]);
             }
             break;
         case I_OSEED:
         case I_EDROPS:
-            if (fighter[t].sts[S_DEAD] != 0)
+            if (fighter[fighter_index].sts[S_DEAD] != 0)
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
-            if (fighter[t].mp == fighter[t].mmp)
+            if (fighter[fighter_index].mp == fighter[fighter_index].mmp)
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
             tmp = rand() % (items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
             if (in_combat == 0)
             {
-                adjust_mp(t, tmp);
+                adjust_mp(fighter_index, tmp);
             }
             else
             {
-                ta[t] = tmp;
-                draw_spellsprite(t, 0, items[ti].eff, 0);
-                display_amount(t, FGREEN, 0);
-                adjust_mp(t, ta[t]);
+                ta[fighter_index] = tmp;
+                draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+                display_amount(fighter_index, FGREEN, 0);
+                adjust_mp(fighter_index, ta[fighter_index]);
             }
             break;
         case I_NLEAF:
         case I_NPOULTICE:
         case I_KBREW:
-            if (fighter[t].sts[S_DEAD] != 0 || fighter[t].sts[S_STONE] != 0)
+            if (fighter[fighter_index].sts[S_DEAD] != 0 || fighter[fighter_index].sts[S_STONE] != 0)
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
-            if (fighter[t].sts[items[ti].elem] != 0)
+            if (fighter[fighter_index].sts[items[ti].elem] != 0)
             {
-                fighter[t].sts[items[ti].elem] = 0;
+                fighter[fighter_index].sts[items[ti].elem] = 0;
             }
             else
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
             if (in_combat == 1)
             {
-                draw_spellsprite(t, 0, items[ti].eff, 0);
+                draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
             }
             break;
         case I_WENSAI:
-            if (fighter[t].sts[S_DEAD] != 0)
+            if (fighter[fighter_index].sts[S_DEAD] != 0)
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
-            if (fighter[t].sts[S_STONE] != 0)
+            if (fighter[fighter_index].sts[S_STONE] != 0)
             {
-                fighter[t].sts[S_STONE] = 0;
+                fighter[fighter_index].sts[S_STONE] = 0;
             }
             else
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
             if (in_combat == 1)
             {
-                draw_spellsprite(t, 0, items[ti].eff, 0);
+                draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
             }
             break;
         case I_EDAENRA:
             tmp = 0;
             for (i = 0; i < 7; i++)
-                if (fighter[t].sts[i] != 0)
+            {
+                if (fighter[fighter_index].sts[i] != 0)
                 {
                     tmp++;
                 }
-            if (tmp == 0 || fighter[t].sts[S_DEAD] != 0)
-            {
-                return 0;
             }
-            if (fighter[t].sts[S_DEAD] != 0)
+            if (tmp == 0 || fighter[fighter_index].sts[S_DEAD] != 0)
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
+            }
+            if (fighter[fighter_index].sts[S_DEAD] != 0)
+            {
+                return ITEM_EFFECT_INEFFECTIVE;
             }
             for (i = 0; i < 12; i++)
             {
-                fighter[t].sts[i] = 0;
+                fighter[fighter_index].sts[i] = 0;
             }
             if (in_combat == 1)
             {
-                draw_spellsprite(t, 0, items[ti].eff, 0);
+                draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
             }
             break;
         case I_LTONIC:
-            if (fighter[t].sts[S_DEAD] == 0)
+            if (fighter[fighter_index].sts[S_DEAD] == 0)
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
             for (a = 0; a < 24; a++)
             {
-                fighter[t].sts[a] = 0;
+                fighter[fighter_index].sts[a] = 0;
             }
-            fighter[t].hp = 1;
-            fighter[t].aframe = 0;
+            fighter[fighter_index].hp = 1;
+            fighter[fighter_index].aframe = 0;
             if (in_combat == 1)
             {
-                draw_spellsprite(t, 0, items[ti].eff, 0);
+                draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
             }
             break;
         case I_RRUNE:
             tmp = 0;
-            for (i = sa; i < sa + san; i++)
-                if (fighter[i].hp == fighter[i].mhp)
+            for (fighter_index = attack_fighter_index; fighter_index < attack_fighter_index + san; fighter_index++)
+            {
+                if (fighter[fighter_index].hp == fighter[fighter_index].mhp)
                 {
                     tmp++;
                 }
+            }
             if (tmp == san)
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
-            for (i = sa; i < sa + san; i++)
+            for (fighter_index = attack_fighter_index; fighter_index < attack_fighter_index + san; fighter_index++)
             {
-                if (fighter[i].sts[S_DEAD] == 0 && fighter[i].sts[S_STONE] == 0)
+                if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].sts[S_STONE] == 0)
                 {
-                    b = fighter[i].lvl * items[ti].stats[A_ATT];
+                    b = fighter[fighter_index].lvl * items[ti].stats[A_ATT];
                     tmp = rand() % b + b + 1;
                     if (in_combat == 0)
                     {
-                        adjust_hp(i, tmp);
+                        adjust_hp(fighter_index, tmp);
                     }
                     else
                     {
-                        ta[i] = do_shell_check(i, tmp);
+                        ta[fighter_index] = do_shell_check(fighter_index, tmp);
                     }
                 }
             }
             if (in_combat == 1)
             {
-                draw_spellsprite(sa, 1, items[ti].eff, 1);
-                display_amount(sa, FYELLOW, 1);
-                for (i = sa; i < sa + san; i++)
+                draw_spellsprite(attack_fighter_index, 1, items[ti].eff, 1);
+                display_amount(attack_fighter_index, FYELLOW, 1);
+                for (fighter_index = attack_fighter_index; fighter_index < attack_fighter_index + san; fighter_index++)
                 {
-                    adjust_hp(i, ta[i]);
+                    adjust_hp(fighter_index, ta[fighter_index]);
                 }
             }
             break;
@@ -608,54 +611,54 @@ int item_effects(int sa, int t, int ti)
         case I_IRUNE:
             if (in_combat == 0)
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
             tmp = items[ti].elem;
-            for (i = se; i < se + sen; i++)
+            for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + sen; fighter_index++)
             {
-                if (fighter[i].sts[S_DEAD] == 0 && fighter[i].mhp > 0)
+                if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].mhp > 0)
                 {
-                    b = fighter[i].lvl * items[ti].stats[A_ATT];
+                    b = fighter[fighter_index].lvl * items[ti].stats[A_ATT];
                     a = rand() % b + b + 20;
                     if (a > 250)
                     {
                         a = 250;
                     }
-                    b = res_adjust(i, tmp, a);
-                    a = do_shell_check(i, b);
-                    ta[i] = 0 - a;
+                    b = res_adjust(fighter_index, tmp, a);
+                    a = do_shell_check(fighter_index, b);
+                    ta[fighter_index] = 0 - a;
                 }
                 else
                 {
-                    ta[i] = 0;
+                    ta[fighter_index] = 0;
                 }
             }
-            draw_spellsprite(se, 1, items[ti].eff, 1);
-            return 2;
+            draw_spellsprite(start_fighter_index, 1, items[ti].eff, 1);
+            return ITEM_EFFECT_SUCCESS_MULTIPLE;
         case I_TP100S:
             if (in_combat == 0)
             {
-                return 0;
+                return ITEM_EFFECT_INEFFECTIVE;
             }
-            if (fighter[t].sts[S_DEAD] == 0 && fighter[t].sts[S_STONE] == 0)
+            if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].sts[S_STONE] == 0)
             {
-                ta[t] = items[ti].stats[A_ATT];
+                ta[fighter_index] = items[ti].stats[A_ATT];
             }
-            draw_spellsprite(t, 0, items[ti].eff, 0);
-            return 2;
+            draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+            return ITEM_EFFECT_SUCCESS_MULTIPLE;
     }
-    if (sa == PARTY_SIZE || in_combat == 1)
+    if (attack_fighter_index == PSIZE || in_combat == 1)
     {
-        return 1;
+        return ITEM_EFFECT_SUCCESS_SINGLE;
     }
     if (ti >= I_STRSEED && ti <= I_WISSEED)
     {
-        if (fighter[t].sts[S_DEAD] != 0 || in_combat == 1 || t >= PARTY_SIZE)
+        if (fighter[fighter_index].sts[S_DEAD] != 0 || in_combat == 1 || fighter_index >= PSIZE)
         {
-            return 0;
+            return ITEM_EFFECT_INEFFECTIVE;
         }
-        z = items[ti].bst;
-        party[pidx[t]].stats[z] += (rand() % 3 + 1) * 100;
+        z = items[ti].bst; //eAttribute
+        party[pidx[fighter_index]].stats[z] += (rand() % 3 + 1) * 100;
         play_effect(SND_TWINKLE, 128);
         switch (z)
         {
@@ -675,82 +678,86 @@ int item_effects(int sa, int t, int ti)
                 message(_("Wisdom up!"), 255, 0, xofs, yofs);
                 break;
         }
-        return 2;
+        return ITEM_EFFECT_SUCCESS_MULTIPLE;
     }
     if ((items[ti].icon == W_SBOOK || items[ti].icon == W_ABOOK))
     {
         tmp = 0;
-        for (i = 0; i < 60; i++)
-            if (party[pidx[t]].spells[i] > 0)
+        for (spell_index = 0; spell_index < NUM_SPELLS - 1; spell_index++)
+        {
+            if (party[pidx[fighter_index]].spells[spell_index] > 0)
             {
                 tmp++;
             }
+        }
         if (tmp == 60)
         {
-            return 0;
+            return ITEM_EFFECT_INEFFECTIVE;
         }
         tmp = 0;
-        for (i = 0; i < 60; i++)
-            if (party[pidx[t]].spells[i] == items[ti].hnds
-                    || party[pidx[t]].lvl < items[ti].ilvl)
+        for (spell_index = 0; spell_index < NUM_SPELLS - 1; spell_index++)
+        {
+            if (party[pidx[fighter_index]].spells[spell_index] == items[ti].hnds
+             || party[pidx[fighter_index]].lvl < items[ti].ilvl)
             {
                 tmp = 1;
             }
+        }
         if (tmp == 1)
         {
-            return 0;
+            return ITEM_EFFECT_INEFFECTIVE;
         }
         tmp = items[ti].hnds;
-        for (i = 0; i < 60; i++)
+        for (spell_index = 0; spell_index < NUM_SPELLS - 1; spell_index++)
         {
-            if (party[pidx[t]].spells[i] == 0)
+            if (party[pidx[fighter_index]].spells[spell_index] == 0)
             {
-                party[pidx[t]].spells[i] = tmp;
-                i = 60;
+                party[pidx[fighter_index]].spells[spell_index] = tmp;
+                spell_index = NUM_SPELLS - 1;
             }
         }
         sprintf(strbuf, _("%s learned!"), magic[tmp].name);
         play_effect(SND_TWINKLE, 128);
         message(strbuf, magic[tmp].icon, 0, xofs, yofs);
-        return 2;
+        return ITEM_EFFECT_SUCCESS_MULTIPLE;
     }
     if (ti == I_HPUP)
     {
-        if (fighter[t].sts[S_DEAD] != 0)
+        if (fighter[fighter_index].sts[S_DEAD] != 0)
         {
-            return 0;
+            return ITEM_EFFECT_INEFFECTIVE;
         }
         i = rand() % 11 + 10;
-        party[pidx[t]].mhp += i;
-        fighter[t].hp += i;
+        party[pidx[fighter_index]].mhp += i;
+        fighter[fighter_index].hp += i;
     }
     if (ti == I_MPUP)
     {
-        if (fighter[t].sts[S_DEAD] != 0)
+        if (fighter[fighter_index].sts[S_DEAD] != 0)
         {
-            return 0;
+            return ITEM_EFFECT_INEFFECTIVE;
         }
         i = rand() % 11 + 10;
-        party[pidx[t]].mmp += i;
-        fighter[t].mp += i;
+        party[pidx[fighter_index]].mmp += i;
+        fighter[fighter_index].mp += i;
     }
     if (ti == I_SSTONE)
     {
         if (use_sstone == 0)
         {
-            return 0;
+            return ITEM_EFFECT_INEFFECTIVE;
         }
-        for (i = sa; i < sa + san; i++)
+        for (fighter_index = attack_fighter_index; fighter_index < attack_fighter_index + san; fighter_index++)
         {
-            fighter[i].hp = fighter[i].mhp;
-            fighter[i].mp = fighter[i].mmp;
+            fighter[fighter_index].hp = fighter[fighter_index].mhp;
+            fighter[fighter_index].mp = fighter[fighter_index].mmp;
             for (b = 0; b < 8; b++)
             {
-                fighter[i].sts[b] = 0;
+                fighter[fighter_index].sts[b] = 0;
             }
         }
     }
-    return 1;
+    return ITEM_EFFECT_SUCCESS_SINGLE;
 }
 
 
@@ -762,37 +769,37 @@ int item_effects(int sa, int t, int ti)
 static void join_items(void)
 {
     unsigned short t_inv[NUM_ITEMS + 1];
-    int a;
+    size_t inventory_index;
 
-    for (a = 0; a < NUM_ITEMS; a++)
+    for (inventory_index = 0; inventory_index < NUM_ITEMS; inventory_index++)
     {
-        t_inv[a] = 0;
+        t_inv[inventory_index] = 0;
     }
-    for (a = 0; a < MAX_INV; a++)
+    for (inventory_index = 0; inventory_index < MAX_INV; inventory_index++)
     {
-        /* foreach instance of item, put the quantity into a temp
+        /* foreach instance of item, put the quantity into inventory_index temp
          * inventory then remove that item from the real inventory
          */
-        t_inv[g_inv[a][0]] += g_inv[a][1];
-        g_inv[a][0] = 0;
-        g_inv[a][1] = 0;
+        t_inv[g_inv[inventory_index][GLOBAL_INVENTORY_ITEM]] += g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY];
+        g_inv[inventory_index][GLOBAL_INVENTORY_ITEM] = 0;
+        g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY] = 0;
     }
-    for (a = 1; a < NUM_ITEMS; a++)
+    for (inventory_index = 1; inventory_index < NUM_ITEMS; inventory_index++)
     {
         // While there is something in the temp inventory
-        while (t_inv[a] > 0)
+        while (t_inv[inventory_index] > 0)
         {
-            if (t_inv[a] > MAX_ITEMS)
+            if (t_inv[inventory_index] > MAX_ITEMS)
             {
                 // Portion out 9 items per slot
-                check_inventory(a, MAX_ITEMS);
-                t_inv[a] -= MAX_ITEMS;
+                check_inventory(inventory_index, MAX_ITEMS);
+                t_inv[inventory_index] -= MAX_ITEMS;
             }
             else
             {
                 // Portion out remaining items into another slot
-                check_inventory(a, t_inv[a]);
-                t_inv[a] = 0;
+                check_inventory(inventory_index, t_inv[inventory_index]);
+                t_inv[inventory_index] = 0;
             }
         }
     }
@@ -804,21 +811,21 @@ static void join_items(void)
  *
  * Remove an item from inventory and re-sort the list.
  *
- * \param   ii Index of item to remove
+ * \param   inventory_index Index of item to remove
  * \param   qi Quantity of item
  */
-void remove_item(int ii, int qi)
+void remove_item(size_t inventory_index, int qi)
 {
     // Remove a certain quantity (qi) of this item
-    g_inv[ii][1] -= qi;
+    g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY] -= qi;
 
     // Check to see if that was the last one in the slot
-    if (g_inv[ii][1] < 1)
+    if (g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY] < 1)
     {
-        g_inv[ii][0] = 0;
-        g_inv[ii][1] = 0;
+        g_inv[inventory_index][GLOBAL_INVENTORY_ITEM] = 0;
+        g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY] = 0;
         // We don't have to sort if it's the last slot
-        if (ii == MAX_INV - 1)
+        if (inventory_index == MAX_INV - 1)
         {
             return;
         }
@@ -835,37 +842,37 @@ void remove_item(int ii, int qi)
  */
 static void sort_inventory(void)
 {
-    int a, b, stop;
+    size_t old_inventory_index, new_inventory_index, stop;
 
-    for (a = 0; a < MAX_INV - 1; a++)
+    for (old_inventory_index = 0; old_inventory_index < MAX_INV - 1; old_inventory_index++)
     {
         // This slot is empty
-        if (g_inv[a][0] == 0)
+        if (g_inv[old_inventory_index][GLOBAL_INVENTORY_ITEM] == 0)
         {
-            b = a + 1;
+            new_inventory_index = old_inventory_index + 1;
             stop = 0;
             while (!stop)
             {
                 // Check if there is something in the next slot
-                if (g_inv[b][0] > 0)
+                if (g_inv[new_inventory_index][GLOBAL_INVENTORY_ITEM] > 0)
                 {
                     // Move the item in the next slot into this one
-                    g_inv[a][0] = g_inv[b][0];
+                    g_inv[old_inventory_index][GLOBAL_INVENTORY_ITEM] = g_inv[new_inventory_index][GLOBAL_INVENTORY_ITEM];
                     // Move its quantity as well
-                    g_inv[a][1] = g_inv[b][1];
+                    g_inv[old_inventory_index][GLOBAL_INVENTORY_QUANTITY] = g_inv[new_inventory_index][GLOBAL_INVENTORY_QUANTITY];
                     // Clear the next slot of items now
-                    g_inv[b][0] = 0;
+                    g_inv[new_inventory_index][GLOBAL_INVENTORY_ITEM] = 0;
                     // Clear if quantity as well
-                    g_inv[b][1] = 0;
+                    g_inv[new_inventory_index][GLOBAL_INVENTORY_QUANTITY] = 0;
                     // Break out of the "check the slot ahead" loop
                     stop = 1;
                 }
                 // Since there's not, continue searching
                 else
                 {
-                    b++;
+                    new_inventory_index++;
                 }
-                if (b > MAX_INV - 1)
+                if (new_inventory_index > MAX_INV - 1)
                 {
                     stop = 1;
                 }
@@ -883,31 +890,35 @@ static void sort_inventory(void)
 static void sort_items(void)
 {
     unsigned short t_inv[MAX_INV][2];
-    int a, b, c = 0, tt[7] = { 6, 0, 1, 2, 3, 4, 5 };
+    int tt[7] = { 6, 0, 1, 2, 3, 4, 5 };
+    size_t new_inventory_index;
+    size_t old_inventory_index;
+    size_t inventory_index = 0;
 
     join_items();
-    for (a = 0; a < MAX_INV; a++)
+    for (old_inventory_index = 0; old_inventory_index < MAX_INV; old_inventory_index++)
     {
         // Temporary item index #
-        t_inv[a][0] = g_inv[a][0];
+        t_inv[old_inventory_index][0] = g_inv[old_inventory_index][GLOBAL_INVENTORY_ITEM];
         // Temporary item quantity
-        t_inv[a][1] = g_inv[a][1];
-        g_inv[a][0] = 0;
-        g_inv[a][1] = 0;
+        t_inv[old_inventory_index][1] = g_inv[old_inventory_index][GLOBAL_INVENTORY_QUANTITY];
+        g_inv[old_inventory_index][GLOBAL_INVENTORY_ITEM] = 0;
+        g_inv[old_inventory_index][GLOBAL_INVENTORY_QUANTITY] = 0;
     }
-    for (a = 0; a < 7; a++)
+    for (old_inventory_index = 0; old_inventory_index < 7; old_inventory_index++)
     {
-        for (b = 0; b < MAX_INV; b++)
+        for (new_inventory_index = 0; new_inventory_index < MAX_INV; new_inventory_index++)
         {
-            if (t_inv[b][0] > 0 && items[t_inv[b][0]].type == tt[a])
+            unsigned short inventory = t_inv[new_inventory_index][0];
+            if (inventory > 0 && items[inventory].type == tt[old_inventory_index])
             {
                 // Re-assign group's inventory items
-                g_inv[c][0] = t_inv[b][0];
+                g_inv[inventory_index][GLOBAL_INVENTORY_ITEM] = inventory;
                 // ...and item quantities
-                g_inv[c][1] = t_inv[b][1];
-                t_inv[b][0] = 0;
-                t_inv[b][1] = 0;
-                c++;
+                g_inv[inventory_index][GLOBAL_INVENTORY_QUANTITY] = t_inv[new_inventory_index][1];
+                t_inv[new_inventory_index][0] = 0;
+                t_inv[new_inventory_index][1] = 0;
+                inventory_index++;
             }
         }
     }
@@ -926,22 +937,16 @@ static void sort_items(void)
  */
 int useup_item(int item_id)
 {
-    int i;
+    size_t inventory_index;
 
-    for (i = 0; i < MAX_INV; ++i)
+    for (inventory_index = 0; inventory_index < MAX_INV; ++inventory_index)
     {
-        if (g_inv[i][0] == item_id)
+        if (g_inv[inventory_index][GLOBAL_INVENTORY_ITEM] == item_id)
         {
-            remove_item(i, 1);
+            remove_item(inventory_index, 1);
             return 1;
         }
     }
     return 0;
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

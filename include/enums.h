@@ -38,7 +38,7 @@
 // easier for a lot of IDEs to interpret.
 
 
-typedef enum eSizes
+enum eSize
 {
     TILE_H = 16U,
     TILE_W = 16U,
@@ -46,17 +46,45 @@ typedef enum eSizes
     ENT_H  = 16U,
     NUM_SPELLS_PER_PAGE = 12U,
     NUM_ITEMS_PER_PAGE = 16U,
-} eSizes;
+};
+
+
+enum eShadow
+{
+    SHADOW_NONE             = 0,
+    SHADOW_LEFT_CORNER      = 1,
+    SHADOW_LEFT_SOLID       = 2,
+    SHADOW_FULL_SOLID       = 3,
+    SHADOW_LEFT_TOP         = 4,
+    SHADOW_BOTTOM_CORNER    = 5,
+    SHADOW_TOP_CORNER       = 6,
+    SHADOW_TOP_MID          = 7,
+    SHADOW_FULL_BLUE        = 8,
+    SHADOW_DOORWAY          = 9,
+    SHADOW_LIGHT_BOTTOM     = 10,
+    SHADOW_LIGHT_TOP        = 11,
+
+    NUM_SHADOWS // always last
+};
+
+
+enum eGlobalInventory
+{
+    GLOBAL_INVENTORY_ITEM = 0,
+    GLOBAL_INVENTORY_QUANTITY = 1,
+
+    NUM_GLOBAL_INVENTORY // always last
+};
 
 #define MAX_TILES        1024
 #define MAXE               41
-#define MAXCHRS             8
-#define PARTY_SIZE               2U
+#define PSIZE               2U
 #define MAXFRAMES          12
 #define MAXEFRAMES         12
 #define WINDOW_TILES_W     21
 #define WINDOW_TILES_H     16
-#define MAX_ENT            50
+#define MAX_ENTITIES_PER_MAP 50
+#define MAX_ENTITIES (MAX_ENTITIES_PER_MAP + PSIZE)
 #define ID_ENEMY          254
 #define ENT_FRAMES_PER_DIR  3
 
@@ -71,8 +99,6 @@ typedef enum eSizes
 #define NUM_STATS          13
 #define MISS             9999
 #define NODISPLAY        9998
-#define SEL_ALL_ALLIES   9997
-#define SEL_ALL_ENEMIES  9996
 #define SCANALL          9995
 #define NO_STS_CHECK     9994
 #define CURE_CHECK       9993
@@ -94,131 +120,183 @@ typedef enum eSizes
 /*  These are the stats when you check your
  *  characters stats (on the left)
  */
-/*\{*/
-#define A_STR 0                 // Strength
-#define A_AGI 1                 // Agility
-#define A_VIT 2                 // Vitality
-#define A_INT 3                 // Intellect
-#define A_SAG 4                 // Sagacity
-#define A_SPD 5                 // Speed
-#define A_AUR 6                 // Aura
-#define A_SPI 7                 // Spirit
-#define A_ATT 8                 // Attack
-#define A_HIT 9                 // Hit
-#define A_DEF 10                // Defense
-#define A_EVD 11                // Evade
-#define A_MAG 12                // Mag.Def
-/*\}*/
+enum eAttribute
+{
+    A_STR       = 0,    // Strength
+    A_AGI       = 1,    // Agility
+    A_VIT       = 2,    // Vitality
+    A_INT       = 3,    // Intellect
+    A_SAG       = 4,    // Sagacity
+    A_SPD       = 5,    // Speed
+    A_AUR       = 6,    // Aura
+    A_SPI       = 7,    // Spirit
+    A_ATT       = 8,    // Attack
+    A_HIT       = 9,    // Hit
+    A_DEF       = 10,   // Defense
+    A_EVD       = 11,   // Evade
+    A_MAG       = 12,   // Mag.Def
+
+    NUM_ATTRIBUTES // always last
+};
 
 
 /*! \name Spells */
-/*\{*/
-#define S_POISON   0
-#define S_BLIND    1
-#define S_CHARM    2
-#define S_STOP     3
-#define S_STONE    4
-#define S_MUTE     5
-#define S_SLEEP    6
-#define S_DEAD     7
-#define S_MALISON  8
-#define S_RESIST   9
-#define S_TIME     10
-#define S_SHIELD   11
-#define S_BLESS    12
-#define S_STRENGTH 13
-#define S_ETHER    14
-#define S_TRUESHOT 15
-#define S_REGEN    16
-#define S_INFUSE   17
-/*\}*/
+enum eSpellType
+{
+    S_POISON   = 0,
+    S_BLIND    = 1,
+    S_CHARM    = 2,
+    S_STOP     = 3,
+    S_STONE    = 4,
+    S_MUTE     = 5,
+    S_SLEEP    = 6,
+    S_DEAD     = 7,
+    S_MALISON  = 8,
+    S_RESIST   = 9,
+    S_TIME     = 10,
+    S_SHIELD   = 11,
+    S_BLESS    = 12,
+    S_STRENGTH = 13,
+    S_ETHER    = 14,
+    S_TRUESHOT = 15,
+    S_REGEN    = 16,
+    S_INFUSE   = 17,
+
+    NUM_SPELL_TYPES // always last
+};
+
 
 /*! \name Special combat skills */
-/*\{*/
-#define C_ATTACK   1
-#define C_COMBO    2
-#define C_SPELL    3
-#define C_SKILL    4
-#define C_DEFEND   5
-#define C_INVOKE   6
-#define C_ITEM     7
-#define C_RUN      8
-/*\}*/
+enum eCombatSkill
+{
+    C_ATTACK   = 1,
+    C_COMBO    = 2,
+    C_SPELL    = 3,
+    C_SKILL    = 4,
+    C_DEFEND   = 5,
+    C_INVOKE   = 6,
+    C_ITEM     = 7,
+    C_RUN      = 8,
+
+    NUM_COMBAT_SKILLS // always last
+};
+
 
 /*! \name Runes/Resistances */
-/*  These are what your strengths and weaknesses to certain
- *  elements and elemental attacks.  This can be a negative
- *  value (lots of damage), 0 (neutral), or a positive value
- *  (very little damage).
+/* These are what your strengths and weaknesses to certain elements and
+ * elemental attacks. This can be a negative value (lots of damage), 0
+ * (neutral), or a positive value (very little damage).
+ * See s_fighter.res[] as well as s_spell.elem.
  */
-/*\{*/
-#define R_EARTH     0
-#define R_BLACK     1
-#define R_FIRE      2
-#define R_THUNDER   3
-#define R_AIR       4
-#define R_WHITE     5
-#define R_WATER     6
-#define R_ICE       7
-#define R_POISON    8
-#define R_BLIND     9
-#define R_CHARM     10
-#define R_PARALYZE  11
-#define R_PETRIFY   12
-#define R_SILENCE   13
-#define R_SLEEP     14
-#define R_TIME      15
-#define R_TOTAL_RES 16
-/*\}*/
+enum eResistance
+{
+    R_EARTH     = 0,
+    R_BLACK     = 1,
+    R_FIRE      = 2,
+    R_THUNDER   = 3,
+    R_AIR       = 4,
+    R_WHITE     = 5,
+    R_WATER     = 6,
+    R_ICE       = 7,
+    R_POISON    = 8,
+    R_BLIND     = 9,
+    R_CHARM     = 10,
+    R_PARALYZE  = 11,
+    R_PETRIFY   = 12,
+    R_SILENCE   = 13,
+    R_SLEEP     = 14,
+    R_TIME      = 15,
+
+    R_TOTAL_RES // always last
+};
 
 
 /*! \name Weapons */
-/*\{*/
-#define W_BASH         0
-#define W_MACE         1
-#define W_HAMMER       2
-#define W_SWORD        3
-#define W_AXE          4
-#define W_KNIFE        5
-#define W_SPEAR        6
-#define W_ROD          7
-#define W_STAFF        8
-#define W_SBOOK        27
-#define W_ABOOK        28
-#define W_CHENDIGAL    29
-/*\}*/
+/* The order of these needs to correspond with the image placement within MISC,
+ * 4th column down (0-based).
+ */
+enum eWeapon
+{
+    W_NO_WEAPON     = 0,
+    W_MACE          = 1,
+    W_HAMMER        = 2,
+    W_SWORD         = 3,
+    W_AXE           = 4,
+    W_KNIFE         = 5,
+    W_SPEAR         = 6,
+    W_ROD           = 7,
+    W_STAFF         = 8,
+
+    W_SHIELD        = 9,
+    W_HEADPIECE     = 10,
+    W_HELMET        = 11,
+
+    W_ROBE          = 12,
+    W_GI            = 13,
+    W_BREASTPLATE   = 14,
+
+    W_BAND          = 15,
+    W_GLOVES        = 16,
+    W_GAUNTLET      = 17,
+
+    W_SHOES         = 18,
+    W_AMULET        = 19,
+    W_CLOAK         = 20,
+    W_RING          = 21,
+
+    W_SEED          = 22,
+    W_ELIXER        = 23,
+    W_SUNSTONE      = 24,
+    W_RUNE          = 25,
+    W_WOODSLIVER    = 26,
+
+    W_SBOOK         = 27,
+    W_ABOOK         = 28,
+    W_CHENDIGAL     = 29,
+
+    W_EXPLOSIVE     = 30,
+
+    NUM_WEAPONS // always last
+};
 
 
 /*!\name Use modes
  * Specify how an item can be used.
  */
-/*\{*/
-#define USE_NOT          0
-#define USE_ANY_ONCE     1
-#define USE_ANY_INF      2
-#define USE_CAMP_ONCE    3
-#define USE_CAMP_INF     4
-#define USE_COMBAT_ONCE  5
-#define USE_COMBAT_INF   6
-#define USE_ATTACK       7
-#define USE_IMBUED       8
-/*\}*/
+enum eItemUse
+{
+    USE_NOT          = 0,
+    USE_ANY_ONCE     = 1,
+    USE_ANY_INF      = 2,
+    USE_CAMP_ONCE    = 3,
+    USE_CAMP_INF     = 4,
+    USE_COMBAT_ONCE  = 5,
+    USE_COMBAT_INF   = 6,
+    USE_ATTACK       = 7,
+    USE_IMBUED       = 8,
+
+    NUM_USES // always last
+};
+
 
 /*! \name Weapon/Spell targeting modes */
-/*\{*/
-#define TGT_CASTER        -1
-#define TGT_NONE          0
-#define TGT_ALLY_ONE      1
-#define TGT_ALLY_ONEALL   2
-#define TGT_ALLY_ALL      3
-#define TGT_ENEMY_ONE     4
-#define TGT_ENEMY_ONEALL  5
-#define TGT_ENEMY_ALL     6
-/*\}*/
+enum eTarget
+{
+    TGT_CASTER        = -1,
+    TGT_NONE          = 0,
+    TGT_ALLY_ONE      = 1,
+    TGT_ALLY_ONEALL   = 2,
+    TGT_ALLY_ALL      = 3,
+    TGT_ENEMY_ONE     = 4,
+    TGT_ENEMY_ONEALL  = 5,
+    TGT_ENEMY_ALL     = 6,
+
+    NUM_TARGETS // always last
+};
+
 
 /*! \name Facing directions */
-/*\{*/
-typedef enum eDirections
+enum eDirection
 {
     FACE_DOWN   = 0,
     FACE_UP     = 1,
@@ -226,15 +304,14 @@ typedef enum eDirections
     FACE_RIGHT  = 3,
 
     NUM_FACING_DIRECTIONS // always last
-} eDirections;
-/*\}*/
+};
 
 
 /* The map modes (parallax and drawing order) are listed here in
  * coded format. The layers are listed as 1, 2, 3, E (entity) S (shadow)
  * and a ) or ( marks which layers use the parallax mult/div.
  */
-typedef enum eMapMode
+enum eMapMode
 {
     MAPMODE_12E3S    = 0,   // "12E3S "
     MAPMODE_1E23S    = 1,   // "1E23S "
@@ -243,20 +320,24 @@ typedef enum eMapMode
     MAPMODE_1P2E3S   = 4,   // "1(2E3S"
     MAPMODE_12EP3S   = 5,   // "12E(3S"
 
-    NUM_MAPMODES            // always last
-} eMapMode;
-
+    NUM_MAPMODES // always last
+};
 
 
 /* move modes */
-#define MM_STAND  0
-#define MM_WANDER 1
-#define MM_SCRIPT 2
-#define MM_CHASE  3
-#define MM_TARGET 4
+enum eMoveMode
+{
+    MM_STAND    = 0,
+    MM_WANDER   = 1,
+    MM_SCRIPT   = 2,
+    MM_CHASE    = 3,
+    MM_TARGET   = 4,
+
+    NUM_MOVEMODES // always last
+};
 
 
-typedef enum eObstacles
+enum eObstacle
 {
     BLOCK_NONE = 0,
     BLOCK_ALL  = 1,
@@ -265,11 +346,11 @@ typedef enum eObstacles
     BLOCK_D    = 4,
     BLOCK_L    = 5,
 
-    NUM_OBSTACLES        // always last
-} eObstacles;
+    NUM_OBSTACLES // always last
+};
 
 
-typedef enum eEquipment
+enum eEquipment
 {
     EQP_WEAPON  = 0,
     EQP_SHIELD  = 1,
@@ -278,15 +359,10 @@ typedef enum eEquipment
     EQP_HAND    = 4,
     EQP_SPECIAL = 5,
 
-    NUM_EQUIPMENT        // always last
-} eEquipment;
+    NUM_EQUIPMENT // always last
+};
 
 
 #endif  /* __ENUMS_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */
+

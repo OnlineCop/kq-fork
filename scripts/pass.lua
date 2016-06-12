@@ -1,7 +1,7 @@
 -- pass - "Karnok's pass, between Sunarin and Pulcannen"
 
 function autoexec()
-  if (get_progress(P_SAVEBREANNE) > 0) then
+  if (progress.savebreanne > 0) then
     -- Move guard on left side of pass
     place_ent(0, get_ent_tilex(0) - 1, get_ent_tiley(0))
     set_ent_facing(0, FACE_RIGHT)
@@ -15,7 +15,7 @@ end
 
 function entity_handler(en)
   if (en == 0 or en == 1) then
-    if (get_progress(P_SAVEBREANNE) == 0) then
+    if (progress.savebreanne == 0) then
       bubble(en, _"This pass is reserved for use by caravans only.")
     else
       bubble(en, _"You are free to use the pass. Just be careful.")
@@ -33,7 +33,7 @@ end
 
 
 function refresh()
-  if (get_progress(P_CAVEKEY) > 0) then
+  if (progress.cavekey > 0) then
     -- Move Rufus into his house
     place_ent(2, 152, 12)
   end
@@ -118,7 +118,7 @@ end
 function LOC_door(door, map, mark)
   local x, y = marker(door)
 
-  if (get_progress(P_CAVEKEY) == 0) then
+  if (progress.cavekey == 0) then
     bubble(HERO1, "Locked.")
     return
   end
@@ -136,28 +136,28 @@ end
 
 
 function LOC_miner(en)
-  if (get_progress(P_TALKRUFUS) == 0) then
+  if (progress.talkrufus == 0) then
     bubble(en, _"Howdy!")
     bubble(HERO1, _"Hello. Is this your cabin?")
     bubble(en, _"It sure is! Th' name's Rufus. I work in the abandoned mines in these parts.")
     bubble(en, _"But I'll warn ya now. There's something nasty hiding in them thar mines.")
     bubble(HERO1, _"Like what?")
     bubble(en, _"I guess I've said enough...")
-    set_progress(P_TALKRUFUS, 1)
-    if (get_progress(P_CAVEKEY) == 0) then
+    progress.talkrufus = 1
+    if (progress.cavekey == 0) then
       bubble(HERO1, _"Don't worry. I was just passing through, anyway.")
     end
-  elseif (get_progress(P_TALKRUFUS) == 1) then
+  elseif (progress.talkrufus == 1) then
     bubble(HERO1, _"Hello again.")
     bubble(en, _"Don't forget what I told ya about them mines.")
-    if (get_progress(P_CAVEKEY) == 0) then
+    if (progress.cavekey == 0) then
       bubble(HERO1, _"I won't.")
     end
   end
 
-  if (get_progress(P_TALKRUFUS)<2) then
+  if (progress.talkrufus<2) then
     bubble(HERO1, _"But, I really need to get in there.")
-    set_progress(P_TALKRUFUS, 2)
+    progress.talkrufus = 2
     bubble(en, _"We-e-ell...")
     bubble(en, _"I reckon that you and me might be able to do a little business here.")
   else

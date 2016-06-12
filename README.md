@@ -4,16 +4,16 @@ KQ Lives Again!
 What is KQ?
 -----------
 
-**KQ** is an old skool console-style RPG.
+**KQ** is an old-skool console-style RPG.
 
-Take the part of one of eight mighty heroes as you search for the Staff of Xenarum.  Visit over twenty different locations, fight a multitude of evil monsters, wield deadly weapons and cast powerful spells. On your quest, you will find out how the Oracle knows everything, who killed the former master of the Embers guild, why no-one trusts the old man in the manor, and what exactly is terrorizing the poor Denorians.
+Take the part as one of eight mighty heroes to search for the Staff of Xenarum.  Visit over twenty different locations, fight a multitude of evil monsters, wield deadly weapons and cast powerful spells. On your quest, you will find out how the Oracle knows everything, who killed the former master of the Embers guild, why no one trusts the old man in the manor, and what exactly is terrorizing the poor Denorians.
 
 Who made KQ?
 ------------
 
-**KQ** was originally developped by **Josh Bolduc** in 2001. The source code was then released in 2002 and the **[KQ Lives](http://sourceforge.net/projects/kqlives/)** team pursued it's developpement from 2002 to 2010.
+**KQ** was originally developed by **Josh Bolduc** in 2001. The source code was then released in 2002 and the **[KQ Lives](http://sourceforge.net/projects/kqlives/)** team pursued its development from 2002 to 2010.
 
-Now the game is being forked once again in the hope to modernise it and finish the story.
+Now the game is being forked once again in the hope to modernize it and finish the story.
 
 **grrk-bzzt** and **OnlineCop** are the maintainers of this project.
 
@@ -24,7 +24,13 @@ How to install KQ
 
 First, download the latest stable version of KQ on the **[Releases](https://github.com/grrk-bzzt/kq-fork/releases)** page.
 
-Check you have installed Allegro v4, Lua v5.2 and [DUMB](http://sourceforge.net/projects/dumb/).
+Check that you have these libraries installed:
+* Allegro v4
+* Lua v5.2
+* TinyXML2
+* [DUMB](http://sourceforge.net/projects/dumb/).
+* libpng v1.2
+* zlib
 
 Then, you can compile the project using the following commands:
 ```

@@ -10,7 +10,7 @@
 
 function autoexec()
   set_ent_active(12, 0)
-  if (get_progress(P_ROUNDNUM) > 0) then
+  if (progress.roundnum > 0) then
     x, y = marker("after_battle")
     place_ent(6, x + 1, y + 1)
   end
@@ -39,14 +39,14 @@ function entity_handler(en)
   elseif (en == 6) then
     local a, b
 
-    if (get_progress(P_OPALSHIELD) == 1) then
+    if (progress.opalshield == 1) then
       bubble(en, _"This is where you register.")
       bubble(en, _"Hey, wait a minute... you're the one who defeated Trayor. We can't let you register again... you're too good for these guys.")
       return
     end
-    if (get_progress(P_ROUNDNUM) == 0) then
+    if (progress.roundnum == 0) then
       bubble(en, _"This is where you register.")
-      if (get_progress(P_FIRSTTIME) == 0) then
+      if (progress.firsttime == 0) then
         bubble(en, _"Before I explain the rules, I should tell you that the registration fee is 2000 gp!")
         bubble(en, _"If you lose even once, you are done... and will have to register again.")
         bubble(en, _"As well, after you register you can't leave the coliseum grounds. If you leave, you will be forced to register again.")
@@ -59,7 +59,7 @@ function entity_handler(en)
                              _"2000 gp entrance fee?",
                              _"  no  ",
                              _"  yes ")
-        set_progress(P_FIRSTTIME, 1)
+        progress.firsttime = 1
       else
         a = prompt(en, 2, 0, _"The registration fee is 2000 gp.",
                              _"Are you in?",
@@ -75,27 +75,27 @@ function entity_handler(en)
           bubble(en, _"Consider yourself registered. After each battle, come back and talk to me.")
           set_ent_script(en, "U2R1F2")
           wait_for_entity(en, en)
-          set_progress(P_ROUNDNUM, 1)
-          set_progress(P_BATTLESTATUS, 0)
+          progress.roundnum = 1
+          progress.battlestatus = 0
         else
           bubble(en, _"Umm... you don't seem to have enough. I would suggest selling some junk. In any case, you can't register at this point.")
         end
       end
     else
-      a = get_progress(P_BATTLESTATUS)
+      a = progress.battlestatus
       if (a == 0) then
-        if (get_progress(P_ROUNDNUM) == 7) then
+        if (progress.roundnum == 7) then
           bubble(en, _"Wow! This is it... your next battle is with Trayor. Good luck... you'll need it!")
         else
-          bubble(en, _"Battle number "..get_progress(P_ROUNDNUM).._". Just head on through that door when you are ready.")
+          bubble(en, _"Battle number "..progress.roundnum.._". Just head on through that door when you are ready.")
         end
       elseif (a == 1) then
-        if (get_progress(P_ROUNDNUM) == 7) then
+        if (progress.roundnum == 7) then
           bubble(en, _"Astounding! Whoever you are, you're going to go far!")
           bubble(en, _"Well, I guess this is yours.")
           sfx(5)
           msg(_"Opal Shield procured", 255, 0, xofs, yofs)
-          set_progress(P_OPALSHIELD, 1)
+          progress.opalshield = 1
           add_special_item(SI_OPALSHIELD)
           if (get_ent_tilex(HERO1) == get_ent_tilex(en)) then
             set_ent_script(HERO1, "L1")
@@ -122,37 +122,37 @@ function entity_handler(en)
             return
           end
 
-          if (get_progress(P_OLDPARTNER) > 0) then
-            set_progress(P_FINALPARTNER, get_progress(P_OLDPARTNER))
+          if (progress.oldpartner > 0) then
+            progress.finalpartner = progress.oldpartner
           else
             if (party[0] == Casandra) then
               if (krnd(10) < 5) then
-                set_progress(P_FINALPARTNER, TEMMIN + 1)
+                progress.finalpartner = temmin + 1
               end
             end
             if (party[0] == Temmin) then
               if (krnd(10) < 5) then
-                set_progress(P_FINALPARTNER, CASANDRA + 1)
+                progress.finalpartner = casandra + 1
               end
             end
-            while (get_progress(P_FINALPARTNER) == 0) do
+            while (progress.finalpartner == 0) do
               z = krnd(8)
               if (z ~= party[0].id) then
-                set_progress(P_FINALPARTNER, z + 1)
+                progress.finalpartner = z + 1
               end
             end
           end
-          set_ent_id(en, get_progress(P_FINALPARTNER) - 1)
+          set_ent_id(en, progress.finalpartner - 1)
           set_ent_active(en, 1)
         else
           bubble(en, _"Congratulations! You should have a rest or heal up. Come back and talk to me again after you've prepared.")
-          set_progress(P_BATTLESTATUS, 0)
-          set_progress(P_ROUNDNUM, get_progress(P_ROUNDNUM) + 1)
+          progress.battlestatus = 0
+          progress.roundnum = progress.roundnum + 1
         end
       elseif (a == 2) then
         bubble(en, _"Ooh... tough luck!")
-        set_progress(P_BATTLESTATUS, 0)
-        set_progress(P_ROUNDNUM, 0)
+        progress.battlestatus = 0
+        progress.roundnum = 0
         set_ent_script(HERO1, "D3F1")
         wait_for_entity(0, 0)
         set_ent_script(en, "L1D2")
@@ -181,7 +181,7 @@ function entity_handler(en)
     bubble(en, _"The Coliseum hasn't been the same since they discontinued betting on the fights.")
 
   elseif (en == 12) then
-    if (get_progress(P_OLDPARTNER) == 0) then
+    if (progress.oldpartner == 0) then
       bubble(en, _"Wow! I saw you fighting. You cleaned up!")
       bubble(en, _"Oh yeah! I'm here because I ran into some guy named Derig. Well, he actually came looking for me.")
       bubble(en, _"Anyways, he wanted me to come and find you.")
@@ -198,9 +198,9 @@ function entity_handler(en)
       bubble(HERO1, _"Well, where should we go first?")
       bubble(en, _"Derig said to get the Armor last and since all that leaves is the Band, then we should go for that.")
       bubble(HERO1, _"Fair enough... let's roll.")
-      add_chr(get_progress(P_FINALPARTNER) - 1)
+      add_chr(progress.finalpartner - 1)
       LOC_partner_up()
-      set_progress(P_FINALPARTNER, 0)
+      progress.finalpartner = 0
       copy_ent(en, HERO2)
       set_ent_active(en, 0)
       orient_heroes()
@@ -220,9 +220,9 @@ function entity_handler(en)
       bubble(en, _"You already found the Helmet and Shield! Wow! Well, the Band is in a town called Ajantara to the south.")
       bubble(en, _"The Armor is deep in a cavern to the east. And Derig said to get the Armor last, so we should go to Ajantara first. Okay?")
       bubble(HERO1, _"No problem... let's go.")
-      add_chr(get_progress(P_FINALPARTNER) - 1)
+      add_chr(progress.finalpartner - 1)
       LOC_partner_up()
-      set_progress(P_FINALPARTNER, 0)
+      progress.finalpartner = 0
       copy_ent(en, HERO2)
       set_ent_active(en, 0)
       orient_heroes()
@@ -242,8 +242,8 @@ end
 
 function zone_handler(zn)
   if (zn == 1) then
-    set_progress(P_ROUNDNUM, 0)
-    set_progress(P_BATTLESTATUS, 0)
+    progress.roundnum = 0
+    progress.battlestatus = 0
     change_map("main", "coliseum")
 
   elseif (zn == 2) then
@@ -287,23 +287,23 @@ function zone_handler(zn)
     door_in("after_battle")
 
   elseif (zn == 15) then
-    if (get_progress(P_BATTLESTATUS) > 0) then
+    if (progress.battlestatus > 0) then
       bubble(HERO1, _"I'm not ready yet.")
       return
     end
     set_run(0)
     set_can_use_item(0)
-    combat(11 + get_progress(P_ROUNDNUM))
+    combat(11 + progress.roundnum)
     set_can_use_item(1)
     set_run(1)
     local x, y = marker("battle")
     warp(x, y - 3, 16)
     if (get_alldead() == 1) then
-      set_progress(P_BATTLESTATUS, 2)
+      progress.battlestatus = 2
       set_party_hp(party[0], 1)
       set_alldead(0)
     else
-      set_progress(P_BATTLESTATUS, 1)
+      progress.battlestatus = 1
     end
 
   end
@@ -319,7 +319,7 @@ function LOC_partner_up()
   end
   a = a + krnd(500)
   give_xp(get_pidx(1), a, 1)
-  a = get_progress(P_FINALPARTNER) - 1
+  a = progress.finalpartner - 1
   if (a == SENSAR) then
     set_all_equip(0, I_HAMMER2, I_SHIELD3, I_CAP3, I_ARMOR5, I_BAND2, 0)
   elseif (a == SARINA) then

@@ -19,6 +19,10 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+
+#include <stdio.h>
+#include <string.h>
+
 #include "draw.h"
 #include "eqpmenu.h"
 #include "heroc.h"
@@ -32,10 +36,6 @@
 #include "setup.h"
 #include "structs.h"
 
-#include <cstdio>
-#include <cstring>
-
-
 /*! \file
  * \brief Main menu functions
  *
@@ -48,7 +48,7 @@ static int check_xp(int, int);
 static void ilist_add(ILIST *, const char *, const char *);
 static void level_up(int);
 static void quest_info(void);
-static void status_screen(int);
+static void status_screen(size_t);
 static ILIST quest_list;
 
 
@@ -116,12 +116,13 @@ static int check_xp(int pl, int ls)
  */
 void draw_mainmenu(int swho)
 {
-    int p;
+    size_t fighter_index;
 
     timer_count = 0;
-    for (p = 0; p < PARTY_SIZE; p++)
-        menubox(double_buffer, 44 + xofs, p * 64 + 64 + yofs, 18, 6,
-                swho == p ? DARKBLUE : BLUE);
+    for (fighter_index = 0; fighter_index < PSIZE; fighter_index++)
+    {
+        menubox(double_buffer, 44 + xofs, fighter_index * 64 + 64 + yofs, 18, 6, (size_t)swho == fighter_index ? DARKBLUE : BLUE);
+    }
     menubox(double_buffer, 204 + xofs, 64 + yofs, 7, 6, BLUE);
     menubox(double_buffer, 204 + xofs, 128 + yofs, 7, 6, BLUE);
     print_font(double_buffer, 220 + xofs, 72 + yofs, _("Items"), FGOLD);
@@ -134,17 +135,16 @@ void draw_mainmenu(int swho)
     print_font(double_buffer, 212 + xofs, 164 + yofs, _("Gold:"), FGOLD);
     /* PH: print time as h:mm */
     sprintf(strbuf, "%d:%02d", khr, kmin);
-    print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 144 + yofs,
-               strbuf, FNORMAL);
+    print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 144 + yofs, strbuf, FNORMAL);
     sprintf(strbuf, "%d", gp);
-    print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 172 + yofs,
-               strbuf, FNORMAL);
+    print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 172 + yofs, strbuf, FNORMAL);
     if (swho != -1)
-        menubox(double_buffer, 44 + xofs, swho * 64 + 64 + yofs, 18, 6,
-                DARKBLUE);
-    for (p = 0; p < numchrs; p++)
     {
-        draw_playerstat(double_buffer, pidx[p], 52 + xofs, p * 64 + 76 + yofs);
+        menubox(double_buffer, 44 + xofs, swho * 64 + 64 + yofs, 18, 6, DARKBLUE);
+    }
+    for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+    {
+        draw_playerstat(double_buffer, pidx[fighter_index], 52 + xofs, fighter_index * 64 + 76 + yofs);
     }
 }
 
@@ -167,8 +167,7 @@ void draw_playerstat(BITMAP *where, int i, int dx, int dy)
     draw_stsicon(where, 0, i, 8, dx + 48, dy + 8);
     print_font(where, dx + 48, dy + 16, _("LV"), FGOLD);
     sprintf(strbuf, "%d", party[i].lvl);
-    print_font(where, dx + 104 - (strlen(strbuf) * 8), dy + 16, strbuf,
-               FNORMAL);
+    print_font(where, dx + 104 - (strlen(strbuf) * 8), dy + 16, strbuf, FNORMAL);
     print_font(where, dx + 48, dy + 24, _("HP"), FGOLD);
     print_font(where, dx + 104, dy + 24, "/", FNORMAL);
     sprintf(strbuf, "%d", party[i].hp);
@@ -304,7 +303,7 @@ void menu(void)
         draw_sprite(double_buffer, menuptr, 204 + xofs, ptr * 8 + 73 + yofs);
         blit2screen(xofs, yofs);
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             ptr--;
@@ -314,7 +313,7 @@ void menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             ptr++;
@@ -325,7 +324,7 @@ void menu(void)
             play_effect(SND_CLICK, 128);
         }
         /* Allow player to rearrange the party at any time by pressing LEFT */
-        if (left)
+        if (PlayerInput.left)
         {
             z = select_player();
             if (z > 0)
@@ -333,7 +332,7 @@ void menu(void)
                 party_newlead();
             }
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             switch (ptr)
@@ -367,7 +366,7 @@ void menu(void)
                     break;
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -394,9 +393,11 @@ void menu(void)
  */
 s_fighter *player2fighter(int who, s_fighter *pf)
 {
-    int j, itemIndex, b;
-    int z[5] = { 5, 3, 2, 1, 4 };
+    int j, a, b;
+    int z[5] = { EQP_SPECIAL, EQP_ARMOR, EQP_HELMET, EQP_SHIELD, EQP_HAND };
     s_fighter tf;
+    size_t current_equipment_slot;
+    size_t weapon_index;
 
     tf.imb_s = 0;
     tf.imb_a = 0;
@@ -417,18 +418,22 @@ s_fighter *player2fighter(int who, s_fighter *pf)
     {
         tf.sts[j] = party[who].sts[j];
     }
-    for (j = 0; j < 13; j++)
+    for (j = 0; j < NUM_ATTRIBUTES; j++)
     {
-        tf.stats[j] =
-            ((party[who].lvl - 1) * lup[who][j + 4] + party[who].stats[j]) / 100;
+        tf.stats[j] = ((party[who].lvl - 1) * lup[who][j + 4] + party[who].stats[j]) / 100;
     }
-    tf.resistances = party[who].resistances;
-    /* set weapon elemental power and imbuements for easy use in combat */
-    tf.welem = items[party[who].eqp[0]].elem;
-    if (items[party[who].eqp[0]].use == USE_ATTACK)
+    for (j = 0; j < R_TOTAL_RES; j++)
     {
-        tf.imb_s = items[party[who].eqp[0]].imb;
-        tf.imb_a = items[party[who].eqp[0]].stats[A_ATT];
+        tf.res[j] = party[who].res[j];
+    }
+
+    /* set weapon elemental power and imbuements for easy use in combat */
+    weapon_index = party[who].eqp[EQP_WEAPON];
+    tf.welem = items[weapon_index].elem;
+    if (items[weapon_index].use == USE_ATTACK)
+    {
+        tf.imb_s = items[weapon_index].imb;
+        tf.imb_a = items[weapon_index].stats[A_ATT];
     }
 
     /* Set instants for equipment... these are imbuements that
@@ -437,42 +442,45 @@ s_fighter *player2fighter(int who, s_fighter *pf)
      * that can be imbued, so some item types get priority over
      * others... hence the need to run through each in this loop.
      */
-    for (size_t equipmentIndex = 0; equipmentIndex < 5; equipmentIndex++)
+    for (a = 0; a < 5; a++)
     {
-        if (items[party[who].eqp[z[equipmentIndex]]].use == USE_IMBUED)
+        current_equipment_slot = party[who].eqp[z[a]];
+        if (items[current_equipment_slot].use == USE_IMBUED)
         {
             for (b = 0; b < 2; b++)
             {
                 if (tf.imb[b] == 0)
                 {
-                    tf.imb[b] = items[party[who].eqp[z[equipmentIndex]]].imb;
+                    tf.imb[b] = items[current_equipment_slot].imb;
                     b = 2;
                 }
             }
         }
     }
+
     /*
-     * any weapon used by Ajathar gains the power of White if
-     * it has no other power to begin with
+     * Any weapon used by Ajathar gains the power of White if
+     * it has no other power to begin with (the "welem" property
+     * is 1-based: value of 0 means "no imbue".
      */
     if (who == AJATHAR && tf.welem == 0)
     {
-        tf.welem = 6;
+        tf.welem = R_WHITE + 1;
     }
-    for (size_t equipmentIndex = 0; equipmentIndex < 6; equipmentIndex++)
+    for (j = 0; j < 6; j++)
     {
-        itemIndex = party[who].eqp[equipmentIndex];
-        if (equipmentIndex == 0)
+        a = party[who].eqp[j];
+        if (j == 0)
         {
-            if (itemIndex == 0)
+            if (a == 0)
             {
                 tf.bonus = 50;
             }
             else
             {
-                tf.bonus = items[itemIndex].bon;
+                tf.bonus = items[a].bon;
             }
-            if (items[itemIndex].icon == 1 || items[itemIndex].icon == 3 || items[itemIndex].icon == 21)
+            if (items[a].icon == 1 || items[a].icon == 3 || items[a].icon == 21)
             {
                 tf.bstat = 1;
             }
@@ -481,56 +489,76 @@ s_fighter *player2fighter(int who, s_fighter *pf)
                 tf.bstat = 0;
             }
             /* Set current weapon type. When the hero wields a weapon
-             * in combat, it will look like this .
+             * in combat, it will look like this.
              * The colour comes from s_item::kol
              */
-            tf.cwt = items[itemIndex].icon;
-            if (tf.cwt == W_CHENDIGAL)
+            tf.current_weapon_type = items[a].icon;
+            if (tf.current_weapon_type == W_CHENDIGAL)
             {
-                tf.cwt = W_SWORD;
+                tf.current_weapon_type = W_SWORD;
             }
         }
-        for (size_t statsIndex = 0; statsIndex < 13; statsIndex++)
+        for (b = 0; b < 13; b++)
         {
-            if (statsIndex == A_SPI && who == TEMMIN)
+            if (b == A_SPI && who == TEMMIN)
             {
-                if (items[itemIndex].stats[A_SPI] > 0)
+                if (items[a].stats[A_SPI] > 0)
                 {
-                    tf.stats[A_SPI] += items[itemIndex].stats[A_SPI];
+                    tf.stats[A_SPI] += items[a].stats[A_SPI];
                 }
             }
             else
             {
-                tf.stats[statsIndex] += items[itemIndex].stats[statsIndex];
+                tf.stats[b] += items[a].stats[b];
             }
         }
-
-        for (size_t resistanceIndex = RESIST_EARTH; resistanceIndex <= RESIST_TIME; resistanceIndex++)
+        for (b = 0; b < R_TOTAL_RES; b++)
         {
-            int resistanceAmount = items[itemIndex].resistances.GetResistanceAmount((eResistance)resistanceIndex);
-            tf.resistances.AddResistanceAmount((eResistance)resistanceIndex, resistanceAmount);
+            tf.res[b] += items[a].res[b];
         }
     }
-
     if (who == CORIN)
     {
-        int quarterLevel = tf.lvl / 4;
-        tf.resistances.AddResistanceAmount(RESIST_EARTH, quarterLevel);
-        tf.resistances.AddResistanceAmount(RESIST_FIRE, quarterLevel);
-        tf.resistances.AddResistanceAmount(RESIST_AIR, quarterLevel);
-        tf.resistances.AddResistanceAmount(RESIST_WATER, quarterLevel);
+        tf.res[R_EARTH] += tf.lvl / 4;
+        tf.res[R_FIRE] += tf.lvl / 4;
+        tf.res[R_AIR] += tf.lvl / 4;
+        tf.res[R_WATER] += tf.lvl / 4;
     }
-
     if (party[who].eqp[5] == I_AGRAN)
     {
-        int combinedResistance = tf.resistances.GetCombinedResistanceAmounts();
-        int newResistanceAmount = ((combinedResistance * 10) / 16 + 5) / 10;
-        for (size_t resistanceIndex = (size_t)RESIST_EARTH; resistanceIndex < (size_t)RESIST_TIME; resistanceIndex++)
+        a = 0;
+        for (j = 0; j < R_TOTAL_RES; j++)
         {
-            tf.resistances.SetResistanceAmount((eResistance)resistanceIndex, newResistanceAmount);
+            a += tf.res[j];
+        }
+        b = ((a * 10) / 16 + 5) / 10;
+        for (j = 0; j < R_TOTAL_RES; j++)
+        {
+            tf.res[j] = b;
         }
     }
-
+    for (j = 0; j < 8; j++)
+    {
+        if (tf.res[j] < -10)
+        {
+            tf.res[j] = -10;
+        }
+        if (tf.res[j] > 20)
+        {
+            tf.res[j] = 20;
+        }
+    }
+    for (j = 8; j < R_TOTAL_RES; j++)
+    {
+        if (tf.res[j] < 0)
+        {
+            tf.res[j] = 0;
+        }
+        if (tf.res[j] > 10)
+        {
+            tf.res[j] = 10;
+        }
+    }
     if (party[who].eqp[5] == I_MANALOCKET)
     {
         tf.mrp = party[who].mrp / 2;
@@ -539,17 +567,18 @@ s_fighter *player2fighter(int who, s_fighter *pf)
     {
         tf.mrp = party[who].mrp;
     }
-
     tf.stats[A_HIT] += tf.stats[A_STR] / 5;
     tf.stats[A_HIT] += tf.stats[A_AGI] / 5;
     tf.stats[A_DEF] += tf.stats[A_VIT] / 8;
     tf.stats[A_EVD] += tf.stats[A_AGI] / 5;
     tf.stats[A_MAG] += (tf.stats[A_INT] + tf.stats[A_SAG]) / 20;
     for (j = 0; j < 13; j++)
+    {
         if (tf.stats[j] < 1)
         {
             tf.stats[j] = 1;
         }
+    }
     tf.crit = 1;
     tf.aux = 0;
     tf.unl = 0;
@@ -591,37 +620,36 @@ static void quest_info(void)
         for (i = 0; i < 10; ++i)
         {
             if (i + base < quest_list.count)
-                print_font(double_buffer, 104 + xofs, 100 + 8 * i + yofs,
-                           quest_list.root[i + base].key, FNORMAL);
+            {
+                print_font(double_buffer, 104 + xofs, 100 + 8 * i + yofs, quest_list.root[i + base].key, FNORMAL);
+            }
         }
-        draw_sprite(double_buffer, menuptr, 88 + xofs,
-                    100 + 8 * (ii - base) + yofs);
+        draw_sprite(double_buffer, menuptr, 88 + xofs, 100 + 8 * (ii - base) + yofs);
         if (ii < quest_list.count)
         {
-            print_font(double_buffer, 96 + xofs, 196 + yofs,
-                       quest_list.root[ii].text, FNORMAL);
+            print_font(double_buffer, 96 + xofs, 196 + yofs, quest_list.root[ii].text, FNORMAL);
         }
         blit2screen(xofs, yofs);
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             --ii;
             play_effect(SND_CLICK, 128);
             unpress();
         }
-        if (down)
+        if (PlayerInput.down)
         {
             ++ii;
             play_effect(SND_CLICK, 128);
             unpress();
         }
-        if (left)
+        if (PlayerInput.left)
         {
             ii -= 10;
             play_effect(SND_CLICK, 128);
             unpress();
         }
-        if (right)
+        if (PlayerInput.right)
         {
             ii += 10;
             play_effect(SND_CLICK, 128);
@@ -635,7 +663,7 @@ static void quest_info(void)
         {
             ii = 0;
         }
-        if (balt || bctrl)
+        if (PlayerInput.balt || PlayerInput.bctrl)
         {
             unpress();
             return;
@@ -651,42 +679,46 @@ static void quest_info(void)
  */
 void revert_equipstats(void)
 {
-    int i, j, g, nc;
+    size_t fighter_index, end_fighter_index;
+    size_t pidx_index;
+    size_t stats_index;
 
-    if (numchrs > PARTY_SIZE)
+    if (numchrs > PSIZE)
     {
-        nc = PARTY_SIZE;
+        end_fighter_index = PSIZE;
     }
     else
     {
-        nc = numchrs;
+        end_fighter_index = numchrs;
     }
-    for (i = 0; i < nc; i++)
+    for (fighter_index = 0; fighter_index < end_fighter_index; fighter_index++)
     {
-        g = pidx[i];
-        party[g].hp = fighter[i].hp;
-        if (party[g].hp > party[g].mhp)
+        pidx_index = pidx[fighter_index];
+        party[pidx_index].hp = fighter[fighter_index].hp;
+        if (party[pidx_index].hp > party[pidx_index].mhp)
         {
-            party[g].hp = party[g].mhp;
+            party[pidx_index].hp = party[pidx_index].mhp;
         }
-        party[g].mp = fighter[i].mp;
-        if (party[g].mp > party[g].mmp)
+        party[pidx_index].mp = fighter[fighter_index].mp;
+        if (party[pidx_index].mp > party[pidx_index].mmp)
         {
-            party[g].mp = party[g].mmp;
+            party[pidx_index].mp = party[pidx_index].mmp;
         }
-        for (j = 0; j < 12; j++)
+        for (stats_index = 0; stats_index < 12; stats_index++)
         {
-            party[g].sts[j] = 0;
+            party[pidx_index].sts[stats_index] = 0;
         }
-        party[g].sts[0] = fighter[i].sts[0];
-        party[g].sts[1] = fighter[i].sts[1];
-        party[g].sts[5] = fighter[i].sts[5];
-        party[g].sts[7] = fighter[i].sts[7];
-        for (j = 0; j < 12; j++)
-            if (j != 0 && j != 1 && j != 5 && j != 7)
+        party[pidx_index].sts[S_POISON] = fighter[fighter_index].sts[S_POISON];
+        party[pidx_index].sts[S_BLIND] = fighter[fighter_index].sts[S_BLIND];
+        party[pidx_index].sts[S_MUTE] = fighter[fighter_index].sts[S_MUTE];
+        party[pidx_index].sts[S_DEAD] = fighter[fighter_index].sts[S_DEAD];
+        for (stats_index = 0; stats_index < 12; stats_index++)
+        {
+            if (stats_index != S_POISON && stats_index != S_BLIND && stats_index != S_MUTE && stats_index != S_DEAD)
             {
-                fighter[i].sts[j] = 0;
+                fighter[fighter_index].sts[stats_index] = 0;
             }
+        }
     }
 }
 
@@ -731,10 +763,8 @@ void spec_items(void)
         menubox(double_buffer, 72 + xofs, 36 + yofs, 20, 19, BLUE);
         for (a = 0; a < num_items; a++)
         {
-            draw_icon(double_buffer, special_items[list_item_which[a]].icon,
-                      88 + xofs, a * 8 + 44 + yofs);
-            print_font(double_buffer, 96 + xofs, a * 8 + 44 + yofs,
-                       special_items[list_item_which[a]].name, FNORMAL);
+            draw_icon(double_buffer, special_items[list_item_which[a]].icon, 88 + xofs, a * 8 + 44 + yofs);
+            print_font(double_buffer, 96 + xofs, a * 8 + 44 + yofs, special_items[list_item_which[a]].name, FNORMAL);
             if (list_item_quantity[a] > 1)
             {
                 sprintf(strbuf, "^%d", list_item_quantity[a]);
@@ -743,25 +773,24 @@ void spec_items(void)
         }
         menubox(double_buffer, 72 + xofs, 204 + yofs, 20, 1, BLUE);
         a = strlen(special_items[list_item_which[ptr]].description) * 4;
-        print_font(double_buffer, 160 - a + xofs, 212 + yofs,
-                   special_items[list_item_which[ptr]].description, FNORMAL);
+        print_font(double_buffer, 160 - a + xofs, 212 + yofs, special_items[list_item_which[ptr]].description, FNORMAL);
         draw_sprite(double_buffer, menuptr, 72 + xofs, ptr * 8 + 44 + yofs);
         blit2screen(xofs, yofs);
         readcontrols();
 
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             ptr = (ptr + 1) % num_items;
             play_effect(SND_CLICK, 128);
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             ptr = (ptr - 1 + num_items) % num_items;
             play_effect(SND_CLICK, 128);
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -774,15 +803,17 @@ void spec_items(void)
 /*! \brief Draw a player's status screen
  *
  * Draw the verbose stats of a single player.
- * \param   ch - Character to draw (index in pidx array)
+ * \param   fighter_index - Character to draw (index in pidx array)
  */
-static void status_screen(int ch)
+static void status_screen(size_t fighter_index)
 {
     int stop = 0;
-    int c, p, i, z = 0, bc = 0;
+    int bc = 0;
+    unsigned int rect_fill_amount = 0, curr_fill, res_index, stats_y, equipment_index;
+    size_t pidx_index, stats_index;
 
     play_effect(SND_MENU, 128);
-    c = pidx[ch];
+    pidx_index = pidx[fighter_index];
     update_equipstats();
     while (!stop)
     {
@@ -792,26 +823,24 @@ static void status_screen(int ch)
 
         // Box around top-left square
         menubox(double_buffer, xofs, 16 + yofs, 18, 5, BLUE);
-        draw_playerstat(double_buffer, c, 8 + xofs, 24 + yofs);
+        draw_playerstat(double_buffer, pidx_index, 8 + xofs, 24 + yofs);
 
         // Box around bottom-left square
         menubox(double_buffer, xofs, 72 + yofs, 18, 17, BLUE);
         print_font(double_buffer, 8 + xofs, 80 + yofs, _("Exp:"), FGOLD);
-        sprintf(strbuf, "%d", party[c].xp);
-        print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs, 80 + yofs,
-                   strbuf, FNORMAL);
+        sprintf(strbuf, "%d", party[pidx_index].xp);
+        print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs, 80 + yofs, strbuf, FNORMAL);
         print_font(double_buffer, 8 + xofs, 88 + yofs, _("Next:"), FGOLD);
         // TT: Does this mean we can only level up to 50?
-        if (party[c].lvl < 50)
+        if (party[pidx_index].lvl < 50)
         {
-            sprintf(strbuf, "%d", party[c].next - party[c].xp);
+            sprintf(strbuf, "%d", party[pidx_index].next - party[pidx_index].xp);
         }
         else
         {
             sprintf(strbuf, "%d", 0);
         }
-        print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs, 88 + yofs,
-                   strbuf, FNORMAL);
+        print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs, 88 + yofs, strbuf, FNORMAL);
         print_font(double_buffer, 8 + xofs, 104 + yofs, _("Strength"), FGOLD);
         print_font(double_buffer, 8 + xofs, 112 + yofs, _("Agility"), FGOLD);
         print_font(double_buffer, 8 + xofs, 120 + yofs, _("Vitality"), FGOLD);
@@ -826,19 +855,18 @@ static void status_screen(int ch)
         print_font(double_buffer, 8 + xofs, 192 + yofs, _("Defense"), FGOLD);
         print_font(double_buffer, 8 + xofs, 200 + yofs, _("Evade"), FGOLD);
         print_font(double_buffer, 8 + xofs, 208 + yofs, _("Mag.Def"), FGOLD);
-        for (p = 0; p < NUM_STATS; p++)
+        for (stats_index = 0; stats_index < NUM_STATS; stats_index++)
         {
             // Coordinates of stats on display
-            i = p * 8 + 104;
+            stats_y = stats_index * 8 + 104;
             // Add an extra 8-pixel space to separate these from the others
-            if (p > 7)
+            if (stats_index > A_SPI)
             {
-                i += 8;
+                stats_y += 8;
             }
-            print_font(double_buffer, 96 + xofs, i + yofs, "$", FGOLD);
-            sprintf(strbuf, "%d", fighter[ch].stats[p]);
-            print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs,
-                       i + yofs, strbuf, FNORMAL);
+            print_font(double_buffer, 96 + xofs, stats_y + yofs, "$", FGOLD);
+            sprintf(strbuf, "%d", fighter[fighter_index].stats[stats_index]);
+            print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs, stats_y + yofs, strbuf, FNORMAL);
         }
 
         menubox(double_buffer, 160 + xofs, 16 + yofs, 18, 16, BLUE);
@@ -859,62 +887,57 @@ static void status_screen(int ch)
         print_font(double_buffer, 168 + xofs, 136 + yofs, _("Sleep"), FNORMAL);
         print_font(double_buffer, 168 + xofs, 144 + yofs, _("Time"), FNORMAL);
 
-        for (size_t resistanceIndex = RESIST_EARTH; resistanceIndex <= RESIST_TIME; resistanceIndex++)
+        for (res_index = 0; res_index < R_TOTAL_RES; res_index++)
         {
-            rectfill(double_buffer, 240 + xofs, resistanceIndex * 8 + 25 + yofs, 310 + xofs,
-                     resistanceIndex * 8 + 31 + yofs, 3);
-            int resistanceAmount = fighter[ch].resistances.GetResistanceAmount((eResistance)resistanceIndex);
-            int visualResistanceIndicator = 0;
-            if (resistanceAmount < 0)
+            rectfill(double_buffer, 240 + xofs, res_index * 8 + 25 + yofs, 310 + xofs, res_index * 8 + 31 + yofs, 3);
+            if (fighter[fighter_index].res[res_index] < 0)
             {
                 bc = 18;            // bright red, meaning WEAK defense
-                visualResistanceIndicator = abs(resistanceAmount);
+                rect_fill_amount = abs(fighter[fighter_index].res[res_index]);
             }
-            else if (resistanceAmount >= 0 && resistanceAmount <= 10)
+            else if (fighter[fighter_index].res[res_index] >= 0 && fighter[fighter_index].res[res_index] <= 10)
             {
                 bc = 34;            // bright green, meaning so-so defense
-                visualResistanceIndicator = resistanceAmount;
+                rect_fill_amount = fighter[fighter_index].res[res_index];
             }
-            else if (resistanceAmount > 10)
+            else if (fighter[fighter_index].res[res_index] > 10)
             {
                 bc = 50;            // bright blue, meaning STRONG defense
-                visualResistanceIndicator = resistanceAmount - 10;
+                rect_fill_amount = fighter[fighter_index].res[res_index] - 10;
             }
 
-            if (visualResistanceIndicator > 0)
+            if (rect_fill_amount > 0)
             {
-                for (p = 0; p < visualResistanceIndicator; p++)
+                for (curr_fill = 0; curr_fill < rect_fill_amount; curr_fill++)
                 {
-                    rectfill(double_buffer, p * 7 + 241 + xofs, resistanceIndex * 8 + 26 + yofs, p * 7 + 246 + xofs, resistanceIndex * 8 + 30 + yofs, bc + p);
+                    rectfill(double_buffer, curr_fill * 7 + 241 + xofs, res_index * 8 + 26 + yofs, curr_fill * 7 + 246 + xofs, res_index * 8 + 30 + yofs, bc + curr_fill);
                 }
             }
         }
         menubox(double_buffer, 160 + xofs, 160 + yofs, 18, 6, BLUE);
-        for (i = 0; i < 6; i++)
+        for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
         {
-            draw_icon(double_buffer, items[party[c].eqp[i]].icon, 168 + xofs,
-                      i * 8 + 168 + yofs);
-            print_font(double_buffer, 176 + xofs, i * 8 + 168 + yofs,
-                       items[party[c].eqp[i]].name, FNORMAL);
+            draw_icon(double_buffer, items[party[pidx_index].eqp[equipment_index]].icon, 168 + xofs, equipment_index * 8 + 168 + yofs);
+            print_font(double_buffer, 176 + xofs, equipment_index * 8 + 168 + yofs, items[party[pidx_index].eqp[equipment_index]].name, FNORMAL);
         }
         blit2screen(xofs, yofs);
         readcontrols();
 
-        if (left && ch > 0)
+        if (PlayerInput.left && fighter_index > 0)
         {
             unpress();
-            ch--;
-            c = pidx[ch];
+            fighter_index--;
+            pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
-        if (right && ch < numchrs - 1)
+        if (PlayerInput.right && fighter_index < numchrs - 1)
         {
             unpress();
-            ch++;
-            c = pidx[ch];
+            fighter_index++;
+            pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             play_effect(SND_MENU, 128);
@@ -932,17 +955,12 @@ static void status_screen(int ch)
  */
 void update_equipstats(void)
 {
-    int i;
+    size_t fighter_index;
 
-    for (i = 0; i < numchrs; i++)
+    for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
     {
-        player2fighter(pidx[i], &fighter[i]);
+        player2fighter(pidx[fighter_index], &fighter[fighter_index]);
     }
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */
+

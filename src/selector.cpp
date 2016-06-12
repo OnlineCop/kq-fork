@@ -26,8 +26,8 @@
  * \author Josh Bolduc
  * \date ????????
  */
-#include <cstdio>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 
 #include "combat.h"
 #include "draw.h"
@@ -39,22 +39,26 @@
 #include "structs.h"
 
 
+enum eMiniMenu
+{
+    MM_NONE     = 0,
+    MM_JOIN     = 1 << 0,
+    MM_LEAVE    = 1 << 1,
+    MM_LEAD     = 1 << 2,
+
+    MM_OPTIONS_JOIN  = 0,
+    MM_OPTIONS_LEAVE = 1,
+    MM_OPTIONS_LEAD  = 2
+};
+
 /*  Internal functions  */
 static int can_attack(int);
-static unsigned int mini_menu(int mask);
-static void party_add(int id, int lead);
-static void party_remove(int id);
+static eMiniMenu mini_menu(int mask);
+static void party_add(ePIDX id, int lead);
+static void party_remove(ePIDX id);
 
 /*  Internal variables  */
 static signed int tmpd[NUM_FIGHTERS]; // defined in heroc.h
-
-/*  Internal defines  */
-#define MM_NONE 0
-#define MM_JOIN 1
-#define MM_LEAVE 2
-#define MM_LEAD 4
-#define MM_X 162
-#define MM_Y 180
 
 
 /*! \brief  Select an enemy automatically
@@ -71,13 +75,13 @@ static signed int tmpd[NUM_FIGHTERS]; // defined in heroc.h
  *               or select only where HP<75% of MHP if csts==CURE_CHECK
  *               or select any if csts==NO_STS_CHECK
  *               (Never selects a dead enemy)
- * \returns enemy index (PARTY_SIZE..PARTY_SIZE+num_enemies-1) or PIDX_UNDEFINED if no enemy found
+ * \returns enemy index (PSIZE..PSIZE+num_enemies-1) or PIDX_UNDEFINED if no enemy found
  */
 int auto_select_enemy(int whom, int csts)
 {
     unsigned int i, number_enemies = 0;
 
-    for (i = PARTY_SIZE; i < PARTY_SIZE + num_enemies; i++)
+    for (i = PSIZE; i < PSIZE + num_enemies; i++)
     {
         if (fighter[i].sts[S_DEAD] == 0)
         {
@@ -99,9 +103,8 @@ int auto_select_enemy(int whom, int csts)
                 else
                 {
                     if ((csts == S_BLESS && fighter[i].sts[csts] < 3)
-                            || (csts == S_STRENGTH && fighter[i].sts[csts] < 2)
-                            || (csts != S_BLESS && csts != S_STRENGTH
-                                && fighter[i].sts[csts] == 0))
+                     || (csts == S_STRENGTH && fighter[i].sts[csts] < 2)
+                     || (csts != S_BLESS && csts != S_STRENGTH && fighter[i].sts[csts] == 0))
                     {
                         tmpd[number_enemies] = i;
                         number_enemies++;
@@ -199,8 +202,9 @@ int auto_select_hero(int whom, int csts)
  */
 static int can_attack(int tgt)
 {
-    if (fighter[tgt].mhp < 1 || fighter[tgt].hp < 1
-            || fighter[tgt].sts[S_DEAD] != 0)
+    if (fighter[tgt].mhp < 1
+     || fighter[tgt].hp < 1
+     || fighter[tgt].sts[S_DEAD] != 0)
     {
         return 0;
     }
@@ -217,13 +221,12 @@ static int can_attack(int tgt)
  * \param   omask - Where the current selection curser is
  * \returns player's selection
  */
-static unsigned int mini_menu(int omask)
+static eMiniMenu mini_menu(int omask)
 {
-    static unsigned int MM_OPTIONS_JOIN  = 0;
-    static unsigned int MM_OPTIONS_LEAVE = 1;
-    static unsigned int MM_OPTIONS_LEAD  = 2;
+    static unsigned int mini_menu_x = 162;
+    static unsigned int mini_menu_y = 180;
 
-    unsigned int cp = 0;
+    eMiniMenu cp = MM_OPTIONS_JOIN;
 
     /* If no actions were allowed, or just one, skip the menu */
     if (omask == MM_JOIN)
@@ -250,23 +253,25 @@ static unsigned int mini_menu(int omask)
     while (1)
     {
         check_animation();
-        menubox(double_buffer, MM_X - 13, MM_Y - 8, 6, 3, DARKBLUE);
-        print_font(double_buffer, MM_X, MM_Y, _("Join"),
-                   (omask & MM_JOIN) ? FNORMAL : FDARK);
-        print_font(double_buffer, MM_X, MM_Y + 8, _("Leave"),
-                   (omask & MM_LEAVE) ? FNORMAL : FDARK);
-        print_font(double_buffer, MM_X, MM_Y + 16, _("Lead"),
-                   (omask & MM_LEAD) ? FNORMAL : FDARK);
-        draw_sprite(double_buffer, menuptr, MM_X - 13, MM_Y + 8 * cp);
+        menubox(double_buffer, mini_menu_x - 13, mini_menu_y - 8, 6, 3, DARKBLUE);
+        print_font(double_buffer, mini_menu_x, mini_menu_y, _("Join"), (omask & MM_JOIN) ? FNORMAL : FDARK);
+        print_font(double_buffer, mini_menu_x, mini_menu_y + 8, _("Leave"), (omask & MM_LEAVE) ? FNORMAL : FDARK);
+        print_font(double_buffer, mini_menu_x, mini_menu_y + 16, _("Lead"), (omask & MM_LEAD) ? FNORMAL : FDARK);
+        draw_sprite(double_buffer, menuptr, mini_menu_x - 13, mini_menu_y + 8 * cp);
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
-            if (cp == MM_OPTIONS_LEAVE || cp == MM_OPTIONS_LEAD)
+            if (cp == MM_OPTIONS_LEAVE)
             {
-                --cp;
+                cp = MM_OPTIONS_JOIN;
+                play_effect(SND_CLICK, 128);
+            }
+            else if (cp == MM_OPTIONS_LEAD)
+            {
+                cp = MM_OPTIONS_LEAVE;
                 play_effect(SND_CLICK, 128);
             }
             else
@@ -275,30 +280,35 @@ static unsigned int mini_menu(int omask)
             }
         }
 
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
-            if (cp == MM_OPTIONS_JOIN || cp == MM_OPTIONS_LEAVE)
+            if (cp == MM_OPTIONS_JOIN)
             {
                 play_effect(SND_CLICK, 128);
-                ++cp;
+                cp = MM_OPTIONS_LEAVE;
+            }
+            else if (cp == MM_OPTIONS_LEAVE)
+            {
+                play_effect(SND_CLICK, 128);
+                cp = MM_OPTIONS_LEAD;
             }
             else
             {
                 cp = MM_OPTIONS_JOIN;
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return MM_NONE;
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (omask & (1 << cp))
             {
-                return (1 << cp);
+                return (eMiniMenu)(1 << cp);
             }
             else
             {
@@ -315,7 +325,7 @@ static unsigned int mini_menu(int omask)
  * \param   id - Index of character
  * \param   lead - Whether or not they will lead the party or follow
  */
-static void party_add(int id, int lead)
+static void party_add(ePIDX id, int lead)
 {
     s_entity *t;
 
@@ -338,7 +348,7 @@ static void party_add(int id, int lead)
             pidx[numchrs] = id;
         }
         ++numchrs;
-        t->eid = id;
+        t->eid = (unsigned char)id;
         t->active = 1;
         t->chrx = 0;
     }
@@ -351,7 +361,8 @@ static void party_add(int id, int lead)
 void party_newlead(void)
 {
     unsigned int i;
-    signed int t;
+    unsigned char j;
+    ePIDX t;
 
     for (i = 1; i < numchrs; ++i)
     {
@@ -359,13 +370,13 @@ void party_newlead(void)
         pidx[0] = pidx[i];
         pidx[i] = t;
 
-        t = g_ent[0].eid;
+        j = g_ent[0].eid;
         g_ent[0].eid = g_ent[i].eid;
-        g_ent[i].eid = t;
+        g_ent[i].eid = j;
 
-        t = g_ent[0].chrx;
+        j = g_ent[0].chrx;
         g_ent[0].chrx = g_ent[i].chrx;
-        g_ent[i].chrx = t;
+        g_ent[i].chrx = j;
     }
 }
 
@@ -375,17 +386,17 @@ void party_newlead(void)
  *
  * \param   id - Index of character
  */
-static void party_remove(signed int id)
+static void party_remove(ePIDX id)
 {
-    unsigned int i;
+    size_t pidx_index;
 
-    for (i = 0; i < numchrs; ++i)
+    for (pidx_index = 0; pidx_index < numchrs; ++pidx_index)
     {
-        if (pidx[i] == id)
+        if (pidx[pidx_index] == id)
         {
             --numchrs;
-            memmove(&pidx[i], &pidx[i + 1], sizeof(*pidx) * (numchrs - i));
-            memmove(&g_ent[i], &g_ent[i + 1], sizeof(*g_ent) * (numchrs - i));
+            memmove(&pidx[pidx_index], &pidx[pidx_index + 1], sizeof(*pidx) * (numchrs - pidx_index));
+            memmove(&g_ent[pidx_index], &g_ent[pidx_index + 1], sizeof(*g_ent) * (numchrs - pidx_index));
             pidx[numchrs] = PIDX_UNDEFINED;
             g_ent[numchrs].active = 0;
             return;
@@ -415,7 +426,7 @@ static void party_remove(signed int id)
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled or
  *          SEL_ALL_ALLIES if 'all' was selected (by pressing L or R)
  */
-int select_any_player(int csa, int icn, const char *msg)
+ePIDX select_any_player(size_t csa, unsigned int icn, const char *msg)
 {
     unsigned int stop = 0, ptr, k, select_all;
     int shy = 120 - (numchrs * 28);
@@ -435,29 +446,27 @@ int select_any_player(int csa, int icn, const char *msg)
         drawmap();
         if (csa < TGT_ALLY_ALL)
         {
-            menubox(double_buffer, 152 - ((strlen(msg) + 1) * 4) + xofs,
-                    8 + yofs, strlen(msg) + 1, 1, BLUE);
-            draw_icon(double_buffer, icn, 160 - ((strlen(msg) + 1) * 4) + xofs,
-                      16 + yofs);
-            print_font(double_buffer, 168 - ((strlen(msg) + 1) * 4) + xofs,
-                       16 + yofs, msg, FNORMAL);
+            menubox(double_buffer, 152 - ((strlen(msg) + 1) * 4) + xofs, 8 + yofs, strlen(msg) + 1, 1, BLUE);
+            draw_icon(double_buffer, icn, 160 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs);
+            print_font(double_buffer, 168 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs, msg, FNORMAL);
         }
         for (k = 0; k < numchrs; k++)
         {
             menubox(double_buffer, 80 + xofs, k * 56 + shy + yofs, 18, 5, BLUE);
-            draw_playerstat(double_buffer, pidx[k], 88 + xofs,
-                            k * 56 + shy + 8 + yofs);
+            draw_playerstat(double_buffer, pidx[k], 88 + xofs, k * 56 + shy + 8 + yofs);
             if (csa < TGT_ALLY_ALL)
             {
                 if (select_all == 0)
                 {
                     if (k == ptr)
-                        draw_sprite(double_buffer, menuptr, 72 + xofs,
-                                    k * 56 + shy + 24 + yofs);
+                    {
+                        draw_sprite(double_buffer, menuptr, 72 + xofs, k * 56 + shy + 24 + yofs);
+                    }
                 }
                 else
-                    draw_sprite(double_buffer, menuptr, 72 + xofs,
-                                k * 56 + shy + 24 + yofs);
+                {
+                    draw_sprite(double_buffer, menuptr, 72 + xofs, k * 56 + shy + 24 + yofs);
+                }
             }
         }
         blit2screen(xofs, yofs);
@@ -465,7 +474,7 @@ int select_any_player(int csa, int icn, const char *msg)
         readcontrols();
         if (csa < TGT_ALLY_ALL)
         {
-            if (left)
+            if (PlayerInput.left)
             {
                 unpress();
                 if (csa == TGT_ALLY_ONE)
@@ -480,7 +489,7 @@ int select_any_player(int csa, int icn, const char *msg)
                     }
                 }
             }
-            if (right)
+            if (PlayerInput.right)
             {
                 unpress();
                 if (csa == TGT_ALLY_ONE)
@@ -495,7 +504,7 @@ int select_any_player(int csa, int icn, const char *msg)
                     }
                 }
             }
-            if (up)
+            if (PlayerInput.up)
             {
                 unpress();
                 if (ptr > 0)
@@ -504,7 +513,7 @@ int select_any_player(int csa, int icn, const char *msg)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (down)
+            if (PlayerInput.down)
             {
                 unpress();
                 if (ptr < numchrs - 1)
@@ -514,12 +523,12 @@ int select_any_player(int csa, int icn, const char *msg)
                 play_effect(SND_CLICK, 128);
             }
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 2;
@@ -531,7 +540,7 @@ int select_any_player(int csa, int icn, const char *msg)
         return PIDX_UNDEFINED;
     }
 
-    return (select_all == 0 ? ptr : SEL_ALL_ALLIES);
+    return (select_all == 0 ? (ePIDX)ptr : SEL_ALL_ALLIES);
 }
 
 
@@ -551,24 +560,25 @@ int select_any_player(int csa, int icn, const char *msg)
  * \note fixme PH Should use TGT_* constants (in kq.h) to compare to multi
  * \todo PH tmpd should be a local var?
  *
- * \param   whom Attacker (person doing the action)
- * \param   multi Target(s)
- * \returns enemy index (PARTY_SIZE..PARTY_SIZE+num_enemies-1) or PIDX_UNDEFINED if cancelled
+ * \param   attack_fighter_index Attacker (person doing the action)
+ * \param   multi_target Target(s)
+ * \returns enemy index (PSIZE..PSIZE+num_enemies-1) or PIDX_UNDEFINED if cancelled
  *          or SEL_ALL_ENEMIES if 'all' was selected (by pressing U or D)
  */
-int select_enemy(int whom, int multi)
+ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 {
-    unsigned int a, cntr = 0, ptr, stop, select_all;
+    unsigned int cntr = 0, stop, select_all;
+    size_t fighter_index, ptr;
 
-    for (a = PARTY_SIZE; a < PARTY_SIZE + num_enemies; a++)
+    for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
     {
-        if (can_attack(a) == 1)
+        if (can_attack(fighter_index) == 1)
         {
-            tmpd[cntr++] = a;
+            tmpd[cntr++] = fighter_index;
         }
     }
 
-    if (multi == 2)
+    if (multi_target == TGT_ALLY_ONEALL)
     {
         select_all = 1;
     }
@@ -583,29 +593,29 @@ int select_enemy(int whom, int multi)
     while (!stop)
     {
         check_animation();
-        if (multi > 0 && select_all == 1)
+        if (multi_target > TGT_NONE && select_all == 1)
         {
-            battle_render(tmpd[ptr] + 1, whom + 1, 2);
+            battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 2);
         }
         else
         {
-            battle_render(tmpd[ptr] + 1, whom + 1, 0);
+            battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 0);
         }
 
         blit2screen(0, 0);
         readcontrols();
 
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return PIDX_UNDEFINED;
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             if (ptr > 0)
@@ -617,7 +627,7 @@ int select_enemy(int whom, int multi)
                 ptr = cntr - 1;
             }
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             if (ptr < cntr - 1)
@@ -629,10 +639,10 @@ int select_enemy(int whom, int multi)
                 ptr = 0;
             }
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
-            if (multi == 1 && cntr > 1)
+            if (multi_target == TGT_ALLY_ONE && cntr > 1)
             {
                 if (select_all == 0)
                 {
@@ -644,10 +654,10 @@ int select_enemy(int whom, int multi)
                 }
             }
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
-            if (multi == 1 && cntr > 1)
+            if (multi_target == TGT_ALLY_ONE && cntr > 1)
             {
                 if (select_all == 0)
                 {
@@ -662,7 +672,7 @@ int select_enemy(int whom, int multi)
     }
     if (select_all == 0)
     {
-        return tmpd[ptr];
+        return (ePIDX)tmpd[ptr];
     }
     else
     {
@@ -680,17 +690,18 @@ int select_enemy(int whom, int multi)
  *
  * \todo PH tmpd should be a local var?
  *
- * \param   whom ==person that is doing the action ??
- * \param   multi ==mode (target one=0, one/all=1 or all=2)
- * \param   csd ==non-zero allows you to select a dead character
+ * \param   target_fighter_index - person that is doing the action ??
+ * \param   multi_target - mode (target one=0, one/all=1 or all=2)
+ * \param   can_select_dead - non-zero allows you to select a dead character
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled
  *          or SEL_ALL_ALLIES if 'all' was selected (by pressing U or D)
  */
-int select_hero(int whom, int multi, int csd)
+ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, int can_select_dead)
 {
-    unsigned int cntr = 0, ptr = 0, stop = 0, select_all, a;
+    unsigned int cntr = 0, ptr = 0, stop = 0, select_all;
+    size_t fighter_index;
 
-    if (multi == TGT_ALLY_ONEALL)
+    if (multi_target == TGT_ALLY_ONEALL)
     {
         select_all = 1;
     }
@@ -698,49 +709,49 @@ int select_hero(int whom, int multi, int csd)
     {
         select_all = 0;
     }
-    for (a = 0; a < numchrs; a++)
+    for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
     {
-        if (fighter[a].sts[S_DEAD] == 0)
+        if (fighter[fighter_index].sts[S_DEAD] == 0)
         {
-            tmpd[a] = a;
+            tmpd[fighter_index] = fighter_index;
             cntr++;
         }
         else
         {
-            if (csd)
+            if (can_select_dead != 0)
             {
-                tmpd[a] = a;
+                tmpd[fighter_index] = fighter_index;
                 cntr++;
-                ptr = a;            /* default: select a dead char if there is one */
+                ptr = fighter_index;    /* default: select a dead char if there is one */
             }
         }
     }
     while (!stop)
     {
         check_animation();
-        if (multi > TGT_NONE && select_all == 1)
+        if (multi_target > TGT_NONE && select_all == 1)
         {
-            battle_render(tmpd[ptr] + 1, whom + 1, 1);
+            battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 1);
         }
         else
         {
-            battle_render(tmpd[ptr] + 1, whom + 1, 0);
+            battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 0);
         }
         blit2screen(0, 0);
 
         readcontrols();
 
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return PIDX_UNDEFINED;
         }
-        if (left)
+        if (PlayerInput.left)
         {
             unpress();
             if (ptr > 0)
@@ -752,7 +763,7 @@ int select_hero(int whom, int multi, int csd)
                 ptr = cntr - 1;
             }
         }
-        if (right)
+        if (PlayerInput.right)
         {
             unpress();
             if (ptr < cntr - 1)
@@ -764,9 +775,9 @@ int select_hero(int whom, int multi, int csd)
                 ptr = 0;
             }
         }
-        if (multi == TGT_ALLY_ONE && cntr > 1)
+        if (multi_target == TGT_ALLY_ONE && cntr > 1)
         {
-            if (up)
+            if (PlayerInput.up)
             {
                 unpress();
                 if (select_all == 0)
@@ -778,7 +789,7 @@ int select_hero(int whom, int multi, int csd)
                     select_all = 0;
                 }
             }
-            if (down)
+            if (PlayerInput.down)
             {
                 unpress();
                 if (select_all == 0)
@@ -794,7 +805,7 @@ int select_hero(int whom, int multi, int csd)
     }
     if (select_all == 0)
     {
-        return tmpd[ptr];
+        return (ePIDX)tmpd[ptr];
     }
     else
     {
@@ -817,14 +828,16 @@ int select_hero(int whom, int multi, int csd)
  * \param   numchrs_max The maximum number of heroes allowed in the party
  * \returns 1 if the party changed, 0 if cancelled
  */
-int select_party(int *avail, int n_avail, int numchrs_max)
+int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
 {
-    static const unsigned int BTN_EXIT = (MAXCHRS + PARTY_SIZE);
+    static const unsigned int BTN_EXIT = (MAXCHRS + PSIZE);
 
-    signed int hero = PIDX_UNDEFINED;
+    ePIDX hero = PIDX_UNDEFINED;
+    eMiniMenu mini_menu_mask;
+    size_t pidx_index;
+    size_t fighter_index;
+    size_t cur, oldcur;             /* cursor */
     signed int x, y;
-    unsigned int cur, oldcur;             /* cursor */
-    unsigned int i, j;
     unsigned int mask;
     unsigned int running = 1;
 
@@ -835,13 +848,15 @@ int select_party(int *avail, int n_avail, int numchrs_max)
         return 0;
     }
     /* Be sure to remove any available characters that are already in the party */
-    for (i = 0; i < n_avail; ++i)
+    for (fighter_index = 0; fighter_index < n_avail; ++fighter_index)
     {
-        for (j = 0; j < numchrs; ++j)
-            if (avail[i] == pidx[j])
+        for (pidx_index = 0; pidx_index < numchrs; ++pidx_index)
+        {
+            if (avail[fighter_index] == (ePIDX)pidx[pidx_index])
             {
-                avail[i] = PIDX_UNDEFINED;
+                avail[fighter_index] = PIDX_UNDEFINED;
             }
+        }
     }
 
     menubox(double_buffer, 16 + xofs, 24 + yofs, 34, 12, BLUE);
@@ -853,31 +868,29 @@ int select_party(int *avail, int n_avail, int numchrs_max)
         /* Draw everything */
         /* draw the row of available heroes */
         y = yofs + 40;
-        for (i = 0; i < n_avail; ++i)
+        for (fighter_index = 0; fighter_index < n_avail; ++fighter_index)
         {
-            x = xofs + (320 - 32 * n_avail) / 2 + 32 * i;
-            menubox(double_buffer, x, y, 2, 2, (i == cur ? DARKRED : DARKBLUE));
-            if (avail[i] != PIDX_UNDEFINED)
+            x = xofs + (320 - 32 * n_avail) / 2 + 32 * fighter_index;
+            menubox(double_buffer, x, y, 2, 2, (fighter_index == cur ? DARKRED : DARKBLUE));
+            if (avail[fighter_index] != PIDX_UNDEFINED)
             {
-                draw_sprite(double_buffer, frames[avail[i]][0], x + 8, y + 8);
+                draw_sprite(double_buffer, frames[avail[fighter_index]][0], x + 8, y + 8);
             }
         }
         /* draw the party */
-        x = xofs + (320 - 40 * PARTY_SIZE) / 2;
+        x = xofs + (320 - 40 * PSIZE) / 2;
         y = yofs + 88;
-        for (i = 0; i < PARTY_SIZE; ++i)
+        for (fighter_index = 0; fighter_index < PSIZE; ++fighter_index)
         {
-            menubox(double_buffer, x, y, 2, 2,
-                    (cur == MAXCHRS + i ? DARKRED : DARKBLUE));
-            if (i < numchrs && pidx[i] >= 0)
+            menubox(double_buffer, x, y, 2, 2, (cur == MAXCHRS + fighter_index ? DARKRED : DARKBLUE));
+            if (fighter_index < numchrs && pidx[fighter_index] != PIDX_UNDEFINED)
             {
-                draw_sprite(double_buffer, frames[pidx[i]][0], x + 8, y + 8);
+                draw_sprite(double_buffer, frames[pidx[fighter_index]][0], x + 8, y + 8);
             }
             x += 40;
         }
         /* Draw the 'Exit' button */
-        menubox(double_buffer, x, y, 4, 1,
-                (cur == PARTY_SIZE + MAXCHRS ? DARKRED : DARKBLUE));
+        menubox(double_buffer, x, y, 4, 1, (cur == PSIZE + MAXCHRS ? DARKRED : DARKBLUE));
         print_font(double_buffer, x + 8, y + 8, _("Exit"), FNORMAL);
         /* See which hero is selected and draw his/her stats */
         if (cur < n_avail)
@@ -902,7 +915,7 @@ int select_party(int *avail, int n_avail, int numchrs_max)
 
         oldcur = cur;
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             /* move between the available row and the party row */
             unpress();
@@ -911,7 +924,7 @@ int select_party(int *avail, int n_avail, int numchrs_max)
                 cur = 0;
             }
         }
-        if (down)
+        if (PlayerInput.down)
         {
             /* move between the available row and the party row */
             unpress();
@@ -920,7 +933,7 @@ int select_party(int *avail, int n_avail, int numchrs_max)
                 cur = MAXCHRS;
             }
         }
-        if (left)
+        if (PlayerInput.left)
         {
             /* move between heroes on a row */
             unpress();
@@ -933,7 +946,7 @@ int select_party(int *avail, int n_avail, int numchrs_max)
                 --cur;
             }
         }
-        if (right)
+        if (PlayerInput.right)
         {
             /* move between heroes on a row */
             unpress();
@@ -946,12 +959,12 @@ int select_party(int *avail, int n_avail, int numchrs_max)
                 ++cur;
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             running = 0;
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (cur == BTN_EXIT)
@@ -979,13 +992,13 @@ int select_party(int *avail, int n_avail, int numchrs_max)
                             mask |= MM_LEAD;
                         }
                     }
-                    j = mini_menu(mask);
-                    if (j == MM_JOIN)
+                    mini_menu_mask = mini_menu(mask);
+                    if (mini_menu_mask == MM_JOIN)
                     {
                         party_add(hero, 0);
                         avail[cur] = PIDX_UNDEFINED;
                     }
-                    else if (j == MM_LEAD)
+                    else if (mini_menu_mask == MM_LEAD)
                     {
                         party_add(hero, 1);
                         avail[cur] = PIDX_UNDEFINED;
@@ -1002,21 +1015,21 @@ int select_party(int *avail, int n_avail, int numchrs_max)
                             mask |= MM_LEAD;
                         }
                     }
-                    j = mini_menu(mask);
-                    if (j == MM_LEAVE)
+                    mini_menu_mask = mini_menu(mask);
+                    if (mini_menu_mask == MM_LEAVE)
                     {
                         party_remove(hero);
                         /* and put back on the top row */
-                        for (x = 0; x < n_avail; ++x)
+                        for (pidx_index = 0; pidx_index < n_avail; ++pidx_index)
                         {
-                            if (avail[x] == PIDX_UNDEFINED)
+                            if (avail[pidx_index] == PIDX_UNDEFINED)
                             {
-                                avail[x] = hero;
+                                avail[pidx_index] = hero;
                                 break;
                             }
                         }
                     }
-                    else if (j == MM_LEAD)
+                    else if (mini_menu_mask == MM_LEAD)
                     {
                         party_newlead();
                     }
@@ -1058,7 +1071,7 @@ int select_player(void)
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (ptr > 0)
@@ -1071,7 +1084,7 @@ int select_player(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (ptr < numchrs - 1)
@@ -1084,12 +1097,12 @@ int select_player(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             return PIDX_UNDEFINED;
@@ -1098,9 +1111,3 @@ int select_player(void)
     return ptr;
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

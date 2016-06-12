@@ -24,15 +24,9 @@
 #define __HSKILL_H 1
 
 
-int hero_skillcheck(int);       /*  heroc.c  */
-int skill_use(int);             /*  heroc.c  */
+int hero_skillcheck(size_t);       /*  heroc.c  */
+int skill_use(size_t);             /*  heroc.c  */
 
 
 #endif  /* __HSKILL_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

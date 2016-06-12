@@ -19,11 +19,16 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+
+#include <stdio.h>
+#include <string.h>
+
 #include "combat.h"
 #include "draw.h"
 #include "effects.h"
 #include "enemyc.h"
 #include "fade.h"
+#include "heroc.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
@@ -33,9 +38,6 @@
 #include "setup.h"
 #include "ssprites.h"
 #include "structs.h"
-
-#include <cstdio>
-#include <cstring>
 
 
 /*! \file
@@ -47,36 +49,36 @@
 
 
 /*  Internal functions  */
-static void beffect_all_enemies(int, int);
-static void beffect_one_enemy(int, int, int);
-static void cure_oneall_allies(int, int, int);
-static void damage_all_enemies(int, int);
-static void damage_oneall_enemies(int, int, int);
-static void geffect_all_allies(int, int);
-static void geffect_one_ally(int, int, int);
-static void heal_one_ally(int, int, int);
-static void set_timed_sts_effect(int, int);
-static void special_spells(int, int);
-static void spell_damage(int, int, int, int);
+static void beffect_all_enemies(size_t, size_t);
+static void beffect_one_enemy(size_t, size_t, size_t);
+static void cure_oneall_allies(size_t, int, size_t);
+static void damage_all_enemies(size_t, size_t);
+static void damage_oneall_enemies(size_t, int, size_t);
+static void geffect_all_allies(size_t, size_t);
+static void geffect_one_ally(size_t, size_t);
+static void heal_one_ally(size_t, size_t, size_t);
+static void set_timed_sts_effect(size_t, int);
+static void special_spells(size_t, size_t);
+static void spell_damage(size_t, int, size_t, size_t);
 
 
 /*! \brief Adjust character's HP
  *
  * I put this is just to make things nice and neat.
  *
- * \param   who Index of character
+ * \param   fighter_index Index of character
  * \param   amt Amount to adjust
  */
-void adjust_hp(int who, int amt)
+void adjust_hp(size_t fighter_index, int amt)
 {
-    fighter[who].hp += amt;
-    if (fighter[who].hp > fighter[who].mhp)
+    fighter[fighter_index].hp += amt;
+    if (fighter[fighter_index].hp > fighter[fighter_index].mhp)
     {
-        fighter[who].hp = fighter[who].mhp;
+        fighter[fighter_index].hp = fighter[fighter_index].mhp;
     }
-    if (fighter[who].hp < 0)
+    if (fighter[fighter_index].hp < 0)
     {
-        fighter[who].hp = 0;
+        fighter[fighter_index].hp = 0;
     }
 }
 
@@ -86,19 +88,19 @@ void adjust_hp(int who, int amt)
  *
  * I put this is just to make things nice and neat.
  *
- * \param   who Index of character
+ * \param   fighter_index Index of character
  * \param   amt Amount to adjust
  */
-void adjust_mp(int who, int amt)
+void adjust_mp(size_t fighter_index, int amt)
 {
-    fighter[who].mp += amt;
-    if (fighter[who].mp > fighter[who].mmp)
+    fighter[fighter_index].mp += amt;
+    if (fighter[fighter_index].mp > fighter[fighter_index].mmp)
     {
-        fighter[who].mp = fighter[who].mmp;
+        fighter[fighter_index].mp = fighter[fighter_index].mmp;
     }
-    if (fighter[who].mp < 0)
+    if (fighter[fighter_index].mp < 0)
     {
-        fighter[who].mp = 0;
+        fighter[fighter_index].mp = 0;
     }
 }
 
@@ -108,57 +110,58 @@ void adjust_mp(int who, int amt)
  *
  * These are 'bad' effect spells that affect all enemy targets.
  *
- * \param   caster Caster
+ * \param   caster_fighter_index Caster
  * \param   spell_number Spell number
  */
-static void beffect_all_enemies(int caster, int spell_number)
+static void beffect_all_enemies(size_t caster_fighter_index, size_t spell_number)
 {
-    int nt, st, a, sp_hit;
+    size_t end_fighter_index, start_fighter_index, fighter_index;
+    int sp_hit;
 
-    if (caster < PARTY_SIZE)
+    if (caster_fighter_index < PSIZE)
     {
-        nt = num_enemies;
-        st = PARTY_SIZE;
+        start_fighter_index = PSIZE;
+        end_fighter_index = num_enemies;
     }
     else
     {
-        nt = numchrs;
-        st = 0;
+        start_fighter_index = 0;
+        end_fighter_index = numchrs;
     }
-    for (a = st; a < st + nt; a++)
+    for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
     {
-        ta[a] = NODISPLAY;
+        ta[fighter_index] = NODISPLAY;
     }
     sp_hit = magic[spell_number].hit;
     switch (spell_number)
     {
         case M_SLOW:
-            for (a = st; a < st + nt; a++)
+            for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
             {
-                if (res_throw(a, magic[spell_number].elem) == 0
-                        && non_dmg_save(a, sp_hit) == 0
-                        && fighter[a].sts[S_STONE] == 0)
+                if (res_throw(fighter_index, magic[spell_number].elem) == 0
+                        && non_dmg_save(fighter_index, sp_hit) == 0
+                        && fighter[fighter_index].sts[S_STONE] == 0)
                 {
-                    if (fighter[a].sts[S_TIME] == 2)
+                    if (fighter[fighter_index].sts[S_TIME] == 2)
                     {
-                        fighter[a].sts[S_TIME] = 0;
+                        fighter[fighter_index].sts[S_TIME] = 0;
                     }
                     else
                     {
-                        if (fighter[a].sts[S_TIME] == 0)
+                        if (fighter[fighter_index].sts[S_TIME] == 0)
                         {
-                            fighter[a].sts[S_TIME] = 1;
-                            ta[a] = NODISPLAY;
+                            fighter[fighter_index].sts[S_TIME] = 1;
+                            ta[fighter_index] = NODISPLAY;
                         }
                         else
                         {
-                            ta[a] = MISS;
+                            ta[fighter_index] = MISS;
                         }
                     }
                 }
                 else
                 {
-                    ta[a] = MISS;
+                    ta[fighter_index] = MISS;
                 }
             }
             break;
@@ -170,33 +173,35 @@ static void beffect_all_enemies(int caster, int spell_number)
             do_transition(TRANS_FADE_IN, 2);
             break;
         case M_MALISON:
-            for (a = st; a < st + nt; a++)
+            for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
             {
-                if (non_dmg_save(a, sp_hit) == 0 && fighter[a].sts[S_MALISON] == 0
-                        && fighter[a].sts[S_STONE] == 0)
+                if (non_dmg_save(fighter_index, sp_hit) == 0
+                    && fighter[fighter_index].sts[S_MALISON] == 0
+                    && fighter[fighter_index].sts[S_STONE] == 0)
                 {
-                    fighter[a].sts[S_MALISON] = 2;
-                    ta[a] = NODISPLAY;
+                    fighter[fighter_index].sts[S_MALISON] = 2;
+                    ta[fighter_index] = NODISPLAY;
                 }
                 else
                 {
-                    ta[a] = MISS;
+                    ta[fighter_index] = MISS;
                 }
             }
             break;
         case M_SLEEPALL:
-            for (a = st; a < st + nt; a++)
+            for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
             {
-                if (res_throw(a, magic[spell_number].elem) == 0
-                        && non_dmg_save(a, sp_hit) == 0 && fighter[a].sts[S_SLEEP] == 0
-                        && fighter[a].sts[S_STONE] == 0)
+                if (res_throw(fighter_index, magic[spell_number].elem) == 0
+                    && non_dmg_save(fighter_index, sp_hit) == 0
+                    && fighter[fighter_index].sts[S_SLEEP] == 0
+                    && fighter[fighter_index].sts[S_STONE] == 0)
                 {
-                    fighter[a].sts[S_SLEEP] = rand() % 2 + 4;
-                    ta[a] = NODISPLAY;
+                    fighter[fighter_index].sts[S_SLEEP] = rand() % 2 + 4;
+                    ta[fighter_index] = NODISPLAY;
                 }
                 else
                 {
-                    ta[a] = MISS;
+                    ta[fighter_index] = MISS;
                 }
             }
             break;
@@ -209,212 +214,213 @@ static void beffect_all_enemies(int caster, int spell_number)
  *
  * This function handles 'bad' effect spells that have a single target.
  *
- * \param   caster Caster
- * \param   tgt Target
+ * \param   caster_fighter_index Caster
+ * \param   target_fighter_index Target
  * \param   spell_number Spell number
  */
-static void beffect_one_enemy(int caster, int tgt, int spell_number)
+static void beffect_one_enemy(size_t caster_fighter_index, size_t target_fighter_index, size_t spell_number)
 {
     int r, a = 0, sp_hit;
+    size_t stats_index;
 
-    ta[tgt] = NODISPLAY;
-    if (fighter[tgt].sts[S_STONE] > 0)
+    ta[target_fighter_index] = NODISPLAY;
+    if (fighter[target_fighter_index].sts[S_STONE] > 0)
     {
-        ta[tgt] = MISS;
+        ta[target_fighter_index] = MISS;
         return;
     }
-    if (res_throw(tgt, magic[spell_number].elem) == 1)
+    if (res_throw(target_fighter_index, magic[spell_number].elem) == 1)
     {
-        ta[tgt] = MISS;
+        ta[target_fighter_index] = MISS;
         return;
     }
     sp_hit = magic[spell_number].hit;
     switch (spell_number)
     {
         case M_BLIND:
-            if (non_dmg_save(tgt, sp_hit) == 0 && fighter[tgt].sts[S_BLIND] == 0)
+            if (non_dmg_save(target_fighter_index, sp_hit) == 0 && fighter[target_fighter_index].sts[S_BLIND] == 0)
             {
-                fighter[tgt].sts[S_BLIND] = 1;
+                fighter[target_fighter_index].sts[S_BLIND] = 1;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_CONFUSE:
-            if (non_dmg_save(tgt, sp_hit) == 0 && fighter[tgt].sts[S_CHARM] == 0)
+            if (non_dmg_save(target_fighter_index, sp_hit) == 0 && fighter[target_fighter_index].sts[S_CHARM] == 0)
             {
-                fighter[tgt].sts[S_CHARM] = rand() % 3 + 3;
+                fighter[target_fighter_index].sts[S_CHARM] = rand() % 3 + 3;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_STONE:
-            if (non_dmg_save(tgt, sp_hit) == 0)
+            if (non_dmg_save(target_fighter_index, sp_hit) == 0)
             {
-                for (a = 0; a < 24; a++)
+                for (stats_index = 0; stats_index < 24; stats_index++)
                 {
-                    if (a != S_DEAD)
+                    if (stats_index != S_DEAD)
                     {
-                        fighter[tgt].sts[a] = 0;
+                        fighter[target_fighter_index].sts[stats_index] = 0;
                     }
                 }
-                fighter[tgt].sts[S_STONE] = rand() % 3 + 3;
+                fighter[target_fighter_index].sts[S_STONE] = rand() % 3 + 3;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_DIFFUSE:
-            if (non_dmg_save(tgt, sp_hit) == 0)
+            if (non_dmg_save(target_fighter_index, sp_hit) == 0)
             {
                 r = 0;
-                if (fighter[tgt].sts[S_RESIST] > 0)
+                if (fighter[target_fighter_index].sts[S_RESIST] > 0)
                 {
-                    fighter[tgt].sts[S_RESIST] = 0;
+                    fighter[target_fighter_index].sts[S_RESIST] = 0;
                     r++;
                 }
-                if (fighter[tgt].sts[S_TIME] > 1)
+                if (fighter[target_fighter_index].sts[S_TIME] > 1)
                 {
-                    fighter[tgt].sts[S_TIME] = 0;
+                    fighter[target_fighter_index].sts[S_TIME] = 0;
                     r++;
                 }
-                if (fighter[tgt].sts[S_SHIELD] > 0)
+                if (fighter[target_fighter_index].sts[S_SHIELD] > 0)
                 {
-                    fighter[tgt].sts[S_SHIELD] = 0;
+                    fighter[target_fighter_index].sts[S_SHIELD] = 0;
                     r++;
                 }
-                if (fighter[tgt].sts[S_BLESS] > 0)
+                if (fighter[target_fighter_index].sts[S_BLESS] > 0)
                 {
-                    fighter[tgt].sts[S_BLESS] = 0;
+                    fighter[target_fighter_index].sts[S_BLESS] = 0;
                     r++;
                 }
-                if (fighter[tgt].sts[S_STRENGTH] > 0)
+                if (fighter[target_fighter_index].sts[S_STRENGTH] > 0)
                 {
-                    fighter[tgt].sts[S_STRENGTH] = 0;
+                    fighter[target_fighter_index].sts[S_STRENGTH] = 0;
                     r++;
                 }
                 if (r == 0)
                 {
-                    ta[tgt] = MISS;
+                    ta[target_fighter_index] = MISS;
                 }
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_HOLD:
-            if (non_dmg_save(tgt, sp_hit) == 0 && fighter[tgt].sts[S_STOP] == 0)
+            if (non_dmg_save(target_fighter_index, sp_hit) == 0 && fighter[target_fighter_index].sts[S_STOP] == 0)
             {
-                fighter[tgt].sts[S_STOP] = rand() % 3 + 2;
+                fighter[target_fighter_index].sts[S_STOP] = rand() % 3 + 2;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_SILENCE:
-            if (non_dmg_save(tgt, sp_hit) == 0 && fighter[tgt].sts[S_MUTE] == 0)
+            if (non_dmg_save(target_fighter_index, sp_hit) == 0 && fighter[target_fighter_index].sts[S_MUTE] == 0)
             {
-                fighter[tgt].sts[S_MUTE] = 1;
+                fighter[target_fighter_index].sts[S_MUTE] = 1;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_SLEEP:
-            if (non_dmg_save(tgt, sp_hit) == 0 && fighter[tgt].sts[S_SLEEP] == 0)
+            if (non_dmg_save(target_fighter_index, sp_hit) == 0 && fighter[target_fighter_index].sts[S_SLEEP] == 0)
             {
-                fighter[tgt].sts[S_SLEEP] = rand() % 2 + 4;
+                fighter[target_fighter_index].sts[S_SLEEP] = rand() % 2 + 4;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_ABSORB:
-            spell_damage(caster, spell_number, tgt, 1);
-            r = ta[tgt];
-            if (non_dmg_save(tgt, sp_hit) == 1)
+            spell_damage(caster_fighter_index, spell_number, target_fighter_index, 1);
+            r = ta[target_fighter_index];
+            if (non_dmg_save(target_fighter_index, sp_hit) == 1)
             {
                 r = r / 2;
             }
-            if (fighter[tgt].mp < abs(r))
+            if (fighter[target_fighter_index].mp < abs(r))
             {
-                r = 0 - fighter[tgt].mp;
+                r = 0 - fighter[target_fighter_index].mp;
             }
-            ta[tgt] = r;
-            ta[caster] = 0 - r;
+            ta[target_fighter_index] = r;
+            ta[caster_fighter_index] = 0 - r;
             break;
         case M_DRAIN:
-            spell_damage(caster, spell_number, tgt, 1);
-            r = ta[tgt];
-            if (non_dmg_save(tgt, sp_hit) == 1)
+            spell_damage(caster_fighter_index, spell_number, target_fighter_index, 1);
+            r = ta[target_fighter_index];
+            if (non_dmg_save(target_fighter_index, sp_hit) == 1)
             {
                 r = r / 2;
             }
-            if (fighter[tgt].unl > 0)
+            if (fighter[target_fighter_index].unl > 0)
             {
-                if (fighter[caster].hp < abs(r))
+                if (fighter[caster_fighter_index].hp < abs(r))
                 {
-                    r = 0 - fighter[caster].hp;
+                    r = 0 - fighter[caster_fighter_index].hp;
                 }
-                ta[tgt] = 0 - r;
-                ta[caster] = r;
+                ta[target_fighter_index] = 0 - r;
+                ta[caster_fighter_index] = r;
             }
             else
             {
-                if (fighter[tgt].hp < abs(r))
+                if (fighter[target_fighter_index].hp < abs(r))
                 {
-                    r = 0 - fighter[tgt].hp;
+                    r = 0 - fighter[target_fighter_index].hp;
                 }
-                ta[tgt] = r;
-                ta[caster] = 0 - r;
+                ta[target_fighter_index] = r;
+                ta[caster_fighter_index] = 0 - r;
             }
             break;
         case M_DOOM:
-            if (non_dmg_save(tgt, sp_hit) == 0)
+            if (non_dmg_save(target_fighter_index, sp_hit) == 0)
             {
-                a = fighter[tgt].hp * 3 / 4;
+                a = fighter[target_fighter_index].hp * 3 / 4;
                 if (a < 1)
                 {
                     a = 1;
                 }
-                if (fighter[tgt].hp - a < 1)
+                if (fighter[target_fighter_index].hp - a < 1)
                 {
-                    a = fighter[tgt].hp - 1;
+                    a = fighter[target_fighter_index].hp - 1;
                 }
-                ta[tgt] = 0 - a;
+                ta[target_fighter_index] = 0 - a;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_DEATH:
-            if (non_dmg_save(tgt, sp_hit) == 0)
+            if (non_dmg_save(target_fighter_index, sp_hit) == 0)
             {
-                a = fighter[tgt].hp;
-                ta[tgt] = 0 - a;
+                a = fighter[target_fighter_index].hp;
+                ta[target_fighter_index] = 0 - a;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_NAUSEA:
-            if (non_dmg_save(tgt, sp_hit) == 0 && fighter[tgt].sts[S_MALISON] == 0)
+            if (non_dmg_save(target_fighter_index, sp_hit) == 0 && fighter[target_fighter_index].sts[S_MALISON] == 0)
             {
-                fighter[tgt].sts[S_MALISON] = 1;
+                fighter[target_fighter_index].sts[S_MALISON] = 1;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
     }
@@ -426,40 +432,38 @@ static void beffect_one_enemy(int caster, int tgt, int spell_number)
  *
  * This is used to invoke items inbued with a spell
  *
- * \param   caster Attacker
+ * \param   fighter_index Attacker
  * \param   target_item Item for imbued spell
  * \param   sag_int_value Value for SAG and INT when casting imbued
  * \param   tgt Target (defender)
  */
-void cast_imbued_spell(int caster, int target_item, int sag_int_value,
-                       int tgt)
+void cast_imbued_spell(size_t fighter_index, int target_item, int sag_int_value, int tgt)
 {
-    int a, ts[5];
+    int temp_int = fighter[fighter_index].stats[A_INT];
+    int temp_sag = fighter[fighter_index].stats[A_SAG];
+    int temp_aur = fighter[fighter_index].stats[A_AUR];
+    int temp_spi = fighter[fighter_index].stats[A_SPI];
 
-    /* Calculates TempStatus for A_INT, A_SAG, A_AUR, A_SPI */
-    for (a = 0; a < 5; a++)
-    {
-        ts[a] = fighter[caster].stats[A_INT + a];
-    }
-    fighter[caster].stats[A_INT] = sag_int_value;
-    fighter[caster].stats[A_SAG] = sag_int_value;
-    fighter[caster].stats[A_AUR] = 100;
-    fighter[caster].stats[A_SPI] = 100;
-    fighter[caster].csmem = target_item;
-    fighter[caster].ctmem = tgt;
+    fighter[fighter_index].stats[A_INT] = sag_int_value;
+    fighter[fighter_index].stats[A_SAG] = sag_int_value;
+    fighter[fighter_index].stats[A_AUR] = 100;
+    fighter[fighter_index].stats[A_SPI] = 100;
+    fighter[fighter_index].csmem = target_item;
+    fighter[fighter_index].ctmem = tgt;
     if (tgt == TGT_CASTER)
     {
-        fighter[caster].ctmem = caster;
-        cast_spell(caster, 1);
+        fighter[fighter_index].ctmem = fighter_index;
+        cast_spell(fighter_index, 1);
     }
     else
     {
-        combat_spell(caster, 1);
+        combat_spell(fighter_index, 1);
     }
-    for (a = 0; a < 5; a++)
-    {
-        fighter[caster].stats[A_INT + a] = ts[a];
-    }
+
+    fighter[fighter_index].stats[A_INT] = temp_int;
+    fighter[fighter_index].stats[A_SAG] = temp_sag;
+    fighter[fighter_index].stats[A_AUR] = temp_aur;
+    fighter[fighter_index].stats[A_SPI] = temp_spi;
 }
 
 
@@ -468,24 +472,24 @@ void cast_imbued_spell(int caster, int target_item, int sag_int_value,
  *
  * Generic function called from camp or combat to cast a spell
  *
- * \param   whom Index of caster
+ * \param   caster_fighter_index Index of caster
  * \param   is_item 0 if regular spell, 1 if item (no MP used)
  * \returns 1 if spell cast/used successfully, 0 otherwise
  */
-int cast_spell(int whom, int is_item)
+int cast_spell(size_t caster_fighter_index, int is_item)
 {
-    int spell_number = fighter[whom].csmem;
-    int tgt = fighter[whom].ctmem;
+    int spell_number = fighter[caster_fighter_index].csmem;
+    int tgt = fighter[caster_fighter_index].ctmem;
     int c;
 
     if (is_item == 0)
     {
-        c = mp_needed(whom, spell_number);
+        c = mp_needed(caster_fighter_index, spell_number);
         if (c < 1)
         {
             c = 1;
         }
-        fighter[whom].mp -= c;
+        fighter[caster_fighter_index].mp -= c;
         /*
             check for spell failure - only applies to spells that
             don't have a hit% or do damage
@@ -496,7 +500,7 @@ int cast_spell(int whom, int is_item)
                 && magic[spell_number].hit == 0)
         {
             if (rand() % 100 + 1 >
-                    fighter[whom].stats[A_AUR + magic[spell_number].stat])
+                    fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat])
             {
 
                 /*  DS: The spell fail, so set ta[target] to MISS */
@@ -506,19 +510,19 @@ int cast_spell(int whom, int is_item)
                 }
                 else
                 {
-                    int i, nt, st;
+                    size_t i, end_fighter_index, start_fighter_index;
 
-                    if (whom < PARTY_SIZE)
+                    if (caster_fighter_index < PSIZE)
                     {
-                        nt = numchrs;
-                        st = 0;
+                        end_fighter_index = numchrs;
+                        start_fighter_index = 0;
                     }
                     else
                     {
-                        nt = num_enemies;
-                        st = PARTY_SIZE;
+                        end_fighter_index = num_enemies;
+                        start_fighter_index = PSIZE;
                     }
-                    for (i = st; i < nt; i++)
+                    for (i = start_fighter_index; i < end_fighter_index; i++)
                     {
                         ta[i] = MISS;
                     }
@@ -533,45 +537,45 @@ int cast_spell(int whom, int is_item)
     {
         case 40:
         case 41:
-            special_spells(whom, spell_number);
+            special_spells(caster_fighter_index, spell_number);
             break;
         case 45:
-            cure_oneall_allies(whom, tgt, spell_number);
+            cure_oneall_allies(caster_fighter_index, tgt, spell_number);
             break;
         case 46:
-            heal_one_ally(whom, tgt, spell_number);
+            heal_one_ally(caster_fighter_index, tgt, spell_number);
             break;
         case 47:
         case 42:
             if (magic[spell_number].tgt == TGT_ALLY_ONE)
             {
-                geffect_one_ally(whom, tgt, spell_number);
+                geffect_one_ally(tgt, spell_number);
             }
             else
             {
-                geffect_all_allies(whom, spell_number);
+                geffect_all_allies(caster_fighter_index, spell_number);
             }
             break;
         case 48:
         case 43:
             if (magic[spell_number].tgt == TGT_ENEMY_ONE)
             {
-                beffect_one_enemy(whom, tgt, spell_number);
+                beffect_one_enemy(caster_fighter_index, tgt, spell_number);
             }
             else
             {
-                beffect_all_enemies(whom, spell_number);
+                beffect_all_enemies(caster_fighter_index, spell_number);
             }
             break;
         case 49:
         case 44:
             if (magic[spell_number].tgt == TGT_ENEMY_ALL)
             {
-                damage_all_enemies(whom, spell_number);
+                damage_all_enemies(caster_fighter_index, spell_number);
             }
             else
             {
-                damage_oneall_enemies(whom, tgt, spell_number);
+                damage_oneall_enemies(caster_fighter_index, tgt, spell_number);
             }
             break;
     }
@@ -586,37 +590,39 @@ int cast_spell(int whom, int is_item)
  * type and target.  This function also displays the caster and spell
  * effects.
  *
- * \param   whom Index of caster
+ * \param   caster_fighter_index Index of caster
  * \param   is_item 0 if regular spell, 1 if item (no MP used)
  * \returns 1 if spell cast/used successfully, 0 otherwise
  */
-int combat_spell(int whom, int is_item)
+int combat_spell(size_t caster_fighter_index, int is_item)
 {
-    int a, b, st, tgt, spell_number, tall = 0, nt = 1, ss = 0;
+    int b, tgt, spell_number, tall = 0, ss = 0;
+    size_t fighter_index;
+    size_t start_fighter_index;
+    size_t end_fighter_index = 1;
 
-    spell_number = fighter[whom].csmem;
+    spell_number = fighter[caster_fighter_index].csmem;
     if (magic[spell_number].tgt == TGT_NONE)
     {
         return 0;
     }
-    tgt = fighter[whom].ctmem;
-    nt = 1;
-    st = tgt;
-    if (magic[spell_number].tgt >= TGT_ALLY_ONE
-            && magic[spell_number].tgt <= TGT_ALLY_ALL)
+    tgt = fighter[caster_fighter_index].ctmem;
+    end_fighter_index = 1;
+    start_fighter_index = tgt;
+    if (magic[spell_number].tgt >= TGT_ALLY_ONE && magic[spell_number].tgt <= TGT_ALLY_ALL)
     {
         if (tgt == SEL_ALL_ALLIES)
         {
             tall = 1;
-            if (whom < PARTY_SIZE)
+            if (caster_fighter_index < PSIZE)
             {
-                nt = numchrs;
-                st = 0;
+                end_fighter_index = numchrs;
+                start_fighter_index = 0;
             }
             else
             {
-                nt = num_enemies;
-                st = PARTY_SIZE;
+                end_fighter_index = num_enemies;
+                start_fighter_index = PSIZE;
             }
         }
     }
@@ -625,22 +631,22 @@ int combat_spell(int whom, int is_item)
         if (tgt == SEL_ALL_ENEMIES)
         {
             tall = 1;
-            if (whom < PARTY_SIZE)
+            if (caster_fighter_index < PSIZE)
             {
-                nt = num_enemies;
-                st = PARTY_SIZE;
+                end_fighter_index = num_enemies;
+                start_fighter_index = PSIZE;
             }
             else
             {
-                nt = numchrs;
-                st = 0;
+                end_fighter_index = numchrs;
+                start_fighter_index = 0;
             }
         }
     }
-    ctext = magic[spell_number].name;
+    strcpy(attack_string, magic[spell_number].name);
     if (is_item == 0)
     {
-        draw_castersprite(whom, eff[magic[spell_number].eff].kolor);
+        draw_castersprite(caster_fighter_index, eff[magic[spell_number].eff].kolor);
     }
     if (magic[spell_number].dmg > 0)
     {
@@ -652,33 +658,33 @@ int combat_spell(int whom, int is_item)
     }
     if (spell_number == M_TREMOR || spell_number == M_EARTHQUAKE)
     {
-        if (st == 0)
+        if (start_fighter_index == 0)
         {
-            draw_hugesprite(st, 80, 126, magic[spell_number].eff, 1);
+            draw_hugesprite(start_fighter_index, 80, 126, magic[spell_number].eff, 1);
         }
         else
         {
-            draw_hugesprite(st, 80, 66, magic[spell_number].eff, 1);
+            draw_hugesprite(start_fighter_index, 80, 66, magic[spell_number].eff, 1);
         }
     }
     else
     {
         if (spell_number == M_FLOOD || spell_number == M_TSUNAMI)
         {
-            if (st == 0)
+            if (start_fighter_index == 0)
             {
-                draw_hugesprite(st, 80, 108, magic[spell_number].eff, 1);
+                draw_hugesprite(start_fighter_index, 80, 108, magic[spell_number].eff, 1);
             }
             else
             {
-                draw_hugesprite(st, 80, 56, magic[spell_number].eff, 1);
+                draw_hugesprite(start_fighter_index, 80, 56, magic[spell_number].eff, 1);
             }
         }
         else
         {
             if (spell_number != M_VISION && spell_number != M_WARP)
             {
-                draw_spellsprite(st, tall, magic[spell_number].eff, ss);
+                draw_spellsprite(start_fighter_index, tall, magic[spell_number].eff, ss);
             }
         }
     }
@@ -688,7 +694,7 @@ int combat_spell(int whom, int is_item)
         deadeffect = 0;
     }
 
-    cast_spell(whom, is_item);
+    cast_spell(caster_fighter_index, is_item);
 
     if (spell_number == M_ABSORB || spell_number == M_DRAIN)
     {
@@ -698,13 +704,13 @@ int combat_spell(int whom, int is_item)
             {
                 display_amount(tgt, FRED, 0);
                 adjust_mp(tgt, ta[tgt]);
-                display_amount(whom, FGREEN, 0);
-                adjust_mp(whom, ta[whom]);
+                display_amount(caster_fighter_index, FGREEN, 0);
+                adjust_mp(caster_fighter_index, ta[caster_fighter_index]);
             }
             else
             {
-                display_amount(whom, FRED, 0);
-                adjust_mp(whom, ta[whom]);
+                display_amount(caster_fighter_index, FRED, 0);
+                adjust_mp(caster_fighter_index, ta[caster_fighter_index]);
                 display_amount(tgt, FGREEN, 0);
                 adjust_mp(tgt, ta[tgt]);
             }
@@ -715,13 +721,13 @@ int combat_spell(int whom, int is_item)
             {
                 display_amount(tgt, FNORMAL, 0);
                 adjust_hp(tgt, ta[tgt]);
-                display_amount(whom, FYELLOW, 0);
-                adjust_hp(whom, ta[whom]);
+                display_amount(caster_fighter_index, FYELLOW, 0);
+                adjust_hp(caster_fighter_index, ta[caster_fighter_index]);
             }
             else
             {
-                display_amount(whom, FNORMAL, 0);
-                adjust_hp(whom, ta[whom]);
+                display_amount(caster_fighter_index, FNORMAL, 0);
+                adjust_hp(caster_fighter_index, ta[caster_fighter_index]);
                 display_amount(tgt, FYELLOW, 0);
                 adjust_hp(tgt, ta[tgt]);
             }
@@ -732,42 +738,44 @@ int combat_spell(int whom, int is_item)
         if (ss == 0)
         {
             b = 0;
-            for (a = st; a < st + nt; a++)
-                if (ta[a] == MISS)
+            for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
+            {
+                if (ta[fighter_index] == MISS)
                 {
                     b++;
                 }
+            }
             if (b > 0)
             {
-                display_amount(st, FNORMAL, tall);
+                display_amount(start_fighter_index, FNORMAL, tall);
             }
         }
         else
         {
-            display_amount(st, FDECIDE, tall);
-            for (a = st; a < st + nt; a++)
+            display_amount(start_fighter_index, FDECIDE, tall);
+            for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
             {
-                adjust_hp(a, ta[a]);
+                adjust_hp(fighter_index, ta[fighter_index]);
             }
         }
     }
     b = 0;
-    for (a = st; a < st + nt; a++)
+    for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
     {
-        if (fighter[a].sts[S_DEAD] == 0 && fighter[a].hp <= 0)
+        if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].hp <= 0)
         {
-            fkill(a);
-            ta[a] = 1;
+            fkill(fighter_index);
+            ta[fighter_index] = 1;
             b++;
         }
         else
         {
-            ta[a] = 0;
+            ta[fighter_index] = 0;
         }
     }
     if (b > 0)
     {
-        death_animation(st, tall);
+        death_animation(start_fighter_index, tall);
     }
 
     return 1;
@@ -779,36 +787,37 @@ int combat_spell(int whom, int is_item)
  *
  * This function only handles healing spells (one or all allied targets).
  *
- * \param   caster Caster
+ * \param   caster_fighter_index Caster
  * \param   tgt Target
  * \param   spell_number Spell number
  */
-static void cure_oneall_allies(int caster, int tgt, int spell_number)
+static void cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spell_number)
 {
     int a = 0, b = 0, z = 0, spwr;
-    int nt, st;
+    size_t fighter_index;
+    size_t end_fighter_index, start_fighter_index;
 
     if (tgt == SEL_ALL_ALLIES)
     {
-        if (caster < PARTY_SIZE)
+        if (caster_fighter_index < PSIZE)
         {
-            nt = numchrs;
-            st = 0;
+            end_fighter_index = numchrs;
+            start_fighter_index = 0;
         }
         else
         {
-            nt = num_enemies;
-            st = PARTY_SIZE;
+            end_fighter_index = num_enemies;
+            start_fighter_index = PSIZE;
         }
     }
     else
     {
-        st = tgt;
-        nt = 1;
+        start_fighter_index = tgt;
+        end_fighter_index = 1;
     }
     spwr =
         magic[spell_number].dmg +
-        (fighter[caster].stats[A_INT + magic[spell_number].stat] *
+        (fighter[caster_fighter_index].stats[A_INT + magic[spell_number].stat] *
          magic[spell_number].bon / 100);
     if (spwr < DMG_RND_MIN * 5)
     {
@@ -818,17 +827,19 @@ static void cure_oneall_allies(int caster, int tgt, int spell_number)
     {
         b = rand() % (spwr / 5) + spwr;
     }
-    a = fighter[caster].stats[A_AUR + magic[spell_number].stat];
+    a = fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat];
     b = b * a / 100;
     if (b < 1)
     {
         b = 1;
     }
-    for (a = st; a < st + nt; a++)
-        if (fighter[a].sts[S_STONE] == 0 && fighter[a].sts[S_DEAD] == 0)
+    for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
+    {
+        if (fighter[fighter_index].sts[S_STONE] == 0 && fighter[fighter_index].sts[S_DEAD] == 0)
         {
             z++;
         }
+    }
     if (z == 0)
     {
         klog(_("... the hell, how can there be nobody to cure?"));
@@ -844,12 +855,12 @@ static void cure_oneall_allies(int caster, int tgt, int spell_number)
         This way, it displays the amounts on screen, then adds the hp after
         the visual effect has taken place... it just looks nicer that way.
      */
-    for (a = st; a < st + nt; a++)
+    for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
     {
-        if (fighter[a].sts[S_STONE] == 0 && fighter[a].sts[S_DEAD] == 0)
+        if (fighter[fighter_index].sts[S_STONE] == 0 && fighter[fighter_index].sts[S_DEAD] == 0)
         {
-            ta[a] = b;
-            ta[a] = do_shell_check(a, ta[a]);
+            ta[fighter_index] = b;
+            ta[fighter_index] = do_shell_check(fighter_index, ta[fighter_index]);
         }
     }
 }
@@ -860,24 +871,24 @@ static void cure_oneall_allies(int caster, int tgt, int spell_number)
  *
  * These are damage spells that affect the entire enemy party.
  *
- * \param   caster Caster
+ * \param   caster_fighter_index Caster
  * \param   spell_number Spell number
  */
-static void damage_all_enemies(int caster, int spell_number)
+static void damage_all_enemies(size_t caster_fighter_index, size_t spell_number)
 {
-    int nt, st;
+    size_t end_fighter_index, start_fighter_index;
 
-    if (caster < PARTY_SIZE)
+    if (caster_fighter_index < PSIZE)
     {
-        nt = num_enemies;
-        st = PARTY_SIZE;
+        start_fighter_index = PSIZE;
+        end_fighter_index = num_enemies;
     }
     else
     {
-        nt = numchrs;
-        st = 0;
+        start_fighter_index = 0;
+        end_fighter_index = numchrs;
     }
-    spell_damage(caster, spell_number, st, nt);
+    spell_damage(caster_fighter_index, spell_number, start_fighter_index, end_fighter_index);
 }
 
 
@@ -886,33 +897,33 @@ static void damage_all_enemies(int caster, int spell_number)
  *
  * These are damage spells that affect the one or all of the enemy's party.
  *
- * \param   caster Caster
+ * \param   caster_fighter_index Caster
  * \param   tgt Traget
  * \param   spell_number Spell number
  */
-static void damage_oneall_enemies(int caster, int tgt, int spell_number)
+static void damage_oneall_enemies(size_t caster_fighter_index, int tgt, size_t spell_number)
 {
-    int nt, st;
+    size_t end_fighter_index, start_fighter_index;
 
     if (tgt == SEL_ALL_ENEMIES)
     {
-        if (caster < PARTY_SIZE)
+        if (caster_fighter_index < PSIZE)
         {
-            nt = num_enemies;
-            st = PARTY_SIZE;
+            end_fighter_index = num_enemies;
+            start_fighter_index = PSIZE;
         }
         else
         {
-            nt = numchrs;
-            st = 0;
+            end_fighter_index = numchrs;
+            start_fighter_index = 0;
         }
     }
     else
     {
-        st = tgt;
-        nt = 1;
+        start_fighter_index = tgt;
+        end_fighter_index = 1;
     }
-    spell_damage(caster, spell_number, st, nt);
+    spell_damage(caster_fighter_index, spell_number, start_fighter_index, end_fighter_index);
 }
 
 
@@ -979,107 +990,108 @@ int do_shield_check(int tgt, int amt)
  *
  * These are 'good' effect spells that affect all allied targets.
  *
- * \param   caster Caster
+ * \param   caster_fighter_index Caster
  * \param   spell_number Spell Number
  */
-static void geffect_all_allies(int caster, int spell_number)
+static void geffect_all_allies(size_t caster_fighter_index, size_t spell_number)
 {
-    int nt, st, a, b = 0;
+    int fighter_hp;
+    size_t fighter_index = 0;
+    size_t end_fighter_index, start_fighter_index;
 
-    if (caster < PARTY_SIZE)
+    if (caster_fighter_index < PSIZE)
     {
-        nt = numchrs;
-        st = 0;
+        end_fighter_index = numchrs;
+        start_fighter_index = 0;
     }
     else
     {
-        nt = num_enemies;
-        st = PARTY_SIZE;
+        end_fighter_index = num_enemies;
+        start_fighter_index = PSIZE;
     }
-    if (rand() % 100 + 1 >
-            fighter[caster].stats[A_AUR + magic[spell_number].stat])
+    if (rand() % 100 + 1 > fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat])
     {
-        for (b = st; b < st + nt; b++)
+        for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
         {
-            ta[b] = MISS;
+            ta[fighter_index] = MISS;
         }
         return;
     }
     switch (spell_number)
     {
         case M_BLESS:
-            for (b = st; b < st + nt; b++)
+            for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
             {
-                if (fighter[b].sts[S_BLESS] < 3)
+                if (fighter[fighter_index].sts[S_BLESS] < 3)
                 {
-                    a = fighter[b].mhp / 10;
-                    if (a < 10)
+                    fighter_hp = fighter[fighter_index].mhp / 10;
+                    if (fighter_hp < 10)
                     {
-                        a = 10;
+                        fighter_hp = 10;
                     }
-                    fighter[b].hp += a;
-                    fighter[b].mhp += a;
-                    fighter[b].sts[S_BLESS]++;
-                    ta[b] = NODISPLAY;
+                    fighter[fighter_index].hp += fighter_hp;
+                    fighter[fighter_index].mhp += fighter_hp;
+                    fighter[fighter_index].sts[S_BLESS]++;
+                    ta[fighter_index] = NODISPLAY;
                 }
                 else
                 {
-                    ta[b] = MISS;
+                    ta[fighter_index] = MISS;
                 }
             }
             break;
         case M_SHIELDALL:
-            for (b = st; b < st + nt; b++)
+            for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
             {
-                if (fighter[b].sts[S_SHIELD] < 2)
+                if (fighter[fighter_index].sts[S_SHIELD] < 2)
                 {
-                    fighter[b].sts[S_SHIELD] = 2;
-                    ta[b] = NODISPLAY;
+                    fighter[fighter_index].sts[S_SHIELD] = 2;
+                    ta[fighter_index] = NODISPLAY;
                 }
                 else
                 {
-                    ta[b] = MISS;
+                    ta[fighter_index] = MISS;
                 }
             }
             break;
         case M_DIVINEGUARD:
-            for (b = st; b < st + nt; b++)
+            for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
             {
-                if (fighter[b].sts[S_SHIELD] < 2 || fighter[b].sts[S_RESIST] < 2)
+                if (fighter[fighter_index].sts[S_SHIELD] < 2 || fighter[fighter_index].sts[S_RESIST] < 2)
                 {
-                    if (fighter[b].sts[S_SHIELD] < 2)
+                    if (fighter[fighter_index].sts[S_SHIELD] < 2)
                     {
-                        fighter[b].sts[S_SHIELD] = 2;
+                        fighter[fighter_index].sts[S_SHIELD] = 2;
                     }
-                    if (fighter[b].sts[S_RESIST] < 2)
+                    if (fighter[fighter_index].sts[S_RESIST] < 2)
                     {
-                        fighter[b].sts[S_RESIST] = 2;
+                        fighter[fighter_index].sts[S_RESIST] = 2;
                     }
                 }
                 else
                 {
-                    ta[b] = MISS;
+                    ta[fighter_index] = MISS;
                 }
             }
             break;
         case M_QUICKEN:
-            for (b = st; b < st + nt; b++)
+            for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
             {
-                if (fighter[b].sts[S_TIME] != 2 && fighter[b].sts[S_STONE] == 0)
+                if (fighter[fighter_index].sts[S_TIME] != 2 && fighter[fighter_index].sts[S_STONE] == 0)
                 {
-                    if (fighter[b].sts[S_TIME] == 1)
+                    if (fighter[fighter_index].sts[S_TIME] == 1)
                     {
-                        fighter[b].sts[S_TIME] = 0;
+                        fighter[fighter_index].sts[S_TIME] = 0;
                     }
                     else
                     {
-                        fighter[b].sts[S_TIME] = 2;
-                        ta[b] = NODISPLAY;
+                        fighter[fighter_index].sts[S_TIME] = 2;
+                        ta[fighter_index] = NODISPLAY;
                     }
                 }
                 else
                 {
-                    ta[b] = MISS;
+                    ta[fighter_index] = MISS;
                 }
             }
             break;
@@ -1092,121 +1104,104 @@ static void geffect_all_allies(int caster, int spell_number)
  *
  * These are 'good' effect spells that affect a single allied target.
  *
- * \param   caster Caster
- * \param   tgt Target
+ * \param   target_fighter_index Target
  * \param   spell_number Spell number
  */
-static void geffect_one_ally(int caster, int tgt, int spell_number)
+static void geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 {
-
-    /*  DS: The same problem of heal_one_ally(), this have been tested in
-              cast_spell(), because the hit% of all magics with good effect
-              are 0
-     */
-#if 0
-    if (rand() % 100 + 1 >
-            fighter[caster].stats[A_AUR + magic[spell_number].stat]
-            || fighter[tgt].sts[S_STONE] > 0)
-    {
-        ta[tgt] = MISS;
-        return;
-    }
-#endif
-    /* Validate the tgt parameter */
-    if (tgt < 0 || tgt >= NUM_FIGHTERS)
+    /* Validate the target_fighter_index parameter */
+    if (target_fighter_index >= NUM_FIGHTERS)
     {
         program_death(_("Invalid target parameter in geffect_one_ally"));
     }
 
-    /*  DS: Now the 'caster' argument isn't used, so I'm doing this: */
-    caster = caster;
     switch (spell_number)
     {
         case M_TRUEAIM:
-            if (fighter[tgt].sts[S_TRUESHOT] == 0)
+            if (fighter[target_fighter_index].sts[S_TRUESHOT] == 0)
             {
-                fighter[tgt].sts[S_TRUESHOT] = 1;
+                fighter[target_fighter_index].sts[S_TRUESHOT] = 1;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_THROUGH:
-            if (fighter[tgt].sts[S_ETHER] == 0)
+            if (fighter[target_fighter_index].sts[S_ETHER] == 0)
             {
-                fighter[tgt].sts[S_ETHER] = 3;
+                fighter[target_fighter_index].sts[S_ETHER] = 3;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_REGENERATE:
-            if (fighter[tgt].sts[S_REGEN] == 0)
+            if (fighter[target_fighter_index].sts[S_REGEN] == 0)
             {
-                set_timed_sts_effect(tgt, S_REGEN);
+                set_timed_sts_effect(target_fighter_index, S_REGEN);
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_HOLYMIGHT:
-            if (fighter[tgt].sts[S_STRENGTH] < 2)
+            if (fighter[target_fighter_index].sts[S_STRENGTH] < 2)
             {
-                fighter[tgt].sts[S_STRENGTH]++;
+                fighter[target_fighter_index].sts[S_STRENGTH]++;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_SHELL:
-            if (fighter[tgt].sts[S_RESIST] == 0)
+            if (fighter[target_fighter_index].sts[S_RESIST] == 0)
             {
-                fighter[tgt].sts[S_RESIST] = 1;
+                fighter[target_fighter_index].sts[S_RESIST] = 1;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_WALL:
-            if (fighter[tgt].sts[S_RESIST] != 2)
+            if (fighter[target_fighter_index].sts[S_RESIST] != 2)
             {
-                fighter[tgt].sts[S_RESIST] = 2;
+                fighter[target_fighter_index].sts[S_RESIST] = 2;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_SHIELD:
-            if (fighter[tgt].sts[S_SHIELD] == 0)
+            if (fighter[target_fighter_index].sts[S_SHIELD] == 0)
             {
-                fighter[tgt].sts[S_SHIELD] = 1;
+                fighter[target_fighter_index].sts[S_SHIELD] = 1;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_HASTEN:
-            if (fighter[tgt].sts[S_TIME] != 2)
+            if (fighter[target_fighter_index].sts[S_TIME] != 2)
             {
-                if (fighter[tgt].sts[S_TIME] == 1)
+                if (fighter[target_fighter_index].sts[S_TIME] == 1)
                 {
-                    fighter[tgt].sts[S_TIME] = 0;
+                    fighter[target_fighter_index].sts[S_TIME] = 0;
                 }
                 else
                 {
-                    fighter[tgt].sts[S_TIME] = 2;
+                    fighter[target_fighter_index].sts[S_TIME] = 2;
                 }
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
     }
@@ -1219,74 +1214,73 @@ static void geffect_one_ally(int caster, int tgt, int spell_number)
  * This is for a special category of spells which are beneficial, but
  * not really effect spells or curative spells.
  *
- * \param   caster Caster
- * \param   tgt Target
+ * \param   caster_fighter_index Caster
+ * \param   target_fighter_index Target
  * \param   spell_number Spell number
  */
-static void heal_one_ally(int caster, int tgt, int spell_number)
+static void heal_one_ally(size_t caster_fighter_index, size_t target_fighter_index, size_t spell_number)
 {
-    int a, b = 0;
+    size_t stat_index;
 
     /*  DS: Because these lines, sometimes when you cast restore or others */
     /*      spells, the spell don't work correctly. In cast_spell() this */
     /*      is tested, so don't need to test again. */
 #if 0
-    if (rand() % 100 + 1 >
-            fighter[caster].stats[A_AUR + magic[spell_number].stat])
+    if (rand() % 100 + 1 > fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat])
     {
-        ta[tgt] = MISS;
+        ta[target_fighter_index] = MISS;
         return;
     }
 #endif
 
-    /*  DS: Now the 'caster' argument isn't used, so I'm doing this: */
-    caster = caster;
+    /*  DS: Now the 'caster_fighter_index' argument isn't used, so I'm doing this: */
+    caster_fighter_index = caster_fighter_index;
     switch (spell_number)
     {
         case M_RESTORE:
-            if (fighter[tgt].sts[S_DEAD] == 0)
+            if (fighter[target_fighter_index].sts[S_DEAD] == 0)
             {
-                fighter[tgt].sts[S_POISON] = 0;
-                fighter[tgt].sts[S_BLIND] = 0;
+                fighter[target_fighter_index].sts[S_POISON] = 0;
+                fighter[target_fighter_index].sts[S_BLIND] = 0;
             }
             break;
         case M_RECOVERY:
-            if (fighter[tgt].sts[S_DEAD] == 0)
+            if (fighter[target_fighter_index].sts[S_DEAD] == 0)
             {
-                for (b = 0; b < 7; b++)
+                for (stat_index = 0; stat_index < 7; stat_index++)
                 {
-                    fighter[tgt].sts[b] = 0;
+                    fighter[target_fighter_index].sts[stat_index] = 0;
                 }
             }
             break;
         case M_LIFE:
-            if (fighter[tgt].sts[S_DEAD] == 1)
+            if (fighter[target_fighter_index].sts[S_DEAD] == 1)
             {
-                for (a = 0; a < 24; a++)
+                for (stat_index = 0; stat_index < 24; stat_index++)
                 {
-                    fighter[tgt].sts[a] = 0;
+                    fighter[target_fighter_index].sts[stat_index] = 0;
                 }
-                fighter[tgt].hp = 1;
-                fighter[tgt].aframe = 0;
+                fighter[target_fighter_index].hp = 1;
+                fighter[target_fighter_index].aframe = 0;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
         case M_FULLLIFE:
-            if (fighter[tgt].sts[S_DEAD] == 1)
+            if (fighter[target_fighter_index].sts[S_DEAD] == 1)
             {
-                for (a = 0; a < 24; a++)
+                for (stat_index = 0; stat_index < 24; stat_index++)
                 {
-                    fighter[tgt].sts[a] = 0;
+                    fighter[target_fighter_index].sts[stat_index] = 0;
                 }
-                fighter[tgt].hp = fighter[tgt].mhp;
-                fighter[tgt].aframe = 0;
+                fighter[target_fighter_index].hp = fighter[target_fighter_index].mhp;
+                fighter[target_fighter_index].aframe = 0;
             }
             else
             {
-                ta[tgt] = MISS;
+                ta[target_fighter_index] = MISS;
             }
             break;
     }
@@ -1300,17 +1294,17 @@ static void heal_one_ally(int caster, int tgt, int spell_number)
  * function was created to allow for different mp consumption rates.
  * \note this is the only place that mrp is used.
  *
- * \param   who Index of caster
+ * \param   fighter_index Index of caster
  * \param   spell_number Spell number
  * \returns needed MP or 0 if insufficient MP
  */
-int mp_needed(int who, int spell_number)
+int mp_needed(size_t fighter_index, int spell_number)
 {
     int amt;
 
     if (spell_number > 0)
     {
-        amt = magic[spell_number].mpc * fighter[who].mrp / 100;
+        amt = magic[spell_number].mpc * fighter[fighter_index].mrp / 100;
         if (amt < 1)
         {
             amt = 1;
@@ -1361,37 +1355,37 @@ int non_dmg_save(int tgt, int per)
  * resistance to the passed element.  The adjusted value is
  * then returned.
  *
- * \param   tgt Target
- * \param   rs Rune/element
- * \param   amt Amount of resistance to given rune
+ * \param   target_fighter_index Target
+ * \param   rune_index Rune/element
+ * \param   amt Amount of resistence to given rune
  * \returns difference of resistance to damage given by rune
  */
-int res_adjust(int tgt, int rs, int amt)
+int res_adjust(size_t target_fighter_index, size_t rune_index, int amt)
 {
     int ad, b;
     s_fighter tf;
+    char current_res;
 
-    if (rs < RESIST_EARTH || rs > RESIST_TIME)
+    if (rune_index >= R_TOTAL_RES)
     {
         return amt;
     }
-    eResistance resistanceIndex = (eResistance)rs;
-
-    tf = status_adjust(tgt);
-    signed int resistance = tf.resistances.GetResistanceAmount(resistanceIndex);
     ad = amt;
-    if (resistance < 0)
+    tf = status_adjust(target_fighter_index);
+    current_res = tf.res[rune_index];
+    if (current_res < 0)
     {
-        b = 10 + abs(resistance);
+        b = 10 + abs(current_res);
         ad = ad * b / 10;
     }
-    if (resistance > 10)
+    else if (current_res > 10)
     {
-        ad = ((ad * (resistance - 10)) / 10) * -1;
+        b = (current_res - 10) * ad;
+        ad = -1 * (b / 10);
     }
-    if (resistance >= 1 && resistance <= 10)
+    else if (current_res >= 1 && current_res <= 10)
     {
-        ad -= ad * resistance / 10;
+        ad -= ad * current_res / 10;
     }
     return ad;
 }
@@ -1411,24 +1405,20 @@ int res_throw(int tgt, int rs)
 {
     s_fighter tf;
 
-    if (rs < RESIST_EARTH || rs > RESIST_TIME)
+    if (rs > R_TIME || rs < R_EARTH)
     {
         return 0;
     }
-    eResistance resistanceIndex = (eResistance)rs;
-
     tf = status_adjust(tgt);
-    signed int resistance = tf.resistances.GetResistanceAmount(resistanceIndex);
-
-    if (resistance < 1)
+    if (tf.res[rs] < 1)
     {
         return 0;
     }
-    if (resistance >= 10)
+    if (tf.res[rs] >= 10)
     {
         return 1;
     }
-    if (rand() % 10 < resistance)
+    if (rand() % 10 < tf.res[rs])
     {
         return 1;
     }
@@ -1442,12 +1432,12 @@ int res_throw(int tgt, int rs)
  * This is used to set things like poison and regen
  * which activate based on the combat timer.
  *
- * \param   who Index of character affected
+ * \param   fighter_index Index of character affected
  * \param   ss Which stat is being affected
  */
-static void set_timed_sts_effect(int who, int ss)
+static void set_timed_sts_effect(size_t fighter_index, int ss)
 {
-    fighter[who].sts[ss] = rcount + 1;
+    fighter[fighter_index].sts[ss] = rcount + 1;
 }
 
 
@@ -1464,35 +1454,39 @@ static void set_timed_sts_effect(int who, int ss)
  * \param   target_index: Target
  * \param   split: Total damage, split among targets
  */
-void special_damage_oneall_enemies(int caster_index, int spell_dmg,
-                                   int rune_type, int target_index, int split)
+void special_damage_oneall_enemies(size_t caster_index, int spell_dmg, int rune_type, size_t target_index, int split)
 {
-    int a, b = 0, average_damage = 1, first_target, last_target,
-           multiple_targets = 0, number_of_enemies = 0;
+    int b = 0, average_damage = 1, multiple_targets = 0, number_of_enemies = 0;
+    size_t first_target, last_target;
+    size_t fighter_index;
 
     if (target_index == SEL_ALL_ENEMIES)
     {
-        if (caster_index < PARTY_SIZE)
+        if (caster_index < PSIZE)
         {
             /* Enemies are the monsters; you are attacking */
-            first_target = PARTY_SIZE;
+            first_target = PSIZE;
             last_target = num_enemies;
-            for (a = PARTY_SIZE; a < PARTY_SIZE + num_enemies; a++)
-                if (fighter[a].sts[S_DEAD] == 0)
+            for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+            {
+                if (fighter[fighter_index].sts[S_DEAD] == 0)
                 {
                     number_of_enemies++;
                 }
+            }
         }
         else
         {
             /* Enemies are your party members; monsters are attacking */
             first_target = 0;
             last_target = numchrs;
-            for (a = 0; a < numchrs; a++)
-                if (fighter[a].sts[S_DEAD] == 0)
+            for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+            {
+                if (fighter[fighter_index].sts[S_DEAD] == 0)
                 {
                     number_of_enemies++;
                 }
+            }
         }
         multiple_targets = 1;
     }
@@ -1522,60 +1516,64 @@ void special_damage_oneall_enemies(int caster_index, int spell_dmg,
         average_damage = average_damage / number_of_enemies;
     }
 
-    for (a = first_target; a < first_target + last_target; a++)
+    for (fighter_index = first_target; fighter_index < first_target + last_target; fighter_index++)
     {
-        if (fighter[a].sts[S_DEAD] == 0 && fighter[a].mhp > 0)
+        if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].mhp > 0)
         {
-            tempd = status_adjust(a);
-            b = do_shell_check(a, average_damage);
+            tempd = status_adjust(fighter_index);
+            b = do_shell_check(fighter_index, average_damage);
             b -= tempd.stats[A_MAG];
             if (b < 0)
             {
                 b = 0;
             }
-            b = res_adjust(a, rune_type, b);
-            if (fighter[a].sts[S_STONE] > 0 && rune_type != R_BLACK
-                    && rune_type != R_WHITE && rune_type != R_EARTH
-                    && rune_type != R_WATER)
+            b = res_adjust(fighter_index, rune_type, b);
+            if (fighter[fighter_index].sts[S_STONE] > 0
+                && rune_type != R_BLACK
+                && rune_type != R_WHITE
+                && rune_type != R_EARTH
+                && rune_type != R_WATER)
             {
-                b = b / 10;
+                b /= 10;
             }
-            ta[a] = 0 - b;
+            ta[fighter_index] = 0 - b;
             if (b < 0 && rune_type == R_POISON)
             {
-                if (!res_throw(a, rune_type) && !non_dmg_save(a, 75))
+                if (!res_throw(fighter_index, rune_type) && !non_dmg_save(fighter_index, 75))
                 {
-                    set_timed_sts_effect(a, S_POISON);
+                    set_timed_sts_effect(fighter_index, S_POISON);
                 }
             }
-            if (ta[a] != 0)
+            if (ta[fighter_index] != 0)
             {
-                fighter[a].sts[S_SLEEP] = 0;
+                fighter[fighter_index].sts[S_SLEEP] = 0;
             }
         }
         else
         {
-            ta[a] = 0;
+            ta[fighter_index] = 0;
         }
     }
     display_amount(first_target, FDECIDE, multiple_targets);
-    for (a = first_target; a < first_target + last_target; a++)
-        if (ta[a] != MISS)
-        {
-            adjust_hp(a, ta[a]);
-        }
-    b = 0;
-    for (a = first_target; a < first_target + last_target; a++)
+    for (fighter_index = first_target; fighter_index < first_target + last_target; fighter_index++)
     {
-        if (fighter[a].sts[S_DEAD] == 0 && fighter[a].hp <= 0)
+        if (ta[fighter_index] != MISS)
         {
-            fkill(a);
-            ta[a] = 1;
+            adjust_hp(fighter_index, ta[fighter_index]);
+        }
+    }
+    b = 0;
+    for (fighter_index = first_target; fighter_index < first_target + last_target; fighter_index++)
+    {
+        if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].hp <= 0)
+        {
+            fkill(fighter_index);
+            ta[fighter_index] = 1;
             b++;
         }
         else
         {
-            ta[a] = 0;
+            ta[fighter_index] = 0;
         }
     }
     if (b > 0)
@@ -1590,15 +1588,14 @@ void special_damage_oneall_enemies(int caster_index, int spell_dmg,
  *
  * Special spells like warp and vision.
  *
- * \param   caster Index of caster
+ * \param   caster_fighter_index Index of Caster
  * \param   spell_number Index of spell
  */
-static void special_spells(int caster, int spell_number)
+static void special_spells(size_t caster_fighter_index, size_t spell_number)
 {
-    if (caster >= PARTY_SIZE)
+    if (caster_fighter_index >= PSIZE)
     {
-        sprintf(strbuf, _("Enemy %d tried to cast %s?!"), caster,
-                magic[spell_number].name);
+        sprintf(strbuf, _("Enemy %d tried to cast %s?!"), (int)caster_fighter_index, magic[spell_number].name);
         klog(strbuf);
     }
     switch (spell_number)
@@ -1622,7 +1619,7 @@ static void special_spells(int caster, int spell_number)
             }
             else
             {
-                if (!strcmp(curmap, "main"))
+                if (curmap == "main")
                 {
                     /* TT: I would like to have a check here: if the player casts Warp,
                      * the player can select WHERE to warp to, instead of just to the
@@ -1633,8 +1630,7 @@ static void special_spells(int caster, int spell_number)
                 }
                 else
                 {
-                    change_map("main", g_map.warpx, g_map.warpy, g_map.warpx,
-                               g_map.warpy);
+                    change_map("main", g_map.warpx, g_map.warpy, g_map.warpx, g_map.warpy);
                 }
             }
             break;
@@ -1651,32 +1647,37 @@ static void special_spells(int caster, int spell_number)
  * This function does all of the damage calculating for damage
  * spells, and fills the ta[] array with the damage amounts.
  *
- * \param   caster Caster
+ * \param   caster_fighter_index Caster
  * \param   spell_number Spell number
- * \param   st Starting target
- * \param   nt Ending target
+ * \param   start_fighter_index Starting target
+ * \param   end_fighter_index Ending target
  */
-static void spell_damage(int caster, int spell_number, int st, int nt)
+static void spell_damage(size_t caster_fighter_index, int spell_number, size_t start_fighter_index, size_t end_fighter_index)
 {
     int a = 0, b = 0, ad = 0, rt = 0, ne = 0;
+    size_t fighter_index = 0;
 
-    if (nt > 1)
+    if (end_fighter_index > 1)
     {
-        if (caster < PARTY_SIZE)
+        if (caster_fighter_index < PSIZE)
         {
-            for (a = PARTY_SIZE; a < PARTY_SIZE + num_enemies; a++)
-                if (fighter[a].sts[S_DEAD] == 0)
+            for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+            {
+                if (fighter[fighter_index].sts[S_DEAD] == 0)
                 {
                     ne++;
                 }
+            }
         }
         else
         {
-            for (a = 0; a < numchrs; a++)
-                if (fighter[a].sts[S_DEAD] == 0)
+            for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+            {
+                if (fighter[fighter_index].sts[S_DEAD] == 0)
                 {
                     ne++;
                 }
+            }
         }
     }
     else
@@ -1690,7 +1691,7 @@ static void spell_damage(int caster, int spell_number, int st, int nt)
     rt = magic[spell_number].elem;
     ad =
         magic[spell_number].dmg +
-        (fighter[caster].stats[A_INT + magic[spell_number].stat] *
+        (fighter[caster_fighter_index].stats[A_INT + magic[spell_number].stat] *
          magic[spell_number].bon / 100);
     if (ad < DMG_RND_MIN * 5)
     {
@@ -1704,7 +1705,7 @@ static void spell_damage(int caster, int spell_number, int st, int nt)
     {
         ad = 1;
     }
-    a = fighter[caster].stats[A_AUR + magic[spell_number].stat];
+    a = fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat];
     ad = ad * a / 100;
     if (ad < 0)
     {
@@ -1714,40 +1715,42 @@ static void spell_damage(int caster, int spell_number, int st, int nt)
     {
         ad = ad / ne;
     }
-    for (a = st; a < st + nt; a++)
+    for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
     {
-        if (fighter[a].sts[S_DEAD] == 0 && fighter[a].mhp > 0)
+        if (fighter[fighter_index].sts[S_DEAD] == 0 && fighter[fighter_index].mhp > 0)
         {
-            tempd = status_adjust(a);
-            b = do_shell_check(a, ad);
+            tempd = status_adjust(fighter_index);
+            b = do_shell_check(fighter_index, ad);
             b -= tempd.stats[A_MAG];
             if (b < 0)
             {
                 b = 0;
             }
-            b = res_adjust(a, rt, b);
-            if (fighter[a].sts[S_STONE] > 0 && rt != R_BLACK && rt != R_WHITE
-                    && rt != R_EARTH && rt != R_WATER)
+            b = res_adjust(fighter_index, rt, b);
+            if (fighter[fighter_index].sts[S_STONE] > 0
+                && rt != R_BLACK
+                && rt != R_WHITE
+                && rt != R_EARTH
+                && rt != R_WATER)
             {
                 b = b / 10;
             }
-            ta[a] = 0 - b;
+            ta[fighter_index] = 0 - b;
             if (b < 0 && rt == R_POISON)
             {
-                if (!res_throw(a, rt)
-                        && !non_dmg_save(a, magic[spell_number].hit))
+                if (!res_throw(fighter_index, rt) && !non_dmg_save(fighter_index, magic[spell_number].hit))
                 {
-                    set_timed_sts_effect(a, S_POISON);
+                    set_timed_sts_effect(fighter_index, S_POISON);
                 }
             }
-            if (ta[a] != 0)
+            if (ta[fighter_index] != 0)
             {
-                fighter[a].sts[S_SLEEP] = 0;
+                fighter[fighter_index].sts[S_SLEEP] = 0;
             }
         }
         else
         {
-            ta[a] = 0;
+            ta[fighter_index] = 0;
         }
     }
 }
@@ -1761,11 +1764,11 @@ static void spell_damage(int caster, int spell_number, int st, int nt)
  *
  * \returns a struct by value (PH: a good thing???)
  */
-s_fighter status_adjust(int caster)
+s_fighter status_adjust(size_t fighter_index)
 {
     s_fighter tf;
 
-    tf = fighter[caster];
+    tf = fighter[fighter_index];
     if (tf.sts[S_STRENGTH] > 0)
     {
         tf.stats[A_ATT] += tf.stats[A_STR] * tf.sts[S_STRENGTH] * 50 / 100;
@@ -1828,9 +1831,3 @@ s_fighter status_adjust(int caster)
     return tf;
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

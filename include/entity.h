@@ -43,14 +43,7 @@ void place_ent(t_entity, int, int);  /*  intrface.c, kq.c  */
 void count_entities(void);      /*  kq.c  */
 
 
-/* move modes */
-#define MM_STAND  0
-#define MM_WANDER 1
-#define MM_SCRIPT 2
-#define MM_CHASE  3
-#define MM_TARGET 4
-
-typedef enum eCommands
+enum eCommands
 {
     COMMAND_NONE            = 0,
     COMMAND_MOVE_UP         = 1,
@@ -64,17 +57,10 @@ typedef enum eCommands
     COMMAND_MOVETO_Y        = 9,
     COMMAND_FACE            = 10,
     COMMAND_KILL            = 11,
-} eCommands;
 
-
-#define ENTITY_NONE -1
+    NUM_COMMANDS // always last
+};
 
 
 #endif  /* __ENTITY_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

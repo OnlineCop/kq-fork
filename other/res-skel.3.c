@@ -2,4 +2,5 @@
 
 
 
-s_effect eff[NUM_EFFECTS] = {
+s_effect eff[NUM_EFFECTS] =
+{

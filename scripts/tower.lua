@@ -3,12 +3,12 @@
 -- /*
 -- {
 --
--- P_ORACLE: Spoke to Oracle in the Tower
+-- progress.oracle: Spoke to Oracle in the Tower
 --   (0) Haven't spoken to her yet
 --   (1) She told you your quest, requested help from monsters
 --   (2) You helped with monsters (stopped them from getting to the portal) (not done)
 --
--- P_ORACLEMONSTERS: Status of the monsters in the caves below
+-- progress.oraclemonsters: Status of the monsters in the caves below
 --   (0) You haven't even seen the monsters take the Statue thru the portal
 --   (1) Monsters thru portal: Haven't told Oracle about it
 --   (2) Monsters thru portal: Told Oracle about it
@@ -16,30 +16,30 @@
 --   (4) Oracle asks you to take care of monsters; they're still there
 --   (5) Monsters are gone (not done)
 --
--- P_FTOTAL: Total number of floor switches activated
--- P_FLOOR1..P_FLOOR4: Status of this floor switch
+-- progress.ftotal: Total number of floor switches activated
+-- progress.floor1..progress.floor4: Status of this floor switch
 -- Hint: press bottom left and top right.
 --
 -- SI_BSTONES: # of Black stones in your inventory
 -- SI_WSTONES: # of White stones in your inventory
--- P_STONE1..P_STONE4: Whether this stone is in your inventory
--- P_WALL1..P_WALL4: Which stone (if any) is in this wall slot
+-- progress.stone1..progress.stone4: Whether this stone is in your inventory
+-- progress.wall1..progress.wall4: Which stone (if any) is in this wall slot
 -- Hint: Stones should be placed in the holes in this order
 -- from left to right: black, white, white, black.
 --
--- P_DOOROPEN: (4: Single treasure, left floor switch)
--- P_DOOROPEN2: (3: Treasure room, bottom)
--- P_TREASUREROOM: (3: Treasure room, top)
+-- progress.dooropen: (4: Single treasure, left floor switch)
+-- progress.dooropen2: (3: Treasure room, bottom)
+-- progress.treasureroom: (3: Treasure room, top)
 --
--- P_TOWEROPEN: Whether you can return and talk to the Oracle
+-- progress.toweropen: Whether you can return and talk to the Oracle
 --   (0) Never spoke to Oracle, cannot enter Tower
 --   (1) Never spoke to Oracle, can enter Tower
 --   (2) Spoke to Oracle, cannot enter Tower
 --   (3) Spoke to Oracle, can enter Tower (not done)
 --
--- P_DRAGONDOWN: Whether the stone dragon is alive or not
+-- progress.dragondown: Whether the stone dragon is alive or not
 --
--- P_DENORIAN: Status of the Denorian statue
+-- progress.denorian: Status of the Denorian statue
 --   (0) You have not spoken to the Dville town council
 --   (1) If you refused to help the Denorians
 --   (2) You've agreed to help: haven't found Demnas
@@ -48,7 +48,7 @@
 --   (5) Broken statue returned to the Denorians
 --   (6) 2nd half of broken statue returned to Denorians (not done)
 --
--- still need to complete P_ORACLE and P_ORACLEMONSTERS
+-- still need to complete progress.oracle and progress.oraclemonsters
 -- }
 -- */
 
@@ -69,12 +69,12 @@ function entity_handler(en)
     --   2: Monsters are trying to get into the TravelPoint
     -- These are actually all related, but she does not know that; she suspects as much, though
     --
-    -- P_ORACLE: Spoke to Oracle in the Tower
+    -- progress.oracle: Spoke to Oracle in the Tower
     --   (0) Have not spoken to her yet
     --   (1) Spoke to her; she requested help from monsters
     --   (2) You helped with monsters (stopped them from getting to the portal)
     --
-    -- P_ORACLEMONSTERS: Status of the monsters in the caves below
+    -- progress.oraclemonsters: Status of the monsters in the caves below
     --   (0) You haven't seen the monsters take the Statue thru the portal
     --   (1) Monsters thru portal: Have not told Oracle about it yet
     --   (2) Monsters thru portal: Told Oracle about it
@@ -82,7 +82,7 @@ function entity_handler(en)
     --   (4) Oracle asks you to take care of monsters; they're still there
     --   (5) Monsters are gone
     --
-    -- P_DENORIAN: Status of the stolen statue
+    -- progress.denorian: Status of the stolen statue
     --   (0) You have not spoken to the Dville town council
     --   (1) If you refused to help the Denorians
     --   (2) You've agreed to help: haven't found Demnas
@@ -93,9 +93,9 @@ function entity_handler(en)
     -- }
     -- */
 
-    if (get_progress(P_ORACLEMONSTERS) == 0) then
+    if (progress.oraclemonsters == 0) then
       -- 0: // You haven't seen the monsters take the Statue thru the portal
-      if (get_progress(P_ORACLE) == 0) then
+      if (progress.oracle == 0) then
         bubble(en, _"$0, thank you for coming.")
         if (get_numchrs() == 1) then
           bubble(HERO1, _"Hello, um... Oracle. How did you know I was coming?")
@@ -104,7 +104,7 @@ function entity_handler(en)
         end
         bubble(en, _"Tsorin sent a messenger here, of course.")
         bubble(en, _"I'm surprised that you came up to see me, seeing as how the TravelPoint is back in the caves from whence you came.")
-        if (get_progress(P_DENORIAN) == 0) then
+        if (progress.denorian == 0) then
           -- 0: // Haven't spoken to Denorian Council, so know nothing about
           --    // where to look.
           bubble(en, _"I am glad you stopped by, though. There is civil unrest in the goblin lands to the south.")
@@ -125,7 +125,7 @@ function entity_handler(en)
             bubble(en, _"That is too bad. But if you would like to help in the future, please talk to the head of the Denorian Council.")
           end
           bubble(en, _"The Denorian village is south of here, by the mountain stream.")
-        elseif (get_progress(P_DENORIAN) == 1) then
+        elseif (progress.denorian == 1) then
           -- 1: // You refused the Denorian's plea and were kicked out of town
           bubble(en, _"I am glad you stopped by, though. There is civil unrest in the goblin lands to the south.")
           if (get_numchrs() == 1) then
@@ -142,7 +142,7 @@ function entity_handler(en)
             bubble(HERO1, _"We are a bit hurried in our quest to find... well, something of importance.")
           end
           bubble(en, _"Oh, I see. Your quest must be very important, then. Very well, I shall ask someone else.")
-        elseif (get_progress(P_DENORIAN) == 2) then
+        elseif (progress.denorian == 2) then
           -- 2: // You told the Denorian Council you would help (haven't found
           --    // anything yet)
           bubble(en, _"I am glad you stopped by, though. There is civil unrest in the goblin lands to the south.")
@@ -153,7 +153,7 @@ function entity_handler(en)
             bubble(HERO2, _"We haven't found anything yet, however.")
           end
           bubble(en, _"Don't worry; I'm sure you'll find something. Good luck to you!")
-        elseif (get_progress(P_DENORIAN) == 3) then
+        elseif (progress.denorian == 3) then
           -- 3: // You found Demnas (but not the troll), but didn't report it
           --    // to the Denorians; you still have the the broken statue with
           --    // you.
@@ -175,7 +175,7 @@ function entity_handler(en)
           else
             bubble(en, _"Well, that's alright. You've done enough already. Thank you so very much.")
           end
-        elseif (get_progress(P_DENORIAN) == 4) then
+        elseif (progress.denorian == 4) then
           -- 4: You found the troll, too, but you did not return the broken
           --    statue to the Denorians. You still have it with you.
           bubble(en, _"I am glad you stopped by, though. I hear...")
@@ -186,7 +186,7 @@ function entity_handler(en)
             bubble(HERO1, _"This is the Denorian Statue. We rescued it from a guy named Demnas and his troll.")
           end
           bubble(en, _"So you did... What happened to it? Part of it is missing.")
-          if (get_progress(P_TALK_CORIN) == 0) then
+          if (progress.talk_corin == 0) then
             -- // You fought the troll but didn't talk to Corin, so still
             -- // don't know about Malkaron. Which was stupid, since he was
             -- // standing RIGHT THERE.
@@ -216,11 +216,11 @@ function entity_handler(en)
             bubble(en, _"Yes, I certainly hope you get to the bottom of this.")
             bubble(en, _"Would you return the statue to the Denorian village? It is a very important treasure.")
           end
-        elseif (get_progress(P_DENORIAN) == 5) then
+        elseif (progress.denorian == 5) then
           -- 5: The broken statue was returned to the village
           bubble(en, _"I am glad you stopped by. The Denorians sent word that you returned part of their statue.")
           bubble(HERO1, _"Yea, well, someone had to do something about that whole mess...")
-          if (get_progress(P_TALK_CORIN) == 0) then
+          if (progress.talk_corin == 0) then
             bubble(en, _"An important question is, who has the other half?")
             if (get_numchrs() == 1) then
               bubble(HERO1, _"That's a good question. I'm searching for the same person... or persons, for that matter.")
@@ -245,8 +245,8 @@ function entity_handler(en)
             bubble(HERO1, _"Yes, we were warned to keep our numbers small. That's why we're traveling in a party of only two.")
           end
           bubble(en, _"Well, I wish you luck. Thank you for all you've done already.")
-        elseif (get_progress(P_DENORIAN) == 6) then
-          -- 6: // We can't get here with P_ORACLEMONSTERS == 0, as the player
+        elseif (progress.denorian == 6) then
+          -- 6: // We can't get here with progress.oraclemonsters == 0, as the player
           --    // would have seen Malkaron's men take the statue thru the
           --    // portal already.
         end
@@ -288,17 +288,17 @@ function entity_handler(en)
         bubble(en, _"Good luck. I hope to meet with you again.")
 
         set_autoparty(0)
-        set_progress(P_ORACLE, 1)
-      elseif (get_progress(P_ORACLE) == 1) then
+        progress.oracle = 1
+      elseif (progress.oracle == 1) then
         bubble(en, _"The monsters in the caves below appeared out of nowhere. Please get rid of them so travelers who wish to use my TravelPoint may do so.")
       else
-        -- We will never get P_ORACLE > 1 here since P_ORACLEMONSTERS will
+        -- We will never get progress.oracle > 1 here since progress.oraclemonsters will
         -- modify that separately.
       end
-    elseif (get_progress(P_ORACLEMONSTERS) == 1) then
-      -- 1: // Regardless of the status of P_ORACLE, you will tell her of
+    elseif (progress.oraclemonsters == 1) then
+      -- 1: // Regardless of the status of progress.oracle, you will tell her of
       --    // Malkaron's monsters with the statue.
-      if (get_progress(P_DENORIAN) == 0) then
+      if (progress.denorian == 0) then
         -- // You don't know what's going on with the Oracle's statue
         if (get_numchrs() == 1) then
           bubble(HERO1, _"Oracle! I saw Malkaron's monsters take some statue that looked like you through the portal below!")
@@ -318,11 +318,11 @@ function entity_handler(en)
         end
       end
       bubble(en, _"You must go after it! That statue is very important to my people.")
-      set_progress(P_ORACLEMONSTERS, 2)
-    elseif (get_progress(P_ORACLEMONSTERS) == 2) then
+      progress.oraclemonsters = 2
+    elseif (progress.oraclemonsters == 2) then
       -- 2: // You told the Oracle about the monsters going thru the portal
       bubble(en, _"Please hurry and get that statue back!")
-    elseif (get_progress(P_ORACLEMONSTERS) == 3) then
+    elseif (progress.oraclemonsters == 3) then
       -- 3: // Followed Malkaron's men thru portal; monsters still in cave
       bubble(en, _"Welcome back.")
       bubble(HERO1, _"Oracle! The monsters went through the portal below with your statue!")
@@ -332,18 +332,18 @@ function entity_handler(en)
         bubble(HERO1, _"We went through the portal, but were was sent to Maldea somehow.")
       end
       bubble(en, _"Yes, the statue probably disrupted the portal somehow. I'm glad to see you made it back safely.")
-      if (get_progress(P_ORACLE) == 0) then
+      if (progress.oracle == 0) then
         bubble(en, _"I ask you to find the missing statue, if you possibly can.")
       else
         bubble(en, _"Please continue your search for the statue. It is very important to my people.")
       end
       bubble(en, _"And would you be able to take care of the monsters in the caves below?")
-      set_progress(P_ORACLEMONSTERS, 4)
-    elseif (get_progress(P_ORACLEMONSTERS) == 4) then
+      progress.oraclemonsters = 4
+    elseif (progress.oraclemonsters == 4) then
       -- 4: // Oracle asked you to take care of monsters; they're still there
       bubble(en, _"I thank you for looking into the missing statue situation.")
       bubble(en, _"There are still monsters lurking around in the caves below. Please get rid of them.")
-    elseif (get_progress(P_ORACLEMONSTERS) == 5) then
+    elseif (progress.oraclemonsters == 5) then
       -- 5: // Monsters are gone
       bubble(en, _"The monsters are gone! Thank you so much!")
     end
@@ -377,25 +377,25 @@ function refresh()
   LOC_draw_dragon()
 
   -- Floor switches (2: Floor switches)
-  LOC_set_floor("floor1", P_FLOOR1, "floor1a", "floor1b")
-  LOC_set_floor("floor2", P_FLOOR2, "floor2a", "floor2b")
-  LOC_set_floor("floor3", P_FLOOR3, "floor3a", "floor3b")
-  LOC_set_floor("floor4", P_FLOOR4, "floor4a", "floor4b")
+  LOC_set_floor("floor1", progress.floor1, "floor1a", "floor1b")
+  LOC_set_floor("floor2", progress.floor2, "floor2a", "floor2b")
+  LOC_set_floor("floor3", progress.floor3, "floor3a", "floor3b")
+  LOC_set_floor("floor4", progress.floor4, "floor4a", "floor4b")
 
   -- Wall holes (3: Treasure room, top left)
-  LOC_set_wall("wall1", P_WALL1)
-  LOC_set_wall("wall2", P_WALL2)
-  LOC_set_wall("wall3", P_WALL3)
-  LOC_set_wall("wall4", P_WALL4)
+  LOC_set_wall("wall1", progress.wall1)
+  LOC_set_wall("wall2", progress.wall2)
+  LOC_set_wall("wall3", progress.wall3)
+  LOC_set_wall("wall4", progress.wall4)
 
   -- Door (3: Treasure room, top)
-  LOC_set_door("door3_1", P_TREASUREROOM, 40)
+  LOC_set_door("door3_1", progress.treasureroom, 40)
 
   -- Door (3: Treasure room, bottom)
-  LOC_set_door("door3_2", P_DOOROPEN2, 10)
+  LOC_set_door("door3_2", progress.dooropen2, 10)
 
   -- Door (4: Single treasure, left floor switch)
-  if (get_progress(P_DOOROPEN) == 1) then
+  if (progress.dooropen == 1) then
     x, y = marker("switch")
     set_btile(x, y, 190)
     set_btile(x + 1, y, 189)
@@ -404,19 +404,19 @@ function refresh()
     set_btile(x, y, 189)
     set_btile(x + 1, y, 190)
   end
-  LOC_set_door("door4", P_DOOROPEN, 10)
+  LOC_set_door("door4", progress.dooropen, 10)
 
   -- Black stone (1: Main entrance, right)
---  LOC_get_stone("stone1", P_STONE1, 20, 222)
+--  LOC_get_stone("stone1", progress.stone1, 20, 222)
 
   -- White stone (2: Floor switches, bottom left)
---  LOC_get_stone("stone2", P_STONE2, 21, 221)
+--  LOC_get_stone("stone2", progress.stone2, 21, 221)
 
   -- White stone (3: Treasure room, top right)
---  LOC_get_stone("stone3", P_STONE3, 22, 221)
+--  LOC_get_stone("stone3", progress.stone3, 22, 221)
 
   -- Black stone (4: Single treasure, treasure chest)
-  if (get_progress(P_STONE4) == 1) then
+  if (progress.stone4 == 1) then
     showch("stone4", -1)
   end
 end
@@ -439,8 +439,8 @@ function zone_handler(zn)
 
   -- Front doors (1: Main entrance)
   elseif (zn == 1) then
-    if (get_progress(P_ORACLE) > 0) then
-      set_progress(P_TOWEROPEN, 2)
+    if (progress.oracle > 0) then
+      progress.toweropen = 2
     end
     LOC_reset_progress()
     change_map("main", "tower")
@@ -487,70 +487,70 @@ function zone_handler(zn)
 
   -- Floor switch (2: Floor switches, top left)
   elseif (zn == 12) then
-    LOC_floor_switch(P_FLOOR1)
+    LOC_floor_switch(progress.floor1)
 
   -- Floor switch (2: Floor switches, top right)
   elseif (zn == 13) then
-    LOC_floor_switch(P_FLOOR3)
+    LOC_floor_switch(progress.floor3)
 
   -- Floor switch (2: Floor switches, bottom left)
   elseif (zn == 14) then
-    LOC_floor_switch(P_FLOOR2)
+    LOC_floor_switch(progress.floor2)
 
   -- Floor switch (2: Floor switches, bottom right)
   elseif (zn == 15) then
-    LOC_floor_switch(P_FLOOR4)
+    LOC_floor_switch(progress.floor4)
 
   -- Wall switch (3: Treasure room, top left)
   elseif (zn == 16) then
-    LOC_stoner("wall1", P_WALL1)
+    LOC_stoner("wall1", progress.wall1)
 
   -- Wall switch (3: Treasure room, top right)
   elseif (zn == 17) then
-    LOC_stoner("wall2", P_WALL2)
+    LOC_stoner("wall2", progress.wall2)
 
   -- Wall switch (3: Treasure room, bottom left)
   elseif (zn == 18) then
-    LOC_stoner("wall3", P_WALL3)
+    LOC_stoner("wall3", progress.wall3)
 
   -- Wall switch (3: Treasure room, bottom right)
   elseif (zn == 19) then
-    LOC_stoner("wall4", P_WALL4)
+    LOC_stoner("wall4", progress.wall4)
 
   -- Black stone (1: Main entrance, right)
   elseif (zn == 20) then
-    if (get_progress(P_STONE1) == 0) then
-      set_progress(P_STONE1, 1)
+    if (progress.stone1 == 0) then
+      progress.stone1 = 1
       add_special_item(SI_BLACKSTONE)
       sfx(5)
       msg(_"Black Stone procured!", 15, 0)
-      LOC_get_stone("stone1", P_STONE1, 20, 222)
+      LOC_get_stone("stone1", progress.stone1, 20, 222)
     end
 
   -- White stone (2: Floor switches, bottom left)
   elseif (zn == 21) then
-    if (get_progress(P_STONE2) == 0) then
-      set_progress(P_STONE2, 1)
+    if (progress.stone2 == 0) then
+      progress.stone2 = 1
       add_special_item(SI_WHITESTONE)
       sfx(5)
       msg(_"White Stone procured!", 15, 0)
-      LOC_get_stone("stone2", P_STONE2, 21, 221)
+      LOC_get_stone("stone2", progress.stone2, 21, 221)
     end
 
   -- White stone (3: Treasure room)
   elseif (zn == 22) then
-    if (get_progress(P_STONE3) == 0) then
-      set_progress(P_STONE3, 1)
+    if (progress.stone3 == 0) then
+      progress.stone3 = 1
       add_special_item(SI_WHITESTONE)
       sfx(5)
       msg(_"White Stone procured!", 15, 0)
-      LOC_get_stone("stone3", P_STONE3, 22, 221)
+      LOC_get_stone("stone3", progress.stone3, 22, 221)
     end
 
   -- Treasure chest (4: Single treasure)
   elseif (zn == 23) then
-    if (get_progress(P_STONE4) == 0) then
-      set_progress(P_STONE4, 1)
+    if (progress.stone4 == 0) then
+      progress.stone4 = 1
       add_special_item(SI_BLACKSTONE)
       sfx(5)
       msg(_"Black Stone procured!", 15, 0)
@@ -559,26 +559,26 @@ function zone_handler(zn)
 
   -- Floor switch (4: Single treasure, left)
   elseif (zn == 24) then
-    if (get_progress(P_DOOROPEN) == 0) then
-      set_progress(P_DOOROPEN, 1)
-      LOC_set_door("door4", P_DOOROPEN, 10)
+    if (progress.dooropen == 0) then
+      progress.dooropen = 1
+      LOC_set_door("door4", progress.dooropen, 10)
       refresh()
     end
 
   -- Floor switch (4: Single treasure, right)
   elseif (zn == 25) then
-    if (get_progress(P_DOOROPEN) == 1) then
-      set_progress(P_DOOROPEN, 0)
+    if (progress.dooropen == 1) then
+      progress.dooropen = 0
       sfx(26)
       refresh()
     end
 
   -- Floor switch (5: Oracle room, left)
   elseif (zn == 26) then
-    if (get_progress(P_DOOROPEN2) == 0) then
+    if (progress.dooropen2 == 0) then
       bubble(HERO1, _"Oh! I think I stepped on a switch!")
-      set_progress(P_DOOROPEN2, 1)
-      LOC_set_door("door3_2", P_DOOROPEN2, 10)
+      progress.dooropen2 = 1
+      LOC_set_door("door3_2", progress.dooropen2, 10)
       refresh()
     end
 
@@ -648,9 +648,9 @@ function zone_handler(zn)
 
   -- Locked door (3: Treasure room)
   elseif (zn == 40) then
-    if (get_progress(P_WALL1) == 1 and get_progress(P_WALL2) == 2 and get_progress(P_WALL3) == 2 and get_progress(P_WALL4) == 1) then
-      set_progress(P_TREASUREROOM, 1)
-      LOC_set_door("door3_1", P_TREASUREROOM, 40)
+    if (progress.wall1 == 1 and progress.wall2 == 2 and progress.wall3 == 2 and progress.wall4 == 1) then
+      progress.treasureroom = 1
+      LOC_set_door("door3_1", progress.treasureroom, 40)
       refresh()
     end
 
@@ -658,7 +658,7 @@ function zone_handler(zn)
 
   -- Guardian Dragon (1: Main entrance)
   elseif (zn == 42) then
-    if (get_progress(P_DRAGONDOWN) == 0) then
+    if (progress.dragondown == 0) then
       bubble(255, _"The Oracle is not to be disturbed!")
       drawmap()
       screen_dump()
@@ -666,7 +666,7 @@ function zone_handler(zn)
       combat(55)
       set_run(1)
       if (get_alldead() == 0) then
-        set_progress(P_DRAGONDOWN, 1)
+        progress.dragondown = 1
         LOC_draw_dragon()
       else
         return
@@ -692,7 +692,7 @@ function LOC_draw_dragon()
   local a
   local x, y = marker("dragon")
 
-  if (get_progress(P_DRAGONDOWN) == 0) then
+  if (progress.dragondown == 0) then
     -- Dragon icon tile (223..228) in the for..loop below:
     local b = 223
     for a = x, x + 2, 1 do
@@ -708,7 +708,7 @@ function LOC_draw_dragon()
       set_zone(a, y, 42)
       b = b + 1
     end
-  elseif (get_progress(P_DRAGONDOWN) == 1) then
+  elseif (progress.dragondown == 1) then
     for a = x, x + 2, 1 do
       set_ftile(a, y - 2, 0)
       set_ftile(a, y - 1, 0)
@@ -724,13 +724,13 @@ end
 
 function LOC_floor_switch(p_floor)
   if (get_progress(p_floor) == 0) then
-    if (get_progress(P_FTOTAL) < 2) then
+    if (progress.ftotal < 2) then
       set_progress(p_floor, 1)
-      set_progress(P_FTOTAL, get_progress(P_FTOTAL) + 1)
+      progress.ftotal = progress.ftotal + 1
     end
   else
     set_progress(p_floor, 0)
-    set_progress(P_FTOTAL, get_progress(P_FTOTAL) - 1)
+    progress.ftotal = progress.ftotal - 1
   end
   refresh()
 end
@@ -754,30 +754,30 @@ end
 
 function LOC_reset_progress()
   -- Reset the Black and White stones on the ground
-  set_progress(P_STONE1, 0)
-  set_progress(P_STONE2, 0)
-  set_progress(P_STONE3, 0)
-  set_progress(P_STONE4, 0)
+  progress.stone1 = 0
+  progress.stone2 = 0
+  progress.stone3 = 0
+  progress.stone4 = 0
   remove_special_item(SI_BLACKSTONE)
   remove_special_item(SI_WHITESTONE)
 
   -- Reset the stones located in the walls
-  set_progress(P_WALL1, 0)
-  set_progress(P_WALL2, 0)
-  set_progress(P_WALL3, 0)
-  set_progress(P_WALL4, 0)
+  progress.wall1 = 0
+  progress.wall2 = 0
+  progress.wall3 = 0
+  progress.wall4 = 0
 
   -- Close the open-by-switch doors
-  set_progress(P_DOOROPEN, 0)
-  set_progress(P_DOOROPEN2, 0)
-  set_progress(P_TREASUREROOM, 0)
+  progress.dooropen = 0
+  progress.dooropen2 = 0
+  progress.treasureroom = 0
 
   -- Reset the holes on the 2nd floor
-  set_progress(P_FTOTAL, 0)
-  set_progress(P_FLOOR1, 0)
-  set_progress(P_FLOOR2, 0)
-  set_progress(P_FLOOR3, 0)
-  set_progress(P_FLOOR4, 0)
+  progress.ftotal = 0
+  progress.floor1 = 0
+  progress.floor2 = 0
+  progress.floor3 = 0
+  progress.floor4 = 0
 end
 
 
@@ -877,7 +877,7 @@ function LOC_stoner(wall, p_wall)
 
   else
     -- Actually, this is already implicitly true
-    if ((get_progress(p_wall) ~= 0) and (get_progress(P_TREASUREROOM) == 0)) then
+    if ((get_progress(p_wall) ~= 0) and (progress.treasureroom == 0)) then
       if (get_progress(p_wall) == 1) then
         -- Remove a White stone
         set_progress(p_wall, 0)

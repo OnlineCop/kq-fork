@@ -31,7 +31,7 @@
  */
 
 
-typedef enum eDirectories
+enum eDirectories
 {
     DATA_DIR        = 0,
     MAP_DIR         = 1,
@@ -39,7 +39,7 @@ typedef enum eDirectories
     MUSIC_DIR       = 3,
     SCRIPT_DIR      = 4,
     SETTINGS_DIR    = 5,
-} eDirectories;
+};
 
 
 #define PCX_DATAFILE   kqres(DATA_DIR, "mpcx.dat")
@@ -62,9 +62,3 @@ const char *get_resource_file_path(const char *, const char *, const char *);
 
 #endif  /* __PLATFORM_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

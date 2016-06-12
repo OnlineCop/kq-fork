@@ -25,7 +25,6 @@
 
 
 #include <allegro.h>
-#include <vector>
 
 
 /*! \file
@@ -34,14 +33,6 @@
  * \date 20060720
  */
 
-class Rect
-{
-    public:
-        unsigned int x;
-        unsigned int y;
-        unsigned int width;
-        unsigned int height;
-};
 
 
 /*! \brief Bounding area box
@@ -54,14 +45,13 @@ class Rect
  * \author TT
  * \date 20060710
  */
-class Bound : public Rect
+struct s_bound
 {
-    public:
-        short left;                  /*!< Left edge of the bounding box */
-        short top;                   /*!< Top edge of the bounding box */
-        short right;                 /*!< Right edge of the bounding box */
-        short bottom;                /*!< Bottom edge of the bounding box */
-        short btile;                 /*!< Index of the tile to draw everywhere BUT here */
+    short left;                  /*!< Left edge of the bounding box */
+    short top;                   /*!< Top edge of the bounding box */
+    short right;                 /*!< Right edge of the bounding box */
+    short bottom;                /*!< Bottom edge of the bounding box */
+    short btile;                 /*!< Index of the tile to draw everywhere BUT here */
 };
 
 
@@ -74,35 +64,25 @@ class Bound : public Rect
  * \author OC
  * \date 20101017
  */
-class BoundArray
+struct s_bound_array
 {
-    public:
-        BoundArray();
-        ~BoundArray();
-
-        void    ClearBounds();
-        
-        void     add_bound(const unsigned short, const unsigned short, const unsigned short, const unsigned short, const unsigned short);
-        Bound*   is_bound(const unsigned short, const unsigned short, const unsigned short, const unsigned short);
-        unsigned int get_bound_index(const unsigned short, const unsigned short, const unsigned short, const unsigned short);
-        size_t   LoadBounds(PACKFILE *);
-        void     RemoveBound(const unsigned int);
-        size_t   SaveBounds(PACKFILE *);
-
-        bool     DoesBoundContainPoint(unsigned int, unsigned int);
-        bool     DoesBoundContainRect(Rect);
-        bool     DoesBoundContainCoordinate(unsigned int, unsigned int, unsigned int, unsigned int);
-
-    protected:
-        std::vector<Bound *> _array;
+    s_bound *array;
+    size_t size;
 };
+
+
+// This line is temporary, but it cuts down a lot of repetition below
+typedef const unsigned short cu_int16;
+
+// Affects a single s_bound object
+s_bound     *is_contained_bound(s_bound *, unsigned int, int, int, int, int);
+void         set_bounds(s_bound *, int, int, int, int, int);
+
+// Affects an entire s_bound_array object array
+unsigned int is_bound(s_bound_array *, cu_int16, cu_int16, cu_int16, cu_int16);
+size_t       load_bounds(s_bound_array *, PACKFILE *);
+size_t       save_bounds(s_bound_array *, PACKFILE *);
 
 
 #endif  /* __BOUNDS_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

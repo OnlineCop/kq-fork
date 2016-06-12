@@ -29,6 +29,12 @@
  * Also some colour manipulation.
  */
 
+#include <assert.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "bounds.h"
 #include "combat.h"
 #include "console.h"
 #include "draw.h"
@@ -40,16 +46,12 @@
 #include "setup.h"
 #include "timing.h"
 
-#include <cassert>
-#include <cctype>
-#include <cstdio>
-#include <cstring>
-
 /* Globals */
 #define MSG_ROWS 4
 #define MSG_COLS 36
 char msgbuf[MSG_ROWS][MSG_COLS];
-int gbx, gby, gbbx, gbby, gbt, gbbw, gbbh, gbbs;
+int gbx, gby, gbbx, gbby, gbbw, gbbh, gbbs;
+eBubbleStemStyle bubble_stem_style;
 unsigned char BLUE = 2, DARKBLUE = 0, DARKRED = 4;
 
 /*  Internal prototypes  */
@@ -65,7 +67,7 @@ static void draw_porttextbox(int, int);
 static void generic_text(int, int, int);
 const char *parse_string(const char *);
 static const char *relay(const char *);
-static void set_textpos(int);
+static void set_textpos(unsigned int);
 static int get_glyph_index(unsigned int);
 
 
@@ -73,13 +75,13 @@ static int get_glyph_index(unsigned int);
  *
  * \sa relay()
  */
-typedef enum m_mode
+enum m_mode
 {
     M_UNDEF,
     M_SPACE,
     M_NONSPACE,
     M_END
-} m_mode;
+};
 
 
 
@@ -182,26 +184,33 @@ static void border(BITMAP *where, int left, int top, int right, int bottom)
  *
  * \param   src Source bitmap
  * \param   dest Destination bitmap
- * \param   st Start of output color range
- * \param   fn End of output color range
+ * \param   output_range_start Start of output color range
+ * \param   output_range_end End of output color range
  */
-void color_scale(BITMAP *src, BITMAP *dest, int st, int fn)
+void color_scale(BITMAP *src, BITMAP *dest, int output_range_start, int output_range_end)
 {
-    int ix, iy, z, a;
+    int ix, iy, z;
+    int current_pixel_color;
+
+    if (src == 0 || dest == 0)
+    {
+        return;
+    }
 
     clear_bitmap(dest);
     for (iy = 0; iy < dest->h; iy++)
     {
         for (ix = 0; ix < dest->w; ix++)
         {
-            a = src->line[iy][ix];
-            if (a > 0)
+            current_pixel_color = src->line[iy][ix];
+            if (current_pixel_color > 0)
             {
-                z = pal[a].r;
-                z += pal[a].g;
-                z += pal[a].b;
-                z = z * (fn - st) / 192;
-                dest->line[iy][ix] = st + z;
+                z = pal[current_pixel_color].r;
+                z += pal[current_pixel_color].g;
+                z += pal[current_pixel_color].b;
+                // 192 is '64*3' (max value for each of R, G and B).
+                z = z * (output_range_end - output_range_start) / 192;
+                dest->line[iy][ix] = output_range_start + z;
             }
         }
     }
@@ -213,42 +222,47 @@ void color_scale(BITMAP *src, BITMAP *dest, int st, int fn)
  *
  * This is used to color_scale one or more fighter frames.
  *
- * \param   who Character to convert
- * \param   st Start of output range
- * \param   fn End of output range
- * \param   convert_heroes If ==1 then \p who<PARTY_SIZE means convert all heroes, otherwise all enemies
+ * \param   fighter_index Character to convert
+ * \param   output_range_start Start of output range
+ * \param   output_range_end End of output range
+ * \param   convert_heroes If ==1 then \cframe_index fighter_index<PSIZE means convert all heroes, otherwise all enemies
  */
-void convert_cframes(int who, int st, int fn, int convert_heroes)
+void convert_cframes(size_t fighter_index, int output_range_start, int output_range_end, int convert_heroes)
 {
-    int a, p, a1;
+    size_t start_fighter_index, end_fighter_index, cframe_index;
 
     /* Determine the range of frames to convert */
     if (convert_heroes == 1)
     {
-        if (who < PARTY_SIZE)
+        if (fighter_index < PSIZE)
         {
-            a = 0;
-            a1 = numchrs;
+            start_fighter_index = 0;
+            end_fighter_index = numchrs;
         }
         else
         {
-            a = PARTY_SIZE;
-            a1 = PARTY_SIZE + num_enemies;
+            start_fighter_index = PSIZE;
+            end_fighter_index = PSIZE + num_enemies;
         }
     }
     else
     {
-        a = who;
-        a1 = who + 1;
+        start_fighter_index = fighter_index;
+        end_fighter_index = fighter_index + 1;
     }
 
-    while (a < a1)
+    while (start_fighter_index < end_fighter_index)
     {
-        for (p = 0; p < MAXCFRAMES; p++)
+        for (cframe_index = 0; cframe_index < MAXCFRAMES; cframe_index++)
         {
-            color_scale(tcframes[a][p], cframes[a][p], st, fn);
+            color_scale(
+                tcframes[start_fighter_index][cframe_index],
+                cframes[start_fighter_index][cframe_index],
+                output_range_start,
+                output_range_end
+            );
         }
-        ++a;
+        ++start_fighter_index;
     }
 }
 
@@ -296,7 +310,7 @@ static void draw_backlayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    Bound box;
+    s_bound box;
 
     if (view_on == 0)
     {
@@ -342,8 +356,7 @@ static void draw_backlayer(void)
                 {
                     here = ((ytc + dy) * g_map.xsize) + xtc + dx;
                     pix = map_seg[here];
-                    blit(map_icons[tilex[pix]], double_buffer, 0, 0,
-                         dx * 16 + xofs, dy * 16 + yofs, 16, 16);
+                    blit(map_icons[tilex[pix]], double_buffer, 0, 0, dx * 16 + xofs, dy * 16 + yofs, 16, 16);
                 }
             }
         }
@@ -364,53 +377,59 @@ static void draw_backlayer(void)
  */
 static void draw_char(int xw, int yw)
 {
-    unsigned int ii;
-    int fr, dx, dy, i, f, fid;
+    signed int dx, dy;
+    int f;
     int x, y;
-    int horiz, vert;
-    int here, there;
+    signed int horiz, vert;
+    unsigned int here, there;
     BITMAP **sprite_base;
     BITMAP *spr = NULL;
+    size_t follower_fighter_index;
+    size_t fighter_index;
+    size_t fighter_frame, fighter_frame_add;
+    size_t fighter_type_id;
 
-    for (ii = PARTY_SIZE + noe; ii > 0; ii--)
+    for (follower_fighter_index = PSIZE + noe; follower_fighter_index > 0; follower_fighter_index--)
     {
-        i = ii - 1;
-        fid = g_ent[i].eid;
-        dx = g_ent[i].x - vx + xw;
-        dy = g_ent[i].y - vy + yw;
-        if (!g_ent[i].moving)
+        fighter_index = follower_fighter_index - 1;
+        fighter_type_id = g_ent[fighter_index].eid;
+        dx = g_ent[fighter_index].x - vx + xw;
+        dy = g_ent[fighter_index].y - vy + yw;
+        if (!g_ent[fighter_index].moving)
         {
-            fr = g_ent[i].facing * ENT_FRAMES_PER_DIR + 2;
+            fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + 2;
         }
         else
         {
-            fr = g_ent[i].facing * ENT_FRAMES_PER_DIR + (g_ent[i].framectr > 10 ? 1 : 0);
+            fighter_frame_add = g_ent[fighter_index].framectr > 10 ? 1 : 0;
+            fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + fighter_frame_add;
         }
-        if (i < PARTY_SIZE && i < numchrs)
+        if (fighter_index < PSIZE && fighter_index < numchrs)
         {
             /* It's a hero */
             /* Masquerade: if chrx!=0 then this hero is disguised as someone else... */
-            sprite_base = g_ent[i].chrx ? eframes[g_ent[i].chrx] : frames[fid];
+            sprite_base = g_ent[fighter_index].chrx
+                ? eframes[g_ent[fighter_index].chrx]
+                : frames[fighter_type_id];
 
-            if (party[fid].sts[S_DEAD] != 0)
+            if (party[fighter_type_id].sts[S_DEAD] != 0)
             {
-                fr = g_ent[i].facing * ENT_FRAMES_PER_DIR + 2;
+                fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + 2;
             }
-            if (party[fid].sts[S_POISON] != 0)
+            if (party[fighter_type_id].sts[S_POISON] != 0)
             {
                 /* PH: we are calling this every frame? */
-                color_scale(sprite_base[fr], tc2, 32, 47);
+                color_scale(sprite_base[fighter_frame], tc2, 32, 47);
                 spr = tc2;
             }
             else
             {
-                spr = sprite_base[fr];
+                spr = sprite_base[fighter_frame];
             }
-            if (is_forestsquare(g_ent[i].tilex, g_ent[i].tiley))
+            if (is_forestsquare(g_ent[fighter_index].tilex, g_ent[fighter_index].tiley))
             {
-                f = !g_ent[i].moving;
-                if (g_ent[i].moving
-                        && is_forestsquare(g_ent[i].x / 16, g_ent[i].y / 16))
+                f = !g_ent[fighter_index].moving;
+                if (g_ent[fighter_index].moving && is_forestsquare(g_ent[fighter_index].x / TILE_W, g_ent[fighter_index].y / TILE_H))
                 {
                     f = 1;
                 }
@@ -422,7 +441,7 @@ static void draw_char(int xw, int yw)
                 }
             }
 
-            if (party[fid].sts[S_DEAD] == 0)
+            if (party[fighter_type_id].sts[S_DEAD] == 0)
             {
                 draw_sprite(double_buffer, spr, dx, dy);
             }
@@ -437,26 +456,26 @@ static void draw_char(int xw, int yw)
              * We also need to ensure that the target coords has SOMETHING in the
              * o_seg[] portion, else there will be graphical glitches.
              */
-            if (i == 0 && g_ent[0].moving)
+            if (fighter_index == 0 && g_ent[0].moving)
             {
                 horiz = 0;
                 vert = 0;
                 /* Determine the direction moving */
 
-                if (g_ent[i].tilex * 16 > g_ent[i].x)
+                if (g_ent[fighter_index].tilex * TILE_W > g_ent[fighter_index].x)
                 {
                     horiz = 1;       // Right
                 }
-                else if (g_ent[i].tilex * 16 < g_ent[i].x)
+                else if (g_ent[fighter_index].tilex * TILE_W < g_ent[fighter_index].x)
                 {
                     horiz = -1;      // Left
                 }
 
-                if (g_ent[i].tiley * 16 > g_ent[i].y)
+                if (g_ent[fighter_index].tiley * TILE_H > g_ent[fighter_index].y)
                 {
                     vert = 1;        // Down
                 }
-                else if (g_ent[i].tiley * 16 < g_ent[i].y)
+                else if (g_ent[fighter_index].tiley * TILE_H < g_ent[fighter_index].y)
                 {
                     vert = -1;       // Up
                 }
@@ -473,26 +492,26 @@ static void draw_char(int xw, int yw)
                         /* Moving diag down */
 
                         // Final x-coord is one left/right of starting x-coord
-                        x = (g_ent[i].tilex - horiz) * 16 - vx + xw;
+                        x = (g_ent[fighter_index].tilex - horiz) * TILE_W - vx + xw;
                         // Final y-coord is same as starting y-coord
-                        y = g_ent[i].tiley * 16 - vy + yw;
+                        y = g_ent[fighter_index].tiley * TILE_H - vy + yw;
                         // Where the tile is on the map that we will draw over
-                        there = (g_ent[i].tiley) * g_map.xsize + g_ent[i].tilex - horiz;
+                        there = (g_ent[fighter_index].tiley) * g_map.xsize + g_ent[fighter_index].tilex - horiz;
                         // Original position, before you started moving
-                        here = (g_ent[i].tiley - vert) * g_map.xsize + g_ent[i].tilex - horiz;
+                        here = (g_ent[fighter_index].tiley - vert) * g_map.xsize + g_ent[fighter_index].tilex - horiz;
                     }
                     else
                     {
                         /* Moving diag up */
 
                         // Final x-coord is same as starting x-coord
-                        x = g_ent[i].tilex * 16 - vx + xw;
+                        x = g_ent[fighter_index].tilex * TILE_W - vx + xw;
                         // Final y-coord is above starting y-coord
-                        y = (g_ent[i].tiley - vert) * 16 - vy + yw;
+                        y = (g_ent[fighter_index].tiley - vert) * TILE_H - vy + yw;
                         // Where the tile is on the map that we will draw over
-                        there = (g_ent[i].tiley - vert) * g_map.xsize + g_ent[i].tilex;
+                        there = (g_ent[fighter_index].tiley - vert) * g_map.xsize + g_ent[fighter_index].tilex;
                         // Target position
-                        here = (g_ent[i].tiley) * g_map.xsize + g_ent[i].tilex;
+                        here = (g_ent[fighter_index].tiley) * g_map.xsize + g_ent[fighter_index].tilex;
                     }
 
                     /* Because of possible redraw problems, only draw if there is
@@ -510,16 +529,20 @@ static void draw_char(int xw, int yw)
         else
         {
             /* It's an NPC */
-            if (g_ent[i].active && g_ent[i].tilex >= view_x1
-                    && g_ent[i].tilex <= view_x2 && g_ent[i].tiley >= view_y1
-                    && g_ent[i].tiley <= view_y2)
+            if (g_ent[fighter_index].active
+             && g_ent[fighter_index].tilex >= view_x1
+             && g_ent[fighter_index].tilex <= view_x2
+             && g_ent[fighter_index].tiley >= view_y1
+             && g_ent[fighter_index].tiley <= view_y2)
             {
-                if (dx >= -16 && dx <= 336 && dy >= -16 && dy <= 256)
+                if (dx >= TILE_W * -1 && dx <= TILE_W * WINDOW_TILES_W
+                 && dy >= TILE_H * -1 && dy <= TILE_H * WINDOW_TILES_H)
                 {
-                    spr = (g_ent[i].eid >= ID_ENEMY) ? eframes[g_ent[i].chrx][fr] :
-                          frames[g_ent[i].eid][fr];
+                    spr = (g_ent[fighter_index].eid >= ID_ENEMY)
+                        ? eframes[g_ent[fighter_index].chrx][fighter_frame]
+                        : frames[g_ent[fighter_index].eid][fighter_frame];
 
-                    if (g_ent[i].transl == 0)
+                    if (g_ent[fighter_index].transl == 0)
                     {
                         draw_sprite(double_buffer, spr, dx, dy);
                     }
@@ -544,7 +567,7 @@ static void draw_forelayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    Bound box;
+    s_bound box;
 
     if (view_on == 0)
     {
@@ -694,8 +717,7 @@ void draw_icon(BITMAP *where, int ino, int icx, int icy)
  * \param   bg Colour/style of background
  * \param   bstyle Style of border
  */
-static void draw_kq_box(BITMAP *where, int x1, int y1, int x2, int y2,
-                        int bg, int bstyle)
+static void draw_kq_box(BITMAP *where, int x1, int y1, int x2, int y2, int bg, int bstyle)
 {
     int a;
 
@@ -754,7 +776,7 @@ static void draw_midlayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    Bound box;
+    s_bound box;
 
     if (view_on == 0)
     {
@@ -798,8 +820,7 @@ static void draw_midlayer(void)
                 {
                     here = ((ytc + dy) * g_map.xsize) + xtc + dx;
                     pix = b_seg[here];
-                    draw_sprite(double_buffer, map_icons[tilex[pix]],
-                                dx * 16 + xofs, dy * 16 + yofs);
+                    draw_sprite(double_buffer, map_icons[tilex[pix]], dx * 16 + xofs, dy * 16 + yofs);
                 }
             }
         }
@@ -816,12 +837,17 @@ static void draw_midlayer(void)
 static void draw_playerbound(void)
 {
     int dx, dy, xtc, ytc;
+    s_bound *found = NULL;
     unsigned short ent_x = g_ent[0].tilex;
     unsigned short ent_y = g_ent[0].tiley;
 
     /* Is the player standing inside a bounding area? */
-    Bound *found = g_map.bounds.is_bound(ent_x, ent_y, ent_x, ent_y);
-    if (found == NULL)
+    unsigned int found_index = is_bound(&g_map.bounds, ent_x, ent_y, ent_x, ent_y);
+    if (found_index)
+    {
+        found = &g_map.bounds.array[found_index - 1];
+    }
+    else
     {
         return;
     }
@@ -905,14 +931,17 @@ static void draw_shadows(void)
     {
         for (dx = 0; dx < 21; dx++)
         {
-            if (ytc + dy >= view_y1 && xtc + dx >= view_x1 && ytc + dy <= view_y2
-                    && xtc + dx <= view_x2)
+            if (ytc + dy >= view_y1
+             && xtc + dx >= view_x1
+             && ytc + dy <= view_y2
+             && xtc + dx <= view_x2)
             {
                 here = ((ytc + dy) * g_map.xsize) + xtc + dx;
                 pix = s_seg[here];
                 if (pix > 0)
-                    draw_trans_sprite(double_buffer, shadow[pix], dx * 16 + xofs,
-                                      dy * 16 + yofs);
+                {
+                    draw_trans_sprite(double_buffer, shadow[pix], dx * 16 + xofs, dy * 16 + yofs);
+                }
             }
         }
     }
@@ -975,25 +1004,21 @@ static void draw_textbox(int bstyle)
     int wid, hgt, a;
     BITMAP *stem;
 
-    /*    BITMAP *tm; */
-
     wid = gbbw * 8 + 16;
     hgt = gbbh * 12 + 16;
 
-    draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid,
-                gbby + yofs + hgt, BLUE, bstyle);
-    if (gbt != -1)
+    draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid, gbby + yofs + hgt, BLUE, bstyle);
+    if (bubble_stem_style != STEM_UNDEFINED)
     {
         /* select the correct stem-thingy that comes out of the speech bubble */
-        stem = bub[gbt + (bstyle == B_THOUGHT ? 4 : 0)];
+        stem = bub[bubble_stem_style + (bstyle == B_THOUGHT ? NUM_BUBBLE_STEMS : 0)];
         /* and draw it */
         draw_sprite(double_buffer, stem, gbx + xofs, gby + yofs);
     }
 
     for (a = 0; a < gbbh; a++)
     {
-        print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs,
-                   msgbuf[a], FBIG);
+        print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs, msgbuf[a], FBIG);
     }
 }
 
@@ -1016,16 +1041,14 @@ static void draw_porttextbox(int bstyle, int chr)
 
     wid = gbbw * 8 + 16;
     hgt = gbbh * 12 + 16;
-    chr = chr - PARTY_SIZE;
+    chr = chr - PSIZE;
 
-    draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid,
-                gbby + yofs + hgt, BLUE, bstyle);
+    draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid, gbby + yofs + hgt, BLUE, bstyle);
 
 
     for (a = 0; a < gbbh; a++)
     {
-        print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs,
-                   msgbuf[a], FBIG);
+        print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs, msgbuf[a], FBIG);
     }
 
     a--;
@@ -1069,7 +1092,9 @@ void drawmap(void)
     {
         draw_backlayer();
     }
-    if (g_map.map_mode == 1 || g_map.map_mode == 3 || g_map.map_mode == 5)
+    if (g_map.map_mode == 1
+     || g_map.map_mode == 3
+     || g_map.map_mode == 5)
     {
         draw_char(16, 16);
     }
@@ -1077,7 +1102,9 @@ void drawmap(void)
     {
         draw_midlayer();
     }
-    if (g_map.map_mode == 0 || g_map.map_mode == 2 || g_map.map_mode == 4)
+    if (g_map.map_mode == 0
+     || g_map.map_mode == 2
+     || g_map.map_mode == 4)
     {
         draw_char(16, 16);
     }
@@ -1105,10 +1132,8 @@ void drawmap(void)
     }
     if (display_desc == 1)
     {
-        menubox(double_buffer, 152 - (strlen(g_map.map_desc) * 4) + xofs,
-                8 + yofs, strlen(g_map.map_desc), 1, BLUE);
-        print_font(double_buffer, 160 - (strlen(g_map.map_desc) * 4) + xofs,
-                   16 + yofs, g_map.map_desc, FNORMAL);
+        menubox(double_buffer, 152 - (g_map.map_desc.length() * 4) + xofs, 8 + yofs, g_map.map_desc.length(), 1, BLUE);
+        print_font(double_buffer, 160 - (g_map.map_desc.length() * 4) + xofs, 16 + yofs, g_map.map_desc.c_str(), FNORMAL);
     }
 }
 
@@ -1163,7 +1188,7 @@ static void generic_text(int who, int box_style, int isPort)
         }
         blit2screen(xofs, yofs);
         readcontrols();
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
@@ -1190,7 +1215,7 @@ int is_forestsquare(int fx, int fy)
 {
     int f;
 
-    if (strcmp(curmap, "main"))
+    if (curmap != "main")
     {
         return 0;
     }
@@ -1281,22 +1306,19 @@ void message(const char *m, int icn, int delay, int x_m, int y_m)
         if (icn == 255)
         {
             /* No icon */
-            menubox(double_buffer, 152 - (max_len * 4) + x_m, 108 + y_m, max_len,
-                    num_lines, DARKBLUE);
+            menubox(double_buffer, 152 - (max_len * 4) + x_m, 108 + y_m, max_len, num_lines, DARKBLUE);
         }
         else
         {
             /* There is an icon; make the box a little bit bigger to the left */
-            menubox(double_buffer, 144 - (max_len * 4) + x_m, 108 + y_m,
-                    max_len + 1, num_lines, DARKBLUE);
+            menubox(double_buffer, 144 - (max_len * 4) + x_m, 108 + y_m, max_len + 1, num_lines, DARKBLUE);
             draw_icon(double_buffer, icn, 152 - (max_len * 4) + x_m, 116 + y_m);
         }
 
         /* Draw the text */
         for (i = 0; i < num_lines; ++i)
         {
-            print_font(double_buffer, 160 - (max_len * 4) + x_m,
-                       116 + 8 * i + y_m, msgbuf[i], FNORMAL);
+            print_font(double_buffer, 160 - (max_len * 4) + x_m, 116 + 8 * i + y_m, msgbuf[i], FNORMAL);
         }
         /* Show it */
         blit2screen(x_m, y_m);
@@ -1548,7 +1570,7 @@ static int get_glyph_index(unsigned int cp)
  * \param   msg String to draw
  * \param   cl Font index (0..6)
  */
-void print_font(BITMAP *where, int sx, int sy, const char *msg, int cl)
+void print_font(BITMAP *where, int sx, int sy, const char *msg, eFontColor cl)
 {
     int z = 0, hgt = 8;
     unsigned int cc = 0;
@@ -1629,8 +1651,7 @@ void print_num(BITMAP *where, int sx, int sy, char *msg, int cl)
  * \param   sp4 Line 4 of text
  * \returns index of option chosen (0..numopt-1)
  */
-int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2,
-           const char *sp3, const char *sp4)
+int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, const char *sp3, const char *sp4)
 {
     int ly, stop = 0, ptr = 0, a;
     unsigned int str_len;
@@ -1669,16 +1690,16 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2,
 
 #if 0
         for (a = 0; a < gbbh; a++)
-            print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs,
-                       msgbuf[a], FBIG);
+        {
+            print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs, msgbuf[a], FBIG);
+        }
 #endif // if 0
 
-        draw_sprite(double_buffer, menuptr, gbbx + xofs + 8,
-                    ptr * 12 + ly + yofs);
+        draw_sprite(double_buffer, menuptr, gbbx + xofs + 8, ptr * 12 + ly + yofs);
         blit2screen(xofs, yofs);
 
         readcontrols();
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             ptr--;
@@ -1688,7 +1709,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2,
             }
             play_effect(SND_CLICK, 128);
         }
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             ptr++;
@@ -1698,7 +1719,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2,
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             stop = 1;
@@ -1793,16 +1814,12 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
                 set_textpos(who);
                 draw_textbox(B_TEXT);
                 /* Draw the  options text */
-                draw_kq_box(double_buffer, winx - 5, winy - 5,
-                            winx + winwidth * 8 + 13, winy + winheight * 12 + 5,
-                            BLUE, B_TEXT);
+                draw_kq_box(double_buffer, winx - 5, winy - 5, winx + winwidth * 8 + 13, winy + winheight * 12 + 5, BLUE, B_TEXT);
                 for (i = 0; i < winheight; ++i)
                 {
-                    print_font(double_buffer, winx + 8, winy + i * 12,
-                               opt[i + topopt], FBIG);
+                    print_font(double_buffer, winx + 8, winy + i * 12, opt[i + topopt], FBIG);
                 }
-                draw_sprite(double_buffer, menuptr, winx + 8 - menuptr->w,
-                            (curopt - topopt) * 12 + winy + 4);
+                draw_sprite(double_buffer, menuptr, winx + 8 - menuptr->w, (curopt - topopt) * 12 + winy + 4);
                 /* Draw the 'up' and 'down' markers if there are more options than will fit in the window */
                 if (topopt > 0)
                 {
@@ -1816,26 +1833,26 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
                 blit2screen(xofs, yofs);
 
                 readcontrols();
-                if (up && curopt > 0)
+                if (PlayerInput.up && curopt > 0)
                 {
                     play_effect(SND_CLICK, 128);
                     unpress();
                     --curopt;
                 }
-                else if (down && curopt < (n_opt - 1))
+                else if (PlayerInput.down && curopt < (n_opt - 1))
                 {
                     play_effect(SND_CLICK, 128);
                     unpress();
                     ++curopt;
                 }
-                else if (balt)
+                else if (PlayerInput.balt)
                 {
                     /* Selected an option */
                     play_effect(SND_CLICK, 128);
                     unpress();
                     running = 0;
                 }
-                else if (bctrl)
+                else if (PlayerInput.bctrl)
                 {
                     /* Just go "ow!" */
                     unpress();
@@ -1991,42 +2008,41 @@ static const char *relay(const char *buf)
  * Restore specified fighter frames to normal color. This is done
  * by blitting the 'master copy' from tcframes.
  *
- * \param   who Character to restore
- * \param   revert_heroes If ==1 then convert all heroes if \p who < PARTY_SIZE, otherwise convert all enemies
+ * \param   fighter_index Character to restore
+ * \param   revert_heroes If ==1 then convert all heroes if fighter_index < PSIZE, otherwise convert all enemies
  */
-void revert_cframes(int who, int revert_heroes)
+void revert_cframes(size_t fighter_index, int revert_heroes)
 {
-    int a, p;
-    int a1;
+    size_t start_fighter_index, end_fighter_index;
+    size_t cframe_index;
 
     /* Determine the range of frames to revert */
     if (revert_heroes == 1)
     {
-        if (who < PARTY_SIZE)
+        if (fighter_index < PSIZE)
         {
-            a = 0;
-            a1 = numchrs;
+            start_fighter_index = 0;
+            end_fighter_index = numchrs;
         }
         else
         {
-            a = PARTY_SIZE;
-            a1 = PARTY_SIZE + num_enemies;
+            start_fighter_index = PSIZE;
+            end_fighter_index = PSIZE + num_enemies;
         }
     }
     else
     {
-        a = who;
-        a1 = who + 1;
+        start_fighter_index = fighter_index;
+        end_fighter_index = fighter_index + 1;
     }
 
-    while (a < a1)
+    while (start_fighter_index < end_fighter_index)
     {
-        for (p = 0; p < MAXCFRAMES; p++)
+        for (cframe_index = 0; cframe_index < MAXCFRAMES; cframe_index++)
         {
-            blit(tcframes[a][p], cframes[a][p], 0, 0, 0, 0, fighter[a].cw,
-                 fighter[a].cl);
+            blit(tcframes[start_fighter_index][cframe_index], cframes[start_fighter_index][cframe_index], 0, 0, 0, 0, fighter[start_fighter_index].cw, fighter[start_fighter_index].cl);
         }
-        ++a;
+        ++start_fighter_index;
     }
 }
 
@@ -2037,14 +2053,15 @@ void revert_cframes(int who, int revert_heroes)
  * The purpose of this function is to calculate where a text bubble
  * should go in relation to the entity who is speaking.
  *
- * \param   who Character that is speaking, or -1 for 'general'
+ * \param   entity_index If value is between 0..MAX_ENTITIES (exclusive),
+ *              character that is speaking, otherwise 'general'.
  */
-static void set_textpos(int who)
+static void set_textpos(unsigned int entity_index)
 {
-    if (who < MAX_ENT && who >= 0)
+    if (entity_index < MAX_ENTITIES)
     {
-        gbx = (g_ent[who].tilex * 16) - vx;
-        gby = (g_ent[who].tiley * 16) - vy;
+        gbx = (g_ent[entity_index].tilex * TILE_W) - vx;
+        gby = (g_ent[entity_index].tiley * TILE_H) - vy;
         gbbx = gbx - (gbbw * 4);
         if (gbbx < 8)
         {
@@ -2056,7 +2073,7 @@ static void set_textpos(int who)
         }
         if (gby > -16 && gby < 240)
         {
-            if (g_ent[who].facing == 1 || g_ent[who].facing == 2)
+            if (g_ent[entity_index].facing == 1 || g_ent[entity_index].facing == 2)
             {
                 if (gbbh * 12 + gby + 40 <= 232)
                 {
@@ -2093,12 +2110,12 @@ static void set_textpos(int who)
         if (gbby > gby)
         {
             gby += 20;
-            gbt = (gbx < 152 ? 3 : 2);
+            bubble_stem_style = (gbx < 152 ? STEM_TOP_LEFT : STEM_TOP_RIGHT);
         }
         else
         {
             gby -= 20;
-            gbt = (gbx < 152 ? 1 : 0);
+            bubble_stem_style = (gbx < 152 ? STEM_BOTTOM_LEFT : STEM_BOTTOM_RIGHT);
         }
         if (gbx < gbbx + 8)
         {
@@ -2121,7 +2138,7 @@ static void set_textpos(int who)
     {
         gbby = 216 - (gbbh * 12);
         gbbx = 152 - (gbbw * 4);
-        gbt = -1;
+        bubble_stem_style = STEM_UNDEFINED;
     }
 }
 
@@ -2210,9 +2227,3 @@ void porttext_ex(int fmt, int who, const char *s)
     }
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

@@ -72,7 +72,7 @@ typedef struct
     int price;                   /*!< Default price of this item, in gp */
     unsigned char eq[8];         /*!< Who can equip this item. See heroc.h */
     int stats[13];               /*!< Stat bonuses for equipping this item See A_ constants in kq.h */
-    Resistances resistances;     /*!< Resistances. See RESIST_* constants in resistances.h */
+    char res[16];                /*!< Resistances. See R_ constants in kq.h */
 } s_item;
 
 
@@ -99,13 +99,13 @@ typedef struct
 /*! \brief A special effect */
 typedef struct
 {
-    unsigned char numf;
-    unsigned short xsize;
-    unsigned short ysize;
-    unsigned char orient;
-    unsigned short delay;
-    unsigned char kolor;
-    unsigned char snd;
+    unsigned char numf;         /*!< Number of frames within the sprite */
+    unsigned short xsize;       /*!< Width of each frame */
+    unsigned short ysize;       /*!< Height of each frame */
+    unsigned char orient;       /*!< When 0, draw effect behind fighter; when 1, draw effect in front of fighter */
+    unsigned short delay;       /*!< Time to wait between frame transitions */
+    unsigned char kolor;        /*!< Relates to the nth color entry within the PALETTE pal */
+    unsigned char snd;          /*!< Sound that is played when effect is used */
     char ename[16];
 } s_effect;
 
@@ -184,9 +184,3 @@ extern s_encounter battles[NUM_BATTLES];    /*  only in combat.c  */
 
 #endif  /* __RES_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

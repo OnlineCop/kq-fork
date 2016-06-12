@@ -24,6 +24,7 @@
 #include "draw.h"
 #include "kq.h"
 #include "music.h"
+#include "structs.h"
 
 
 /*! \file
@@ -45,6 +46,17 @@ static struct console_state
 
 
 
+enum eRunConsoleKeys
+{
+    RUNKEY_RETURN = '\r',
+    RUNKEY_DELETE = 127,
+    RUNKEY_CTRL_G = 7,
+    RUNKEY_BACKSPACE = 8,
+    RUNKEY_CTRL_R = 18,
+    RUNKEY_CTRL_S = 19
+};
+
+
 /*! \brief Initialise the console state
 *
 * Set up the global state ready for using the console
@@ -52,13 +64,13 @@ static struct console_state
 */
 void init_console(void)
 {
-    int c;
+    size_t console_line;
 
     g_console.cursor = 0;
     g_console.on = 0;
-    for (c = 0; c < CONSOLE_LINES; ++c)
+    for (console_line = 0; console_line < CONSOLE_LINES; ++console_line)
     {
-        g_console.lines[c] = NULL;
+        g_console.lines[console_line] = NULL;
     }
 }
 
@@ -73,36 +85,30 @@ void init_console(void)
 * \param xofs x-offset display position
 * \param yofs y-offset display position
 */
-void display_console(int xofs, int yofs)
+void display_console(unsigned int xofs, unsigned int yofs)
 {
-    int i, y;
+    unsigned int i, y;
+    unsigned int max_y = yofs + 120;
 
     if (g_console.on != 1)
     {
         return;
     }
-    rectfill(double_buffer, xofs, yofs + 120, xofs + 320, yofs + 240,
-             makecol(0, 0, 0));
-    hline(double_buffer, xofs, yofs + 120, xofs + 320,
-          makecol(255, 255, 255));
+    rectfill(double_buffer, xofs, max_y, xofs + 320, yofs + 240, makecol(0, 0, 0));
+    hline(double_buffer, xofs, max_y, xofs + 320, makecol(255, 255, 255));
     y = yofs + 240 - 2 * text_height(font);
     i = CONSOLE_LINES - 1;
-    while (y > yofs + 120)
+    while (y > max_y)
     {
         if (g_console.lines[i])
         {
-            textout_ex(double_buffer, font, g_console.lines[i], xofs, y,
-                       makecol(255, 255, 255), makecol(0, 0, 0));
+            textout_ex(double_buffer, font, g_console.lines[i], xofs, y, makecol(255, 255, 255), makecol(0, 0, 0));
         }
         y -= text_height(font);
         --i;
     }
-    textout_ex(double_buffer, font, g_console.inputline, xofs,
-               yofs + 240 - text_height(font), makecol(255, 255, 255),
-               makecol(0, 0, 0));
-    rectfill(double_buffer, xofs + text_length(font, g_console.inputline),
-             yofs + 238, xofs + text_length(font, g_console.inputline) +
-             text_length(font, "_"), yofs + 240, makecol(192, 192, 192));
+    textout_ex(double_buffer, font, g_console.inputline, xofs, yofs + 240 - text_height(font), makecol(255, 255, 255), makecol(0, 0, 0));
+    rectfill(double_buffer, xofs + text_length(font, g_console.inputline), yofs + 238, xofs + text_length(font, g_console.inputline) + text_length(font, "_"), yofs + 240, makecol(192, 192, 192));
 }
 
 
@@ -143,9 +149,9 @@ void run_console(void)
     int running;
     unsigned int string_len;
     unsigned int i;
-    const char get[] = "return get_progress(P_";
-    const char ret[] = "return ";
-    const char set[] = "set_progress(P_";
+    static const char get[] = "return get_progress(P_";
+    static const char ret[] = "return ";
+    static const char set[] = "set_progress(P_";
 
     g_console.inputline[0] = '\0';
     g_console.on = 1;
@@ -168,9 +174,10 @@ void run_console(void)
             poll_music();
             kq_yield();
         }
+
         switch ((c = readkey()) & 0xff)
         {
-            case '\r':               /* Return */
+            case RUNKEY_RETURN: /* Return */
                 if (sl == 0)
                 {
                     /* Stop when blank line is entered */
@@ -187,14 +194,14 @@ void run_console(void)
                 }
                 break;
 
-            case 127:                /* delete */
+            case RUNKEY_DELETE: /* delete */
                 if (strlen(g_console.inputline) > 0)
                 {
                     g_console.inputline[sl - 1] = '\0';
                 }
                 break;
 
-            case 7:                  /* ctrl g */
+            case RUNKEY_CTRL_G: /* ctrl g */
                 do_console_command(g_console.inputline);
 
                 string_len = strlen(get);
@@ -204,14 +211,14 @@ void run_console(void)
                 }
                 break;
 
-            case 8:                  /* backspace */
+            case RUNKEY_BACKSPACE: /* backspace */
                 if (strlen(g_console.inputline) > 0)
                 {
                     g_console.inputline[sl - 1] = '\0';
                 }
                 break;
 
-            case 18:                 /* ctrl r */
+            case RUNKEY_CTRL_R: /* ctrl r */
                 do_console_command(g_console.inputline);
 
                 string_len = strlen(ret);
@@ -221,7 +228,7 @@ void run_console(void)
                 }
                 break;
 
-            case 19:                 /* ctrl s */
+            case RUNKEY_CTRL_S: /* ctrl s */
                 do_console_command(g_console.inputline);
 
                 string_len = strlen(set);
@@ -246,12 +253,6 @@ void run_console(void)
     {
         readcontrols();
     }
-    while (benter);
+    while (PlayerInput.benter);
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

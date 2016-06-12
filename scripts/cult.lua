@@ -3,7 +3,7 @@
 function autoexec()
   local a
 
-  if (get_progress(P_AVATARDEAD) < 2) then
+  if (progress.avatardead < 2) then
     set_zone("front_door", 32)
     set_obs("front_door", 1)
   else
@@ -24,7 +24,7 @@ end
 
 function entity_handler(en)
   if (en == 0) then
-    if (get_progress(P_IRONKEY) == 0) then
+    if (progress.ironkey == 0) then
       bubble(0, _"What th...")
       bubble(HERO1, _"Where's the girl?")
       bubble(0, _"Do you really think that I'm going to tell you?")
@@ -41,7 +41,7 @@ function entity_handler(en)
       drawmap()
       screen_dump()
       set_ent_active(0, 0)
-      set_progress(P_IRONKEY, 1)
+      progress.ironkey = 1
       add_special_item(SI_IRONKEY)
       sfx(5)
       msg(_"Iron key procured", 255, 0)
@@ -78,7 +78,7 @@ end
 function zone_handler(zn)
   local x, y
   if (zn == 0) then
-    if (get_progress(P_AVATARDEAD) < 2) then
+    if (progress.avatardead < 2) then
 --      combat(19)
     end
 
@@ -134,12 +134,12 @@ function zone_handler(zn)
     LOC_open_door("door6")
 
   elseif (zn == 18) then
-    if (get_progress(P_IRONKEY) == 0) then
+    if (progress.ironkey == 0) then
       bubble(HERO1, _"Locked tight.")
     else
-      if (get_progress(P_IRONKEY) == 1) then
+      if (progress.ironkey == 1) then
         bubble(HERO1, _"Unlocked.")
-        set_progress(P_IRONKEY, 2)
+        progress.ironkey = 2
         remove_special_item(SI_IRONKEY)
       end
       LOC_open_door("door7")
@@ -181,7 +181,7 @@ function zone_handler(zn)
     bubble(HERO1, _"There is nothing here but common supplies.")
 
   elseif (zn == 29) then
-    if (get_progress(P_AVATARDEAD) == 0) then
+    if (progress.avatardead == 0) then
 
       bubble(HERO1, _"Breanne... are you in here?")
       wait(50)
@@ -196,9 +196,9 @@ function zone_handler(zn)
       bubble(23, _"You've got to stop them!")
       bubble(HERO1, _"Well... I guess we should hurry then. We'll be back shortly to get you out.")
       bubble(23, _"Thanks! Now hurry!")
-      set_progress(P_AVATARDEAD, 1)
+      progress.avatardead = 1
       return
-    elseif (get_progress(P_AVATARDEAD) == 1) then
+    elseif (progress.avatardead == 1) then
       bubble(23, _"What are you waiting for?")
     end
 
@@ -338,7 +338,7 @@ function LOC_fight(guard1, guard2, guard3)
   set_mtile(x - 1, y + 1, 0)
   set_mtile(x, y + 1, 0)
   set_mtile(x + 1, y + 1, 0)
-  set_progress(P_AVATARDEAD, 2)
+  progress.avatardead = 2
   set_obs("front_door", 0)
   set_zone("front_door", 1)
 end
@@ -346,7 +346,7 @@ end
 
 
 function LOC_freed(guard1, guard2, guard3, breanne)
-  if (get_progress(P_AVATARDEAD) == 2) then
+  if (progress.avatardead == 2) then
     x, y = marker("rescue")
 
     set_ent_active(guard1, 1)
@@ -364,7 +364,7 @@ function LOC_freed(guard1, guard2, guard3, breanne)
 
   warp("dstairs5", 8)
 
-  if (get_progress(P_AVATARDEAD) == 2) then
+  if (progress.avatardead == 2) then
     set_autoparty(1)
     if (get_numchrs() == 2) then
       set_ent_script(HERO1, "L1")
@@ -392,7 +392,7 @@ function LOC_freed(guard1, guard2, guard3, breanne)
     screen_dump()
     sfx(5)
     msg(_"Opal Band procured", 255, 0)
-    set_progress(P_OPALBAND, 1)
+    progress.opalband = 1
     add_special_item(SI_OPALBAND)
     drawmap()
     screen_dump()
@@ -417,8 +417,8 @@ function LOC_freed(guard1, guard2, guard3, breanne)
     set_ent_active(guard2, 0)
     set_ent_active(guard3, 0)
     set_ent_active(breanne, 0)
-    set_progress(P_AVATARDEAD, 3)
-    set_progress(P_SAVEBREANNE, 3)
+    progress.avatardead = 3
+    progress.savebreanne = 3
   end
 end
 

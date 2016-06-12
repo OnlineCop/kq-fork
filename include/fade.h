@@ -24,18 +24,17 @@
 #define __FADE_H 1
 
 
-#define TRANS_FADE_IN    1
-#define TRANS_FADE_OUT   2
-#define TRANS_FADE_WHITE 3
+enum eTransitionFade
+{
+    TRANS_FADE_IN    = 1,
+    TRANS_FADE_OUT   = 2,
+    TRANS_FADE_WHITE = 3,
 
-void do_transition(int, int);
+    NUM_TRANSITIONS
+};
+
+void do_transition(eTransitionFade, int);
 
 
 #endif  /* __FADE_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

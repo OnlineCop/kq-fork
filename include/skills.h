@@ -24,17 +24,9 @@
 #define __SKILLS_H 1
 
 
-void combat_skill(int);         /*  hskill.c, enemyc.c  */
 int hero_skillcheck(int);       /*  eskill.c, heroc.c  */
-int skill_use(int);             /*  eskill.c, heroc.c  */
 void infusion(int, int);        /*  hskill.c  */
 
 
 #endif  /* __SKILLS_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

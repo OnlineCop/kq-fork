@@ -24,21 +24,15 @@
 #define __EFFECTS_H 1
 
 
-void death_animation(int, int);         /*  combat.c, heroc,c, hskill.c, magic.c  */
-void display_amount(int, int, int);     /*  many places ;)  */
-void draw_attacksprite(int, int, int, int);     /*  heroc.c  */
-void draw_castersprite(int, int);       /*  hskill.c, magic.c  */
-void draw_hugesprite(int, int, int, int, int);  /*  eskill.c, magic.c  */
-void draw_spellsprite(int, int, int, int);      /*  many places ;)  */
-void fight_animation(int, int, int);    /*  combat.c  */
+void death_animation(size_t, int);         /*  combat.c, heroc,c, hskill.c, magic.c  */
+void display_amount(size_t, eFontColor, int);     /*  many places ;)  */
+void draw_attacksprite(size_t, int, size_t, int);     /*  heroc.c  */
+void draw_castersprite(size_t, int);       /*  hskill.c, magic.c  */
+void draw_hugesprite(size_t, int, int, size_t, int);  /*  eskill.c, magic.c  */
+void draw_spellsprite(size_t, int, size_t, int);      /*  many places ;)  */
+void fight_animation(size_t, size_t, int);    /*  combat.c  */
 int is_active(int);             /*  hskill.c  */
 
 
 #endif  /* __EFFECTS_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

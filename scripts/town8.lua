@@ -4,14 +4,14 @@
 -- {
 -- We're going to learn about the Xenars for the first time here.
 --
--- P_WALKING: Layer which the player is walking on
+-- progress.walking: Layer which the player is walking on
 --   (0) You're on an elevated cliff: you walk OVER bridges
 --   (1) You're on ground level: you walk UNDER bridges
 -- }
 -- */
 
 function autoexec()
-  set_progress(P_WALKING, 0)
+  progress.walking = 0
   refresh()
 end
 
@@ -78,11 +78,11 @@ function zone_handler(zn)
     change_map("main", "town8")
 
   elseif (zn == 2) then
-    set_progress(P_WALKING, 0)
+    progress.walking = 0
     TOC_switch_layers(zn)
 
   elseif (zn == 3) then
-    set_progress(P_WALKING, 1)
+    progress.walking = 1
     TOC_switch_layers(zn)
 
   elseif (zn == 4) then
@@ -191,7 +191,7 @@ function TOC_switch_layers()
   local x1, y1 = marker("bridge1")
   local x2, y2 = marker("bridge2")
 
-  if (get_progress(P_WALKING) == 0) then
+  if (progress.walking == 0) then
     set_obs(x1 - 1, y1    , 3)
     set_obs(x1    , y1 - 2, 0)
     set_obs(x1    , y1 + 2, 0)
@@ -213,7 +213,7 @@ function TOC_switch_layers()
 
     set_mtile(x2, y2, 33)
     set_ftile(x2, y2, 0)
-  elseif (get_progress(P_WALKING) == 1) then
+  elseif (progress.walking == 1) then
     set_obs(x1 - 1, y1    , 0)
     set_obs(x1    , y1 - 2, 1)
     set_obs(x1    , y1 + 2, 1)

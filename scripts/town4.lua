@@ -9,21 +9,21 @@
 
 
 function autoexec()
-  if (get_progress(P_WARPEDTOT4) == 1) then
+  if (progress.warpedtot4 == 1) then
     if (get_numchrs() > 1) then
-      set_progress(P_OLDPARTNER, get_pidx(1) + 1)
+      progress.oldpartner = get_pidx(1) + 1
       remove_chr(get_pidx(1))
       set_ent_active(HERO2, 0)
     else
-      set_progress(P_OLDPARTNER, 0)
+      progress.oldpartner = 0
     end
-    set_progress(P_WARPEDTOT4, 2)
+    progress.warpedtot4 = 2
     set_desc(0)
   end
 
   -- We do not want to call this in refresh() because we want to keep the
   -- guy on the screen until you walk into the house
-  if (get_progress(P_BOUGHTHOUSE) == 1) then
+  if (progress.boughthouse == 1) then
     set_ent_active(6, 0)
   end
 
@@ -41,7 +41,7 @@ end
 
 function entity_handler(en)
   if (en == 0) then
-    if (get_progress(P_TALKGELIK) == 0) then
+    if (progress.talkgelik == 0) then
       bubble(en, _"Opal armor? I have no idea where you would find something like that.")
       bubble(en, _"You should go talk to Gelik. He's old... he knows all kinds of stuff. He lives up in the north end of town.")
     else
@@ -105,7 +105,7 @@ end
 
 
 function postexec()
-  if (get_progress(P_WARPEDTOT4) == 2) then
+  if (progress.warpedtot4 == 2) then
     LOC_lost_partner()
   end
 end
@@ -280,7 +280,7 @@ end
 
 
 function LOC_buy_house(en)
-  if (get_progress(P_BOUGHTHOUSE) == 0) then
+  if (progress.boughthouse == 0) then
     bubble(en, _"Hey, the name's Trezin, and have I got a deal for you!")
     if (party[0] == CASANDRA) then
       thought(HERO1, _"Oh great. This guy sounds like another used-chariot salesman. Sign...")
@@ -331,7 +331,7 @@ function LOC_buy_house(en)
         set_ent_script(en, "R1D1")
       end
       wait_for_entity(en, en)
-      set_progress(P_BOUGHTHOUSE, 1)
+      progress.boughthouse = 1
     end
   else
     bubble(en, _"What are you waiting for? Go in and take a look around.")
@@ -341,19 +341,19 @@ end
 
 function LOC_lost_partner()
   local a, b
-  if (get_progress(P_OLDPARTNER) > 0) then
+  if (progress.oldpartner > 0) then
     bubble(HERO1, _"What?")
     set_autoparty(1)
     set_ent_script(HERO1, "F0W25F2W25F1W25F3W25F0")
     wait_for_entity(HERO1, HERO1)
     set_autoparty(0)
-    a = get_progress(P_OLDPARTNER) - 1
+    a = progress.oldpartner - 1
     b = "Where's "..get_party_name(a).."?"
     bubble(HERO1, b)
     bubble(HERO1, _"Just great... how am I supposed to get back?")
     wait(100)
     if (party[0] == CASANDRA) then
-      if (get_progress(P_OLDPARTNER) - 1 == TEMMIN) then
+      if (progress.oldpartner - 1 == TEMMIN) then
         bubble(HERO1, _"I have to find him! I'm not letting him get away from me that easily.")
       else
         thought(HERO1, _"Oh well...")
@@ -363,34 +363,34 @@ function LOC_lost_partner()
       wait(50)
     end
   end
-  set_progress(P_WARPEDTOT4, 3)
+  progress.warpedtot4 = 3
 end
 
 
 function LOC_talk_gelik(en)
-  if (get_progress(P_OPALHELMET) == 0) then
-    if (get_progress(P_TALKGELIK) == 0) then
+  if (progress.opalhelmet == 0) then
+    if (progress.talkgelik == 0) then
       bubble(en, _"So, you're looking for Opal armor eh? Well, I know of one piece.")
       bubble(en, _"The Opal Helmet belongs to a wealthy man named Dungar who lives in his own private estate east of town.")
       bubble(en, _"You should go and talk to him.")
       bubble(en, _"If you get the Helmet, come back here and hopefully by then I can find out a little bit more about the other pieces.")
-      set_progress(P_TALKGELIK, 1)
+      progress.talkgelik = 1
     else
       bubble(en, _"There isn't anything else I can tell you about Opal Armor right now.")
     end
   end
-  if (get_progress(P_OPALSHIELD) == 0 and get_progress(P_OPALHELMET) > 0) then
-    if (get_progress(P_TALKGELIK) == 4) then
+  if (progress.opalshield == 0 and progress.opalhelmet > 0) then
+    if (progress.talkgelik == 4) then
       bubble(en, _"Ah, you are back and you have the Helmet.")
       bubble(en, _"Oh, in case you are curious, you can't wear any of the armor until you get all of the pieces and go to the Water Shrine.")
       bubble(HERO1, _"Oh... that's why.")
       bubble(en, _"Yes, well anyways, I have found out where the next piece is.")
       bubble(en, _"You see, it turns out that the Opal Shield is the prize for besting the warrior Trayor at the Coliseum.")
-      if (get_progress(P_SEECOLISEUM) == 0) then
+      if (progress.seecoliseum == 0) then
         bubble(HERO1, _"Coliseum?")
       end
       bubble(en, _"The coliseum is west of Sunarin. You can't miss it.")
-      if (get_progress(P_SEECOLISEUM) == 1) then
+      if (progress.seecoliseum == 1) then
         bubble(HERO1, _"But the Coliseum was closed when I went there.")
         bubble(en, _"Yes... well I'm sure it's open by now.")
         bubble(HERO1, _"Isn't that convenient?")
@@ -405,14 +405,14 @@ function LOC_talk_gelik(en)
       bubble(HERO1, _"Oh... well nothing is ever easy right?")
       bubble(en, _"Not if it's worth doing, no.")
       bubble(HERO1, _"Thanks. I'll see you after I get the Shield.")
-      set_progress(P_TALKGELIK, 5)
-      set_progress(P_SEECOLISEUM, 2)
+      progress.talkgelik = 5
+      progress.seecoliseum = 2
       return
     else
       bubble(en, _"Good luck.")
     end
   end
-  if (get_progress(P_OPALSHIELD) == 1 and get_progress(P_TALKGELIK) < 6) then
+  if (progress.opalshield == 1 and progress.talkgelik < 6) then
     bubble(en, _"Oh... you're back. I'm sorry, but I haven't been able to find out where the other pieces are.")
     bubble(HERO1, _"Hey, don't worry about it.")
     bubble(HERO1, _"My friend here brought me information about the Band and the Armor. We'll have no trouble finding it now.")
@@ -420,10 +420,10 @@ function LOC_talk_gelik(en)
     bubble(en, _"Well, that's great... and you're welcome. I'm glad I was able to help.")
     bubble(HERO1, _"I'll see you around then.")
     bubble(en, _"Certainly. Good journey.")
-    set_progress(P_TALKGELIK, 6)
+    progress.talkgelik = 6
     return
   end
-  if (get_progress(P_TALKGELIK) == 6) then
+  if (progress.talkgelik == 6) then
     bubble(en, _"How are things going?")
   end
 end

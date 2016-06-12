@@ -188,10 +188,10 @@ npgettext_aux(const char *domain,
    can be arbitrary expressions.  But for string literals these macros are
    less efficient than those above.  */
 
-#include <cstring>
+#include <string.h>
 
 #if (((__GNUC__ >= 3 || __GNUG__ >= 2) && !defined __STRICT_ANSI__) \
-     /* || __STDC_VERSION__ >= 199901L */ )
+     && !defined __cplusplus )
 # define _LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS 1
 #else
 # define _LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS 0
@@ -302,9 +302,3 @@ dcnpgettext_expr(const char *domain,
 
 #endif /* _LIBGETTEXT_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

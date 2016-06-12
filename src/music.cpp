@@ -27,26 +27,15 @@
  * Interfaces to DUMB
  */
 
+#include <stdio.h>
+#include <string.h>
+#include <string>
+
 #include "kq.h"
 #include "music.h"
 #include "platform.h"
 
-#include <cstdio>
-#include <cstring>
 
-
-#ifndef USE_DUMB
-
-void init_music(void) {}
-void shutdown_music(void) {}
-void set_music_volume(float volume) {}
-void poll_music(void) {}
-void play_music(const char *music_name, long position) {}
-void stop_music(void) {}
-void pause_music(void) {}
-void resume_music(void) {}
-
-#else // USE_DUMB
 /* DUMB version of music */
 #include <aldumb.h>
 
@@ -140,14 +129,14 @@ void poll_music(void)
  * \param   music_name The relative filename of the song to be played
  * \param   position The position of the file to begin at
  */
-void play_music(const char *music_name, long position)
+void play_music(const std::string &music_name, long position)
 {
     if (is_sound != 0)
     {
         char filename[2048];
 
         stop_music();
-        strcpy(filename, kqres(MUSIC_DIR, music_name));
+        strcpy(filename, kqres(MUSIC_DIR, music_name.c_str()));
         if (exists(filename))
         {
             if (strstr(filename, ".mod"))
@@ -173,7 +162,8 @@ void play_music(const char *music_name, long position)
             {
                 /* ML: we should (?) adjust the buffer size after everything is running smooth */
                 mod_player[current_music_player] =
-                    al_start_duh(mod_song[current_music_player], 2, position, 1.0, 4096 * 4, 44100);
+                    al_start_duh(mod_song[current_music_player], 2, position, 1.0,
+                                 4096 * 4, 44100);
             }
             else
             {
@@ -247,11 +237,3 @@ void resume_music(void)
     }
 }
 
-#endif
-
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

@@ -26,19 +26,11 @@
 
 /*! \file
  * \brief Enemy Skills header file
- *
- * This file contains only one function
  */
 
 
-void combat_skill(int);         /*  enemyc.c  */
+void combat_skill(size_t);
 
 
 #endif  /* __ESKILL_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

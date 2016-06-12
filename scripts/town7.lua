@@ -1,19 +1,19 @@
 -- town7 - "Pulcannen"
 
--- // P_TRAVELPOINT: Whether we've just come through the TravelPoint
+-- // progress.travelpoint: Whether we've just come through the TravelPoint
 
 function autoexec()
 
-  if ((get_progress(P_TALKOLDMAN) == 0) and
-      (get_progress(P_OPALHELMET) > 0) and
-      (get_progress(P_OPALSHIELD) > 0) and
-      (get_progress(P_OPALBAND) > 0) and
-      (get_progress(P_OPALARMOUR) > 0)) then
-    set_progress(P_TALKOLDMAN, 1)
+  if ((progress.talkoldman == 0) and
+      (progress.opalhelmet > 0) and
+      (progress.opalshield > 0) and
+      (progress.opalband > 0) and
+      (progress.opalarmour > 0)) then
+    progress.talkoldman = 1
   end
 
-  if (get_progress(P_TRAVELPOINT) == 1) then
-    set_progress(P_TRAVELPOINT, 0)
+  if (progress.travelpoint == 1) then
+    progress.travelpoint = 0
   end
 
   refresh()
@@ -108,7 +108,7 @@ function zone_handler(zn)
     door_out("room_2o")
 
   elseif (zn == 12) then
-    if (get_progress(P_TALKOLDMAN) > 0) then
+    if (progress.talkoldman > 0) then
       door_in("counter_i")
     else
       bubble(HERO1, _"Locked.")
@@ -173,7 +173,7 @@ function zone_handler(zn)
     bubble(HERO1, _"The chest is locked.")
 
   elseif (zn == 33) then
-    set_progress(P_TRAVELPOINT, 1)
+    progress.travelpoint = 1
     change_map("cave3a", "portal")
 
   end
@@ -182,15 +182,15 @@ end
 
 -- Allow player to go visit the old man
 function LOC_setup_oldman(en)
-  if (get_progress(P_TALKOLDMAN) == 1) then
+  if (progress.talkoldman == 1) then
     set_obs("door1", 0)
-  elseif (get_progress(P_TALKOLDMAN) > 1) then
+  elseif (progress.talkoldman > 1) then
     place_ent(en, "around_table")
     set_ent_facing(en, FACE_DOWN)
     local x, y = marker("counter")
     set_zone(x, y - 3, 0)
     set_zone(x, y, 0)
-    if (get_progress(P_TALKOLDMAN) == 5) then
+    if (progress.talkoldman == 5) then
       -- // Unlock the doors leading to the old man's counters
       set_obs("hdoor1", 0)
       set_obs("hdoor2", 0)
@@ -202,9 +202,9 @@ end
 function LOC_talk_oldman(en)
   local x, y = marker("counter")
 
-  if (get_progress(P_TALKOLDMAN) == 0) then
+  if (progress.talkoldman == 0) then
     bubble(en, _"Hey, how did you get in here? Get out!")
-  elseif (get_progress(P_TALKOLDMAN) == 1) then
+  elseif (progress.talkoldman == 1) then
     set_ent_speed(en, 5)
     set_ent_movemode(en, 2)
     -- Move the old man to the counter closest to you
@@ -230,9 +230,9 @@ function LOC_talk_oldman(en)
     set_ent_facing(en, FACE_DOWN)
     set_ent_movemode(en, 0)
 
-    set_progress(P_TALKOLDMAN, 2)
+    progress.talkoldman = 2
     refresh()
-  elseif (get_progress(P_TALKOLDMAN) == 2) then
+  elseif (progress.talkoldman == 2) then
     bubble(en, _"I see you have everything! Here, take this key.")
     sfx(5)
     msg(_"Rusty key procured", 63, 0)
@@ -244,13 +244,13 @@ function LOC_talk_oldman(en)
     end
     bubble(en, _"It's an underwater tunnel that leads from the grotto to the island Malkaron is staying.")
     bubble(HERO1, _"Oh. Thanks!")
-    set_progress(P_TALKOLDMAN, 3)
+    progress.talkoldman = 3
     add_special_item(SI_RUSTYKEY)
-  elseif (get_progress(P_TALKOLDMAN) == 3) then
+  elseif (progress.talkoldman == 3) then
     bubble(en, _"I hope the key still fits in the temple down in the Grotto by Ekla. It's a bit rusty.")
-  elseif (get_progress(P_TALKOLDMAN) == 4) then
+  elseif (progress.talkoldman == 4) then
     bubble(en, _"I see the key worked. Excellent.")
-    set_progress(P_TALKOLDMAN, 5)
+    progress.talkoldman = 5
   else
     bubble(en, _"Good luck on your journey.")
   end

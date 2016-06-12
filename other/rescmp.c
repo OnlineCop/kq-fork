@@ -236,12 +236,9 @@ int process_ts (FILE *in, PACKFILE *out)
             break;
          case ID_ANIM:
             if (anims < MAX_ANIM) {
-               sscanf (val, "%hd %hd %hd", &ts.tanim[anims].start,
-                       &ts.tanim[anims].end, &ts.tanim[anims].delay);
+               sscanf (val, "%hd %hd %hd", &ts.tanim[anims].start, &ts.tanim[anims].end, &ts.tanim[anims].delay);
             } else if (anims == MAX_ANIM) {
-               fprintf (stderr,
-                        "Error; max number of animations in one tileset is %d",
-                        MAX_ANIM);
+               fprintf (stderr, "Error; max number of animations in one tileset is %d", MAX_ANIM);
             }
             ++anims;
             break;
@@ -264,8 +261,7 @@ int save_s_tileset_txt (s_tileset *ts, FILE *out)
    fprintf (out, "name: %s\n", ts->icon_set);
    for (i = 0; i < MAX_ANIM; ++i) {
       if (ts->tanim[i].start != ts->tanim[i].end) {
-         fprintf (out, "anim: %hd %hd %hd\n", ts->tanim[i].start,
-                  ts->tanim[i].end, ts->tanim[i].delay);
+         fprintf (out, "anim: %hd %hd %hd\n", ts->tanim[i].start, ts->tanim[i].end, ts->tanim[i].delay);
       }
    }
    fprintf (out, "\n");
@@ -294,7 +290,9 @@ int main (int argc, char *argv[])
       /* No files to process */
       fprintf (stdout, "# Default value dump by %s\nplayer\n", argv[0]);
       for (i = 0; i < MAXCHRS; ++i)
-         save_s_player_txt (&default_players[i], stdout);
+      {
+        save_s_player_txt (&default_players[i], stdout);
+      }
       fprintf (stdout, "# Default value dump by %s\ntileset\n", argv[0]);
       for (i = 0; i < MAX_TILESETS; ++i) {
          save_s_tileset_txt (&default_tilesets[i], stdout);

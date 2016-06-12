@@ -26,60 +26,20 @@
  * \date 20060720
  */
 
-#include "bounds.h"
+#include <assert.h>
+#include <ctype.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <cassert>
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
-BoundArray::BoundArray()
-{
-    _array.clear();
-}
-
-BoundArray::~BoundArray()
-{
-    _array.clear();
-}
-
-void BoundArray::ClearBounds()
-{
-    _array.clear();
-}
-
-
-/*! \brief Add a bounding area to a map
- *
- * \param   x1     Left edge of current bounding area
- * \param   y1     Top edge of current bounding area
- * \param   x2     Right edge of current bounding area
- * \param   y2     Bottom edge of current bounding area
- */
-void BoundArray::add_bound(
-    const unsigned short x1,
-    const unsigned short y1,
-    const unsigned short x2,
-    const unsigned short y2,
-    const unsigned short btile)
-{
-    Bound *bound = new Bound();
-
-    bound->left = x1;
-    bound->top = y1;
-    bound->right = x2;
-    bound->bottom = y2;
-    bound->btile = btile;
-
-    _array.push_back(bound);
-}
+#include "../include/bounds.h"
 
 
 
 /*! \brief Determine whether given coordinates are within any bounding boxes
  *
+ * \param   sbound - Pointer to struct, which includes a size and array
  * \param   left - Left edge of current bounding area
  * \param   top - Top edge of current bounding area
  * \param   right - Right edge of current bounding area
@@ -87,13 +47,17 @@ void BoundArray::add_bound(
  *
  * \returns index+1 in array if found, else 0 if not found
  */
-Bound* BoundArray::is_bound(
+unsigned int is_bound(
+    s_bound_array *sbound,
     const unsigned short left,
     const unsigned short top,
     const unsigned short right,
     const unsigned short bottom)
 {
+    size_t i;
     unsigned short x1, y1, x2, y2;
+
+    assert(sbound && "s_bound_array is NULL");
 
     if (left < right)
     {
@@ -117,188 +81,173 @@ Bound* BoundArray::is_bound(
         y2 = top;
     }
 
-    std::vector<Bound*>::iterator it;
-    for (it = _array.begin(); it != _array.end(); ++it)
+    for (i = 0; i < sbound->size; ++i)
     {
-        Bound* bound = *it;
-        if ((x1 > bound->right) || (x2 < bound->left) ||
-            (y1 > bound->bottom) || (y2 < bound->top))
+        if ((x1 > sbound->array[i].right)
+         || (x2 < sbound->array[i].left)
+         || (y1 > sbound->array[i].bottom)
+         || (y2 < sbound->array[i].top))
         {
             continue;
         }
         else
         {
-            return bound;
+            return i + 1;
         }
     }
 
-    return NULL; // not found
+    return 0; // not found
 }
 
 
 
-unsigned int BoundArray::get_bound_index(
-    const unsigned short left,
-    const unsigned short top,
-    const unsigned short right,
-    const unsigned short bottom)
+/*! \brief Determine whether the coordinates are within any bounding boxes
+ *
+ * \param   boxes_array - Address of array
+ * \param   num_boxes - Number of array elements
+ * \param   left - Left edge of current bounding area
+ * \param   top - Top edge of current bounding area
+ * \param   right - Right edge of current bounding area
+ * \param   bottom - Bottom edge of current bounding area
+ *
+ * \returns NULL if not found, else address within boxes_array array
+ */
+s_bound *is_contained_bound(
+    s_bound *boxes_array,
+    unsigned int num_boxes,
+    int left,
+    int top,
+    int right,
+    int bottom)
 {
-    unsigned int index = 0;
-    unsigned short x1, y1, x2, y2;
+    unsigned int i;
 
-    if (left < right)
+    if (num_boxes > 0)
     {
-        x1 = left;
-        x2 = right;
-    }
-    else
-    {
-        x1 = right;
-        x2 = left;
+        assert(boxes_array && "s_bound is NULL");
     }
 
-    if (top < bottom)
+    for (i = 0; i < num_boxes; i++)
     {
-        y1 = top;
-        y2 = bottom;
-    }
-    else
-    {
-        y1 = bottom;
-        y2 = top;
-    }
-
-    std::vector<Bound*>::iterator it;
-    for (it = _array.begin(); it != _array.end(); ++it)
-    {
-        Bound* bound = *it;
-        if ((x1 > bound->right) || (x2 < bound->left) ||
-            (y1 > bound->bottom) || (y2 < bound->top))
+        if (left >= boxes_array[i].left
+         && right <= boxes_array[i].right
+         && top >= boxes_array[i].top
+         && bottom <= boxes_array[i].bottom)
         {
-            continue;
+            return (&boxes_array[i]);
         }
-        else
-        {
-            // We return index+1 when found, so increment again before breaking
-            index++;
-            break;
-        }
-        index++;
     }
 
-    return index;
+    return NULL;
 }
 
 
 
 /*! \brief Load all bounds in from packfile
  *
- * Loads individual \sa Bound objects from the specified PACKFILE.
+ * Loads individual \sa s_bound objects from the specified PACKFILE.
  *
+ * \param[in,out] barray - Current array of bounds to be reallocated
  * \param[in]     pf - PACKFILE from whence data are pulled
  * \return        Non-0 on error, 0 on success
  */
-size_t BoundArray::LoadBounds(
+size_t load_bounds(
+    s_bound_array *barray,
     PACKFILE *pf)
 {
-    Bound *mbound = NULL;
-    size_t i;
+    s_bound *mbound = NULL;
+    unsigned int i;
 
+    assert(barray && "barray == NULL");
     assert(pf && "pf == NULL");
 
-    if (!pf)
+    if (!barray || !pf)
     {
-        allegro_message("PACKFILE passed to LoadBounds is NULL.\n");
+        allegro_message("NULL passed into load_bounds()\n");
         return 1;
     }
 
-    unsigned int size = pack_igetw(pf);
+    barray->size = pack_igetw(pf);
     if (pack_feof(pf))
     {
         allegro_message("Expected value for number of bounds. Instead, received EOF.\n");
         return 2;
     }
 
-    this->ClearBounds();
-    for (i = 0; i < size; ++i)
+    if (barray->size > 0)
     {
-        Bound* bound = new Bound();
-
-        bound->left    = pack_igetw(pf);
-        bound->top     = pack_igetw(pf);
-        bound->right   = pack_igetw(pf);
-        bound->bottom  = pack_igetw(pf);
-        bound->btile   = pack_igetw(pf);
-
-        _array.push_back(bound);
-
-        if (pack_feof(pf))
+        barray->array = (s_bound *) realloc(barray->array, barray->size * sizeof(s_bound));
+        for (i = 0; i < barray->size; ++i)
         {
-            /*printf ("Encountered EOF during bound read.\n");*/
-            return 3;
+            mbound = &barray->array[i];
+
+            mbound->left    = pack_igetw(pf);
+            mbound->top     = pack_igetw(pf);
+            mbound->right   = pack_igetw(pf);
+            mbound->bottom  = pack_igetw(pf);
+            mbound->btile   = pack_igetw(pf);
+
+            if (pack_feof(pf))
+            {
+                /*printf ("Encountered EOF during bound #%d read.\n", i);*/
+                return 3;
+            }
         }
+    }
+    else
+    {
+        barray->array = NULL;
     }
 
     return 0;
-}
-
-
-
-void BoundArray::RemoveBound(
-    const unsigned int index)
-{
-    size_t i;
-
-    if (index < _array.size())
-    {
-        _array.erase(_array.begin() + index);
-    }
 }
 
 
 
 /*! \brief Save all bounds out to packfile
  *
- * Saves individual \sa Bound objects to the specified PACKFILE.
+ * Saves individual \sa s_bound objects to the specified PACKFILE.
  *
+ * \param[out] barray - Current array of bounds from whence data are pulled
  * \param[out] pf - PACKFILE to where data is written
- * \return     0 on save success, otherwise failure
+ * \return     Non-0 on error, 0 on success
  */
-size_t BoundArray::SaveBounds(
+size_t save_bounds(
+    s_bound_array *barray,
     PACKFILE *pf)
 {
     size_t i;
-    Bound *mbound = NULL;
+    s_bound *mbound = NULL;
 
+    assert(barray && "barray == NULL");
     assert(pf && "pf == NULL");
 
-    if (!pf)
+    if (!barray || !pf)
     {
-        printf("PACKFILE passed to SaveBounds() is NULL.\n");
+        printf("NULL passed into save_bounds()\n");
         return 1;
     }
 
-    pack_iputw(_array.size(), pf);
+    pack_iputw(barray->size, pf);
     if (pack_feof(pf))
     {
         printf("Encountered EOF when writing bound array size.\n");
         return 2;
     }
 
-    std::vector<Bound*>::iterator it;
-    for (it = _array.begin(); it != _array.end(); ++it)
+    for (i = 0; i < barray->size; ++i)
     {
-        Bound* bound = *it;
+        mbound = &barray->array[i];
 
-        pack_iputw(bound->left, pf);
-        pack_iputw(bound->top, pf);
-        pack_iputw(bound->right, pf);
-        pack_iputw(bound->bottom, pf);
-        pack_iputw(bound->btile, pf);
+        pack_iputw(mbound->left, pf);
+        pack_iputw(mbound->top, pf);
+        pack_iputw(mbound->right, pf);
+        pack_iputw(mbound->bottom, pf);
+        pack_iputw(mbound->btile, pf);
 
         if (pack_feof(pf))
         {
-            allegro_message("Encountered EOF when writing bound.\n");
+            allegro_message("Encountered EOF when writing bound %d.\n", (int)i);
             return 3;
         }
     }
@@ -307,9 +256,51 @@ size_t BoundArray::SaveBounds(
 }
 
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */
+
+/* Assign the given bounding area with the x and y coords.
+ * Check whether left < right or top < bottom, and swap accordingly.
+ *
+ * \param   which_bound - Where we will store the correct x/y coords
+ * \param   left   Left edge of boundary
+ * \param   top    Top edge of boundary
+ * \param   right  Right edge of boundary
+ * \param   bottom Bottom edge of boundary
+ * \param   btile  Tile
+ */
+void set_bounds(
+    s_bound *which_bound,
+    int left,
+    int top,
+    int right,
+    int bottom,
+    int btile)
+{
+    assert(which_bound && "s_bound is NULL");
+
+    // This check ensures that the given `left' is always <= `right'
+    if (left <= right)
+    {
+        which_bound->left = left;
+        which_bound->right = right;
+    }
+    else
+    {
+        which_bound->left = right;
+        which_bound->right = left;
+    }
+
+    // This check ensures that the given `top' is always <= `bottom'
+    if (top <= bottom)
+    {
+        which_bound->top = top;
+        which_bound->bottom = bottom;
+    }
+    else
+    {
+        which_bound->top = bottom;
+        which_bound->bottom = top;
+    }
+
+    which_bound->btile = btile;
+}
+

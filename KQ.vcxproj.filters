@@ -1,0 +1,908 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Lua Files">
+      <UniqueIdentifier>{382f10d4-ab5c-4093-8be3-b32f8b3bf02e}</UniqueIdentifier>
+      <Extensions>lua</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Images">
+      <UniqueIdentifier>{42e821e7-378e-475e-8441-ad948b1de2aa}</UniqueIdentifier>
+      <Extensions>png</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Maps">
+      <UniqueIdentifier>{38600f1a-28d1-4e85-aa9e-9995f205c659}</UniqueIdentifier>
+      <Extensions>tmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Maps\Tilesets">
+      <UniqueIdentifier>{11e833e0-cfab-4832-9aeb-23da565a86b8}</UniqueIdentifier>
+      <Extensions>tsx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Images\maps">
+      <UniqueIdentifier>{dbe1a03d-b5e5-4e06-aca2-ac5126a17602}</UniqueIdentifier>
+      <Extensions>png</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Images\data">
+      <UniqueIdentifier>{afeb8026-3a0e-4120-a682-2410c879245f}</UniqueIdentifier>
+      <Extensions>png</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\Images\other">
+      <UniqueIdentifier>{8ef03e14-6bad-44f2-8451-98d9f82d3e1c}</UniqueIdentifier>
+      <Extensions>png</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\bounds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\combat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\credits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\disk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\effects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\enemyc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\eqpmenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\eskill.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fade.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\heroc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hskill.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgcache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\intrface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\itemmenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\kq.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\magic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\markers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\masmenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\movement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\music.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\res.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\selector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\setup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shopmenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tiledmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\timing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\animation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bounds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\combat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\console.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\credits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\disk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\draw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\effects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enemyc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\enums.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\eqpmenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\eskill.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fade.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fighter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gettext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\heroc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hskill.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imgcache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\intrface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\itemdefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\itemmenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\kqsnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\magic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\markers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\masmenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\movement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mpcx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\music.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\res.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\selector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\setup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sgame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\shopmenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\skills.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ssprites.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\structs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tiledmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\timing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="scripts\bridge.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\bridge2.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\camp.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\cave1.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\cave2.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\cave3a.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\cave3b.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\cave4.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\cave5.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\cave6a.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\cave6b.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\coliseum.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\cult.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\dville.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\estate.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\esteria.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\fort.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\global.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\goblin.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\grotto.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\grotto2.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\guild.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\init.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\main.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\manor.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\pass.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\shrine.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\starting.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\sunarin.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\temple1.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\temple2.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\tower.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\town1.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\town2.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\town3.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\town4.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\town5.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\town6.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\town7.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\town8.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="scripts\tunnel.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="maps\bridge.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\bridge2.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\camp.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\cave1.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\cave2.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\cave3a.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\cave3b.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\cave4.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\cave5.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\cave6a.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\cave6b.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\coliseum.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\cult.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\dville.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\estate.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\fort.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\goblin.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\grotto.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\grotto2.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\guild.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\main.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\manor.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\pass.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\rule1_trees.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\starting.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\sunarin.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\temple1.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\temple2.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\tower.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\town1.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\town2.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\town3.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\town4.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\town5.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\town6.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\town7.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\town8.tmx">
+      <Filter>Resource Files\Maps</Filter>
+    </None>
+    <None Include="maps\castle.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+    <None Include="maps\cave.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+    <None Include="maps\entities.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+    <None Include="maps\fortress.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+    <None Include="maps\land.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+    <None Include="maps\misc.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+    <None Include="maps\mount.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+    <None Include="maps\newtown.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+    <None Include="maps\obstacles.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+    <None Include="maps\shrine.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+    <None Include="maps\uschrs.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+    <None Include="maps\village.tsx">
+      <Filter>Resource Files\Maps\Tilesets</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\back1.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back2.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back3.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back4.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back5.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back6.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back7.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back8.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back9.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back10.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back11.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back12.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\back13.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\entities.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\fonts.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\kqfaces.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\kqt.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\misc.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="data\title.png">
+      <Filter>Resource Files\Images\data</Filter>
+    </Image>
+    <Image Include="maps\castle.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\enemy.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\entities.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\fonts.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\fortress.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\incave.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\land.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\Misc.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\mount.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\newtown.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\obstacles.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\shrine.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\town1.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\underwater.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\usbat.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\uschrs.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="maps\village.png">
+      <Filter>Resource Files\Images\maps</Filter>
+    </Image>
+    <Image Include="other\source-images\aaxe.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\absorb.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\amace.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\asword.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back1.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back2.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back3.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back4.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back5.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back6.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back7.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back8.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back9.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back10.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back11.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back12.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\back13.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\black.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\bless.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\blind.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\bliz1.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\bliz2.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\bolt1.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\bolt2.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\bolt3.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\caster2.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\castle.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\confuse.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\CURE.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\destitle.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\diffuse.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\doom.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\drain.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\enemy.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\entities.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\ethereal.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\flame.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\flood.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\fonts.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\fortress.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\generic.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\heroism.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\hold.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\icurehp.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\icuremp.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\incave.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\irestore.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\kq_pal.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\kqfaces.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\kqt.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\land.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\lflame.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\life.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\LIFEG.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\misc.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\mount.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\newtown.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\poisgas.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\quake.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\quicken.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\RASP.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\restore.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\runeofa.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\runeofe.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\runeoff.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\runeofi.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\SBLAST.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\SCORCH.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\SHELL.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\shield.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\shrine.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\sleep.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\slow.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\stone.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\stonegas.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\title.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\usbat.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\uschrs.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\venom1.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\village.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\whirl.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\white.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+    <Image Include="other\source-images\xsurge.png">
+      <Filter>Resource Files\Images\other</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

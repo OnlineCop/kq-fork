@@ -310,12 +310,12 @@ function refresh()
     set_ent_active(10, 0)
   end
 
+  set_ent_active(13, 0)
   if progress.foundmayor > 0 then
     if not LOC_manor_or_party(CASANDRA) then
       -- Casandra should be available to join your party
+      set_ent_active(13, 1)
       set_ent_id(13, CASANDRA)
-    else
-      set_ent_active(13, 0)
     end
 
     if progress.showbridge > 1 then

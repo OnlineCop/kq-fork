@@ -29,6 +29,9 @@
  * including dropping and optimizing the items carried.
  */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "kq.h"
 #include "draw.h"
 #include "eqpmenu.h"
@@ -37,13 +40,9 @@
 #include "res.h"
 #include "setup.h"
 
-#include <cstdio>
-#include <cstring>
-
 
 /* Globals  */
-int tstats[13];
-Resistances tempResistances;
+int tstats[13], tres[R_TOTAL_RES];
 unsigned short t_inv[MAX_INV], sm;
 size_t tot;
 char eqp_act;
@@ -81,7 +80,10 @@ static void calc_equippreview(unsigned int aa, unsigned int p2, int ii)
     {
         tstats[z] = fighter[aa].stats[z];
     }
-    tempResistances = fighter[aa].resistances;
+    for (z = 0; z < R_TOTAL_RES; z++)
+    {
+        tres[z] = fighter[aa].res[z];
+    }
     party[pidx[aa]].eqp[p2] = c;
     update_equipstats();
 }
@@ -104,10 +106,10 @@ static void calc_possible_equip(int c, int slot)
     for (k = 0; k < MAX_INV; k++)
     {
         // Check if we have any items at all
-        if (g_inv[k][0] > 0 && g_inv[k][1] > 0)
+        if (g_inv[k][GLOBAL_INVENTORY_ITEM] > 0 && g_inv[k][GLOBAL_INVENTORY_QUANTITY] > 0)
         {
-            if (items[g_inv[k][0]].type == slot
-                    && items[g_inv[k][0]].eq[pidx[c]] != 0)
+            if (items[g_inv[k][GLOBAL_INVENTORY_ITEM]].type == slot
+             && items[g_inv[k][GLOBAL_INVENTORY_ITEM]].eq[pidx[c]] != 0)
             {
                 t_inv[tot] = k;
                 tot++;
@@ -156,7 +158,7 @@ static void choose_equipment(int c, int slot)
 
         readcontrols();
 
-        if (down)
+        if (PlayerInput.down)
         {
             unpress();
             if (yptr == 15)
@@ -176,7 +178,7 @@ static void choose_equipment(int c, int slot)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (up)
+        if (PlayerInput.up)
         {
             unpress();
             if (yptr == 0)
@@ -193,7 +195,7 @@ static void choose_equipment(int c, int slot)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (equip(pidx[c], t_inv[pptr + yptr], 0) == 1)
@@ -206,7 +208,7 @@ static void choose_equipment(int c, int slot)
                 play_effect(SND_BAD, 128);
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             stop = 1;
@@ -339,7 +341,7 @@ static void draw_equippable(unsigned int c, unsigned int slot, unsigned int pptr
     }
     if (tot < NUM_ITEMS_PER_PAGE)
     {
-        sm = tot;
+        sm = (unsigned short)tot;
     }
     else
     {
@@ -438,12 +440,13 @@ static void draw_equippreview(int ch, int ptr, int pp)
     menubox(double_buffer, 188 + xofs, 212 + yofs, 13, 1, BLUE);
     if (ptr >= 0)
     {
-        // Count up the total resistance of both the original (tempResistances) and
-        // new (fighter->resistances) and display whether the overall resistance
-        // went up or down.
-
-        c1 = fighter[ch].resistances.GetCombinedResistanceAmounts();
-        c2 = tempResistances.GetCombinedResistanceAmounts();
+        c1 = 0;
+        c2 = 0;
+        for (z = 0; z < R_TOTAL_RES; z++)
+        {
+            c1 += fighter[ch].res[z];
+            c2 += tres[z];
+        }
         if (c1 < c2)
             print_font(double_buffer, 212 + xofs, 220 + yofs, _("Resist up"),
                        FNORMAL);
@@ -481,7 +484,7 @@ static int equip(unsigned int c, unsigned int selected_item, unsigned int forced
 
     if (forced == 0)
     {
-        d = g_inv[selected_item][0];
+        d = g_inv[selected_item][GLOBAL_INVENTORY_ITEM];
     }
     else
     {
@@ -518,17 +521,19 @@ static int equip(unsigned int c, unsigned int selected_item, unsigned int forced
     if (b > 0)
     {
         for (i = 0; i < MAX_INV; i++)
+        {
             // Check if we have any items at all
-            if (g_inv[selected_item][0] > 0 && g_inv[selected_item][1] > 0)
+            if (g_inv[selected_item][GLOBAL_INVENTORY_ITEM] > 0 && g_inv[selected_item][GLOBAL_INVENTORY_QUANTITY] > 0)
             {
                 n++;
             }
+        }
         // this first argument checks to see if there's one of given item
-        if (g_inv[selected_item][1] == 1 && n == MAX_INV && forced == 0)
+        if (g_inv[selected_item][GLOBAL_INVENTORY_QUANTITY] == 1 && n == MAX_INV && forced == 0)
         {
             party[c].eqp[a] = d;
-            g_inv[selected_item][0] = b;
-            g_inv[selected_item][1] = 1;
+            g_inv[selected_item][GLOBAL_INVENTORY_ITEM] = b;
+            g_inv[selected_item][GLOBAL_INVENTORY_QUANTITY] = 1;
             return 1;
         }
         else
@@ -599,7 +604,7 @@ void equip_menu(unsigned int c)
 
         if (sl == 1)
         {
-            if (left)
+            if (PlayerInput.left)
             {
                 unpress();
                 eqp_act--;
@@ -609,7 +614,7 @@ void equip_menu(unsigned int c)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (right)
+            if (PlayerInput.right)
             {
                 unpress();
                 eqp_act++;
@@ -622,7 +627,7 @@ void equip_menu(unsigned int c)
         }
         else
         {
-            if (down)
+            if (PlayerInput.down)
             {
                 unpress();
                 yptr++;
@@ -632,7 +637,7 @@ void equip_menu(unsigned int c)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (up)
+            if (PlayerInput.up)
             {
                 unpress();
                 yptr--;
@@ -643,7 +648,7 @@ void equip_menu(unsigned int c)
                 play_effect(SND_CLICK, 128);
             }
         }
-        if (balt)
+        if (PlayerInput.balt)
         {
             unpress();
             if (sl == 1)
@@ -701,7 +706,7 @@ void equip_menu(unsigned int c)
                 }
             }
         }
-        if (bctrl)
+        if (PlayerInput.bctrl)
         {
             unpress();
             if (sl == 0)
@@ -756,10 +761,12 @@ static void optimize_equip(int c)
         }
     }
     if (maxi > -1)
+    {
         if (equip(pidx[c], t_inv[maxi], 0) == 0)
         {
             return;
         }
+    }
     for (z = 1; z < 5; z++)
     {
         maxx = 0;
@@ -775,10 +782,12 @@ static void optimize_equip(int c)
             }
         }
         if (maxi > -1)
+        {
             if (equip(pidx[c], t_inv[maxi], 0) == 0)
             {
                 return;
             }
+        }
     }
     maxx = 0;
     maxi = -1;
@@ -790,7 +799,10 @@ static void optimize_equip(int c)
         {
             v += items[b].stats[z];
         }
-        v += items[b].resistances.GetCombinedResistanceAmounts();
+        for (z = 0; z < R_TOTAL_RES; z++)
+        {
+            v += items[b].res[z];
+        }
         if (v > maxx)
         {
             maxx = v;
@@ -798,16 +810,12 @@ static void optimize_equip(int c)
         }
     }
     if (maxi > -1)
+    {
         if (equip(pidx[c], t_inv[maxi], 0) == 0)
         {
             return;
         }
+    }
     play_effect(SND_EQUIP, 128);
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

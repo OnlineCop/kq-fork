@@ -31,7 +31,6 @@
  */
 
 #include <allegro.h>
-#include <string>
 
 /* Have to undef some stuff because Allegro defines it - thanks guys
 */
@@ -60,11 +59,14 @@
 
 #include "entity.h"
 #include "enums.h"
+#include "heroc.h"
+#include "maps.h"
 #include "structs.h"
+#include <string>
 
 
-void change_map(const char *, int, int, int, int);    /*  intrface.c, magic.c  */
-void change_mapm(const char *, const char *, int, int);       /*  intrface.c */
+void change_map(const std::string &, int, int, int, int);    /*  intrface.c, magic.c  */
+void change_mapm(const std::string &, const std::string &, int, int);       /*  intrface.c */
 void readcontrols(void);        /*  everywhere ;)  */
 void calc_viewport(int);        /*  entity.c, intrface.c  */
 void zone_check(void);          /*  entity.c  */
@@ -77,8 +79,8 @@ void klog(const char *);        /*  draw.c, intrface.c, magic.c, setup.c  */
 void init_players(void);        /*  sgame.c  */
 void kwait(int);                /*  intrface.c  */
 NORETURN void program_death(const char *);     /*  everywhere ;)  */
-unsigned int in_party(int);     /*  combat.c, intrface.c  */
-void wait_for_entity(int, int);  /*  intrface.c  */
+size_t in_party(ePIDX);     /*  combat.c, intrface.c  */
+void wait_for_entity(size_t, size_t);  /*  intrface.c  */
 char *get_timer_event(void);    /*  entity.c, kq.c  */
 int add_timer_event(const char *, int);   /*  intrface.c  */
 void reset_timer_events(void);  /*  intrface.c  */
@@ -86,40 +88,9 @@ void reset_world(void);         /*  sgame.c  */
 
 
 
-extern char curmap[16];         /*  sgame.c, draw.c, magic.c */
-
-extern int right;               /*  intrface.c, (eqp|item|mas|shop)menu.c, entity.c, menu.c, selector.c, setup.c, heroc.c  */
-
-extern int left;                /*  intrface.c, (eqp|item|mas|shop)menu.c, entity.c, menu.c, selector.c, setup.c, heroc.c  */
-
-extern int up;                  /*  selector.c, (eqp|item|mas|shop)menu.c, heroc.c, intrface.c, menu.c, entity.c, setup.c, sgame.c, draw.c  */
-
-extern int down;                /*  selector.c, (eqp|item|mas|shop)menu.c, heroc.c, intrface.c, menu.c, entity.c, setup.c, sgame.c, draw.c  */
-
-extern int besc;                /*  intrface.c, setup.c, sgame.c  */
-
-extern int benter;              /*  entity.c, intrface.c, setup.c, sgame.c  */
-
-extern int balt;                /*  selector.c, (eqp|item|mas|shop)menu.c, heroc.c, intrface.c, menu.c, setup.c, draw.c, sgame.c  */
-
-extern int bctrl;               /*  selector.c, (eqp|item|mas|shop)menu.c, sgame.c, heroc.c, intrface.c, setup.c, menu.c  */
-
-extern int bhelp;
-extern int bcheat;
-
-extern int kright;              /*  setup.c, sgame.c  */
-extern int kleft;               /*  setup.c, sgame.c  */
-extern int kup;                 /*  setup.c, sgame.c  */
-extern int kdown;               /*  setup.c, sgame.c  */
-extern int kesc;                /*  setup.c, sgame.c  */
-extern int kenter;              /*  setup.c, sgame.c  */
-extern int kalt;                /*  setup.c, sgame.c  */
-extern int kctrl;               /*  setup.c, sgame.c, entity.c  */
-extern int jbalt;               /*  setup.c, sgame.c  */
-extern int jbctrl;              /*  setup.c, sgame.c  */
-extern int jbenter;             /*  setup.c, sgame.c  */
-extern int jbesc;               /*  setup.c, sgame.c  */
-extern int vx, vy, mx, my, steps, lastm[PARTY_SIZE];
+extern std::string curmap;         /*  sgame.c, draw.c, magic.c */
+extern s_player_input PlayerInput;
+extern int vx, vy, mx, my, steps, lastm[PSIZE];
 
 extern BITMAP *double_buffer, *fx_buffer;
 extern BITMAP *map_icons[MAX_TILES];
@@ -138,11 +109,13 @@ extern unsigned char treasure[SIZE_TREASURE];
 extern unsigned char save_spells[SIZE_SAVE_SPELL];
 extern BITMAP *kfonts;
 extern s_map g_map;
-extern s_entity g_ent[MAX_ENT + PARTY_SIZE];
+extern s_entity g_ent[MAX_ENTITIES];
 extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
 extern s_anim adata[MAX_ANIM];
 extern unsigned int numchrs;
-extern int noe, pidx[MAXCHRS], gp, xofs, yofs, gsvol, gmvol;
+extern int gp, xofs, yofs, gsvol, gmvol;
+extern unsigned int noe;
+extern ePIDX pidx[MAXCHRS];
 extern unsigned char autoparty, alldead, is_sound, deadeffect, vfollow, use_sstone, sound_avail;
 extern const unsigned char kq_version;
 extern unsigned char hold_fade, cansave, skip_intro, wait_retrace, windowed, stretch_view, cpu_usage;
@@ -152,15 +125,15 @@ extern s_player party[MAXCHRS];
 extern s_heroinfo players[MAXCHRS];
 extern s_fighter fighter[NUM_FIGHTERS];
 extern s_fighter tempa, tempd;
-extern int noi, shin[12], dct;
-extern char sname[39];
-extern std::string ctext;
+extern int shin[12], display_attack_string;
+extern char shop_name[39];
+extern char attack_string[39];
 extern volatile int timer, ksec, kmin, khr, animation_count, timer_count;
 extern unsigned short lup[MAXCHRS][20];
 extern COLOR_MAP cmap;
 extern unsigned char can_run, display_desc;
 extern unsigned char draw_background, draw_middle, draw_foreground, draw_shadow;
-extern unsigned short g_inv[MAX_INV][2];
+extern unsigned short g_inv[MAX_INV][NUM_GLOBAL_INVENTORY]; // [0] is the inventory item ID, [1] is the quantity
 extern s_special_item special_items[MAX_SPECIAL_ITEMS];
 extern short player_special_items[MAX_SPECIAL_ITEMS];
 extern int view_x1, view_y1, view_x2, view_y2, view_on, in_combat;
@@ -188,16 +161,10 @@ extern BITMAP *obj_mesh;
  * 272 == (240 + 16 + 16) or screen dimensions plus 1 tile on top and 1 tile
  * on bottom.
  */
-#define SCREEN_W2 ((320*2) + 16 + 16)
-#define SCREEN_H2 (240 + 16 + 16)
+#define SCREEN_W2 (320 + 2 * TILE_W)
+#define SCREEN_H2 (240 + 2 * TILE_H)
 #define fullblit(a,b) blit((a), (b), 0, 0, 0, 0, SCREEN_W2, SCREEN_H2)
 
 
 #endif  /* __KQ_H */
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

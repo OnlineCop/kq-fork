@@ -27,6 +27,13 @@
  * \date ??????
  */
 
+#include <assert.h>
+#include <ctype.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "combat.h"
 #include "entity.h"
 #include "enums.h"
@@ -35,13 +42,6 @@
 #include "kq.h"
 #include "menu.h"
 #include "setup.h"
-
-#include <cassert>
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 
 
 
@@ -77,7 +77,7 @@ static void chase(t_entity target_entity)
     if (g_ent[target_entity].chasing == 0)
     {
         if (entity_near(target_entity, 0, 3) == 1
-                && rand() % 100 <= g_ent[target_entity].extra)
+         && rand() % 100 <= g_ent[target_entity].extra)
         {
             g_ent[target_entity].chasing = 1;
             if (g_ent[target_entity].speed < 7)
@@ -134,17 +134,21 @@ static void chase(t_entity target_entity)
 /*! \brief Count active entities
  *
  * Force calculation of the 'noe' variable.
+ * This actually calculates the last index of any active entity plus one,
+ * so if there are entities present, but not active, they may be counted.
  */
 void count_entities(void)
 {
-    t_entity i;
+    size_t entity_index;
 
     noe = 0;
-    for (i = 0; i < MAX_ENT; i++)
-        if (g_ent[i].active == 1)
+    for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++)
+    {
+        if (g_ent[entity_index].active == 1)
         {
-            noe = i + 1;
+            noe = entity_index + 1;
         }
+    }
 }
 
 
@@ -164,21 +168,22 @@ void count_entities(void)
  */
 static int entity_near(t_entity eno, t_entity tgt, int rad)
 {
-    int ax, ay;
-    s_entity* entity1 = &g_ent[eno];
-    s_entity* entity2 = &g_ent[tgt];
+    int ax, ay, ex, ey, b;
 
-    for (ay = -rad; ay <= rad; ay++)
+    b = 0 - rad;
+    ex = g_ent[eno].tilex;
+    ey = g_ent[eno].tiley;
+    for (ay = b; ay <= rad; ay++)
     {
-        for (ax = -rad; ax <= rad; ax++)
+        for (ax = b; ax <= rad; ax++)
         {
-            if (entity1->tilex + ax == entity2->tilex &&
-                entity1->tiley + ay == entity2->tiley)
+            if (ex + ax >= view_x1
+             && ax + ax <= view_x2
+             && ey + ay >= view_y1
+             && ey + ay <= view_y2)
             {
-                if (entity1->tilex + ax >= view_x1 &&
-                    entity1->tilex + ax <= view_x2 &&
-                    entity1->tiley + ay >= view_y1 &&
-                    entity1->tiley + ay <= view_y2)
+                if (ex + ax == g_ent[tgt].tilex
+                 && ey + ay == g_ent[tgt].tiley)
                 {
                     return 1;
                 }
@@ -206,13 +211,13 @@ int entityat(int ox, int oy, t_entity who)
 {
     t_entity i;
 
-    for (i = 0; i < MAX_ENT; i++)
+    for (i = 0; i < MAX_ENTITIES; i++)
     {
         if (g_ent[i].active && ox == g_ent[i].tilex && oy == g_ent[i].tiley)
         {
-            if (who >= PARTY_SIZE)
+            if (who >= PSIZE)
             {
-                if (g_ent[who].eid == ID_ENEMY && i < PARTY_SIZE)
+                if (g_ent[who].eid == ID_ENEMY && i < PSIZE)
                 {
                     if (combat(0) == 1)
                     {
@@ -232,7 +237,7 @@ int entityat(int ox, int oy, t_entity who)
                     }
                     return 0;
                 }
-                if (i >= PARTY_SIZE)
+                if (i >= PSIZE)
                 {
                     return i + 1;
                 }
@@ -356,8 +361,9 @@ static void follow(int tile_x, int tile_y)
             move(i, tile_x - g_ent[i].tilex, tile_y - g_ent[i].tiley);
         }
         else
-            move(i, g_ent[i - 1].tilex - g_ent[i].tilex,
-                 g_ent[i - 1].tiley - g_ent[i].tiley);
+        {
+            move(i, g_ent[i - 1].tilex - g_ent[i].tilex, g_ent[i - 1].tiley - g_ent[i].tiley);
+        }
     }
 }
 
@@ -454,9 +460,7 @@ static void getcommand(t_entity target_entity)
 #ifdef DEBUGMODE
             if (debugging > 0)
             {
-                sprintf(strbuf,
-                        _("Invalid entity command (%c) at position %d for ent %d"), s,
-                        g_ent[target_entity].sidx, target_entity);
+                sprintf(strbuf, _("Invalid entity command (%c) at position %d for ent %d"), s, g_ent[target_entity].sidx, target_entity);
                 program_death(strbuf);
             }
 #endif
@@ -503,8 +507,10 @@ static int move(t_entity target_entity, int dx, int dy)
     {
         ent->facing = FACE_UP;
     }
-    if (tile_x + dx == -1 || tile_x + dx == g_map.xsize ||
-            tile_y + dy == -1 || tile_y + dy == g_map.ysize)
+    if (tile_x + dx == -1
+     || tile_x + dx == (int)g_map.xsize
+     || tile_y + dy == -1
+     || tile_y + dy == (int)g_map.ysize)
     {
         return 0;
     }
@@ -513,15 +519,17 @@ static int move(t_entity target_entity, int dx, int dy)
         // Try to automatically walk/run around obstacle.
         if (dx && obstruction(tile_x, tile_y, dx, 0, FALSE))
         {
-            if (dy != -1 && oldfacing == ent->facing
-                    && !obstruction(tile_x, tile_y + 1, dx, 0, TRUE)
-                    && !obstruction(tile_x, tile_y, 0, 1, TRUE))
+            if (dy != -1
+             && oldfacing == ent->facing
+             && !obstruction(tile_x, tile_y + 1, dx, 0, TRUE)
+             && !obstruction(tile_x, tile_y, 0, 1, TRUE))
             {
                 dy = 1;
             }
-            else if (dy != 1 && oldfacing == ent->facing
-                     && !obstruction(tile_x, tile_y - 1, dx, 0, TRUE)
-                     && !obstruction(tile_x, tile_y, 0, -1, TRUE))
+            else if (dy != 1
+             && oldfacing == ent->facing
+             && !obstruction(tile_x, tile_y - 1, dx, 0, TRUE)
+             && !obstruction(tile_x, tile_y, 0, -1, TRUE))
             {
                 dy = -1;
             }
@@ -532,15 +540,17 @@ static int move(t_entity target_entity, int dx, int dy)
         }
         if (dy && obstruction(tile_x, tile_y, 0, dy, FALSE))
         {
-            if (dx != -1 && oldfacing == ent->facing
-                    && !obstruction(tile_x + 1, tile_y, 0, dy, TRUE)
-                    && !obstruction(tile_x, tile_y, 1, 0, TRUE))
+            if (dx != -1
+             && oldfacing == ent->facing
+             && !obstruction(tile_x + 1, tile_y, 0, dy, TRUE)
+             && !obstruction(tile_x, tile_y, 1, 0, TRUE))
             {
                 dx = 1;
             }
-            else if (dx != 1 && oldfacing == ent->facing
-                     && !obstruction(tile_x - 1, tile_y, 0, dy, TRUE)
-                     && !obstruction(tile_x, tile_y, -1, 0, TRUE))
+            else if (dx != 1
+             && oldfacing == ent->facing
+             && !obstruction(tile_x - 1, tile_y, 0, dy, TRUE)
+             && !obstruction(tile_x, tile_y, -1, 0, TRUE))
             {
                 dx = -1;
             }
@@ -554,10 +564,12 @@ static int move(t_entity target_entity, int dx, int dy)
             dx = dy = 0;
         }
     }
+
     if (!dx && !dy && oldfacing == ent->facing)
     {
         return 0;
     }
+
     if (ent->obsmode == 1 && entityat(tile_x + dx, tile_y + dy, target_entity))
     {
         return 0;
@@ -568,7 +580,7 @@ static int move(t_entity target_entity, int dx, int dy)
     {
         source_tile = tile_y * g_map.xsize + tile_x;
         if (z_seg[source_tile] != z_seg[source_tile + dx]
-                || z_seg[source_tile] != z_seg[source_tile + dy * g_map.xsize])
+         || z_seg[source_tile] != z_seg[source_tile + dy * g_map.xsize])
         {
             if (ent->facing == FACE_LEFT || ent->facing == FACE_RIGHT)
             {
@@ -598,7 +610,8 @@ static int move(t_entity target_entity, int dx, int dy)
     // Make sure player can't walk diagonally between active entities.
     if (dx && dy)
     {
-        if (obstruction(tile_x, tile_y, dx, 0, TRUE) && obstruction(tile_x, tile_y, 0, dy, TRUE))
+        if (obstruction(tile_x, tile_y, dx, 0, TRUE)
+         && obstruction(tile_x, tile_y, 0, dy, TRUE))
         {
             return 0;
         }
@@ -635,9 +648,10 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
     t_entity i;
 
     // Block entity if it tries to walk off the map
-    if ((origin_x == 0 && move_x < 0) || (origin_y == 0 && move_y < 0) ||
-            (origin_x == g_map.xsize - 1 && move_x > 0) ||
-            (origin_y == g_map.ysize - 1 && move_y > 0))
+    if ((origin_x == 0 && move_x < 0)
+     || (origin_y == 0 && move_y < 0)
+     || (origin_x == (int)g_map.xsize - 1 && move_x > 0)
+     || (origin_y == (int)g_map.ysize - 1 && move_y > 0))
     {
         return 1;
     }
@@ -688,9 +702,11 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
     // Another entity blocks movement as well
     if (check_entity)
     {
-        for (i = 0; i < MAX_ENT; i++)
+        for (i = 0; i < MAX_ENTITIES; i++)
         {
-            if (g_ent[i].active && dest_x == g_ent[i].tilex && dest_y == g_ent[i].tiley)
+            if (g_ent[i].active
+             && dest_x == g_ent[i].tilex
+             && dest_y == g_ent[i].tiley)
             {
                 return 1;
             }
@@ -765,22 +781,22 @@ static void player_move(void)
 
     readcontrols();
 
-    if (balt)
+    if (PlayerInput.balt)
     {
         activate();
     }
-    if (benter)
+    if (PlayerInput.benter)
     {
         menu();
     }
 #ifdef KQ_CHEATS
-    if (bcheat)
+    if (PlayerInput.bcheat)
     {
         do_luacheat();
     }
 #endif
 
-    move(0, right ? 1 : left ? -1 : 0, down ? 1 : up ? -1 : 0);
+    move(0, PlayerInput.right ? 1 : PlayerInput.left ? -1 : 0, PlayerInput.down ? 1 : PlayerInput.up ? -1 : 0);
     if (g_ent[0].moving)
     {
         follow(oldx, oldy);
@@ -799,7 +815,7 @@ void process_entities(void)
     t_entity i;
     const char *t_evt;
 
-    for (i = 0; i < MAX_ENT; i++)
+    for (i = 0; i < MAX_ENTITIES; i++)
     {
         if (g_ent[i].active == 1)
         {
@@ -900,7 +916,7 @@ static void process_entity(t_entity target_entity)
         if (ent->movcnt == 0)
         {
             ent->moving = 0;
-            if (target_entity < PARTY_SIZE)
+            if (target_entity < PSIZE)
             {
                 player = &party[pidx[target_entity]];
                 if (steps < STEPS_NEEDED)
@@ -954,8 +970,7 @@ void set_script(t_entity target_entity, const char *movestring)
     g_ent[target_entity].sidx = 0;   // Reset script command index
     g_ent[target_entity].cmdnum = 0; // There are no scripted commands
     g_ent[target_entity].movemode = MM_SCRIPT;   // Force the entity to follow the script
-    strncpy(g_ent[target_entity].script, movestring,
-            sizeof(g_ent[target_entity].script));
+    strncpy(g_ent[target_entity].script, movestring, sizeof(g_ent[target_entity].script));
 }
 
 
@@ -1019,7 +1034,7 @@ static void speed_adjust(t_entity target_entity)
             break;
     }
     /* TT: This is to see if the player is "running" */
-    if (key[kctrl] && target_entity < PARTY_SIZE)
+    if (key[PlayerInput.kctrl] && target_entity < PSIZE)
     {
         process_entity(target_entity);
     }
@@ -1142,9 +1157,3 @@ static void wander(t_entity target_entity)
     }
 }
 
-/* Local Variables:     */
-/* mode: c              */
-/* comment-column: 0    */
-/* indent-tabs-mode nil */
-/* tab-width: 4         */
-/* End:                 */

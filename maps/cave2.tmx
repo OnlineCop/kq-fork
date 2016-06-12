@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="16" tileheight="16" backgroundcolor="#0e0e0e" nextobjectid="5">
+ <properties>
+  <property name="can_save" value="0"/>
+  <property name="can_warp" value="0"/>
+  <property name="map_mode" value="0"/>
+  <property name="map_no" value="8"/>
+  <property name="pdiv" value="1"/>
+  <property name="pmult" value="1"/>
+  <property name="stx" value="14"/>
+  <property name="sty" value="15"/>
+  <property name="tileset" value="3"/>
+  <property name="use_sstone" value="0"/>
+  <property name="warpx" value="14"/>
+  <property name="warpy" value="15"/>
+  <property name="zero_zone" value="0"/>
+ </properties>
+ <tileset firstgid="1" source="cave.tsx"/>
+ <tileset firstgid="501" source="entities.tsx"/>
+ <tileset firstgid="1473" source="misc.tsx"/>
+ <tileset firstgid="1773" source="obstacles.tsx"/>
+ <layer name="map" width="30" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztz8kKgDAMRdFuxHkA0aKurf7/F5pAC0Ecumjswjy4ZHmIUjLZf6ehkTR85BVQTsoYbU28GqpIJaNtiHflYusHbgtN9jqX42fnotNBCzTb2yi+n83JO+fs0G5649H6SG4TycWSwO4WycX5/Mzh+vy8M7hvNpf5ZHObMplMhjsAR5AMgA==
+  </data>
+ </layer>
+ <layer name="bmap" width="30" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztzsEJADAIBEH7Sf/9WYIYFEKY+d5jLwIA+s7lttndVHVf/fVbF4BZCTdkAS4=
+  </data>
+ </layer>
+ <objectgroup color="#ff00ff" name="entities"/>
+ <layer name="fmap" width="30" height="30">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjILhDSQG2gGjYBRQAFgG2gEDAPD5mWkA7Ka1nTDAjIZHwSgYBaOAHgAAdy8ANQ==
+  </data>
+ </layer>
+ <layer name="shadows" width="30" height="30" opacity="0.5">
+  <data encoding="base64" compression="zlib">
+   eJztwQEBAAAAgiD/r25IQAEAAPBoDhAAAQ==
+  </data>
+ </layer>
+ <layer name="obstacles" width="30" height="30" opacity="0.5">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjILhC96yITA97UMXo7Wd5MhRaiche2lhNzHmDqS91LabGPNoGdaD0V5i1VDb7oHIx/Qut+hZVo6CUTAKBg8AAJpGITo=
+  </data>
+ </layer>
+ <objectgroup color="#008000" name="zones">
+  <object id="1" name="1" type="zone" x="224" y="160" width="16" height="16"/>
+  <object id="2" name="2" type="zone" x="288" y="256" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup color="#ffff00" name="markers">
+  <object id="3" name="entrance" type="marker" x="224" y="240" width="16" height="16"/>
+  <object id="4" name="exit" type="marker" x="240" y="288" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup color="#0000ff" name="bounds" visible="0"/>
+</map>
