@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "constants.h"
 #include "draw.h"
 #include "eqpmenu.h"
 #include "heroc.h"

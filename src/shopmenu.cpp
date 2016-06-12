@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "constants.h"
 #include "draw.h"
 #include "fade.h"
 #include "itemdefs.h"
@@ -90,14 +91,14 @@ static void buy_item(int how_many, int item_no)
     }
     while (!stop)
     {
-		Game.do_check_animation();
-        blit(back, double_buffer, 0, 0, xofs, 192 + yofs, 320, 48);
+        Game.do_check_animation();
+        blit(back, double_buffer, 0, 0, xofs, 192 + yofs, KQ_SCREEN_W, 48);
         menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, DARKBLUE);
         print_font(double_buffer, 104 + xofs, 176 + yofs, _("Confirm/Cancel"), FNORMAL);
         draw_sideshot(shops[shop_no].items[item_no]);
         blit2screen(xofs, yofs);
 
-		Game.readcontrols();
+        Game.readcontrols();
         if (PlayerInput.balt)
         {
             Game.unpress();
@@ -151,7 +152,7 @@ static void buy_menu(void)
     }
     while (!stop)
     {
-		Game.do_check_animation();
+        Game.do_check_animation();
         drawmap();
         menubox(double_buffer, 152 - (strlen(shop_name) * 4) + xofs, yofs, strlen(shop_name), 1, BLUE);
         print_font(double_buffer, 160 - (strlen(shop_name) * 4) + xofs, 8 + yofs, shop_name, FGOLD);
@@ -199,7 +200,7 @@ static void buy_menu(void)
         draw_sprite(double_buffer, menuptr, 32 + xofs, yptr * 8 + 32 + yofs);
         blit2screen(xofs, yofs);
 
-		Game.readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
             Game.unpress();
@@ -241,7 +242,7 @@ static void buy_menu(void)
         if (PlayerInput.balt)
         {
             Game.unpress();
-            blit(double_buffer, back, xofs, 192 + yofs, 0, 0, 320, 48);
+            blit(double_buffer, back, xofs, 192 + yofs, 0, 0, KQ_SCREEN_W, 48);
             max = shops[shop_no].items_current[yptr];
             if (xptr <= max)
             {
@@ -496,7 +497,7 @@ void inn(const char *iname, uint32_t gold_per_character, int pay)
     }
     while (!stop)
     {
-		Game.do_check_animation();
+        Game.do_check_animation();
         drawmap();
 
         sprintf(strbuf, _("The cost is %u gp for the night."), total_gold_cost);
@@ -516,7 +517,7 @@ void inn(const char *iname, uint32_t gold_per_character, int pay)
             menubox(double_buffer, 32 + xofs, 96 + yofs, 30, 2, BLUE);
             print_font(double_buffer, 40 + xofs, 108 + yofs, _("You can't afford to stay here."), FNORMAL);
             blit2screen(xofs, yofs);
-			Game.wait_enter();
+            Game.wait_enter();
             return;
         }
 
@@ -525,7 +526,7 @@ void inn(const char *iname, uint32_t gold_per_character, int pay)
         print_font(double_buffer, 236 + xofs, 112 + yofs, _("no"), FNORMAL);
         draw_sprite(double_buffer, menuptr, 220 + xofs, my * 8 + 104 + yofs);
         blit2screen(xofs, yofs);
-		Game.readcontrols();
+        Game.readcontrols();
         if (PlayerInput.down)
         {
             Game.unpress();
@@ -604,7 +605,7 @@ static void sell_howmany(int item_no, size_t inv_page)
     }
     while (!stop)
     {
-		Game.do_check_animation();
+        Game.do_check_animation();
         drawmap();
         menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, DARKBLUE);
         print_font(double_buffer, 124 + xofs, 176 + yofs, _("How many?"), FNORMAL);
@@ -615,7 +616,7 @@ static void sell_howmany(int item_no, size_t inv_page)
         print_font(double_buffer, 280 - (strlen(strbuf) * 8) + xofs, item_no * 8 + 32 + yofs, strbuf, FNORMAL);
         blit2screen(xofs, yofs);
 
-		Game.readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up || PlayerInput.right)
         {
             if (my < max_items)
@@ -680,7 +681,7 @@ static void sell_item(int itno, int ni)
     blit2screen(xofs, yofs);
     while (!stop)
     {
-		Game.readcontrols();
+        Game.readcontrols();
         if (PlayerInput.balt)
         {
             Game.unpress();
@@ -724,7 +725,7 @@ static void sell_menu(void)
 
     while (!stop)
     {
-		Game.do_check_animation();
+        Game.do_check_animation();
         drawmap();
         menubox(double_buffer, 152 - (strlen(shop_name) * 4) + xofs, yofs, strlen(shop_name), 1, BLUE);
         print_font(double_buffer, 160 - (strlen(shop_name) * 4) + xofs, 8 + yofs, shop_name, FGOLD);
@@ -781,7 +782,7 @@ static void sell_menu(void)
         draw_sprite(double_buffer, pgb[inv_page], 278 + xofs, 158 + yofs);
         blit2screen(xofs, yofs);
 
-		Game.readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.down)
         {
@@ -898,7 +899,7 @@ int shop(int shop_num)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-		Game.do_check_animation();
+        Game.do_check_animation();
         drawmap();
         menubox(double_buffer, 152 - (strlen(shop_name) * 4) + xofs, yofs, strlen(shop_name), 1, BLUE);
         print_font(double_buffer, 160 - (strlen(shop_name) * 4) + xofs, 8 + yofs, shop_name, FGOLD);
@@ -911,7 +912,7 @@ int shop(int shop_num)
         draw_shopgold();
         blit2screen(xofs, yofs);
 
-		Game.readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.left && ptr > 0)
         {

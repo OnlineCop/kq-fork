@@ -32,6 +32,7 @@
 #include <string.h>
 
 #include "combat.h"
+#include "constants.h"
 #include "draw.h"
 #include "effects.h"
 #include "enemyc.h"
@@ -320,7 +321,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
     }
 
     clear_bitmap(double_buffer);
-    blit(backart, double_buffer, 0, 0, 0, 0, 320, 240);
+    blit(backart, double_buffer, 0, 0, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H);
 
     if ((sall == 0) && (curx > -1) && (cury > -1))
     {
@@ -724,10 +725,10 @@ static int do_combat(char *bg, char *mus, int is_rnd)
                     screen,
                     zoom_step * 16 + xofs,
                     zoom_step * 12 + yofs,
-                    320 - (zoom_step * 32),
-                    240 - (zoom_step * 24),
+                    KQ_SCREEN_W - (zoom_step * 32),
+                    KQ_SCREEN_H - (zoom_step * 24),
                     0, 0,
-                    640, 480
+                    KQ_SCALED_SCREEN_W, KQ_SCALED_SCREEN_H
                 );
             }
             else
@@ -737,10 +738,10 @@ static int do_combat(char *bg, char *mus, int is_rnd)
                     screen,
                     zoom_step * 16 + xofs,
                     zoom_step * 12 + yofs,
-                    320 - (zoom_step * 32),
-                    240 - (zoom_step * 24),
+                    KQ_SCREEN_W - (zoom_step * 32),
+                    KQ_SCREEN_H - (zoom_step * 24),
                     0, 0,
-                    320, 240
+                    KQ_SCREEN_W, KQ_SCREEN_H
                 );
             }
 
@@ -954,7 +955,7 @@ static void do_round(void)
             timer_count = 0;
         }
 
-		Game.kq_yield();
+        Game.kq_yield();
     }
 }
 
@@ -1076,7 +1077,7 @@ static void enemies_win(void)
     menubox(double_buffer, 152 - (strlen(strbuf) * 4), 48, strlen(strbuf), 1, BLUE);
     print_font(double_buffer, 160 - (strlen(strbuf) * 4), 56, strbuf, FNORMAL);
     blit2screen(0, 0);
-	Game.wait_enter();
+    Game.wait_enter();
     do_transition(TRANS_FADE_OUT, 4);
     alldead = 1;
 }
@@ -1135,7 +1136,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
             battle_render(defend_fighter_index + 1, 0, 0);
             blit2screen(0, 0);
             kq_wait(20);
-            rectfill(double_buffer, 0, 0, 320, 240, 15);
+            rectfill(double_buffer, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H, 15);
             blit2screen(0, 0);
             kq_wait(20);
         }
@@ -1367,7 +1368,7 @@ static void heroes_win(void)
     if (nr > 0)
     {
         blit2screen(0, 0);
-		Game.wait_enter();
+        Game.wait_enter();
         fullblit(back, double_buffer);
     }
 
@@ -1437,7 +1438,7 @@ static void heroes_win(void)
 
     if (ent == 0)
     {
-		Game.wait_enter();
+        Game.wait_enter();
     }
 }
 

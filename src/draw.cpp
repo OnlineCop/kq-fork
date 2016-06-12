@@ -37,6 +37,7 @@
 #include "bounds.h"
 #include "combat.h"
 #include "console.h"
+#include "constants.h"
 #include "draw.h"
 #include "entity.h"
 #include "kq.h"
@@ -112,11 +113,11 @@ void blit2screen(int xw, int yw)
 #endif
     if (stretch_view == 1)
     {
-        stretch_blit(double_buffer, screen, xw, yw, 320, 240, 0, 0, 640, 480);
+        stretch_blit(double_buffer, screen, xw, yw, KQ_SCREEN_W, KQ_SCREEN_H, 0, 0, KQ_SCALED_SCREEN_W, KQ_SCALED_SCREEN_H);
     }
     else
     {
-        blit(double_buffer, screen, xw, yw, 0, 0, 320, 240);
+        blit(double_buffer, screen, xw, yw, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H);
     }
     frate = limit_frame_rate(25);
 }
@@ -1796,8 +1797,8 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
                 }
             }
             winheight = n_opt > 4 ? 4 : n_opt;
-            winx = xofs + (320 - winwidth * 8) / 2;
-            winy = yofs + 230 - winheight * 12;
+            winx = xofs + (KQ_SCREEN_W - winwidth * 8) / 2;
+            winy = yofs + (KQ_SCREEN_H - 10) - winheight * 12;
             running = 1;
             while (running)
             {
@@ -2064,11 +2065,11 @@ static void set_textpos(uint32_t entity_index)
         {
             gbbx = 296 - (gbbw * 8);
         }
-        if (gby > -16 && gby < 240)
+        if (gby > -16 && gby < KQ_SCREEN_H)
         {
             if (g_ent[entity_index].facing == 1 || g_ent[entity_index].facing == 2)
             {
-                if (gbbh * 12 + gby + 40 <= 232)
+                if (gbbh * 12 + gby + 40 <= KQ_SCREEN_H - 8)
                 {
                     gbby = gby + 24;
                 }

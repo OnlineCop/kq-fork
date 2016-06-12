@@ -30,6 +30,7 @@
 #include <string.h>
 
 #include "combat.h"
+#include "constants.h"
 #include "draw.h"
 #include "heroc.h"
 #include "kq.h"
@@ -870,7 +871,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
         y = yofs + 40;
         for (fighter_index = 0; fighter_index < n_avail; ++fighter_index)
         {
-            x = xofs + (320 - 32 * n_avail) / 2 + 32 * fighter_index;
+            x = xofs + (KQ_SCREEN_W - 32 * n_avail) / 2 + 32 * fighter_index;
             menubox(double_buffer, x, y, 2, 2, (fighter_index == cur ? DARKRED : DARKBLUE));
             if (avail[fighter_index] != PIDX_UNDEFINED)
             {
@@ -878,7 +879,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
             }
         }
         /* draw the party */
-        x = xofs + (320 - 40 * PSIZE) / 2;
+        x = xofs + (KQ_SCREEN_W - 40 * PSIZE) / 2;
         y = yofs + 88;
         for (fighter_index = 0; fighter_index < PSIZE; ++fighter_index)
         {

@@ -509,9 +509,9 @@ int KGame::add_timer_event(const char *n, int delta)
  */
 BITMAP *KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name)
 {
-	BITMAP *tmp = create_bitmap(bitmap_width, bitmap_height);
+    BITMAP *tmp = create_bitmap(bitmap_width, bitmap_height);
 
-	if (!tmp)
+    if (!tmp)
     {
         sprintf(strbuf, _("Could not allocate %s!."), bitmap_name);
         program_death(strbuf);
@@ -723,8 +723,8 @@ void KGame::calc_viewport(int /*center*/)
  */
 void KGame::change_map(const std::string &map_name, int msx, int msy, int mvx, int mvy)
 {
-	load_tmx(map_name);
-	prepare_map(msx, msy, mvx, mvy);
+    load_tmx(map_name);
+    prepare_map(msx, msy, mvx, mvy);
 }
 
 
@@ -775,9 +775,9 @@ void KGame::change_mapm(const std::string &map_name, const std::string &marker_n
  */
 void KGame::do_check_animation(void)
 {
-	int millis = (1000 * animation_count) / KQ_TICKS;
-	animation_count -= (KQ_TICKS * millis) / 1000;
-	check_animation(millis);
+    int millis = (1000 * animation_count) / KQ_TICKS;
+    animation_count -= (KQ_TICKS * millis) / 1000;
+    check_animation(millis);
 }
 
 
@@ -956,7 +956,7 @@ void KGame::deallocate_stuff(void)
         free_samples();
     }
     deallocate_credits();
-	clear_image_cache();
+    clear_image_cache();
 
 #ifdef DEBUGMODE
     destroy_bitmap(obj_mesh);
@@ -1212,7 +1212,7 @@ void KGame::load_heroes(void)
     pack_fclose(f);
 
     /* portraits */
-	BITMAP* faces = get_cached_image("kqfaces.png");
+    BITMAP* faces = get_cached_image("kqfaces.png");
 
     for (player_index = 0; player_index < 4; ++player_index)
     {
@@ -1426,7 +1426,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-	pcxb = g_map.map_tiles;
+    pcxb = g_map.map_tiles;
     for (o = 0; o < (size_t)pcxb->h / TILE_H; o++)
     {
         for (i = 0; i < (size_t)pcxb->w / TILE_W; i++)
@@ -1737,7 +1737,7 @@ void KGame::startup(void)
     }
 
     srand((unsigned)time(&t));
-	BITMAP* misc = get_cached_image("misc.png");
+    BITMAP* misc = get_cached_image("misc.png");
     blit(misc, menuptr, 24, 0, 0, 0, 16, 8);
     blit(misc, sptr, 0, 0, 0, 0, 8, 8);
     blit(misc, mptr, 8, 0, 0, 0, 8, 8);
@@ -1814,9 +1814,9 @@ void KGame::startup(void)
 
     load_heroes();
 
-	BITMAP* allfonts = get_cached_image("fonts.png");
+    BITMAP* allfonts = get_cached_image("fonts.png");
     blit(allfonts, kfonts, 0, 0, 0, 0, 1024, 60);
-	BITMAP* entities = get_cached_image("entities.png");
+    BITMAP* entities = get_cached_image("entities.png");
     for (q = 0; q < MAXE; q++)
     {
         for (p = 0; p < MAXEFRAMES; p++)

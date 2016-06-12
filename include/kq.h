@@ -104,65 +104,65 @@ public:
 	void data_dump(void);
 };
 
-	extern std::string curmap;         /*  sgame.c, draw.c, magic.c */
-	extern s_player_input PlayerInput;
-	extern int vx, vy, mx, my, steps, lastm[PSIZE];
+extern std::string curmap;         /*  sgame.c, draw.c, magic.c */
+extern s_player_input PlayerInput;
+extern int vx, vy, mx, my, steps, lastm[PSIZE];
 
-	extern BITMAP *double_buffer, *fx_buffer;
-	extern BITMAP *map_icons[MAX_TILES];
+extern BITMAP *double_buffer, *fx_buffer;
+extern BITMAP *map_icons[MAX_TILES];
 
 
-	extern BITMAP *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse, *b_mp;
-	extern BITMAP *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES];
-	extern BITMAP *eframes[MAXE][MAXEFRAMES], *pgb[9], *sfonts[5], *bord[8];
-	extern BITMAP *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr;
-	extern BITMAP *shadow[MAX_SHADOWS];     /*  draw.c  */
-	extern uint16_t *map_seg;
-	extern uint16_t *b_seg, *f_seg;
-	extern uint8_t *z_seg, *s_seg, *o_seg;
-	extern uint8_t progress[SIZE_PROGRESS];
-	extern uint8_t treasure[SIZE_TREASURE];
-	extern uint8_t save_spells[SIZE_SAVE_SPELL];
-	extern BITMAP *kfonts;
-	extern s_map g_map;
-	extern s_entity g_ent[MAX_ENTITIES];
-	extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
-	extern s_anim adata[MAX_ANIM];
-	extern uint32_t numchrs;
-	extern int gp, xofs, yofs, gsvol, gmvol;
-	extern uint32_t noe;
-	extern ePIDX pidx[MAXCHRS];
-	extern uint8_t autoparty, alldead, is_sound, deadeffect, vfollow, use_sstone, sound_avail;
-	extern const uint8_t kq_version;
-	extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, stretch_view, cpu_usage;
-	extern uint16_t tilex[MAX_TILES], adelay[MAX_ANIM];
-	extern char *strbuf, *savedir;
-	extern s_player party[MAXCHRS];
-	extern s_heroinfo players[MAXCHRS];
-	extern s_fighter fighter[NUM_FIGHTERS];
-	extern s_fighter tempa, tempd;
-	extern int shin[12], display_attack_string;
-	extern char shop_name[39];
-	extern char attack_string[39];
-	extern volatile int timer, ksec, kmin, khr, animation_count, timer_count;
-	extern uint16_t lup[MAXCHRS][20];
-	extern COLOR_MAP cmap;
-	extern uint8_t can_run, display_desc;
-	extern uint8_t draw_background, draw_middle, draw_foreground, draw_shadow;
-	extern uint16_t g_inv[MAX_INV][NUM_GLOBAL_INVENTORY]; // [0] is the inventory item ID, [1] is the quantity
-	extern s_special_item special_items[MAX_SPECIAL_ITEMS];
-	extern short player_special_items[MAX_SPECIAL_ITEMS];
-	extern int view_x1, view_y1, view_x2, view_y2, view_on, in_combat;
-	extern int show_frate, use_joy;
+extern BITMAP *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse, *b_mp;
+extern BITMAP *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES];
+extern BITMAP *eframes[MAXE][MAXEFRAMES], *pgb[9], *sfonts[5], *bord[8];
+extern BITMAP *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr;
+extern BITMAP *shadow[MAX_SHADOWS];     /*  draw.c  */
+extern uint16_t *map_seg;
+extern uint16_t *b_seg, *f_seg;
+extern uint8_t *z_seg, *s_seg, *o_seg;
+extern uint8_t progress[SIZE_PROGRESS];
+extern uint8_t treasure[SIZE_TREASURE];
+extern uint8_t save_spells[SIZE_SAVE_SPELL];
+extern BITMAP *kfonts;
+extern s_map g_map;
+extern s_entity g_ent[MAX_ENTITIES];
+extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
+extern s_anim adata[MAX_ANIM];
+extern uint32_t numchrs;
+extern int gp, xofs, yofs, gsvol, gmvol;
+extern uint32_t noe;
+extern ePIDX pidx[MAXCHRS];
+extern uint8_t autoparty, alldead, is_sound, deadeffect, vfollow, use_sstone, sound_avail;
+extern const uint8_t kq_version;
+extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, stretch_view, cpu_usage;
+extern uint16_t tilex[MAX_TILES], adelay[MAX_ANIM];
+extern char *strbuf, *savedir;
+extern s_player party[MAXCHRS];
+extern s_heroinfo players[MAXCHRS];
+extern s_fighter fighter[NUM_FIGHTERS];
+extern s_fighter tempa, tempd;
+extern int shin[12], display_attack_string;
+extern char shop_name[39];
+extern char attack_string[39];
+extern volatile int timer, ksec, kmin, khr, animation_count, timer_count;
+extern uint16_t lup[MAXCHRS][20];
+extern COLOR_MAP cmap;
+extern uint8_t can_run, display_desc;
+extern uint8_t draw_background, draw_middle, draw_foreground, draw_shadow;
+extern uint16_t g_inv[MAX_INV][NUM_GLOBAL_INVENTORY]; // [0] is the inventory item ID, [1] is the quantity
+extern s_special_item special_items[MAX_SPECIAL_ITEMS];
+extern short player_special_items[MAX_SPECIAL_ITEMS];
+extern int view_x1, view_y1, view_x2, view_y2, view_on, in_combat;
+extern int show_frate, use_joy;
 
-	/*! Variables used with KQ_CHEATS */
-	extern int cheat;
-	extern int no_random_encounters;
-	extern int every_hit_999;
-	extern int no_monsters;
+/*! Variables used with KQ_CHEATS */
+extern int cheat;
+extern int no_random_encounters;
+extern int every_hit_999;
+extern int no_monsters;
 
 #ifdef DEBUGMODE
-	extern BITMAP *obj_mesh;
+extern BITMAP *obj_mesh;
 #endif
 
 /* The same blit() function was called all over the place, so this simplifies

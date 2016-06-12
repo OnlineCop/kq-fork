@@ -25,61 +25,61 @@ the Free Software Foundation,
 using std::vector;
 
 struct asequence {
-	asequence(const tmx_animation&);
-	asequence(asequence&&);
+    asequence(const tmx_animation&);
+    asequence(asequence&&);
 
-	const tmx_animation::animation_frame& current()
-	{
-		return animation.frames[index];
-	}
+    const tmx_animation::animation_frame& current()
+    {
+        return animation.frames[index];
+    }
 
-	void advance()
-	{
-		if (++index >= animation.frames.size())
-		{
-			index = 0;
-		}
-	}
+    void advance()
+    {
+        if (++index >= animation.frames.size())
+        {
+            index = 0;
+        }
+    }
 
-	int nexttime;
-	size_t index;
-	const tmx_animation animation;
+    int nexttime;
+    size_t index;
+    const tmx_animation animation;
 };
 
 // Note: *copy* the base animation into this instance. The base animation
 // comes from a tmx_map which may be destroyed.
 asequence::asequence(const tmx_animation & base) : animation(base)
 {
-	index = 0;
-	nexttime = current().delay;
+    index = 0;
+    nexttime = current().delay;
 }
 
 // Move constructor to aid efficiency 
 asequence::asequence(asequence && other) : animation(other.animation)
 {
-	nexttime = other.nexttime;
-	index = other.index;
+    nexttime = other.nexttime;
+    index = other.index;
 }
 
 std::vector<asequence> animations;
 void check_animation(int millis)
 {
-	for (auto&& a : animations) {
-		a.nexttime -= millis;
-		while (a.nexttime < 0) {
-			a.nexttime += a.current().delay;
-			a.advance();
-		}
-		tilex[a.animation.tilenumber] = a.current().tile;
-	}
+    for (auto&& a : animations) {
+        a.nexttime -= millis;
+        while (a.nexttime < 0) {
+            a.nexttime += a.current().delay;
+            a.advance();
+        }
+        tilex[a.animation.tilenumber] = a.current().tile;
+    }
 }
 
 void add_animation(const tmx_animation & base)
 {
-	animations.push_back(asequence(base));
+    animations.push_back(asequence(base));
 }
 
 void clear_animations()
 {
-	animations.clear();
+    animations.clear();
 }

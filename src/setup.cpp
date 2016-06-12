@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "constants.h"
 #include "combat.h"
 #include "draw.h"
 #include "kq.h"
@@ -158,7 +159,7 @@ void config_menu(void)
     set_config_file(kqres(SETTINGS_DIR, "kq.cfg"));
     while (!stop)
     {
-		Game.do_check_animation();
+        Game.do_check_animation();
         drawmap();
         menubox(double_buffer, 88 + xofs, yofs, 16, 1, BLUE);
         print_font(double_buffer, 96 + xofs, 8 + yofs, _("KQ Configuration"), FGOLD);
@@ -974,15 +975,13 @@ void play_effect(int efc, int panning)
                 play_sample(samp, gsvol, panning, 1000, 0);
             }
             clear_bitmap(double_buffer);
-            blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, 320, 240);
+            blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, KQ_SCREEN_W, KQ_SCREEN_H);
 
             if (in_combat == 0)
             {
                 xo = xofs;
                 yo = yofs;
             }
-
-            /*        blit (fx_buffer, double_buffer, xo, yo, xo, yo, 320, 240); */
 
             for (a = 0; a < 8; a++)
             {
@@ -1000,7 +999,7 @@ void play_effect(int efc, int panning)
                 s = (old[a].r + old[a].g + old[a].b) > 40 ? 0 : 63;
                 whiteout[a].r = whiteout[a].g = whiteout[a].b = s;
             }
-            blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, 320, 240);
+            blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, KQ_SCREEN_W, KQ_SCREEN_H);
             if (samp)
             {
                 play_sample(samp, gsvol, panning, 1000, 0);
@@ -1040,22 +1039,22 @@ void set_graphics_mode(void)
     {
         if (windowed == 1)
         {
-            set_gfx_mode(GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
+            set_gfx_mode(GFX_AUTODETECT_WINDOWED, KQ_SCALED_SCREEN_W, KQ_SCALED_SCREEN_H, 0, 0);
         }
         else
         {
-            set_gfx_mode(GFX_AUTODETECT, 640, 480, 0, 0);
+            set_gfx_mode(GFX_AUTODETECT, KQ_SCALED_SCREEN_W, KQ_SCALED_SCREEN_H, 0, 0);
         }
     }
     else
     {
         if (windowed == 1)
         {
-            set_gfx_mode(GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0);
+            set_gfx_mode(GFX_AUTODETECT_WINDOWED, KQ_SCREEN_W, KQ_SCREEN_H, 0, 0);
         }
         else
         {
-            set_gfx_mode(GFX_AUTODETECT, 320, 240, 0, 0);
+            set_gfx_mode(GFX_AUTODETECT, KQ_SCREEN_W, KQ_SCREEN_H, 0, 0);
         }
     }
 

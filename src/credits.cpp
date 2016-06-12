@@ -27,7 +27,8 @@
  * \date 20030526
  */
 
-#include <string.h>
+#include <string>
+#include "constants.h"
 #include "credits.h"
 #include "draw.h"
 #include "gettext.h"
@@ -36,16 +37,10 @@
 
 
 /*! Array of strings */
-
-/*! edgarmolina: i think that the credits aren't in any language
- *  so they could be leaved untouched.
- *  why wasn't günter here?, i added him, but while there's not utf-8
- *  support, i'll write gunter
- */
 static const char *credits[] =
 {
     "(C) 2001 DoubleEdge Software",
-    "(C) 2002-9 KQ Lives Team",
+    "(C) 2002-2016 KQ Lives Team",
     "http://kqlives.sourceforge.net/",
     "Peter Hull",
     "TeamTerradactyl",
@@ -154,17 +149,17 @@ void display_credits(BITMAP *double_buffer)
     ease_amount = (max_ticks / 2) - ticks;
     if (ease_amount != last_ease_amount)
     {
-        x0 = (320 - wk->w) / 2;
+        x0 = (KQ_SCREEN_W - wk->w) / 2;
         for (i = 0; i < wk->w; ++i)
         {
-            blit(wk, double_buffer, i, ease(i + ease_amount), i + x0, 185, 1, 32);
+            blit(wk, double_buffer, i, ease(i + ease_amount), i + x0, KQ_SCREEN_H - 55, 1, 32);
         }
-        print_font(double_buffer, (320 - 8 * strlen(pressf1)) / 2, 210, pressf1, FNORMAL);
+        print_font(double_buffer, (KQ_SCREEN_W - 8 * strlen(pressf1)) / 2, KQ_SCREEN_H - 30, pressf1, FNORMAL);
 #ifdef KQ_CHEATS
         /* Put an un-ignorable cheat message; this should stop
          * PH releasing versions with cheat mode compiled in ;)
          */
-		extern int cheat;
+        extern int cheat;
         print_font(double_buffer, 80, 40, cheat ? _("*CHEAT MODE ON*") : _("*CHEAT MODE OFF*"), FGOLD);
 #endif
 #ifdef DEBUGMODE

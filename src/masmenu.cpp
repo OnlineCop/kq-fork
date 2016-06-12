@@ -336,7 +336,7 @@ static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_numbe
             play_effect(SND_TWINKLE, 128);    /* this should be a failure sound */
         }
         revert_equipstats();
-		Game.kq_yield();
+        Game.kq_yield();
     }
 }
 
@@ -390,7 +390,7 @@ int learn_new_spells(int who)
                     draw_icon(double_buffer, magic[a].icon, 156 - (strlen(strbuf) * 4), 160);
                     print_font(double_buffer, 164 - (strlen(strbuf) * 4), 160, strbuf, FNORMAL);
                     blit2screen(0, 0);
-					Game.wait_enter();
+                    Game.wait_enter();
                     g++;
                 }
                 party[who].spells[p] = a;

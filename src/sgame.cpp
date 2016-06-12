@@ -38,6 +38,7 @@
 #include <string.h>
 
 #include "combat.h"
+#include "constants.h"
 #include "credits.h"
 #include "disk.h"
 #include "draw.h"
@@ -113,7 +114,7 @@ static int confirm_action(void)
     fullblit(back, double_buffer);
     while (!stop)
     {
-		Game.readcontrols();
+        Game.readcontrols();
         if (PlayerInput.balt)
         {
             Game.unpress();
@@ -124,7 +125,7 @@ static int confirm_action(void)
             Game.unpress();
             return 0;
         }
-		Game.kq_yield();
+        Game.kq_yield();
     }
     return 0;
 }
@@ -194,13 +195,13 @@ static void delete_game(void)
 
     while (!stop)
     {
-		Game.readcontrols();
+        Game.readcontrols();
         if (PlayerInput.balt || PlayerInput.bctrl)
         {
             Game.unpress();
             stop = 1;
         }
-		Game.kq_yield();
+        Game.kq_yield();
     }
 
 }
@@ -257,7 +258,7 @@ static int load_game(void)
     timer_count = 0;
     ksec = 0;
     hold_fade = 0;
-	Game.change_map(curmap, g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
+    Game.change_map(curmap, g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
     /* Set music and sound volume */
     set_volume(gsvol, -1);
     set_music_volume(((float) gmvol) / 255.0);
@@ -1005,12 +1006,12 @@ static int saveload(int am_saving)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-		Game.do_check_animation();
+        Game.do_check_animation();
         clear_bitmap(double_buffer);
         show_sgstats(am_saving);
         blit2screen(0, 0);
 
-		Game.readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
             Game.unpress();
@@ -1177,7 +1178,7 @@ static void show_sgstats(int saving)
     }
     if (top_pointer < NUMSG - max_onscreen)
     {
-        draw_sprite(double_buffer, dnptr, 32, 240 - 8);
+        draw_sprite(double_buffer, dnptr, 32, KQ_SCREEN_H - 8);
     }
 
     for (sg = top_pointer; sg < top_pointer + max_onscreen; sg++)
@@ -1247,7 +1248,7 @@ int start_menu(int skip_splash)
     int stop = 0, ptr = 0, redraw = 1, a, b;
     uint32_t fade_color;
     BITMAP *staff, *dudes, *tdudes;
-	BITMAP* title = get_cached_image("title.png");
+    BITMAP* title = get_cached_image("title.png");
 #ifdef DEBUGMODE
     if (debugging == 0)
     {
@@ -1256,7 +1257,7 @@ int start_menu(int skip_splash)
         /* Play splash (with the staff and the heroes in circle */
         if (skip_splash == 0)
         {
-			BITMAP* splash = get_cached_image("kqt.png");
+            BITMAP* splash = get_cached_image("kqt.png");
             staff = create_bitmap_ex(8, 72, 226);
             dudes = create_bitmap_ex(8, 112, 112);
             tdudes = create_bitmap_ex(8, 112, 112);
@@ -1297,11 +1298,11 @@ int start_menu(int skip_splash)
         clear_to_color(double_buffer, 15);
         blit2screen(0, 0);
         set_palette(pal);
-		
+
         for (fade_color = 0; fade_color < 16; fade_color++)
         {
             clear_to_color(double_buffer, 15 - fade_color);
-            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), 320, 124);
+            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), KQ_SCREEN_W, 124);
             blit2screen(0, 0);
             kq_wait(fade_color == 0 ? 500 : 100);
         }
@@ -1316,7 +1317,7 @@ int start_menu(int skip_splash)
         set_palette(pal);
     }
 #endif
-	Game.reset_world();
+    Game.reset_world();
 
     /* Draw menu and handle menu selection */
     while (!stop)
@@ -1324,7 +1325,7 @@ int start_menu(int skip_splash)
         if (redraw)
         {
             clear_bitmap(double_buffer);
-            masked_blit(title, double_buffer, 0, 0, 0, 0, 320, 124);
+            masked_blit(title, double_buffer, 0, 0, 0, 0, KQ_SCREEN_W, 124);
             menubox(double_buffer, 112, 116, 10, 4, BLUE);
             print_font(double_buffer, 128, 124, _("Continue"), FNORMAL);
             print_font(double_buffer, 128, 132, _("New Game"), FNORMAL);
@@ -1335,7 +1336,7 @@ int start_menu(int skip_splash)
         }
         display_credits(double_buffer);
         blit2screen(0, 0);
-		Game.readcontrols();
+        Game.readcontrols();
         if (PlayerInput.bhelp)
         {
             Game.unpress();
@@ -1400,7 +1401,7 @@ int start_menu(int skip_splash)
             }
             else if (ptr == 3)     /* Exit */
             {
-				Game.klog(_("Then exit you shall!"));
+                Game.klog(_("Then exit you shall!"));
                 return 2;
             }
         }
@@ -1412,7 +1413,7 @@ int start_menu(int skip_splash)
         {
             memcpy(&party[a], &players[a].plr, sizeof(s_player));
         }
-		Game.init_players();
+        Game.init_players();
         memset(progress, 0, SIZE_PROGRESS);
         memset(treasure, 0, SIZE_TREASURE);
         numchrs = 0;
@@ -1467,7 +1468,7 @@ int system_menu(void)
 
     while (!stop)
     {
-		Game.do_check_animation();
+        Game.do_check_animation();
         drawmap();
         menubox(double_buffer, xofs, yofs, 8, 4, BLUE);
 
@@ -1478,7 +1479,7 @@ int system_menu(void)
 
         draw_sprite(double_buffer, menuptr, 0 + xofs, ptr * 8 + 8 + yofs);
         blit2screen(xofs, yofs);
-		Game.readcontrols();
+        Game.readcontrols();
 
 
         // TT:

@@ -842,7 +842,7 @@ static void cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spel
     }
     if (z == 0)
     {
-		Game.klog(_("whu... how can there be nobody to cure?"));
+        Game.klog(_("whu... how can there be nobody to cure?"));
         return;
     }
     if (tgt == SEL_ALL_ALLIES)

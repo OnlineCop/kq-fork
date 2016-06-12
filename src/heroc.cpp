@@ -1266,7 +1266,7 @@ static void hero_run(void)
     }
     if (b == 0)
     {
-		Game.program_death(_("Fatal error: How can a dead party run?"));
+        Game.program_death(_("Fatal error: How can a dead party run?"));
     }
     else
     {
@@ -1282,7 +1282,7 @@ static void hero_run(void)
     }
     if (c == 0)
     {
-		Game.program_death(_("Fatal error: Why are the heroes running from dead enemies?"));
+        Game.program_death(_("Fatal error: Why are the heroes running from dead enemies?"));
     }
     else
     {
@@ -1313,7 +1313,7 @@ static void hero_run(void)
         menubox(double_buffer, 84, 32, 17, 1, BLUE);
         print_font(double_buffer, 92, 40, _("Could not escape!"), FNORMAL);
         blit2screen(0, 0);
-		Game.wait_enter();
+        Game.wait_enter();
         return;
     }
     if (g > 0)

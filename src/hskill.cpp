@@ -31,6 +31,7 @@
 #include <string.h>
 
 #include "kq.h"
+#include "constants.h"
 #include "combat.h"
 #include "draw.h"
 #include "effects.h"
@@ -505,7 +506,7 @@ void reveal(int tgt)
     }
     blit2screen(0, 0);
     do_transition(TRANS_FADE_IN, 4);
-	Game.wait_enter();
+    Game.wait_enter();
 }
 
 
@@ -535,8 +536,8 @@ int skill_use(size_t attack_fighter_index)
                 return 0;
             }
             enemy_index = (uint32_t)tgt;
-            temp = create_bitmap(320, 240);
-            blit( backart, temp, 0, 0, 0, 0, 320, 240);
+            temp = create_bitmap(KQ_SCREEN_W, KQ_SCREEN_H);
+            blit(backart, temp, 0, 0, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H);
             color_scale(temp, backart, 16, 31);
             b = fighter[attack_fighter_index].mhp / 20;
             strcpy(attack_string, _("Rage"));
@@ -569,7 +570,7 @@ int skill_use(size_t attack_fighter_index)
             fighter[attack_fighter_index].hp -= (b * 2);
             ta[attack_fighter_index] = (b * 2);
             display_attack_string = 0;
-            blit(temp, backart, 0, 0, 0, 0, 320, 240);
+            blit(temp, backart, 0, 0, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H);
             display_amount(attack_fighter_index, FDECIDE, 0);
             if (fighter[attack_fighter_index].sts[S_DEAD] == 0
              && fighter[attack_fighter_index].hp <= 0)
@@ -605,7 +606,10 @@ int skill_use(size_t attack_fighter_index)
                 curx = -1;
                 cury = -1;
                 play_effect(22, 128);
-                convert_cframes(attack_fighter_index, eff[magic[fighter[attack_fighter_index].csmem].eff].kolor - 3, eff[magic[fighter[attack_fighter_index].csmem].eff].kolor + 3, 0);
+                convert_cframes(attack_fighter_index,
+                    eff[magic[fighter[attack_fighter_index].csmem].eff].kolor - 3,
+                    eff[magic[fighter[attack_fighter_index].csmem].eff].kolor + 3,
+                    0);
                 battle_render(0, 0, 0);
                 fullblit(double_buffer, back);
                 for (p = 0; p < 2; p++)

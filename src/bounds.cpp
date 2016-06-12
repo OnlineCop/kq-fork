@@ -83,7 +83,7 @@ const uint32_t is_bound(
 
     for (i = 0; i < sbound->size; ++i)
     {
-		s_bound current_bound = sbound->array[i];
+        s_bound current_bound = sbound->array[i];
         if ((x1 > current_bound.right)
          || (x2 < current_bound.left)
          || (y1 > current_bound.bottom)

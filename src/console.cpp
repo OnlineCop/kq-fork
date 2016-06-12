@@ -21,6 +21,7 @@
 
 
 #include "console.h"
+#include "constants.h"
 #include "draw.h"
 #include "kq.h"
 #include "music.h"
@@ -94,9 +95,9 @@ void display_console(uint32_t xofs, uint32_t yofs)
     {
         return;
     }
-    rectfill(double_buffer, xofs, max_y, xofs + 320, yofs + 240, makecol(0, 0, 0));
-    hline(double_buffer, xofs, max_y, xofs + 320, makecol(255, 255, 255));
-    y = yofs + 240 - 2 * text_height(font);
+    rectfill(double_buffer, xofs, max_y, xofs + KQ_SCREEN_W, yofs + KQ_SCREEN_H, makecol(0, 0, 0));
+    hline(double_buffer, xofs, max_y, xofs + KQ_SCREEN_W, makecol(255, 255, 255));
+    y = yofs + KQ_SCREEN_H - 2 * text_height(font);
     i = CONSOLE_LINES - 1;
     while (y > max_y)
     {
@@ -107,8 +108,8 @@ void display_console(uint32_t xofs, uint32_t yofs)
         y -= text_height(font);
         --i;
     }
-    textout_ex(double_buffer, font, g_console.inputline, xofs, yofs + 240 - text_height(font), makecol(255, 255, 255), makecol(0, 0, 0));
-    rectfill(double_buffer, xofs + text_length(font, g_console.inputline), yofs + 238, xofs + text_length(font, g_console.inputline) + text_length(font, "_"), yofs + 240, makecol(192, 192, 192));
+    textout_ex(double_buffer, font, g_console.inputline, xofs, yofs + KQ_SCREEN_H - text_height(font), makecol(255, 255, 255), makecol(0, 0, 0));
+    rectfill(double_buffer, xofs + text_length(font, g_console.inputline), yofs + 238, xofs + text_length(font, g_console.inputline) + text_length(font, "_"), yofs + KQ_SCREEN_H, makecol(192, 192, 192));
 }
 
 
@@ -172,7 +173,7 @@ void run_console(void)
             Game.do_check_animation();
             blit2screen(xofs, yofs);
             poll_music();
-			Game.kq_yield();
+            Game.kq_yield();
         }
 
         switch ((c = readkey()) & 0xff)

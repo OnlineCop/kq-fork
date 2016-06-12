@@ -138,6 +138,7 @@
     <ClInclude Include="include\bounds.h" />
     <ClInclude Include="include\combat.h" />
     <ClInclude Include="include\console.h" />
+    <ClInclude Include="include\constants.h" />
     <ClInclude Include="include\credits.h" />
     <ClInclude Include="include\disk.h" />
     <ClInclude Include="include\draw.h" />

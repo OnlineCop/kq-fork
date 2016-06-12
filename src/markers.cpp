@@ -42,7 +42,7 @@ uint32_t find_marker(const s_marker_array *marray, std::string name)
 
     assert(marray && "s_marker_array is NULL");
 
-	if (name.empty())
+    if (name.empty())
     {
         return -1;    // An empty name is not an error; it is simply not found
     }
@@ -67,58 +67,58 @@ Markers::Markers()
 
 Markers::~Markers()
 {
-	for (auto marker : m_markers)
-	{
-		marker = nullptr;
-	}
+    for (auto marker : m_markers)
+    {
+        marker = nullptr;
+    }
 }
 
 bool Markers::Add(std::shared_ptr<Marker> marker)
 {
-	m_markers.push_back(marker);
-	return true;
+    m_markers.push_back(marker);
+    return true;
 }
 
 bool Markers::Remove(std::shared_ptr<Marker> marker)
 {
-	auto found = std::find(m_markers.begin(), m_markers.end(), marker);
-	if (found != m_markers.end())
-	{
-		m_markers.erase(found);
-		return true;
-	}
-	return false;
+    auto found = std::find(m_markers.begin(), m_markers.end(), marker);
+    if (found != m_markers.end())
+    {
+        m_markers.erase(found);
+        return true;
+    }
+    return false;
 }
 
 std::shared_ptr<Marker> Markers::GetMarker(size_t index)
 {
-	if (index < m_markers.size())
-	{
-		return m_markers[index];
-	}
-	return nullptr;
+    if (index < m_markers.size())
+    {
+        return m_markers[index];
+    }
+    return nullptr;
 }
 
 std::shared_ptr<Marker> Markers::GetMarker(std::string name)
 {
-	for (auto it = m_markers.begin(); it != m_markers.end(); it++)
-	{
-		if ((*it)->name == name)
-		{
-			return *it;
-		}
-	}
-	return nullptr;
+    for (auto it = m_markers.begin(); it != m_markers.end(); it++)
+    {
+        if ((*it)->name == name)
+        {
+            return *it;
+        }
+    }
+    return nullptr;
 }
 
 std::shared_ptr<Marker> Markers::GetMarker(int32_t x, int32_t y)
 {
-	for (auto it = m_markers.begin(); it != m_markers.end(); it++)
-	{
-		if ((*it)->x == x && (*it)->y == y)
-		{
-			return *it;
-		}
-	}
-	return nullptr;
+    for (auto it = m_markers.begin(); it != m_markers.end(); it++)
+    {
+        if ((*it)->x == x && (*it)->y == y)
+        {
+            return *it;
+        }
+    }
+    return nullptr;
 }

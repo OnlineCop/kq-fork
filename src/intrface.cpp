@@ -720,7 +720,7 @@ void do_luainit(const char *fname, int global)
  */
 void do_luakill(void)
 {
-	Game.reset_timer_events();
+    Game.reset_timer_events();
     if (theL)
     {
         lua_close(theL);
@@ -1284,7 +1284,7 @@ static int KQ_portbubble_ex(lua_State *L)
 
 static int KQ_calc_viewport(lua_State *L)
 {
-	Game.calc_viewport((int) lua_tonumber(L, 1));
+    Game.calc_viewport((int) lua_tonumber(L, 1));
     return 0;
 }
 
