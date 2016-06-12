@@ -35,15 +35,11 @@
  */
 #include "kq.h"
 
-#ifndef KQ_SCAN_DEPEND
-# include <cstdio>
-# include <cstring>
 extern "C" {
 # include <lua.h>
 # include <lualib.h>
 # include <lauxlib.h>
 }
-#endif /* KQ_SCAN_DEPEND */
 
 #include "bounds.h"
 #include "combat.h"
@@ -69,6 +65,9 @@ extern "C" {
 #include "sgame.h"
 #include "shopmenu.h"
 #include "timing.h"
+
+#include <string>
+using std::string;
 
 /* Defines */
 #define LUA_ENT_KEY "_ent"
@@ -944,7 +943,7 @@ static const char *stringreader(lua_State *L, void *data, size_t *size)
  */
 static s_marker *KQ_find_marker(const char *name, int required)
 {
-	std::string name_string = name;
+    string name_string = name;
     uint32_t i = find_marker(&g_map.markers, name_string);
     if (i < g_map.markers.size)
     {
@@ -1948,7 +1947,7 @@ static int KQ_draw_pstat(lua_State *L)
 
 static int KQ_drawframe(lua_State *L)
 {
-	auto a = lua_tointeger(L, 1);
+    auto a = lua_tointeger(L, 1);
     auto b = lua_tointeger(L, 2);
 
     draw_sprite(double_buffer,
@@ -3044,14 +3043,14 @@ static int KQ_play_song(lua_State *L)
 
 static int KQ_pnum(lua_State *L)
 {
-    auto a = lua_tointeger(L, 3);
+    auto a = (int)lua_tointeger(L, 3);
 
-    sprintf(strbuf, "%d", (int)a);
+    sprintf(strbuf, "%d", a);
     print_font(double_buffer,
         lua_tointeger(L, 1) + xofs,
-		lua_tointeger(L, 2) + yofs,
+        lua_tointeger(L, 2) + yofs,
         strbuf,
-        (eFontColor) ilua_tointeger(L, 4)
+        (eFontColor) lua_tointeger(L, 4)
     );
     return 0;
 }
@@ -3127,7 +3126,7 @@ static int KQ_ptext(lua_State *L)
         (int) lua_tonumber(L, 1) + xofs,
         (int) lua_tonumber(L, 2) + yofs,
         lua_tostring(L, 3),
-        (eFontColor) int(lua_tonumber(L, 4))
+        (eFontColor) lua_tointeger(L, 4)
     );
     return 0;
 }
