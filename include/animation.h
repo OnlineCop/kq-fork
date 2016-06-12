@@ -18,10 +18,14 @@ along with KQ; see the file COPYING.  If not, write to
 the Free Software Foundation,
 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
 #ifndef __ANIMATION_H
 #define __ANIMATION_H
-void check_animation(int millis);
+
 struct tmx_animation;
+
+void check_animation(int millis);
 void add_animation(const tmx_animation&);
 void clear_animations();
+
 #endif // !__ANIMATION_H

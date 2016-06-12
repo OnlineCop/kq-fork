@@ -27,14 +27,41 @@ using std::vector;
 struct asequence {
 	asequence(const tmx_animation&);
 	asequence(asequence&&);
+
+	const tmx_animation::animation_frame& current()
+	{
+		return animation.frames[index];
+	}
+
+	void advance()
+	{
+		if (++index >= animation.frames.size())
+		{
+			index = 0;
+		}
+	}
+
 	int nexttime;
 	size_t index;
 	const tmx_animation animation;
-	const tmx_animation::animation_frame& current() { return animation.frames[index]; }
-	void advance() { if (++index >= animation.frames.size()) index = 0; }
 };
-std::vector<asequence> animations;
 
+// Note: *copy* the base animation into this instance. The base animation
+// comes from a tmx_map which may be destroyed.
+asequence::asequence(const tmx_animation & base) : animation(base)
+{
+	index = 0;
+	nexttime = current().delay;
+}
+
+// Move constructor to aid efficiency 
+asequence::asequence(asequence && other) : animation(other.animation)
+{
+	nexttime = other.nexttime;
+	index = other.index;
+}
+
+std::vector<asequence> animations;
 void check_animation(int millis)
 {
 	for (auto&& a : animations) {
@@ -55,17 +82,4 @@ void add_animation(const tmx_animation & base)
 void clear_animations()
 {
 	animations.clear();
-}
-// Note: *copy* the base animation into this instance. The base animation
-// comes from a tmx_map which may be destroyed.
-asequence::asequence(const tmx_animation & base) : animation(base)
-{
-	index = 0;
-	nexttime = current().delay;
-}
-// Move constructor to aid efficiency 
-asequence::asequence(asequence && other) : animation(other.animation)
-{
-	nexttime = other.nexttime;
-	index = other.index;
 }
