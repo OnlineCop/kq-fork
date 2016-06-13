@@ -21,8 +21,10 @@ the Free Software Foundation,
 
 #ifndef __IMGCACHE_H
 #define __IMGCACHE_H
+
 #include <string>
 #include <allegro.h>
 BITMAP* get_cached_image(const std::string& name);
 void clear_image_cache();
+
 #endif

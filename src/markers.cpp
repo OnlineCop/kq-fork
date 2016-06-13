@@ -32,33 +32,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+using std::string;
+#include <memory>
+using std::shared_ptr;
 
-#include "../include/markers.h"
-
-
-uint32_t find_marker(const s_marker_array *marray, std::string name)
-{
-    uint32_t i;
-
-    assert(marray && "s_marker_array is NULL");
-
-    if (name.empty())
-    {
-        return -1;    // An empty name is not an error; it is simply not found
-    }
-
-    for (i = 0; i < marray->size; ++i)
-    {
-        if (name != marray->array[i].name) // no match; keep going
-        {
-            continue;
-        }
-
-        return i; // return index of matching marker
-    }
-
-    return -1; // no match
-}
+#include "markers.h"
 
 Markers::Markers()
 {
@@ -73,13 +51,13 @@ Markers::~Markers()
     }
 }
 
-bool Markers::Add(std::shared_ptr<Marker> marker)
+bool Markers::Add(shared_ptr<KMarker> marker)
 {
     m_markers.push_back(marker);
     return true;
 }
 
-bool Markers::Remove(std::shared_ptr<Marker> marker)
+bool Markers::Remove(shared_ptr<KMarker> marker)
 {
     auto found = std::find(m_markers.begin(), m_markers.end(), marker);
     if (found != m_markers.end())
@@ -90,7 +68,7 @@ bool Markers::Remove(std::shared_ptr<Marker> marker)
     return false;
 }
 
-std::shared_ptr<Marker> Markers::GetMarker(size_t index)
+shared_ptr<KMarker> Markers::GetMarker(size_t index)
 {
     if (index < m_markers.size())
     {
@@ -99,11 +77,11 @@ std::shared_ptr<Marker> Markers::GetMarker(size_t index)
     return nullptr;
 }
 
-std::shared_ptr<Marker> Markers::GetMarker(std::string name)
+shared_ptr<KMarker> Markers::GetMarker(string marker_name)
 {
     for (auto it = m_markers.begin(); it != m_markers.end(); it++)
     {
-        if ((*it)->name == name)
+        if ((*it)->name == marker_name)
         {
             return *it;
         }
@@ -111,7 +89,7 @@ std::shared_ptr<Marker> Markers::GetMarker(std::string name)
     return nullptr;
 }
 
-std::shared_ptr<Marker> Markers::GetMarker(int32_t x, int32_t y)
+shared_ptr<KMarker> Markers::GetMarker(int32_t x, int32_t y)
 {
     for (auto it = m_markers.begin(); it != m_markers.end(); it++)
     {
@@ -122,3 +100,5 @@ std::shared_ptr<Marker> Markers::GetMarker(int32_t x, int32_t y)
     }
     return nullptr;
 }
+
+KMarker Marker;

@@ -43,6 +43,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\anim_sequence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\animation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -144,6 +147,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\anim_sequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -154,6 +160,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\console.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\credits.h">
@@ -273,7 +282,13 @@
     <ClInclude Include="include\timing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\constants.h">
+    <ClInclude Include="include\tmx_animation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tmx_tileset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\zone.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

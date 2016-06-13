@@ -18,29 +18,28 @@ along with KQ; see the file COPYING.  If not, write to
 the Free Software Foundation,
 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
+#ifndef __ANIM_SEQUENCE_H
+#define __ANIM_SEQUENCE_H
+
 #include "animation.h"
-#include "anim_sequence.h"
+#include "tiledmap.h"
 
-void KAnimation::check_animation(int millis, uint16_t *tilex)
+class KAnimSequence
 {
-    for (auto&& a : animations) {
-        a.nexttime -= millis;
-        while (a.nexttime < 0) {
-            a.nexttime += a.current().delay;
-            a.advance();
-        }
-        tilex[a.animation.tilenumber] = a.current().tile;
-    }
-}
+public:
+    KAnimSequence(const KTmxAnimation&);
+    KAnimSequence(KAnimSequence&&);
 
-void KAnimation::add_animation(const KTmxAnimation & base)
-{
-    animations.push_back(KAnimSequence(base));
-}
+    const KTmxAnimation::animation_frame& current();
 
-void KAnimation::clear_animations()
-{
-    animations.clear();
-}
+    void advance();
 
-KAnimation Animation;
+public:
+    int nexttime;
+    size_t index;
+    const KTmxAnimation animation;
+};
+
+extern KAnimSequence AnimSequence;
+#endif // !__ANIM_SEQUENCE_H

@@ -26,7 +26,11 @@
 
 #include <allegro.h>
 #include <memory>
+using std::shared_ptr;
+#include <string>
+using std::string;
 #include <vector>
+using std::vector;
 
 
 /*! \file
@@ -45,75 +49,50 @@
  * \author PH
  * \date 20050126
  */
-typedef struct _marker
+struct KMarker
 {
-    char name[32];               /*!< The name of this marker */
-    short x;                     /*!< The X position it refers to */
-    short y;                     /*!< The Y position it refers to */
-} s_marker;
+    // The name of the current marker
+    string name;
 
+    // The X position the marker refers to
+    int32_t x;
 
-class Marker
-{
-public:
-	Marker() {};
-	~Marker() {};
-
-	std::string name;
-	int32_t x;
-	int32_t y;
+    // The Y position the marker refers to
+    int32_t y;
 };
-
-
-
-/*! \brief Container holding array of markers
- *
- * This contains an array of markers, and the number of markers, to simplify
- * passing around the size and elements separately.
- *
- * \author OC
- * \date 20101015
- */
-typedef struct _marker_array
-{
-    s_marker *array;
-    size_t size;
-} s_marker_array;
 
 
 class Markers
 {
 public:
-	Markers();
-	~Markers();
+    Markers();
+    ~Markers();
 
-	// Add a new marker to the map. Returns true on success, or false on failure.
-	bool Add(std::shared_ptr<Marker> marker);
+    // Add a new marker to the map. Returns true on success, or false on failure.
+    bool Add(shared_ptr<KMarker> marker);
 
-	// Remove the specified marker from the map. Returns true if the marker was removed, or false if the marker was not found.
-	bool Remove(std::shared_ptr<Marker> marker);
+    // Remove the specified marker from the map. Returns true if the marker was removed, or false if the marker was not found.
+    bool Remove(shared_ptr<KMarker> marker);
 
-	// Return a pointer to the marker at the given @param index. If index is out of bounds, returns null.
-	std::shared_ptr<Marker> GetMarker(size_t index);
+    // Return a pointer to the marker at the given @param index. If index is out of bounds, returns null.
+    shared_ptr<KMarker> GetMarker(size_t index);
 
-	// Return a pointer to the marker that has the given @param name. If no markers by that name are found, returns null.
-	std::shared_ptr<Marker> GetMarker(std::string name);
+    // Return a pointer to the marker that has the given @param name. If no markers by that name are found, returns null.
+    shared_ptr<KMarker> GetMarker(string name);
 
-	// Return a pointer to the marker whose @param x and @param y coordinates match. If no marker is at those coordinates, returns null.
-	std::shared_ptr<Marker> GetMarker(int32_t x, int32_t y);
+    // Return a pointer to the marker whose @param x and @param y coordinates match. If no marker is at those coordinates, returns null.
+    shared_ptr<KMarker> GetMarker(int32_t x, int32_t y);
 
-	// Return the number of markers in the array.
-	inline const size_t NumMarkers() {
-		return m_markers.size();
-	}
+    // Return the number of markers in the array.
+    inline const size_t NumMarkers() {
+        return m_markers.size();
+    }
 
 protected:
-	std::vector< std::shared_ptr<Marker> > m_markers;
+    vector< shared_ptr<KMarker> > m_markers;
 };
 
-
-uint32_t find_marker(const s_marker_array *, std::string);
-
+extern KMarker Marker;
 
 #endif  /* __MARKERS_H */
 

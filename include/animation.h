@@ -22,10 +22,22 @@ the Free Software Foundation,
 #ifndef __ANIMATION_H
 #define __ANIMATION_H
 
-struct tmx_animation;
+#include <vector>
+using std::vector;
 
-void check_animation(int millis);
-void add_animation(const tmx_animation&);
-void clear_animations();
+#include "tmx_animation.h"
 
+class KAnimSequence;
+class KAnimation
+{
+public:
+    void check_animation(int millis, uint16_t *tilex);
+    void add_animation(const KTmxAnimation&);
+    void clear_animations();
+
+private:
+    vector<KAnimSequence> animations;
+};
+
+extern KAnimation Animation;
 #endif // !__ANIMATION_H

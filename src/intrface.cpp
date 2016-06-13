@@ -68,6 +68,9 @@ extern "C" {
 
 #include <string>
 using std::string;
+#include <memory>
+using std::shared_ptr;
+using std::make_shared;
 
 /* Defines */
 #define LUA_ENT_KEY "_ent"
@@ -939,18 +942,17 @@ static const char *stringreader(lua_State *L, void *data, size_t *size)
  * \param   name - the name of the marker to search for
  * \param   required - if non-zero throw an error if the marker isn't found
  *
- * \returns pointer to marker or NULL if name not found
+ * \returns pointer to marker or nullptr if name not found
  */
-static s_marker *KQ_find_marker(const char *name, int required)
+static shared_ptr<KMarker> KQ_find_marker(string name, int required)
 {
-    string name_string = name;
-    uint32_t i = find_marker(&g_map.markers, name_string);
-    if (i < g_map.markers.size)
+    auto found_marker = g_map.markers.GetMarker(name);
+    if (found_marker != nullptr)
     {
-        return &g_map.markers.array[i];
+        return found_marker;
     }
 
-    if (name == NULL)
+    if (name.empty())
     {
         name = "(null)";
     }
@@ -958,12 +960,12 @@ static s_marker *KQ_find_marker(const char *name, int required)
     if (required)
     {
         /* Error, marker name not found */
-        sprintf(strbuf, _("Marker \"%s\" not found."), name);
+        sprintf(strbuf, _("Marker \"%s\" not found."), name.c_str());
         lua_pushstring(theL, strbuf);
         lua_error(theL);
         /* never returns here... */
     }
-    return NULL;
+    return nullptr;
 }
 
 
@@ -995,22 +997,22 @@ static int get_field(const char *n)
  */
 static void init_markers(lua_State *L)
 {
-    size_t i;
-    s_marker *m;
-
     lua_newtable(L);
-    for (i = 0; i < g_map.markers.size; ++i)
+    for (size_t i = 0; i < g_map.markers.NumMarkers(); i++)
     {
-        m = &g_map.markers.array[i];
-        lua_pushstring(L, m->name);
-        lua_newtable(L);
-        lua_pushstring(L, "x");
-        lua_pushnumber(L, m->x);
-        lua_rawset(L, -3);
-        lua_pushstring(L, "y");
-        lua_pushnumber(L, m->y);
-        lua_rawset(L, -3);
-        lua_rawset(L, -3);
+        auto marker = g_map.markers.GetMarker(i);
+        if (marker != nullptr)
+        {
+            lua_pushstring(L, marker->name.c_str());
+            lua_newtable(L);
+            lua_pushstring(L, "x");
+            lua_pushnumber(L, marker->x);
+            lua_rawset(L, -3);
+            lua_pushstring(L, "y");
+            lua_pushnumber(L, marker->y);
+            lua_rawset(L, -3);
+            lua_rawset(L, -3);
+        }
     }
     lua_setglobal(L, "markers");
 }
@@ -1879,10 +1881,12 @@ static int KQ_door_in(lua_State *L)
     if (lua_type(L, 1) == LUA_TSTRING)
     {
         /* It's in "marker" form */
-        s_marker *m = KQ_find_marker(lua_tostring(L, 1), 1);
-
-        x = m->x + (int) lua_tonumber(L, 2);
-        y = m->y + (int) lua_tonumber(L, 3);
+        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        if (m != nullptr)
+        {
+            x = m->x + (int)lua_tonumber(L, 2);
+            y = m->y + (int)lua_tonumber(L, 3);
+        }
     }
     else
     {
@@ -1913,11 +1917,12 @@ static int KQ_door_out(lua_State *L)
     if (lua_type(L, 1) == LUA_TSTRING)
     {
         /* It's in "marker" form */
-        s_marker *m;
-
-        m = KQ_find_marker(lua_tostring(L, 1), 1);
-        x = m->x + (int) lua_tonumber(L, 2);
-        y = m->y + (int) lua_tonumber(L, 3);
+        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        if (m != nullptr)
+        {
+            x = m->x + (int)lua_tonumber(L, 2);
+            y = m->y + (int)lua_tonumber(L, 3);
+        }
     }
     else
     {
@@ -2253,9 +2258,15 @@ static int KQ_get_gp(lua_State *L)
 static int KQ_get_marker_tilex(lua_State *L)
 {
     const char *marker_name = lua_tostring(L, 1);
-    s_marker *m = KQ_find_marker(marker_name, 1);
-
-    lua_pushnumber(L, m->x);
+    shared_ptr<KMarker> m = KQ_find_marker(marker_name, 1);
+    if (m != nullptr)
+    {
+        lua_pushnumber(L, m->x);
+    }
+    else
+    {
+        lua_pushnil(L);
+    }
     return 1;
 }
 
@@ -2269,9 +2280,15 @@ static int KQ_get_marker_tilex(lua_State *L)
 static int KQ_get_marker_tiley(lua_State *L)
 {
     const char *marker_name = lua_tostring(L, 1);
-    s_marker *m = KQ_find_marker(marker_name, 1);
-
-    lua_pushnumber(L, m->y);
+    shared_ptr<KMarker> m = KQ_find_marker(marker_name, 1);
+    if (m != nullptr)
+    {
+        lua_pushnumber(L, m->y);
+    }
+    else
+    {
+        lua_pushnil(L);
+    }
     return 1;
 }
 
@@ -2753,9 +2770,9 @@ static int KQ_log(lua_State *L)
  */
 static int KQ_marker(lua_State *L)
 {
-    s_marker *s = KQ_find_marker(lua_tostring(L, 1), 0);
+    shared_ptr<KMarker> s = KQ_find_marker(lua_tostring(L, 1), 0);
 
-    if (s != NULL)
+    if (s != nullptr)
     {
         lua_pushnumber(L, s->x + lua_tonumber(L, 2));
         lua_pushnumber(L, s->y + lua_tonumber(L, 3));
@@ -2886,17 +2903,19 @@ static int KQ_move_camera(lua_State *L)
 static int KQ_move_entity(lua_State *L)
 {
     int entity_id = real_entity_num(L, 1);
-    int kill, target_x, target_y;
+    int kill = 0, target_x = 0, target_y = 0;
 
     char buffer[1024];
 
     if (lua_type(L, 2) == LUA_TSTRING)
     {
-        s_marker *m = KQ_find_marker(lua_tostring(L, 2), 1);
-
-        target_x = m->x;
-        target_y = m->y;
-        kill = (int) lua_tonumber(L, 3);
+        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 2), 1);
+        if (m != nullptr)
+        {
+            target_x = m->x;
+            target_y = m->y;
+            kill = (int)lua_tonumber(L, 3);
+        }
     }
     else
     {
@@ -3001,15 +3020,17 @@ static int KQ_pause_song(lua_State *L)
 static int KQ_place_ent(lua_State *L)
 {
     int a = real_entity_num(L, 1);
-    int x, y;
+    int x = 0, y = 0;
 
     if (lua_type(L, 2) == LUA_TSTRING)
     {
         /* It's in "marker" form */
-        s_marker *m = KQ_find_marker(lua_tostring(L, 2), 1);
-
-        x = m->x;
-        y = m->y;
+        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 2), 1);
+        if (m != nullptr)
+        {
+            x = m->x;
+            y = m->y;
+        }
     }
     else
     {
@@ -3372,19 +3393,18 @@ static int KQ_set_btile(lua_State *L)
         /* Format:
          *    set_btile("marker", value)
          */
-        s_marker *m = KQ_find_marker(lua_tostring(L, 1), 1);
-
-        set_btile(m->x, m->y, (int) lua_tonumber(L, 2));
+        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        if (m != nullptr)
+        {
+            set_btile(m->x, m->y, lua_tointeger(L, 2));
+        }
     }
     else
     {
         /* Format:
          *    set_btile(x, y, value)
          */
-        set_btile((int) lua_tonumber(L, 1),
-            (int) lua_tonumber(L, 2),
-            (int) lua_tonumber(L, 3)
-        );
+        set_btile(lua_tointeger(L, 1), lua_tointeger(L, 2), lua_tointeger(L, 3));
     }
     return 0;
 }
@@ -3627,19 +3647,18 @@ static int KQ_set_ftile(lua_State *L)
         /* Format:
          *    set_ftile("marker", value)
          */
-        s_marker *m = KQ_find_marker(lua_tostring(L, 1), 1);
-
-        set_ftile(m->x, m->y, (int) lua_tonumber(L, 2));
+        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        if (m != nullptr)
+        {
+            set_ftile(m->x, m->y, lua_tointeger(L, 2));
+        }
     }
     else
     {
         /* Format:
          *    set_ftile(x, y, value)
          */
-        set_ftile((int) lua_tonumber(L, 1),
-            (int) lua_tonumber(L, 2),
-            (int) lua_tonumber(L, 3)
-        );
+        set_ftile(lua_tointeger(L, 1), lua_tointeger(L, 2), lua_tointeger(L, 3));
     }
     return 0;
 }
@@ -3683,19 +3702,19 @@ static int KQ_set_map_mode(lua_State *L)
  */
 static int KQ_set_marker(lua_State *L)
 {
-    s_marker *m;
-
     const char *marker_name = lua_tostring(L, 1);
     const int x_coord = lua_tonumber(L, 2);
     const int y_coord = lua_tonumber(L, 3);
 
-    m = KQ_find_marker(marker_name, 0);
-    if (m == NULL)
+    shared_ptr<KMarker> m = KQ_find_marker(marker_name, 0);
+    if (m == nullptr)
     {
         /* Need to add a new marker */
-        g_map.markers.array = (s_marker *) realloc(g_map.markers.array, sizeof(s_marker) * (g_map.markers.size + 1));
-        m = &g_map.markers.array[g_map.markers.size++];
-        strcpy(m->name, marker_name);
+        auto new_marker = make_shared<KMarker>();
+        new_marker->name = marker_name;
+        new_marker->x = x_coord;
+        new_marker->y = y_coord;
+        g_map.markers.Add(new_marker);
     }
     m->x = x_coord;
     m->y = y_coord;
@@ -3732,19 +3751,18 @@ static int KQ_set_mtile(lua_State *L)
         /* Format:
          *    set_mtile("marker", value)
          */
-        s_marker *m = KQ_find_marker(lua_tostring(L, 1), 1);
-
-        set_mtile(m->x, m->y, (int) lua_tonumber(L, 2));
+        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        if (m != nullptr)
+        {
+            set_mtile(m->x, m->y, lua_tointeger(L, 2));
+        }
     }
     else
     {
         /* Format:
          *    set_mtile(x, y, value)
          */
-        set_mtile((int) lua_tonumber(L, 1),
-            (int) lua_tonumber(L, 2),
-            (int) lua_tonumber(L, 3)
-        );
+        set_mtile(lua_tointeger(L, 1), lua_tointeger(L, 2), lua_tointeger(L, 3));
     }
     return 0;
 }
@@ -3782,19 +3800,18 @@ static int KQ_set_obs(lua_State *L)
         /* Format:
          *    set_obs("marker", value)
          */
-        s_marker *m = KQ_find_marker(lua_tostring(L, 1), 1);
-
-        set_obs(m->x, m->y, (int) lua_tonumber(L, 2));
+        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        if (m != nullptr)
+        {
+            set_obs(m->x, m->y, lua_tointeger(L, 2));
+        }
     }
     else
     {
         /* Format:
          *    set_obs(x, y, value)
          */
-        set_obs((int) lua_tonumber(L, 1),
-            (int) lua_tonumber(L, 2),
-            (int) lua_tonumber(L, 3)
-        );
+        set_obs(lua_tointeger(L, 1), lua_tointeger(L, 2), lua_tointeger(L, 3));
     }
     return 0;
 }
@@ -4114,19 +4131,18 @@ static int KQ_set_shadow(lua_State *L)
         /* Format:
          *    set_shadow("marker", value)
          */
-        s_marker *m = KQ_find_marker(lua_tostring(L, 1), 1);
-
-        set_shadow(m->x, m->y, (int) lua_tonumber(L, 2));
+        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        if (m != nullptr)
+        {
+            set_shadow(m->x, m->y, lua_tointeger(L, 2));
+        }
     }
     else
     {
         /* Format:
          *    set_shadow(x, y, value)
          */
-        set_shadow((int) lua_tonumber(L, 1),
-            (int) lua_tonumber(L, 2),
-            (int) lua_tonumber(L, 3)
-        );
+        set_shadow(lua_tointeger(L, 1), lua_tointeger(L, 2), lua_tointeger(L, 3));
     }
     return 0;
 }
@@ -4268,19 +4284,18 @@ static int KQ_set_zone(lua_State *L)
         /* Format:
          *    set_zone("marker", value)
          */
-        s_marker *m = KQ_find_marker(lua_tostring(L, 1), 1);
-
-        set_zone(m->x, m->y, (int) lua_tonumber(L, 2));
+        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        if (m != nullptr)
+        {
+            set_zone(m->x, m->y, lua_tointeger(L, 2));
+        }
     }
     else
     {
         /* Format:
          *    set_zone(x, y, value)
          */
-        set_zone((int) lua_tonumber(L, 1),
-            (int) lua_tonumber(L, 2),
-            (int) lua_tonumber(L, 3)
-        );
+        set_zone(lua_tointeger(L, 1), lua_tointeger(L, 2), lua_tointeger(L, 3));
     }
     return 0;
 }
@@ -4523,20 +4538,22 @@ static int KQ_warp(lua_State *L)
     if (lua_type(L, 1) == LUA_TSTRING)
     {
         /* Format is warp("marker", [speed]) */
-        s_marker *m = KQ_find_marker(lua_tostring(L, 1), 1);
-
-        x = m->x;
-        y = m->y;
-        s = 2;
+        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        if (m != nullptr)
+        {
+            x = m->x;
+            y = m->y;
+            s = 2;
+        }
     }
     else
     {
         /* Format is warp(x, y, [speed]) */
-        x = (int) lua_tonumber(L, 1);
-        y = (int) lua_tonumber(L, 2);
+        x = lua_tointeger(L, 1);
+        y = lua_tointeger(L, 2);
         s = 3;
     }
-    warpspeed = (lua_isnil(L, s) ? 8 : (int) lua_tonumber(L, s));
+    warpspeed = (lua_isnil(L, s) ? 8 : lua_tointeger(L, s));
     Game.warp(x, y, warpspeed);
     return 0;
 }

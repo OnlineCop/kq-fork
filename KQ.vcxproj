@@ -100,6 +100,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\animation.cpp" />
+    <ClCompile Include="src\anim_sequence.cpp" />
     <ClCompile Include="src\bounds.cpp" />
     <ClCompile Include="src\combat.cpp" />
     <ClCompile Include="src\console.cpp" />
@@ -135,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\animation.h" />
+    <ClInclude Include="include\anim_sequence.h" />
     <ClInclude Include="include\bounds.h" />
     <ClInclude Include="include\combat.h" />
     <ClInclude Include="include\console.h" />
@@ -178,6 +180,9 @@
     <ClInclude Include="include\structs.h" />
     <ClInclude Include="include\tiledmap.h" />
     <ClInclude Include="include\timing.h" />
+    <ClInclude Include="include\tmx_animation.h" />
+    <ClInclude Include="include\tmx_tileset.h" />
+    <ClInclude Include="include\zone.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="maps\bridge.tmx" />

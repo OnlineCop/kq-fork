@@ -42,7 +42,6 @@
 #include <assert.h>
 #include <locale.h>
 #include <stdio.h>
-#include <string.h>
 #include <time.h>
 #include <vector>
 
@@ -70,6 +69,7 @@
 #include "shopmenu.h"
 #include "structs.h"
 #include <string>
+using std::string;
 #include "tiledmap.h"
 #include "imgcache.h"
 #include "animation.h"
@@ -77,7 +77,7 @@
 KGame Game;
 
 /*! Name of the current map */
-std::string curmap;
+string curmap;
 
 /*! \brief Which keys are pressed.
  *
@@ -721,9 +721,9 @@ void KGame::calc_viewport(int /*center*/)
  *              to use the default: s_map::stx and s_map::sty)
  * \param   mvy New y-coord for camera
  */
-void KGame::change_map(const std::string &map_name, int msx, int msy, int mvx, int mvy)
+void KGame::change_map(const string &map_name, int msx, int msy, int mvx, int mvy)
 {
-    load_tmx(map_name);
+    TiledMap.load_tmx(map_name);
     prepare_map(msx, msy, mvx, mvy);
 }
 
@@ -744,22 +744,19 @@ void KGame::change_map(const std::string &map_name, int msx, int msy, int mvx, i
  * \param   offset_x Push player left/right this many tiles from the marker
  * \param   offset_y Push player up/down this many tiles from the marker
  */
-void KGame::change_mapm(const std::string &map_name, const std::string &marker_name, int offset_x, int offset_y)
+void KGame::change_mapm(const string &map_name, const string &marker_name, int offset_x, int offset_y)
 {
     int msx = 0, msy = 0, mvx = 0, mvy = 0;
-    s_marker *m;
 
-    load_tmx(map_name);
+    TiledMap.load_tmx(map_name);
     /* Search for the marker with the name passed into the function. Both
      * player's starting position and camera position will be the same
      */
-    for (m = g_map.markers.array; m < g_map.markers.array + g_map.markers.size; ++m)
+    auto marker = g_map.markers.GetMarker(marker_name);
+    if (marker != nullptr)
     {
-        if (marker_name == m->name)
-        {
-            msx = mvx = m->x + offset_x;
-            msy = mvy = m->y + offset_y;
-        }
+        msx = mvx = marker->x + offset_x;
+        msy = mvy = marker->y + offset_y;
     }
     prepare_map(msx, msy, mvx, mvy);
 }
@@ -777,7 +774,7 @@ void KGame::do_check_animation(void)
 {
     int millis = (1000 * animation_count) / KQ_TICKS;
     animation_count -= (KQ_TICKS * millis) / 1000;
-    check_animation(millis);
+    Animation.check_animation(millis, tilex);
 }
 
 
