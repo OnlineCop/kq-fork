@@ -704,12 +704,12 @@ static void load_enemies(void)
         /* Already done the loading */
         return;
     }
-    enemy_pcx = load_datafile_object(PCX_DATAFILE, "ENEMY_PCX");
+    enemy_pcx = load_datafile_object(PCX_DATAFILE.c_str(), "ENEMY_PCX");
     if (enemy_pcx == NULL)
     {
         Game.program_death(_("Could not load enemy sprites from datafile!"));
     }
-    edat = fopen(kqres(DATA_DIR, "allstat.mon"), "r");
+    edat = fopen(kqres(DATA_DIR, "allstat.mon").c_str(), "r");
     if (!edat)
     {
         Game.program_death(_("Could not load 1st enemy datafile!"));
@@ -819,7 +819,7 @@ static void load_enemies(void)
         }
     }
     fclose(edat);
-    edat = fopen(kqres(DATA_DIR, "resabil.mon"), "r");
+    edat = fopen(kqres(DATA_DIR, "resabil.mon").c_str(), "r");
     if (!edat)
     {
         Game.program_death(_("Could not load 2nd enemy datafile!"));

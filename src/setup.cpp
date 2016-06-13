@@ -156,7 +156,7 @@ void config_menu(void)
 
     Game.unpress();
     push_config_state();
-    set_config_file(kqres(SETTINGS_DIR, "kq.cfg"));
+    set_config_file(kqres(SETTINGS_DIR, "kq.cfg").c_str());
     while (!stop)
     {
         Game.do_check_animation();
@@ -668,7 +668,7 @@ static int load_samples(void)
 
     for (index = 0; index < MAX_SAMPLES; index++)
     {
-        sfx[index] = load_datafile_object(SOUND_DATAFILE, sndfiles[index]);
+        sfx[index] = load_datafile_object(SOUND_DATAFILE.c_str(), sndfiles[index]);
         if (sfx[index] == NULL)
         {
             sprintf(strbuf, _("Error loading .WAV file: %s.\n"),
@@ -691,7 +691,7 @@ static int load_samples(void)
  */
 static void parse_allegro_setup(void)
 {
-    const char *cfg = kqres(SETTINGS_DIR, "kq.cfg");
+    const char *cfg = kqres(SETTINGS_DIR, "kq.cfg").c_str();
 
     if (!exists(cfg))
     {
@@ -699,7 +699,7 @@ static void parse_allegro_setup(void)
         /* Transitional code */
         parse_jb_setup();
         push_config_state();
-        set_config_file(kqres(SETTINGS_DIR, "kq.cfg"));
+        set_config_file(kqres(SETTINGS_DIR, "kq.cfg").c_str());
 
         set_config_int(NULL, "skip_intro", skip_intro);
         set_config_int(NULL, "windowed", windowed);
@@ -790,7 +790,7 @@ static void parse_jb_setup(void)
     PlayerInput.jbenter = 2;
     PlayerInput.jbesc = 3;
     /* PH Why in the world doesn't he use Allegro cfg functions here? */
-    if (!(s = fopen(kqres(SETTINGS_DIR, "setup.cfg"), "r")))
+    if (!(s = fopen(kqres(SETTINGS_DIR, "setup.cfg").c_str(), "r")))
     {
         Game.klog(_("Could not open saves/setup.cfg - Using defaults."));
         return;

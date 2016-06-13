@@ -166,7 +166,7 @@ static void delete_game(void)
     size_t pidx_index;
 
     sprintf(strbuf, "sg%d.sav", save_ptr);
-    remove_result = remove(kqres(SAVE_DIR, strbuf));
+    remove_result = remove(kqres(SAVE_DIR, strbuf).c_str());
     if (remove_result == 0)
     {
         menubox(double_buffer, 128, pointer_offset + 12, 12, 1, DARKBLUE);
@@ -227,7 +227,7 @@ static int load_game(void)
     uint8_t tv;
 
     sprintf(strbuf, "sg%d.sav", save_ptr);
-    sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_READ_PACKED);
+    sdat = pack_fopen(kqres(SAVE_DIR, strbuf).c_str(), F_READ_PACKED);
     if (!sdat)
     {
         message(_("Could not load saved game."), 255, 0, 0, 0);
@@ -708,7 +708,7 @@ void load_sgstats(void)
     for (current_save_game = 0; current_save_game < NUMSG; current_save_game++)
     {
         sprintf(strbuf, "sg%u.sav", current_save_game);
-        ldat = pack_fopen(kqres(SAVE_DIR, strbuf), F_READ_PACKED);
+        ldat = pack_fopen(kqres(SAVE_DIR, strbuf).c_str(), F_READ_PACKED);
         if (!ldat)
         {
             savegame_num_characters[current_save_game] = 0;
@@ -854,7 +854,7 @@ static int save_game_92(void)
     savegame_time_hours[save_ptr] = khr;
     savegame_time_minutes[save_ptr] = kmin;
     sprintf(strbuf, "sg%d.sav", save_ptr);
-    sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_WRITE_PACKED);
+    sdat = pack_fopen(kqres(SAVE_DIR, strbuf).c_str(), F_WRITE_PACKED);
     if (!sdat)
     {
         message(_("Could not save game data."), 255, 0, 0, 0);

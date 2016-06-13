@@ -1070,7 +1070,7 @@ void KGame::init_players(void)
 
     gp = 0;
 
-    pb = load_datafile_object(PCX_DATAFILE, "USCHRS_PCX");
+    pb = load_datafile_object(PCX_DATAFILE.c_str(), "USCHRS_PCX");
 
     if (!pb)
     {
@@ -1198,7 +1198,7 @@ void KGame::load_heroes(void)
     size_t player_index;
 
     /* Hero stats */
-    if ((f = pack_fopen(kqres(DATA_DIR, "hero.kq"), F_READ_PACKED)) == NULL)
+    if ((f = pack_fopen(kqres(DATA_DIR, "hero.kq").c_str(), F_READ_PACKED)) == NULL)
     {
         program_death(_("Cannot open hero data file"));
     }

@@ -999,7 +999,7 @@ void hero_init(void)
     uint32_t fighter_weapon_index;
 
     update_equipstats();
-    pb = load_datafile_object(PCX_DATAFILE, "USBAT_PCX");
+    pb = load_datafile_object(PCX_DATAFILE.c_str(), "USBAT_PCX");
 
     // Load all 8 fighters' stances into the `cframes` array.
     // cframes[fighter's index][]

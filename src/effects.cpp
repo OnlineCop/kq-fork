@@ -256,7 +256,7 @@ void draw_attacksprite(size_t target_fighter_index, int multiple_target, size_t 
     size_t num_fighters, start_fighter_index;
     DATAFILE *pb;
 
-    pb = load_datafile_object(SPELL_DATAFILE, eff[magic_effect_index].ename);
+    pb = load_datafile_object(SPELL_DATAFILE.c_str(), eff[magic_effect_index].ename);
     if (multiple_target == 1)
     {
         if (target_fighter_index < PSIZE)
@@ -364,7 +364,7 @@ void draw_castersprite(size_t caster_fighter_index, int new_pal_color)
     DATAFILE *cd;
     BITMAP *cs;
 
-    cd = load_datafile_object(SPELL_DATAFILE, "CASTER2_PCX");
+    cd = load_datafile_object(SPELL_DATAFILE.c_str(), "CASTER2_PCX");
     cs = (BITMAP *) cd->dat;
 
     // Re-colorize the two-tone image by replacing its value in the palette
@@ -434,7 +434,7 @@ void draw_hugesprite(size_t target_fighter_index, int hx, int hy, size_t effect_
     size_t start_fighter_index, num_fighters;
     DATAFILE *pb;
 
-    pb = load_datafile_object(SPELL_DATAFILE, eff[effect_index].ename);
+    pb = load_datafile_object(SPELL_DATAFILE.c_str(), eff[effect_index].ename);
     convert_cframes(target_fighter_index, eff[effect_index].kolor - 3, eff[effect_index].kolor + 3, 1);
     if (target_fighter_index < PSIZE)
     {
@@ -508,7 +508,7 @@ void draw_spellsprite(size_t target_fighter_index, int multiple_target, size_t e
     size_t start_fighter_index, num_fighers, fighter_index;
     DATAFILE *pb;
 
-    pb = load_datafile_object(SPELL_DATAFILE, eff[effect_index].ename);
+    pb = load_datafile_object(SPELL_DATAFILE.c_str(), eff[effect_index].ename);
     convert_cframes(target_fighter_index, eff[effect_index].kolor - 3, eff[effect_index].kolor + 3, multiple_target);
     if (multiple_target == 1)
     {

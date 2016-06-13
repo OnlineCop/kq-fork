@@ -633,13 +633,13 @@ void do_entity(int en_num)
 void do_luacheat(void)
 {
     int oldtop;
-    const char *cheatfile;
+    string cheatfile;
 
     /* kqres might return null if the cheat file doesn't exist.
      * in that case, just do a no-op.
      */
     cheatfile = kqres(SCRIPT_DIR, "cheat");
-    if (cheatfile == NULL)
+    if (cheatfile.empty())
     {
         return;
     }
@@ -699,14 +699,14 @@ void do_luainit(const char *fname, int global)
     oldtop = lua_gettop(theL);
     if (global)
     {
-        if (lua_dofile(theL, kqres(SCRIPT_DIR, "global")) != 0)
+        if (lua_dofile(theL, kqres(SCRIPT_DIR, "global").c_str()) != 0)
         {
             /* lua_dofile already displayed error message */
             Game.program_death(strbuf);
         }
     }
 
-    if (lua_dofile(theL, kqres(SCRIPT_DIR, fname)) != 0)
+    if (lua_dofile(theL, kqres(SCRIPT_DIR, fname).c_str()) != 0)
     {
         /* lua_dofile already displayed error message */
         Game.program_death(strbuf);
@@ -1758,7 +1758,7 @@ static int KQ_create_bmp(lua_State *L)
 
 static int KQ_create_df(lua_State *L)
 {
-    g_df = load_datafile_object(kqres(DATA_DIR, lua_tostring(L, 1)), lua_tostring(L, 2));
+    g_df = load_datafile_object(kqres(DATA_DIR, lua_tostring(L, 1)).c_str(), lua_tostring(L, 2));
     return 0;
 }
 
