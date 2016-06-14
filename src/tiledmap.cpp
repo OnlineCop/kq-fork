@@ -149,9 +149,9 @@ tmx_map KTiledMap::load_tmx_map(XMLElement const *root)
  * \param el the object group
  * \returns a collection of objects
  */
-vector<s_bound> KTiledMap::load_tmx_bounds(XMLElement const *el)
+KBounds KTiledMap::load_tmx_bounds(XMLElement const *el)
 {
-    vector<s_bound> bounds;
+    KBounds bounds;
     if (el)
     {
         for (auto i = el->FirstChildElement("object"); i;
@@ -159,12 +159,12 @@ vector<s_bound> KTiledMap::load_tmx_bounds(XMLElement const *el)
         {
             if (i->Attribute("type", "bounds"))
             {
-                s_bound bound;
-                bound.left = i->IntAttribute("x") / TILE_W;
-                bound.top = i->IntAttribute("y") / TILE_H;
-                bound.right = i->IntAttribute("width") / TILE_W + bound.left - 1;
-                bound.bottom = i->IntAttribute("height") / TILE_H + bound.top - 1;
-                bound.btile = 0;
+                auto new_bound = make_shared<KBound>();
+                new_bound->left = i->IntAttribute("x") / TILE_W;
+                new_bound->top = i->IntAttribute("y") / TILE_H;
+                new_bound->right = i->IntAttribute("width") / TILE_W + new_bound->left - 1;
+                new_bound->bottom = i->IntAttribute("height") / TILE_H + new_bound->top - 1;
+                new_bound->btile = 0;
                 auto props = i->FirstChildElement("properties");
                 if (props)
                 {
@@ -172,11 +172,11 @@ vector<s_bound> KTiledMap::load_tmx_bounds(XMLElement const *el)
                     {
                         if (property->Attribute("name", "btile"))
                         {
-                            bound.btile = property->IntAttribute("value");
+                            new_bound->btile = property->IntAttribute("value");
                         }
                     }
                 }
-                bounds.push_back(bound);
+                bounds.Add(new_bound);
             }
         }
     }
@@ -209,9 +209,9 @@ XMLElement const *KTiledMap::find_tmx_element(XMLElement const *root, const char
  * \param el the object group
  * \returns a collection of objects
  */
-Markers KTiledMap::load_tmx_markers(XMLElement const *el)
+KMarkers KTiledMap::load_tmx_markers(XMLElement const *el)
 {
-    Markers markers;
+    KMarkers markers;
     if (el)
     {
         for (auto obj = el->FirstChildElement("object"); obj;
@@ -498,16 +498,8 @@ void tmx_map::set_current()
     g_map.song_file = song_file;
     // Markers
     g_map.markers = markers;
-    //free(g_map.markers.array);
-    //g_map.markers.size = markers.size();
-    //g_map.markers.array = static_cast<KMarker*>(calloc(g_map.markers.size, sizeof(KMarker)));
-    //copy(begin(markers), end(markers), make_checked_array_iterator(g_map.markers.array, g_map.markers.size));
     // Bounding boxes
-    free(g_map.bounds.array);
-    g_map.bounds.size = bounds.size();
-    g_map.bounds.array =
-        static_cast<s_bound *>(calloc(g_map.bounds.size, sizeof(s_bound)));
-    copy(begin(bounds), end(bounds), make_checked_array_iterator(g_map.bounds.array, g_map.bounds.size));
+    g_map.bounds = bounds;
     // Allocate space for layers
     for (auto&& layer : layers)
     {

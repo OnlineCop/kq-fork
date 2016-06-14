@@ -36,10 +36,25 @@
 #include "../include/bounds.h"
 
 
+bool KBounds::Add(shared_ptr<KBound> bound)
+{
+    m_bounds.push_back(bound);
+    return true;
+}
+
+
+shared_ptr<KBound> KBounds::GetBound(size_t index)
+{
+    if (index < m_bounds.size())
+    {
+        return m_bounds[index];
+    }
+    return nullptr;
+}
+
 
 /*! \brief Determine whether given coordinates are within any bounding boxes
  *
- * \param   sbound - Pointer to struct, which includes a size and array
  * \param   left - Left edge of current bounding area
  * \param   top - Top edge of current bounding area
  * \param   right - Right edge of current bounding area
@@ -47,8 +62,7 @@
  *
  * \returns index+1 in array if found, else 0 if not found
  */
-const uint32_t is_bound(
-    s_bound_array *sbound,
+const uint32_t KBounds::IsBound(
     const uint16_t left,
     const uint16_t top,
     const uint16_t right,
@@ -57,9 +71,7 @@ const uint32_t is_bound(
     size_t i;
     uint16_t x1, y1, x2, y2;
 
-    assert(sbound && "s_bound_array is NULL");
-
-    if (left < right)
+    if (left <= right)
     {
         x1 = left;
         x2 = right;
@@ -70,7 +82,7 @@ const uint32_t is_bound(
         x2 = left;
     }
 
-    if (top < bottom)
+    if (top <= bottom)
     {
         y1 = top;
         y2 = bottom;
@@ -81,13 +93,11 @@ const uint32_t is_bound(
         y2 = top;
     }
 
-    for (i = 0; i < sbound->size; ++i)
+    for (i = 0; i < m_bounds.size(); ++i)
     {
-        s_bound current_bound = sbound->array[i];
-        if ((x1 > current_bound.right)
-         || (x2 < current_bound.left)
-         || (y1 > current_bound.bottom)
-         || (y2 < current_bound.top))
+        auto current_bound = m_bounds[i];
+        if (x1 > current_bound->right  || x2 < current_bound->left ||
+            y1 > current_bound->bottom || y2 < current_bound->top)
         {
             continue;
         }

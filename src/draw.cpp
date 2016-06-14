@@ -311,7 +311,7 @@ static void draw_backlayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    s_bound box;
+    KBound box;
 
     if (view_on == 0)
     {
@@ -568,7 +568,7 @@ static void draw_forelayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    s_bound box;
+    KBound box;
 
     if (view_on == 0)
     {
@@ -777,7 +777,7 @@ static void draw_midlayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    s_bound box;
+    KBound box;
 
     if (view_on == 0)
     {
@@ -838,20 +838,17 @@ static void draw_midlayer(void)
 static void draw_playerbound(void)
 {
     int dx, dy, xtc, ytc;
-    s_bound *found = NULL;
+    shared_ptr<KBound> found = nullptr;
     uint16_t ent_x = g_ent[0].tilex;
     uint16_t ent_y = g_ent[0].tiley;
 
     /* Is the player standing inside a bounding area? */
-    uint32_t found_index = is_bound(&g_map.bounds, ent_x, ent_y, ent_x, ent_y);
-    if (found_index)
-    {
-        found = &g_map.bounds.array[found_index - 1];
-    }
-    else
+    uint32_t found_index = g_map.bounds.IsBound(ent_x, ent_y, ent_x, ent_y);
+    if (!found_index)
     {
         return;
     }
+    found = g_map.bounds.GetBound(found_index - 1);
 
     xtc = vx >> 4;
     ytc = vy >> 4;

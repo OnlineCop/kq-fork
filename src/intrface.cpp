@@ -998,7 +998,7 @@ static int get_field(const char *n)
 static void init_markers(lua_State *L)
 {
     lua_newtable(L);
-    for (size_t i = 0; i < g_map.markers.NumMarkers(); i++)
+    for (size_t i = 0; i < g_map.markers.Size(); i++)
     {
         auto marker = g_map.markers.GetMarker(i);
         if (marker != nullptr)
@@ -2074,7 +2074,7 @@ static int KQ_get_bounds(lua_State *L)
 
         ent_x = g_ent[a].tilex;
         ent_y = g_ent[a].tiley;
-        found_index = is_bound(&g_map.bounds, ent_x, ent_y, ent_x, ent_y);
+        found_index = g_map.bounds.IsBound(ent_x, ent_y, ent_x, ent_y);
         if (found_index > 0)
         {
             lua_pushnumber(L, found_index - 1);

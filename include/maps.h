@@ -66,8 +66,8 @@ struct s_map
     int extra_sdword2;           /*!< Not used */
     string song_file;       /*!< Base file name for map song */
     string map_desc;        /*!< Map name (shown when map first appears) */
-    Markers markers;      /*!< Marker array */
-    s_bound_array bounds;        /*!< Bound array and bound size */
+    KMarkers markers;      /*!< Marker array */
+    KBounds bounds;        /*!< Bound array and bound size */
     BITMAP* map_tiles;
     BITMAP* misc_tiles;
     BITMAP* entity_tiles;

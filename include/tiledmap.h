@@ -115,9 +115,9 @@ public:
     // Tilesets defined within this tilemap
     vector<KTmxTileset> tilesets;
 
-    vector<s_bound> bounds;
+    KBounds bounds;
     vector<KZone> zones;
-    Markers markers;
+    KMarkers markers;
     vector<s_entity> entities;
     vector<tmx_layer> layers;
     void set_current();
@@ -132,8 +132,8 @@ public:
 private:
     tmx_map load_tmx_map(XMLElement const *root);
     XMLElement const *find_tmx_element(XMLElement const *, const char *, const char *);
-    vector<s_bound> load_tmx_bounds(XMLElement const *);
-    Markers load_tmx_markers(XMLElement const *);
+    KBounds load_tmx_bounds(XMLElement const *);
+    KMarkers load_tmx_markers(XMLElement const *);
     vector<KZone> load_tmx_zones(XMLElement const *);
     tmx_layer load_tmx_layer(XMLElement const *el);
     vector<s_entity> load_tmx_entities(XMLElement const *);
