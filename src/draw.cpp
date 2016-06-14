@@ -1202,8 +1202,8 @@ static void generic_text(int who, int box_style, int isPort)
 
 /*! \brief Check for forest square
  *
- * Helper function for the \sa draw_char routine.  Just returns whether or not
- * the tile at the specified co-ordinates is a forest tile.  This could be
+ * Helper function for the `draw_char` routine.  Just returns whether or not
+ * the tile at the specified coordinates is a forest tile.  This could be
  * a headache if the tileset changes!
  * Looks in the \p map_seg[] array
  * PH modified 20030309 added check for map (only main map has forest)
@@ -1214,15 +1214,13 @@ static void generic_text(int who, int box_style, int isPort)
  */
 int is_forestsquare(int fx, int fy)
 {
-    int f;
-
     if (curmap != "main")
     {
         return 0;
     }
-    f = map_seg[(fy * g_map.xsize) + fx];
-// TT: EDIT
-    switch (f)
+
+    auto mapseg = map_seg[(fy * g_map.xsize) + fx];
+    switch (mapseg)
     {
         case 63:
         case 65:
@@ -1255,7 +1253,7 @@ int is_forestsquare(int fx, int fy)
  */
 void menubox(BITMAP *where, int x, int y, int w, int h, int c)
 {
-    draw_kq_box(where, x, y, x + w * 8 + 16, y + h * 8 + 16, c, B_TEXT);
+    draw_kq_box(where, x, y, x + w * 8 + TILE_W, y + h * 8 + TILE_H, c, B_TEXT);
 }
 
 

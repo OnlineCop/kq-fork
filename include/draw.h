@@ -103,7 +103,7 @@ void drawmap(void);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, hskill.c,  */
 /*  menu.c, selector.c, setup.c, sgame.c, intrface.c  */
-void menubox(BITMAP *, int, int, int, int, int);
+void menubox(BITMAP *where, int x, int y, int w, int h, int c);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, hskill.c,  */
 /*  intrface.c, selector.c, setup.c, sgame.c, menu.c  */

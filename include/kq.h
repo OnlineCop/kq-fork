@@ -141,7 +141,7 @@ extern s_heroinfo players[MAXCHRS];
 extern s_fighter fighter[NUM_FIGHTERS];
 extern s_fighter tempa, tempd;
 extern int shin[12], display_attack_string;
-extern char shop_name[39];
+extern string shop_name;
 extern char attack_string[39];
 extern volatile int timer, ksec, kmin, khr, animation_count, timer_count;
 extern uint16_t lup[MAXCHRS][20];

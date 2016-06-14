@@ -165,19 +165,19 @@ void config_menu(void)
         print_font(double_buffer, 96 + xofs, 8 + yofs, _("KQ Configuration"), FGOLD);
         menubox(double_buffer, 32 + xofs, 24 + yofs, 30, MENU_SIZE + 3, BLUE);
 
-        citem(row[0], _("Windowed mode:"), windowed == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[1], _("Stretch Display:"), stretch_view == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[2], _("Show Frame Rate:"), show_frate == 1 ? _("YES") : _("NO"), FNORMAL);
+        citem(row[0], _("Windowed mode:"),    windowed == 1 ? _("YES") : _("NO"),     FNORMAL);
+        citem(row[1], _("Stretch Display:"),  stretch_view == 1 ? _("YES") : _("NO"), FNORMAL);
+        citem(row[2], _("Show Frame Rate:"),  show_frate == 1 ? _("YES") : _("NO"),   FNORMAL);
         citem(row[3], _("Wait for Retrace:"), wait_retrace == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[4], _("Up Key:"), kq_keyname(PlayerInput.kup), FNORMAL);
-        citem(row[5], _("Down Key:"), kq_keyname(PlayerInput.kdown), FNORMAL);
-        citem(row[6], _("Left Key:"), kq_keyname(PlayerInput.kleft), FNORMAL);
-        citem(row[7], _("Right Key:"), kq_keyname(PlayerInput.kright), FNORMAL);
-        citem(row[8], _("Confirm Key:"), kq_keyname(PlayerInput.kalt), FNORMAL);
-        citem(row[9], _("Cancel Key:"), kq_keyname(PlayerInput.kctrl), FNORMAL);
-        citem(row[10], _("Menu Key:"), kq_keyname(PlayerInput.kenter), FNORMAL);
-        citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.kesc), FNORMAL);
-        citem(row[12], _("Sound System:"), is_sound ? _("ON") : _("OFF"), FNORMAL);
+        citem(row[4], _("Up Key:"),           kq_keyname(PlayerInput.kup),            FNORMAL);
+        citem(row[5], _("Down Key:"),         kq_keyname(PlayerInput.kdown),          FNORMAL);
+        citem(row[6], _("Left Key:"),         kq_keyname(PlayerInput.kleft),          FNORMAL);
+        citem(row[7], _("Right Key:"),        kq_keyname(PlayerInput.kright),         FNORMAL);
+        citem(row[8], _("Confirm Key:"),      kq_keyname(PlayerInput.kalt),           FNORMAL);
+        citem(row[9], _("Cancel Key:"),       kq_keyname(PlayerInput.kctrl),          FNORMAL);
+        citem(row[10], _("Menu Key:"),        kq_keyname(PlayerInput.kenter),         FNORMAL);
+        citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.kesc),           FNORMAL);
+        citem(row[12], _("Sound System:"),    is_sound ? _("ON") : _("OFF"),          FNORMAL);
 
         fontColor = FNORMAL;
         /* TT: This needs to check for ==0 because 1 means sound init */
@@ -187,12 +187,12 @@ void config_menu(void)
         }
 
         sprintf(strbuf, "%3d%%", gsvol * 100 / 250);
-        citem(row[13], _("Sound Volume:"), strbuf, fontColor);
+        citem(row[13], _("Sound Volume:"),    strbuf,                                 fontColor);
 
         sprintf(strbuf, "%3d%%", gmvol * 100 / 250);
-        citem(row[14], _("Music Volume:"), strbuf, fontColor);
+        citem(row[14], _("Music Volume:"),    strbuf,                                 fontColor);
 
-        citem(row[15], _("Slow Computer:"), slow_computer ? _("YES") : _("NO"), FNORMAL);
+        citem(row[15], _("Slow Computer:"),   slow_computer ? _("YES") : _("NO"),     FNORMAL);
 
         if (cpu_usage)
         {
@@ -202,14 +202,14 @@ void config_menu(void)
         {
             sprintf(strbuf, "yield_timeslice()");
         }
-        citem(row[16], _("CPU Usage:"), strbuf, FNORMAL);
+        citem(row[16], _("CPU Usage:"),       strbuf,                                 FNORMAL);
 
 #ifdef DEBUGMODE
         if (debugging)
         {
             sprintf(strbuf, "%d", debugging);
         }
-        citem(row[17], _("DebugMode Stuff:"), debugging ? strbuf : _("OFF"), FNORMAL);
+        citem(row[17], _("DebugMode Stuff:"), debugging ? strbuf : _("OFF"),          FNORMAL);
 #endif
 
         /* This affects the VISUAL placement of the arrow */
@@ -666,9 +666,10 @@ static int load_samples(void)
         return 1;
     }
 
+    auto kqsnd = SOUND_DATAFILE.c_str();
     for (index = 0; index < MAX_SAMPLES; index++)
     {
-        sfx[index] = load_datafile_object(SOUND_DATAFILE.c_str(), sndfiles[index]);
+        sfx[index] = load_datafile_object(kqsnd, sndfiles[index]);
         if (sfx[index] == NULL)
         {
             sprintf(strbuf, _("Error loading .WAV file: %s.\n"),

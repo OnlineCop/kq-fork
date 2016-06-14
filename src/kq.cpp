@@ -228,7 +228,7 @@ s_fighter fighter[NUM_FIGHTERS];
 s_fighter tempa, tempd;
 
 /*! Name of current shop */
-char shop_name[39];
+string shop_name;
 
 /*! Items in a shop */
 /* int shin[SHOPITEMS]; One global variable down; 999,999 to go --WK */

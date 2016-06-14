@@ -154,10 +154,12 @@ static void buy_menu(void)
     {
         Game.do_check_animation();
         drawmap();
-        menubox(double_buffer, 152 - (strlen(shop_name) * 4) + xofs, yofs, strlen(shop_name), 1, BLUE);
-        print_font(double_buffer, 160 - (strlen(shop_name) * 4) + xofs, 8 + yofs, shop_name, FGOLD);
+        menubox(double_buffer, 152 - (shop_name.length() * 4) + xofs, yofs, shop_name.length(), 1, BLUE);
+        print_font(double_buffer, 160 - (shop_name.length() * 4) + xofs, 8 + yofs, shop_name.c_str(), FGOLD);
+
         menubox(double_buffer, xofs, 208 + yofs, 7, 2, BLUE);
         print_font(double_buffer, 24 + xofs, 220 + yofs, _("Buy"), FGOLD);
+
         menubox(double_buffer, 32 + xofs, 24 + yofs, 30, 16, BLUE);
         menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, BLUE);
         draw_shopgold();
@@ -719,7 +721,8 @@ static void sell_item(int itno, int ni)
 static void sell_menu(void)
 {
     size_t yptr = 0, stop = 0;
-    int z, p, sp;
+    uint16_t inventory_item_index, inventory_qty_index;
+    int p, sp;
     eFontColor k;
     size_t inv_page = 0;
 
@@ -727,8 +730,8 @@ static void sell_menu(void)
     {
         Game.do_check_animation();
         drawmap();
-        menubox(double_buffer, 152 - (strlen(shop_name) * 4) + xofs, yofs, strlen(shop_name), 1, BLUE);
-        print_font(double_buffer, 160 - (strlen(shop_name) * 4) + xofs, 8 + yofs, shop_name, FGOLD);
+        menubox(double_buffer, 152 - (shop_name.length() * 4) + xofs, yofs, shop_name.length(), 1, BLUE);
+        print_font(double_buffer, 160 - (shop_name.length() * 4) + xofs, 8 + yofs, shop_name.c_str(), FGOLD);
         menubox(double_buffer, xofs, 208 + yofs, 7, 2, BLUE);
         print_font(double_buffer, 20 + xofs, 220 + yofs, _("Sell"), FGOLD);
         menubox(double_buffer, 32 + xofs, 24 + yofs, 30, 16, BLUE);
@@ -736,8 +739,8 @@ static void sell_menu(void)
         draw_shopgold();
         for (p = 0; p < NUM_ITEMS_PER_PAGE; p++)
         {
-            z = g_inv[inv_page * NUM_ITEMS_PER_PAGE + p][GLOBAL_INVENTORY_ITEM];
-            if (items[z].price == 0)
+            inventory_item_index = g_inv[inv_page * NUM_ITEMS_PER_PAGE + p][GLOBAL_INVENTORY_ITEM];
+            if (items[inventory_item_index].price == 0)
             {
                 k = FDARK;
             }
@@ -745,20 +748,23 @@ static void sell_menu(void)
             {
                 k = FNORMAL;
             }
-            draw_icon(double_buffer, items[z].icon, 48 + xofs, p * 8 + 32 + yofs);
-            print_font(double_buffer, 56 + xofs, p * 8 + 32 + yofs, items[z].name, k);
+            draw_icon(double_buffer, items[inventory_item_index].icon, 48 + xofs, p * 8 + 32 + yofs);
+            print_font(double_buffer, 56 + xofs, p * 8 + 32 + yofs, items[inventory_item_index].name, k);
             // Check if quantity of this item > 1
-            if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + p][GLOBAL_INVENTORY_QUANTITY] > 1)
+            inventory_qty_index = g_inv[inv_page * NUM_ITEMS_PER_PAGE + p][GLOBAL_INVENTORY_QUANTITY];
+            if (inventory_qty_index > 1)
             {
                 // The '^' in this is an 'x' in allfonts.pcx
-                sprintf(strbuf, "^%d", g_inv[inv_page * NUM_ITEMS_PER_PAGE + p][GLOBAL_INVENTORY_QUANTITY]);
+                sprintf(strbuf, "^%d", (int)inventory_qty_index);
                 print_font(double_buffer, 264 + xofs, p * 8 + 32 + yofs, strbuf, k);
             }
         }
-        sp = items[g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_ITEM]].price * 50 / 100;
-        if (items[g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_ITEM]].price > 0)
+        inventory_item_index = g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_ITEM];
+        sp = items[inventory_item_index].price * 50 / 100;
+        if (items[inventory_item_index].price > 0)
         {
-            if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_QUANTITY] > 1)
+            inventory_qty_index = g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_QUANTITY];
+            if (inventory_qty_index > 1)
             {
                 // Check if there is more than one item
                 sprintf(strbuf, _("%d gp for each one."), sp);
@@ -773,9 +779,9 @@ static void sell_menu(void)
         }
         else
         {
-            if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr][GLOBAL_INVENTORY_ITEM] > 0)
+            if (inventory_item_index > 0)
             {
-                print_font(double_buffer, 76 + xofs, 192 + yofs, _("That can not be sold!"), FNORMAL);
+                print_font(double_buffer, 76 + xofs, 192 + yofs, _("That cannot be sold!"), FNORMAL);
             }
         }
         draw_sprite(double_buffer, menuptr, 32 + xofs, yptr * 8 + 32 + yofs);
@@ -867,7 +873,7 @@ int shop(int shop_num)
     int ptr = 0, stop = 0, a;
 
     shop_no = shop_num;
-    strcpy(shop_name, shops[shop_no].name);
+    shop_name = shops[shop_no].name;
 
     /* If enough time has passed, fully replenish this shop's stock of an item */
     for (a = 0; a < SHOPITEMS; a++)
@@ -901,8 +907,8 @@ int shop(int shop_num)
     {
         Game.do_check_animation();
         drawmap();
-        menubox(double_buffer, 152 - (strlen(shop_name) * 4) + xofs, yofs, strlen(shop_name), 1, BLUE);
-        print_font(double_buffer, 160 - (strlen(shop_name) * 4) + xofs, 8 + yofs, shop_name, FGOLD);
+        menubox(double_buffer, 152 - (shop_name.length() * 4) + xofs, yofs, shop_name.length(), 1, BLUE);
+        print_font(double_buffer, 160 - (shop_name.length() * 4) + xofs, 8 + yofs, shop_name.c_str(), FGOLD);
         menubox(double_buffer, 32 + xofs, 24 + yofs, 30, 1, BLUE);
         menubox(double_buffer, ptr * 80 + 32 + xofs, 24 + yofs, 10, 1, DARKBLUE);
         print_font(double_buffer, 68 + xofs, 32 + yofs, _("Buy"), FGOLD);

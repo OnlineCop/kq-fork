@@ -111,6 +111,26 @@ PALETTE pal =
 
 
 
+/* 0: `name`: Item name.
+ * 1: `icon`: Icon ID (matches icon found in misc.png).
+ * 2: `kol`: Recolor value from PALETTE `pal` table. Replaces the two colors found in
+ *    USBAT with the color specified by this index value (if this index value > 0).
+ *    - Value "168" corresponds to entry value {27, 54, 27, 0}
+ *    - Value "175" corresponds to entry value {53, 63, 53, 0}
+ *   If the replacement index is 8 (such as the "Mace"), the 8th entry in `pal` is
+ *   {33, 33, 33, 0}, or mid-gray. Therefore, when the Mace renders on-screen during
+ *   battle, instead of green, it will render mid-gray on the outside of the mace,
+ *   and {51, 51, 51, 0} inside (as that is the "index + 4" entry).
+ *   If the replacement index is 244 (Frozen Star), the entry is {15, 30, 30, 0}
+ *   for the outside edge of the weapon and {27, 54, 54, 0} for the inside. This makes
+ *   the weapon appear more "cyan" in color.
+ * 3: `desc`: Longer description of the item.
+ * 4: `tgt`: Targeting type for combat items. See TGT_* constants in kq.h.
+ * 5: `type`: Relates to whihc slot (hand, head, etc.) this item goes into.
+ * 6: `use`: Usage mode. See USE_* constants in kq.h.
+ * 7: `ilvl`: What level this item is.
+ * 8: `hnds`: Used to index into the ::magic[] array.
+ */
 s_item items[NUM_ITEMS] =
 {
     {
