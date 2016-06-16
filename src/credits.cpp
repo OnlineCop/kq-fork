@@ -60,30 +60,32 @@ static const int NUM_EASE_VALUES = 32;
 
 static const char **cc = NULL;
 static short int ease_table[NUM_EASE_VALUES];
-static Raster *wk = NULL;
+static Raster *wk = nullptr;
 
-static volatile uint32_t ticks = 0;
+static volatile uint32_t ticks = UINT32_MAX;
 
 void allocate_credits(void) {
-  unsigned int tlen = 0;
+  if (wk == nullptr) {
+    unsigned int tlen = 0;
 
-  // Determine the longest text in the credits.
-  for (const char **credits_current_line = credits; *credits_current_line;
-       ++credits_current_line) {
-    size_t current_line_length = strlen(*credits_current_line);
-    if (current_line_length > tlen) {
-      tlen = current_line_length;
+    // Determine the longest text in the credits.
+    for (auto credits_current_line = credits; *credits_current_line;
+         ++credits_current_line) {
+      size_t current_line_length = strlen(*credits_current_line);
+      if (current_line_length > tlen) {
+        tlen = current_line_length;
+      }
     }
-  }
-  wk = new Raster(8 * tlen, NUM_EASE_VALUES * 2);
+    wk = new Raster(8 * tlen, NUM_EASE_VALUES * 2);
 
-  // Pre-generate the ease_table values, so they don't have
-  // to be calculated on the fly at runtime. All calculations
-  // are integer division.
-  for (int ease_index = 0; ease_index < NUM_EASE_VALUES; ++ease_index) {
-    ease_table[ease_index] =
-        short(ease_index * ease_index * (3 * NUM_EASE_VALUES - 2 * ease_index) /
-              NUM_EASE_VALUES / NUM_EASE_VALUES);
+    // Pre-generate the ease_table values, so they don't have
+    // to be calculated on the fly at runtime. All calculations
+    // are integer division.
+    for (int ease_index = 0; ease_index < NUM_EASE_VALUES; ++ease_index) {
+      ease_table[ease_index] = short(ease_index * ease_index *
+                                     (3 * NUM_EASE_VALUES - 2 * ease_index) /
+                                     NUM_EASE_VALUES / NUM_EASE_VALUES);
+    }
   }
   cc = credits;
 }
@@ -94,16 +96,10 @@ void deallocate_credits(void) {
 }
 
 void display_credits(Raster *double_buffer) {
-  static const char *pressf1;
   static int last_ease_amount = 999;
-  int i, x0, ease_amount;
-  uint32_t max_ticks = 640;
+  static const uint32_t max_ticks = 640;
 
-  pressf1 = _("Press F1 for help");
-  if (wk == NULL) {
-    allocate_credits();
-  }
-  ++ticks;
+  static const char *pressf1 = _("Press F1 for help");
   if (ticks > max_ticks) {
     clear_bitmap(wk);
     print_font(wk, (wk->width - 8 * strlen(*cc)) / 2, 42, *cc, FNORMAL);
@@ -116,31 +112,30 @@ void display_credits(Raster *double_buffer) {
     }
     print_font(wk, (wk->width - 8 * strlen(*cc)) / 2, 10, *cc, FNORMAL);
     ticks = 0;
+  } else {
+    ++ticks;
   }
 
-  ease_amount = (max_ticks / 2) - ticks;
-  if (ease_amount != last_ease_amount) {
-    x0 = (320 - wk->width) / 2;
-    for (i = 0; i < wk->width; ++i) {
-      blit(wk, double_buffer, i, ease(i + ease_amount), i + x0,
-           KQ_SCREEN_H - 55, 1, 32);
-    }
-    print_font(double_buffer, (KQ_SCREEN_W - 8 * strlen(pressf1)) / 2,
-               KQ_SCREEN_H - 30, pressf1, FNORMAL);
+  int ease_amount = (max_ticks / 2) - ticks;
+  int x0 = (320 - wk->width) / 2;
+  for (int i = 0; i < wk->width; ++i) {
+    blit(wk, double_buffer, i, ease(i + ease_amount), i + x0, KQ_SCREEN_H - 55,
+         1, 32);
+  }
+  print_font(double_buffer, (KQ_SCREEN_W - 8 * strlen(pressf1)) / 2,
+             KQ_SCREEN_H - 30, pressf1, FNORMAL);
 #ifdef KQ_CHEATS
-    /* Put an un-ignorable cheat message; this should stop
-     * PH releasing versions with cheat mode compiled in ;)
-     */
-    extern int cheat;
-    print_font(double_buffer, 80, 40,
-               cheat ? _("*CHEAT MODE ON*") : _("*CHEAT MODE OFF*"), FGOLD);
+  /* Put an un-ignorable cheat message; this should stop
+   * PH releasing versions with cheat mode compiled in ;)
+   */
+  extern int cheat;
+  print_font(double_buffer, 80, 40,
+             cheat ? _("*CHEAT MODE ON*") : _("*CHEAT MODE OFF*"), FGOLD);
 #endif
 #ifdef DEBUGMODE
-    /* TT: Similarly, if we are in debug mode, we should be warned. */
-    print_font(double_buffer, 80, 48, _("*DEBUG MODE ON*"), FGOLD);
+  /* TT: Similarly, if we are in debug mode, we should be warned. */
+  print_font(double_buffer, 80, 48, _("*DEBUG MODE ON*"), FGOLD);
 #endif
-    last_ease_amount = ease_amount;
-  }
 }
 
 /*! \brief An S-shaped curve
