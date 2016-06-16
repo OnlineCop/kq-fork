@@ -113,6 +113,7 @@
     <ClCompile Include="src\eqpmenu.cpp" />
     <ClCompile Include="src\eskill.cpp" />
     <ClCompile Include="src\fade.cpp" />
+    <ClCompile Include="src\gfx.cpp" />
     <ClCompile Include="src\heroc.cpp" />
     <ClCompile Include="src\hskill.cpp" />
     <ClCompile Include="src\imgcache.cpp" />
@@ -125,6 +126,7 @@
     <ClCompile Include="src\menu.cpp" />
     <ClCompile Include="src\movement.cpp" />
     <ClCompile Include="src\music.cpp" />
+    <ClCompile Include="src\random.cpp" />
     <ClCompile Include="src\res.cpp" />
     <ClCompile Include="src\selector.cpp" />
     <ClCompile Include="src\setup.cpp" />

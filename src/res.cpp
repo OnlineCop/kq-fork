@@ -20,7 +20,7 @@
 */
 
 #include "res.h"
-#include "allegro.h"
+#include <allegro.h>
 #include "kq.h"
 
 // *INDENT-OFF*

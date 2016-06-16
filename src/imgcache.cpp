@@ -86,7 +86,7 @@ static Raster *bmp_from_png(const string &path) {
   png_image image;
   image.version = PNG_IMAGE_VERSION;
   image.opaque = nullptr;
-  png_image_begin_read_from_file(&image, path);
+  png_image_begin_read_from_file(&image, path.c_str());
   Raster *bitmap = nullptr;
   if (!PNG_IMAGE_FAILED(image)) {
     // Force load in true colour with alpha format

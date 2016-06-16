@@ -21,7 +21,8 @@
 
 #ifndef __RES_H
 #define __RES_H 1
-
+#include <stdint.h>
+#include <allegro.h>
 /*! \file
  * \brief Definitions of resource types
  * \author JB

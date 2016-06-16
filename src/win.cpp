@@ -32,6 +32,8 @@
 #include "platform.h"
 #include <allegro.h>
 #include <stdio.h>
+// This clashes with a Windows typedef
+#undef PSIZE
 #include <winalleg.h>
 
 static int init_path = 0;
