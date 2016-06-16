@@ -19,24 +19,20 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __SELECTOR_H
 #define __SELECTOR_H 1
-
 
 #include "enums.h"
 #include "heroc.h"
 
+int select_player(void); /*  menu.c  */
+ePIDX select_any_player(eTarget, unsigned int,
+                        const char *);     /*  (item|mas)menu.c  */
+ePIDX select_hero(size_t, eTarget, bool);  /*  enemyc.c, heroc.c  */
+ePIDX select_enemy(size_t, eTarget);       /*  enemyc.c, heroc.c, hskill.c  */
+int auto_select_hero(int, int);            /*  enemyc.c, heroc.c  */
+int auto_select_enemy(int, int);           /*  enemyc.c, heroc.c  */
+int select_party(ePIDX *, size_t, size_t); /*  intrface.c  */
+void party_newlead(void);                  /*  selector.c, menu.c  */
 
-int select_player(void);                    /*  menu.c  */
-ePIDX select_any_player(eTarget, unsigned int, const char *);  /*  (item|mas)menu.c  */
-ePIDX select_hero(size_t, eTarget, bool);    /*  enemyc.c, heroc.c  */
-ePIDX select_enemy(size_t, eTarget);        /*  enemyc.c, heroc.c, hskill.c  */
-int auto_select_hero(int, int);             /*  enemyc.c, heroc.c  */
-int auto_select_enemy(int, int);            /*  enemyc.c, heroc.c  */
-int select_party(ePIDX *, size_t, size_t);  /*  intrface.c  */
-void party_newlead(void);                   /*  selector.c, menu.c  */
-
-
-#endif  /* __SELECTOR_H */
-
+#endif /* __SELECTOR_H */

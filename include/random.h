@@ -26,5 +26,5 @@ void kq_init_random();
 int kq_rnd(int v0, int v1);
 inline int kq_rnd(int v1) { return kq_rnd(0, v1); }
 std::string kq_get_random_state();
-void kq_set_random_state(const std::string& s);
+void kq_set_random_state(const std::string &s);
 #endif

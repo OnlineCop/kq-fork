@@ -19,20 +19,16 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __EFFECTS_H
 #define __EFFECTS_H 1
 
+void death_animation(size_t, int); /*  combat.c, heroc,c, hskill.c, magic.c  */
+void display_amount(size_t, eFontColor, int);        /*  many places ;)  */
+void draw_attacksprite(size_t, int, size_t, int);    /*  heroc.c  */
+void draw_castersprite(size_t, int);                 /*  hskill.c, magic.c  */
+void draw_hugesprite(size_t, int, int, size_t, int); /*  eskill.c, magic.c  */
+void draw_spellsprite(size_t, int, size_t, int);     /*  many places ;)  */
+void fight_animation(size_t, size_t, int);           /*  combat.c  */
+int is_active(int);                                  /*  hskill.c  */
 
-void death_animation(size_t, int);         /*  combat.c, heroc,c, hskill.c, magic.c  */
-void display_amount(size_t, eFontColor, int);     /*  many places ;)  */
-void draw_attacksprite(size_t, int, size_t, int);     /*  heroc.c  */
-void draw_castersprite(size_t, int);       /*  hskill.c, magic.c  */
-void draw_hugesprite(size_t, int, int, size_t, int);  /*  eskill.c, magic.c  */
-void draw_spellsprite(size_t, int, size_t, int);      /*  many places ;)  */
-void fight_animation(size_t, size_t, int);    /*  combat.c  */
-int is_active(int);             /*  hskill.c  */
-
-
-#endif  /* __EFFECTS_H */
-
+#endif /* __EFFECTS_H */

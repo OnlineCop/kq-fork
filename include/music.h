@@ -19,10 +19,8 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __MUSIC_H
 #define __MUSIC_H 1
-
 
 /* ML: include aldumb.h here, because other modules really don't know that
    we are using dumb, and it doesn't make sense to have to include aldumb
@@ -39,6 +37,4 @@ void pause_music(void);
 void resume_music(void);
 void stop_music(void);
 
-
-#endif  /* __MUSIC_H */
-
+#endif /* __MUSIC_H */

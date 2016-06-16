@@ -19,34 +19,31 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __SHOPMENU_H
 #define __SHOPMENU_H 1
 
+#define NUMSHOPS 50
+#define SHOPITEMS 12
 
-#define NUMSHOPS      50
-#define SHOPITEMS     12
+void do_inn_effects(int);              /*  only in intrface.c  */
+void draw_shopgold(void);              /*  only in shopmenu.c  */
+void inn(const char *, uint32_t, int); /*  only in intrface.c  */
+int shop(int);                         /*  only in intrface.c  */
 
-void do_inn_effects(int);       /*  only in intrface.c  */
-void draw_shopgold(void);       /*  only in shopmenu.c  */
-void inn(const char *, uint32_t, int);     /*  only in intrface.c  */
-int shop(int);                  /*  only in intrface.c  */
+typedef struct {
+  char name[40];                     /* Name of this shop */
+  uint16_t items[SHOPITEMS];         /* A list of items in this shop */
+  uint16_t items_current[SHOPITEMS]; /* Quantity of this type of item */
+  uint16_t items_max[SHOPITEMS];     /* Maximum quantity of this type of item */
 
-typedef struct
-{
-    char name[40];                            /* Name of this shop */
-    uint16_t items[SHOPITEMS];          /* A list of items in this shop */
-    uint16_t items_current[SHOPITEMS];  /* Quantity of this type of item */
-    uint16_t items_max[SHOPITEMS];      /* Maximum quantity of this type of item */
-
-    /* Amount of time, in minutes, it takes for this shop to replenish this item */
-    unsigned short items_replenish_time[SHOPITEMS];
-	unsigned short time; /* The last time (in minutes) that you visited this shop */
+  /* Amount of time, in minutes, it takes for this shop to replenish this item
+   */
+  unsigned short items_replenish_time[SHOPITEMS];
+  unsigned short
+      time; /* The last time (in minutes) that you visited this shop */
 } s_shop;
 
+extern s_shop shops[NUMSHOPS]; /* sgame.c intrface.c */
+extern uint16_t num_shops;     /* sgame.c intrface.c */
 
-extern s_shop shops[NUMSHOPS];      /* sgame.c intrface.c */
-extern uint16_t num_shops;    /* sgame.c intrface.c */
-
-#endif  /* __SHOPMENU_H */
-
+#endif /* __SHOPMENU_H */

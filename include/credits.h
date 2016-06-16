@@ -19,7 +19,6 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __CREDITS_H
 #define __CREDITS_H 1
 
@@ -34,5 +33,4 @@ void deallocate_credits(void);
 /*! Display credits (call in a loop) */
 void display_credits(Raster *);
 
-#endif  /* __CREDITS_H */
-
+#endif /* __CREDITS_H */

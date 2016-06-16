@@ -19,7 +19,6 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __BOUNDS_H
 #define __BOUNDS_H 1
 
@@ -37,8 +36,6 @@ struct PACKFILE;
  * \date 20060720
  */
 
-
-
 /*! \brief Bounding area box
  *
  * A boundary is a viewable area on the map.
@@ -49,17 +46,14 @@ struct PACKFILE;
  * \author TT
  * \date 20060710
  */
-struct KBound
-{
+struct KBound {
 public:
-    short left;                  /*!< Left edge of the bounding box */
-    short top;                   /*!< Top edge of the bounding box */
-    short right;                 /*!< Right edge of the bounding box */
-    short bottom;                /*!< Bottom edge of the bounding box */
-    short btile;                 /*!< Index of the tile to draw everywhere BUT here */
+  short left;   /*!< Left edge of the bounding box */
+  short top;    /*!< Top edge of the bounding box */
+  short right;  /*!< Right edge of the bounding box */
+  short bottom; /*!< Bottom edge of the bounding box */
+  short btile;  /*!< Index of the tile to draw everywhere BUT here */
 };
-
-
 
 /*! \brief Container holding array of bounds
  *
@@ -69,28 +63,25 @@ public:
  * \author OC
  * \date 20101017
  */
-class KBounds
-{
+class KBounds {
 public:
-    KBounds() {}
-    ~KBounds() {}
+  KBounds() {}
+  ~KBounds() {}
 
-    // Add a new bound to the map. Returns true on success, or false on failure.
-    bool Add(shared_ptr<KBound> bound);
+  // Add a new bound to the map. Returns true on success, or false on failure.
+  bool Add(shared_ptr<KBound> bound);
 
-    // Return a pointer to the bound at the given @param index. If index is invalid, returns null.
-    shared_ptr<KBound> GetBound(size_t index);
+  // Return a pointer to the bound at the given @param index. If index is
+  // invalid, returns null.
+  shared_ptr<KBound> GetBound(size_t index);
 
-    size_t Size()
-    {
-        return m_bounds.size();
-    }
+  size_t Size() { return m_bounds.size(); }
 
-    uint32_t IsBound(const uint16_t left, const uint16_t top, const uint16_t right, const uint16_t bottom) const;
+  uint32_t IsBound(const uint16_t left, const uint16_t top,
+                   const uint16_t right, const uint16_t bottom) const;
 
 protected:
-    vector< shared_ptr<KBound> > m_bounds;
+  vector<shared_ptr<KBound>> m_bounds;
 };
 
-#endif  /* __BOUNDS_H */
-
+#endif /* __BOUNDS_H */

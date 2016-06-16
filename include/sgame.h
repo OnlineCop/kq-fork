@@ -19,21 +19,16 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __SGAME_H
 #define __SGAME_H 1
 
-
 #include "kq.h"
-
 
 /* Number of save game slots */
 #define NUMSG 20
 
-void load_sgstats(void);        /*  kq.c  */
-int start_menu(int);            /*  kq.c  */
-int system_menu(void);          /*  kq.c  */
+void load_sgstats(void); /*  kq.c  */
+int start_menu(int);     /*  kq.c  */
+int system_menu(void);   /*  kq.c  */
 
-
-#endif  /* __SGAME_H */
-
+#endif /* __SGAME_H */

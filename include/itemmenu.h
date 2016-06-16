@@ -19,28 +19,21 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __ITEMMENU_H
 #define __ITEMMENU_H 1
 
+#define MAX_ITEMS 9
 
-#define MAX_ITEMS           9
-
-
-enum eItemEffectResult
-{
-    ITEM_EFFECT_INEFFECTIVE = 0,
-    ITEM_EFFECT_SUCCESS_SINGLE = 1,
-    ITEM_EFFECT_SUCCESS_MULTIPLE = 2
+enum eItemEffectResult {
+  ITEM_EFFECT_INEFFECTIVE = 0,
+  ITEM_EFFECT_SUCCESS_SINGLE = 1,
+  ITEM_EFFECT_SUCCESS_MULTIPLE = 2
 };
 
-
-void camp_item_menu(void);      /*  menu.c  */
-int check_inventory(size_t, int);  /*  many functions ;)  */
-eItemEffectResult item_effects(size_t, size_t, int);        /*  heroc.c  */
-void remove_item(size_t, int);     /*  (eqp|shop)menu.c, heroc.c  */
+void camp_item_menu(void);                           /*  menu.c  */
+int check_inventory(size_t, int);                    /*  many functions ;)  */
+eItemEffectResult item_effects(size_t, size_t, int); /*  heroc.c  */
+void remove_item(size_t, int); /*  (eqp|shop)menu.c, heroc.c  */
 int useup_item(int);
 
-
-#endif  /* __ITEMMENU_H */
-
+#endif /* __ITEMMENU_H */

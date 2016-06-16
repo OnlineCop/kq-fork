@@ -22,7 +22,7 @@ the Free Software Foundation,
 #ifndef __IMGCACHE_H
 #define __IMGCACHE_H
 class Raster;
-Raster* get_cached_image(const std::string& name);
+Raster *get_cached_image(const std::string &name);
 void clear_image_cache();
 
 #endif

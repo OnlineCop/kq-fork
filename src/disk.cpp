@@ -162,41 +162,6 @@ bool range_is_default(_InputIterator first, _InputIterator last) {
   return true;
 }
   
-  
-int save_s_entity(s_entity *s, PACKFILE *f)
-{
-    pack_putc(s->chrx, f);
-    pack_putc(0, f);             /* alignment */
-    pack_iputw(s->x, f);
-    pack_iputw(s->y, f);
-    pack_iputw(s->tilex, f);
-    pack_iputw(s->tiley, f);
-    pack_putc(s->eid, f);
-    pack_putc(s->active, f);
-    pack_putc(s->facing, f);
-    pack_putc(s->moving, f);
-    pack_putc(s->movcnt, f);
-    pack_putc(s->framectr, f);
-    pack_putc(s->movemode, f);
-    pack_putc(s->obsmode, f);
-    pack_putc(s->delay, f);
-    pack_putc(s->delayctr, f);
-    pack_putc(s->speed, f);
-    pack_putc(s->scount, f);
-    pack_putc(s->cmd, f);
-    pack_putc(s->sidx, f);
-    pack_putc(s->extra, f);
-    pack_putc(s->chasing, f);
-    pack_iputw(0, f);            /* alignment */
-    pack_iputl(s->cmdnum, f);
-    pack_putc(s->atype, f);
-    pack_putc(s->snapback, f);
-    pack_putc(s->facehero, f);
-    pack_putc(s->transl, f);
-    pack_fwrite(s->script, sizeof(s->script), f);
-    return 0;
-}
-
 static int load_resistances(s_player* s, XMLElement* node) {
 	std::fill(std::begin(s->res), std::end(s->res), 0);
 	XMLElement* resistances = node->FirstChildElement("resistances");

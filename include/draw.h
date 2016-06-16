@@ -19,58 +19,54 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __DRAW_H
 #define __DRAW_H 1
 #include <stdint.h>
 class Raster;
 
-// TODO: Find out whether these values paired to any color defined within PALETTE 'pal'
-#define GREY1      4
-#define GREY2      8
-#define GREY3     13
-#define WHITE     15
-#define DBLUE      3
-#define DRED       6
+// TODO: Find out whether these values paired to any color defined within
+// PALETTE 'pal'
+#define GREY1 4
+#define GREY2 8
+#define GREY3 13
+#define WHITE 15
+#define DBLUE 3
+#define DRED 6
 
-enum eFontColor
-{
-    FNORMAL    = 0,
-    FRED       = 1,
-    FYELLOW    = 2,
-    FGREEN     = 3,
-    FDARK      = 4,
-    FGOLD      = 5,
-    FBIG       = 6,
-    FDECIDE    = 7,
+enum eFontColor {
+  FNORMAL = 0,
+  FRED = 1,
+  FYELLOW = 2,
+  FGREEN = 3,
+  FDARK = 4,
+  FGOLD = 5,
+  FBIG = 6,
+  FDECIDE = 7,
 
-    NUM_FONT_COLORS // always last
+  NUM_FONT_COLORS // always last
 };
 
-enum eBubbleStyle
-{
-    B_TEXT     = 0,
-    B_THOUGHT  = 1,
-    B_MESSAGE  = 2,
+enum eBubbleStyle {
+  B_TEXT = 0,
+  B_THOUGHT = 1,
+  B_MESSAGE = 2,
 
-    NUM_BUBBLE_STYLES // always last
+  NUM_BUBBLE_STYLES // always last
 };
 
 /* These should correspond with the stems found in MISC.
  * Bubbles are either solid (for speech) or wavy (for thoughts).
  */
-enum eBubbleStemStyle
-{
-    STEM_UNDEFINED      = -1,
+enum eBubbleStemStyle {
+  STEM_UNDEFINED = -1,
 
-    STEM_BOTTOM_RIGHT   = 0,
-    STEM_BOTTOM_LEFT    = 1,
-    STEM_TOP_RIGHT      = 2,
-    STEM_TOP_LEFT       = 3,
+  STEM_BOTTOM_RIGHT = 0,
+  STEM_BOTTOM_LEFT = 1,
+  STEM_TOP_RIGHT = 2,
+  STEM_TOP_LEFT = 3,
 
-    NUM_BUBBLE_STEMS // always last
+  NUM_BUBBLE_STEMS // always last
 };
-
 
 /*  draw global functions  */
 
@@ -116,7 +112,8 @@ void text_ex(int, int, const char *);
 void porttext_ex(int, int, const char *);
 
 /*  intrface.c, setup.c  */
-int prompt(int, int, int, const char *, const char *, const char *, const char *);
+int prompt(int, int, int, const char *, const char *, const char *,
+           const char *);
 int prompt_ex(int, const char *, const char *[], int);
 
 /*  combat.c, hskill.c, intrface.c, (item|shop)menu.c, kq.c, sgame.c  */
@@ -132,6 +129,4 @@ extern uint8_t BLUE;
 extern uint8_t DARKBLUE;
 extern uint8_t DARKRED;
 
-
-#endif  /* __DRAW_H */
-
+#endif /* __DRAW_H */

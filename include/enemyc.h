@@ -19,16 +19,12 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __ENEMYC_H
 #define __ENEMYC_H 1
 
+int select_encounter(int, int);  /*  combat.c  */
+void enemy_init(void);           /*  combat.c  */
+void enemy_chooseaction(size_t); /*  combat.c  */
+void enemy_charmaction(size_t);  /*  combat.c, heroc.c  */
 
-int select_encounter(int, int);         /*  combat.c  */
-void enemy_init(void);          /*  combat.c  */
-void enemy_chooseaction(size_t);   /*  combat.c  */
-void enemy_charmaction(size_t);    /*  combat.c, heroc.c  */
-
-
-#endif  /* __ENEMYC_H */
-
+#endif /* __ENEMYC_H */

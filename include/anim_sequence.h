@@ -25,20 +25,19 @@ the Free Software Foundation,
 #include "animation.h"
 #include "tiledmap.h"
 
-class KAnimSequence
-{
+class KAnimSequence {
 public:
-    KAnimSequence(const KTmxAnimation&);
-    KAnimSequence(KAnimSequence&&);
+  KAnimSequence(const KTmxAnimation &);
+  KAnimSequence(KAnimSequence &&);
 
-    const KTmxAnimation::animation_frame& current();
+  const KTmxAnimation::animation_frame &current();
 
-    void advance();
+  void advance();
 
 public:
-    int nexttime;
-    size_t index;
-    const KTmxAnimation animation;
+  int nexttime;
+  size_t index;
+  const KTmxAnimation animation;
 };
 
 extern KAnimSequence AnimSequence;

@@ -19,10 +19,8 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __PLATFORM_H
 #define __PLATFORM_H 1
-
 
 /*! \file
  * \brief Platform-specific interfaces, prototypes, and #defines
@@ -33,14 +31,13 @@
 #include <string>
 using std::string;
 
-enum eDirectories
-{
-    DATA_DIR        = 0,
-    MAP_DIR         = 1,
-    SAVE_DIR        = 2,
-    MUSIC_DIR       = 3,
-    SCRIPT_DIR      = 4,
-    SETTINGS_DIR    = 5,
+enum eDirectories {
+  DATA_DIR = 0,
+  MAP_DIR = 1,
+  SAVE_DIR = 2,
+  MUSIC_DIR = 3,
+  SCRIPT_DIR = 4,
+  SETTINGS_DIR = 5,
 };
 
 /* Get the directory for application data (music, gfx, etc.)
@@ -51,9 +48,6 @@ const string kqres(enum eDirectories, const string);
 const string get_lua_file_path(const string, const string);
 const string get_resource_file_path(const string, const string, const string);
 
-
 #define maybe_poll_joystick poll_joystick
 
-
-#endif  /* __PLATFORM_H */
-
+#endif /* __PLATFORM_H */

@@ -19,14 +19,10 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #ifndef __HSKILL_H
 #define __HSKILL_H 1
 
+int hero_skillcheck(size_t); /*  heroc.c  */
+int skill_use(size_t);       /*  heroc.c  */
 
-int hero_skillcheck(size_t);       /*  heroc.c  */
-int skill_use(size_t);             /*  heroc.c  */
-
-
-#endif  /* __HSKILL_H */
-
+#endif /* __HSKILL_H */
