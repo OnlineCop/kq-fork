@@ -61,7 +61,6 @@ static const char *credits[] =
 };
 
 
-// Compiler doesn't like "const uint32_t", so it's this or a #define.
 static const int NUM_EASE_VALUES=32;
 
 static const char **cc = NULL;
@@ -117,7 +116,7 @@ void display_credits(Raster *double_buffer)
     {
         allocate_credits();
     }
-
+    ++ticks;
     if (ticks > max_ticks)
     {
         clear_bitmap(wk);
