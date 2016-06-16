@@ -19,14 +19,14 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <stddef.h>
 #include "console.h"
 #include "constants.h"
 #include "draw.h"
+#include "gfx.h"
 #include "kq.h"
 #include "music.h"
 #include "structs.h"
-#include "gfx.h"
+#include <stddef.h>
 
 /*! \file
 * \brief Lua console for debugging
@@ -34,48 +34,38 @@
 * \date 20070723
 */
 
-
 /* Internal variables */
-static struct console_state
-{
+static struct console_state {
 #define CONSOLE_LINES 25
-    char *lines[CONSOLE_LINES];
-    char inputline[80];
-    int cursor;
-    int on;
+  char *lines[CONSOLE_LINES];
+  char inputline[80];
+  int cursor;
+  int on;
 } g_console;
 
-
-
-enum eRunConsoleKeys
-{
-    RUNKEY_RETURN = '\r',
-    RUNKEY_DELETE = 127,
-    RUNKEY_CTRL_G = 7,
-    RUNKEY_BACKSPACE = 8,
-    RUNKEY_CTRL_R = 18,
-    RUNKEY_CTRL_S = 19
+enum eRunConsoleKeys {
+  RUNKEY_RETURN = '\r',
+  RUNKEY_DELETE = 127,
+  RUNKEY_CTRL_G = 7,
+  RUNKEY_BACKSPACE = 8,
+  RUNKEY_CTRL_R = 18,
+  RUNKEY_CTRL_S = 19
 };
-
 
 /*! \brief Initialize the console state
 *
 * Set up the global state ready for using the console
 * \author PH
 */
-void init_console(void)
-{
-    size_t console_line;
+void init_console(void) {
+  size_t console_line;
 
-    g_console.cursor = 0;
-    g_console.on = 0;
-    for (console_line = 0; console_line < CONSOLE_LINES; ++console_line)
-    {
-        g_console.lines[console_line] = NULL;
-    }
+  g_console.cursor = 0;
+  g_console.on = 0;
+  for (console_line = 0; console_line < CONSOLE_LINES; ++console_line) {
+    g_console.lines[console_line] = NULL;
+  }
 }
-
-
 
 /*! \brief Show the current console
 *
@@ -86,33 +76,31 @@ void init_console(void)
 * \param xofs x-offset display position
 * \param yofs y-offset display position
 */
-void display_console(uint32_t xofs, uint32_t yofs)
-{
-    uint32_t i, y;
-    uint32_t max_y = yofs + 120;
+void display_console(uint32_t xofs, uint32_t yofs) {
+  uint32_t i, y;
+  uint32_t max_y = yofs + 120;
 
-    if (g_console.on != 1)
-    {
-        return;
+  if (g_console.on != 1) {
+    return;
+  }
+  rectfill(double_buffer, xofs, max_y, xofs + 320, yofs + 240,
+           makecol(0, 0, 0));
+  hline(double_buffer, xofs, max_y, xofs + 320, makecol(255, 255, 255));
+  y = yofs + 240 - 2 * text_height(font);
+  i = CONSOLE_LINES - 1;
+  while (y > max_y) {
+    if (g_console.lines[i]) {
+      print_font(double_buffer, xofs, y, g_console.lines[i], FGREEN);
     }
-    rectfill(double_buffer, xofs, max_y, xofs + 320, yofs + 240, makecol(0, 0, 0));
-    hline(double_buffer, xofs, max_y, xofs + 320, makecol(255, 255, 255));
-    y = yofs + 240 - 2 * text_height(font);
-    i = CONSOLE_LINES - 1;
-    while (y > max_y)
-    {
-        if (g_console.lines[i])
-        {
-			print_font(double_buffer, xofs, y, g_console.lines[i], FGREEN);
-        }
-        y -= text_height(font);
-        --i;
-    }
-	print_font(double_buffer, xofs, yofs + 240 - 8, g_console.inputline, FNORMAL);
-    rectfill(double_buffer, xofs + text_length(font, g_console.inputline), yofs + 238, xofs + text_length(font, g_console.inputline) + text_length(font, "_"), yofs + 240, makecol(192, 192, 192));
+    y -= text_height(font);
+    --i;
+  }
+  print_font(double_buffer, xofs, yofs + 240 - 8, g_console.inputline, FNORMAL);
+  rectfill(double_buffer, xofs + text_length(font, g_console.inputline),
+           yofs + 238, xofs + text_length(font, g_console.inputline) +
+                           text_length(font, "_"),
+           yofs + 240, makecol(192, 192, 192));
 }
-
-
 
 /*! \brief Display a line on the console
 *
@@ -120,140 +108,118 @@ void display_console(uint32_t xofs, uint32_t yofs)
 * lines. No wrapping is performed.
 * \param l the text to display
 */
-void scroll_console(const char *l)
-{
-    int i;
+void scroll_console(const char *l) {
+  int i;
 
-    if (l == NULL)
-    {
-        return;
-    }
-    free(g_console.lines[0]);
-    for (i = 0; i < CONSOLE_LINES - 1; ++i)
-    {
-        g_console.lines[i] = g_console.lines[i + 1];
-    }
-    g_console.lines[CONSOLE_LINES - 1] = strcpy((char *) malloc(strlen(l) + 1), l);
+  if (l == NULL) {
+    return;
+  }
+  free(g_console.lines[0]);
+  for (i = 0; i < CONSOLE_LINES - 1; ++i) {
+    g_console.lines[i] = g_console.lines[i + 1];
+  }
+  g_console.lines[CONSOLE_LINES - 1] = strcpy((char *)malloc(strlen(l) + 1), l);
 }
-
-
 
 /* \brief Enter console mode
 *
 * Run the console. Does not return until the console
 * is closed.
 */
-void run_console(void)
-{
-    int c;
-    size_t sl;
-    int running;
-    uint32_t string_len;
-    uint32_t i;
-    static const char get[] = "return get_progress(P_";
-    static const char ret[] = "return ";
-    static const char set[] = "set_progress(P_";
+void run_console(void) {
+  int c;
+  size_t sl;
+  int running;
+  uint32_t string_len;
+  uint32_t i;
+  static const char get[] = "return get_progress(P_";
+  static const char ret[] = "return ";
+  static const char set[] = "set_progress(P_";
 
-    g_console.inputline[0] = '\0';
-    g_console.on = 1;
+  g_console.inputline[0] = '\0';
+  g_console.on = 1;
 
-    /* Wait for all keys up */
-    while (keypressed())
-    {
-        readkey();
-    }
-    running = 1;
-    while (running == 1)
-    {
-        sl = strlen(g_console.inputline);
+  /* Wait for all keys up */
+  while (keypressed()) {
+    readkey();
+  }
+  running = 1;
+  while (running == 1) {
+    sl = strlen(g_console.inputline);
 
-        /* Get a key */
-        while (!keypressed())
-        {
-            Game.do_check_animation();
-            blit2screen(xofs, yofs);
-            poll_music();
-            Game.kq_yield();
-        }
-
-        switch ((c = readkey()) & 0xff)
-        {
-            case RUNKEY_RETURN: /* Return */
-                if (sl == 0)
-                {
-                    /* Stop when blank line is entered */
-                    running = 0;
-                    g_console.on = 0;
-                }
-                else
-                {
-                    g_console.on = 0;
-                    scroll_console(g_console.inputline);
-                    do_console_command(g_console.inputline);
-                    g_console.inputline[0] = '\0';
-                    g_console.on = 1;
-                }
-                break;
-
-            case RUNKEY_DELETE: /* delete */
-                if (strlen(g_console.inputline) > 0)
-                {
-                    g_console.inputline[sl - 1] = '\0';
-                }
-                break;
-
-            case RUNKEY_CTRL_G: /* ctrl g */
-                do_console_command(g_console.inputline);
-
-                string_len = strlen(get);
-                for (i = 0; i < string_len; i++)
-                {
-                    g_console.inputline[i] = get[i];
-                }
-                break;
-
-            case RUNKEY_BACKSPACE: /* backspace */
-                if (strlen(g_console.inputline) > 0)
-                {
-                    g_console.inputline[sl - 1] = '\0';
-                }
-                break;
-
-            case RUNKEY_CTRL_R: /* ctrl r */
-                do_console_command(g_console.inputline);
-
-                string_len = strlen(ret);
-                for (i = 0; i < string_len; i++)
-                {
-                    g_console.inputline[i] = ret[i];
-                }
-                break;
-
-            case RUNKEY_CTRL_S: /* ctrl s */
-                do_console_command(g_console.inputline);
-
-                string_len = strlen(set);
-                for (i = 0; i < string_len; i++)
-                {
-                    g_console.inputline[i] = set[i];
-                }
-                break;
-
-            default:
-                if (strlen(g_console.inputline) < sizeof(g_console.inputline) - 1)
-                {
-                    g_console.inputline[sl] = c & 0xff;
-                    g_console.inputline[sl + 1] = '\0';
-                }
-                break;
-        }
+    /* Get a key */
+    while (!keypressed()) {
+      Game.do_check_animation();
+      blit2screen(xofs, yofs);
+      poll_music();
+      Game.kq_yield();
     }
 
-    /* Wait for enter key up */
-    do
-    {
-        Game.readcontrols();
+    switch ((c = readkey()) & 0xff) {
+    case RUNKEY_RETURN: /* Return */
+      if (sl == 0) {
+        /* Stop when blank line is entered */
+        running = 0;
+        g_console.on = 0;
+      } else {
+        g_console.on = 0;
+        scroll_console(g_console.inputline);
+        do_console_command(g_console.inputline);
+        g_console.inputline[0] = '\0';
+        g_console.on = 1;
+      }
+      break;
+
+    case RUNKEY_DELETE: /* delete */
+      if (strlen(g_console.inputline) > 0) {
+        g_console.inputline[sl - 1] = '\0';
+      }
+      break;
+
+    case RUNKEY_CTRL_G: /* ctrl g */
+      do_console_command(g_console.inputline);
+
+      string_len = strlen(get);
+      for (i = 0; i < string_len; i++) {
+        g_console.inputline[i] = get[i];
+      }
+      break;
+
+    case RUNKEY_BACKSPACE: /* backspace */
+      if (strlen(g_console.inputline) > 0) {
+        g_console.inputline[sl - 1] = '\0';
+      }
+      break;
+
+    case RUNKEY_CTRL_R: /* ctrl r */
+      do_console_command(g_console.inputline);
+
+      string_len = strlen(ret);
+      for (i = 0; i < string_len; i++) {
+        g_console.inputline[i] = ret[i];
+      }
+      break;
+
+    case RUNKEY_CTRL_S: /* ctrl s */
+      do_console_command(g_console.inputline);
+
+      string_len = strlen(set);
+      for (i = 0; i < string_len; i++) {
+        g_console.inputline[i] = set[i];
+      }
+      break;
+
+    default:
+      if (strlen(g_console.inputline) < sizeof(g_console.inputline) - 1) {
+        g_console.inputline[sl] = c & 0xff;
+        g_console.inputline[sl + 1] = '\0';
+      }
+      break;
     }
-    while (PlayerInput.benter);
+  }
+
+  /* Wait for enter key up */
+  do {
+    Game.readcontrols();
+  } while (PlayerInput.benter);
 }
-

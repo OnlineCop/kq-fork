@@ -60,14 +60,13 @@ typedef struct {
    * See item_effects()
    */
   uint8_t bst;
-  uint8_t
-      elem;    /*!< For runes, what element will it affect (see rs parameter of
-                  res_adjust() ) */
-  uint8_t imb; /*!< imbued - What spell is cast when you "use" this item in
-                  combat */
-  uint8_t eff; /*!< Effect ?? */
-  int bon;     /*!< Bonus ?? */
-  int price;   /*!< Default price of this item, in gp */
+  uint8_t elem; /*!< For runes, what element will it affect (see rs parameter of
+                   res_adjust() ) */
+  uint8_t imb;  /*!< imbued - What spell is cast when you "use" this item in
+                   combat */
+  uint8_t eff;  /*!< Effect ?? */
+  int bon;      /*!< Bonus ?? */
+  int price;    /*!< Default price of this item, in gp */
   uint8_t eq[8]; /*!< Who can equip this item. See heroc.h */
   int stats[13]; /*!< Stat bonuses for equipping this item See A_ constants in
                     kq.h */
@@ -109,9 +108,8 @@ typedef struct {
 typedef struct {
   uint8_t tnum; /*!< Encounter number in the Encounter table */
   uint8_t lvl;  /*!< Level of monsters */
-  uint8_t
-      per; /*!< When random encounters are specified, this is the cumulative
-              percentage that this one will be selected */
+  uint8_t per; /*!< When random encounters are specified, this is the cumulative
+                  percentage that this one will be selected */
   uint8_t idx[5]; /*!< Index of enemies */
 } s_erow;
 

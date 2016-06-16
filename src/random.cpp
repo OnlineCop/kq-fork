@@ -26,7 +26,7 @@
 #include "random.h"
 
 // Name a specific engine here rather than default
-// just in case different platforms have different 
+// just in case different platforms have different
 // implementations of default.
 static std::minstd_rand engine;
 
@@ -41,7 +41,7 @@ int kq_rnd(int v0, int v1) {
 }
 
 /*! Return the internal random state.
- * You can store this state, and restore it later 
+ * You can store this state, and restore it later
  * to resume
  * the random sequence where it left off.
  * \returns the state
@@ -53,11 +53,11 @@ std::string kq_get_random_state() {
 }
 
 /*! Set the internal random state.
- * Call this with a string returned 
+ * Call this with a string returned
  * from kq_random_state
  * \param str a string
  */
-void kq_set_random_state(const std::string& s) {
+void kq_set_random_state(const std::string &s) {
   std::istringstream stm(s);
   stm >> engine;
 }

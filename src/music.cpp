@@ -19,7 +19,6 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 /*! \file
  * \brief In-game music routines
  *
@@ -35,10 +34,8 @@
 #include "music.h"
 #include "platform.h"
 
-
 /* DUMB version of music */
 #include <aldumb.h>
-
 
 /* private variables */
 #define MAX_MUSIC_PLAYERS 3
@@ -46,48 +43,36 @@ static DUH *mod_song[MAX_MUSIC_PLAYERS];
 static AL_DUH_PLAYER *mod_player[MAX_MUSIC_PLAYERS];
 static int current_music_player;
 
-
-
 /*! \brief Initiate music player (DUMB)
  *
  * Initializes the music players. Must be called before any other
  * music function. Needs to be shutdown when finished.
  */
-void init_music(void)
-{
-    atexit(&dumb_exit);
-    dumb_register_stdfiles();
-    dumb_resampling_quality = 2;
+void init_music(void) {
+  atexit(&dumb_exit);
+  dumb_register_stdfiles();
+  dumb_resampling_quality = 2;
 
-    /* initialize all music players */
-    current_music_player = MAX_MUSIC_PLAYERS;
-    while (current_music_player--)
-    {
-        mod_song[current_music_player] = NULL;
-        mod_player[current_music_player] = NULL;
-    }
-    current_music_player = 0;
+  /* initialize all music players */
+  current_music_player = MAX_MUSIC_PLAYERS;
+  while (current_music_player--) {
+    mod_song[current_music_player] = NULL;
+    mod_player[current_music_player] = NULL;
+  }
+  current_music_player = 0;
 }
-
-
 
 /*! \brief Clean up and shut down music (DUMB)
  *
  * Performs any cleanup needed. Must be called before the program exits.
  */
-void shutdown_music(void)
-{
-    if (is_sound != 0)
-    {
-        do
-        {
-            stop_music();
-        }
-        while (current_music_player--);
-    }
+void shutdown_music(void) {
+  if (is_sound != 0) {
+    do {
+      stop_music();
+    } while (current_music_player--);
+  }
 }
-
-
 
 /*! \brief Set the music volume (DUMB)
  *
@@ -95,30 +80,22 @@ void shutdown_music(void)
  *
  * \param   volume 0 (silent) to 100 (loudest)
  */
-void set_music_volume(float volume)
-{
-    if (is_sound != 0 && mod_player[current_music_player])
-    {
-        al_duh_set_volume(mod_player[current_music_player], volume);
-    }
+void set_music_volume(float volume) {
+  if (is_sound != 0 && mod_player[current_music_player]) {
+    al_duh_set_volume(mod_player[current_music_player], volume);
+  }
 }
-
-
 
 /*! \brief Poll the music (DUMB)
  *
  * Does whatever is needed to ensure the music keeps playing.
  * It's safe to call this too much, but shouldn't be called inside a timer.
  */
-void poll_music(void)
-{
-    if (is_sound != 0)
-    {
-        al_poll_duh(mod_player[current_music_player]);
-    }
+void poll_music(void) {
+  if (is_sound != 0) {
+    al_poll_duh(mod_player[current_music_player]);
+  }
 }
-
-
 
 /*! \brief Play a specific song (DUMB)
  *
@@ -129,55 +106,41 @@ void poll_music(void)
  * \param   music_name The relative filename of the song to be played
  * \param   position The position of the file to begin at
  */
-void play_music(const std::string &music_name, long position)
-{
-    if (is_sound != 0)
-    {
-        const char *filename = kqres(MUSIC_DIR, music_name).c_str();
+void play_music(const std::string &music_name, long position) {
+  if (is_sound != 0) {
+    const char *filename = kqres(MUSIC_DIR, music_name).c_str();
 
-        stop_music();
-        if (exists(filename))
-        {
-            if (strstr(filename, ".mod"))
-            {
-                mod_song[current_music_player] = dumb_load_mod(filename);
-            }
+    stop_music();
+    if (exists(filename)) {
+      if (strstr(filename, ".mod")) {
+        mod_song[current_music_player] = dumb_load_mod(filename);
+      }
 
-            else if (strstr(filename, ".xm"))
-            {
-                mod_song[current_music_player] = dumb_load_xm(filename);
-            }
+      else if (strstr(filename, ".xm")) {
+        mod_song[current_music_player] = dumb_load_xm(filename);
+      }
 
-            else if (strstr(filename, ".s3m"))
-            {
-                mod_song[current_music_player] = dumb_load_s3m(filename);
-            }
+      else if (strstr(filename, ".s3m")) {
+        mod_song[current_music_player] = dumb_load_s3m(filename);
+      }
 
-            else
-            {
-                mod_song[current_music_player] = NULL;
-            }
-            if (mod_song[current_music_player])
-            {
-                /* ML: we should (?) adjust the buffer size after everything is running smooth */
-	      float vol = float(gmvol)/250.0f;
-                mod_player[current_music_player] =
-                    al_start_duh(mod_song[current_music_player], 2, position, vol,
-                                 4096 * 4, 44100);
-            }
-            else
-            {
-                TRACE(_("Could not load %s!\n"), filename);
-            }
-        }
-        else
-        {
-            mod_song[current_music_player] = NULL;
-        }
+      else {
+        mod_song[current_music_player] = NULL;
+      }
+      if (mod_song[current_music_player]) {
+        /* ML: we should (?) adjust the buffer size after everything is running
+         * smooth */
+        float vol = float(gmvol) / 250.0f;
+        mod_player[current_music_player] = al_start_duh(
+            mod_song[current_music_player], 2, position, vol, 4096 * 4, 44100);
+      } else {
+        TRACE(_("Could not load %s!\n"), filename);
+      }
+    } else {
+      mod_song[current_music_player] = NULL;
     }
+  }
 }
-
-
 
 /*! \brief Stop the music (DUMB)
  *
@@ -185,18 +148,14 @@ void play_music(const std::string &music_name, long position)
  * must call play_music(), as the current music player will no longer
  * be available and the song unloaded from memory.
  */
-void stop_music(void)
-{
-    if (is_sound != 0 && mod_player[current_music_player])
-    {
-        al_stop_duh(mod_player[current_music_player]);
-        unload_duh(mod_song[current_music_player]);
-        mod_player[current_music_player] = NULL;
-        mod_song[current_music_player] = NULL;
-    }
+void stop_music(void) {
+  if (is_sound != 0 && mod_player[current_music_player]) {
+    al_stop_duh(mod_player[current_music_player]);
+    unload_duh(mod_song[current_music_player]);
+    mod_player[current_music_player] = NULL;
+    mod_song[current_music_player] = NULL;
+  }
 }
-
-
 
 /*! \brief Pauses the current music file (DUMB)
  *
@@ -204,36 +163,26 @@ void stop_music(void)
  * by calling resume_music(). Pausing the music file may be used
  * to nest music (such as during a battle).
  */
-void pause_music(void)
-{
-    if (is_sound != 0)
-    {
-        if (current_music_player < MAX_MUSIC_PLAYERS - 1)
-        {
-            al_pause_duh(mod_player[current_music_player]);
-            current_music_player++;
-        }
-        else
-        {
-            TRACE(_("reached maximum levels of music pauses!\n"));
-        }
+void pause_music(void) {
+  if (is_sound != 0) {
+    if (current_music_player < MAX_MUSIC_PLAYERS - 1) {
+      al_pause_duh(mod_player[current_music_player]);
+      current_music_player++;
+    } else {
+      TRACE(_("reached maximum levels of music pauses!\n"));
     }
+  }
 }
-
-
 
 /*! \brief Resume paused music (DUMB)
  *
  * Resumes the most recently paused music file. If a call to
  * play_music() was made in between, that file will be stopped.
  */
-void resume_music(void)
-{
-    if (is_sound != 0 && current_music_player > 0)
-    {
-        stop_music();
-        current_music_player--;
-        al_resume_duh(mod_player[current_music_player]);
-    }
+void resume_music(void) {
+  if (is_sound != 0 && current_music_player > 0) {
+    stop_music();
+    current_music_player--;
+    al_resume_duh(mod_player[current_music_player]);
+  }
 }
-

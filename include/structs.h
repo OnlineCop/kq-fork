@@ -186,4 +186,16 @@ typedef struct {
   unsigned short quantity;
 } s_inventory;
 
+/*! \brief Save Game Stats
+ * The information that's shown when picking a slot to save/load.
+ */
+struct s_sgstats {
+  int num_characters;
+  int gold;
+  int time;
+  struct {
+    int id, level, hp, mp;
+  } characters[PSIZE];
+};
+
 #endif /* __STRUCTS_H */
