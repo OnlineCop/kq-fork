@@ -22,6 +22,7 @@
 #ifndef __DRAW_H
 #define __DRAW_H 1
 #include <stdint.h>
+#include <stdlib.h>
 class Raster;
 
 // TODO: Find out whether these values paired to any color defined within
