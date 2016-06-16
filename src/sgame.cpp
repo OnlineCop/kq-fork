@@ -185,43 +185,8 @@ static void delete_game(void) {
  * \returns 1 if load succeeded, 0 otherwise
  */
 static int load_game(void) {
-#if 0
-	PACKFILE *sdat;
-    int a;
-    uint8_t tv;
-
-    sprintf(strbuf, "sg%d.sav", save_ptr);
-    sdat = pack_fopen(kqres(SAVE_DIR, strbuf).c_str(), F_READ_PACKED);
-    if (!sdat)
-    {
-        message(_("Could not load saved game."), 255, 0, 0, 0);
-        return 0;
-    }
-
-    tv = pack_getc(sdat);
-    if (tv == 92)
-    {
-        a = load_game_92(sdat);
-    }
-    else if (tv == 91)
-    {
-        a = load_game_91(sdat);
-    }
-    else
-    {
-        a = 0;
-        message(_("Saved game format is not current."), 255, 0, 0, 0);
-    }
-
-    pack_fclose(sdat);
-    if (!a)
-    {
-        return 0;
-    }
-#else
   sprintf(strbuf, "sg%d.xml", save_ptr);
   load_game_xml(kqres(SAVE_DIR, strbuf).c_str());
-#endif
   timer_count = 0;
   ksec = 0;
   hold_fade = 0;
@@ -245,130 +210,12 @@ void load_sgstats(void) {
     sprintf(buf, "sg%u.xml", sg);
     string path = kqres(SAVE_DIR, string(buf));
     s_sgstats &stats = savegame[sg];
-    if (load_stats_only(path.c_str(), stats) != 0) {
-      // Not found, zero out
+    if (exists(path.c_str()) && (load_stats_only(path.c_str(), stats) != 0)) {
+      // Not found (which is OK), so zero out the struct
       stats.num_characters = 0;
     }
   }
 }
-/*
-void load_sgstats_(void)
-{
-    PACKFILE *ldat;
-    int c;
-    uint8_t vc;
-    uint32_t current_save_game;
-    s_player tpm;
-    size_t pidx_index, player_index, temp_player_index;
-
-    for (current_save_game = 0; current_save_game < NUMSG; current_save_game++)
-    {
-        sprintf(strbuf, "sg%u.sav", current_save_game);
-        ldat = pack_fopen(kqres(SAVE_DIR, strbuf).c_str(), F_READ_PACKED);
-        if (!ldat)
-        {
-            savegame_num_characters[current_save_game] = 0;
-            savegame_gold[current_save_game] = 0;
-            savegame_time_hours[current_save_game] = 0;
-            savegame_time_minutes[current_save_game] = 0;
-            for (pidx_index = 0; pidx_index < PSIZE; pidx_index++)
-            {
-                sid[current_save_game][pidx_index] = 0;
-                shp[current_save_game][pidx_index] = 0;
-                smp[current_save_game][pidx_index] = 0;
-            }
-        }
-        else
-        {
-            vc = pack_getc(ldat);
-            if (vc == 92)
-            {
-                savegame_gold[current_save_game] = pack_igetl(ldat);
-                savegame_time_hours[current_save_game] = pack_igetw(ldat);
-                savegame_time_minutes[current_save_game] = pack_igetw(ldat);
-                savegame_num_characters[current_save_game] = pack_igetw(ldat);
-                if (savegame_num_characters[current_save_game] >= 0)
-                {
-                    for (pidx_index = 0; pidx_index <
-(size_t)savegame_num_characters[current_save_game]; pidx_index++)
-                    {
-                        sid[current_save_game][pidx_index] = pack_igetw(ldat);
-                        // sid[current_save_game][pidx_index] = 0; // Temp:
-Debugging / Testing
-                    }
-                    pack_igetw(ldat);   // Number of characters in game. Assume
-MAXCHRS
-                    for (player_index = 0; player_index < MAXCHRS;
-player_index++)
-                    {
-                        load_s_player(&tpm, ldat);
-                        for (c = 0; c <
-savegame_num_characters[current_save_game]; c++)
-                        {
-                            if (player_index == sid[current_save_game][c])
-                            {
-                                slv[current_save_game][c] = tpm.lvl;
-                                shp[current_save_game][c] = tpm.hp * 100 /
-tpm.mhp;
-                                if (tpm.mmp > 0)
-                                {
-                                    smp[current_save_game][c] = tpm.mp * 100 /
-tpm.mmp;
-                                }
-                                else
-                                {
-                                    smp[current_save_game][c] = 0;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else if (vc == 91)
-            {
-                savegame_num_characters[current_save_game] = pack_igetl(ldat);
-                savegame_gold[current_save_game] = pack_igetl(ldat);
-                savegame_time_hours[current_save_game] = pack_igetl(ldat);
-                savegame_time_minutes[current_save_game] = pack_igetl(ldat);
-                for (pidx_index = 0; pidx_index < PSIZE; pidx_index++)
-                {
-                    sid[current_save_game][pidx_index] = pack_igetl(ldat);
-                }
-                for (player_index = 0; player_index < MAXCHRS; player_index++)
-                {
-                    load_s_player(&tpm, ldat);
-                    for (temp_player_index = 0; temp_player_index < PSIZE;
-temp_player_index++)
-                    {
-                        if (player_index ==
-sid[current_save_game][temp_player_index])
-                        {
-                            slv[current_save_game][temp_player_index] = tpm.lvl;
-                            shp[current_save_game][temp_player_index] = tpm.hp *
-100 / tpm.mhp;
-                            if (tpm.mmp > 0)
-                            {
-                                smp[current_save_game][temp_player_index] =
-tpm.mp * 100 / tpm.mmp;
-                            }
-                            else
-                            {
-                                smp[current_save_game][temp_player_index] = 0;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                savegame_num_characters[current_save_game] = -1;
-            }
-            pack_fclose(ldat);
-        }
-    }
-}
-
-*/
 
 /*! \brief Save game
  *

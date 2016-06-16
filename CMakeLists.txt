@@ -10,7 +10,6 @@ find_package(DUMB REQUIRED)
 find_package(PNG REQUIRED)
 find_package(ZLIB REQUIRED)
 
-find_library(M_LIB m)
 find_library(TINYXML2 tinyxml2)
 
 if(ALLEGRO_FOUND)
@@ -78,24 +77,13 @@ set(kq-fork_SRCS
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/maps")
 
 set(CMAKE_CXX_STANDARD 14)
-# DEBUGMODE lets players alter options in the ESC->Config menu (including seeing obstacles and zones)
-#add_definitions(-DDEBUGMODE)
-
-# KQ_CHEATS works in conjunction with the setting 'cheat = 1' in the player's ~/.kq/kq.cfg file.
-# When enabled, hitting F10 will open 'cheat.lua' if it exists, and then call the cheat() function there.
-#add_definitions(-DKQ_CHEATS)
-
-#set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -DDEBUG -DKQ_CHEATS -Wall -Wextra -Wpedantic -std=c++14")
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O0 -g -ggdb3 -Wall -Wextra -Wpedantic")
-#set(ALLEGRO_LIBRARY "-lalleg")
-#set(DUMB_LIBRARY "-laldmb -ldumb")
+set(CMAKE_CXX_FLAGS_DEBUG  ${CMAKE_CXX_FLAGS} "-O0 -g -DDEBUGMODE" )
+set(CMAKE_CXX_FLAGS_RELEASE  ${CMAKE_CXX_FLAGS} "-O2" )
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO  ${CMAKE_CXX_FLAGS} "-O2 -g" )
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(kq-fork ${kq-fork_SRCS})
-
-if(KQ_DEBUGGING)
-set_target_properties(kq-fork PROPERTIES COMPILE_DEFINITIONS DEBUGMODE)
-endif(KQ_DEBUGGING)
 
 target_link_libraries(kq-fork
 	${ALLEGRO_LIBRARIES}

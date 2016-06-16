@@ -801,21 +801,23 @@ static void fieldsort(void) {
         fieldcmp);
 }
 
+struct readerbuf_t {
+  FILE *in;
+  char buffer[1024];
+};
+
 /*! \brief Read file chunk
  *
  * Read in a piece of a file for the Lua system to compile
  *
  * \param L the Lua state (ignored)
- * \param f an Allegro packfile to read from
+ * \param data a pointer to a readerbuf_t structure
  * \param size [out] the number of bytes read
  */
-static const char *filereader(lua_State *L, void *data, size_t *size) {
-  static char buf[1024];
-  PACKFILE *f = (PACKFILE *)data;
-  /* Avoid 'unused' warning */
-  (void)L;
-  *size = pack_fread(buf, sizeof(buf), f);
-  return buf;
+static const char *filereader(lua_State *, void *data, size_t *size) {
+  auto r = reinterpret_cast<readerbuf_t *>(data);
+  *size = fread(r->buffer, sizeof(char), sizeof(r->buffer), r->in);
+  return r->buffer;
 }
 
 /*! \brief Read string chunk
@@ -3592,26 +3594,26 @@ static int KQ_warp(lua_State *L) {
  * \return 0 on success, 1 on error
  */
 int lua_dofile(lua_State *L, const char *filename) {
-  PACKFILE *f = (filename ? pack_fopen(filename, F_READ) : NULL);
+  auto r = std::make_unique<readerbuf_t>();
+  r->in = fopen(filename, "rb");
   int ret = 0;
-  lua_Reader reader = filereader;
 
-  if (f == NULL) {
-    printf(_("Could not open script %s!"), get_filename(filename));
-    return 1;
+  if (r->in == NULL) {
+    TRACE("Could not open script %s!\n", filename);
+    Game.program_death("Error opening script file");
   }
-  ret = lua_load(L, reader, f, filename, NULL);
-  pack_fclose(f);
+  ret = lua_load(L, filereader, r.get(), filename, NULL);
+  fclose(r->in);
   if (ret != 0) {
-    printf(_("Could not parse script %s!"), get_filename(filename));
-    return 1;
+    TRACE("Could not parse script %s!\n", get_filename(filename));
+    Game.program_death("Script error");
   }
 
   if (lua_pcall(L, 0, LUA_MULTRET, 0) != 0) {
-    printf(_("lua_pcall failed while calling script %s!"),
-           get_filename(filename));
+    TRACE("lua_pcall failed while calling script %s!\n",
+          get_filename(filename));
     KQ_traceback(L);
-    return 1;
+    Game.program_death("Script error");
   }
 
   return 0;

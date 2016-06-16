@@ -320,45 +320,6 @@ int load_s_player(s_player *s, XMLElement *node) {
   return 0;
 }
 
-int load_s_player(s_player *s, PACKFILE *f) {
-  size_t i;
-
-  pack_fread(s->name, sizeof(s->name), f);
-  pack_getc(f); // alignment
-  pack_getc(f); // alignment
-  pack_getc(f); // alignment
-  s->xp = pack_igetl(f);
-  s->next = pack_igetl(f);
-  s->lvl = pack_igetl(f);
-  s->mrp = pack_igetl(f);
-  s->hp = pack_igetl(f);
-  s->mhp = pack_igetl(f);
-  s->mp = pack_igetl(f);
-  s->mmp = pack_igetl(f);
-
-  for (i = 0; i < NUM_STATS; ++i) {
-    s->stats[i] = pack_igetl(f);
-  }
-
-  for (i = 0; i < R_TOTAL_RES; ++i) {
-    s->res[i] = pack_getc(f);
-  }
-
-  for (i = 0; i < 24; ++i) {
-    s->sts[i] = pack_getc(f);
-  }
-
-  for (i = 0; i < NUM_EQUIPMENT; ++i) {
-    s->eqp[i] = pack_getc(f);
-  }
-
-  for (i = 0; i < 60; ++i) {
-    s->spells[i] = pack_getc(f);
-  }
-  pack_getc(f); // alignment
-  pack_getc(f); // alignment
-  return 0;
-}
 // Helper function - insert a property element.
 template <typename T>
 static XMLElement *addprop(XMLElement *parent, const char *name, T value) {
@@ -429,40 +390,6 @@ static int store_lup(const s_player *s, XMLElement *node) {
   XMLElement *elem = node->GetDocument()->NewElement("level-up");
   value_list(elem, std::begin(s->lup), std::end(s->lup));
   node->InsertEndChild(elem);
-  return 0;
-}
-int save_s_player(s_player *s, PACKFILE *f) {
-  size_t i;
-
-  pack_fwrite(s->name, sizeof(s->name), f);
-  pack_putc(0, f); // alignment
-  pack_putc(0, f); // alignment
-  pack_putc(0, f); // alignment
-  pack_iputl(s->xp, f);
-  pack_iputl(s->next, f);
-  pack_iputl(s->lvl, f);
-  pack_iputl(s->mrp, f);
-  pack_iputl(s->hp, f);
-  pack_iputl(s->mhp, f);
-  pack_iputl(s->mp, f);
-  pack_iputl(s->mmp, f);
-  for (i = 0; i < NUM_STATS; ++i) {
-    pack_iputl(s->stats[i], f);
-  }
-  for (i = 0; i < R_TOTAL_RES; ++i) {
-    pack_putc(s->res[i], f);
-  }
-  for (i = 0; i < 24; ++i) {
-    pack_putc(s->sts[i], f);
-  }
-  for (i = 0; i < NUM_EQUIPMENT; ++i) {
-    pack_putc(s->eqp[i], f);
-  }
-  for (i = 0; i < 60; ++i) {
-    pack_putc(s->spells[i], f);
-  }
-  pack_putc(0, f); // alignment
-  pack_putc(0, f); // alignment
   return 0;
 }
 
