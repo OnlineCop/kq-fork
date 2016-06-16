@@ -43,21 +43,21 @@
 
 /* Globals  */
 int tstats[13], tres[R_TOTAL_RES];
-unsigned short t_inv[MAX_INV], sm;
+uint16_t t_inv[MAX_INV], sm;
 size_t tot;
 char eqp_act;
 
 
 /* Internal functions */
 static void draw_equipmenu(int, int);
-static void draw_equippable(unsigned int, unsigned int, unsigned int);
+static void draw_equippable(uint32_t, uint32_t, uint32_t);
 static void calc_possible_equip(int, int);
 static void optimize_equip(int);
 static void choose_equipment(int, int);
-static void calc_equippreview(unsigned int, unsigned int, int);
+static void calc_equippreview(uint32_t, uint32_t, int);
 static void draw_equippreview(int, int, int);
-static int equip(unsigned int, unsigned int, unsigned int);
-static int deequip(unsigned int, unsigned int);
+static int equip(uint32_t, uint32_t, uint32_t);
+static int deequip(uint32_t, uint32_t);
 
 
 /*! \brief Show the effect on stats if this piece were selected
@@ -69,7 +69,7 @@ static int deequip(unsigned int, unsigned int);
  * \param   p2 Slot to consider changing
  * \param   ii New piece of equipment to compare/use
  */
-static void calc_equippreview(unsigned int aa, unsigned int p2, int ii)
+static void calc_equippreview(uint32_t aa, uint32_t p2, int ii)
 {
     int c, z;
 
@@ -100,7 +100,7 @@ static void calc_equippreview(unsigned int aa, unsigned int p2, int ii)
  */
 static void calc_possible_equip(int c, int slot)
 {
-    unsigned int k;
+    uint32_t k;
 
     tot = 0;
     for (k = 0; k < MAX_INV; k++)
@@ -133,7 +133,7 @@ static void choose_equipment(int c, int slot)
 
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         draw_equipmenu(c, 0);
         draw_equippable(c, slot, pptr);
@@ -156,11 +156,11 @@ static void choose_equipment(int c, int slot)
             sm = tot - NUM_ITEMS_PER_PAGE;
         }
 
-        readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             if (yptr == 15)
             {
                 pptr++;
@@ -180,7 +180,7 @@ static void choose_equipment(int c, int slot)
         }
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             if (yptr == 0)
             {
                 pptr--;
@@ -197,7 +197,7 @@ static void choose_equipment(int c, int slot)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (equip(pidx[c], t_inv[pptr + yptr], 0) == 1)
             {
                 play_effect(SND_EQUIP, 128);
@@ -210,7 +210,7 @@ static void choose_equipment(int c, int slot)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -228,7 +228,7 @@ static void choose_equipment(int c, int slot)
  * \param   ptr Slot to de-equip
  * \returns 0 if unsuccessful, 1 if successful
  */
-static int deequip(unsigned int c, unsigned int ptr)
+static int deequip(uint32_t c, uint32_t ptr)
 {
     int a, b = 0;
 
@@ -327,7 +327,7 @@ static void draw_equipmenu(int c, int sel)
  * \param   slot Which 'part of the body' to equip
  * \param   pptr Which page of the inventory to draw
  */
-static void draw_equippable(unsigned int c, unsigned int slot, unsigned int pptr)
+static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
 {
     int z, j, k;
 
@@ -341,7 +341,7 @@ static void draw_equippable(unsigned int c, unsigned int slot, unsigned int pptr
     }
     if (tot < NUM_ITEMS_PER_PAGE)
     {
-        sm = (unsigned short)tot;
+        sm = (uint16_t)tot;
     }
     else
     {
@@ -472,9 +472,9 @@ static void draw_equippreview(int ch, int ptr, int pp)
  * \param   forced Non-zero if character doesn't already have the item (see above)
  * \returns 1 if equip was successful, 0 otherwise
  */
-static int equip(unsigned int c, unsigned int selected_item, unsigned int forced)
+static int equip(uint32_t c, uint32_t selected_item, uint32_t forced)
 {
-    unsigned int a;
+    uint32_t a;
     int d, b, z, n = 0, i;
 
     if (selected_item >= MAX_INV)
@@ -565,7 +565,7 @@ static int equip(unsigned int c, unsigned int selected_item, unsigned int forced
  *
  * \param   c Character to process
  */
-void equip_menu(unsigned int c)
+void equip_menu(uint32_t c)
 {
     int stop = 0, yptr = 0, sl = 1;
     int a, b, d;
@@ -574,7 +574,7 @@ void equip_menu(unsigned int c)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         draw_equipmenu(c, sl);
         if (sl == 0)
@@ -591,7 +591,7 @@ void equip_menu(unsigned int c)
         }
         else
         {
-            draw_equippable(c, (unsigned int) - 1, 0);
+            draw_equippable(c, (uint32_t) - 1, 0);
             draw_equippreview(c, -1, 0);
         }
         if (sl == 0)
@@ -600,13 +600,13 @@ void equip_menu(unsigned int c)
         }
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
 
         if (sl == 1)
         {
             if (PlayerInput.left)
             {
-                unpress();
+                Game.unpress();
                 eqp_act--;
                 if (eqp_act < 0)
                 {
@@ -616,7 +616,7 @@ void equip_menu(unsigned int c)
             }
             if (PlayerInput.right)
             {
-                unpress();
+                Game.unpress();
                 eqp_act++;
                 if (eqp_act > 3)
                 {
@@ -629,7 +629,7 @@ void equip_menu(unsigned int c)
         {
             if (PlayerInput.down)
             {
-                unpress();
+                Game.unpress();
                 yptr++;
                 if (yptr > 5)
                 {
@@ -639,7 +639,7 @@ void equip_menu(unsigned int c)
             }
             if (PlayerInput.up)
             {
-                unpress();
+                Game.unpress();
                 yptr--;
                 if (yptr < 0)
                 {
@@ -650,7 +650,7 @@ void equip_menu(unsigned int c)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (sl == 1)
             {
                 // If the selection is over 'Equip' or 'Remove'
@@ -708,7 +708,7 @@ void equip_menu(unsigned int c)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             if (sl == 0)
             {
                 sl = 1;
@@ -735,7 +735,7 @@ void equip_menu(unsigned int c)
  */
 static void optimize_equip(int c)
 {
-    unsigned int a;
+    uint32_t a;
     int b, z, maxx, maxi, v = 0;
 
     for (a = 0; a < NUM_EQUIPMENT; a++)

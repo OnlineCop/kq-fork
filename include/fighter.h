@@ -40,17 +40,17 @@ typedef struct
                                   */
     int stats[NUM_STATS];        /*!<\brief See A_* constants in kq.h */
     char res[NUM_RES];                /*!<\brief eResistance: See R_* constants */
-    unsigned char facing;        /*!<\brief Direction character's sprite faces */
-    unsigned char aframe;        /*!<\brief Battle sprite to display (standing, casting, attacking) */
-    unsigned char crit;
-    unsigned char sts[NUM_SPELLTYPES];       /*!< eSpellType */
-    unsigned char defend;
-    unsigned char ai[8];
-    unsigned char aip[8];
-    unsigned char atrack[8];
-    unsigned int csmem;          /*!<\brief Spell number, associated with M_* spells, used within s_spell magic[] array. */
+    uint8_t facing;        /*!<\brief Direction character's sprite faces */
+    uint8_t aframe;        /*!<\brief Battle sprite to display (standing, casting, attacking) */
+    uint8_t crit;
+    uint8_t sts[NUM_SPELLTYPES];       /*!< eSpellType */
+    uint8_t defend;
+    uint8_t ai[8];
+    uint8_t aip[8];
+    uint8_t atrack[8];
+    uint32_t csmem;          /*!<\brief Spell number, associated with M_* spells, used within s_spell magic[] array. */
     int ctmem;                   /*!<\brief Spell target: who is going to be affected by the spell; can be set to -1 */
-    unsigned int current_weapon_type;   /*!<\brief Current Weapon Type
+    uint32_t current_weapon_type;   /*!<\brief Current Weapon Type
                                          * The shape of the currently held weapon (sword, dagger, axe etc) \sa hero_init()
                                          */
     int welem;                   /*!<\brief eResistance: Which Element type (sick, fire, water, etc.) */

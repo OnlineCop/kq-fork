@@ -145,7 +145,7 @@ void camp_spell_menu(int c)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         camp_draw_spell_menu(c, pg[smove], ptr[smove]);
         if (smove == 0)
@@ -161,10 +161,10 @@ void camp_spell_menu(int c)
             draw_sprite(double_buffer, sptr, 88 + xofs, ptr[1] * 8 + 100 + yofs);
         }
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             ptr[smove]++;
             if (ptr[smove] > 11)
             {
@@ -174,7 +174,7 @@ void camp_spell_menu(int c)
         }
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             ptr[smove]--;
             if (ptr[smove] < 0)
             {
@@ -184,7 +184,7 @@ void camp_spell_menu(int c)
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             pg[smove]++;
             if (pg[smove] > 4)
             {
@@ -194,7 +194,7 @@ void camp_spell_menu(int c)
         }
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             pg[smove]--;
             if (pg[smove] < 0)
             {
@@ -204,7 +204,7 @@ void camp_spell_menu(int c)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (smove == 1)
             {
                 smove = 0;
@@ -244,7 +244,7 @@ void camp_spell_menu(int c)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             if (smove == 1)
             {
                 smove = 0;
@@ -336,7 +336,7 @@ static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_numbe
             play_effect(SND_TWINKLE, 128);    /* this should be a failure sound */
         }
         revert_equipstats();
-        kq_yield();
+        Game.kq_yield();
     }
 }
 
@@ -390,7 +390,7 @@ int learn_new_spells(int who)
                     draw_icon(double_buffer, magic[a].icon, 156 - (strlen(strbuf) * 4), 160);
                     print_font(double_buffer, 164 - (strlen(strbuf) * 4), 160, strbuf, FNORMAL);
                     blit2screen(0, 0);
-                    wait_enter();
+                    Game.wait_enter();
                     g++;
                 }
                 party[who].spells[p] = a;
@@ -415,7 +415,7 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 {
     size_t stats_index;
     size_t figher_index, victim_figher_index = 0;
-    unsigned int affected_targets;
+    uint32_t affected_targets;
 
     if (target_fighter_index < numchrs)
     {

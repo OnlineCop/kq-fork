@@ -32,6 +32,7 @@
 #include <memory>
 
 #include "kq.h"
+#include "constants.h"
 #include "combat.h"
 #include "draw.h"
 #include "effects.h"
@@ -66,7 +67,7 @@ int hero_skillcheck(size_t fighter_index)
     size_t weapon_index = 0;
     size_t pidx_index = pidx[fighter_index];
     size_t target_fighter_index;
-    unsigned int can_be_affected = 0;
+    uint32_t can_be_affected = 0;
 
     switch (pidx_index)
     {
@@ -448,8 +449,8 @@ static void infusion(int c, int sn)
 
 void reveal(int tgt)
 {
-    unsigned int c, g = 0, b;
-    unsigned int d = 0;
+    uint32_t c, g = 0, b;
+    uint32_t d = 0;
     int draw_x, draw_y;
     char resistance;
 
@@ -507,7 +508,7 @@ void reveal(int tgt)
     }
     blit2screen(0, 0);
     do_transition(TRANS_FADE_IN, 4);
-    wait_enter();
+    Game.wait_enter();
 }
 
 
@@ -605,7 +606,10 @@ int skill_use(size_t attack_fighter_index)
                 curx = -1;
                 cury = -1;
                 play_effect(22, 128);
-                convert_cframes(attack_fighter_index, eff[magic[fighter[attack_fighter_index].csmem].eff].kolor - 3, eff[magic[fighter[attack_fighter_index].csmem].eff].kolor + 3, 0);
+                convert_cframes(attack_fighter_index,
+                    eff[magic[fighter[attack_fighter_index].csmem].eff].kolor - 3,
+                    eff[magic[fighter[attack_fighter_index].csmem].eff].kolor + 3,
+                    0);
                 battle_render(0, 0, 0);
                 fullblit(double_buffer, back);
                 for (p = 0; p < 2; p++)
@@ -789,7 +793,7 @@ int skill_use(size_t attack_fighter_index)
             {
                 return 0;
             }
-            enemy_index = (unsigned int)tgt;
+            enemy_index = (uint32_t)tgt;
             tx = fighter[attack_fighter_index].cx;
             ty = fighter[attack_fighter_index].cy;
             fighter[attack_fighter_index].cx = fighter[enemy_index].cx - 16;
@@ -901,7 +905,7 @@ int skill_use(size_t attack_fighter_index)
             {
                 return 0;
             }
-            enemy_index = (unsigned int)tgt;
+            enemy_index = (uint32_t)tgt;
             reveal(enemy_index);
             break;
         default:

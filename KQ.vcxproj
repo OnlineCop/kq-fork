@@ -1,0 +1,403 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9414DC25-62CF-4FB6-A9D2-878DE9D4A3CD}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>KQ</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)deps\include;$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)deps\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)deps\include;$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)deps\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>ALLEGRO_STATICLINK;WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>aldmbd.lib;dumbd.lib;allegd.lib;tinyxml2d.lib;zlibd.lib;libpng16d.lib;luad.lib;winmm.lib;dinput8.lib;dxguid.lib;ddraw.lib;dsound.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>MSVCRT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>ALLEGRO_STATICLINK;WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>alleg.lib;aldmb.lib;dumb.lib;tinyxml2.lib;lua.lib;zlib.lib;libpng16.lib;winmm.lib;dinput8.lib;dxguid.lib;ddraw.lib;dsound.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\animation.cpp" />
+    <ClCompile Include="src\anim_sequence.cpp" />
+    <ClCompile Include="src\bounds.cpp" />
+    <ClCompile Include="src\combat.cpp" />
+    <ClCompile Include="src\console.cpp" />
+    <ClCompile Include="src\credits.cpp" />
+    <ClCompile Include="src\disk.cpp" />
+    <ClCompile Include="src\draw.cpp" />
+    <ClCompile Include="src\effects.cpp" />
+    <ClCompile Include="src\enemyc.cpp" />
+    <ClCompile Include="src\entity.cpp" />
+    <ClCompile Include="src\eqpmenu.cpp" />
+    <ClCompile Include="src\eskill.cpp" />
+    <ClCompile Include="src\fade.cpp" />
+    <ClCompile Include="src\heroc.cpp" />
+    <ClCompile Include="src\hskill.cpp" />
+    <ClCompile Include="src\imgcache.cpp" />
+    <ClCompile Include="src\intrface.cpp" />
+    <ClCompile Include="src\itemmenu.cpp" />
+    <ClCompile Include="src\kq.cpp" />
+    <ClCompile Include="src\magic.cpp" />
+    <ClCompile Include="src\markers.cpp" />
+    <ClCompile Include="src\masmenu.cpp" />
+    <ClCompile Include="src\menu.cpp" />
+    <ClCompile Include="src\movement.cpp" />
+    <ClCompile Include="src\music.cpp" />
+    <ClCompile Include="src\res.cpp" />
+    <ClCompile Include="src\selector.cpp" />
+    <ClCompile Include="src\setup.cpp" />
+    <ClCompile Include="src\sgame.cpp" />
+    <ClCompile Include="src\shopmenu.cpp" />
+    <ClCompile Include="src\tiledmap.cpp" />
+    <ClCompile Include="src\timing.cpp" />
+    <ClCompile Include="src\win.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\animation.h" />
+    <ClInclude Include="include\anim_sequence.h" />
+    <ClInclude Include="include\bounds.h" />
+    <ClInclude Include="include\combat.h" />
+    <ClInclude Include="include\console.h" />
+    <ClInclude Include="include\constants.h" />
+    <ClInclude Include="include\credits.h" />
+    <ClInclude Include="include\disk.h" />
+    <ClInclude Include="include\draw.h" />
+    <ClInclude Include="include\effects.h" />
+    <ClInclude Include="include\enemyc.h" />
+    <ClInclude Include="include\entity.h" />
+    <ClInclude Include="include\enums.h" />
+    <ClInclude Include="include\eqpmenu.h" />
+    <ClInclude Include="include\eskill.h" />
+    <ClInclude Include="include\fade.h" />
+    <ClInclude Include="include\fighter.h" />
+    <ClInclude Include="include\gettext.h" />
+    <ClInclude Include="include\heroc.h" />
+    <ClInclude Include="include\hskill.h" />
+    <ClInclude Include="include\imgcache.h" />
+    <ClInclude Include="include\intrface.h" />
+    <ClInclude Include="include\itemdefs.h" />
+    <ClInclude Include="include\itemmenu.h" />
+    <ClInclude Include="include\kq.h" />
+    <ClInclude Include="include\kqsnd.h" />
+    <ClInclude Include="include\magic.h" />
+    <ClInclude Include="include\maps.h" />
+    <ClInclude Include="include\markers.h" />
+    <ClInclude Include="include\masmenu.h" />
+    <ClInclude Include="include\menu.h" />
+    <ClInclude Include="include\movement.h" />
+    <ClInclude Include="include\mpcx.h" />
+    <ClInclude Include="include\music.h" />
+    <ClInclude Include="include\platform.h" />
+    <ClInclude Include="include\res.h" />
+    <ClInclude Include="include\selector.h" />
+    <ClInclude Include="include\setup.h" />
+    <ClInclude Include="include\sgame.h" />
+    <ClInclude Include="include\shopmenu.h" />
+    <ClInclude Include="include\skills.h" />
+    <ClInclude Include="include\ssprites.h" />
+    <ClInclude Include="include\structs.h" />
+    <ClInclude Include="include\tiledmap.h" />
+    <ClInclude Include="include\timing.h" />
+    <ClInclude Include="include\tmx_animation.h" />
+    <ClInclude Include="include\tmx_tileset.h" />
+    <ClInclude Include="include\zone.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="maps\bridge.tmx" />
+    <None Include="maps\bridge2.tmx" />
+    <None Include="maps\camp.tmx" />
+    <None Include="maps\castle.tsx" />
+    <None Include="maps\cave.tsx" />
+    <None Include="maps\cave1.tmx" />
+    <None Include="maps\cave2.tmx" />
+    <None Include="maps\cave3a.tmx" />
+    <None Include="maps\cave3b.tmx" />
+    <None Include="maps\cave4.tmx" />
+    <None Include="maps\cave5.tmx" />
+    <None Include="maps\cave6a.tmx" />
+    <None Include="maps\cave6b.tmx" />
+    <None Include="maps\coliseum.tmx" />
+    <None Include="maps\cult.tmx" />
+    <None Include="maps\dville.tmx" />
+    <None Include="maps\entities.tsx" />
+    <None Include="maps\estate.tmx" />
+    <None Include="maps\fort.tmx" />
+    <None Include="maps\fortress.tsx" />
+    <None Include="maps\goblin.tmx" />
+    <None Include="maps\grotto.tmx" />
+    <None Include="maps\grotto2.tmx" />
+    <None Include="maps\guild.tmx" />
+    <None Include="maps\land.tsx" />
+    <None Include="maps\main.tmx" />
+    <None Include="maps\manor.tmx" />
+    <None Include="maps\misc.tsx" />
+    <None Include="maps\mount.tsx" />
+    <None Include="maps\newtown.tsx" />
+    <None Include="maps\obstacles.tsx" />
+    <None Include="maps\pass.tmx" />
+    <None Include="maps\rule1_trees.tmx" />
+    <None Include="maps\shrine.tsx" />
+    <None Include="maps\starting.tmx" />
+    <None Include="maps\sunarin.tmx" />
+    <None Include="maps\temple1.tmx" />
+    <None Include="maps\temple2.tmx" />
+    <None Include="maps\tower.tmx" />
+    <None Include="maps\town1.tmx" />
+    <None Include="maps\town2.tmx" />
+    <None Include="maps\town3.tmx" />
+    <None Include="maps\town4.tmx" />
+    <None Include="maps\town5.tmx" />
+    <None Include="maps\town6.tmx" />
+    <None Include="maps\town7.tmx" />
+    <None Include="maps\town8.tmx" />
+    <None Include="maps\uschrs.tsx" />
+    <None Include="maps\village.tsx" />
+    <None Include="scripts\bridge.lua" />
+    <None Include="scripts\bridge2.lua" />
+    <None Include="scripts\camp.lua" />
+    <None Include="scripts\cave1.lua" />
+    <None Include="scripts\cave2.lua" />
+    <None Include="scripts\cave3a.lua" />
+    <None Include="scripts\cave3b.lua" />
+    <None Include="scripts\cave4.lua" />
+    <None Include="scripts\cave5.lua" />
+    <None Include="scripts\cave6a.lua" />
+    <None Include="scripts\cave6b.lua" />
+    <None Include="scripts\coliseum.lua" />
+    <None Include="scripts\cult.lua" />
+    <None Include="scripts\dville.lua" />
+    <None Include="scripts\estate.lua" />
+    <None Include="scripts\esteria.lua" />
+    <None Include="scripts\fort.lua" />
+    <None Include="scripts\global.lua" />
+    <None Include="scripts\goblin.lua" />
+    <None Include="scripts\grotto.lua" />
+    <None Include="scripts\grotto2.lua" />
+    <None Include="scripts\guild.lua" />
+    <None Include="scripts\init.lua" />
+    <None Include="scripts\main.lua" />
+    <None Include="scripts\manor.lua" />
+    <None Include="scripts\pass.lua" />
+    <None Include="scripts\shrine.lua" />
+    <None Include="scripts\starting.lua" />
+    <None Include="scripts\sunarin.lua" />
+    <None Include="scripts\temple1.lua" />
+    <None Include="scripts\temple2.lua" />
+    <None Include="scripts\tower.lua" />
+    <None Include="scripts\town1.lua" />
+    <None Include="scripts\town2.lua" />
+    <None Include="scripts\town3.lua" />
+    <None Include="scripts\town4.lua" />
+    <None Include="scripts\town5.lua" />
+    <None Include="scripts\town6.lua" />
+    <None Include="scripts\town7.lua" />
+    <None Include="scripts\town8.lua" />
+    <None Include="scripts\tunnel.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\back1.png" />
+    <Image Include="data\back10.png" />
+    <Image Include="data\back11.png" />
+    <Image Include="data\back12.png" />
+    <Image Include="data\back13.png" />
+    <Image Include="data\back2.png" />
+    <Image Include="data\back3.png" />
+    <Image Include="data\back4.png" />
+    <Image Include="data\back5.png" />
+    <Image Include="data\back6.png" />
+    <Image Include="data\back7.png" />
+    <Image Include="data\back8.png" />
+    <Image Include="data\back9.png" />
+    <Image Include="data\entities.png" />
+    <Image Include="data\fonts.png" />
+    <Image Include="data\kqfaces.png" />
+    <Image Include="data\kqt.png" />
+    <Image Include="data\misc.png" />
+    <Image Include="data\title.png" />
+    <Image Include="maps\castle.png" />
+    <Image Include="maps\enemy.png" />
+    <Image Include="maps\entities.png" />
+    <Image Include="maps\fonts.png" />
+    <Image Include="maps\fortress.png" />
+    <Image Include="maps\incave.png" />
+    <Image Include="maps\land.png" />
+    <Image Include="maps\Misc.png" />
+    <Image Include="maps\mount.png" />
+    <Image Include="maps\newtown.png" />
+    <Image Include="maps\obstacles.png" />
+    <Image Include="maps\shrine.png" />
+    <Image Include="maps\town1.png" />
+    <Image Include="maps\underwater.png" />
+    <Image Include="maps\usbat.png" />
+    <Image Include="maps\uschrs.png" />
+    <Image Include="maps\village.png" />
+    <Image Include="other\source-images\aaxe.png" />
+    <Image Include="other\source-images\absorb.png" />
+    <Image Include="other\source-images\amace.png" />
+    <Image Include="other\source-images\asword.png" />
+    <Image Include="other\source-images\back1.png" />
+    <Image Include="other\source-images\back10.png" />
+    <Image Include="other\source-images\back11.png" />
+    <Image Include="other\source-images\back12.png" />
+    <Image Include="other\source-images\back13.png" />
+    <Image Include="other\source-images\back2.png" />
+    <Image Include="other\source-images\back3.png" />
+    <Image Include="other\source-images\back4.png" />
+    <Image Include="other\source-images\back5.png" />
+    <Image Include="other\source-images\back6.png" />
+    <Image Include="other\source-images\back7.png" />
+    <Image Include="other\source-images\back8.png" />
+    <Image Include="other\source-images\back9.png" />
+    <Image Include="other\source-images\black.png" />
+    <Image Include="other\source-images\bless.png" />
+    <Image Include="other\source-images\blind.png" />
+    <Image Include="other\source-images\bliz1.png" />
+    <Image Include="other\source-images\bliz2.png" />
+    <Image Include="other\source-images\bolt1.png" />
+    <Image Include="other\source-images\bolt2.png" />
+    <Image Include="other\source-images\bolt3.png" />
+    <Image Include="other\source-images\caster2.png" />
+    <Image Include="other\source-images\castle.png" />
+    <Image Include="other\source-images\confuse.png" />
+    <Image Include="other\source-images\CURE.png" />
+    <Image Include="other\source-images\destitle.png" />
+    <Image Include="other\source-images\diffuse.png" />
+    <Image Include="other\source-images\doom.png" />
+    <Image Include="other\source-images\drain.png" />
+    <Image Include="other\source-images\enemy.png" />
+    <Image Include="other\source-images\entities.png" />
+    <Image Include="other\source-images\ethereal.png" />
+    <Image Include="other\source-images\flame.png" />
+    <Image Include="other\source-images\flood.png" />
+    <Image Include="other\source-images\fonts.png" />
+    <Image Include="other\source-images\fortress.png" />
+    <Image Include="other\source-images\generic.png" />
+    <Image Include="other\source-images\heroism.png" />
+    <Image Include="other\source-images\hold.png" />
+    <Image Include="other\source-images\icurehp.png" />
+    <Image Include="other\source-images\icuremp.png" />
+    <Image Include="other\source-images\incave.png" />
+    <Image Include="other\source-images\irestore.png" />
+    <Image Include="other\source-images\kqfaces.png" />
+    <Image Include="other\source-images\kqt.png" />
+    <Image Include="other\source-images\kq_pal.png" />
+    <Image Include="other\source-images\land.png" />
+    <Image Include="other\source-images\lflame.png" />
+    <Image Include="other\source-images\life.png" />
+    <Image Include="other\source-images\LIFEG.png" />
+    <Image Include="other\source-images\misc.png" />
+    <Image Include="other\source-images\mount.png" />
+    <Image Include="other\source-images\newtown.png" />
+    <Image Include="other\source-images\poisgas.png" />
+    <Image Include="other\source-images\quake.png" />
+    <Image Include="other\source-images\quicken.png" />
+    <Image Include="other\source-images\RASP.png" />
+    <Image Include="other\source-images\restore.png" />
+    <Image Include="other\source-images\runeofa.png" />
+    <Image Include="other\source-images\runeofe.png" />
+    <Image Include="other\source-images\runeoff.png" />
+    <Image Include="other\source-images\runeofi.png" />
+    <Image Include="other\source-images\SBLAST.png" />
+    <Image Include="other\source-images\SCORCH.png" />
+    <Image Include="other\source-images\SHELL.png" />
+    <Image Include="other\source-images\shield.png" />
+    <Image Include="other\source-images\shrine.png" />
+    <Image Include="other\source-images\sleep.png" />
+    <Image Include="other\source-images\slow.png" />
+    <Image Include="other\source-images\stone.png" />
+    <Image Include="other\source-images\stonegas.png" />
+    <Image Include="other\source-images\title.png" />
+    <Image Include="other\source-images\usbat.png" />
+    <Image Include="other\source-images\uschrs.png" />
+    <Image Include="other\source-images\venom1.png" />
+    <Image Include="other\source-images\village.png" />
+    <Image Include="other\source-images\whirl.png" />
+    <Image Include="other\source-images\white.png" />
+    <Image Include="other\source-images\xsurge.png" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

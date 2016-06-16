@@ -36,10 +36,10 @@
 #include "movement.h"
 
 
-static int compose_path(AL_CONST int *, unsigned int, unsigned int, char *, size_t);
+static int compose_path(AL_CONST int *, uint32_t, uint32_t, char *, size_t);
 static void copy_map(int *);
 static int minimize_path(AL_CONST char *, char *, size_t);
-static int search_paths(unsigned int, int *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
+static int search_paths(uint32_t, int *, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
 
 
 
@@ -61,12 +61,12 @@ static int search_paths(unsigned int, int *, unsigned int, unsigned int, unsigne
  *
  * \sa search_paths copy_map find_path minimize_path
  */
-static int compose_path(AL_CONST int *map, unsigned int target_x, unsigned int target_y, char *buffer, size_t size)
+static int compose_path(AL_CONST int *map, uint32_t target_x, uint32_t target_y, char *buffer, size_t size)
 {
     char temp[1024];
     int index = 0;
-    unsigned int x;
-    unsigned int y;
+    uint32_t x;
+    uint32_t y;
     int value;
 
     x = target_x;
@@ -175,10 +175,10 @@ static void copy_map(int *map)
  *
  * \sa copy_map compose_path search_paths minimize_path
  */
-int find_path(size_t entity_id, unsigned int source_x, unsigned int source_y, unsigned int target_x, unsigned int target_y, char *buffer, unsigned int size)
+int find_path(size_t entity_id, uint32_t source_x, uint32_t source_y, uint32_t target_x, uint32_t target_y, char *buffer, uint32_t size)
 {
     int *map = NULL;
-    unsigned int result = 0;
+    uint32_t result = 0;
 
     if (buffer == NULL || size == 0)
     {
@@ -230,7 +230,7 @@ int find_path(size_t entity_id, unsigned int source_x, unsigned int source_y, un
 static int minimize_path(AL_CONST char *source, char *target, size_t size)
 {
     size_t source_index = 0;
-    unsigned int repetition = 0;
+    uint32_t repetition = 0;
     char value;
     char temp[16];
     char buffer[512];
@@ -287,11 +287,11 @@ static int minimize_path(AL_CONST char *source, char *target, size_t size)
  *
  * \sa copy_map compose_path find_path minimize_path
  */
-static int search_paths(unsigned int entity_id, int *map, unsigned int step,
-    unsigned int source_x, unsigned int source_y,
-    unsigned int target_x, unsigned int target_y,
-    unsigned int start_x, unsigned int start_y,
-    unsigned int limit_x, unsigned int limit_y)
+static int search_paths(uint32_t entity_id, int *map, uint32_t step,
+    uint32_t source_x, uint32_t source_y,
+    uint32_t target_x, uint32_t target_y,
+    uint32_t start_x, uint32_t start_y,
+    uint32_t limit_x, uint32_t limit_y)
 {
     int index;
     int value;

@@ -38,10 +38,10 @@
 
 #include "platform.h"
 
-static int init_path = 0;
-static char user_dir[2048];
-static char data_dir[2048];
-static char lib_dir[2048];
+static bool init_path = false;
+static string user_dir;
+static string data_dir;
+static string lib_dir;
 
 
 /*! \brief Returns the full path for this file
@@ -56,15 +56,16 @@ static char lib_dir[2048];
  * \param file The filename
  * \returns the combined path
  */
-const char *get_resource_file_path(const char *str1, const char *str2,
-                                   const char *file)
+const string get_resource_file_path(const string str1, const string str2,
+                                   const string file)
 {
-    static char ans[2048];
+    string slash("/");
+    string tail = str2.empty() ? slash + file : slash + str2 + slash + file;
+    string ans = user_dir + tail;
 
-    sprintf(ans, "%s/%s/%s", user_dir, str2, file);
-    if (!exists(ans))
+    if (!exists(ans.c_str()))
     {
-        sprintf(ans, "%s/%s/%s", str1, str2, file);
+      ans = str1 + tail;
     }
     return ans;
 }
@@ -86,23 +87,28 @@ const char *get_resource_file_path(const char *str1, const char *str2,
  * \param file The filename
  * \returns the combined path
  */
-const char *get_lua_file_path(const char *str1, const char *file)
+const string get_lua_file_path(const string str1, const string file)
 {
-    static char ans[2048];
-
-    sprintf(ans, "%s/scripts/%s.lob", user_dir, file);
-    if (!exists(ans))
+    string ans;
+    string scripts("/scripts/");
+    string lob(".lob");
+    string lua(".lua");
+    ans = user_dir+scripts+file+lob;
+    if (!exists(ans.c_str()))
     {
-        sprintf(ans, "%s/scripts/%s.lua", user_dir, file);
-        if (!exists(ans))
+      ans = user_dir+scripts+file+lua;
+
+      if (!exists(ans.c_str()))
         {
-            sprintf(ans, "%s/scripts/%s.lob", str1, file);
-            if (!exists(ans))
+	  ans = str1+scripts+file+lob;
+
+	  if (!exists(ans.c_str()))
             {
-                sprintf(ans, "%s/scripts/%s.lua", str1, file);
-                if (!exists(ans))
+	      ans = str1+scripts+file+lua;
+
+	      if (!exists(ans.c_str()))
                 {
-                    return NULL;
+		  return string();
                 }
             }
         }
@@ -123,7 +129,7 @@ const char *get_lua_file_path(const char *str1, const char *file)
  * \param   file File name below that directory.
  * \returns the combined path
  */
-const char *kqres(enum eDirectories dir, const char *file)
+const string kqres(enum eDirectories dir, const string file)
 {
     char exe[2048];
 
@@ -145,20 +151,19 @@ const char *kqres(enum eDirectories dir, const char *file)
         /* Do not get fooled by a corrupted $HOME */
         if (home != NULL && strlen(home) < 2048)
         {
-            sprintf(user_dir, "%s/.kq", home);
+	  user_dir = string(home)+string("/.kq");
             /* Always try to make the directory, just to be sure. */
-            mkdir(user_dir, 0755);
+	  mkdir(user_dir.c_str(), 0755);
         }
         else
         {
-            strcpy(user_dir, ".");
+	  user_dir=string(".");
         }
         /* Now the data directory */
         get_executable_name(exe, sizeof(exe));
         /* Not installed, development version */
-        strcpy(data_dir, ".");
-        strcpy(lib_dir, ".");
-        init_path = 1;
+	data_dir = lib_dir=string(".");
+        init_path = true;
     }
     switch (dir)
     {

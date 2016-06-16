@@ -47,7 +47,7 @@ typedef HRESULT (WINAPI * SHGETFOLDERPATH) (HWND, int, HANDLE, DWORD, LPWSTR);
 /*! \brief Returns the full path for this file
  *
  * This function first checks if the file can be found in the user's
- * directory. If it can not, it checks the relavent game directory
+ * directory. If it can not, it checks the relevant game directory
  * (data, music, lib, etc)
  *
  * \param str1 The first part of the string, assuming the file can't be
@@ -56,16 +56,16 @@ typedef HRESULT (WINAPI * SHGETFOLDERPATH) (HWND, int, HANDLE, DWORD, LPWSTR);
  * \param file The filename
  * \returns the combined path
  */
-const char * get_resource_file_path (const char * str1, const char * str2, const char * file)
+const string get_resource_file_path(const string str1, const string str2, const string file)
 {
     static char ans[MAX_PATH];
     FILE * fp;
 
-    sprintf (ans, "%s/%s/%s", user_dir, str2, file);
+    sprintf(ans, "%s/%s/%s", user_dir, str2.c_str(), file.c_str());
     fp = fopen(ans, "r");
     if (fp == NULL)
     {
-        sprintf (ans, "%s/%s/%s", str1, str2, file);
+        sprintf(ans, "%s/%s/%s", str1.c_str(), str2.c_str(), file.c_str());
     }
     else
     {
@@ -88,24 +88,24 @@ const char * get_resource_file_path (const char * str1, const char * str2, const
  * \param file The filename
  * \returns the combined path
  */
-const char * get_lua_file_path (const char * file)
+const string get_lua_file_path (const string file)
 {
     static char ans[MAX_PATH];
     FILE * fp;
 
-    sprintf(ans, "%s/scripts/%s.lob", user_dir, file);
+    sprintf(ans, "%s/scripts/%s.lob", user_dir, file.c_str());
     fp = fopen(ans, "r");
     if (fp == NULL)
     {
-        sprintf(ans, "%s/scripts/%s.lua", user_dir, file);
+        sprintf(ans, "%s/scripts/%s.lua", user_dir, file.c_str());
         fp = fopen(ans, "r");
         if (fp == NULL)
         {
-            sprintf(ans, "%s/scripts/%s.lob", game_dir, file);
+            sprintf(ans, "%s/scripts/%s.lob", game_dir, file.c_str());
             fp = fopen(ans, "r");
             if (fp == NULL)
             {
-                sprintf(ans, "%s/scripts/%s.lua", game_dir, file);
+                sprintf(ans, "%s/scripts/%s.lua", game_dir, file.c_str());
                 fp = fopen(ans, "r");
                 if (fp == NULL)
                 {
@@ -126,7 +126,7 @@ const char * get_lua_file_path (const char * file)
  * \param   file File name below that directory.
  * \returns the combined path
  */
-const char *kqres (eDirectories dir, const char *file)
+const string kqres(eDirectories dir, string file)
 {
     HINSTANCE SHFolder;
     SHGETFOLDERPATH SHGetFolderPath;
@@ -137,34 +137,34 @@ const char *kqres (eDirectories dir, const char *file)
         WCHAR tmp[MAX_PATH];
         home = NULL;
         /* Get home directory; this bit originally written by SH */
-        SHFolder = LoadLibrary ("shfolder.dll");
+        SHFolder = LoadLibrary("shfolder.dll");
         if (SHFolder != NULL)
         {
-            SHGetFolderPath = (SHGETFOLDERPATH) GetProcAddress (SHFolder, "SHGetFolderPathW");
+            SHGetFolderPath = (SHGETFOLDERPATH)GetProcAddress(SHFolder, "SHGetFolderPathW");
             if (SHGetFolderPath != NULL)
             {
                 /* Get the "Application Data" folder for the current user */
                 if (SHGetFolderPath(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, SHGFP_TYPE_CURRENT, tmp) == S_OK)
                 {
-                    home = uconvert((const char*) tmp, U_UNICODE, NULL, U_UTF8, 0);
+                    home = uconvert((const char*)tmp, U_UNICODE, NULL, U_UTF8, 0);
                 }
             }
-            FreeLibrary (SHFolder);
+            FreeLibrary(SHFolder);
         }
 
         /* Do not get fooled by a corrupted $HOME */
-        if (home != NULL && strlen (home) < MAX_PATH)
+        if (home != NULL && strlen(home) < MAX_PATH)
         {
-            sprintf (user_dir, "%s\\KQ", home);
+            sprintf(user_dir, "%s\\KQ", home);
             /* Always try to make the directory, just to be sure. */
-            _mkdir (user_dir);
+            _mkdir(user_dir);
         }
         else
         {
-            strcpy (user_dir, ".");
+            strcpy(user_dir, ".");
         }
         /* Now the data directory */
-        strcpy (game_dir, ".");
+        strcpy(game_dir, ".");
         init_path = 1;
     }
 

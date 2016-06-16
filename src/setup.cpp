@@ -32,6 +32,7 @@
 #include <string.h>
 #include <string>
 
+#include "constants.h"
 #include "combat.h"
 #include "draw.h"
 #include "kq.h"
@@ -151,30 +152,30 @@ void config_menu(void)
     dc[17] = _("Things you can do only in DebugMode.");
 #endif
 
-    unpress();
+    Game.unpress();
     push_config_state();
-    set_config_file(kqres(SETTINGS_DIR, "kq.cfg"));
+    set_config_file(kqres(SETTINGS_DIR, "kq.cfg").c_str());
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         menubox(double_buffer, 88 + xofs, yofs, 16, 1, BLUE);
         print_font(double_buffer, 96 + xofs, 8 + yofs, _("KQ Configuration"), FGOLD);
         menubox(double_buffer, 32 + xofs, 24 + yofs, 30, MENU_SIZE + 3, BLUE);
 
-        citem(row[0], _("Windowed mode:"), windowed == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[1], _("Stretch Display:"), stretch_view == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[2], _("Show Frame Rate:"), show_frate == 1 ? _("YES") : _("NO"), FNORMAL);
+        citem(row[0], _("Windowed mode:"),    windowed == 1 ? _("YES") : _("NO"),     FNORMAL);
+        citem(row[1], _("Stretch Display:"),  stretch_view == 1 ? _("YES") : _("NO"), FNORMAL);
+        citem(row[2], _("Show Frame Rate:"),  show_frate == 1 ? _("YES") : _("NO"),   FNORMAL);
         citem(row[3], _("Wait for Retrace:"), wait_retrace == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[4], _("Up Key:"), kq_keyname(PlayerInput.kup), FNORMAL);
-        citem(row[5], _("Down Key:"), kq_keyname(PlayerInput.kdown), FNORMAL);
-        citem(row[6], _("Left Key:"), kq_keyname(PlayerInput.kleft), FNORMAL);
-        citem(row[7], _("Right Key:"), kq_keyname(PlayerInput.kright), FNORMAL);
-        citem(row[8], _("Confirm Key:"), kq_keyname(PlayerInput.kalt), FNORMAL);
-        citem(row[9], _("Cancel Key:"), kq_keyname(PlayerInput.kctrl), FNORMAL);
-        citem(row[10], _("Menu Key:"), kq_keyname(PlayerInput.kenter), FNORMAL);
-        citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.kesc), FNORMAL);
-        citem(row[12], _("Sound System:"), is_sound ? _("ON") : _("OFF"), FNORMAL);
+        citem(row[4], _("Up Key:"),           kq_keyname(PlayerInput.kup),            FNORMAL);
+        citem(row[5], _("Down Key:"),         kq_keyname(PlayerInput.kdown),          FNORMAL);
+        citem(row[6], _("Left Key:"),         kq_keyname(PlayerInput.kleft),          FNORMAL);
+        citem(row[7], _("Right Key:"),        kq_keyname(PlayerInput.kright),         FNORMAL);
+        citem(row[8], _("Confirm Key:"),      kq_keyname(PlayerInput.kalt),           FNORMAL);
+        citem(row[9], _("Cancel Key:"),       kq_keyname(PlayerInput.kctrl),          FNORMAL);
+        citem(row[10], _("Menu Key:"),        kq_keyname(PlayerInput.kenter),         FNORMAL);
+        citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.kesc),           FNORMAL);
+        citem(row[12], _("Sound System:"),    is_sound ? _("ON") : _("OFF"),          FNORMAL);
 
         fontColor = FNORMAL;
         /* TT: This needs to check for ==0 because 1 means sound init */
@@ -184,12 +185,12 @@ void config_menu(void)
         }
 
         sprintf(strbuf, "%3d%%", gsvol * 100 / 250);
-        citem(row[13], _("Sound Volume:"), strbuf, fontColor);
+        citem(row[13], _("Sound Volume:"),    strbuf,                                 fontColor);
 
         sprintf(strbuf, "%3d%%", gmvol * 100 / 250);
-        citem(row[14], _("Music Volume:"), strbuf, fontColor);
+        citem(row[14], _("Music Volume:"),    strbuf,                                 fontColor);
 
-        citem(row[15], _("Slow Computer:"), slow_computer ? _("YES") : _("NO"), FNORMAL);
+        citem(row[15], _("Slow Computer:"),   slow_computer ? _("YES") : _("NO"),     FNORMAL);
 
         if (cpu_usage)
         {
@@ -199,14 +200,14 @@ void config_menu(void)
         {
             sprintf(strbuf, "yield_timeslice()");
         }
-        citem(row[16], _("CPU Usage:"), strbuf, FNORMAL);
+        citem(row[16], _("CPU Usage:"),       strbuf,                                 FNORMAL);
 
 #ifdef DEBUGMODE
         if (debugging)
         {
             sprintf(strbuf, "%d", debugging);
         }
-        citem(row[17], _("DebugMode Stuff:"), debugging ? strbuf : _("OFF"), FNORMAL);
+        citem(row[17], _("DebugMode Stuff:"), debugging ? strbuf : _("OFF"),          FNORMAL);
 #endif
 
         /* This affects the VISUAL placement of the arrow */
@@ -230,10 +231,10 @@ void config_menu(void)
         print_font(double_buffer, 8 + xofs, 224 + yofs, dc[ptr], FNORMAL);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             // "jump" over unusable options
             if (ptr == 15 && is_sound == 0)
             {
@@ -251,7 +252,7 @@ void config_menu(void)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             // "jump" over unusable options
             if (ptr == 12 && is_sound == 0)
             {
@@ -269,7 +270,7 @@ void config_menu(void)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             switch (ptr)
             {
                 case 0:
@@ -321,56 +322,56 @@ void config_menu(void)
                 case 4:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kup = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kup", PlayerInput.kup);
                     break;
                 case 5:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kdown = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kdown", PlayerInput.kdown);
                     break;
                 case 6:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kleft = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kleft", PlayerInput.kleft);
                     break;
                 case 7:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kright = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kright", PlayerInput.kright);
                     break;
                 case 8:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kalt = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kalt", PlayerInput.kalt);
                     break;
                 case 9:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kctrl = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kctrl", PlayerInput.kctrl);
                     break;
                 case 10:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kenter = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kenter", PlayerInput.kenter);
                     break;
                 case 11:
                     while ((temp_key = getakey()) == 0) {}
                     PlayerInput.kesc = temp_key;
-                    unpress();
+                    Game.unpress();
                     temp_key = 0;
                     set_config_int(NULL, "kesc", PlayerInput.kesc);
                     break;
@@ -460,7 +461,7 @@ void config_menu(void)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -548,7 +549,7 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, bool sp, void
     bool stop = false;
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         menubox(double_buffer, 148 - (maxu * 4) + xofs, 100 + yofs, maxu + 1, 3, DARKBLUE);
         print_font(double_buffer, 160 - (strlen(capt) * 4) + xofs, 108 + yofs, capt, FGOLD);
         print_font(double_buffer, 152 - (maxu * 4) + xofs, 116 + yofs, "<", FNORMAL);
@@ -574,10 +575,10 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, bool sp, void
                    124 + yofs, strbuf, FGOLD);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             cv--;
             if (cv < minu)
             {
@@ -589,7 +590,7 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, bool sp, void
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             cv++;
             if (cv > maxu)
             {
@@ -601,12 +602,12 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, bool sp, void
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             stop = true;
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             return -1;
         }
     }
@@ -669,7 +670,7 @@ static int load_samples(void)
     {
         return 1;
     }
-	std::string sound_datafile(kqres(DATA_DIR, "kqsnd.dat"));
+	string sound_datafile(kqres(DATA_DIR, "kqsnd.dat"));
     for (index = 0; index < MAX_SAMPLES; index++)
     {
         sfx[index] = load_datafile_object(sound_datafile.c_str(), sndfiles[index]);
@@ -677,7 +678,7 @@ static int load_samples(void)
         {
             sprintf(strbuf, _("Error loading .WAV file: %s.\n"),
                     sndfiles[index]);
-            klog(strbuf);
+            Game.klog(strbuf);
             return 1;
         }
     }
@@ -695,15 +696,15 @@ static int load_samples(void)
  */
 static void parse_allegro_setup(void)
 {
-    const char *cfg = kqres(SETTINGS_DIR, "kq.cfg");
+    const string cfg = kqres(SETTINGS_DIR, "kq.cfg").c_str();
 
-    if (!exists(cfg))
+    if (!exists(cfg.c_str()))
     {
         /* config file does not exist. Fall back to setup.cfg */
         /* Transitional code */
         parse_jb_setup();
         push_config_state();
-        set_config_file(kqres(SETTINGS_DIR, "kq.cfg"));
+        set_config_file(kqres(SETTINGS_DIR, "kq.cfg").c_str());
 
         set_config_int(NULL, "skip_intro", skip_intro);
         set_config_int(NULL, "windowed", windowed);
@@ -731,7 +732,7 @@ static void parse_allegro_setup(void)
         return;
     }
     push_config_state();
-    set_config_file(cfg);
+    set_config_file(cfg.c_str());
 
     /* NB. JB's config file uses intro=yes --> skip_intro=0 */
     skip_intro = get_config_int(NULL, "skip_intro", 0);
@@ -796,9 +797,9 @@ static void parse_jb_setup(void)
     PlayerInput.jbenter = 2;
     PlayerInput.jbesc = 3;
     /* PH Why in the world doesn't he use Allegro cfg functions here? */
-    if (!(s = fopen(kqres(SETTINGS_DIR, "setup.cfg"), "r")))
+    if (!(s = fopen(kqres(SETTINGS_DIR, "setup.cfg").c_str(), "r")))
     {
-        klog(_("Could not open saves/setup.cfg - Using defaults."));
+        Game.klog(_("Could not open saves/setup.cfg - Using defaults."));
         return;
     }
     fscanf(s, "%s", strbuf);
@@ -981,15 +982,13 @@ void play_effect(int efc, int panning)
                 play_sample(samp, gsvol, panning, 1000, 0);
             }
             clear_bitmap(double_buffer);
-            blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, 320, 240);
+            blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, KQ_SCREEN_W, KQ_SCREEN_H);
 
             if (in_combat == 0)
             {
                 xo = xofs;
                 yo = yofs;
             }
-
-            /*        blit (fx_buffer, double_buffer, xo, yo, xo, yo, 320, 240); */
 
             for (a = 0; a < 8; a++)
             {
@@ -1007,7 +1006,7 @@ void play_effect(int efc, int panning)
                 s = (old[a].r + old[a].g + old[a].b) > 40 ? 0 : 63;
                 whiteout[a].r = whiteout[a].g = whiteout[a].b = s;
             }
-            blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, 320, 240);
+            blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, KQ_SCREEN_W, KQ_SCREEN_H);
             if (samp)
             {
                 play_sample(samp, gsvol, panning, 1000, 0);
@@ -1047,22 +1046,22 @@ void set_graphics_mode(void)
     {
         if (windowed == 1)
         {
-            set_gfx_mode(GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
+            set_gfx_mode(GFX_AUTODETECT_WINDOWED, KQ_SCALED_SCREEN_W, KQ_SCALED_SCREEN_H, 0, 0);
         }
         else
         {
-            set_gfx_mode(GFX_AUTODETECT, 640, 480, 0, 0);
+            set_gfx_mode(GFX_AUTODETECT, KQ_SCALED_SCREEN_W, KQ_SCALED_SCREEN_H, 0, 0);
         }
     }
     else
     {
         if (windowed == 1)
         {
-            set_gfx_mode(GFX_AUTODETECT_WINDOWED, 320, 240, 0, 0);
+            set_gfx_mode(GFX_AUTODETECT_WINDOWED, KQ_SCREEN_W, KQ_SCREEN_H, 0, 0);
         }
         else
         {
-            set_gfx_mode(GFX_AUTODETECT, 320, 240, 0, 0);
+            set_gfx_mode(GFX_AUTODETECT, KQ_SCREEN_W, KQ_SCREEN_H, 0, 0);
         }
     }
 
@@ -1095,10 +1094,10 @@ void show_help(void)
     do
     {
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
     }
     while (!PlayerInput.balt && !PlayerInput.bctrl);
-    unpress();
+    Game.unpress();
 }
 
 
@@ -1106,7 +1105,7 @@ void show_help(void)
 /*! \brief Initialize sound system
  * \author JB
  * \date ????????
- * \remark On entry is_sound=1 to initialise,
+ * \remark On entry is_sound=1 to initialize,
  *         on exit is_sound=0 (failure) or 2 (success),
  *         is_sound=2 to shutdown,
  *         on exit is_sound=0

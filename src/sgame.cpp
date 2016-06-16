@@ -38,6 +38,7 @@
 #include <string.h>
 
 #include "combat.h"
+#include "constants.h"
 #include "credits.h"
 #include "disk.h"
 #include "draw.h"
@@ -67,9 +68,9 @@
 /* These describe the save slots. Number of characters, gp, etc */
 /* They are used to make the save menu prettier. */
 signed int savegame_num_characters[NUMSG]; // -1 indicates "wrong version" of save game
-unsigned int savegame_gold[NUMSG], savegame_time_hours[NUMSG], savegame_time_minutes[NUMSG];
-unsigned int sid[NUMSG][PSIZE], slv[NUMSG][PSIZE];
-unsigned char shp[NUMSG][PSIZE], smp[NUMSG][PSIZE];
+uint32_t savegame_gold[NUMSG], savegame_time_hours[NUMSG], savegame_time_minutes[NUMSG];
+uint32_t sid[NUMSG][PSIZE], slv[NUMSG][PSIZE];
+uint8_t shp[NUMSG][PSIZE], smp[NUMSG][PSIZE];
 
 /* Which save_slot the player is pointing to */
 int save_ptr = 0;
@@ -114,18 +115,18 @@ static int confirm_action(void)
     fullblit(back, double_buffer);
     while (!stop)
     {
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             return 1;
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             return 0;
         }
-        kq_yield();
+        Game.kq_yield();
     }
     return 0;
 }
@@ -166,7 +167,7 @@ static void delete_game(void)
     size_t pidx_index;
 
     sprintf(strbuf, "sg%d.sav", save_ptr);
-    remove_result = remove(kqres(SAVE_DIR, strbuf));
+    remove_result = remove(kqres(SAVE_DIR, strbuf).c_str());
     if (remove_result == 0)
     {
         menubox(double_buffer, 128, pointer_offset + 12, 12, 1, DARKBLUE);
@@ -195,13 +196,13 @@ static void delete_game(void)
 
     while (!stop)
     {
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.balt || PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
-        kq_yield();
+        Game.kq_yield();
     }
 
 }
@@ -225,9 +226,10 @@ static int load_game(void)
 #if 0
 	PACKFILE *sdat;
     int a;
-    unsigned char tv;
+    uint8_t tv;
+
     sprintf(strbuf, "sg%d.sav", save_ptr);
-    sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_READ_PACKED);
+    sdat = pack_fopen(kqres(SAVE_DIR, strbuf).c_str(), F_READ_PACKED);
     if (!sdat)
     {
         message(_("Could not load saved game."), 255, 0, 0, 0);
@@ -256,12 +258,12 @@ static int load_game(void)
     }
 #else
     sprintf(strbuf, "sg%d.xml", save_ptr);
-    load_game_xml(kqres(SAVE_DIR, strbuf));
+    load_game_xml(kqres(SAVE_DIR, strbuf).c_str());
 #endif
     timer_count = 0;
     ksec = 0;
     hold_fade = 0;
-    change_map(curmap, g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
+    Game.change_map(curmap, g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
     /* Set music and sound volume */
     set_volume(gsvol, -1);
     set_music_volume(((float) gmvol) / 250.0);
@@ -272,7 +274,7 @@ static int load_game(void)
 
 int load_game_91(PACKFILE *sdat)
 {
-    unsigned int a, b;
+    uint32_t a, b;
 
     numchrs = pack_igetl(sdat);
     gp = pack_igetl(sdat);
@@ -467,154 +469,6 @@ int load_game_91(PACKFILE *sdat)
     {
         player_special_items[SI_RUSTYKEY] = 1;
     }
-
-#if 0
-    a = 0;
-    if (progress[P_UCOIN] == 2)
-    {
-        strcpy(special_items[a].name, _("Unadium coin"));
-        strcpy(special_items[a].description, _("Use to reach ruins"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 50;
-        a++;
-    }
-    if (progress[P_CANCELROD] == 1)
-    {
-        strcpy(special_items[a].name, _("Cancellation Rod"));
-        strcpy(special_items[a].description, _("Nullify magic"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 51;
-        a++;
-    }
-    if (progress[P_GOBLINITEM] == 1)
-    {
-        strcpy(special_items[a].name, _("Jade Pendant"));
-        strcpy(special_items[a].description, _("Magical goblin gem"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 52;
-        a++;
-    }
-    if (progress[P_UNDEADJEWEL] == 1)
-    {
-        strcpy(special_items[a].name, _("Goblin Jewel"));
-        strcpy(special_items[a].description, _("Precious artifact"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 53;
-        a++;
-    }
-    if (progress[P_WSTONES] > 0)
-    {
-        strcpy(special_items[a].name, _("White Stone"));
-        strcpy(special_items[a].description, _("Smooth white rock"));
-        special_items[a].quantity = progress[P_WSTONES];
-        special_items[a].icon = 54;
-        a++;
-    }
-    if (progress[P_BSTONES] > 0)
-    {
-        strcpy(special_items[a].name, _("Black Stone"));
-        strcpy(special_items[a].description, _("Smooth black rock"));
-        special_items[a].quantity = progress[P_BSTONES];
-        special_items[a].icon = 55;
-        a++;
-    }
-    if (progress[P_EMBERSKEY] == 2)
-    {
-        strcpy(special_items[a].name, _("Ember's Key"));
-        strcpy(special_items[a].description, _("Unlock stuff"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 56;
-        a++;
-    }
-    if (progress[P_BRONZEKEY] == 1)
-    {
-        strcpy(special_items[a].name, _("Bronze Key"));
-        strcpy(special_items[a].description, _("Unlock stuff"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 57;
-        a++;
-    }
-    if (progress[P_DENORIAN] == 3 || progress[P_DENORIAN] == 4)
-    {
-        strcpy(special_items[a].name, _("Denorian Statue"));
-        strcpy(special_items[a].description, _("Broken in half"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 58;
-        a++;
-    }
-    if (progress[P_OPALHELMET] == 1)
-    {
-        strcpy(special_items[a].name, _("Opal Helmet"));
-        strcpy(special_items[a].description, _("Piece of opal set"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 59;
-        a++;
-    }
-    if (progress[P_OPALSHIELD] == 1)
-    {
-        strcpy(special_items[a].name, _("Opal Shield"));
-        strcpy(special_items[a].description, _("Piece of opal set"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 60;
-        a++;
-    }
-    if (progress[P_IRONKEY] == 1)
-    {
-        strcpy(special_items[a].name, _("Iron Key"));
-        strcpy(special_items[a].description, _("Unlock stuff"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 61;
-        a++;
-    }
-    if (progress[P_OPALBAND] == 1)
-    {
-        strcpy(special_items[a].name, _("Opal Band"));
-        strcpy(special_items[a].description, _("Piece of opal set"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 62;
-        a++;
-    }
-    if (progress[P_OPALARMOUR] == 1)
-    {
-        strcpy(special_items[a].name, _("Opal Armour"));
-        strcpy(special_items[a].description, _("Piece of opal set"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 14;
-        a++;
-    }
-    if (progress[P_CAVEKEY] == 1)
-    {
-        strcpy(special_items[a].name, _("Cave Key"));
-        strcpy(special_items[a].description, _("Unlock stuff"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 63;
-        a++;
-    }
-    if (progress[P_TALK_TSORIN] == 1)
-    {
-        strcpy(special_items[a].name, _("Tsorin's Note"));
-        strcpy(special_items[a].description, _("Sealed envelope"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 18;
-        a++;
-    }
-    if (progress[P_TALK_TSORIN] == 2)
-    {
-        strcpy(special_items[a].name, _("Derig's Note"));
-        strcpy(special_items[a].description, _("Encrypted message"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 18;
-        a++;
-    }
-    if (progress[P_TALKOLDMAN] > 2)
-    {
-        strcpy(special_items[a].name, _("Rusty Key"));
-        strcpy(special_items[a].description, _("Unlock grotto ruins"));
-        special_items[a].quantity = 1;
-        special_items[a].icon = 64;
-        a++;
-    }
-#endif
 
 #undef P_UCOIN
 #undef P_CANCELROD
@@ -851,15 +705,15 @@ void load_sgstats(void)
 {
     PACKFILE *ldat;
     int c;
-    unsigned char vc;
-    unsigned int current_save_game;
+    uint8_t vc;
+    uint32_t current_save_game;
     s_player tpm;
     size_t pidx_index, player_index, temp_player_index;
 
     for (current_save_game = 0; current_save_game < NUMSG; current_save_game++)
     {
         sprintf(strbuf, "sg%u.sav", current_save_game);
-        ldat = pack_fopen(kqres(SAVE_DIR, strbuf), F_READ_PACKED);
+        ldat = pack_fopen(kqres(SAVE_DIR, strbuf).c_str(), F_READ_PACKED);
         if (!ldat)
         {
             savegame_num_characters[current_save_game] = 0;
@@ -967,7 +821,7 @@ static int save_game_92(void);
 static int save_game(void)
 {
   sprintf(strbuf, "sg%d.xml", save_ptr);
-  save_game_xml(kqres(SAVE_DIR, strbuf));
+  save_game_xml(kqres(SAVE_DIR, strbuf).c_str());
     return save_game_92();
 }
 
@@ -1007,7 +861,7 @@ static int save_game_92(void)
     savegame_time_hours[save_ptr] = khr;
     savegame_time_minutes[save_ptr] = kmin;
     sprintf(strbuf, "sg%d.sav", save_ptr);
-    sdat = pack_fopen(kqres(SAVE_DIR, strbuf), F_WRITE_PACKED);
+    sdat = pack_fopen(kqres(SAVE_DIR, strbuf).c_str(), F_WRITE_PACKED);
     if (!sdat)
     {
         message(_("Could not save game data."), 255, 0, 0, 0);
@@ -1158,15 +1012,15 @@ static int saveload(int am_saving)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
 		double_buffer->fill(0);
         show_sgstats(am_saving);
         blit2screen(0, 0);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             save_ptr--;
             if (save_ptr < 0)
             {
@@ -1187,7 +1041,7 @@ static int saveload(int am_saving)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             save_ptr++;
             if (save_ptr > NUMSG - 1)
             {
@@ -1208,7 +1062,7 @@ static int saveload(int am_saving)
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             if (am_saving < 2)
             {
                 am_saving = am_saving + 2;
@@ -1216,7 +1070,7 @@ static int saveload(int am_saving)
         }
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             if (am_saving >= 2)
             {
                 am_saving = am_saving - 2;
@@ -1224,7 +1078,7 @@ static int saveload(int am_saving)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             switch (am_saving)
             {
                 case 0:               // Load
@@ -1267,7 +1121,7 @@ static int saveload(int am_saving)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -1330,7 +1184,7 @@ static void show_sgstats(int saving)
     }
     if (top_pointer < NUMSG - max_onscreen)
     {
-        draw_sprite(double_buffer, dnptr, 32, 240 - 8);
+        draw_sprite(double_buffer, dnptr, 32, KQ_SCREEN_H - 8);
     }
 
     for (sg = top_pointer; sg < top_pointer + max_onscreen; sg++)
@@ -1450,11 +1304,11 @@ int start_menu(int skip_splash)
         clear_to_color(double_buffer, 15);
         blit2screen(0, 0);
         set_palette(pal);
-		
+
         for (fade_color = 0; fade_color < 16; fade_color++)
         {
             clear_to_color(double_buffer, 15 - fade_color);
-            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), 320, 124);
+            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), KQ_SCREEN_W, 124);
             blit2screen(0, 0);
             kq_wait(fade_color == 0 ? 500 : 100);
         }
@@ -1469,7 +1323,7 @@ int start_menu(int skip_splash)
         set_palette(pal);
     }
 #endif
-    reset_world();
+    Game.reset_world();
 
     /* Draw menu and handle menu selection */
     while (!stop)
@@ -1477,7 +1331,7 @@ int start_menu(int skip_splash)
         if (redraw)
         {
             clear_bitmap(double_buffer);
-            masked_blit(title, double_buffer, 0, 0, 0, 0, 320, 124);
+            masked_blit(title, double_buffer, 0, 0, 0, 0, KQ_SCREEN_W, 124);
             menubox(double_buffer, 112, 116, 10, 4, BLUE);
             print_font(double_buffer, 128, 124, _("Continue"), FNORMAL);
             print_font(double_buffer, 128, 132, _("New Game"), FNORMAL);
@@ -1488,16 +1342,16 @@ int start_menu(int skip_splash)
         }
         display_credits(double_buffer);
         blit2screen(0, 0);
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.bhelp)
         {
-            unpress();
+            Game.unpress();
             show_help();
             redraw = 1;
         }
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             if (ptr > 0)
             {
                 ptr--;
@@ -1511,7 +1365,7 @@ int start_menu(int skip_splash)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             if (ptr < 3)
             {
                 ptr++;
@@ -1525,7 +1379,7 @@ int start_menu(int skip_splash)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (ptr == 0)          /* User selected "Continue" */
             {
                 if (savegame_num_characters[0] == 0 && savegame_num_characters[1] == 0 && savegame_num_characters[2] == 0 && savegame_num_characters[3] == 0
@@ -1553,7 +1407,7 @@ int start_menu(int skip_splash)
             }
             else if (ptr == 3)     /* Exit */
             {
-                klog(_("Then exit you shall!"));
+                Game.klog(_("Then exit you shall!"));
                 return 2;
             }
         }
@@ -1562,7 +1416,7 @@ int start_menu(int skip_splash)
     {
         /* New game init */
 		extern int load_game_xml(const char* filename);
-		load_game_xml(kqres(eDirectories::DATA_DIR, "starting.xml"));
+		load_game_xml(kqres(eDirectories::DATA_DIR, "starting.xml").c_str());
     }
     return stop - 1;
 }
@@ -1600,7 +1454,7 @@ int system_menu(void)
 
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         menubox(double_buffer, xofs, yofs, 8, 4, BLUE);
 
@@ -1611,7 +1465,7 @@ int system_menu(void)
 
         draw_sprite(double_buffer, menuptr, 0 + xofs, ptr * 8 + 8 + yofs);
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
 
 
         // TT:
@@ -1630,12 +1484,12 @@ int system_menu(void)
                 ptr = 0;
             }
             play_effect(SND_CLICK, 128);
-            unpress();
+            Game.unpress();
         }
 
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
 
             if (ptr == 0)
             {
@@ -1677,7 +1531,7 @@ int system_menu(void)
         if (PlayerInput.bctrl)
         {
             stop = 1;
-            unpress();
+            Game.unpress();
         }
     }
 

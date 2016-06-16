@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "combat.h"
 #include "entity.h"
@@ -461,7 +462,7 @@ static void getcommand(t_entity target_entity)
             if (debugging > 0)
             {
                 sprintf(strbuf, _("Invalid entity command (%c) at position %d for ent %d"), s, g_ent[target_entity].sidx, target_entity);
-                program_death(strbuf);
+                Game.program_death(strbuf);
             }
 #endif
             break;
@@ -728,7 +729,7 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
  */
 static void parsems(t_entity target_entity)
 {
-    unsigned int p = 0;
+    uint32_t p = 0;
     char tok[10];
     char s;
 
@@ -779,11 +780,11 @@ static void player_move(void)
     int oldx = g_ent[0].tilex;
     int oldy = g_ent[0].tiley;
 
-    readcontrols();
+    Game.readcontrols();
 
     if (PlayerInput.balt)
     {
-        activate();
+        Game.activate();
     }
     if (PlayerInput.benter)
     {
@@ -824,7 +825,7 @@ void process_entities(void)
     }
 
     /* Do timers */
-    t_evt = get_timer_event();
+    t_evt = Game.get_timer_event();
     if (t_evt)
     {
         do_timefunc(t_evt);
@@ -941,20 +942,20 @@ static void process_entity(t_entity target_entity)
             }
             if (target_entity == 0)
             {
-                zone_check();
+                Game.zone_check();
             }
         }
 
         if (target_entity == 0 && vfollow == 1)
         {
-            calc_viewport(0);
+            Game.calc_viewport(0);
         }
     }
 }
 
 
 
-/*! \brief Initialise script
+/*! \brief Initialize script
  *
  * This is used to set up an entity with a movement script so that
  * it can be automatically controlled.

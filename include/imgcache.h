@@ -24,4 +24,5 @@ the Free Software Foundation,
 class Raster;
 Raster* get_cached_image(const std::string& name);
 void clear_image_cache();
+
 #endif

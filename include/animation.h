@@ -18,10 +18,27 @@ along with KQ; see the file COPYING.  If not, write to
 the Free Software Foundation,
 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
 #ifndef __ANIMATION_H
 #define __ANIMATION_H
-void check_animation(int millis);
-struct tmx_animation;
-void add_animation(const tmx_animation&);
-void clear_animations();
+
+#include <vector>
+#include <stdint.h>
+using std::vector;
+
+#include "tmx_animation.h"
+
+class KAnimSequence;
+class KAnimation
+{
+public:
+    void check_animation(int millis, uint16_t *tilex);
+    void add_animation(const KTmxAnimation&);
+    void clear_animations();
+
+private:
+    vector<KAnimSequence> animations;
+};
+
+extern KAnimation Animation;
 #endif // !__ANIMATION_H

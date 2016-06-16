@@ -157,7 +157,7 @@ static void enemy_attack(size_t target_fighter_index)
         cact[target_fighter_index] = 0;
         return;
     }
-    if ((unsigned int)b < PSIZE && numchrs > 1)
+    if ((uint32_t)b < PSIZE && numchrs > 1)
     {
         c = 0;
         for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
@@ -195,7 +195,7 @@ static void enemy_attack(size_t target_fighter_index)
 static int enemy_cancast(size_t target_fighter_index, size_t sp)
 {
     size_t a;
-    unsigned int z = 0;
+    uint32_t z = 0;
 
     /* Enemy is mute; cannot cast the spell */
     if (fighter[target_fighter_index].sts[S_MUTE] != 0)
@@ -392,7 +392,7 @@ static void enemy_curecheck(int w)
 
 
 
-/*! \brief Initialise enemy & sprites for combat
+/*! \brief Initialize enemy & sprites for combat
  *
  * If required, load the all the enemies, then
  * init the ones that are going into battle, by calling make_enemy() and
@@ -653,7 +653,7 @@ static void enemy_spellcheck(size_t attack_fighter_index, size_t defend_fighter_
  */
 static int enemy_stscheck(int ws, int s)
 {
-    unsigned int fighter_affected = 0;
+    uint32_t fighter_affected = 0;
     size_t fighter_index;
 
     if (s == PSIZE)
@@ -718,12 +718,12 @@ static void load_enemies(void)
 
     if (!enemy_gfx)
     {
-        program_death(_("Could not load enemy sprites!"));
+        Game.program_death(_("Could not load enemy sprites!"));
     }
-    edat = fopen(kqres(DATA_DIR, "allstat.mon"), "r");
+    edat = fopen(kqres(DATA_DIR, "allstat.mon").c_str(), "r");
     if (!edat)
     {
-        program_death(_("Could not load 1st enemy datafile!"));
+        Game.program_death(_("Could not load 1st enemy datafile!"));
     }
     enemies_n = 0;
     enemies_cap = 128;
@@ -805,7 +805,7 @@ static void load_enemies(void)
         f->bstat = 0;
         // Current weapon type
         fscanf(edat, "%d", &tmp);
-        f->current_weapon_type = (unsigned int)tmp;
+        f->current_weapon_type = (uint32_t)tmp;
         // Weapon elemental type
         fscanf(edat, "%d", &tmp);
         f->welem = tmp;
@@ -831,10 +831,10 @@ static void load_enemies(void)
         }
     }
     fclose(edat);
-    edat = fopen(kqres(DATA_DIR, "resabil.mon"), "r");
+    edat = fopen(kqres(DATA_DIR, "resabil.mon").c_str(), "r");
     if (!edat)
     {
-        program_death(_("Could not load 2nd enemy datafile!"));
+        Game.program_death(_("Could not load 2nd enemy datafile!"));
     }
     for (i = 0; i < enemies_n; i++)
     {
@@ -879,7 +879,7 @@ static void load_enemies(void)
  * \author PH
  * \date 2003????
  * \param   who The numeric id of the enemy to make
- * \param   en Pointer to an s_fighter structure to initialise
+ * \param   en Pointer to an s_fighter structure to initialize
  * \returns the value of en, for convenience, or NULL if an error occurred.
  * \sa make_enemy_by_name()
  */
@@ -899,7 +899,7 @@ static s_fighter *make_enemy(int who, s_fighter *en)
 
 
 
-/*! \brief Enemy initialisation
+/*! \brief Enemy initialization
  *
  * This is the main enemy initialization routine.  This function sets up
  * the enemy types and then loads each one in.  It also calls a helper
@@ -932,7 +932,7 @@ int select_encounter(int en, int etid)
         if (where >= NUM_ETROWS)
         {
             sprintf(strbuf, _("There are no rows for encounter table #%d!"), en);
-            program_death(strbuf);
+            Game.program_death(strbuf);
         }
     }
     if (etid == 99)
@@ -950,7 +950,7 @@ int select_encounter(int en, int etid)
             }
             if (erows[where].tnum > en || where >= NUM_ETROWS)
             {
-                program_death(_("Couldn't select random encounter table row!"));
+                Game.program_death(_("Couldn't select random encounter table row!"));
             }
         }
     }
@@ -978,7 +978,7 @@ int select_encounter(int en, int etid)
     }
     if (num_enemies == 0)
     {
-        program_death(_("Empty encounter table row!"));
+        Game.program_death(_("Empty encounter table row!"));
     }
     return entry;
 }

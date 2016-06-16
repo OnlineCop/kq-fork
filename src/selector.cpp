@@ -30,6 +30,7 @@
 #include <string.h>
 
 #include "combat.h"
+#include "constants.h"
 #include "draw.h"
 #include "heroc.h"
 #include "kq.h"
@@ -197,8 +198,8 @@ static int can_attack(int tgt)
  */
 static eMiniMenu mini_menu(int omask)
 {
-    static unsigned int mini_menu_x = 162;
-    static unsigned int mini_menu_y = 180;
+    static uint32_t mini_menu_x = 162;
+    static uint32_t mini_menu_y = 180;
 
     eMiniMenu cp = MM_OPTIONS_JOIN;
 
@@ -226,7 +227,7 @@ static eMiniMenu mini_menu(int omask)
 
     while (1)
     {
-        check_animation();
+        Game.do_check_animation();
         menubox(double_buffer, mini_menu_x - 13, mini_menu_y - 8, 6, 3, DARKBLUE);
         print_font(double_buffer, mini_menu_x, mini_menu_y, _("Join"), (omask & MM_JOIN) ? FNORMAL : FDARK);
         print_font(double_buffer, mini_menu_x, mini_menu_y + 8, _("Leave"), (omask & MM_LEAVE) ? FNORMAL : FDARK);
@@ -234,10 +235,10 @@ static eMiniMenu mini_menu(int omask)
         draw_sprite(double_buffer, menuptr, mini_menu_x - 13, mini_menu_y + 8 * cp);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             if (cp == MM_OPTIONS_LEAVE)
             {
                 cp = MM_OPTIONS_JOIN;
@@ -256,7 +257,7 @@ static eMiniMenu mini_menu(int omask)
 
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             if (cp == MM_OPTIONS_JOIN)
             {
                 play_effect(SND_CLICK, 128);
@@ -274,12 +275,12 @@ static eMiniMenu mini_menu(int omask)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             return MM_NONE;
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (omask & (1 << cp))
             {
                 return (eMiniMenu)(1 << cp);
@@ -322,7 +323,7 @@ static void party_add(ePIDX id, int lead)
             pidx[numchrs] = id;
         }
         ++numchrs;
-        t->eid = (unsigned char)id;
+        t->eid = (uint8_t)id;
         t->active = 1;
         t->chrx = 0;
     }
@@ -334,8 +335,8 @@ static void party_add(ePIDX id, int lead)
  */
 void party_newlead(void)
 {
-    unsigned int i;
-    unsigned char j;
+    uint32_t i;
+    uint8_t j;
     ePIDX t;
 
     for (i = 1; i < numchrs; ++i)
@@ -399,14 +400,14 @@ static void party_remove(ePIDX id)
  */
 ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
 {
-    unsigned int  ptr = 0;
+    uint32_t ptr = 0;
     int shy = 120 - (numchrs * 28);
 	bool select_all = (csa == TGT_ALLY_ALL);
 	bool stop = false;
 
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         if (csa != TGT_NONE)
         {
@@ -426,22 +427,22 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
         }
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
 		if (csa == TGT_NONE)
 		{
 			if (PlayerInput.balt | PlayerInput.bctrl) {
-				unpress();
+				Game.unpress();
 				return PIDX_UNDEFINED;
 			}
 			if (PlayerInput.left || PlayerInput.right || PlayerInput.down || PlayerInput.up)
 			{
-				unpress();
+				Game.unpress();
 			}
 		}
 		else {
 			if (PlayerInput.left || PlayerInput.right)
 			{
-				unpress();
+				Game.unpress();
 				if (csa == TGT_ALLY_ONEALL)
 				{
 					select_all = !select_all;
@@ -450,7 +451,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
 
 			if (PlayerInput.up)
 			{
-				unpress();
+				Game.unpress();
 				if (ptr > 0)
 				{
 					ptr--;
@@ -459,7 +460,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
 			}
 			if (PlayerInput.down)
 			{
-				unpress();
+				Game.unpress();
 				if (ptr < numchrs - 1)
 				{
 					ptr++;
@@ -469,12 +470,12 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
 
 			if (PlayerInput.balt)
 			{
-				unpress();
+				Game.unpress();
 				stop = true;
 			}
 			if (PlayerInput.bctrl)
 			{
-				unpress();
+				Game.unpress();
 				return PIDX_UNDEFINED;
 			}
 		}
@@ -505,7 +506,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
 ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 {
 	if (!(multi_target == TGT_ENEMY_ONE || multi_target == TGT_ENEMY_ONEALL || multi_target == TGT_ENEMY_ALL)) {
-		program_death("Invalid enemy target mode");
+		Game.program_death("Invalid enemy target mode");
 		return PIDX_UNDEFINED;
 	}
 	unsigned int cntr = 0;
@@ -529,7 +530,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         if (select_all)
         {
             battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 2);
@@ -540,21 +541,21 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
         }
 
         blit2screen(0, 0);
-        readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             stop = true;
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             return PIDX_UNDEFINED;
         }
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             if (ptr > 0)
             {
                 ptr--;
@@ -566,7 +567,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             if (ptr < cntr - 1)
             {
                 ptr++;
@@ -578,7 +579,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
         }
         if (PlayerInput.up || PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             if (multi_target == TGT_ENEMY_ONEALL && cntr > 1)
             {
 				select_all = !select_all;
@@ -611,7 +612,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_select_dead)
 {
   if (!(multi_target == TGT_ALLY_ALL || multi_target == TGT_ALLY_ONE || multi_target == TGT_ALLY_ONEALL)) {
-    program_death("Invalid hero target mode");
+    Game.program_death("Invalid hero target mode");
     return PIDX_UNDEFINED;
   }
   unsigned int cntr = 0, ptr = 0;
@@ -633,7 +634,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
   bool stop = false;
   while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         if (select_all)
         {
             battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 1);
@@ -644,21 +645,21 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
         }
         blit2screen(0, 0);
 
-        readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             stop = true;
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             return PIDX_UNDEFINED;
         }
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             if (ptr > 0)
             {
                 ptr--;
@@ -670,7 +671,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             if (ptr < cntr - 1)
             {
                 ptr++;
@@ -684,7 +685,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
         {
             if (PlayerInput.up || PlayerInput.down)
             {
-                unpress();
+                Game.unpress();
 				select_all = !select_all;
             }
         }
@@ -716,7 +717,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
  */
 int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
 {
-    static const unsigned int BTN_EXIT = (MAXCHRS + PSIZE);
+    static const uint32_t BTN_EXIT = (MAXCHRS + PSIZE);
 
     ePIDX hero = PIDX_UNDEFINED;
     eMiniMenu mini_menu_mask;
@@ -724,8 +725,8 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
     size_t fighter_index;
     size_t cur, oldcur;             /* cursor */
     signed int x, y;
-    unsigned int mask;
-    unsigned int running = 1;
+    uint32_t mask;
+    uint32_t running = 1;
 
     cur = 0;
     if (avail == NULL)
@@ -750,13 +751,13 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
     print_font(double_buffer, 24 + xofs, 80 + yofs, _("In party:"), FGOLD);
     while (running)
     {
-        check_animation();
+        Game.do_check_animation();
         /* Draw everything */
         /* draw the row of available heroes */
         y = yofs + 40;
         for (fighter_index = 0; fighter_index < n_avail; ++fighter_index)
         {
-            x = xofs + (320 - 32 * n_avail) / 2 + 32 * fighter_index;
+            x = xofs + (KQ_SCREEN_W - 32 * n_avail) / 2 + 32 * fighter_index;
             menubox(double_buffer, x, y, 2, 2, (fighter_index == cur ? DARKRED : DARKBLUE));
             if (avail[fighter_index] != PIDX_UNDEFINED)
             {
@@ -764,7 +765,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
             }
         }
         /* draw the party */
-        x = xofs + (320 - 40 * PSIZE) / 2;
+        x = xofs + (KQ_SCREEN_W - 40 * PSIZE) / 2;
         y = yofs + 88;
         for (fighter_index = 0; fighter_index < PSIZE; ++fighter_index)
         {
@@ -800,11 +801,11 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
         blit2screen(xofs, yofs);
 
         oldcur = cur;
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
             /* move between the available row and the party row */
-            unpress();
+            Game.unpress();
             if (cur >= MAXCHRS)
             {
                 cur = 0;
@@ -813,7 +814,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
         if (PlayerInput.down)
         {
             /* move between the available row and the party row */
-            unpress();
+            Game.unpress();
             if (cur < MAXCHRS)
             {
                 cur = MAXCHRS;
@@ -822,7 +823,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
         if (PlayerInput.left)
         {
             /* move between heroes on a row */
-            unpress();
+            Game.unpress();
             if (cur > MAXCHRS)
             {
                 --cur;
@@ -835,7 +836,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
         if (PlayerInput.right)
         {
             /* move between heroes on a row */
-            unpress();
+            Game.unpress();
             if (cur < (n_avail - 1))
             {
                 cur++;
@@ -847,12 +848,12 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             running = 0;
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (cur == BTN_EXIT)
             {
                 /* selected the exit button */
@@ -942,7 +943,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
  */
 int select_player(void)
 {
-    unsigned int stop = 0, ptr;
+    uint32_t stop = 0, ptr;
 
     if (numchrs == 1)
     {
@@ -951,15 +952,15 @@ int select_player(void)
     ptr = 0;
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         draw_mainmenu(ptr);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             if (ptr > 0)
             {
                 ptr--;
@@ -972,7 +973,7 @@ int select_player(void)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             if (ptr < numchrs - 1)
             {
                 ptr++;
@@ -985,12 +986,12 @@ int select_player(void)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             return PIDX_UNDEFINED;
         }
     }

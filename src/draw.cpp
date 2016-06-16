@@ -37,6 +37,7 @@
 #include "bounds.h"
 #include "combat.h"
 #include "console.h"
+#include "constants.h"
 #include "draw.h"
 #include "entity.h"
 #include "kq.h"
@@ -53,7 +54,7 @@
 char msgbuf[MSG_ROWS][MSG_COLS];
 int gbx, gby, gbbx, gbby, gbbw, gbbh, gbbs;
 eBubbleStemStyle bubble_stem_style;
-unsigned char BLUE = 2, DARKBLUE = 0, DARKRED = 4;
+uint8_t BLUE = 2, DARKBLUE = 0, DARKRED = 4;
 
 /*  Internal prototypes  */
 static void border(Raster *, int, int, int, int);
@@ -68,8 +69,8 @@ static void draw_porttextbox(int, int);
 static void generic_text(int, int, int);
 const char *parse_string(const char *);
 static const char *relay(const char *);
-static void set_textpos(unsigned int);
-static int get_glyph_index(unsigned int);
+static void set_textpos(uint32_t);
+static int get_glyph_index(uint32_t);
 
 
 /*! \brief The internal processing modes during text reformatting
@@ -325,7 +326,7 @@ static void draw_backlayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    s_bound box;
+    KBound box;
 
     if (view_on == 0)
     {
@@ -582,7 +583,7 @@ static void draw_forelayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    s_bound box;
+    KBound box;
 
     if (view_on == 0)
     {
@@ -778,7 +779,7 @@ static void draw_midlayer(void)
 {
     int dx, dy, pix, xtc, ytc;
     int here;
-    s_bound box;
+    KBound box;
 
     if (view_on == 0)
     {
@@ -839,20 +840,17 @@ static void draw_midlayer(void)
 static void draw_playerbound(void)
 {
     int dx, dy, xtc, ytc;
-    s_bound *found = NULL;
-    unsigned short ent_x = g_ent[0].tilex;
-    unsigned short ent_y = g_ent[0].tiley;
+    shared_ptr<KBound> found = nullptr;
+    uint16_t ent_x = g_ent[0].tilex;
+    uint16_t ent_y = g_ent[0].tiley;
 
     /* Is the player standing inside a bounding area? */
-    unsigned int found_index = is_bound(&g_map.bounds, ent_x, ent_y, ent_x, ent_y);
-    if (found_index)
-    {
-        found = &g_map.bounds.array[found_index - 1];
-    }
-    else
+    uint32_t found_index = g_map.bounds.IsBound(ent_x, ent_y, ent_x, ent_y);
+    if (!found_index)
     {
         return;
     }
+    found = g_map.bounds.GetBound(found_index - 1);
 
     xtc = vx >> 4;
     ytc = vy >> 4;
@@ -1174,11 +1172,11 @@ static void generic_text(int who, int box_style, int isPort)
     {
         return;
     }
-    unpress();
+    Game.unpress();
     timer_count = 0;
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         if (isPort == 0)
         {
@@ -1189,10 +1187,10 @@ static void generic_text(int who, int box_style, int isPort)
             draw_porttextbox(box_style, who);
         }
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -1215,15 +1213,12 @@ static void generic_text(int who, int box_style, int isPort)
  */
 int is_forestsquare(int fx, int fy)
 {
-    int f;
-
     if (curmap != "main")
     {
         return 0;
     }
-    f = map_seg[(fy * g_map.xsize) + fx];
-// TT: EDIT
-    switch (f)
+    auto mapseg = map_seg[(fy * g_map.xsize) + fx];
+    switch (mapseg)
     {
         case 63:
         case 65:
@@ -1256,7 +1251,7 @@ int is_forestsquare(int fx, int fy)
  */
 void menubox(Raster *where, int x, int y, int w, int h, int c)
 {
-    draw_kq_box(where, x, y, x + w * 8 + 16, y + h * 8 + 16, c, B_TEXT);
+    draw_kq_box(where, x, y, x + w * 8 + TILE_W, y + h * 8 + TILE_H, c, B_TEXT);
 }
 
 
@@ -1327,7 +1322,7 @@ void message(const char *m, int icn, int delay, int x_m, int y_m)
         /* Wait for delay time or key press */
         if (delay == 0)
         {
-            wait_enter();
+            Game.wait_enter();
         }
         else
         {
@@ -1395,7 +1390,7 @@ const char *parse_string(const char *the_string)
  * \author PH
  * \date 20071116
  */
-static const char *decode_utf8(const char *string, unsigned int *cp)
+static const char *decode_utf8(const char *string, uint32_t *cp)
 {
     char ch = *string;
 
@@ -1491,7 +1486,7 @@ static const char *decode_utf8(const char *string, unsigned int *cp)
 
     if (string == NULL)
     {
-        program_death(_("UTF-8 decode error"));
+        Game.program_death(_("UTF-8 decode error"));
     }
     return string;
 }
@@ -1505,7 +1500,7 @@ static const char *decode_utf8(const char *string, unsigned int *cp)
  * n.b. must be sorted in order of unicode char
  * and terminated by {0, 0}
  */
-static unsigned int glyph_lookup[][2] =
+static uint32_t glyph_lookup[][2] =
 {
     {0x00c9, 'E' - 32},          /* E-acute */
     {0x00d3, 'O' - 32},          /* O-acute */
@@ -1533,7 +1528,7 @@ static unsigned int glyph_lookup[][2] =
  * \date 20071116
  * \note uses inefficient linear search for now.
  */
-static int get_glyph_index(unsigned int cp)
+static int get_glyph_index(uint32_t cp)
 {
     int i;
 
@@ -1555,7 +1550,7 @@ static int get_glyph_index(unsigned int cp)
 
     /* didn't find it */
     sprintf(strbuf, _("Invalid glyph index: %d"), cp);
-    klog(strbuf);
+    Game.klog(strbuf);
     return 0;
 }
 
@@ -1575,12 +1570,12 @@ static int get_glyph_index(unsigned int cp)
 void print_font(Raster* where, int sx, int sy, const char *msg, eFontColor cl)
 {
     int z = 0, hgt = 8;
-    unsigned int cc = 0;
+    uint32_t cc = 0;
 
     if (cl < 0 || cl > 6)
     {
         sprintf(strbuf, _("print_font: Bad font index, %d"), cl);
-        klog(strbuf);
+        Game.klog(strbuf);
         return;
     }
     if (cl == FBIG)
@@ -1624,7 +1619,7 @@ void print_num(Raster *where, int sx, int sy, char *msg, int cl)
     if (cl < 0 || cl > 4)
     {
         sprintf(strbuf, _("print_num: Bad font index, %d"), cl);
-        klog(strbuf);
+        Game.klog(strbuf);
         return;
     }
     for (z = 0; z < (signed int) strlen(msg); z++)
@@ -1656,7 +1651,7 @@ void print_num(Raster *where, int sx, int sy, char *msg, int cl)
 int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, const char *sp3, const char *sp4)
 {
     int ly, stop = 0, ptr = 0, a;
-    unsigned int str_len;
+    uint32_t str_len;
 
     gbbw = 1;
     gbbh = 0;
@@ -1665,7 +1660,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
     strcpy(msgbuf[1], parse_string(sp2));
     strcpy(msgbuf[2], parse_string(sp3));
     strcpy(msgbuf[3], parse_string(sp4));
-    unpress();
+    Game.unpress();
     for (a = 0; a < 4; a++)
     {
         str_len = strlen(msgbuf[a]);
@@ -1686,24 +1681,17 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
     ly = (gbbh - numopt) * 12 + gbby + 10;
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         draw_textbox(bstyle);
-
-#if 0
-        for (a = 0; a < gbbh; a++)
-        {
-            print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs, msgbuf[a], FBIG);
-        }
-#endif // if 0
 
         draw_sprite(double_buffer, menuptr, gbbx + xofs + 8, ptr * 12 + ly + yofs);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             ptr--;
             if (ptr < 0)
             {
@@ -1713,7 +1701,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             ptr++;
             if (ptr > numopt - 1)
             {
@@ -1723,7 +1711,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2, co
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -1805,12 +1793,12 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
                 }
             }
             winheight = n_opt > 4 ? 4 : n_opt;
-            winx = xofs + (320 - winwidth * 8) / 2;
-            winy = yofs + 230 - winheight * 12;
+            winx = xofs + (KQ_SCREEN_W - winwidth * 8) / 2;
+            winy = yofs + (KQ_SCREEN_H - 10) - winheight * 12;
             running = 1;
             while (running)
             {
-                check_animation();
+                Game.do_check_animation();
                 drawmap();
                 /* Draw the prompt text */
                 set_textpos(who);
@@ -1834,30 +1822,30 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
 
                 blit2screen(xofs, yofs);
 
-                readcontrols();
+                Game.readcontrols();
                 if (PlayerInput.up && curopt > 0)
                 {
                     play_effect(SND_CLICK, 128);
-                    unpress();
+                    Game.unpress();
                     --curopt;
                 }
                 else if (PlayerInput.down && curopt < (n_opt - 1))
                 {
                     play_effect(SND_CLICK, 128);
-                    unpress();
+                    Game.unpress();
                     ++curopt;
                 }
                 else if (PlayerInput.balt)
                 {
                     /* Selected an option */
                     play_effect(SND_CLICK, 128);
-                    unpress();
+                    Game.unpress();
                     running = 0;
                 }
                 else if (PlayerInput.bctrl)
                 {
                     /* Just go "ow!" */
-                    unpress();
+                    Game.unpress();
                     play_effect(SND_BAD, 128);
                 }
 
@@ -2058,7 +2046,7 @@ void revert_cframes(size_t fighter_index, int revert_heroes)
  * \param   entity_index If value is between 0..MAX_ENTITIES (exclusive),
  *              character that is speaking, otherwise 'general'.
  */
-static void set_textpos(unsigned int entity_index)
+static void set_textpos(uint32_t entity_index)
 {
     if (entity_index < MAX_ENTITIES)
     {
@@ -2073,11 +2061,11 @@ static void set_textpos(unsigned int entity_index)
         {
             gbbx = 296 - (gbbw * 8);
         }
-        if (gby > -16 && gby < 240)
+        if (gby > -16 && gby < KQ_SCREEN_H)
         {
             if (g_ent[entity_index].facing == 1 || g_ent[entity_index].facing == 2)
             {
-                if (gbbh * 12 + gby + 40 <= 232)
+                if (gbbh * 12 + gby + 40 <= KQ_SCREEN_H - 8)
                 {
                     gbby = gby + 24;
                 }

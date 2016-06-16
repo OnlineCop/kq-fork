@@ -37,6 +37,7 @@ set(KQ_DEBUGGING 0 CACHE BOOL "Features for debugging the game")
 
 
 set(kq-fork_SRCS
+        src/anim_sequence.cpp
 	src/bounds.cpp
 	src/combat.cpp
 	src/console.cpp

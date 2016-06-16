@@ -30,6 +30,8 @@
  * \date 20100221
  */
 
+#include <string>
+using std::string;
 
 enum eDirectories
 {
@@ -44,9 +46,10 @@ enum eDirectories
 /* Get the directory for application data (music, gfx, etc.)
    or user data (screenshots, prefs, saved games)
  */
-const char *kqres(enum eDirectories, const char *);
+const string kqres(enum eDirectories, const string);
 
-const char *get_resource_file_path(const char *, const char *, const char *);
+const string get_lua_file_path(const string, const string);
+const string get_resource_file_path(const string, const string, const string);
 
 
 #define maybe_poll_joystick poll_joystick

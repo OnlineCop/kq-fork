@@ -23,6 +23,12 @@
 #ifndef __BOUNDS_H
 #define __BOUNDS_H 1
 
+#include <allegro.h>
+#include <memory>
+using std::shared_ptr;
+#include <vector>
+using std::vector;
+
 struct PACKFILE;
 
 /*! \file
@@ -43,8 +49,9 @@ struct PACKFILE;
  * \author TT
  * \date 20060710
  */
-struct s_bound
+struct KBound
 {
+public:
     short left;                  /*!< Left edge of the bounding box */
     short top;                   /*!< Top edge of the bounding box */
     short right;                 /*!< Right edge of the bounding box */
@@ -62,25 +69,28 @@ struct s_bound
  * \author OC
  * \date 20101017
  */
-struct s_bound_array
+class KBounds
 {
-    s_bound *array;
-    size_t size;
+public:
+    KBounds() {}
+    ~KBounds() {}
+
+    // Add a new bound to the map. Returns true on success, or false on failure.
+    bool Add(shared_ptr<KBound> bound);
+
+    // Return a pointer to the bound at the given @param index. If index is invalid, returns null.
+    shared_ptr<KBound> GetBound(size_t index);
+
+    size_t Size()
+    {
+        return m_bounds.size();
+    }
+
+    uint32_t IsBound(const uint16_t left, const uint16_t top, const uint16_t right, const uint16_t bottom) const;
+
+protected:
+    vector< shared_ptr<KBound> > m_bounds;
 };
-
-
-// This line is temporary, but it cuts down a lot of repetition below
-typedef const unsigned short cu_int16;
-
-// Affects a single s_bound object
-s_bound     *is_contained_bound(s_bound *, unsigned int, int, int, int, int);
-void         set_bounds(s_bound *, int, int, int, int, int);
-
-// Affects an entire s_bound_array object array
-unsigned int is_bound(s_bound_array *, cu_int16, cu_int16, cu_int16, cu_int16);
-size_t       load_bounds(s_bound_array *, PACKFILE *);
-size_t       save_bounds(s_bound_array *, PACKFILE *);
-
 
 #endif  /* __BOUNDS_H */
 

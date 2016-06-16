@@ -76,35 +76,35 @@ struct s_player_input
  * Contains info on an entities appearance, position and behaviour */
 typedef struct
 {
-    unsigned char chrx;          //!< Entity's identity (what s/he looks like)
-    unsigned short x;            //!< x-coord on map
-    unsigned short y;            //!< y-coord on map
-    unsigned short tilex;        //!< x-coord tile that entity is standing on
-    unsigned short tiley;        //!< y-coord tile that entity is standing on
-    unsigned char eid;           //!< Entity type (fighter, enemy, normal)
-    unsigned char active;        //!< "Alive" or not
-    unsigned char facing;        //!< Direction
-    unsigned char moving;        //!< In the middle of a move
-    unsigned char movcnt;        //!< How far along the move entity is
-    unsigned char framectr;      //!< Counter for determining animation frame
-    unsigned char movemode;      //!< Stand, wander, script or chasing
-    unsigned char obsmode;       //!< Determine if affected by obstacles or not
-    unsigned char delay;         //!< Movement delay (between steps)
-    unsigned char delayctr;      //!< Counter for movement delay
-    unsigned char speed;         //!< How hyperactive the entity is
-    unsigned char scount;
-    unsigned char cmd;           //!< Scripted commands (eCommands in entity.h)
-    unsigned char sidx;          //!< Index within script parser
-    unsigned char extra;
-    unsigned char chasing;       //!< Entity is following another
+    uint8_t chrx;          //!< Entity's identity (what s/he looks like)
+    uint16_t x;            //!< x-coord on map
+    uint16_t y;            //!< y-coord on map
+    uint16_t tilex;        //!< x-coord tile that entity is standing on
+    uint16_t tiley;        //!< y-coord tile that entity is standing on
+    uint8_t eid;           //!< Entity type (fighter, enemy, normal)
+    uint8_t active;        //!< "Alive" or not
+    uint8_t facing;        //!< Direction
+    uint8_t moving;        //!< In the middle of a move
+    uint8_t movcnt;        //!< How far along the move entity is
+    uint8_t framectr;      //!< Counter for determining animation frame
+    uint8_t movemode;      //!< Stand, wander, script or chasing
+    uint8_t obsmode;       //!< Determine if affected by obstacles or not
+    uint8_t delay;         //!< Movement delay (between steps)
+    uint8_t delayctr;      //!< Counter for movement delay
+    uint8_t speed;         //!< How hyperactive the entity is
+    uint8_t scount;
+    uint8_t cmd;           //!< Scripted commands (eCommands in entity.h)
+    uint8_t sidx;          //!< Index within script parser
+    uint8_t extra;
+    uint8_t chasing;       //!< Entity is following another
     signed int cmdnum;           //!< Number of times we need to repeat 'cmd'
-    unsigned char atype;
-    unsigned char snapback;      //!< Snaps back to direction previously facing
-    unsigned char facehero;      //!< Look at player when talked to
-    unsigned char transl;        //!< Entity is see-through or not
+    uint8_t atype;
+    uint8_t snapback;      //!< Snaps back to direction previously facing
+    uint8_t facehero;      //!< Look at player when talked to
+    uint8_t transl;        //!< Entity is see-through or not
     char script[60];             //!< Movement/action script (pacing, etc.)
-    unsigned short target_x;     //!< Scripted x-coord the ent is moving to
-    unsigned short target_y;     //!< Scripted y-coord the ent is moving to
+    uint16_t target_x;     //!< Scripted x-coord the ent is moving to
+    uint16_t target_y;     //!< Scripted y-coord the ent is moving to
 } s_entity;
 
 
@@ -116,9 +116,9 @@ typedef struct
  */
 typedef struct
 {
-    unsigned short start;        /*!< First tile in sequence  */
-    unsigned short end;          /*!< Last tile in sequence */
-    unsigned short delay;        /*!< Frames to wait between tile changes */
+    uint16_t start;        /*!< First tile in sequence  */
+    uint16_t end;          /*!< Last tile in sequence */
+    uint16_t delay;        /*!< Frames to wait between tile changes */
 } s_anim;
 
 
@@ -143,7 +143,7 @@ typedef struct
  */
 typedef struct
 {
-    unsigned int num_progress;   /*!< Number of current progress */
+    uint32_t num_progress;   /*!< Number of current progress */
     char name[18];               /*!< Name of current progress */
 } s_progress;
 
@@ -162,9 +162,9 @@ typedef struct
     int mmp;                     /*!< Maximum magic points */
     int stats[NUM_STATS];
     char res[NUM_RES];                  /*!< eResistance: See R_* constants */
-    unsigned char sts[NUM_SPELLTYPES];  /*!< eSpellType */
-    unsigned char eqp[NUM_EQUIPMENT];   /*!< eEquipment: Weapons, armor, etc. equipped */
-    unsigned char spells[NUM_SPELLS];           /*!< Known spells */
+    uint8_t sts[NUM_SPELLTYPES];  /*!< eSpellType */
+    uint8_t eqp[NUM_EQUIPMENT];   /*!< eEquipment: Weapons, armor, etc. equipped */
+    uint8_t spells[NUM_SPELLS];           /*!< Known spells */
 	/*! \brief Level up information 
 	* * Item 0, 1 - used to calculate the XP you need for the next level
 	* * Item 2 - Boost to your HP/MHP

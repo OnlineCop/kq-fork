@@ -27,8 +27,8 @@
  * \date 20030526
  */
 
-#include <string.h>
-#include <allegro.h>
+#include <string>
+#include "constants.h"
 #include "credits.h"
 #include "draw.h"
 #include "gettext.h"
@@ -39,16 +39,10 @@
 static int ease(int);
 
 /*! Array of strings */
-
-/*! edgarmolina: i think that the credits aren't in any language
- *  so they could be leaved untouched.
- *  why wasn't günter here?, i added him, but while there's not utf-8
- *  support, i'll write gunter
- */
 static const char *credits[] =
 {
     "(C) 2001 DoubleEdge Software",
-    "(C) 2002-9 KQ Lives Team",
+    "(C) 2002-2016 KQ Lives Team",
     "http://kqlives.sourceforge.net/",
     "Peter Hull",
     "TeamTerradactyl",
@@ -67,21 +61,14 @@ static const char *credits[] =
 };
 
 
-// Compiler doesn't like "const unsigned int", so it's this or a #define.
-#define NUM_EASE_VALUES 32
+// Compiler doesn't like "const uint32_t", so it's this or a #define.
+static const int NUM_EASE_VALUES=32;
 
 static const char **cc = NULL;
 static short int ease_table[NUM_EASE_VALUES];
 static Raster *wk = NULL;
 
-static volatile unsigned int ticks = 0;
-static void ticker(void)
-{
-    ticks++;
-}
-END_OF_FUNCTION(ticker)
-
-
+static volatile uint32_t ticks = 0;
 
 void allocate_credits(void)
 {
@@ -106,9 +93,6 @@ void allocate_credits(void)
         ease_table[ease_index] = short(ease_index * ease_index * (3 * NUM_EASE_VALUES - 2 * ease_index) / NUM_EASE_VALUES / NUM_EASE_VALUES);
     }
     cc = credits;
-    LOCK_FUNCTION(ticker);
-    LOCK_VARIABLE(ticks);
-    install_int_ex(ticker, BPS_TO_TIMER(60));
 }
 
 
@@ -117,7 +101,6 @@ void deallocate_credits(void)
 {
     delete(wk);
     wk = NULL;
-    remove_int(ticker);
 }
 
 
@@ -127,7 +110,7 @@ void display_credits(Raster *double_buffer)
     static const char *pressf1;
     static int last_ease_amount = 999;
     int i, x0, ease_amount;
-    unsigned int max_ticks = 640;
+    uint32_t max_ticks = 640;
 
     pressf1 = _("Press F1 for help");
     if (wk == NULL)
@@ -157,14 +140,14 @@ void display_credits(Raster *double_buffer)
         x0 = (320 - wk->width) / 2;
         for (i = 0; i < wk->width; ++i)
         {
-            blit(wk, double_buffer, i, ease(i + ease_amount), i + x0, 185, 1, 32);
+            blit(wk, double_buffer, i, ease(i + ease_amount), i + x0, KQ_SCREEN_H - 55, 1, 32);
         }
-        print_font(double_buffer, (320 - 8 * strlen(pressf1)) / 2, 210, pressf1, FNORMAL);
+        print_font(double_buffer, (KQ_SCREEN_W - 8 * strlen(pressf1)) / 2, KQ_SCREEN_H - 30, pressf1, FNORMAL);
 #ifdef KQ_CHEATS
         /* Put an un-ignorable cheat message; this should stop
          * PH releasing versions with cheat mode compiled in ;)
          */
-		extern int cheat;
+        extern int cheat;
         print_font(double_buffer, 80, 40, cheat ? _("*CHEAT MODE ON*") : _("*CHEAT MODE OFF*"), FGOLD);
 #endif
 #ifdef DEBUGMODE

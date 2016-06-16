@@ -209,7 +209,7 @@ static int load_resistances(s_player* s, XMLElement* node) {
 			}
 			else {
 				TRACE("Wrong number of resistances, expected %d and got %d", NUM_RES, values.size());
-				program_death("Error loading XML");
+				Game.program_death("Error loading XML");
 			}
 		}
 	}
@@ -226,7 +226,7 @@ static int load_spelltypes(s_player* s, XMLElement* node) {
 			}
 			else {
 				TRACE("Wrong number of spelltypes, expected %d and got %d", NUM_SPELLTYPES, values.size());
-				program_death("Error loading XML");
+				Game.program_death("Error loading XML");
 			}
 		}
 	}
@@ -243,7 +243,7 @@ static int load_spells(s_player* s, XMLElement* node) {
 			}
 			else {
 				TRACE("Wrong number of spells, expected %d and got %d", NUM_SPELLS, values.size());
-				program_death("Error loading XML");
+				Game.program_death("Error loading XML");
 			}
 		}
 	}
@@ -260,7 +260,7 @@ static int load_equipment(s_player* s, XMLElement* node) {
 			}
 			else {
 				TRACE("Wrong number of equipment, expected %d and got %d", NUM_EQUIPMENT, values.size());
-				program_death("Error loading XML");
+				Game.program_death("Error loading XML");
 			}
 		}
 	}
@@ -348,7 +348,7 @@ static int load_core_properties(s_player* s, XMLElement* node) {
 		}
 	}
 	else {
-		program_death("Core properties missing from XML");
+		Game.program_death("Core properties missing from XML");
 	}
 	return 0;
 }
@@ -603,7 +603,7 @@ static int load_players(XMLElement* root) {
 		}
 	}
 	else {
-		program_death("Error loading heroes");
+		Game.program_death("Error loading heroes");
 	}
 	return 1;
 }
@@ -648,7 +648,7 @@ static int load_treasures(XMLElement* node) {
 			*it++ = v;
 			if (it == endp) {
 				// Too much data supplied...
-				program_death("Too much data supplied");
+				Game.program_death("Too much data supplied");
 			}
 		}
 	}
@@ -675,7 +675,7 @@ static int  load_progress(XMLElement* node) {
 	  for (auto& v : vs) {
 	    if (it == endp) {
 	      // Too much data supplied...
-	      program_death("Too much data supplied");
+	      Game.program_death("Too much data supplied");
 	    }
 	    *it++ = v;
 	  }
@@ -703,7 +703,7 @@ static int  load_save_spells(XMLElement* node) {
 		for (auto& v : vs) {
 			if (it == endp) {
 				// Too much data supplied...
-				program_death("Too much data supplied");
+				Game.program_death("Too much data supplied");
 			}
 			*it++ = v;
 		}
@@ -731,7 +731,7 @@ static int  load_specials(XMLElement* node) {
 		for (auto& v : vs) {
 			if (it == endp) {
 				// Too much data supplied...
-				program_death("Too much data supplied");
+				Game.program_death("Too much data supplied");
 			}
 			*it++ = v;
 		}
@@ -945,7 +945,8 @@ int load_game_xml(const char* filename) {
 		return load_game_xml(doc.RootElement());
 	}
 	else {
-		program_death("Unable to load XML file");
+	  TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());
+		Game.program_death("Unable to load XML file");
 	}
 	return 0;
 }

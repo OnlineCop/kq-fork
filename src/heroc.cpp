@@ -408,7 +408,7 @@ static int combat_item_menu(int whom)
     fullblit(double_buffer, back);
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         fullblit(back, double_buffer);
         combat_draw_items(pptr);
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 16);
@@ -417,10 +417,10 @@ static int combat_item_menu(int whom)
         print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16].item].desc, FNORMAL);
         blit2screen(0, 0);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             ptr--;
             if (ptr < 0)
             {
@@ -430,7 +430,7 @@ static int combat_item_menu(int whom)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             ptr++;
             if (ptr > 15)
             {
@@ -440,7 +440,7 @@ static int combat_item_menu(int whom)
         }
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             pptr--;
             if (pptr < 0)
             {
@@ -450,7 +450,7 @@ static int combat_item_menu(int whom)
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             pptr++;
             if (pptr > 3)
             {
@@ -460,7 +460,7 @@ static int combat_item_menu(int whom)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (items[inventory].tgt >= TGT_ENEMY_ONE)
             {
                 z = select_enemy(whom, (eTarget)(items[inventory].tgt));
@@ -491,7 +491,7 @@ static int combat_item_menu(int whom)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -540,16 +540,16 @@ int combat_spell_menu(int c)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         fullblit(back, double_buffer);
         combat_draw_spell_menu(c, ptr, pgno);
         blit2screen(0, 0);
 
-        readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             ptr++;
             if (ptr > 11)
             {
@@ -559,7 +559,7 @@ int combat_spell_menu(int c)
         }
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             ptr--;
             if (ptr < 0)
             {
@@ -569,7 +569,7 @@ int combat_spell_menu(int c)
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             pgno++;
             if (pgno > 4)
             {
@@ -579,7 +579,7 @@ int combat_spell_menu(int c)
         }
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             pgno--;
             if (pgno < 0)
             {
@@ -589,7 +589,7 @@ int combat_spell_menu(int c)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (combat_castable(c, pgno * NUM_SPELLS_PER_PAGE + ptr) == 1)
             {
                 fighter[c].csmem = party[pidx[c]].spells[pgno * NUM_SPELLS_PER_PAGE + ptr];
@@ -598,7 +598,7 @@ int combat_spell_menu(int c)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -759,7 +759,7 @@ void hero_choose_action(size_t fighter_index)
     int stop = 0, amy;
     size_t equipment_index;
     size_t ca_index;
-    unsigned int sptr = 1, ptr = 0, my = 0, tt, chi[9];
+    uint32_t sptr = 1, ptr = 0, my = 0, tt, chi[9];
 
     // This is going to blow up if we translate _(...) text into a language
     // where the text is longer than 8 characters.
@@ -778,7 +778,7 @@ void hero_choose_action(size_t fighter_index)
     {
         return;
     }
-    unpress();
+    Game.unpress();
     fighter[fighter_index].defend = 0;
     fighter[fighter_index].facing = 0;
     if (pidx[fighter_index] != CORIN && pidx[fighter_index] != CASANDRA)
@@ -787,7 +787,7 @@ void hero_choose_action(size_t fighter_index)
     }
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         battle_render(fighter_index + 1, fighter_index + 1, 0);
         my = 0;
         strcpy(ca[my], _("Attack"));
@@ -854,10 +854,10 @@ void hero_choose_action(size_t fighter_index)
         }
         blit2screen(0, 0);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             if (ptr > 0)
             {
                 ptr--;
@@ -870,7 +870,7 @@ void hero_choose_action(size_t fighter_index)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             if (ptr < my - 1)
             {
                 ptr++;
@@ -883,7 +883,7 @@ void hero_choose_action(size_t fighter_index)
         }
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             if (sptr > 0)
             {
                 sptr--;
@@ -891,7 +891,7 @@ void hero_choose_action(size_t fighter_index)
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             sptr++;
 #ifdef DEBUGMODE
             // If we're debugging, we will force the ability to RUN
@@ -911,7 +911,7 @@ void hero_choose_action(size_t fighter_index)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (sptr == 0)
             {
                 fighter[fighter_index].defend = 1;
@@ -1097,16 +1097,16 @@ static int hero_invoke(int whom)
     dud = pidx[whom];
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         fullblit(back, double_buffer);
         draw_invokable(dud);
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 88);
         blit2screen(0, 0);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             ptr--;
             if (ptr < 0)
             {
@@ -1116,7 +1116,7 @@ static int hero_invoke(int whom)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             ptr++;
             if (ptr > 5)
             {
@@ -1126,7 +1126,7 @@ static int hero_invoke(int whom)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (can_invoke_item(party[dud].eqp[ptr]))
             {
                 if (hero_invokeitem(whom, party[dud].eqp[ptr]) == 1)
@@ -1141,7 +1141,7 @@ static int hero_invoke(int whom)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -1256,7 +1256,7 @@ static void hero_run(void)
     }
     if (b == 0)
     {
-        program_death(_("Fatal error: How can a dead party run?"));
+        Game.program_death(_("Fatal error: How can a dead party run?"));
     }
     else
     {
@@ -1272,7 +1272,7 @@ static void hero_run(void)
     }
     if (c == 0)
     {
-        program_death(_("Fatal error: Why are the heroes running from dead enemies?"));
+        Game.program_death(_("Fatal error: Why are the heroes running from dead enemies?"));
     }
     else
     {
@@ -1303,7 +1303,7 @@ static void hero_run(void)
         menubox(double_buffer, 84, 32, 17, 1, BLUE);
         print_font(double_buffer, 92, 40, _("Could not escape!"), FNORMAL);
         blit2screen(0, 0);
-        wait_enter();
+        Game.wait_enter();
         return;
     }
     if (g > 0)

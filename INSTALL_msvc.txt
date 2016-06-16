@@ -1,0 +1,63 @@
+Create a new directory at C:\KQ
+
+Download the MSVC precompiled library files and binaries from:
+- http://cdn.allegro.cc/file/library/allegro/4.4.2/allegro-4.4.2-msvc-10.0.zip
+- Extract the files, then rename the parent directory (the one above bin/, include/ and lib/) to `allegro`.
+
+Download DUMB:
+- https://sourceforge.net/projects/dumb/files/dumb/0.9.3/ selecting dumb-0.9.3.zip\
+- Extract the files under C:\KQ\dumb
+
+Download kq-fork:
+- https://github.com/grrk-bzzt/kq-fork
+- Clone the project under C:\KQ\kq-fork
+
+Download Lua:
+- https://www.lua.org/download.html and/or https://www.lua.org/ftp/lua-5.3.2.tar.gz
+- Extract the files under C:\KQ\lua
+
+Download TinyXML2:
+- https://github.com/leethomason/tinyxml2 and click the `Clone or Download` link and choose to `Download ZIP`.
+- Extract the files under C:\KQ\tinyxml2
+
+Your directory should now look like:
+
+C:\KQ
+C:\KQ\allegro
+C:\KQ\dumb
+C:\KQ\kq-fork
+C:\KQ\lua
+C:\KQ\tinyxml2
+
+Open Visual Studio
+File -> New Project...
+Templates / Visual C++ / Win32 Console Application
+- Name: kq
+- Location: C:\KQ\
+- Solution: Create new solution
+- Solution name: kq
+- [x] Create directory for solution
+- [ ] Add to source control
+
+In the "Welcome to the Win32 Application Wizard":
+- Click `Next >`
+- [x] Console application
+- [x] Empty project
+- Click `Finish`
+
+=== Allegro 4.4.2 ===
+
+In the new project, open the Solution Explorer window and right-click the project name (`kq`) and choose Properties.
+- Select Configuration Properties / VC++ Directories
+-- Edit the `Include Directories` row, and add `C:\KQ\allegro\include`
+- Close all dialog boxes with the `OK` buttons
+
+Right-click the project name (`kq`) again and select `Add -> Existing Item`
+- Select C:\KQ\allegro\lib\allegro-4.4.2-md.lib
+
+=== DUMB 0.9.8 === (incomplete, not fully working)
+
+Find C:\KQ\dumb\vc6\dumb.dsw and open it in Visual Studio. It will give a "One-way upgrade" warning: hit OK to migrate.
+Switch the compilation from `Debug` to `Release` mode.
+Right click the `aldumb` project in the Solution Explorer window, and choose Properties.
+- Edit the `Configuration Properties / VC++ Directories / Include Directories` and add the same `C:\KQ\allegro\include` path as done in the earlier step.

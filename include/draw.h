@@ -22,7 +22,7 @@
 
 #ifndef __DRAW_H
 #define __DRAW_H 1
-
+#include <stdint.h>
 class Raster;
 
 // TODO: Find out whether these values paired to any color defined within PALETTE 'pal'
@@ -102,7 +102,7 @@ void drawmap(void);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, hskill.c,  */
 /*  menu.c, selector.c, setup.c, sgame.c, intrface.c  */
-void menubox(Raster *, int, int, int, int, int);
+void menubox(Raster *where, int x, int y, int w, int h, int c);
 
 /*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, hskill.c,  */
 /*  intrface.c, selector.c, setup.c, sgame.c, menu.c  */
@@ -128,9 +128,9 @@ void set_view(int, int, int, int, int);
 Raster *copy_bitmap(Raster *, Raster *);
 
 /*  global variables  */
-extern unsigned char BLUE;
-extern unsigned char DARKBLUE;
-extern unsigned char DARKRED;
+extern uint8_t BLUE;
+extern uint8_t DARKBLUE;
+extern uint8_t DARKRED;
 
 
 #endif  /* __DRAW_H */

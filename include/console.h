@@ -24,7 +24,10 @@
 #define __CONSOLE_H 1
 
 
-void display_console(unsigned int, unsigned int);
+#include <allegro.h>
+
+
+void display_console(uint32_t, uint32_t);
 void do_console_command(const char *);
 void init_console(void);
 void run_console(void);

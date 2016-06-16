@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "combat.h"
+#include "constants.h"
 #include "draw.h"
 #include "effects.h"
 #include "enemyc.h"
@@ -56,23 +57,23 @@
 
 /*! \name global variables  */
 
-unsigned int combatend;
+uint32_t combatend;
 int cact[NUM_FIGHTERS];
 int curx;
 int cury;
-unsigned int num_enemies;
+uint32_t num_enemies;
 int ta[NUM_FIGHTERS];
 int deffect[NUM_FIGHTERS];
 int rcount;
-unsigned char vspell;
-unsigned char ms;
+uint8_t vspell;
+uint8_t ms;
 Raster *backart;
 
 /* Internal variables */
 static int curw;
 static int nspeed[NUM_FIGHTERS];
 static int bspeed[NUM_FIGHTERS];
-static unsigned char hs;
+static uint8_t hs;
 
 
 enum eAttackResult
@@ -322,7 +323,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
     }
 
     clear_bitmap(double_buffer);
-    blit(backart, double_buffer, 0, 0, 0, 0, 320, 240);
+    blit(backart, double_buffer, 0, 0, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H);
 
     if ((sall == 0) && (curx > -1) && (cury > -1))
     {
@@ -582,46 +583,6 @@ int combat(int bno)
 }
 
 
-#if 0
-/*! \brief Does current location call for combat?
- *
- * This function checks the zone at the specified co-ordinates
- * and calls combat based on the map and zone.
- *
- * PH: it seems that this is rarely used (?) - only called by
- * entityat().
- * WK: I have altered entityat() slightly to bypass this function.
- * This function is no longer used. I have not noticed any
- * negative side effects.
- *
- * \param   comx x-coord of player
- * \param   comy y-coord of player
- * \returns outcome of combat() or 0 if no combat
- *
- */
-int combat_check(int comx, int comy)
-{
-    unsigned char zn;
-    size_t battle_index;
-
-    zn = z_seg[comy * g_map.xsize + comx];
-
-    /*  RB TODO: adding a break will make this a bit faster, plus
-     *           calling combat with the FIRST zone, not the LAST
-     *           one.
-     * PH: done this 20020222
-     */
-    for (battle_index = 0; battle_index < NUM_BATTLES; battle_index++)
-    {
-        /* if (battles[battle_index].mapnum == g_map.map_no && battles[battle_index].zonenum == zn) */
-        return combat(battle_index);
-    }
-
-    return 0;
-}
-#endif
-
-
 /*! \brief Choose an action
  * \author Josh Bolduc
  * \date Created ????????
@@ -632,8 +593,8 @@ int combat_check(int comx, int comy)
 static void do_action(size_t fighter_index)
 {
     size_t imb_index;
-    unsigned char imbued_item;
-    unsigned char spell_type_status;
+    uint8_t imbued_item;
+    uint8_t spell_type_status;
 
     for (imb_index = 0; imb_index < 2; imb_index++)
     {
@@ -716,7 +677,7 @@ static int do_combat(char *bg, char *mus, int is_rnd)
         }
         else
         {
-            if (numchrs > 1 && (in_party(AYLA) < MAXCHRS))
+            if (numchrs > 1 && (Game.in_party(AYLA) < MAXCHRS))
             {
                 hs = kq_rnd(1, 21);
                 ms = kq_rnd(1, 6);
@@ -950,7 +911,7 @@ static void do_round(void)
                 }
             }
 
-            readcontrols();
+            Game.readcontrols();
             battle_render(0, 0, 0);
             blit2screen(0, 0);
 
@@ -974,7 +935,7 @@ static void do_round(void)
             timer_count = 0;
         }
 
-        kq_yield();
+        Game.kq_yield();
     }
 }
 
@@ -1096,7 +1057,7 @@ static void enemies_win(void)
     menubox(double_buffer, 152 - (strlen(strbuf) * 4), 48, strlen(strbuf), 1, BLUE);
     print_font(double_buffer, 160 - (strlen(strbuf) * 4), 56, strbuf, FNORMAL);
     blit2screen(0, 0);
-    wait_enter();
+    Game.wait_enter();
     do_transition(TRANS_FADE_OUT, 4);
     alldead = 1;
 }
@@ -1121,8 +1082,8 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
     int a;
     int tx = -1;
     int ty = -1;
-    unsigned int f;
-    unsigned int ares;
+    uint32_t f;
+    uint32_t ares;
     size_t fighter_index;
     size_t stats_index;
 
@@ -1155,7 +1116,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
             battle_render(defend_fighter_index + 1, 0, 0);
             blit2screen(0, 0);
             kq_wait(20);
-            rectfill(double_buffer, 0, 0, 320, 240, 15);
+            rectfill(double_buffer, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H, 15);
             blit2screen(0, 0);
             kq_wait(20);
         }
@@ -1387,7 +1348,7 @@ static void heroes_win(void)
     if (nr > 0)
     {
         blit2screen(0, 0);
-        wait_enter();
+        Game.wait_enter();
         fullblit(back, double_buffer);
     }
 
@@ -1457,7 +1418,7 @@ static void heroes_win(void)
 
     if (ent == 0)
     {
-        wait_enter();
+        Game.wait_enter();
     }
 }
 
@@ -1514,9 +1475,9 @@ void multi_fight(size_t attack_fighter_index)
     size_t spell_index;
     size_t start_fighter_index;
     size_t end_fighter_index;
-    unsigned int deadcount = 0;
-    unsigned int killed_warrior[NUM_FIGHTERS];
-    //unsigned int ares[NUM_FIGHTERS];
+    uint32_t deadcount = 0;
+    uint32_t killed_warrior[NUM_FIGHTERS];
+    //uint32_t ares[NUM_FIGHTERS];
 
     for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
     {
@@ -1678,25 +1639,6 @@ static void roll_initiative(void)
 
     rcount = 0;
 
-    /* PH: this isn't right because not all members of the fighter[] array
-     * are valid - e.g. if you are attacked by 1 enemy, there are 4 enemy
-     * slots that aren't used. Currently, no enemies use imbued stuff, but
-     * this may change (?)
-     */
-#if 0
-    for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
-    {
-        /*  TODO: Unroll this loop  */
-        for (j = 0; j < 2; j++)
-        {
-            if (fighter[fighter_index].imb[j] > 0)
-            {
-                cast_imbued_spell(fighter_index, fighter[fighter_index].imb[j], 1, TGT_CASTER);
-            }
-        }
-    }
-
-#endif
     /* PH: This should be ok */
     for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
     {

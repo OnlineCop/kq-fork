@@ -28,7 +28,6 @@
 #include "maps.h"
 #include "structs.h"
 
-int save_s_map(s_map *, PACKFILE *);
 int save_s_entity(s_entity *, PACKFILE *);
 int load_s_player(s_player *, PACKFILE *);
 int save_s_player(s_player *, PACKFILE *);

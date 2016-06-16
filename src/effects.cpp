@@ -143,13 +143,13 @@ void death_animation(size_t target_fighter_index, int target_all_flag)
 void display_amount(size_t target_fighter_index, eFontColor font_color, int multiple_target)
 {
     int dx, dy, sprite_height;
-    unsigned int c, p;
+    uint32_t c, p;
     eFontColor new_font_color;
     size_t fighter_index, start_fighter_index, num_fighters;
     size_t string_length;
 
     /* TT: used for the slow_computer routine */
-    unsigned int pcount, ccount;
+    uint32_t pcount, ccount;
 
     if (multiple_target == 1)
     {

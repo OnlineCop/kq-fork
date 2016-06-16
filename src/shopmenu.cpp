@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "constants.h"
 #include "draw.h"
 #include "fade.h"
 #include "itemdefs.h"
@@ -48,16 +49,16 @@ in the code. It is part of my "separate the engine and the data" campaign. */
 
 /* highest valid shops[] index + 1. Equals number of shops declared if indexes
     are declared in order. */
-unsigned short num_shops = 0;
+uint16_t num_shops = 0;
 
 s_shop shops[NUMSHOPS];         /* Initialized by init.lua:init_shop() */
 
 /*! Number of items in a shop */
-static unsigned int num_shop_items;
+static uint32_t num_shop_items;
 
 /*  internal variables  */
 /*! \brief Current shop index */
-static unsigned char shop_no;
+static uint8_t shop_no;
 
 /*  internal functions  */
 static void draw_sideshot(int);
@@ -90,22 +91,22 @@ static void buy_item(int how_many, int item_no)
     }
     while (!stop)
     {
-        check_animation();
-        back->blitTo( double_buffer, 0, 0, xofs, 192 + yofs, 320, 48);
+        Game.do_check_animation();
+        blit(back, double_buffer, 0, 0, xofs, 192 + yofs, KQ_SCREEN_W, 48);
         menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, DARKBLUE);
         print_font(double_buffer, 104 + xofs, 176 + yofs, _("Confirm/Cancel"), FNORMAL);
         draw_sideshot(shops[shop_no].items[item_no]);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             return;
         }
     }
@@ -153,12 +154,14 @@ static void buy_menu(void)
     }
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
-        menubox(double_buffer, 152 - (strlen(shop_name) * 4) + xofs, yofs, strlen(shop_name), 1, BLUE);
-        print_font(double_buffer, 160 - (strlen(shop_name) * 4) + xofs, 8 + yofs, shop_name, FGOLD);
+        menubox(double_buffer, 152 - (shop_name.length() * 4) + xofs, yofs, shop_name.length(), 1, BLUE);
+        print_font(double_buffer, 160 - (shop_name.length() * 4) + xofs, 8 + yofs, shop_name.c_str(), FGOLD);
+
         menubox(double_buffer, xofs, 208 + yofs, 7, 2, BLUE);
         print_font(double_buffer, 24 + xofs, 220 + yofs, _("Buy"), FGOLD);
+
         menubox(double_buffer, 32 + xofs, 24 + yofs, 30, 16, BLUE);
         menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, BLUE);
         draw_shopgold();
@@ -194,10 +197,10 @@ static void buy_menu(void)
         draw_sprite(double_buffer, menuptr, 32 + xofs, yptr * 8 + 32 + yofs);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             if (yptr > 0)
             {
                 yptr--;
@@ -210,7 +213,7 @@ static void buy_menu(void)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             if (yptr < num_shop_items - 1)
             {
                 yptr++;
@@ -223,19 +226,19 @@ static void buy_menu(void)
         }
         if (PlayerInput.left && xptr > 1)
         {
-            unpress();
+            Game.unpress();
             xptr--;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.right && xptr < max_x)
         {
-            unpress();
+            Game.unpress();
             xptr++;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             blit(double_buffer, back, xofs, 192 + yofs, 0, 0, 320, 48);
             unsigned short max = shops[shop_no].items_current[yptr];
             if (xptr < max)
@@ -246,7 +249,7 @@ static void buy_menu(void)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = true;
         }
     }
@@ -317,7 +320,7 @@ static void draw_sideshot(int selected_item)
 {
     int wx, wy;
     int cs[13];
-    unsigned int ownd = 0, equipped_items = 0, slot;
+    uint32_t ownd = 0, equipped_items = 0, slot;
     size_t pidx_index, equipment_index, stats_index, cs_index, spell_index, inventory_index;
 
     menubox(double_buffer, 80 + xofs, 192 + yofs, 18, 4, BLUE);
@@ -449,10 +452,10 @@ static void draw_sideshot(int selected_item)
  * \param   gold_per_character Gold per character (base price)
  * \param   pay If 0, staying is free.
  */
-void inn(const char *iname, unsigned int gold_per_character, int pay)
+void inn(const char *iname, uint32_t gold_per_character, int pay)
 {
     int b, my = 0, stop = 0;
-    unsigned int total_gold_cost;
+    uint32_t total_gold_cost;
     size_t pidx_index, party_index;
 
     if (pay == 0)
@@ -463,7 +466,7 @@ void inn(const char *iname, unsigned int gold_per_character, int pay)
         do_inn_effects(pay);
         return;
     }
-    unpress();
+    Game.unpress();
     drawmap();
     menubox(double_buffer, 152 - (strlen(iname) * 4) + xofs, yofs, strlen(iname), 1, BLUE);
     print_font(double_buffer, 160 - (strlen(iname) * 4) + xofs, 8 + yofs, iname, FGOLD);
@@ -491,7 +494,7 @@ void inn(const char *iname, unsigned int gold_per_character, int pay)
     }
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
 
         sprintf(strbuf, _("The cost is %u gp for the night."), total_gold_cost);
@@ -501,7 +504,7 @@ void inn(const char *iname, unsigned int gold_per_character, int pay)
         print_font(double_buffer, 256 + xofs, 176 + yofs, _("Gold:"), FGOLD);
         sprintf(strbuf, "%d", gp);
         print_font(double_buffer, 312 - (strlen(strbuf) * 8) + xofs, 184 + yofs, strbuf, FNORMAL);
-        if ((unsigned int)gp >= total_gold_cost)
+        if ((uint32_t)gp >= total_gold_cost)
         {
             menubox(double_buffer, 52 + xofs, 96 + yofs, 25, 2, BLUE);
             print_font(double_buffer, 60 + xofs, 108 + yofs, _("Do you wish to stay?"), FNORMAL);
@@ -511,7 +514,7 @@ void inn(const char *iname, unsigned int gold_per_character, int pay)
             menubox(double_buffer, 32 + xofs, 96 + yofs, 30, 2, BLUE);
             print_font(double_buffer, 40 + xofs, 108 + yofs, _("You can't afford to stay here."), FNORMAL);
             blit2screen(xofs, yofs);
-            wait_enter();
+            Game.wait_enter();
             return;
         }
 
@@ -520,10 +523,10 @@ void inn(const char *iname, unsigned int gold_per_character, int pay)
         print_font(double_buffer, 236 + xofs, 112 + yofs, _("no"), FNORMAL);
         draw_sprite(double_buffer, menuptr, 220 + xofs, my * 8 + 104 + yofs);
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             if (my == 0)
             {
                 my = 1;
@@ -536,7 +539,7 @@ void inn(const char *iname, unsigned int gold_per_character, int pay)
         }
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             if (my == 0)
             {
                 my = 1;
@@ -549,7 +552,7 @@ void inn(const char *iname, unsigned int gold_per_character, int pay)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (my == 0)
             {
                 gp -= total_gold_cost;
@@ -599,7 +602,7 @@ static void sell_howmany(int item_no, size_t inv_page)
     }
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, DARKBLUE);
         print_font(double_buffer, 124 + xofs, 176 + yofs, _("How many?"), FNORMAL);
@@ -610,17 +613,17 @@ static void sell_howmany(int item_no, size_t inv_page)
         print_font(double_buffer, 280 - (strlen(strbuf) * 8) + xofs, item_no * 8 + 32 + yofs, strbuf, FNORMAL);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up || PlayerInput.right)
         {
             if (my < max_items)
             {
-                unpress();
+                Game.unpress();
                 my++;
             }
             else
             {
-                unpress();
+                Game.unpress();
                 my = 1;
             }
         }
@@ -628,18 +631,18 @@ static void sell_howmany(int item_no, size_t inv_page)
         {
             if (my > 1)
             {
-                unpress();
+                Game.unpress();
                 my--;
             }
             else
             {
-                unpress();
+                Game.unpress();
                 my = max_items;
             }
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, DARKBLUE);
             sprintf(strbuf, _("Sell for %d gp?"), (prc * 50 / 100) * my);
             print_font(double_buffer, 160 - (strlen(strbuf) * 4) + xofs, 176 + yofs, strbuf, FNORMAL);
@@ -648,7 +651,7 @@ static void sell_howmany(int item_no, size_t inv_page)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -675,10 +678,10 @@ static void sell_item(int itno, int ni)
     blit2screen(xofs, yofs);
     while (!stop)
     {
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             gp += sp;
             for (a = 0; a < SHOPITEMS; a++)
             {
@@ -697,7 +700,7 @@ static void sell_item(int itno, int ni)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -713,16 +716,16 @@ static void sell_item(int itno, int ni)
 static void sell_menu(void)
 {
     size_t yptr = 0, stop = 0;
-    int z, p, sp;
+    int p, sp;
     eFontColor k;
     size_t inv_page = 0;
 
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
-        menubox(double_buffer, 152 - (strlen(shop_name) * 4) + xofs, yofs, strlen(shop_name), 1, BLUE);
-        print_font(double_buffer, 160 - (strlen(shop_name) * 4) + xofs, 8 + yofs, shop_name, FGOLD);
+        menubox(double_buffer, 152 - (shop_name.length() * 4) + xofs, yofs, shop_name.length(), 1, BLUE);
+        print_font(double_buffer, 160 - (shop_name.length() * 4) + xofs, 8 + yofs, shop_name.c_str(), FGOLD);
         menubox(double_buffer, xofs, 208 + yofs, 7, 2, BLUE);
         print_font(double_buffer, 20 + xofs, 220 + yofs, _("Sell"), FGOLD);
         menubox(double_buffer, 32 + xofs, 24 + yofs, 30, 16, BLUE);
@@ -730,8 +733,8 @@ static void sell_menu(void)
         draw_shopgold();
         for (p = 0; p < NUM_ITEMS_PER_PAGE; p++)
         {
-            z = g_inv[inv_page * NUM_ITEMS_PER_PAGE + p].item;
-            if (items[z].price == 0)
+            int inventory_item_index = g_inv[inv_page * NUM_ITEMS_PER_PAGE + p].item;
+            if (items[inventory_item_index].price == 0)
             {
                 k = FDARK;
             }
@@ -739,8 +742,8 @@ static void sell_menu(void)
             {
                 k = FNORMAL;
             }
-            draw_icon(double_buffer, items[z].icon, 48 + xofs, p * 8 + 32 + yofs);
-            print_font(double_buffer, 56 + xofs, p * 8 + 32 + yofs, items[z].name, k);
+            draw_icon(double_buffer, items[inventory_item_index].icon, 48 + xofs, p * 8 + 32 + yofs);
+            print_font(double_buffer, 56 + xofs, p * 8 + 32 + yofs, items[inventory_item_index].name, k);
             // Check if quantity of this item > 1
             if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + p].quantity > 1)
             {
@@ -770,18 +773,18 @@ static void sell_menu(void)
         {
             if (inv.item > 0)
             {
-                print_font(double_buffer, 76 + xofs, 192 + yofs, _("That can not be sold!"), FNORMAL);
+                print_font(double_buffer, 76 + xofs, 192 + yofs, _("That cannot be sold!"), FNORMAL);
             }
         }
         draw_sprite(double_buffer, menuptr, 32 + xofs, yptr * 8 + 32 + yofs);
         draw_sprite(double_buffer, pgb[inv_page], 278 + xofs, 158 + yofs);
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             if (yptr < (NUM_ITEMS_PER_PAGE - 1))
             {
                 yptr++;
@@ -794,7 +797,7 @@ static void sell_menu(void)
         }
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             if (yptr > 0)
             {
                 yptr--;
@@ -807,7 +810,7 @@ static void sell_menu(void)
         }
         if (PlayerInput.left)
         {
-            unpress();
+            Game.unpress();
             if (inv_page > 0)
             {
                 inv_page--;
@@ -820,7 +823,7 @@ static void sell_menu(void)
         }
         if (PlayerInput.right)
         {
-            unpress();
+            Game.unpress();
             if (inv_page < (MAX_INV / NUM_ITEMS_PER_PAGE - 1))
             {
                 inv_page++;
@@ -833,7 +836,7 @@ static void sell_menu(void)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr].item > 0 && items[g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr].item].price > 0)
             {
                 sell_howmany(yptr, inv_page);
@@ -841,7 +844,7 @@ static void sell_menu(void)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -863,7 +866,7 @@ int shop(int shop_num)
   bool stop = false;
     s_shop& shop = shops[shop_num];
     shop_no = shop_num;
-    strcpy(shop_name, shop.name);
+    shop_name = shop.name;
 
     /* If enough time has passed, fully replenish this shop's stock of an item */
     int replenish_time = (khr * 60) + kmin - shop.time;
@@ -893,14 +896,14 @@ int shop(int shop_num)
         return 1;
     }
 
-    unpress();
+    Game.unpress();
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
-        menubox(double_buffer, 152 - (strlen(shop_name) * 4) + xofs, yofs, strlen(shop_name), 1, BLUE);
-        print_font(double_buffer, 160 - (strlen(shop_name) * 4) + xofs, 8 + yofs, shop_name, FGOLD);
+        menubox(double_buffer, 152 - (shop_name.length() * 4) + xofs, yofs, shop_name.length(), 1, BLUE);
+        print_font(double_buffer, 160 - (shop_name.length() * 4) + xofs, 8 + yofs, shop_name.c_str(), FGOLD);
         menubox(double_buffer, 32 + xofs, 24 + yofs, 30, 1, BLUE);
         menubox(double_buffer, ptr * 80 + 32 + xofs, 24 + yofs, 10, 1, DARKBLUE);
         print_font(double_buffer, 68 + xofs, 32 + yofs, _("Buy"), FGOLD);
@@ -910,23 +913,23 @@ int shop(int shop_num)
         draw_shopgold();
         blit2screen(xofs, yofs);
 
-        readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.left && ptr > 0)
         {
-            unpress();
+            Game.unpress();
             ptr--;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.right && ptr < 2)
         {
-            unpress();
+            Game.unpress();
             ptr++;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             if (ptr == 0)
             {
                 buy_menu();
@@ -942,7 +945,7 @@ int shop(int shop_num)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = true;
         }
     }

@@ -133,10 +133,9 @@ void play_music(const std::string &music_name, long position)
 {
     if (is_sound != 0)
     {
-        char filename[2048];
+        const char *filename = kqres(MUSIC_DIR, music_name).c_str();
 
         stop_music();
-        strcpy(filename, kqres(MUSIC_DIR, music_name.c_str()));
         if (exists(filename))
         {
             if (strstr(filename, ".mod"))

@@ -25,20 +25,22 @@
 
 
 /* Special identifiers for bubble() */
-#define HERO1             200
-#define HERO2             201
+enum eHero
+{
+    HERO1 = 200,
+    HERO2 = 201
+};
 
 
-void do_autoexec(void);         /*  kq.c  */
-void do_entity(int);            /*  kq.c  */
-void do_luacheat(void);         /*  entity.c  */
-void do_luainit(const char *, int);  /*  kq.c  */
-void do_luakill(void);          /*  kq.c  */
-void do_postexec(void);         /*  kq.c  */
-void do_timefunc(const char *);
-void do_zone(int);              /*  kq.c  */
-void lua_user_init(void);       /*  kq.c */
+void do_autoexec(void);
+void do_entity(int en_num);
+void do_luacheat(void);
+void do_luainit(const char *fname, int global);
+void do_luakill(void);
+void do_postexec(void);
+void do_timefunc(const char *funcname);
+void do_zone(int zn_num);
+void lua_user_init(void);
 
 
 #endif  /* __INTRFACE_H */
-

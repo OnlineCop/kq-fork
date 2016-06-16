@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "constants.h"
 #include "draw.h"
 #include "eqpmenu.h"
 #include "heroc.h"
@@ -156,33 +157,33 @@ void draw_mainmenu(int swho)
  *
  * Draw the terse stats of a single player.
  * \param   where Bitmap to draw onto
- * \param   i Player (index in party array) to show info for
- * \param   dx x-coord of stats view
- * \param   dy y-coord of stats view
+ * \param   player_index_in_party Player (index in party array) to show info for
+ * \param   dx left-most x-coord of stats view
+ * \param   dy top-most y-coord of stats view
  */
-void draw_playerstat(Raster* where, int i, int dx, int dy)
+void draw_playerstat(Raster* where, int player_index_in_party, int dx, int dy)
 {
     int j;
-	players[i].portrait->maskedBlitTo(where, dx, dy);
-    print_font(where, dx + 48, dy, party[i].name, FNORMAL);
-    draw_stsicon(where, 0, i, 8, dx + 48, dy + 8);
+	players[player_index_in_party].portrait->maskedBlitTo(where, dx, dy);
+    print_font(where, dx + 48, dy, party[player_index_in_party].name, FNORMAL);
+    draw_stsicon(where, 0, player_index_in_party, 8, dx + 48, dy + 8);
     print_font(where, dx + 48, dy + 16, _("LV"), FGOLD);
-    sprintf(strbuf, "%d", party[i].lvl);
+    sprintf(strbuf, "%d", party[player_index_in_party].lvl);
     print_font(where, dx + 104 - (strlen(strbuf) * 8), dy + 16, strbuf, FNORMAL);
     print_font(where, dx + 48, dy + 24, _("HP"), FGOLD);
     print_font(where, dx + 104, dy + 24, "/", FNORMAL);
-    sprintf(strbuf, "%d", party[i].hp);
+    sprintf(strbuf, "%d", party[player_index_in_party].hp);
     j = strlen(strbuf) * 8;
     print_font(where, dx + 104 - j, dy + 24, strbuf, FNORMAL);
-    sprintf(strbuf, "%d", party[i].mhp);
+    sprintf(strbuf, "%d", party[player_index_in_party].mhp);
     j = strlen(strbuf) * 8;
     print_font(where, dx + 144 - j, dy + 24, strbuf, FNORMAL);
     print_font(where, dx + 48, dy + 32, _("MP"), FGOLD);
     print_font(where, dx + 104, dy + 32, "/", FNORMAL);
-    sprintf(strbuf, "%d", party[i].mp);
+    sprintf(strbuf, "%d", party[player_index_in_party].mp);
     j = strlen(strbuf) * 8;
     print_font(where, dx + 104 - j, dy + 32, strbuf, FNORMAL);
-    sprintf(strbuf, "%d", party[i].mmp);
+    sprintf(strbuf, "%d", party[player_index_in_party].mmp);
     j = strlen(strbuf) * 8;
     print_font(where, dx + 144 - j, dy + 32, strbuf, FNORMAL);
 }
@@ -299,15 +300,15 @@ void menu(void)
     timer_count = 0;
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         draw_mainmenu(-1);
         draw_sprite(double_buffer, menuptr, 204 + xofs, ptr * 8 + 73 + yofs);
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             ptr--;
             if (ptr < 0)
             {
@@ -317,7 +318,7 @@ void menu(void)
         }
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             ptr++;
             if (ptr > 5)
             {
@@ -336,7 +337,7 @@ void menu(void)
         }
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             switch (ptr)
             {
                 case 0:
@@ -370,7 +371,7 @@ void menu(void)
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
         if (close_menu == 1)
@@ -630,30 +631,30 @@ static void quest_info(void)
             print_font(double_buffer, 96 + xofs, 196 + yofs, quest_list.root[ii].text, FNORMAL);
         }
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.up)
         {
             --ii;
             play_effect(SND_CLICK, 128);
-            unpress();
+            Game.unpress();
         }
         if (PlayerInput.down)
         {
             ++ii;
             play_effect(SND_CLICK, 128);
-            unpress();
+            Game.unpress();
         }
         if (PlayerInput.left)
         {
             ii -= 10;
             play_effect(SND_CLICK, 128);
-            unpress();
+            Game.unpress();
         }
         if (PlayerInput.right)
         {
             ii += 10;
             play_effect(SND_CLICK, 128);
-            unpress();
+            Game.unpress();
         }
         if (ii < 0)
         {
@@ -665,7 +666,7 @@ static void quest_info(void)
         }
         if (PlayerInput.balt || PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             return;
         }
     }
@@ -756,7 +757,7 @@ void spec_items(void)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         menubox(double_buffer, 72 + xofs, 12 + yofs, 20, 1, BLUE);
         print_font(double_buffer, 108 + xofs, 20 + yofs, _("Special Items"), FGOLD);
@@ -776,23 +777,23 @@ void spec_items(void)
         print_font(double_buffer, 160 - a + xofs, 212 + yofs, special_items[list_item_which[ptr]].description, FNORMAL);
         draw_sprite(double_buffer, menuptr, 72 + xofs, ptr * 8 + 44 + yofs);
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.down)
         {
-            unpress();
+            Game.unpress();
             ptr = (ptr + 1) % num_items;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.up)
         {
-            unpress();
+            Game.unpress();
             ptr = (ptr - 1 + num_items) % num_items;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
     }
@@ -809,7 +810,7 @@ static void status_screen(size_t fighter_index)
 {
     int stop = 0;
     int bc = 0;
-    unsigned int rect_fill_amount = 0, curr_fill, res_index, stats_y, equipment_index;
+    uint32_t rect_fill_amount = 0, curr_fill, res_index, stats_y, equipment_index;
     size_t pidx_index, stats_index;
 
     play_effect(SND_MENU, 128);
@@ -817,7 +818,7 @@ static void status_screen(size_t fighter_index)
     update_equipstats();
     while (!stop)
     {
-        check_animation();
+        Game.do_check_animation();
         // Redraw the map, clearing any menus under this new window
         drawmap();
 
@@ -921,25 +922,25 @@ static void status_screen(size_t fighter_index)
             print_font(double_buffer, 176 + xofs, equipment_index * 8 + 168 + yofs, items[party[pidx_index].eqp[equipment_index]].name, FNORMAL);
         }
         blit2screen(xofs, yofs);
-        readcontrols();
+        Game.readcontrols();
 
         if (PlayerInput.left && fighter_index > 0)
         {
-            unpress();
+            Game.unpress();
             fighter_index--;
             pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
         if (PlayerInput.right && fighter_index < numchrs - 1)
         {
-            unpress();
+            Game.unpress();
             fighter_index++;
             pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
         if (PlayerInput.bctrl)
         {
-            unpress();
+            Game.unpress();
             play_effect(SND_MENU, 128);
             stop = 1;
         }

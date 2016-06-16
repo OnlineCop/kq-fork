@@ -21,6 +21,7 @@
 
 #include <stddef.h>
 #include "console.h"
+#include "constants.h"
 #include "draw.h"
 #include "kq.h"
 #include "music.h"
@@ -57,7 +58,7 @@ enum eRunConsoleKeys
 };
 
 
-/*! \brief Initialise the console state
+/*! \brief Initialize the console state
 *
 * Set up the global state ready for using the console
 * \author PH
@@ -85,10 +86,10 @@ void init_console(void)
 * \param xofs x-offset display position
 * \param yofs y-offset display position
 */
-void display_console(unsigned int xofs, unsigned int yofs)
+void display_console(uint32_t xofs, uint32_t yofs)
 {
-    unsigned int i, y;
-    unsigned int max_y = yofs + 120;
+    uint32_t i, y;
+    uint32_t max_y = yofs + 120;
 
     if (g_console.on != 1)
     {
@@ -147,8 +148,8 @@ void run_console(void)
     int c;
     size_t sl;
     int running;
-    unsigned int string_len;
-    unsigned int i;
+    uint32_t string_len;
+    uint32_t i;
     static const char get[] = "return get_progress(P_";
     static const char ret[] = "return ";
     static const char set[] = "set_progress(P_";
@@ -169,10 +170,10 @@ void run_console(void)
         /* Get a key */
         while (!keypressed())
         {
-            check_animation();
+            Game.do_check_animation();
             blit2screen(xofs, yofs);
             poll_music();
-            kq_yield();
+            Game.kq_yield();
         }
 
         switch ((c = readkey()) & 0xff)
@@ -251,7 +252,7 @@ void run_console(void)
     /* Wait for enter key up */
     do
     {
-        readcontrols();
+        Game.readcontrols();
     }
     while (PlayerInput.benter);
 }

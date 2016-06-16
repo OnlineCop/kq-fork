@@ -28,7 +28,7 @@
  *
  * This file includes the main() function,
  * most of the global variables, and some other stuff,
- * for example, controls, some initialisation and
+ * for example, controls, some initialization and
  * timing.
  *
  * \note 23: I don't know if we're going to do anything to lessen the number of
@@ -42,7 +42,6 @@
 #include <assert.h>
 #include <locale.h>
 #include <stdio.h>
-#include <string.h>
 #include <time.h>
 #include <vector>
 #include <string>
@@ -73,11 +72,17 @@
 #include "tiledmap.h"
 #include "imgcache.h"
 #include "animation.h"
+
 #include "gfx.h"
 #include "random.h"
 
+static void my_counter(void);
+static void time_counter(void);
+
+KGame Game;
+
 /*! Name of the current map */
-std::string curmap;
+string curmap;
 
 /*! \brief Which keys are pressed.
  *
@@ -106,20 +111,20 @@ Raster *obj_mesh;
 #endif
 
 /*! Layers in the map */
-unsigned short *map_seg = NULL, *b_seg = NULL, *f_seg = NULL;
+uint16_t *map_seg = NULL, *b_seg = NULL, *f_seg = NULL;
 
 /*! Zone, shadow and obstacle layers */
-unsigned char *z_seg = NULL, *s_seg = NULL, *o_seg = NULL;
+uint8_t *z_seg = NULL, *s_seg = NULL, *o_seg = NULL;
 
 /*! keeps track of tasks completed and treasure chests opened */
-unsigned char progress[SIZE_PROGRESS];
-unsigned char treasure[SIZE_TREASURE];
+uint8_t progress[SIZE_PROGRESS];
+uint8_t treasure[SIZE_TREASURE];
 
 /*! keeps track of when shops were last visited */
-unsigned short shop_time[NUMSHOPS];
+uint16_t shop_time[NUMSHOPS];
 
 /*! keeps track of non-combat spell statuses (currently only repulse) */
-unsigned char save_spells[SIZE_SAVE_SPELL];
+uint8_t save_spells[SIZE_SAVE_SPELL];
 
 /*! Current map */
 s_map g_map;
@@ -128,13 +133,13 @@ s_map g_map;
 s_entity g_ent[MAX_ENTITIES];
 
 /*! Number of enemies */
-unsigned int noe = 0;
+uint32_t noe = 0;
 
 /*! Identifies characters in the party */
 ePIDX pidx[MAXCHRS];
 
 /*! Number of characters in the party */
-unsigned int numchrs = 0;
+uint32_t numchrs = 0;
 
 /*! Current gold */
 int gp = 0;
@@ -146,45 +151,45 @@ int xofs, yofs;
 int gsvol = 250, gmvol = 250;
 
 /*! Is the party under 'automatic' (i.e. scripted) control */
-unsigned char autoparty = 0;
+uint8_t autoparty = 0;
 
 /*! Are all heroes dead? */
-unsigned char alldead = 0;
+uint8_t alldead = 0;
 
 /*! Is sound activated/available? */
-unsigned char is_sound = 1, sound_avail;
+uint8_t is_sound = 1, sound_avail;
 
 /*! Makes is_active() return TRUE even if the character is dead */
-unsigned char deadeffect = 0;
+uint8_t deadeffect = 0;
 
 /*! Does the viewport follow the characters?*/
-unsigned char vfollow = 1;
+uint8_t vfollow = 1;
 
 /*! Whether the sun stone can be used in this map*/
-unsigned char use_sstone = 0;
+uint8_t use_sstone = 0;
 
 /*! Version number (used for version control in sgame.c) */
-const unsigned char kq_version = 92;
+const uint8_t kq_version = 92;
 
 /*! If non-zero, don't do fade effects. The only place this is
  * set is in scripts. */
-unsigned char hold_fade = 0;
+uint8_t hold_fade = 0;
 
 /*! True if player can save at this point */
-unsigned char cansave = 0;
+uint8_t cansave = 0;
 
 /*! True if the intro is to be skipped (the bit where the heroes learn of the quest) */
-unsigned char skip_intro = 0;
+uint8_t skip_intro = 0;
 
 /*! Graphics mode settings */
-unsigned char wait_retrace = 1, windowed = 1, stretch_view = 1, cpu_usage = 1;
+uint8_t wait_retrace = 1, windowed = 1, stretch_view = 1, cpu_usage = 1;
 
 /*! Current sequence position of animated tiles */
-unsigned short tilex[MAX_TILES];
+uint16_t tilex[MAX_TILES];
 
 /*! Current 'time' for animated tiles. When this increments to adata[].delay,
  * the next tile is shown */
-unsigned short adelay[MAX_ANIM];
+uint16_t adelay[MAX_ANIM];
 
 /*! Temporary buffer for string operations (used everywhere!) */
 char *strbuf = NULL;
@@ -214,7 +219,7 @@ s_fighter fighter[NUM_FIGHTERS];
 s_fighter tempa, tempd;
 
 /*! Name of current shop */
-char shop_name[39];
+string shop_name;
 
 /*! Items in a shop */
 /* int shin[SHOPITEMS]; One global variable down; 999,999 to go --WK */
@@ -225,18 +230,6 @@ int display_attack_string = 0;
 
 /*! Name of current spell or special ability */
 char attack_string[39];
-
-/* PH: needed these fwd declarations */
-#ifdef DEBUGMODE
-static void data_dump(void);
-#endif
-
-static void allocate_stuff(void);
-static void load_heroes(void);
-static void my_counter(void);
-static void prepare_map(int, int, int, int);
-static void startup(void);
-static void time_counter(void);
 
 
 /*! \note 23: for keeping time. timer_count is the game timer the main game
@@ -250,15 +243,15 @@ volatile int timer = 0, ksec = 0, kmin = 0, khr = 0, timer_count = 0, animation_
 COLOR_MAP cmap;
 
 /*! Party can run away from combat? */
-unsigned char can_run = 1;
+uint8_t can_run = 1;
 
 /*! Is the map description is displayed on screen? */
-unsigned char display_desc = 0;
+uint8_t display_desc = 0;
 
 /*! Which map layers should be drawn. These are set when the map is loaded;
      see change_map()
  */
-unsigned char draw_background = 1, draw_middle = 1, draw_foreground = 1, draw_shadow = 1;
+uint8_t draw_background = 1, draw_middle = 1, draw_foreground = 1, draw_shadow = 1;
 
 /*! Items in inventory.  */
 s_inventory g_inv[MAX_INV];
@@ -381,13 +374,13 @@ s_progress progresses[SIZE_PROGRESS] =
  * Things that can be activated are entities and zones that are
  * obstructed.
  */
-void activate(void)
+void KGame::activate(void)
 {
     int zx, zy, looking_at_x = 0, looking_at_y = 0, q, target_char_facing = 0, tf;
 
-    unsigned int p;
+    uint32_t p;
 
-    unpress();
+    Game.unpress();
 
     /* Determine which direction the player's character is facing.  For
      * 'looking_at_y', a negative value means "toward north" or "facing up",
@@ -418,8 +411,8 @@ void activate(void)
             break;
     }
 
-    zx = g_ent[0].x / 16;
-    zy = g_ent[0].y / 16;
+    zx = g_ent[0].x / TILE_W;
+    zy = g_ent[0].y / TILE_H;
 
     looking_at_x += zx;
     looking_at_y += zy;
@@ -471,7 +464,7 @@ void activate(void)
  *        five seconds in the future
  * \returns <0 if an error occurred (i.e. too many pending events)
  */
-int add_timer_event(const char *n, int delta)
+int KGame::add_timer_event(const char *n, int delta)
 {
     int w = delta + ksec;
     int i;
@@ -495,14 +488,9 @@ int add_timer_event(const char *n, int delta)
 
 
 #ifdef DEBUGMODE
-Raster *alloc_bmp(int, int, const char *);  // Get rid of "no prev prototype" warning
-
 
 /*! \brief Creates a bitmap, giving an error message with the specified name if it fails.
  *
- * This function is wrapped in an #if..#endif guard so it only gets called
- * when DEBUGMODE is defined. Otherwise, create_bitmap() is called, ignoring
- * the last param.
  * This function terminates the program with an error message if it fails to
  * allocate the specified bitmap. The name supplied is shown if this happens
  * to help you trace which bitmap caused the issue.
@@ -512,7 +500,7 @@ Raster *alloc_bmp(int, int, const char *);  // Get rid of "no prev prototype" wa
  * \param   bitmap_name Name of bitmap
  * \returns the pointer to the created bitmap
  */
-Raster *alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name)
+Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name)
 {
     Raster *tmp = new Raster(bitmap_width, bitmap_height);
 
@@ -522,11 +510,10 @@ Raster *alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name)
         sprintf(strbuf, _("Could not allocate %s!."), bitmap_name);
         program_death(strbuf);
     }
-
     return tmp;
 }
 #else
-inline Raster* alloc_bmp(int w, int h, const char* n) {
+Raster* KGame::alloc_bmp(int w, int h, const char* n) {
 	(void)n;
 	return new Raster(w, h);
 }
@@ -538,7 +525,7 @@ inline Raster* alloc_bmp(int w, int h, const char* n) {
  *
  * A separate function to create all global bitmaps needed in the game.
  */
-static void allocate_stuff(void)
+void KGame::allocate_stuff(void)
 {
     size_t i, p;
 
@@ -603,7 +590,7 @@ static void allocate_stuff(void)
 
     for (p = 0; p < MAX_SHADOWS; p++)
     {
-        shadow[p] = alloc_bmp(16, 16, "shadow[x]");
+        shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
     }
 
     for (p = 0; p < 8; p++)
@@ -629,7 +616,7 @@ static void allocate_stuff(void)
 
     for (p = 0; p < MAX_TILES; p++)
     {
-        map_icons[p] = alloc_bmp(16, 16, "map_icons[x]");
+        map_icons[p] = alloc_bmp(TILE_W, TILE_H, "map_icons[x]");
     }
     allocate_credits();
 }
@@ -646,7 +633,7 @@ static void allocate_stuff(void)
  *
  * \param   center Unused variable
  */
-void calc_viewport(int /*center*/)
+void KGame::calc_viewport(int /*center*/)
 {
     int sx, sy, bl, br, bu, bd, zx, zy;
 
@@ -734,10 +721,10 @@ void calc_viewport(int /*center*/)
  *              to use the default: s_map::stx and s_map::sty)
  * \param   mvy New y-coord for camera
  */
-void change_map(const std::string &map_name, int msx, int msy, int mvx, int mvy)
+void KGame::change_map(const string &map_name, int msx, int msy, int mvx, int mvy)
 {
-	load_tmx(map_name);
-	prepare_map(msx, msy, mvx, mvy);
+    TiledMap.load_tmx(map_name);
+    prepare_map(msx, msy, mvx, mvy);
 }
 
 
@@ -757,22 +744,19 @@ void change_map(const std::string &map_name, int msx, int msy, int mvx, int mvy)
  * \param   offset_x Push player left/right this many tiles from the marker
  * \param   offset_y Push player up/down this many tiles from the marker
  */
-void change_mapm(const std::string &map_name, const std::string &marker_name, int offset_x, int offset_y)
+void KGame::change_mapm(const string &map_name, const string &marker_name, int offset_x, int offset_y)
 {
     int msx = 0, msy = 0, mvx = 0, mvy = 0;
-    s_marker *m;
 
-    load_tmx(map_name);
+    TiledMap.load_tmx(map_name);
     /* Search for the marker with the name passed into the function. Both
      * player's starting position and camera position will be the same
      */
-    for (m = g_map.markers.array; m < g_map.markers.array + g_map.markers.size; ++m)
+    auto marker = g_map.markers.GetMarker(marker_name);
+    if (marker != nullptr)
     {
-        if (marker_name == m->name)
-        {
-            msx = mvx = m->x + offset_x;
-            msy = mvy = m->y + offset_y;
-        }
+        msx = mvx = marker->x + offset_x;
+        msy = mvy = marker->y + offset_y;
     }
     prepare_map(msx, msy, mvx, mvy);
 }
@@ -786,11 +770,11 @@ void change_mapm(const std::string &map_name, const std::string &marker_name, in
  * tile index, and a delay. The smaller the delay value, the faster that the
  * animation cycles through the tiles.
  */
-void check_animation(void)
+void KGame::do_check_animation(void)
 {
-	int millis = (1000 * animation_count) / KQ_TICKS;
-	animation_count -= (KQ_TICKS * millis) / 1000;
-	check_animation(millis);
+    int millis = (1000 * animation_count) / KQ_TICKS;
+    animation_count -= (KQ_TICKS * millis) / 1000;
+    Animation.check_animation(millis, tilex);
 }
 
 
@@ -802,7 +786,7 @@ void check_animation(void)
  * and "progress.log" respectively. This happens in response to user hitting
  * the F11 key.
  */
-void data_dump(void)
+void KGame::data_dump(void)
 {
     FILE *ff;
     int a;
@@ -845,7 +829,7 @@ void data_dump(void)
  *
  * This frees memory and such things.
  */
-static void deallocate_stuff(void)
+void KGame::deallocate_stuff(void)
 {
     int i, p;
 
@@ -969,7 +953,7 @@ static void deallocate_stuff(void)
         free_samples();
     }
     deallocate_credits();
-	clear_image_cache();
+    clear_image_cache();
 
 #ifdef DEBUGMODE
     delete(obj_mesh);
@@ -991,7 +975,7 @@ static void deallocate_stuff(void)
  *
  * \returns name of the next event or NULL if none is ready
  */
-char *get_timer_event(void)
+char *KGame::get_timer_event(void)
 {
     static char buf[32];
     int now = ksec;
@@ -1037,7 +1021,7 @@ char *get_timer_event(void)
  * \param   pn Character to ask about
  * \returns index of member's ID if found, else MAXCHRS if NOT in party.
  */
-size_t in_party(ePIDX pn)
+size_t KGame::in_party(ePIDX pn)
 {
     size_t pidx_index;
 
@@ -1062,7 +1046,7 @@ size_t in_party(ePIDX pn)
  *
  * \param   msg String to add to log file
  */
-void klog(const char *msg)
+void KGame::klog(const char *msg)
 {
     TRACE("%s\n", msg);
 }
@@ -1078,7 +1062,7 @@ void klog(const char *msg)
  * \author OC
  * \date 20100228
  */
-void kq_yield(void)
+void KGame::kq_yield(void)
 {
     rest(cpu_usage);
 }
@@ -1094,7 +1078,7 @@ void kq_yield(void)
  *
  * \param   dtime Time in frames
  */
-void kwait(int dtime)
+void KGame::kwait(int dtime)
 {
     int cnt = 0;
 
@@ -1111,7 +1095,7 @@ void kwait(int dtime)
             cnt++;
             process_entities();
         }
-        check_animation();
+        Game.do_check_animation();
 
         drawmap();
         blit2screen(xofs, yofs);
@@ -1120,9 +1104,9 @@ void kwait(int dtime)
         {
             if (key[KEY_W] && key[KEY_ALT])
             {
-                klog(_("Alt+W Pressed:"));
+                Game.klog(_("Alt+W Pressed:"));
                 sprintf(strbuf, "\tkwait(); cnt=%d, dtime=%d, timer_count=%d", cnt, dtime, timer_count);
-                klog(strbuf);
+                Game.klog(strbuf);
                 break;
             }
         }
@@ -1154,7 +1138,7 @@ void kwait(int dtime)
  * Loads the hero stats from a file.
  *
  */
-void load_heroes(void)
+void KGame::load_heroes(void)
 {
 	Raster* eb = get_cached_image("uschrs.png");
 
@@ -1208,7 +1192,7 @@ int main(int argc, const char *argv[])
         }
     }
 
-    startup();
+    Game.startup();
     game_on = 1;
     /* While KQ is running (playing or at startup menu) */
     while (game_on)
@@ -1218,7 +1202,7 @@ int main(int argc, const char *argv[])
             case 0:                  /* Continue */
                 break;
             case 1:                  /* New game */
-                change_map("starting", 0, 0, 0, 0);
+                Game.change_map("starting", 0, 0, 0, 0);
 				kq_init_random();
                 break;
             default:                 /* Exit */
@@ -1241,7 +1225,7 @@ int main(int argc, const char *argv[])
                     timer_count--;
                     process_entities();
                 }
-                check_animation();
+                Game.do_check_animation();
                 drawmap();
                 blit2screen(xofs, yofs);
                 poll_music();
@@ -1272,7 +1256,7 @@ int main(int argc, const char *argv[])
     }
     remove_int(my_counter);
     remove_int(time_counter);
-    deallocate_stuff();
+    Game.deallocate_stuff();
     return EXIT_SUCCESS;
 } END_OF_MAIN()
 
@@ -1280,7 +1264,7 @@ int main(int argc, const char *argv[])
  *
  * New interrupt handler set to keep game time.
  */
-static void my_counter(void)
+void my_counter(void)
 {
     timer++;
 
@@ -1303,7 +1287,7 @@ static void my_counter(void)
  * \param   mvx - New x-coord for camera
  * \param   mvy - Same, for y-coord
  */
-static void prepare_map(int msx, int msy, int mvx, int mvy)
+void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 {
     Raster *pcxb;
     unsigned int i;
@@ -1402,26 +1386,26 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     play_music(g_map.song_file, 0);
-    mx = g_map.xsize * 16 - 304;
+    mx = g_map.xsize * TILE_W - 304;
     /*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
-    my = g_map.ysize * 16 - 256;
+    my = g_map.ysize * TILE_H - 256;
 
     if (mvx == 0 && mvy == 0)
     {
-        vx = g_map.stx * 16;
-        vy = g_map.sty * 16;
+        vx = g_map.stx * TILE_W;
+        vy = g_map.sty * TILE_H;
     }
     else
     {
-        vx = mvx * 16;
-        vy = mvy * 16;
+        vx = mvx * TILE_W;
+        vy = mvy * TILE_H;
     }
 
     calc_viewport(1);
 
     for (i = 0; i < MAX_TILES; i++)
     {
-        tilex[i] = (unsigned short)i;
+        tilex[i] = (uint16_t)i;
     }
 
     noe = 0;
@@ -1474,7 +1458,7 @@ static void prepare_map(int msx, int msy, int mvx, int mvy)
  *
  * \param   message Text to put into log
  */
-void program_death(const char *message)
+void KGame::program_death(const char *message)
 {
     TRACE("%s\n", message);
     char tmp[1024];
@@ -1496,7 +1480,7 @@ void program_death(const char *message)
  * 2003-09-07 Caz Jones: last time code workaround pci-gameport bug
  * (should not affect non-buggy drivers - please report to edge)
  */
-void readcontrols(void)
+void KGame::readcontrols(void)
 {
     JOYSTICK_INFO *stk;
 
@@ -1577,7 +1561,7 @@ void readcontrols(void)
  *
  * This removes any events from the list
  */
-void reset_timer_events(void)
+void KGame::reset_timer_events(void)
 {
     int i;
 
@@ -1593,7 +1577,7 @@ void reset_timer_events(void)
 /*! \brief Resets the world. Called every new game and load game
  *  This function may be called multiple times in some cases. That should be ok.
  */
-void reset_world(void)
+void KGame::reset_world(void)
 {
     int i, j;
 
@@ -1636,7 +1620,7 @@ void reset_world(void)
  * Set up allegro, set up variables, load stuff, blah...
  * This is called once per game.
  */
-static void startup(void)
+void KGame::startup(void)
 {
     int p, i, q;
     time_t t;
@@ -1692,7 +1676,7 @@ static void startup(void)
 
         if (use_joy == 0)
         {
-            klog(_("Only joysticks/gamepads with at least 4 buttons can be used."));
+            Game.klog(_("Only joysticks/gamepads with at least 4 buttons can be used."));
             remove_joystick();
         }
     }
@@ -1805,11 +1789,11 @@ static void startup(void)
     clear_bitmap(obj_mesh);
     for (q = 0; q < 16; q += 2)
     {
-        for (p = 0; p < 16; p += 2)
+        for (p = 0; p < TILE_W; p += 2)
         {
             putpixel(obj_mesh, p, q, 255);
         }
-        for (p = 1; p < 16; p += 2)
+        for (p = 1; p < TILE_W; p += 2)
         {
             putpixel(obj_mesh, p, q + 1, 255);
         }
@@ -1823,7 +1807,7 @@ static void startup(void)
 
 /*! \brief Keep track of the time the game has been in play
  */
-static void time_counter(void)
+void time_counter(void)
 {
     if (kmin < 60)
     {
@@ -1834,7 +1818,6 @@ static void time_counter(void)
         kmin -= 60;
         ++khr;
     }
-
 } END_OF_FUNCTION(time_counter)
 
 
@@ -1847,12 +1830,12 @@ static void time_counter(void)
  *
  * \note Waits at most 20 'ticks'
  */
-void unpress(void)
+void KGame::unpress(void)
 {
     timer_count = 0;
     while (timer_count < 20)
     {
-        readcontrols();
+        Game.readcontrols();
         if (!(PlayerInput.balt || PlayerInput.bctrl || PlayerInput.benter || PlayerInput.besc || PlayerInput.up || PlayerInput.down || PlayerInput.right || PlayerInput.left || PlayerInput.bcheat))
         {
             break;
@@ -1867,18 +1850,18 @@ void unpress(void)
  *
  * Simply wait for the 'alt' key to be pressed.
  */
-void wait_enter(void)
+void KGame::wait_enter(void)
 {
     int stop = 0;
 
-    unpress();
+    Game.unpress();
 
     while (!stop)
     {
-        readcontrols();
+        Game.readcontrols();
         if (PlayerInput.balt)
         {
-            unpress();
+            Game.unpress();
             stop = 1;
         }
         kq_yield();
@@ -1901,10 +1884,10 @@ void wait_enter(void)
  * \param   first_entity_index First entity
  * \param   last_entity_index Last entity
  */
-void wait_for_entity(size_t first_entity_index, size_t last_entity_index)
+void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
 {
     int any_following_entities;
-    unsigned char move_mode;
+    uint8_t move_mode;
     size_t entity_index;
 
     if (first_entity_index > last_entity_index)
@@ -1924,7 +1907,7 @@ void wait_for_entity(size_t first_entity_index, size_t last_entity_index)
             process_entities();
         }
         poll_music();
-        check_animation();
+        Game.do_check_animation();
         drawmap();
         blit2screen(xofs, yofs);
 
@@ -1964,7 +1947,7 @@ void wait_for_entity(size_t first_entity_index, size_t last_entity_index)
  * \param   wty New y-coord
  * \param   fspeed Speed of fading (See do_transition())
  */
-void warp(int wtx, int wty, int fspeed)
+void KGame::warp(int wtx, int wty, int fspeed)
 {
     size_t entity_index, last_entity;
 
@@ -2018,12 +2001,12 @@ void warp(int wtx, int wty, int fspeed)
  * wish.
  * This function also handles the Repulse functionality
  */
-void zone_check(void)
+void KGame::zone_check(void)
 {
-    unsigned short stc, zx, zy;
+    uint16_t stc, zx, zy;
 
-    zx = g_ent[0].x / 16;
-    zy = g_ent[0].y / 16;
+    zx = g_ent[0].x / TILE_W;
+    zy = g_ent[0].y / TILE_H;
 
     if (save_spells[P_REPULSE] > 0)
     {
@@ -2120,4 +2103,3 @@ void zone_check(void)
  *
  * The names given are the base names of the maps/lua scripts
  */
-
