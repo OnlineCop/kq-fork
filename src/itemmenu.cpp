@@ -885,42 +885,25 @@ static void sort_inventory(void)
 /*! \brief Sort the items in inventory
  *
  * This runs through all the items in your inventory and sorts them.
+ * Sorting means grouping by type and putting the groups in the 
+ * order specified by 'tt' below.
  */
 static void sort_items(void)
 {
-  // todo - t_inv is the same kind of thing as g_inv
-    uint16_t t_inv[MAX_INV][2];
-    int tt[7] = { 6, 0, 1, 2, 3, 4, 5 };
-    size_t new_inventory_index;
-    size_t old_inventory_index;
-    size_t inventory_index = 0;
+    s_inventory t_inv[MAX_INV];
+    static int type_order[7] = { 6, 0, 1, 2, 3, 4, 5 };
+    int inventory_index = 0;
 
     join_items();
-    for (old_inventory_index = 0; old_inventory_index < MAX_INV; old_inventory_index++)
-    {
-        // Temporary item index #
-        t_inv[old_inventory_index][0] = g_inv[old_inventory_index].item;
-        // Temporary item quantity
-        t_inv[old_inventory_index][1] = g_inv[old_inventory_index].quantity;
-        g_inv[old_inventory_index].item = 0;
-        g_inv[old_inventory_index].quantity = 0;
+    for (auto type : type_order) {
+      for (auto& inv : g_inv) {
+	if (items[inv.item].type == type) {
+	  t_inv[inventory_index++] = inv;
+	}
+      }
     }
-    for (old_inventory_index = 0; old_inventory_index < 7; old_inventory_index++)
-    {
-        for (new_inventory_index = 0; new_inventory_index < MAX_INV; new_inventory_index++)
-        {
-            uint16_t inventory = t_inv[new_inventory_index][0];
-            if (inventory > 0 && items[inventory].type == tt[old_inventory_index])
-            {
-                // Re-assign group's inventory items
-                g_inv[inventory_index].item = inventory;
-                // ...and item quantities
-                g_inv[inventory_index].quantity = t_inv[new_inventory_index][1];
-                t_inv[new_inventory_index][0] = 0;
-                t_inv[new_inventory_index][1] = 0;
-                inventory_index++;
-            }
-        }
+    for (int i=0; i<inventory_index; ++i) {
+      g_inv[i] = t_inv[i];
     }
 }
 
