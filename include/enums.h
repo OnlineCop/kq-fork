@@ -33,7 +33,7 @@
 
 // OC: I plan to move these into enums instead of #define's since those are
 // easier for a lot of IDEs to interpret.
-#undef NUM_SPELLS
+
 enum eSize {
   TILE_H = 16U,
   TILE_W = 16U,
@@ -41,8 +41,6 @@ enum eSize {
   ENT_H = 16U,
   NUM_SPELLS_PER_PAGE = 12U,
   NUM_ITEMS_PER_PAGE = 16U,
-  NUM_LUP = 20U,
-  NUM_SPELLS = 61U,
 };
 
 enum eShadow {

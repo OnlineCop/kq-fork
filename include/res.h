@@ -36,6 +36,7 @@
 #define NUM_EFFECTS 52
 #define NUM_ETROWS 111
 #define NUM_BATTLES 60
+#define NUM_LUP 20
 /*\}*/
 
 /*! \brief An item */
