@@ -479,15 +479,16 @@ static void draw_char(int xw, int yw) {
           g_ent[fighter_index].tilex <= view_x2 &&
           g_ent[fighter_index].tiley >= view_y1 &&
           g_ent[fighter_index].tiley <= view_y2) {
-        if (dx >= TILE_W * -1 && dx <= TILE_W * WINDOW_TILES_W &&
-            dy >= TILE_H * -1 && dy <= TILE_H * WINDOW_TILES_H) {
+        if (dx >= TILE_W * -1 && dx <= TILE_W * (ONSCREEN_TILES_W + 1) &&
+            dy >= TILE_H * -1 && dy <= TILE_H * (ONSCREEN_TILES_H + 1)) {
           spr = (g_ent[fighter_index].eid >= ID_ENEMY)
-                    ? eframes[g_ent[fighter_index].chrx][fighter_frame]
-                    : frames[g_ent[fighter_index].eid][fighter_frame];
+            ? eframes[g_ent[fighter_index].chrx][fighter_frame]
+            : frames[g_ent[fighter_index].eid][fighter_frame];
 
           if (g_ent[fighter_index].transl == 0) {
             draw_sprite(double_buffer, spr, dx, dy);
-          } else {
+          }
+          else {
             draw_trans_sprite(double_buffer, spr, dx, dy);
           }
         }
@@ -753,7 +754,7 @@ static void draw_playerbound(void) {
 
   // Top
   for (dy = 0; dy < found->top - ytc; dy++) {
-    for (dx = 0; dx < WINDOW_TILES_W; dx++) {
+    for (dx = 0; dx <= ONSCREEN_TILES_W; dx++) {
       blit(map_icons[tilex[found->btile]], double_buffer, 0, 0,
            dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
     }
@@ -768,15 +769,15 @@ static void draw_playerbound(void) {
     }
 
     // Right side
-    for (dx = found->right - xtc + 1; dx < WINDOW_TILES_W; dx++) {
+    for (dx = found->right - xtc + 1; dx <= ONSCREEN_TILES_W; dx++) {
       blit(map_icons[tilex[found->btile]], double_buffer, 0, 0,
            dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
     }
   }
 
   // Bottom
-  for (dy = found->bottom - ytc + 1; dy < WINDOW_TILES_H; dy++) {
-    for (dx = 0; dx < WINDOW_TILES_W; dx++) {
+  for (dy = found->bottom - ytc + 1; dy <= ONSCREEN_TILES_H; dy++) {
+    for (dx = 0; dx <= ONSCREEN_TILES_W; dx++) {
       blit(map_icons[tilex[found->btile]], double_buffer, 0, 0,
            dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
     }

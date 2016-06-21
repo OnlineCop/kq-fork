@@ -288,19 +288,18 @@ void battle_render(signed int plyr, size_t hl, int sall) {
       t = curx + (curw / 2);
       t -= (strlen(fighter[current_fighter_index].name) * 4);
       z = (fighter[current_fighter_index].cy < 32
-               ? fighter[current_fighter_index].cy +
-                     fighter[current_fighter_index].cl
+               ? fighter[current_fighter_index].cy + fighter[current_fighter_index].cl
                : fighter[current_fighter_index].cy - 32);
 
-      menubox(double_buffer, t - 8, z,
-              strlen(fighter[current_fighter_index].name), 1, BLUE);
+      menubox(double_buffer, t - 8, z, strlen(fighter[current_fighter_index].name), 1, BLUE);
       print_font(double_buffer, t, z + 8, fighter[current_fighter_index].name,
                  FNORMAL);
     }
   }
 
+  auto x_offset = 216;
   for (z = 0; z < numchrs; z++) {
-    b = z * 216;
+    b = z * x_offset;
 
     if (fighter[z].sts[S_DEAD] == 0) {
       draw_fighter(z, (sall == 1));
@@ -320,8 +319,7 @@ void battle_render(signed int plyr, size_t hl, int sall) {
       if (fighter[z].sts[S_TIME] == 1) {
         a = 83;
       }
-
-      if (fighter[z].sts[S_TIME] == 2) {
+      else if (fighter[z].sts[S_TIME] == 2) {
         a = 36;
       }
 
@@ -331,8 +329,7 @@ void battle_render(signed int plyr, size_t hl, int sall) {
       hline(double_buffer, b + 8, 231, b + sz + 8, a - 1);
     }
 
-    print_font(double_buffer, b + 8, 192, fighter[z].name,
-               (hl == z + 1) ? FGOLD : FNORMAL);
+    print_font(double_buffer, b + 8, 192, fighter[z].name, (hl == z + 1) ? FGOLD : FNORMAL);
 
     sprintf(strbuf, _("HP: %3d/%3d"), fighter[z].hp, fighter[z].mhp);
     /*  RB IDEA: If the character has less than 1/5 of his/her max    */
@@ -346,8 +343,7 @@ void battle_render(signed int plyr, size_t hl, int sall) {
     /*           to warn the player, it's much more eye-pleasing than */
     /*           just a solid color (and not too hard to implement).  */
 
-    print_font(double_buffer, b + 8, 208, strbuf,
-               (fighter[z].hp < (fighter[z].mhp / 5)) ? FRED : FNORMAL);
+    print_font(double_buffer, b + 8, 208, strbuf, (fighter[z].hp < (fighter[z].mhp / 5)) ? FRED : FNORMAL);
 
     hline(double_buffer, b + 8, 216, b + 95, 21);
     sz = (fighter[z].hp > 0) ? fighter[z].hp * 88 / fighter[z].mhp : 88;
@@ -356,8 +352,7 @@ void battle_render(signed int plyr, size_t hl, int sall) {
     sprintf(strbuf, _("MP: %3d/%3d"), fighter[z].mp, fighter[z].mmp);
 
     /*  RB IDEA: Same suggestion as with health, just above.  */
-    print_font(double_buffer, b + 8, 218, strbuf,
-               (fighter[z].mp < (fighter[z].mmp / 5)) ? FRED : FNORMAL);
+    print_font(double_buffer, b + 8, 218, strbuf, (fighter[z].mp < (fighter[z].mmp / 5)) ? FRED : FNORMAL);
     hline(double_buffer, b + 8, 226, b + 95, 21);
     sz = (fighter[z].mp > 0) ? fighter[z].mp * 88 / fighter[z].mmp : 88;
     hline(double_buffer, b + 8, 226, b + 8 + sz, 12);
@@ -373,8 +368,7 @@ void battle_render(signed int plyr, size_t hl, int sall) {
 
   if (display_attack_string == 1) {
     size_t ctext_length = strlen(attack_string) * 4;
-    menubox(double_buffer, 152 - ctext_length, 8, strlen(attack_string), 1,
-            BLUE);
+    menubox(double_buffer, 152 - ctext_length, 8, strlen(attack_string), 1, BLUE);
     print_font(double_buffer, 160 - ctext_length, 16, attack_string, FNORMAL);
   }
 }
@@ -503,8 +497,7 @@ int combat(int bno) {
 
   steps = 0;
   init_fighters();
-  return do_combat(battles[bno].backimg, battles[bno].bmusic,
-                   battles[bno].eidx == 99);
+  return do_combat(battles[bno].backimg, battles[bno].bmusic, battles[bno].eidx == 99);
 }
 
 /*! \brief Choose an action
@@ -611,9 +604,13 @@ static int do_combat(char *bg, char *mus, int is_rnd) {
     std::unique_ptr<Raster> temp(copy_bitmap(nullptr, double_buffer));
     for (zoom_step = 0; zoom_step < 9; zoom_step++) {
       Music.poll_music();
-      stretch_blit(temp.get(), double_buffer, zoom_step * 16 + xofs,
-                   zoom_step * 12 + yofs, 320 - (zoom_step * 32),
-                   240 - (zoom_step * 24), 0, 0, 320, 240);
+      stretch_blit(temp.get(), double_buffer,
+        zoom_step * (KQ_SCREEN_W / 20) + xofs,
+        zoom_step * (KQ_SCREEN_H / 20) + yofs,
+        KQ_SCREEN_W - (zoom_step * (KQ_SCREEN_W / 10)),
+        KQ_SCREEN_H - (zoom_step * (KQ_SCREEN_H / 10)),
+        0, 0,
+        KQ_SCREEN_W, KQ_SCREEN_H);
       blit2screen(xofs, yofs);
     }
   }
@@ -828,27 +825,19 @@ void draw_fighter(size_t fighter_index, size_t dcur) {
   } else {
     if (fighter_index < PSIZE) {
       // Your party
-      Raster *shad = new Raster(cframes[fighter_index][ff]->width * 2 / 3,
-                                cframes[fighter_index][ff]->height / 4);
+      Raster *shad = new Raster(cframes[fighter_index][ff]->width * 2 / 3, cframes[fighter_index][ff]->height / 4);
 
       clear_bitmap(shad);
-      ellipsefill(shad, shad->width / 2, shad->height / 2, shad->width / 2,
-                  shad->height / 2, makecol(128, 128, 128));
-      draw_trans_sprite(double_buffer, shad, xx + (shad->width / 3) - 2,
-                        yy + cframes[fighter_index][ff]->height -
-                            shad->height / 2);
+      ellipsefill(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2, makecol(128, 128, 128));
+      draw_trans_sprite(double_buffer, shad, xx + (shad->width / 3) - 2, yy + cframes[fighter_index][ff]->height - shad->height / 2);
       delete shad;
     } else {
       // Enemy
-      Raster *shad = new Raster(cframes[fighter_index][ff]->width,
-                                cframes[fighter_index][ff]->height / 4);
+      Raster *shad = new Raster(cframes[fighter_index][ff]->width, cframes[fighter_index][ff]->height / 4);
 
       clear_bitmap(shad);
-      ellipsefill(shad, shad->width / 2, shad->height / 2, shad->width / 2,
-                  shad->height / 2, makecol(128, 128, 128));
-      draw_trans_sprite(double_buffer, shad, xx,
-                        yy + cframes[fighter_index][ff]->height -
-                            shad->height / 2);
+      ellipsefill(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2, makecol(128, 128, 128));
+      draw_trans_sprite(double_buffer, shad, xx, yy + cframes[fighter_index][ff]->height - shad->height / 2);
       delete (shad);
     }
 
@@ -868,18 +857,15 @@ void draw_fighter(size_t fighter_index, size_t dcur) {
     xx += fr->cw / 2;
     rect(double_buffer, xx - 16, yy + fr->cl + 2, xx + 15, yy + fr->cl + 5, 0);
     if (ff > AUGMENT_STRONGEST) {
-      rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1,
-               yy + fr->cl + 4, 40);
+      rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1, yy + fr->cl + 4, 40);
     }
 
     else if ((ff <= AUGMENT_STRONGEST) && (ff > AUGMENT_STRONG)) {
-      rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1,
-               yy + fr->cl + 4, 104);
+      rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1, yy + fr->cl + 4, 104);
     }
 
     else if ((ff <= AUGMENT_STRONG) && (ff > AUGMENT_NORMAL)) {
-      rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1,
-               yy + fr->cl + 4, 24);
+      rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1, yy + fr->cl + 4, 24);
     }
   }
 }
@@ -1120,8 +1106,7 @@ static void heroes_win(void) {
     sprintf(strbuf, _("Gained %d xp."), txp);
   }
 
-  menubox(double_buffer, 152 - (strlen(strbuf) * 4), 8, strlen(strbuf), 1,
-          BLUE);
+  menubox(double_buffer, 152 - (strlen(strbuf) * 4), 8, strlen(strbuf), 1, BLUE);
   print_font(double_buffer, 160 - (strlen(strbuf) * 4), 16, strbuf, FNORMAL);
   blit2screen(0, 0);
   fullblit(double_buffer, back);
@@ -1143,12 +1128,9 @@ static void heroes_win(void) {
       if (found_item > 0) {
         if (check_inventory(found_item, 1) != 0) {
           sprintf(strbuf, _("%s found!"), items[found_item].name);
-          menubox(double_buffer, 148 - (strlen(strbuf) * 4), nr * 24 + 48,
-                  strlen(strbuf) + 1, 1, BLUE);
-          draw_icon(double_buffer, items[found_item].icon,
-                    156 - (strlen(strbuf) * 4), nr * 24 + 56);
-          print_font(double_buffer, 164 - (strlen(strbuf) * 4), nr * 24 + 56,
-                     strbuf, FNORMAL);
+          menubox(double_buffer, 148 - (strlen(strbuf) * 4), nr * 24 + 48, strlen(strbuf) + 1, 1, BLUE);
+          draw_icon(double_buffer, items[found_item].icon, 156 - (strlen(strbuf) * 4), nr * 24 + 56);
+          print_font(double_buffer, 164 - (strlen(strbuf) * 4), nr * 24 + 56, strbuf, FNORMAL);
           nr++;
         }
       }
@@ -1203,8 +1185,7 @@ static void heroes_win(void) {
         menubox(double_buffer, b, 104, 18, 1, BLUE);
       }
 
-      sprintf(strbuf, _("Next level %7d"),
-              party[pidx[pidx_index]].next - party[pidx[pidx_index]].xp);
+      sprintf(strbuf, _("Next level %7d"), party[pidx[pidx_index]].next - party[pidx[pidx_index]].xp);
       print_font(double_buffer, b + 8, 112, strbuf, FGOLD);
     }
   }
@@ -1411,8 +1392,7 @@ static void roll_initiative(void) {
         (fighter_index >= PSIZE && fighter_index < (PSIZE + num_enemies))) {
       for (j = 0; j < 2; j++) {
         if (fighter[fighter_index].imb[j] > 0) {
-          cast_imbued_spell(fighter_index, fighter[fighter_index].imb[j], 1,
-                            TGT_CASTER);
+          cast_imbued_spell(fighter_index, fighter[fighter_index].imb[j], 1, TGT_CASTER);
         }
       }
     }
