@@ -200,7 +200,11 @@ void KSaveGame::load_sgstats(void) {
  */
 int KSaveGame::save_game(void) {
   sprintf(strbuf, "sg%d.xml", save_ptr);
-  return save_game_xml(kqres(SAVE_DIR, strbuf).c_str());
+  int rc = save_game_xml(kqres(SAVE_DIR, strbuf).c_str());
+  if (rc) {
+    savegame[save_ptr] = s_sgstats::get_current();
+  }
+  return rc;
 }
 
 /*! \brief Save/Load menu

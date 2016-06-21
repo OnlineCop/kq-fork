@@ -45,6 +45,7 @@
 #include "platform.h"
 #include "random.h"
 #include "shopmenu.h"
+#include "sgame.h"
 
 using tinyxml2::XMLElement;
 using tinyxml2::XMLDocument;
@@ -668,8 +669,9 @@ static int load_shop_info(XMLElement *node) {
 
 static int save_general_props(XMLElement *node) {
   XMLElement *properties = node->GetDocument()->NewElement("properties");
-  addprop(properties, "gold", gp);
-  addprop(properties, "time", khr * 60 + kmin);
+  s_sgstats stats = s_sgstats::get_current();
+  addprop(properties, "gold", stats.gold);
+  addprop(properties, "time", stats.time);
   addprop(properties, "mapname", Game.GetCurmap());
   addprop(properties, "mapx", g_ent[0].tilex);
   addprop(properties, "mapy", g_ent[0].tiley);
@@ -680,16 +682,12 @@ static int save_general_props(XMLElement *node) {
   // Save-Game Stats - id, level, hp (as a % of mhp), mp% for each member of the
   // party
   vector<int> sgs;
-  for (auto id : pidx) {
-    if (id >= 0 && id < MAXCHRS) {
-      auto &p = party[id];
-      sgs.push_back(id);
-      sgs.push_back(p.lvl);
-      sgs.push_back(p.mhp > 0 ? p.hp * 100 / p.mhp : 0);
-      sgs.push_back(p.mmp > 0 ? p.mp * 100 / p.mmp : 0);
-    } else {
-      break;
-    }
+  for (int i = 0; i < stats.num_characters; ++i) {
+    auto &chr = stats.characters[i];
+    sgs.push_back(chr.id);
+    sgs.push_back(chr.level);
+    sgs.push_back(chr.hp);
+    sgs.push_back(chr.mp);
   }
   addprop(properties, "sgstats", make_list(sgs.begin(), sgs.end()));
   node->InsertEndChild(properties);
@@ -916,4 +914,23 @@ int load_stats_only(const char *filename, s_sgstats &stats) {
           doc.GetErrorStr2());
   }
   return 1;
+}
+
+/*! Get the save-game stats that apply to the current state.
+* \returns a structure containing the stats;
+*/
+s_sgstats s_sgstats::get_current() {
+  s_sgstats stats;
+  stats.gold = gp;
+  stats.time = khr * 60 + kmin;
+  stats.num_characters = numchrs;
+  for (auto i = 0U; i < numchrs; ++i) {
+    auto &chr = stats.characters[i];
+    chr.id = pidx[i];
+    auto &pp = party[chr.id];
+    chr.hp = pp.mhp > 0 ? pp.hp * 100 / pp.mhp : 0;
+    chr.mp = pp.mmp > 0 ? pp.mp * 100 / pp.mmp : 0;
+    chr.level = pp.lvl;
+  }
+  return stats;
 }

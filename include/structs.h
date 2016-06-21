@@ -197,6 +197,7 @@ struct s_sgstats {
   struct {
     int id, level, hp, mp;
   } characters[PSIZE];
+  static s_sgstats get_current(void);
 };
 
 #endif /* __STRUCTS_H */
