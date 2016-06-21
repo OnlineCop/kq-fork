@@ -96,7 +96,6 @@ void deallocate_credits(void) {
 }
 
 void display_credits(Raster *double_buffer) {
-  static int last_ease_amount = 999;
   static const uint32_t max_ticks = 640;
 
   static const char *pressf1 = _("Press F1 for help");
