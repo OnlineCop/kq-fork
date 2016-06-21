@@ -174,14 +174,6 @@ extern int no_monsters;
 extern Raster *obj_mesh;
 #endif
 
-/* The same blit() function was called all over the place, so this simplifies the call.
- * 352 == (320 + 16 + 16) or screen dimensions plus 1 tile on left and 1 tile on right.
- * 272 == (240 + 16 + 16) or screen dimensions plus 1 tile on top and 1 tile on bottom.
- */
-#define SCREEN_W2 (KQ_SCREEN_W + 2 * TILE_W)
-#define SCREEN_H2 (KQ_SCREEN_H + 2 * TILE_H)
-#define fullblit(a, b) blit((a), (b), 0, 0, 0, 0, SCREEN_W2, SCREEN_H2)
-
 extern KGame Game;
 
 #ifndef TRACE
