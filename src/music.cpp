@@ -48,7 +48,7 @@ static int current_music_player;
  * Initializes the music players. Must be called before any other
  * music function. Needs to be shutdown when finished.
  */
-void init_music(void) {
+void KMusic::init_music(void) {
   atexit(&dumb_exit);
   dumb_register_stdfiles();
   dumb_resampling_quality = 2;
@@ -66,7 +66,7 @@ void init_music(void) {
  *
  * Performs any cleanup needed. Must be called before the program exits.
  */
-void shutdown_music(void) {
+void KMusic::shutdown_music(void) {
   if (is_sound != 0) {
     do {
       stop_music();
@@ -80,7 +80,7 @@ void shutdown_music(void) {
  *
  * \param   volume 0 (silent) to 100 (loudest)
  */
-void set_music_volume(float volume) {
+void KMusic::set_music_volume(float volume) {
   if (is_sound != 0 && mod_player[current_music_player]) {
     al_duh_set_volume(mod_player[current_music_player], volume);
   }
@@ -91,7 +91,7 @@ void set_music_volume(float volume) {
  * Does whatever is needed to ensure the music keeps playing.
  * It's safe to call this too much, but shouldn't be called inside a timer.
  */
-void poll_music(void) {
+void KMusic::poll_music(void) {
   if (is_sound != 0) {
     al_poll_duh(mod_player[current_music_player]);
   }
@@ -106,7 +106,7 @@ void poll_music(void) {
  * \param   music_name The relative filename of the song to be played
  * \param   position The position of the file to begin at
  */
-void play_music(const std::string &music_name, long position) {
+void KMusic::play_music(const std::string &music_name, long position) {
   if (is_sound != 0) {
     const char *filename = kqres(MUSIC_DIR, music_name).c_str();
 
@@ -148,7 +148,7 @@ void play_music(const std::string &music_name, long position) {
  * must call play_music(), as the current music player will no longer
  * be available and the song unloaded from memory.
  */
-void stop_music(void) {
+void KMusic::stop_music(void) {
   if (is_sound != 0 && mod_player[current_music_player]) {
     al_stop_duh(mod_player[current_music_player]);
     unload_duh(mod_song[current_music_player]);
@@ -163,7 +163,7 @@ void stop_music(void) {
  * by calling resume_music(). Pausing the music file may be used
  * to nest music (such as during a battle).
  */
-void pause_music(void) {
+void KMusic::pause_music(void) {
   if (is_sound != 0) {
     if (current_music_player < MAX_MUSIC_PLAYERS - 1) {
       al_pause_duh(mod_player[current_music_player]);
@@ -179,10 +179,12 @@ void pause_music(void) {
  * Resumes the most recently paused music file. If a call to
  * play_music() was made in between, that file will be stopped.
  */
-void resume_music(void) {
+void KMusic::resume_music(void) {
   if (is_sound != 0 && current_music_player > 0) {
     stop_music();
     current_music_player--;
     al_resume_duh(mod_player[current_music_player]);
   }
 }
+
+KMusic Music;

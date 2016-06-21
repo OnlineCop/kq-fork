@@ -71,7 +71,6 @@ public:
 
   void change_map(const string &, int, int, int, int);
   void change_mapm(const string &, const string &, int, int);
-  void readcontrols(void);
   void calc_viewport(int);
   void zone_check(void);
   void warp(int, int, int);
@@ -110,13 +109,14 @@ public:
 
 public:
   const string WORLD_MAP;
+  /*! The number of frames per second */
+  const int32_t KQ_TICKS;
 
 protected:
   /*! Name of the current map */
   string m_curmap;
 };
 
-extern s_player_input PlayerInput;
 extern int vx, vy, mx, my, steps, lastm[PSIZE];
 
 extern Raster *double_buffer, *fx_buffer;

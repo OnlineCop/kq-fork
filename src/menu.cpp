@@ -27,6 +27,7 @@
 #include "eqpmenu.h"
 #include "gfx.h"
 #include "heroc.h"
+#include "input.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
@@ -266,7 +267,7 @@ void menu(void) {
     draw_mainmenu(-1);
     draw_sprite(double_buffer, menuptr, 204 + xofs, ptr * 8 + 73 + yofs);
     blit2screen(xofs, yofs);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       Game.unpress();
       ptr--;
@@ -534,7 +535,7 @@ static void quest_info(void) {
                  FNORMAL);
     }
     blit2screen(xofs, yofs);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       --ii;
       play_effect(SND_CLICK, 128);
@@ -657,7 +658,7 @@ void spec_items(void) {
                special_items[list_item_which[ptr]].description, FNORMAL);
     draw_sprite(double_buffer, menuptr, 72 + xofs, ptr * 8 + 44 + yofs);
     blit2screen(xofs, yofs);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
 
     if (PlayerInput.down) {
       Game.unpress();
@@ -792,7 +793,7 @@ static void status_screen(size_t fighter_index) {
                  items[party[pidx_index].eqp[equipment_index]].name, FNORMAL);
     }
     blit2screen(xofs, yofs);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
 
     if (PlayerInput.left && fighter_index > 0) {
       Game.unpress();

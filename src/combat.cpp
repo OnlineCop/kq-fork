@@ -41,6 +41,7 @@
 #include "gfx.h"
 #include "heroc.h"
 #include "imgcache.h"
+#include "input.h"
 #include "itemmenu.h"
 #include "kq.h"
 #include "magic.h"
@@ -592,9 +593,9 @@ static int do_combat(char *bg, char *mus, int is_rnd) {
   }
 
   /*  RB: do the zoom at the beginning of the combat.  */
-  pause_music();
-  set_music_volume((gmvol / 250.0) * 0.75);
-  play_music(mus, 0);
+  Music.pause_music();
+  Music.set_music_volume((gmvol / 250.0) * 0.75);
+  Music.play_music(mus, 0);
   if (stretch_view == 2) {
     do_transition(TRANS_FADE_OUT, 2);
     clear_bitmap(double_buffer);
@@ -609,7 +610,7 @@ static int do_combat(char *bg, char *mus, int is_rnd) {
      */
     std::unique_ptr<Raster> temp(copy_bitmap(nullptr, double_buffer));
     for (zoom_step = 0; zoom_step < 9; zoom_step++) {
-      poll_music();
+      Music.poll_music();
       stretch_blit(temp.get(), double_buffer, zoom_step * 16 + xofs,
                    zoom_step * 12 + yofs, 320 - (zoom_step * 32),
                    240 - (zoom_step * 24), 0, 0, 320, 240);
@@ -626,10 +627,10 @@ static int do_combat(char *bg, char *mus, int is_rnd) {
 
   /*  RB: execute combat  */
   do_round();
-  set_music_volume(gmvol / 250.0);
-  resume_music();
+  Music.set_music_volume(gmvol / 250.0);
+  Music.resume_music();
   if (alldead) {
-    stop_music();
+    Music.stop_music();
   }
 
   steps = 0;
@@ -766,7 +767,7 @@ static void do_round(void) {
         }
       }
 
-      Game.readcontrols();
+      PlayerInput.readcontrols();
       battle_render(0, 0, 0);
       blit2screen(0, 0);
 
@@ -892,14 +893,13 @@ void draw_fighter(size_t fighter_index, size_t dcur) {
  * will return to the main menu.
  */
 static void enemies_win(void) {
-  play_music("rain.s3m", 0);
+  Music.play_music("rain.s3m", 0);
   battle_render(0, 0, 0);
   /*  RB FIXME: rest()?  */
   blit2screen(0, 0);
   kq_wait(1000);
   sprintf(strbuf, _("%s was defeated!"), party[pidx[0]].name);
-  menubox(double_buffer, 152 - (strlen(strbuf) * 4), 48, strlen(strbuf), 1,
-          BLUE);
+  menubox(double_buffer, 152 - (strlen(strbuf) * 4), 48, strlen(strbuf), 1, BLUE);
   print_font(double_buffer, 160 - (strlen(strbuf) * 4), 56, strbuf, FNORMAL);
   blit2screen(0, 0);
   Game.wait_enter();
@@ -1083,7 +1083,7 @@ static void heroes_win(void) {
   s_fighter t1;
   s_fighter t2;
 
-  play_music("rend5.s3m", 0);
+  Music.play_music("rend5.s3m", 0);
   kq_wait(500);
   revert_equipstats();
   for (fighter_index = 0; fighter_index < numchrs; fighter_index++) {

@@ -44,6 +44,7 @@
 #include "fade.h"
 #include "gfx.h"
 #include "imgcache.h"
+#include "input.h"
 #include "intrface.h"
 #include "kq.h"
 #include "magic.h"
@@ -80,7 +81,7 @@ int KSaveGame::confirm_action(void) {
   blit2screen(0, 0);
   fullblit(back, double_buffer);
   while (!stop) {
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.balt) {
       Game.unpress();
       return 1;
@@ -142,7 +143,7 @@ void KSaveGame::delete_game(void) {
   fullblit(back, double_buffer);
 
   while (!stop) {
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.balt || PlayerInput.bctrl) {
       Game.unpress();
       stop = 1;
@@ -169,7 +170,7 @@ int KSaveGame::load_game(void) {
     g_ent[0].tilex, g_ent[0].tiley);
   /* Set music and sound volume */
   set_volume(gsvol, -1);
-  set_music_volume(((float)gmvol) / 250.0);
+  Music.set_music_volume(((float)gmvol) / 250.0);
   return 1;
 }
 
@@ -227,7 +228,7 @@ int KSaveGame::saveload(int am_saving) {
     show_sgstats(am_saving);
     blit2screen(0, 0);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       Game.unpress();
       save_ptr--;
@@ -421,7 +422,7 @@ int KSaveGame::start_menu(int skip_splash) {
 #ifdef DEBUGMODE
   if (debugging == 0) {
 #endif
-    play_music("oxford.s3m", 0);
+    Music.play_music("oxford.s3m", 0);
     /* Play splash (with the staff and the heroes in circle */
     if (skip_splash == 0) {
       Raster *splash = get_cached_image("kqt.png");
@@ -497,7 +498,7 @@ int KSaveGame::start_menu(int skip_splash) {
     }
     display_credits(double_buffer);
     blit2screen(0, 0);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.bhelp) {
       Game.unpress();
       show_help();
@@ -604,7 +605,7 @@ int KSaveGame::system_menu(void) {
 
     draw_sprite(double_buffer, menuptr, 0 + xofs, ptr * 8 + 8 + yofs);
     blit2screen(xofs, yofs);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
 
     // TT:
     // When pressed, 'up' or 'down' == 1.  Otherwise, they equal 0.  So:

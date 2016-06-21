@@ -122,7 +122,7 @@ void kq_wait(long ms) {
       Sleep(ms);
       ms = 0;
     }
-    poll_music();
+    Music.poll_music();
   }
 }
 

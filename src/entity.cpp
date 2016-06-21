@@ -37,6 +37,7 @@
 #include "combat.h"
 #include "entity.h"
 #include "enums.h"
+#include "input.h"
 #include "intrface.h"
 #include "itemdefs.h"
 #include "kq.h"
@@ -629,7 +630,7 @@ static void player_move(void) {
   int oldx = g_ent[0].tilex;
   int oldy = g_ent[0].tiley;
 
-  Game.readcontrols();
+  PlayerInput.readcontrols();
 
   if (PlayerInput.balt) {
     Game.activate();

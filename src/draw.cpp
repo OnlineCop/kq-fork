@@ -40,6 +40,7 @@
 #include "draw.h"
 #include "entity.h"
 #include "gfx.h"
+#include "input.h"
 #include "kq.h"
 #include "magic.h"
 #include "music.h"
@@ -1023,7 +1024,7 @@ static void generic_text(int who, int box_style, int isPort) {
       draw_porttextbox(box_style, who);
     }
     blit2screen(xofs, yofs);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.balt) {
       Game.unpress();
       stop = 1;
@@ -1434,7 +1435,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2,
     draw_sprite(double_buffer, menuptr, gbbx + xofs + 8, ptr * 12 + ly + yofs);
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       Game.unpress();
       ptr--;
@@ -1552,7 +1553,7 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt) {
 
         blit2screen(xofs, yofs);
 
-        Game.readcontrols();
+        PlayerInput.readcontrols();
         if (PlayerInput.up && curopt > 0) {
           play_effect(SND_CLICK, 128);
           Game.unpress();

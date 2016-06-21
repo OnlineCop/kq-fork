@@ -33,6 +33,7 @@
 #include "draw.h"
 #include "gfx.h"
 #include "heroc.h"
+#include "input.h"
 #include "kq.h"
 #include "menu.h"
 #include "random.h"
@@ -203,7 +204,7 @@ static eMiniMenu mini_menu(int omask) {
     draw_sprite(double_buffer, menuptr, mini_menu_x - 13, mini_menu_y + 8 * cp);
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       Game.unpress();
       if (cp == MM_OPTIONS_LEAVE) {
@@ -361,7 +362,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg) {
     }
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (csa == TGT_NONE) {
       if (PlayerInput.balt | PlayerInput.bctrl) {
         Game.unpress();
@@ -459,7 +460,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target) {
     }
 
     blit2screen(0, 0);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
 
     if (PlayerInput.balt) {
       Game.unpress();
@@ -545,7 +546,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target,
     }
     blit2screen(0, 0);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
 
     if (PlayerInput.balt) {
       Game.unpress();
@@ -673,7 +674,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max) {
     blit2screen(xofs, yofs);
 
     oldcur = cur;
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       /* move between the available row and the party row */
       Game.unpress();
@@ -789,7 +790,7 @@ int select_player(void) {
     draw_mainmenu(ptr);
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       Game.unpress();
       if (ptr > 0) {

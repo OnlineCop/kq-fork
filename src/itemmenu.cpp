@@ -33,6 +33,7 @@
 #include "draw.h"
 #include "effects.h"
 #include "gfx.h"
+#include "input.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
@@ -68,7 +69,7 @@ void camp_item_menu(void) {
     drawmap();
     draw_itemmenu(ptr, pptr, sel);
     blit2screen(xofs, yofs);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
 
     if (sel == 0) {
       if (PlayerInput.down) {
@@ -151,7 +152,7 @@ void camp_item_menu(void) {
                 print_font(double_buffer, 104 + xofs, 212 + yofs,
                            _("Confirm/Cancel"), FNORMAL);
                 blit2screen(xofs, yofs);
-                Game.readcontrols();
+                PlayerInput.readcontrols();
 
                 if (PlayerInput.balt) {
                   Game.unpress();

@@ -117,6 +117,7 @@
     <ClCompile Include="src\heroc.cpp" />
     <ClCompile Include="src\hskill.cpp" />
     <ClCompile Include="src\imgcache.cpp" />
+    <ClCompile Include="src\input.cpp" />
     <ClCompile Include="src\intrface.cpp" />
     <ClCompile Include="src\itemmenu.cpp" />
     <ClCompile Include="src\kq.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="include\heroc.h" />
     <ClInclude Include="include\hskill.h" />
     <ClInclude Include="include\imgcache.h" />
+    <ClInclude Include="include\input.h" />
     <ClInclude Include="include\intrface.h" />
     <ClInclude Include="include\itemdefs.h" />
     <ClInclude Include="include\itemmenu.h" />

@@ -23,6 +23,7 @@
 #include "constants.h"
 #include "draw.h"
 #include "gfx.h"
+#include "input.h"
 #include "kq.h"
 #include "music.h"
 #include "structs.h"
@@ -151,7 +152,7 @@ void run_console(void) {
     while (!keypressed()) {
       Game.do_check_animation();
       blit2screen(xofs, yofs);
-      poll_music();
+      Music.poll_music();
       Game.kq_yield();
     }
 
@@ -220,6 +221,6 @@ void run_console(void) {
 
   /* Wait for enter key up */
   do {
-    Game.readcontrols();
+    PlayerInput.readcontrols();
   } while (PlayerInput.benter);
 }

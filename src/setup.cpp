@@ -35,6 +35,7 @@
 #include "constants.h"
 #include "draw.h"
 #include "gfx.h"
+#include "input.h"
 #include "kq.h"
 #include "music.h"
 #include "platform.h"
@@ -66,7 +67,7 @@ static void sound_feedback(int val) {
   play_effect(1, 127);
 }
 static void music_feedback(int val) {
-  set_music_volume(float(val * 10) / 250.0f);
+  Music.set_music_volume(float(val * 10) / 250.0f);
 }
 
 /*! \brief Draw a setting and its title
@@ -222,7 +223,7 @@ void config_menu(void) {
     print_font(double_buffer, 8 + xofs, 224 + yofs, dc[ptr], FNORMAL);
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       Game.unpress();
       // "jump" over unusable options
@@ -362,19 +363,17 @@ void config_menu(void) {
         } else {
           if (is_sound == 0) {
             is_sound = 1;
-            print_font(double_buffer, 92 + 2 + xofs, 204 + yofs,
-                       _("...please wait..."), FNORMAL);
+            print_font(double_buffer, 92 + 2 + xofs, 204 + yofs, _("...please wait..."), FNORMAL);
             blit2screen(xofs, yofs);
             sound_init();
-            play_music(g_map.song_file, 0);
+            Music.play_music(g_map.song_file, 0);
           }
         }
         set_config_int(NULL, "is_sound", is_sound != 0);
         break;
       case 13:
         if (is_sound == 2) {
-          p = getavalue(_("Sound Volume"), 0, 25, gsvol / 10, true,
-                        sound_feedback);
+          p = getavalue(_("Sound Volume"), 0, 25, gsvol / 10, true, sound_feedback);
           if (p != -1) {
             gsvol = p * 10;
           }
@@ -397,7 +396,7 @@ void config_menu(void) {
           }
 
           /* make sure to set it no matter what */
-          set_music_volume(gmvol / 250.0);
+          Music.set_music_volume(gmvol / 250.0);
           set_config_int(NULL, "gmvol", gmvol);
         } else {
           play_effect(SND_BAD, 128);
@@ -469,7 +468,7 @@ static int getakey(void) {
   blit2screen(xofs, yofs);
 
   while (1) {
-    poll_music();
+    Music.poll_music();
     for (a = 0; a < KEY_MAX; a++) {
       if (key[a] != 0) {
         return a;
@@ -527,7 +526,7 @@ static int getavalue(const char *capt, int minu, int maxu, int cv, bool sp,
                strbuf, FGOLD);
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.left) {
       Game.unpress();
       cv--;
@@ -957,7 +956,7 @@ void show_help(void) {
   citem(128, _("System Menu Key:"), kq_keyname(PlayerInput.kesc), FNORMAL);
   do {
     blit2screen(xofs, yofs);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
   } while (!PlayerInput.balt && !PlayerInput.bctrl);
   Game.unpress();
 }
@@ -981,12 +980,12 @@ void sound_init(void) {
   switch (is_sound) {
   case 1:
     /* set_volume_per_voice (2); */
-    init_music();
+    Music.init_music();
     is_sound = load_samples() ? 0 : 2; /* load the wav files */
     break;
   case 2:
     /* TT: We forgot to add this line, causing phantom music to loop */
-    stop_music();
+    Music.stop_music();
     free_samples();
     is_sound = 0;
     break;
