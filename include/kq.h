@@ -67,7 +67,7 @@ class Raster;
 
 class KGame {
 public:
-  KGame::KGame();
+  KGame();
 
   void change_map(const string &, int, int, int, int);
   void change_mapm(const string &, const string &, int, int);
