@@ -541,15 +541,13 @@ static void draw_forelayer(void) {
           // Used in several places in this loop, so shortened the name
           here = ((ytc + dy) * g_map.xsize) + xtc + dx;
           pix = f_seg[here];
-          draw_sprite(double_buffer, map_icons[tilex[pix]], dx * 16 + xofs,
-                      dy * 16 + yofs);
+          draw_sprite(double_buffer, map_icons[tilex[pix]], dx * 16 + xofs, dy * 16 + yofs);
 
 #ifdef DEBUGMODE
           if (debugging > 3) {
             // Obstacles
             if (o_seg[here] == 1) {
-              draw_sprite(double_buffer, obj_mesh, dx * 16 + xofs,
-                          dy * 16 + yofs);
+              draw_sprite(double_buffer, obj_mesh, dx * 16 + xofs, dy * 16 + yofs);
             }
 
 // Zones
@@ -560,8 +558,7 @@ static void draw_forelayer(void) {
               char buf[8];
               sprintf(buf, "%d", z_seg[here]);
               size_t l = strlen(buf) * 8;
-              print_num(double_buffer, dx * 16 + 8 + xofs - l / 2,
-                        dy * 16 + 4 + yofs, buf, FNORMAL);
+              print_num(double_buffer, dx * 16 + 8 + xofs - l / 2, dy * 16 + 4 + yofs, buf, FNORMAL);
             }
 #else
             if (z_seg[here] == 0) {
@@ -1331,19 +1328,20 @@ static int get_glyph_index(uint32_t cp) {
  * \param   sx x-coord
  * \param   sy y-coord
  * \param   msg String to draw
- * \param   cl Font index (0..6)
+ * \param   font_index Font index (0..6)
  */
-void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor cl) {
-  int z = 0, hgt = 8;
+void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor font_index) {
+  int z = 0;
+  int hgt = 8;//MagicNumber: font height for NORMAL text
   uint32_t cc = 0;
 
-  if (cl < 0 || cl > 6) {
-    sprintf(strbuf, _("print_font: Bad font index, %d"), cl);
+  if (font_index < 0 || font_index >= NUM_FONTS) {
+    sprintf(strbuf, _("print_font: Bad font index, %d"), (int)font_index);
     Game.klog(strbuf);
     return;
   }
-  if (cl == FBIG) {
-    hgt = 12;
+  if (font_index == FBIG) {
+    hgt = 12;//MagicNumber: font height for BIG text
   }
   while (1) {
     msg = decode_utf8(msg, &cc);
@@ -1351,7 +1349,7 @@ void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor cl) {
       break;
     }
     cc = get_glyph_index(cc);
-    masked_blit(kfonts, where, cc * 8, cl * 8, z + sx, sy, 8, hgt);
+    masked_blit(kfonts, where, cc * 8, font_index * 8, z + sx, sy, 8, hgt);
     z += 8;
   }
 }
@@ -1367,22 +1365,21 @@ void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor cl) {
  * \param   sx x-coord
  * \param   sy y-coord
  * \param   msg String to draw
- * \param   cl Font index (0..4)
+ * \param   font_index Font index (0..4)
  */
-void print_num(Raster *where, int sx, int sy, char *msg, int cl) {
-  int z, cc;
+void print_num(Raster *where, int sx, int sy, const string msg, eFontColor font_index) {
   assert(where && "where == NULL");
-  assert(msg && "msg == NULL");
 
-  if (cl < 0 || cl > 4) {
-    sprintf(strbuf, _("print_num: Bad font index, %d"), cl);
+  if (font_index >= NUM_FONTS) {
+    sprintf(strbuf, _("print_num: Bad font index, %d"), (int)font_index);
     Game.klog(strbuf);
     return;
   }
-  for (z = 0; z < (signed int)strlen(msg); z++) {
-    cc = msg[z] - '0';
+  for (size_t z = 0; z < msg.length(); z++) {
+    // Convert each character in the string into a digit between 0..9
+    auto cc = msg[z] - '0';
     if (cc >= 0 && cc <= 9) {
-      masked_blit(sfonts[cl], where, cc * 6, 0, z * 6 + sx, sy, 6, 8);
+      masked_blit(sfonts[font_index], where, cc * 6, 0, z * 6 + sx, sy, 6, 8);
     }
   }
 }

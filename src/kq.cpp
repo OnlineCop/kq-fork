@@ -479,8 +479,7 @@ int KGame::add_timer_event(const char *n, int delta) {
 
 #ifdef DEBUGMODE
 
-/*! \brief Creates a bitmap, giving an error message with the specified name if
- * it fails.
+/*! \brief Creates a bitmap, giving an error message with the specified name if it fails.
  *
  * This function terminates the program with an error message if it fails to
  * allocate the specified bitmap. The name supplied is shown if this happens
@@ -491,8 +490,7 @@ int KGame::add_timer_event(const char *n, int delta) {
  * \param   bitmap_name Name of bitmap
  * \returns the pointer to the created bitmap
  */
-Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height,
-                         const char *bitmap_name) {
+Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name) {
   Raster *tmp = new Raster(bitmap_width, bitmap_height);
 
   if (!tmp) {
@@ -502,8 +500,7 @@ Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height,
   return tmp;
 }
 #else
-Raster *KGame::alloc_bmp(int w, int h, const char *n) {
-  (void)n;
+Raster *KGame::alloc_bmp(int w, int h, const char */*n*/) {
   return new Raster(w, h);
 }
 #endif
@@ -1422,17 +1419,18 @@ void KGame::startup(void) {
   misc->blitTo(b_mp, 0, 24, 0, 0, 10, 8);
   misc->blitTo(sfonts[0], 0, 128, 0, 0, 60, 8);
 
+  // sfonts[1-4] are the same font shape, just colored differently.
   sfonts[0]->blitTo(sfonts[1]);
   sfonts[0]->blitTo(sfonts[2]);
   sfonts[0]->blitTo(sfonts[3]);
   sfonts[0]->blitTo(sfonts[4]);
-  for (i = 0; i < 8; i++) {
-    for (p = 0; p < 60; p++) {
-      if (sfonts[0]->getpixel(p, i) == 15) {
-        sfonts[1]->setpixel(p, i, 22);
-        sfonts[2]->setpixel(p, i, 105);
-        sfonts[3]->setpixel(p, i, 39);
-        sfonts[4]->setpixel(p, i, 8);
+  for (int16_t sfont_y = 0; sfont_y < 8; sfont_y++) {
+    for (int16_t sfont_x = 0; sfont_x < 60; sfont_x++) {
+      if (sfonts[0]->getpixel(sfont_x, sfont_y) == 15) {
+        sfonts[1]->setpixel(sfont_x, sfont_y, 22);
+        sfonts[2]->setpixel(sfont_x, sfont_y, 105);
+        sfonts[3]->setpixel(sfont_x, sfont_y, 39);
+        sfonts[4]->setpixel(sfont_x, sfont_y, 8);
       }
     }
   }

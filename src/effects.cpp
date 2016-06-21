@@ -126,11 +126,9 @@ void death_animation(size_t target_fighter_index, int target_all_flag) {
  * \param   font_color Color of text
  * \param   multiple_target Multiple target flag
  */
-void display_amount(size_t target_fighter_index, eFontColor font_color,
-                    int multiple_target) {
+void display_amount(size_t target_fighter_index, eFontColor font_color, int multiple_target) {
   int dx, dy, sprite_height;
   uint32_t c, p;
-  eFontColor new_font_color;
   size_t fighter_index, start_fighter_index, num_fighters;
   size_t string_length;
 
@@ -163,22 +161,24 @@ void display_amount(size_t target_fighter_index, eFontColor font_color,
     for (c = 0; c < ccount; c++) {
       fullblit(back, double_buffer);
       for (fighter_index = start_fighter_index;
-           fighter_index < start_fighter_index + num_fighters;
-           fighter_index++) {
+      fighter_index < start_fighter_index + num_fighters;
+        fighter_index++) {
         if (is_active(fighter_index) == 1) {
           dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2);
           if (fighter[fighter_index].cl <= 64) {
             dy = fighter[fighter_index].cy;
-          } else {
+          }
+          else {
             dy = fighter[fighter_index].cy + fighter[fighter_index].cl - 8;
           }
           if (ta[fighter_index] == NODISPLAY) {
             sprintf(strbuf, "_");
-          } else {
+          }
+          else {
             sprintf(strbuf, "%d", abs(ta[fighter_index]));
           }
           string_length = strlen(strbuf) * 3;
-          new_font_color = font_color;
+          eFontColor new_font_color = font_color;
           if (font_color == FDECIDE) {
             new_font_color = (ta[fighter_index] > 0 ? FYELLOW : FNORMAL);
           }
@@ -186,15 +186,16 @@ void display_amount(size_t target_fighter_index, eFontColor font_color,
 
           if (p == 0) {
             sprite_height = dy - c;
-          } else {
+          }
+          else {
             sprite_height = dy - 9 + c;
           }
 
           if (ta[fighter_index] == MISS) {
             draw_sprite(double_buffer, missbmp, dx - 10, sprite_height);
-          } else {
-            print_num(double_buffer, dx - string_length, sprite_height, strbuf,
-                      new_font_color);
+          }
+          else {
+            print_num(double_buffer, dx - string_length, sprite_height, strbuf, new_font_color);
           }
         }
       }
