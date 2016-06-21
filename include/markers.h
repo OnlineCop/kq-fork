@@ -20,7 +20,7 @@
 */
 
 #ifndef __MARKERS_H
-#define __MARKERS_H 1
+#define __MARKERS_H
 
 #include <memory>
 using std::shared_ptr;

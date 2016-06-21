@@ -20,9 +20,9 @@
 */
 
 #ifndef __SKILLS_H
-#define __SKILLS_H 1
+#define __SKILLS_H
 
-int hero_skillcheck(int); /*  eskill.c, heroc.c  */
-void infusion(int, int);  /*  hskill.c  */
+int hero_skillcheck(int);
+void infusion(int, int);
 
 #endif /* __SKILLS_H */

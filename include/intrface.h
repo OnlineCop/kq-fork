@@ -20,7 +20,7 @@
 */
 
 #ifndef __INTRFACE_H
-#define __INTRFACE_H 1
+#define __INTRFACE_H
 
 /* Special identifiers for bubble() */
 enum eHero { HERO1 = 200, HERO2 = 201 };

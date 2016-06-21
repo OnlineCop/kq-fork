@@ -20,7 +20,7 @@
 */
 
 #ifndef __TIMING_H
-#define __TIMING_H 1
+#define __TIMING_H
 
 void kq_wait(long ms);
 int limit_frame_rate(int fps);

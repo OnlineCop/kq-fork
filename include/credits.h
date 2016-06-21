@@ -20,7 +20,7 @@
 */
 
 #ifndef __CREDITS_H
-#define __CREDITS_H 1
+#define __CREDITS_H
 
 class Raster;
 

@@ -20,7 +20,7 @@
 */
 
 #ifndef __ENUMS_H
-#define __ENUMS_H 1
+#define __ENUMS_H
 
 /*! \file
  * \brief Moves most of the #defines into one location
@@ -34,11 +34,7 @@
 // OC: I plan to move these into enums instead of #define's since those are
 // easier for a lot of IDEs to interpret.
 
-enum eSize {
-  TILE_H = 16U,
-  TILE_W = 16U,
-  ENT_W = 16U,
-  ENT_H = 16U,
+enum eMenu {
   NUM_SPELLS_PER_PAGE = 12U,
   NUM_ITEMS_PER_PAGE = 16U,
 };

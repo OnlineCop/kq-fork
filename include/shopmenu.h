@@ -20,15 +20,15 @@
 */
 
 #ifndef __SHOPMENU_H
-#define __SHOPMENU_H 1
+#define __SHOPMENU_H
 
 #define NUMSHOPS 50
 #define SHOPITEMS 12
 
-void do_inn_effects(int);              /*  only in intrface.c  */
-void draw_shopgold(void);              /*  only in shopmenu.c  */
-void inn(const char *, uint32_t, int); /*  only in intrface.c  */
-int shop(int);                         /*  only in intrface.c  */
+void do_inn_effects(int);
+void draw_shopgold(void);
+void inn(const char *, uint32_t, int);
+int shop(int);
 
 typedef struct {
   char name[40];                     /* Name of this shop */
@@ -39,11 +39,10 @@ typedef struct {
   /* Amount of time, in minutes, it takes for this shop to replenish this item
    */
   unsigned short items_replenish_time[SHOPITEMS];
-  unsigned short
-      time; /* The last time (in minutes) that you visited this shop */
+  unsigned short time; /* The last time (in minutes) that you visited this shop */
 } s_shop;
 
-extern s_shop shops[NUMSHOPS]; /* sgame.c intrface.c */
-extern uint16_t num_shops;     /* sgame.c intrface.c */
+extern s_shop shops[NUMSHOPS];
+extern uint16_t num_shops;
 
 #endif /* __SHOPMENU_H */

@@ -20,11 +20,11 @@
 */
 
 #ifndef __MASMENU_H
-#define __MASMENU_H 1
+#define __MASMENU_H
 
-int learn_new_spells(int); /*  kq.c, menu.c, combat.c  */
-void camp_spell_menu(int); /*  menu.c  */
+int learn_new_spells(int);
+void camp_spell_menu(int);
 
-extern int close_menu; /*  menu.c  */
+extern int close_menu;
 
 #endif /* __MASMENU_H */

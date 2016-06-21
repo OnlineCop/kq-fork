@@ -20,7 +20,7 @@
 */
 
 #ifndef __BOUNDS_H
-#define __BOUNDS_H 1
+#define __BOUNDS_H
 
 #include <allegro.h>
 #include <memory>

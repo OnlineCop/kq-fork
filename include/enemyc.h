@@ -20,11 +20,11 @@
 */
 
 #ifndef __ENEMYC_H
-#define __ENEMYC_H 1
+#define __ENEMYC_H
 
-int select_encounter(int, int);  /*  combat.c  */
-void enemy_init(void);           /*  combat.c  */
-void enemy_chooseaction(size_t); /*  combat.c  */
-void enemy_charmaction(size_t);  /*  combat.c, heroc.c  */
+int select_encounter(int, int);
+void enemy_init(void);
+void enemy_chooseaction(size_t);
+void enemy_charmaction(size_t);
 
 #endif /* __ENEMYC_H */

@@ -20,7 +20,7 @@
 */
 
 #ifndef __ITEMMENU_H
-#define __ITEMMENU_H 1
+#define __ITEMMENU_H
 
 #define MAX_ITEMS 9
 
@@ -30,10 +30,10 @@ enum eItemEffectResult {
   ITEM_EFFECT_SUCCESS_MULTIPLE = 2
 };
 
-void camp_item_menu(void);                           /*  menu.c  */
-int check_inventory(size_t, int);                    /*  many functions ;)  */
-eItemEffectResult item_effects(size_t, size_t, int); /*  heroc.c  */
-void remove_item(size_t, int); /*  (eqp|shop)menu.c, heroc.c  */
+void camp_item_menu(void);
+int check_inventory(size_t, int);
+eItemEffectResult item_effects(size_t, size_t, int);
+void remove_item(size_t, int);
 int useup_item(int);
 
 #endif /* __ITEMMENU_H */

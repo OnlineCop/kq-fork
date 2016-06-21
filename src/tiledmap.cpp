@@ -77,7 +77,7 @@ void KTiledMap::load_tmx(const string &name) {
 
   auto loaded_map = load_tmx_map(tmx.RootElement());
   loaded_map.set_current();
-  curmap = name;
+  Game.SetCurmap(name);
 }
 
 // Convert pointer-to-char to string,

@@ -81,9 +81,6 @@ static void time_counter(void);
 
 KGame Game;
 
-/*! Name of the current map */
-string curmap;
-
 /*! \brief Which keys are pressed.
  *
  * \note 23: apparently flags for determining keypresses and player movement.
@@ -379,6 +376,12 @@ s_progress progresses[SIZE_PROGRESS] = {
     {118, "P_SIDEQUEST6"},    {119, "P_SIDEQUEST7"},
 };
 #endif
+
+KGame::KGame()
+  : WORLD_MAP("main")
+{
+
+}
 
 /*! \brief Alt key handler
  *
@@ -1077,7 +1080,7 @@ int main(int argc, const char *argv[]) {
   game_on = 1;
   /* While KQ is running (playing or at startup menu) */
   while (game_on) {
-    switch (start_menu(skip_splash)) {
+    switch (SaveGame.start_menu(skip_splash)) {
     case 0: /* Continue */
       break;
     case 1: /* New game */
@@ -1107,7 +1110,7 @@ int main(int argc, const char *argv[]) {
         poll_music();
 
         if (key[PlayerInput.kesc]) {
-          stop = system_menu();
+          stop = SaveGame.system_menu();
         }
         if (PlayerInput.bhelp) {
           /* TODO: In-game help system. */
@@ -1276,7 +1279,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy) {
   }
 
   do_luakill();
-  do_luainit(curmap.c_str(), 1);
+  do_luainit(Game.GetCurmap().c_str(), 1);
   do_autoexec();
 
   if (hold_fade == 0 && numchrs > 0) {
@@ -1574,7 +1577,7 @@ void KGame::startup(void) {
   install_int_ex(time_counter, BPM_TO_TIMER(1));
   create_trans_table(&cmap, pal, 128, 128, 128, NULL);
   color_map = &cmap;
-  load_sgstats();
+  SaveGame.load_sgstats();
 
 #ifdef DEBUGMODE
   /* TT: Create the mesh object to see 4-way obstacles (others ignored) */
@@ -1768,7 +1771,7 @@ void KGame::zone_check(void) {
   zy = g_ent[0].y / TILE_H;
 
   if (save_spells[P_REPULSE] > 0) {
-    if (curmap == "main") {
+    if (Game.IsOverworldMap()) {
       save_spells[P_REPULSE]--;
     } else {
       if (save_spells[P_REPULSE] > 1) {

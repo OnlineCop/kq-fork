@@ -20,7 +20,7 @@
 */
 
 #ifndef __STRUCTS_H
-#define __STRUCTS_H 1
+#define __STRUCTS_H
 
 /*! \file
  * \brief Structures common to mapedit and the game (s_map and s_entity)

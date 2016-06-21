@@ -20,7 +20,7 @@
 */
 
 #ifndef __SETUP_H
-#define __SETUP_H 1
+#define __SETUP_H
 
 /*! \file */
 
@@ -39,19 +39,16 @@
 #define SND_EXPLODE 42
 
 /*  This is in addition to setup.c:  */
-void parse_setup(void);       /*  kq.c  */
-void config_menu(void);       /*  sgame.c  */
-void show_help(void);         /*  sgame.c  */
-void set_graphics_mode(void); /*  kq.c, sgame.c  */
-void sound_init(void);        /*  kq.c  */
-void free_samples(void);      /*  kq.c  */
-void play_effect(int, int);   /*  draw.c, effects.c, entity.c, heroc.c, */
-/*  (eqp|item|mas|shop)menu.c, hskill.c,  */
-/*  intrface.c, menu.c, selector.c,       */
-/*  sgame.c                               */
+void parse_setup(void);
+void config_menu(void);
+void show_help(void);
+void set_graphics_mode(void);
+void sound_init(void);
+void free_samples(void);
+void play_effect(int, int);
 
-extern char debugging;     /*  combat.c, kq.c, sgame.c  */
-extern char slow_computer; /*  effects.c, heroc.c  */
+extern char debugging;
+extern char slow_computer;
 
 /* Allegro 4.2 has the scancode_to_name function,
  * For previous versions, we must emulate that function

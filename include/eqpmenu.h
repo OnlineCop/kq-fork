@@ -20,8 +20,8 @@
 */
 
 #ifndef __EQPMENU_H
-#define __EQPMENU_H 1
+#define __EQPMENU_H
 
-void equip_menu(uint32_t); /*  menu.c  */
+void equip_menu(uint32_t);
 
 #endif /* __EQPMENU_H */

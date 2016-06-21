@@ -20,7 +20,7 @@
 */
 
 #ifndef __ENTITY_H
-#define __ENTITY_H 1
+#define __ENTITY_H
 
 /*! \file
  * \brief Stuff related to entities on the map
@@ -32,11 +32,11 @@
 
 typedef uint32_t t_entity;
 
-void process_entities(void);             /*  kq.c  */
-int entityat(int, int, t_entity);        /*  kq.c  */
-void set_script(t_entity, const char *); /*  intrface.c  */
-void place_ent(t_entity, int, int);      /*  intrface.c, kq.c  */
-void count_entities(void);               /*  kq.c  */
+void process_entities(void);
+int entityat(int, int, t_entity);
+void set_script(t_entity, const char *);
+void place_ent(t_entity, int, int);
+void count_entities(void);
 
 enum eCommands {
   COMMAND_NONE = 0,

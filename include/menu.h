@@ -20,23 +20,21 @@
 */
 
 #ifndef __MENU_H
-#define __MENU_H 1
+#define __MENU_H
 
 #include "kq.h"
 
 void add_questinfo(const char *key, const char *text);
 void do_questinfo(void);
-void draw_mainmenu(int); /*  selector.c  */
-void draw_playerstat(Raster *, int, int,
-                     int);  /*  intrface.c, masmenu.c, menu.c  */
-int give_xp(int, int, int); /*  intrface.c, combat.c  */
-void menu(void);            /*  entity.c  */
-void revert_equipstats(
-    void);             /*  heroc.c, (item|mas)menu.c, magic.c, combat.c  */
-void spec_items(void); /*  only in menu.c  */
-void update_equipstats(void); /*  (eqp|item|mas)menu.c, heroc.c  */
+void draw_mainmenu(int);
+void draw_playerstat(Raster *, int, int, int);
+int give_xp(int, int, int);
+void menu(void);
+void revert_equipstats(void);
+void spec_items(void);
+void update_equipstats(void);
 
-s_fighter *player2fighter(int, s_fighter *); /*  combat.c  */
+s_fighter *player2fighter(int, s_fighter *);
 
 /* These are hints/reminders about the game - e.g:
  * - Something you have been told by an important character

@@ -20,7 +20,7 @@
 */
 
 #ifndef __PLATFORM_H
-#define __PLATFORM_H 1
+#define __PLATFORM_H
 
 /*! \file
  * \brief Platform-specific interfaces, prototypes, and #defines

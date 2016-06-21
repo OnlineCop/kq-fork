@@ -60,31 +60,6 @@
 
 /*! \brief No game-wide globals in this file. */
 
-/*! \name Internal variables */
-/* NUMSG is the number of save slots. */
-/* PSIZE is the maximum party size (2) */
-
-/* These describe the save slots. Number of characters, gp, etc */
-/* They are used to make the save menu prettier. */
-s_sgstats savegame[NUMSG];
-
-/* Which save_slot the player is pointing to */
-int save_ptr = 0;
-
-/* Which save_slot is shown at the top of the screen (for scrolling) */
-int top_pointer = 0;
-
-/* Maximum number of slots to show on screen. */
-int max_onscreen = 5;
-
-/*! \name Internal functions  */
-static void show_sgstats(int);
-static int save_game(void);
-static int load_game(void);
-static void delete_game(void);
-static int saveload(int);
-static int confirm_action(void);
-
 /*! \brief Confirm save
  *
  * If the save slot selected already has a saved game in it, confirm that we
@@ -92,7 +67,7 @@ static int confirm_action(void);
  *
  * \returns 0 if cancelled, 1 if confirmed
  */
-static int confirm_action(void) {
+int KSaveGame::confirm_action(void) {
   int stop = 0;
   int pointer_offset = (save_ptr - top_pointer) * 48;
   // Nothing in this slot so confirm without asking.
@@ -101,8 +76,7 @@ static int confirm_action(void) {
   }
   fullblit(double_buffer, back);
   menubox(double_buffer, 128, pointer_offset + 12, 14, 1, DARKBLUE);
-  print_font(double_buffer, 136, pointer_offset + 20, _("Confirm/Cancel"),
-             FNORMAL);
+  print_font(double_buffer, 136, pointer_offset + 20, _("Confirm/Cancel"), FNORMAL);
   blit2screen(0, 0);
   fullblit(back, double_buffer);
   while (!stop) {
@@ -143,7 +117,7 @@ static int confirm_quit(void) {
  *
  * You guessed it... delete the game.
  */
-static void delete_game(void) {
+void KSaveGame::delete_game(void) {
   int stop = 0;
   int remove_result;
   int pointer_offset = (save_ptr - top_pointer) * 48;
@@ -184,14 +158,15 @@ static void delete_game(void) {
  * PH 20030914 Now ignores keyboard settings etc in the save file
  * \returns 1 if load succeeded, 0 otherwise
  */
-static int load_game(void) {
+int KSaveGame::load_game(void) {
   sprintf(strbuf, "sg%d.xml", save_ptr);
   load_game_xml(kqres(SAVE_DIR, strbuf).c_str());
   timer_count = 0;
   ksec = 0;
   hold_fade = 0;
-  Game.change_map(curmap, g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex,
-                  g_ent[0].tiley);
+  Game.change_map(Game.GetCurmap(),
+    g_ent[0].tilex, g_ent[0].tiley,
+    g_ent[0].tilex, g_ent[0].tiley);
   /* Set music and sound volume */
   set_volume(gsvol, -1);
   set_music_volume(((float)gmvol) / 250.0);
@@ -204,7 +179,7 @@ static int load_game(void) {
  * These mini stats are just for displaying info about the save game on the
  * save/load game screen.
  */
-void load_sgstats(void) {
+void KSaveGame::load_sgstats(void) {
   for (int sg = 0; sg < NUMSG; ++sg) {
     char buf[32];
     sprintf(buf, "sg%u.xml", sg);
@@ -223,7 +198,7 @@ void load_sgstats(void) {
  *
  * \returns 0 if save failed, 1 if success
  */
-static int save_game(void) {
+int KSaveGame::save_game(void) {
   sprintf(strbuf, "sg%d.xml", save_ptr);
   return save_game_xml(kqres(SAVE_DIR, strbuf).c_str());
 }
@@ -236,7 +211,7 @@ static int save_game(void) {
  * \param   am_saving 0 if loading, 1 if saving
  * \returns 0 if an error occurred or save/load cancelled
  */
-static int saveload(int am_saving) {
+int KSaveGame::saveload(int am_saving) {
   int stop = 0;
 
   // Have no more than 5 savestate boxes onscreen, but fewer if NUMSG < 5
@@ -343,7 +318,7 @@ static int saveload(int am_saving) {
  *
  * \param   saving 0 if loading, 1 if saving.
  */
-static void show_sgstats(int saving) {
+void KSaveGame::show_sgstats(int saving) {
   int a, sg, hx, hy, b;
   int pointer_offset;
 
@@ -438,7 +413,7 @@ static void show_sgstats(int saving) {
  *            should be displayed.
  * \returns 1 if new game, 0 if continuing, 2 if exit
  */
-int start_menu(int skip_splash) {
+int KSaveGame::start_menu(int skip_splash) {
   int stop = 0, ptr = 0, redraw = 1, a;
   unsigned int fade_color;
   Raster *staff, *dudes, *tdudes;
@@ -600,7 +575,7 @@ int start_menu(int skip_splash) {
  *
  * \returns 0 if cancelled or nothing happened, 1 otherwise
  */
-int system_menu(void) {
+int KSaveGame::system_menu(void) {
   int stop = 0, ptr = 0;
   char save_str[10];
   eFontColor text_color = FNORMAL;
@@ -687,3 +662,5 @@ int system_menu(void) {
 
   return 0;
 }
+
+KSaveGame SaveGame;

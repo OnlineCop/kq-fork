@@ -20,7 +20,7 @@
 */
 
 #ifndef __COMBAT_H
-#define __COMBAT_H 1
+#define __COMBAT_H
 
 /*! \file
  * \brief Combat header file
@@ -42,28 +42,25 @@
 class Raster;
 
 /*! \name combat function prototypes  */
-int combat_check(int, int); /*  entity.c  */
-int combat(int);            /*  intrface.c  */
-void battle_render(
-    signed int, size_t,
-    int); /*  effects.c, [eh]skill.c, heroc.c, magic.c, selector.c  */
-void draw_fighter(size_t, size_t); /*  effects.c, hskill.c  */
-int fight(size_t, size_t, int);    /*  enemyc.c, [eh]skill.c, heroc.c  */
-void multi_fight(size_t);          /*  hskill.c  */
-void fkill(size_t);                /*  heroc.c, hskill.c, magic.c  */
+int combat_check(int, int);
+int combat(int);
+void battle_render(signed int, size_t, int);
+void draw_fighter(size_t, size_t);
+int fight(size_t, size_t, int);
+void multi_fight(size_t);
+void fkill(size_t);
 
 /*!  global combat related variables  */
-extern uint32_t combatend;        /*  heroc.c, magic.c  */
-extern int cact[NUM_FIGHTERS];    /*  enemyc.c, heroc.c, hskill.c  */
-extern int curx;                  /*  effects.c, heroc.c, hskill.c  */
-extern int cury;                  /*  effects.c, heroc.c, hskill.c  */
-extern uint32_t num_enemies;      /*  draw.c, effects.c, enemyc.c  */
-extern int ta[NUM_FIGHTERS];      /*  effects.c, [he]skill.c, hero.c,
-                                     (item|mas)menu.c, kq.c, magic.c  */
-extern int deffect[NUM_FIGHTERS]; /*  effects.c, hskill.c  */
-extern int rcount;                /*  magic.c  */
-extern uint8_t vspell;            /*  magic.c  */
-extern uint8_t ms;                /*  heroc.c  */
-extern Raster *backart;           /*  hskill.c  */
+extern uint32_t combatend;
+extern int cact[NUM_FIGHTERS];
+extern int curx;
+extern int cury;
+extern uint32_t num_enemies;
+extern int ta[NUM_FIGHTERS];
+extern int deffect[NUM_FIGHTERS];
+extern int rcount;
+extern uint8_t vspell;
+extern uint8_t ms;
+extern Raster *backart;
 
 #endif /* __COMBAT_H */

@@ -670,7 +670,7 @@ static int save_general_props(XMLElement *node) {
   XMLElement *properties = node->GetDocument()->NewElement("properties");
   addprop(properties, "gold", gp);
   addprop(properties, "time", khr * 60 + kmin);
-  addprop(properties, "mapname", curmap);
+  addprop(properties, "mapname", Game.GetCurmap());
   addprop(properties, "mapx", g_ent[0].tilex);
   addprop(properties, "mapy", g_ent[0].tiley);
   auto pbegin = std::begin(pidx);
@@ -709,7 +709,7 @@ static int load_general_props(XMLElement *node) {
         kmin = tt % 60;
         khr = (tt - kmin) / 60;
       } else if (property->Attribute("name", "mapname")) {
-        curmap = std::string(property->Attribute("value"));
+        Game.SetCurmap(property->Attribute("value"));
       } else if (property->Attribute("name", "mapx")) {
         g_ent[0].tilex = property->IntAttribute("value");
       } else if (property->Attribute("name", "mapy")) {

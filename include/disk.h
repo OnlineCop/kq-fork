@@ -20,7 +20,7 @@
 */
 
 #ifndef __DISK_H
-#define __DISK_H 1
+#define __DISK_H
 
 #include "entity.h"
 #include "maps.h"

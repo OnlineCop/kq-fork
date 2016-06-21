@@ -1289,7 +1289,7 @@ static void special_spells(size_t caster_fighter_index, size_t spell_number) {
       do_transition(TRANS_FADE_IN, 2);
       combatend = 2;
     } else {
-      if (curmap == "main") {
+      if (Game.IsOverworldMap()) {
         /* TT: I would like to have a check here: if the player casts Warp,
          * the player can select WHERE to warp to, instead of just to the
          * house, etc.
@@ -1297,8 +1297,9 @@ static void special_spells(size_t caster_fighter_index, size_t spell_number) {
 
         Game.change_mapm("town4", "warp", 0, 0);
       } else {
-        Game.change_map("main", g_map.warpx, g_map.warpy, g_map.warpx,
-                        g_map.warpy);
+        Game.change_map(Game.WORLD_MAP,
+          g_map.warpx, g_map.warpy,
+          g_map.warpx, g_map.warpy);
       }
     }
     break;

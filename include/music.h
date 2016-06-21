@@ -20,7 +20,7 @@
 */
 
 #ifndef __MUSIC_H
-#define __MUSIC_H 1
+#define __MUSIC_H
 
 /* ML: include aldumb.h here, because other modules really don't know that
    we are using dumb, and it doesn't make sense to have to include aldumb

@@ -20,7 +20,7 @@
 */
 
 #ifndef __HEROC_H
-#define __HEROC_H 1
+#define __HEROC_H
 #include <stdlib.h>
 /*! \file
  * \brief Hero combat header file

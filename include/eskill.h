@@ -20,7 +20,7 @@
 */
 
 #ifndef __ESKILL_H
-#define __ESKILL_H 1
+#define __ESKILL_H
 
 /*! \file
  * \brief Enemy Skills header file

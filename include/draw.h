@@ -20,7 +20,7 @@
 */
 
 #ifndef __DRAW_H
-#define __DRAW_H 1
+#define __DRAW_H
 #include <stdint.h>
 #include <stdlib.h>
 class Raster;
@@ -71,56 +71,22 @@ enum eBubbleStemStyle {
 
 /*  draw global functions  */
 
-/*  combat.c, effects.c, (item|mas|shop|eqp)menu.c, heroc.c, kq.c,  */
-/*  [he]skill.c, intrface.c, selector.c, menu.c, setup.c, sgame.c  */
 void blit2screen(int, int);
-
-/*  hskill.c, sgame.c  */
 void color_scale(Raster *, Raster *, int, int);
-
-/*  combat.c, effects.c, hskill.c  */
 void convert_cframes(size_t, int, int, int);
-
-/*  combat.c, effects.c, hskill.c  */
 void revert_cframes(size_t, int);
-
-/*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, menu.c, selector.c  */
 void draw_icon(Raster *, int, int, int);
-
-/*  combat.c, menu.c  */
 void draw_stsicon(Raster *, int, int, int, int, int);
-
-/*  intrface.c  */
 int is_forestsquare(int, int);
-
-/*  (eqp|item|mas|shop)menu.c, intrface.c, kq.c, magic.c, menu.c,  */
-/*  selector.c, setup.c, sgame.c  */
 void drawmap(void);
-
-/*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, hskill.c,  */
-/*  menu.c, selector.c, setup.c, sgame.c, intrface.c  */
 void menubox(Raster *where, int x, int y, int w, int h, int c);
-
-/*  combat.c, (eqp|item|mas|shop)menu.c, heroc.c, hskill.c,  */
-/*  intrface.c, selector.c, setup.c, sgame.c, menu.c  */
 void print_font(Raster *, int, int, const char *, eFontColor);
-
-/*  effects.c -> only place (RB IDEA: moving it there?)  */
 void print_num(Raster *, int, int, char *, int);
-
-/*  intrface.c, setup.c  */
 void text_ex(int, int, const char *);
 void porttext_ex(int, int, const char *);
-
-/*  intrface.c, setup.c  */
-int prompt(int, int, int, const char *, const char *, const char *,
-           const char *);
+int prompt(int, int, int, const char *, const char *, const char *, const char *);
 int prompt_ex(int, const char *, const char *[], int);
-
-/*  combat.c, hskill.c, intrface.c, (item|shop)menu.c, kq.c, sgame.c  */
 void message(const char *, int, int, int, int);
-
-/*  intrface.c, kq.c  */
 void set_view(int, int, int, int, int);
 
 Raster *copy_bitmap(Raster *, Raster *);

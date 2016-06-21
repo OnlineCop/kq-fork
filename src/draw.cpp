@@ -1045,7 +1045,7 @@ static void generic_text(int who, int box_style, int isPort) {
  * \returns 1 if it is a forest square, 0 otherwise
  */
 int is_forestsquare(int fx, int fy) {
-  if (curmap != "main") {
+  if (!Game.IsOverworldMap()) {
     return 0;
   }
   auto mapseg = map_seg[(fy * g_map.xsize) + fx];

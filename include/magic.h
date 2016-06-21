@@ -20,7 +20,7 @@
 */
 
 #ifndef __MAGIC_H
-#define __MAGIC_H 1
+#define __MAGIC_H
 
 /*! \file
  * \brief Stuff to work with magic.
@@ -96,20 +96,20 @@
 /*! non-combat spell states */
 #define P_REPULSE 48
 
-int combat_spell(size_t, int);                 /*  enemyc.c, heroc.c  */
-int cast_spell(size_t, int);                   /*  masmenu.c  */
-void cast_imbued_spell(size_t, int, int, int); /*  combat.c, heroc.c  */
+int combat_spell(size_t, int);
+int cast_spell(size_t, int);
+void cast_imbued_spell(size_t, int, int, int);
 void special_damage_oneall_enemies(size_t, int, int, size_t,
-                                   int); /*  eskill.c heroc.c  */
-int res_adjust(size_t, size_t, int);     /*  combat.c, itemmenu.c  */
-int res_throw(int, int);                 /*  combat.c, eskill.c  */
-int non_dmg_save(int, int);              /*  combat.c, eskill.c  */
-int mp_needed(size_t, int); /*  enemyc.c, hskill.c, masmenu.c, heroc.c  */
+                                   int);
+int res_adjust(size_t, size_t, int);
+int res_throw(int, int);
+int non_dmg_save(int, int);
+int mp_needed(size_t, int);
 void adjust_hp(size_t,
-               int); /*  combat.c, [he]skill.c, (item|mas)menu.c, heroc.c  */
-void adjust_mp(size_t, int);     /*  eskill.c, itemmenu.c  */
-int do_shell_check(int, int);    /*  hskill.c, itemmenu.c  */
-int do_shield_check(int, int);   /*  only in combat.c  */
-s_fighter status_adjust(size_t); /*  combat.c, [he]skill.c  */
+               int);
+void adjust_mp(size_t, int);
+int do_shell_check(int, int);
+int do_shield_check(int, int);
+s_fighter status_adjust(size_t);
 
 #endif /* __MAGIC_H */

@@ -20,7 +20,7 @@
 */
 
 #ifndef __CONSOLE_H
-#define __CONSOLE_H 1
+#define __CONSOLE_H
 
 #include <allegro.h>
 

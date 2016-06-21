@@ -20,7 +20,7 @@
 */
 
 #ifndef __FADE_H
-#define __FADE_H 1
+#define __FADE_H
 
 enum eTransitionFade {
   TRANS_FADE_IN = 1,

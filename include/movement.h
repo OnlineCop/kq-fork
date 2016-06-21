@@ -20,7 +20,8 @@
 */
 
 #ifndef __MOVEMENT_H
-#define __MOVEMENT_H 1
+#define __MOVEMENT_H
+
 #include <stdint.h>
 #include <stdlib.h>
 int find_path(size_t, uint32_t, uint32_t, uint32_t, uint32_t, char *, uint32_t);

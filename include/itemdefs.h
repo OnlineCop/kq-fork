@@ -20,7 +20,7 @@
 */
 
 #ifndef __ITEMDEFS_H
-#define __ITEMDEFS_H 1
+#define __ITEMDEFS_H
 
 /*! \file
  * \brief Defines for all items
