@@ -34,6 +34,7 @@
 #include "draw.h"
 #include "eqpmenu.h"
 #include "gfx.h"
+#include "input.h"
 #include "itemmenu.h"
 #include "kq.h"
 #include "menu.h"
@@ -136,7 +137,7 @@ static void choose_equipment(int c, int slot) {
       sm = tot - NUM_ITEMS_PER_PAGE;
     }
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
 
     if (PlayerInput.down) {
       Game.unpress();
@@ -487,7 +488,7 @@ void equip_menu(uint32_t c) {
     }
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
 
     if (sl == 1) {
       if (PlayerInput.left) {

@@ -26,6 +26,7 @@
 #include "draw.h"
 #include "enums.h"
 #include "gfx.h"
+#include "input.h"
 #include "kq.h"
 #include "magic.h"
 #include "masmenu.h"
@@ -150,7 +151,7 @@ void camp_spell_menu(int c) {
       draw_sprite(double_buffer, sptr, 88 + xofs, ptr[1] * 8 + 100 + yofs);
     }
     blit2screen(xofs, yofs);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.down) {
       Game.unpress();
       ptr[smove]++;

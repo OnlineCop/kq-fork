@@ -40,6 +40,7 @@
 #include "draw.h"
 #include "entity.h"
 #include "gfx.h"
+#include "input.h"
 #include "kq.h"
 #include "magic.h"
 #include "music.h"
@@ -478,15 +479,16 @@ static void draw_char(int xw, int yw) {
           g_ent[fighter_index].tilex <= view_x2 &&
           g_ent[fighter_index].tiley >= view_y1 &&
           g_ent[fighter_index].tiley <= view_y2) {
-        if (dx >= TILE_W * -1 && dx <= TILE_W * WINDOW_TILES_W &&
-            dy >= TILE_H * -1 && dy <= TILE_H * WINDOW_TILES_H) {
+        if (dx >= TILE_W * -1 && dx <= TILE_W * (ONSCREEN_TILES_W + 1) &&
+            dy >= TILE_H * -1 && dy <= TILE_H * (ONSCREEN_TILES_H + 1)) {
           spr = (g_ent[fighter_index].eid >= ID_ENEMY)
-                    ? eframes[g_ent[fighter_index].chrx][fighter_frame]
-                    : frames[g_ent[fighter_index].eid][fighter_frame];
+            ? eframes[g_ent[fighter_index].chrx][fighter_frame]
+            : frames[g_ent[fighter_index].eid][fighter_frame];
 
           if (g_ent[fighter_index].transl == 0) {
             draw_sprite(double_buffer, spr, dx, dy);
-          } else {
+          }
+          else {
             draw_trans_sprite(double_buffer, spr, dx, dy);
           }
         }
@@ -539,15 +541,13 @@ static void draw_forelayer(void) {
           // Used in several places in this loop, so shortened the name
           here = ((ytc + dy) * g_map.xsize) + xtc + dx;
           pix = f_seg[here];
-          draw_sprite(double_buffer, map_icons[tilex[pix]], dx * 16 + xofs,
-                      dy * 16 + yofs);
+          draw_sprite(double_buffer, map_icons[tilex[pix]], dx * 16 + xofs, dy * 16 + yofs);
 
 #ifdef DEBUGMODE
           if (debugging > 3) {
             // Obstacles
             if (o_seg[here] == 1) {
-              draw_sprite(double_buffer, obj_mesh, dx * 16 + xofs,
-                          dy * 16 + yofs);
+              draw_sprite(double_buffer, obj_mesh, dx * 16 + xofs, dy * 16 + yofs);
             }
 
 // Zones
@@ -558,8 +558,7 @@ static void draw_forelayer(void) {
               char buf[8];
               sprintf(buf, "%d", z_seg[here]);
               size_t l = strlen(buf) * 8;
-              print_num(double_buffer, dx * 16 + 8 + xofs - l / 2,
-                        dy * 16 + 4 + yofs, buf, FNORMAL);
+              print_num(double_buffer, dx * 16 + 8 + xofs - l / 2, dy * 16 + 4 + yofs, buf, FNORMAL);
             }
 #else
             if (z_seg[here] == 0) {
@@ -752,7 +751,7 @@ static void draw_playerbound(void) {
 
   // Top
   for (dy = 0; dy < found->top - ytc; dy++) {
-    for (dx = 0; dx < WINDOW_TILES_W; dx++) {
+    for (dx = 0; dx <= ONSCREEN_TILES_W; dx++) {
       blit(map_icons[tilex[found->btile]], double_buffer, 0, 0,
            dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
     }
@@ -767,15 +766,15 @@ static void draw_playerbound(void) {
     }
 
     // Right side
-    for (dx = found->right - xtc + 1; dx < WINDOW_TILES_W; dx++) {
+    for (dx = found->right - xtc + 1; dx <= ONSCREEN_TILES_W; dx++) {
       blit(map_icons[tilex[found->btile]], double_buffer, 0, 0,
            dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
     }
   }
 
   // Bottom
-  for (dy = found->bottom - ytc + 1; dy < WINDOW_TILES_H; dy++) {
-    for (dx = 0; dx < WINDOW_TILES_W; dx++) {
+  for (dy = found->bottom - ytc + 1; dy <= ONSCREEN_TILES_H; dy++) {
+    for (dx = 0; dx <= ONSCREEN_TILES_W; dx++) {
       blit(map_icons[tilex[found->btile]], double_buffer, 0, 0,
            dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
     }
@@ -1023,7 +1022,7 @@ static void generic_text(int who, int box_style, int isPort) {
       draw_porttextbox(box_style, who);
     }
     blit2screen(xofs, yofs);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.balt) {
       Game.unpress();
       stop = 1;
@@ -1329,19 +1328,20 @@ static int get_glyph_index(uint32_t cp) {
  * \param   sx x-coord
  * \param   sy y-coord
  * \param   msg String to draw
- * \param   cl Font index (0..6)
+ * \param   font_index Font index (0..6)
  */
-void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor cl) {
-  int z = 0, hgt = 8;
+void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor font_index) {
+  int z = 0;
+  int hgt = 8;//MagicNumber: font height for NORMAL text
   uint32_t cc = 0;
 
-  if (cl < 0 || cl > 6) {
-    sprintf(strbuf, _("print_font: Bad font index, %d"), cl);
+  if (font_index < 0 || font_index >= NUM_FONTS) {
+    sprintf(strbuf, _("print_font: Bad font index, %d"), (int)font_index);
     Game.klog(strbuf);
     return;
   }
-  if (cl == FBIG) {
-    hgt = 12;
+  if (font_index == FBIG) {
+    hgt = 12;//MagicNumber: font height for BIG text
   }
   while (1) {
     msg = decode_utf8(msg, &cc);
@@ -1349,7 +1349,7 @@ void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor cl) {
       break;
     }
     cc = get_glyph_index(cc);
-    masked_blit(kfonts, where, cc * 8, cl * 8, z + sx, sy, 8, hgt);
+    masked_blit(kfonts, where, cc * 8, font_index * 8, z + sx, sy, 8, hgt);
     z += 8;
   }
 }
@@ -1365,22 +1365,21 @@ void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor cl) {
  * \param   sx x-coord
  * \param   sy y-coord
  * \param   msg String to draw
- * \param   cl Font index (0..4)
+ * \param   font_index Font index (0..4)
  */
-void print_num(Raster *where, int sx, int sy, char *msg, int cl) {
-  int z, cc;
+void print_num(Raster *where, int sx, int sy, const string msg, eFontColor font_index) {
   assert(where && "where == NULL");
-  assert(msg && "msg == NULL");
 
-  if (cl < 0 || cl > 4) {
-    sprintf(strbuf, _("print_num: Bad font index, %d"), cl);
+  if (font_index >= NUM_FONTS) {
+    sprintf(strbuf, _("print_num: Bad font index, %d"), (int)font_index);
     Game.klog(strbuf);
     return;
   }
-  for (z = 0; z < (signed int)strlen(msg); z++) {
-    cc = msg[z] - '0';
+  for (size_t z = 0; z < msg.length(); z++) {
+    // Convert each character in the string into a digit between 0..9
+    auto cc = msg[z] - '0';
     if (cc >= 0 && cc <= 9) {
-      masked_blit(sfonts[cl], where, cc * 6, 0, z * 6 + sx, sy, 6, 8);
+      masked_blit(sfonts[font_index], where, cc * 6, 0, z * 6 + sx, sy, 6, 8);
     }
   }
 }
@@ -1434,7 +1433,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2,
     draw_sprite(double_buffer, menuptr, gbbx + xofs + 8, ptr * 12 + ly + yofs);
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       Game.unpress();
       ptr--;
@@ -1552,7 +1551,7 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt) {
 
         blit2screen(xofs, yofs);
 
-        Game.readcontrols();
+        PlayerInput.readcontrols();
         if (PlayerInput.up && curopt > 0) {
           play_effect(SND_CLICK, 128);
           Game.unpress();

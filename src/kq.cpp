@@ -56,6 +56,7 @@
 #include "enums.h"
 #include "fade.h"
 #include "imgcache.h"
+#include "input.h"
 #include "intrface.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
@@ -80,14 +81,6 @@ static void my_counter(void);
 static void time_counter(void);
 
 KGame Game;
-
-/*! \brief Which keys are pressed.
- *
- * \note 23: apparently flags for determining keypresses and player movement.
- * Seems to use some kind of homebrew Hungarian notation; I assume 'b' means
- * bool.  Most if not all of these are updated in readcontrols() below ....
- */
-s_player_input PlayerInput;
 
 /*! View and character positions */
 int vx, vy, mx, my;
@@ -282,9 +275,6 @@ int no_monsters = 0;
 int every_hit_999 = 0;
 #endif
 
-/*! The number of frames per second */
-#define KQ_TICKS 100
-
 /*! \brief Timer Event structure
  *
  * Holds the information relating to a forthcoming event
@@ -378,7 +368,7 @@ s_progress progresses[SIZE_PROGRESS] = {
 #endif
 
 KGame::KGame()
-  : WORLD_MAP("main")
+  : WORLD_MAP("main"), KQ_TICKS(100)
 {
 
 }
@@ -489,8 +479,7 @@ int KGame::add_timer_event(const char *n, int delta) {
 
 #ifdef DEBUGMODE
 
-/*! \brief Creates a bitmap, giving an error message with the specified name if
- * it fails.
+/*! \brief Creates a bitmap, giving an error message with the specified name if it fails.
  *
  * This function terminates the program with an error message if it fails to
  * allocate the specified bitmap. The name supplied is shown if this happens
@@ -501,8 +490,7 @@ int KGame::add_timer_event(const char *n, int delta) {
  * \param   bitmap_name Name of bitmap
  * \returns the pointer to the created bitmap
  */
-Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height,
-                         const char *bitmap_name) {
+Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name) {
   Raster *tmp = new Raster(bitmap_width, bitmap_height);
 
   if (!tmp) {
@@ -512,8 +500,7 @@ Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height,
   return tmp;
 }
 #else
-Raster *KGame::alloc_bmp(int w, int h, const char *n) {
-  (void)n;
+Raster *KGame::alloc_bmp(int w, int h, const char */*n*/) {
   return new Raster(w, h);
 }
 #endif
@@ -875,7 +862,7 @@ void KGame::deallocate_stuff(void) {
   }
 
   if (is_sound) {
-    shutdown_music();
+    Music.shutdown_music();
     free_samples();
   }
   deallocate_credits();
@@ -984,9 +971,9 @@ void KGame::kwait(int dtime) {
   timer_count = 0;
 
   while (cnt < dtime) {
-    poll_music();
+    Music.poll_music();
     while (timer_count > 0) {
-      poll_music();
+      Music.poll_music();
       timer_count--;
       cnt++;
       process_entities();
@@ -1107,7 +1094,7 @@ int main(int argc, const char *argv[]) {
         Game.do_check_animation();
         drawmap();
         blit2screen(xofs, yofs);
-        poll_music();
+        Music.poll_music();
 
         if (key[PlayerInput.kesc]) {
           stop = SaveGame.system_menu();
@@ -1142,7 +1129,7 @@ END_OF_MAIN()
 void my_counter(void) {
   timer++;
 
-  if (timer >= KQ_TICKS) {
+  if (timer >= Game.KQ_TICKS) {
     timer = 0;
     ksec++;
   }
@@ -1240,7 +1227,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy) {
     adelay[o] = 0;
   }
 
-  play_music(g_map.song_file, 0);
+  Music.play_music(g_map.song_file, 0);
   mx = g_map.xsize * TILE_W - 304;
   /*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
   my = g_map.ysize * TILE_H - 256;
@@ -1310,79 +1297,6 @@ void KGame::program_death(const char *message) {
   set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
   allegro_message("%s\n", tmp);
   exit(EXIT_FAILURE);
-}
-
-/*! \brief Handle user input.
- *
- * Updates all of the game controls according to user input.
- * 2003-05-27 PH: updated to re-enable the joystick
- * 2003-09-07 Edge <hardedged@excite.com>: removed duplicate input, joystick
- * code
- * 2003-09-07 Caz Jones: last time code workaround pci-gameport bug
- * (should not affect non-buggy drivers - please report to edge)
- */
-void KGame::readcontrols(void) {
-  JOYSTICK_INFO *stk;
-
-  poll_music();
-
-  /* PH 2002.09.21 in case this is needed (not sure on which platforms it is) */
-  if (keyboard_needs_poll()) {
-    poll_keyboard();
-  }
-
-  PlayerInput.balt = key[PlayerInput.kalt];
-  PlayerInput.besc = key[PlayerInput.kesc];
-  PlayerInput.bctrl = key[PlayerInput.kctrl];
-  PlayerInput.benter = key[PlayerInput.kenter];
-  PlayerInput.bhelp = key[KEY_F1];
-  PlayerInput.bcheat = key[KEY_F10];
-
-  PlayerInput.up = key[PlayerInput.kup];
-  PlayerInput.down = key[PlayerInput.kdown];
-  PlayerInput.left = key[PlayerInput.kleft];
-  PlayerInput.right = key[PlayerInput.kright];
-
-  /* Emergency kill-game set. */
-  /* PH modified - need to hold down for 0.50 sec */
-  if (key[KEY_ALT] && key[KEY_X]) {
-    int kill_time = timer_count + KQ_TICKS / 2;
-
-    while (key[KEY_ALT] && key[KEY_X]) {
-      if (timer_count >= kill_time) {
-        /* Pressed, now wait for release */
-        clear_bitmap(screen);
-        while (key[KEY_ALT] && key[KEY_X]) {
-        }
-        program_death(_("X-ALT pressed... exiting."));
-      }
-    }
-  }
-#ifdef DEBUGMODE
-  if (debugging > 0) {
-    if (key[KEY_F11]) {
-      data_dump();
-    }
-
-    /* Back to menu - by pretending all the heroes died.. hehe */
-    if (key[KEY_ALT] && key[KEY_M]) {
-      alldead = 1;
-    }
-  }
-#endif
-
-  if (use_joy > 0 && maybe_poll_joystick() == 0) {
-    stk = &joy[use_joy - 1];
-    PlayerInput.left |= stk->stick[0].axis[0].d1;
-    PlayerInput.right |= stk->stick[0].axis[0].d2;
-    PlayerInput.up |= stk->stick[0].axis[1].d1;
-    PlayerInput.down |= stk->stick[0].axis[1].d2;
-
-    PlayerInput.balt |= stk->button[0].b;
-    PlayerInput.bctrl |= stk->button[1].b;
-    PlayerInput.benter |= stk->button[2].b;
-    PlayerInput.besc |= stk->button[3].b;
-  }
 }
 
 /*! \brief Delete any pending events
@@ -1505,17 +1419,18 @@ void KGame::startup(void) {
   misc->blitTo(b_mp, 0, 24, 0, 0, 10, 8);
   misc->blitTo(sfonts[0], 0, 128, 0, 0, 60, 8);
 
+  // sfonts[1-4] are the same font shape, just colored differently.
   sfonts[0]->blitTo(sfonts[1]);
   sfonts[0]->blitTo(sfonts[2]);
   sfonts[0]->blitTo(sfonts[3]);
   sfonts[0]->blitTo(sfonts[4]);
-  for (i = 0; i < 8; i++) {
-    for (p = 0; p < 60; p++) {
-      if (sfonts[0]->getpixel(p, i) == 15) {
-        sfonts[1]->setpixel(p, i, 22);
-        sfonts[2]->setpixel(p, i, 105);
-        sfonts[3]->setpixel(p, i, 39);
-        sfonts[4]->setpixel(p, i, 8);
+  for (int16_t sfont_y = 0; sfont_y < 8; sfont_y++) {
+    for (int16_t sfont_x = 0; sfont_x < 60; sfont_x++) {
+      if (sfonts[0]->getpixel(sfont_x, sfont_y) == 15) {
+        sfonts[1]->setpixel(sfont_x, sfont_y, 22);
+        sfonts[2]->setpixel(sfont_x, sfont_y, 105);
+        sfonts[3]->setpixel(sfont_x, sfont_y, 39);
+        sfonts[4]->setpixel(sfont_x, sfont_y, 8);
       }
     }
   }
@@ -1619,7 +1534,7 @@ END_OF_FUNCTION(time_counter)
 void KGame::unpress(void) {
   timer_count = 0;
   while (timer_count < 20) {
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (!(PlayerInput.balt || PlayerInput.bctrl || PlayerInput.benter ||
           PlayerInput.besc || PlayerInput.up || PlayerInput.down ||
           PlayerInput.right || PlayerInput.left || PlayerInput.bcheat)) {
@@ -1639,7 +1554,7 @@ void KGame::wait_enter(void) {
   Game.unpress();
 
   while (!stop) {
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.balt) {
       Game.unpress();
       stop = 1;
@@ -1682,7 +1597,7 @@ void KGame::wait_for_entity(size_t first_entity_index,
       timer_count--;
       process_entities();
     }
-    poll_music();
+    Music.poll_music();
     Game.do_check_animation();
     drawmap();
     blit2screen(xofs, yofs);

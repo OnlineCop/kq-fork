@@ -33,6 +33,7 @@
 #include "draw.h"
 #include "fade.h"
 #include "gfx.h"
+#include "input.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
@@ -94,7 +95,7 @@ static void buy_item(int how_many, int item_no) {
     draw_sideshot(shops[shop_no].items[item_no]);
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.balt) {
       Game.unpress();
       stop = 1;
@@ -188,7 +189,7 @@ static void buy_menu(void) {
     draw_sprite(double_buffer, menuptr, 32 + xofs, yptr * 8 + 32 + yofs);
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       Game.unpress();
       if (yptr > 0) {
@@ -250,7 +251,7 @@ void do_inn_effects(int do_delay) {
       party[party_index].sts[stats_index] = 0;
     }
   }
-  pause_music();
+  Music.pause_music();
   play_effect(36, 128);
   if (do_delay != 0) {
     do_transition(TRANS_FADE_OUT, 2);
@@ -260,7 +261,7 @@ void do_inn_effects(int do_delay) {
     do_transition(TRANS_FADE_IN, 2);
   }
   save_spells[P_REPULSE] = 0;
-  resume_music();
+  Music.resume_music();
 }
 
 /*! \brief Display amount of gold
@@ -458,7 +459,7 @@ void inn(const char *iname, uint32_t gold_per_character, int pay) {
     print_font(double_buffer, 236 + xofs, 112 + yofs, _("no"), FNORMAL);
     draw_sprite(double_buffer, menuptr, 220 + xofs, my * 8 + 104 + yofs);
     blit2screen(xofs, yofs);
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.down) {
       Game.unpress();
       if (my == 0) {
@@ -533,7 +534,7 @@ static void sell_howmany(int item_no, size_t inv_page) {
                item_no * 8 + 32 + yofs, strbuf, FNORMAL);
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up || PlayerInput.right) {
       if (my < max_items) {
         Game.unpress();
@@ -586,7 +587,7 @@ static void sell_item(int itno, int ni) {
              FNORMAL);
   blit2screen(xofs, yofs);
   while (!stop) {
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.balt) {
       Game.unpress();
       gp += sp;
@@ -675,7 +676,7 @@ static void sell_menu(void) {
     draw_sprite(double_buffer, pgb[inv_page], 278 + xofs, 158 + yofs);
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
 
     if (PlayerInput.down) {
       Game.unpress();
@@ -782,7 +783,7 @@ int shop(int shop_num) {
     draw_shopgold();
     blit2screen(xofs, yofs);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
 
     if (PlayerInput.left && ptr > 0) {
       Game.unpress();

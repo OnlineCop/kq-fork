@@ -37,6 +37,7 @@
 #include "combat.h"
 #include "entity.h"
 #include "enums.h"
+#include "input.h"
 #include "intrface.h"
 #include "itemdefs.h"
 #include "kq.h"
@@ -289,8 +290,7 @@ static void follow(int tile_x, int tile_y) {
     if (i == 1) {
       move(i, tile_x - g_ent[i].tilex, tile_y - g_ent[i].tiley);
     } else {
-      move(i, g_ent[i - 1].tilex - g_ent[i].tilex,
-           g_ent[i - 1].tiley - g_ent[i].tiley);
+      move(i, g_ent[i - 1].tilex - g_ent[i].tilex, g_ent[i - 1].tiley - g_ent[i].tiley);
     }
   }
 }
@@ -514,8 +514,7 @@ static int move(t_entity target_entity, int dx, int dy) {
  * \param   check_entity Whether to return 1 if an entity is at the target
  * \returns 1 if path is obstructed, 0 otherwise
  */
-static int obstruction(int origin_x, int origin_y, int move_x, int move_y,
-                       int check_entity) {
+static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int check_entity) {
   int current_tile; // obstrution for current tile
   int target_tile;  // obstruction for destination tile
   int dest_x;       // destination tile, x-coord
@@ -629,7 +628,7 @@ static void player_move(void) {
   int oldx = g_ent[0].tilex;
   int oldy = g_ent[0].tiley;
 
-  Game.readcontrols();
+  PlayerInput.readcontrols();
 
   if (PlayerInput.balt) {
     Game.activate();
@@ -643,8 +642,7 @@ static void player_move(void) {
   }
 #endif
 
-  move(0, PlayerInput.right ? 1 : PlayerInput.left ? -1 : 0,
-       PlayerInput.down ? 1 : PlayerInput.up ? -1 : 0);
+  move(0, PlayerInput.right ? 1 : PlayerInput.left ? -1 : 0, PlayerInput.down ? 1 : PlayerInput.up ? -1 : 0);
   if (g_ent[0].moving) {
     follow(oldx, oldy);
   }
@@ -784,10 +782,8 @@ void set_script(t_entity target_entity, const char *movestring) {
   g_ent[target_entity].cmd = COMMAND_NONE;
   g_ent[target_entity].sidx = 0;   // Reset script command index
   g_ent[target_entity].cmdnum = 0; // There are no scripted commands
-  g_ent[target_entity].movemode =
-      MM_SCRIPT; // Force the entity to follow the script
-  strncpy(g_ent[target_entity].script, movestring,
-          sizeof(g_ent[target_entity].script));
+  g_ent[target_entity].movemode = MM_SCRIPT; // Force the entity to follow the script
+  strncpy(g_ent[target_entity].script, movestring, sizeof(g_ent[target_entity].script));
 }
 
 /*! \brief Adjust movement speed

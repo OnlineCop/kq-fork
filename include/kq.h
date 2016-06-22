@@ -71,7 +71,6 @@ public:
 
   void change_map(const string &, int, int, int, int);
   void change_mapm(const string &, const string &, int, int);
-  void readcontrols(void);
   void calc_viewport(int);
   void zone_check(void);
   void warp(int, int, int);
@@ -110,13 +109,14 @@ public:
 
 public:
   const string WORLD_MAP;
+  /*! The number of frames per second */
+  const int32_t KQ_TICKS;
 
 protected:
   /*! Name of the current map */
   string m_curmap;
 };
 
-extern s_player_input PlayerInput;
 extern int vx, vy, mx, my, steps, lastm[PSIZE];
 
 extern Raster *double_buffer, *fx_buffer;
@@ -173,14 +173,6 @@ extern int no_monsters;
 #ifdef DEBUGMODE
 extern Raster *obj_mesh;
 #endif
-
-/* The same blit() function was called all over the place, so this simplifies the call.
- * 352 == (320 + 16 + 16) or screen dimensions plus 1 tile on left and 1 tile on right.
- * 272 == (240 + 16 + 16) or screen dimensions plus 1 tile on top and 1 tile on bottom.
- */
-#define SCREEN_W2 (KQ_SCREEN_W + 2 * TILE_W)
-#define SCREEN_H2 (KQ_SCREEN_H + 2 * TILE_H)
-#define fullblit(a, b) blit((a), (b), 0, 0, 0, 0, SCREEN_W2, SCREEN_H2)
 
 extern KGame Game;
 

@@ -70,7 +70,7 @@ static void _fade_from_range(AL_CONST PALETTE source, AL_CONST PALETTE dest,
   start = retrace_count;
   last = -1;
   while ((c = (retrace_count - start) * speed / 2) < 64) {
-    poll_music();
+    Music.poll_music();
     if (c != last) {
       fade_interpolate(source, dest, temp, c, from, to);
       set_palette_range(temp, from, to, TRUE);

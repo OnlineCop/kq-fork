@@ -49,6 +49,7 @@ extern "C" {
 #include "enums.h"
 #include "fade.h"
 #include "heroc.h"
+#include "input.h"
 #include "intrface.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
@@ -2274,7 +2275,7 @@ static int KQ_move_camera(lua_State *L) {
     Game.do_check_animation();
     drawmap();
     blit2screen(xofs, yofs);
-    poll_music();
+    Music.poll_music();
   }
 
   timer_count = 0;
@@ -2388,7 +2389,7 @@ static int KQ_orient_heroes(lua_State *L) {
 
 static int KQ_pause_song(lua_State *L) {
   (void)L;
-  pause_music();
+  Music.pause_music();
   return 0;
 }
 
@@ -2415,12 +2416,12 @@ static int KQ_place_ent(lua_State *L) {
 
 static int KQ_play_map_song(lua_State *L) {
   (void)L;
-  play_music(g_map.song_file, 0);
+  Music.play_music(g_map.song_file, 0);
   return 0;
 }
 
 static int KQ_play_song(lua_State *L) {
-  play_music(lua_tostring(L, 1), 0);
+  Music.play_music(lua_tostring(L, 1), 0);
   return 0;
 }
 
@@ -2517,7 +2518,7 @@ static int KQ_read_controls(lua_State *L) {
     g_keys[z] = 0;
   }
 
-  Game.readcontrols();
+  PlayerInput.readcontrols();
   if (PlayerInput.up && a == 1) {
     Game.unpress();
     g_keys[0] = 1;
@@ -3444,7 +3445,7 @@ static int KQ_shop_add_item(lua_State *L) {
 
 static int KQ_stop_song(lua_State *L) {
   (void)L;
-  stop_music();
+  Music.stop_music();
   return 0;
 }
 
@@ -3500,7 +3501,7 @@ static int KQ_traceback(lua_State *theL) {
 
 static int KQ_unpause_map_song(lua_State *L) {
   (void)L;
-  resume_music();
+  Music.resume_music();
   return 0;
 }
 

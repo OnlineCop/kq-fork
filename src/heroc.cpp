@@ -39,6 +39,7 @@
 #include "gfx.h"
 #include "hskill.h"
 #include "imgcache.h"
+#include "input.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
@@ -347,7 +348,7 @@ static int combat_item_menu(int whom) {
                FNORMAL);
     blit2screen(0, 0);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       Game.unpress();
       ptr--;
@@ -446,7 +447,7 @@ int combat_spell_menu(int c) {
     combat_draw_spell_menu(c, ptr, pgno);
     blit2screen(0, 0);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
 
     if (PlayerInput.down) {
       Game.unpress();
@@ -695,7 +696,7 @@ void hero_choose_action(size_t fighter_index) {
     }
     blit2screen(0, 0);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       Game.unpress();
       if (ptr > 0) {
@@ -921,7 +922,7 @@ static int hero_invoke(int whom) {
     draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 88);
     blit2screen(0, 0);
 
-    Game.readcontrols();
+    PlayerInput.readcontrols();
     if (PlayerInput.up) {
       Game.unpress();
       ptr--;

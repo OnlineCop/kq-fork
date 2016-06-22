@@ -61,8 +61,6 @@ enum eShadow {
 #define PSIZE 2U
 #define MAXFRAMES 12
 #define MAXEFRAMES 12
-#define WINDOW_TILES_W 21
-#define WINDOW_TILES_H 16
 #define MAX_ENTITIES_PER_MAP 50
 #define MAX_ENTITIES (MAX_ENTITIES_PER_MAP + PSIZE)
 #define ID_ENEMY 254

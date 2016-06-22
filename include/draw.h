@@ -21,8 +21,12 @@
 
 #ifndef __DRAW_H
 #define __DRAW_H
+
 #include <stdint.h>
 #include <stdlib.h>
+#include <string>
+using std::string;
+
 class Raster;
 
 // TODO: Find out whether these values paired to any color defined within
@@ -45,6 +49,16 @@ enum eFontColor {
   FDECIDE = 7,
 
   NUM_FONT_COLORS // always last
+};
+
+enum eFont {
+  FONT_WHITE = 0,
+  FONT_RED,
+  FONT_YELLOW,
+  FONT_GREEN,
+  FONT_PURPLE,
+
+  NUM_FONTS // always last
 };
 
 enum eBubbleStyle {
@@ -81,7 +95,7 @@ int is_forestsquare(int, int);
 void drawmap(void);
 void menubox(Raster *where, int x, int y, int w, int h, int c);
 void print_font(Raster *, int, int, const char *, eFontColor);
-void print_num(Raster *, int, int, char *, int);
+void print_num(Raster *where, int sx, int sy, const string msg, eFontColor font_index);
 void text_ex(int, int, const char *);
 void porttext_ex(int, int, const char *);
 int prompt(int, int, int, const char *, const char *, const char *, const char *);
