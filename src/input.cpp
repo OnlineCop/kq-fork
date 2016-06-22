@@ -60,6 +60,7 @@ void KPlayerInput::readcontrols() {
     }
   }
 #ifdef DEBUGMODE
+  extern char debugging;
   if (debugging > 0) {
     if (key[KEY_F11]) {
       Game.data_dump();
