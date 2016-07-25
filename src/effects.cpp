@@ -126,7 +126,7 @@ void death_animation(size_t target_fighter_index, int target_all_flag) {
  * \param   font_color Color of text
  * \param   multiple_target Multiple target flag
  */
-void display_amount(size_t target_fighter_index, eFontColor font_color, int multiple_target) {
+void display_amount(size_t target_fighter_index, eFont font_color, int multiple_target) {
   int dx, dy, sprite_height;
   uint32_t c, p;
   size_t fighter_index, start_fighter_index, num_fighters;
@@ -178,9 +178,9 @@ void display_amount(size_t target_fighter_index, eFontColor font_color, int mult
             sprintf(strbuf, "%d", abs(ta[fighter_index]));
           }
           string_length = strlen(strbuf) * 3;
-          eFontColor new_font_color = font_color;
-          if (font_color == FDECIDE) {
-            new_font_color = (ta[fighter_index] > 0 ? FYELLOW : FNORMAL);
+          eFont new_font_color = font_color;
+          if (font_color == FONT_DECIDE) {
+            new_font_color = (ta[fighter_index] > 0 ? FONT_YELLOW : FONT_WHITE);
           }
           draw_fighter(fighter_index, 0);
 

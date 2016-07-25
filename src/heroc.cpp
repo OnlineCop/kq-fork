@@ -304,7 +304,7 @@ static int combat_item(int ss, int t1, int tg) {
       tt = num_enemies;
     }
   }
-  display_amount(st, FDECIDE, tl);
+  display_amount(st, FONT_DECIDE, tl);
   for (a = st; a < st + tt; a++) {
     adjust_hp(a, ta[a]);
   }

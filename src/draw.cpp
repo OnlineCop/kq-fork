@@ -1335,7 +1335,7 @@ void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor font_
   int hgt = 8;//MagicNumber: font height for NORMAL text
   uint32_t cc = 0;
 
-  if (font_index < 0 || font_index >= NUM_FONTS) {
+  if (font_index < 0 || font_index >= NUM_FONT_COLORS) {
     sprintf(strbuf, _("print_font: Bad font index, %d"), (int)font_index);
     Game.klog(strbuf);
     return;
@@ -1367,9 +1367,9 @@ void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor font_
  * \param   msg String to draw
  * \param   font_index Font index (0..4)
  */
-void print_num(Raster *where, int sx, int sy, const string msg, eFontColor font_index) {
+void print_num(Raster *where, int sx, int sy, const string msg, eFont font_index) {
   assert(where && "where == NULL");
-
+  // Check ought not to be necessary if using the enum correctly.
   if (font_index >= NUM_FONTS) {
     sprintf(strbuf, _("print_num: Bad font index, %d"), (int)font_index);
     Game.klog(strbuf);

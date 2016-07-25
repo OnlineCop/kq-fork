@@ -674,7 +674,7 @@ static void do_round(void) {
             }
 
             ta[fighter_index] = a;
-            display_amount(fighter_index, FNORMAL, 0);
+            display_amount(fighter_index, FONT_WHITE, 0);
             fighter[fighter_index].hp -= a;
           }
 
@@ -689,7 +689,7 @@ static void do_round(void) {
             }
 
             ta[fighter_index] = a;
-            display_amount(fighter_index, FYELLOW, 0);
+            display_amount(fighter_index, FONT_YELLOW, 0);
             adjust_hp(fighter_index, a);
           }
 
@@ -978,7 +978,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk) {
         do_shield_check(defend_fighter_index, ta[defend_fighter_index]);
   }
 
-  display_amount(defend_fighter_index, FDECIDE, 0);
+  display_amount(defend_fighter_index, FONT_DECIDE, 0);
   if (ta[defend_fighter_index] != MISS) {
     fighter[defend_fighter_index].hp += ta[defend_fighter_index];
     if ((fighter[attack_fighter_index].imb_s > 0) && (kq_rnd(5) == 0)) {
@@ -1325,7 +1325,7 @@ void multi_fight(size_t attack_fighter_index) {
     fighter[attack_fighter_index].cy -= 10;
   }
 
-  display_amount(start_fighter_index, FDECIDE, 1);
+  display_amount(start_fighter_index, FONT_DECIDE, 1);
   for (fighter_index = start_fighter_index;
        fighter_index < start_fighter_index + end_fighter_index;
        fighter_index++) {

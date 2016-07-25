@@ -52,6 +52,7 @@ set(kq-fork_SRCS
 	src/gfx.cpp
 	src/heroc.cpp
 	src/hskill.cpp
+	src/input.cpp
 	src/intrface.cpp
 	src/itemmenu.cpp
 	src/kq.cpp

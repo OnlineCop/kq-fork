@@ -46,7 +46,6 @@ enum eFontColor {
   FDARK = 4,
   FGOLD = 5,
   FBIG = 6,
-  FDECIDE = 7,
 
   NUM_FONT_COLORS // always last
 };
@@ -57,7 +56,7 @@ enum eFont {
   FONT_YELLOW,
   FONT_GREEN,
   FONT_PURPLE,
-
+  FONT_DECIDE,
   NUM_FONTS // always last
 };
 
@@ -95,7 +94,7 @@ int is_forestsquare(int, int);
 void drawmap(void);
 void menubox(Raster *where, int x, int y, int w, int h, int c);
 void print_font(Raster *, int, int, const char *, eFontColor);
-void print_num(Raster *where, int sx, int sy, const string msg, eFontColor font_index);
+void print_num(Raster *where, int sx, int sy, const string msg, eFont font_index);
 void text_ex(int, int, const char *);
 void porttext_ex(int, int, const char *);
 int prompt(int, int, int, const char *, const char *, const char *, const char *);

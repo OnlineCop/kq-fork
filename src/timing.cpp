@@ -158,7 +158,7 @@ int limit_frame_rate(int fps) {
  * \remark PH does this need locking with LOCK_FUNCTION
  *            like a timer function does?
  */
-static void _kq_rest_callback(void) { poll_music(); }
+static void _kq_rest_callback(void) { Music.poll_music(); }
 
 void kq_wait(long ms) { rest_callback(ms, _kq_rest_callback); }
 

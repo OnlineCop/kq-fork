@@ -500,7 +500,7 @@ int skill_use(size_t attack_fighter_index) {
     ta[attack_fighter_index] = (b * 2);
     display_attack_string = 0;
     blit(temp.get(), backart, 0, 0, 0, 0, 320, 240);
-    display_amount(attack_fighter_index, FDECIDE, 0);
+    display_amount(attack_fighter_index, FONT_DECIDE, 0);
     if (fighter[attack_fighter_index].sts[S_DEAD] == 0 &&
         fighter[attack_fighter_index].hp <= 0) {
       fkill(attack_fighter_index);
@@ -654,7 +654,7 @@ int skill_use(size_t attack_fighter_index) {
           ta[fighter_index] = do_shell_check(fighter_index, ta[fighter_index]);
         }
       }
-      display_amount(0, FYELLOW, 1);
+      display_amount(0, FONT_YELLOW, 1);
       for (fighter_index = 0; fighter_index < numchrs; fighter_index++) {
         if (fighter[fighter_index].sts[S_STONE] == 0 &&
             fighter[fighter_index].sts[S_DEAD] == 0) {

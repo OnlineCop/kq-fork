@@ -378,7 +378,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
     } else {
       ta[fighter_index] = tmp;
       draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
-      display_amount(fighter_index, FYELLOW, 0);
+      display_amount(fighter_index, FONT_YELLOW, 0);
       adjust_hp(fighter_index, ta[fighter_index]);
     }
     break;
@@ -396,7 +396,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
     } else {
       ta[fighter_index] = tmp;
       draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
-      display_amount(fighter_index, FGREEN, 0);
+      display_amount(fighter_index, FONT_GREEN, 0);
       adjust_mp(fighter_index, ta[fighter_index]);
     }
     break;
@@ -488,7 +488,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
     }
     if (in_combat == 1) {
       draw_spellsprite(attack_fighter_index, 1, items[ti].eff, 1);
-      display_amount(attack_fighter_index, FYELLOW, 1);
+      display_amount(attack_fighter_index, FONT_YELLOW, 1);
       for (fighter_index = attack_fighter_index;
            fighter_index < attack_fighter_index + san; fighter_index++) {
         adjust_hp(fighter_index, ta[fighter_index]);

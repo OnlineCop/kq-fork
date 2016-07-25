@@ -568,26 +568,26 @@ int combat_spell(size_t caster_fighter_index, int is_item) {
   if (spell_number == M_ABSORB || spell_number == M_DRAIN) {
     if (spell_number == M_ABSORB) {
       if (ta[tgt] <= 0) {
-        display_amount(tgt, FRED, 0);
+        display_amount(tgt, FONT_RED, 0);
         adjust_mp(tgt, ta[tgt]);
-        display_amount(caster_fighter_index, FGREEN, 0);
+        display_amount(caster_fighter_index, FONT_GREEN, 0);
         adjust_mp(caster_fighter_index, ta[caster_fighter_index]);
       } else {
-        display_amount(caster_fighter_index, FRED, 0);
+        display_amount(caster_fighter_index, FONT_RED, 0);
         adjust_mp(caster_fighter_index, ta[caster_fighter_index]);
-        display_amount(tgt, FGREEN, 0);
+        display_amount(tgt, FONT_GREEN, 0);
         adjust_mp(tgt, ta[tgt]);
       }
     } else {
       if (ta[tgt] <= 0) {
-        display_amount(tgt, FNORMAL, 0);
+        display_amount(tgt, FONT_WHITE, 0);
         adjust_hp(tgt, ta[tgt]);
-        display_amount(caster_fighter_index, FYELLOW, 0);
+        display_amount(caster_fighter_index, FONT_YELLOW, 0);
         adjust_hp(caster_fighter_index, ta[caster_fighter_index]);
       } else {
-        display_amount(caster_fighter_index, FNORMAL, 0);
+        display_amount(caster_fighter_index, FONT_WHITE, 0);
         adjust_hp(caster_fighter_index, ta[caster_fighter_index]);
-        display_amount(tgt, FYELLOW, 0);
+        display_amount(tgt, FONT_YELLOW, 0);
         adjust_hp(tgt, ta[tgt]);
       }
     }
@@ -602,10 +602,10 @@ int combat_spell(size_t caster_fighter_index, int is_item) {
         }
       }
       if (b > 0) {
-        display_amount(start_fighter_index, FNORMAL, tall);
+        display_amount(start_fighter_index, FONT_WHITE, tall);
       }
     } else {
-      display_amount(start_fighter_index, FDECIDE, tall);
+      display_amount(start_fighter_index, FONT_DECIDE, tall);
       for (fighter_index = start_fighter_index;
            fighter_index < start_fighter_index + end_fighter_index;
            fighter_index++) {
@@ -1235,7 +1235,7 @@ void special_damage_oneall_enemies(size_t caster_index, int spell_dmg,
       ta[fighter_index] = 0;
     }
   }
-  display_amount(first_target, FDECIDE, multiple_targets);
+  display_amount(first_target, FONT_DECIDE, multiple_targets);
   for (fighter_index = first_target; fighter_index < first_target + last_target;
        fighter_index++) {
     if (ta[fighter_index] != MISS) {
