@@ -19,52 +19,43 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <random>
-#include <sstream>
-#include <time.h>
-
 #include "random.h"
+
+
+KQRandom::KQRandom()
+{
+	time_t t0 = time(nullptr);
+	engine.seed(static_cast<std::minstd_rand::result_type>(t0));
+}
+
+int KQRandom::random_range_exclusive(int min_inclusive, int max_exclusive)
+{
+	std::uniform_int_distribution<int> rnd(min_inclusive, max_exclusive - 1);
+	return rnd(engine);
+}
+
+int KQRandom::random_range_inclusive(int min_inclusive, int max_inclusive)
+{
+	std::uniform_int_distribution<int> rnd(min_inclusive, max_inclusive);
+	return rnd(engine);
+}
+
+std::string KQRandom::kq_get_random_state()
+{
+	std::ostringstream stm;
+	stm << engine;
+	return stm.str();
+}
+
+void KQRandom::kq_set_random_state(const std::string &new_state)
+{
+	std::istringstream stm(new_state);
+	stm >> engine;
+}
 
 // Name a specific engine here rather than default
 // just in case different platforms have different
 // implementations of default.
 static std::minstd_rand engine;
 
-/*! \brief Get random integer.
- * \param v0 lowest number
- * \param v1 highest number + 1
- * \returns new random greater than or equal to v0 but less than v1
- */
-int kq_rnd(int v0, int v1) {
-  std::uniform_int_distribution<int> rnd(v0, v1 - 1);
-  return rnd(engine);
-}
-
-/*! Return the internal random state.
- * You can store this state, and restore it later
- * to resume
- * the random sequence where it left off.
- * \returns the state
- */
-std::string kq_get_random_state() {
-  std::ostringstream stm;
-  stm << engine;
-  return stm.str();
-}
-
-/*! Set the internal random state.
- * Call this with a string returned
- * from kq_random_state
- * \param str a string
- */
-void kq_set_random_state(const std::string &s) {
-  std::istringstream stm(s);
-  stm >> engine;
-}
-
-/*! initialise the random generator
- */
-void kq_init_random() {
-  time_t t0 = time(nullptr);
-  engine.seed(static_cast<std::minstd_rand::result_type>(t0));
-}
+KQRandom* kqrandom;

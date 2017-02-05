@@ -372,7 +372,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
     if (fighter[fighter_index].hp == fighter[fighter_index].mhp) {
       return ITEM_EFFECT_INEFFECTIVE;
     }
-    tmp = kq_rnd(items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
+    tmp = kqrandom->random_range_exclusive(0, items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
     if (in_combat == 0) {
       adjust_hp(fighter_index, tmp);
     } else {
@@ -390,7 +390,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
     if (fighter[fighter_index].mp == fighter[fighter_index].mmp) {
       return ITEM_EFFECT_INEFFECTIVE;
     }
-    tmp = kq_rnd(items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
+    tmp = kqrandom->random_range_exclusive(0, items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
     if (in_combat == 0) {
       adjust_mp(fighter_index, tmp);
     } else {
@@ -478,7 +478,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
       if (fighter[fighter_index].sts[S_DEAD] == 0 &&
           fighter[fighter_index].sts[S_STONE] == 0) {
         b = fighter[fighter_index].lvl * items[ti].stats[A_ATT];
-        tmp = kq_rnd(b) + b + 1;
+        tmp = kqrandom->random_range_exclusive(0, b) + b + 1;
         if (in_combat == 0) {
           adjust_hp(fighter_index, tmp);
         } else {
@@ -508,7 +508,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
       if (fighter[fighter_index].sts[S_DEAD] == 0 &&
           fighter[fighter_index].mhp > 0) {
         b = fighter[fighter_index].lvl * items[ti].stats[A_ATT];
-        a = kq_rnd(b) + b + 20;
+        a = kqrandom->random_range_exclusive(0, b) + b + 20;
         if (a > 250) {
           a = 250;
         }
@@ -541,7 +541,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
       return ITEM_EFFECT_INEFFECTIVE;
     }
     z = items[ti].bst; // eAttribute
-    party[pidx[fighter_index]].stats[z] += kq_rnd(1, 4) * 100;
+    party[pidx[fighter_index]].stats[z] += kqrandom->random_range_exclusive(1, 4) * 100;
     play_effect(SND_TWINKLE, 128);
     switch (z) {
     case 0:
@@ -598,7 +598,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
     if (fighter[fighter_index].sts[S_DEAD] != 0) {
       return ITEM_EFFECT_INEFFECTIVE;
     }
-    i = kq_rnd(10, 21);
+    i = kqrandom->random_range_exclusive(10, 21);
     party[pidx[fighter_index]].mhp += i;
     fighter[fighter_index].hp += i;
   }
@@ -606,7 +606,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
     if (fighter[fighter_index].sts[S_DEAD] != 0) {
       return ITEM_EFFECT_INEFFECTIVE;
     }
-    i = kq_rnd(10, 21);
+    i = kqrandom->random_range_exclusive(10, 21);
     party[pidx[fighter_index]].mmp += i;
     fighter[fighter_index].mp += i;
   }

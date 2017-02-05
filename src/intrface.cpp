@@ -2182,7 +2182,7 @@ static int KQ_krnd(lua_State *L) {
   auto a = lua_tointeger(L, 1);
 
   if (a > 0) {
-    lua_pushnumber(L, kq_rnd(a));
+    lua_pushnumber(L, kqrandom->random_range_exclusive(0, a));
   } else {
     lua_pushnumber(L, 0);
   }

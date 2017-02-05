@@ -243,10 +243,10 @@ static void level_up(int pr) {
   z = ((a / 3) + (xpi * (a / 20 + 1) - 1)) * (((a - 2) / 2) * (a - 1));
   z += (bxp * (a / 20 + 1) * (a - 1));
   party[pr].next += (int)z;
-  a = (kq_rnd(lup[2] / 2)) + lup[2] + (tmpf.stats[A_VIT] / 5);
+  a = (kqrandom->random_range_exclusive(0, lup[2] / 2)) + lup[2] + (tmpf.stats[A_VIT] / 5);
   party[pr].hp += a;
   party[pr].mhp += a;
-  b = (kq_rnd(lup[3] / 2)) + lup[3];
+  b = (kqrandom->random_range_exclusive(0, lup[3] / 2)) + lup[3];
   b += (tmpf.stats[A_INT] + tmpf.stats[A_SAG]) / 25;
   party[pr].mp += b;
   party[pr].mmp += b;

@@ -491,7 +491,7 @@ int skill_use(size_t attack_fighter_index) {
         }
       }
       if (next_target > 0) {
-        enemy_index = nn[kq_rnd(next_target)];
+        enemy_index = nn[kqrandom->random_range_exclusive(0, next_target)];
         fight(attack_fighter_index, enemy_index, 1);
       }
     }
@@ -618,7 +618,7 @@ int skill_use(size_t attack_fighter_index) {
               cts = 0;
             }
           }
-          if (kq_rnd(100) < cts) {
+          if (kqrandom->random_range_exclusive(0, 100) < cts) {
             if (b >= fighter[fighter_index].hp) {
               b -= fighter[fighter_index].hp;
               deffect[fighter_index] = 1;
@@ -632,15 +632,15 @@ int skill_use(size_t attack_fighter_index) {
       cury = -1;
       battle_render(attack_fighter_index, attack_fighter_index, 0);
     } else {
-      a = kq_rnd(100);
+      a = kqrandom->random_range_exclusive(0, 100);
       c = fighter[attack_fighter_index].lvl / 10 + 1;
       if (a < 25) {
-        b = kq_rnd(5 * c) + 1;
+        b = kqrandom->random_range_exclusive(0, 5 * c) + 1;
       } else {
         if (a < 90) {
-          b = kq_rnd(10 * c) + (20 * c);
+          b = kqrandom->random_range_exclusive(0, 10 * c) + (20 * c);
         } else {
-          b = kq_rnd(25 * c) + (50 * c);
+          b = kqrandom->random_range_exclusive(0, 25 * c) + (50 * c);
         }
       }
       strcpy(attack_string, _("Divine Cure"));
@@ -753,13 +753,13 @@ int skill_use(size_t attack_fighter_index) {
     if (cts > 95) {
       cts = 95;
     }
-    if (kq_rnd(100) < cts) {
-      if (fighter[enemy_index].steal_item_rare > 0 && (kq_rnd(100) < 5)) {
+    if (kqrandom->random_range_exclusive(0, 100) < cts) {
+      if (fighter[enemy_index].steal_item_rare > 0 && (kqrandom->random_range_exclusive(0, 100) < 5)) {
         /* This steals a rare item from monster, if there is one */
         found_item = fighter[enemy_index].steal_item_rare;
         fighter[enemy_index].steal_item_rare = 0;
       } else if (fighter[enemy_index].steal_item_common > 0 &&
-                 (kq_rnd(100) < 95)) {
+                 (kqrandom->random_range_exclusive(0, 100) < 95)) {
         /* This steals a common item from a monster, if there is one */
         found_item = fighter[enemy_index].steal_item_common;
         fighter[enemy_index].steal_item_common = 0;

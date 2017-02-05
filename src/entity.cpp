@@ -73,7 +73,7 @@ static void chase(t_entity target_entity) {
 
   if (g_ent[target_entity].chasing == 0) {
     if (entity_near(target_entity, 0, 3) == 1 &&
-        kq_rnd(100) <= g_ent[target_entity].extra) {
+        kqrandom->random_range_exclusive(0, 100) <= g_ent[target_entity].extra) {
       g_ent[target_entity].chasing = 1;
       if (g_ent[target_entity].speed < 7) {
         g_ent[target_entity].speed++;
@@ -105,7 +105,7 @@ static void chase(t_entity target_entity) {
       if (g_ent[target_entity].speed > 1) {
         g_ent[target_entity].speed--;
       }
-      g_ent[target_entity].delay = kq_rnd(25, 50);
+      g_ent[target_entity].delay = kqrandom->random_range_exclusive(25, 50);
       wander(target_entity);
     }
   }
@@ -919,7 +919,7 @@ static void wander(t_entity target_entity) {
     return;
   }
   g_ent[target_entity].delayctr = 0;
-  switch (kq_rnd(8)) {
+  switch (kqrandom->random_range_exclusive(0, 8)) {
   case 0:
     move(target_entity, 0, -1);
     break;

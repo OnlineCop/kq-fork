@@ -678,7 +678,7 @@ static int save_general_props(XMLElement *node) {
   auto pbegin = std::begin(pidx);
   auto pend = std::next(pbegin, numchrs);
   addprop(properties, "party", make_list(pbegin, pend));
-  addprop(properties, "random-state", kq_get_random_state());
+  addprop(properties, "random-state", kqrandom->kq_get_random_state());
   // Save-Game Stats - id, level, hp (as a % of mhp), mp% for each member of the
   // party
   vector<int> sgs;
@@ -701,7 +701,7 @@ static int load_general_props(XMLElement *node) {
         gp = property->IntAttribute("value");
       } else if (property->Attribute("name", "random-state")) {
         std::string state = property->Attribute("value");
-        kq_set_random_state(state);
+        kqrandom->kq_set_random_state(state);
       } else if (property->Attribute("name", "time")) {
         int tt = property->IntAttribute("value");
         kmin = tt % 60;

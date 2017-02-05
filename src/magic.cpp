@@ -170,7 +170,7 @@ static void beffect_all_enemies(size_t caster_fighter_index,
           non_dmg_save(fighter_index, sp_hit) == 0 &&
           fighter[fighter_index].sts[S_SLEEP] == 0 &&
           fighter[fighter_index].sts[S_STONE] == 0) {
-        fighter[fighter_index].sts[S_SLEEP] = kq_rnd(4, 6);
+        fighter[fighter_index].sts[S_SLEEP] = kqrandom->random_range_exclusive(4, 6);
         ta[fighter_index] = NODISPLAY;
       } else {
         ta[fighter_index] = MISS;
@@ -216,7 +216,7 @@ static void beffect_one_enemy(size_t caster_fighter_index,
   case M_CONFUSE:
     if (non_dmg_save(target_fighter_index, sp_hit) == 0 &&
         fighter[target_fighter_index].sts[S_CHARM] == 0) {
-      fighter[target_fighter_index].sts[S_CHARM] = kq_rnd(3, 6);
+      fighter[target_fighter_index].sts[S_CHARM] = kqrandom->random_range_exclusive(3, 6);
     } else {
       ta[target_fighter_index] = MISS;
     }
@@ -228,7 +228,7 @@ static void beffect_one_enemy(size_t caster_fighter_index,
           fighter[target_fighter_index].sts[stats_index] = 0;
         }
       }
-      fighter[target_fighter_index].sts[S_STONE] = kq_rnd(3, 6);
+      fighter[target_fighter_index].sts[S_STONE] = kqrandom->random_range_exclusive(3, 6);
     } else {
       ta[target_fighter_index] = MISS;
     }
@@ -266,7 +266,7 @@ static void beffect_one_enemy(size_t caster_fighter_index,
   case M_HOLD:
     if (non_dmg_save(target_fighter_index, sp_hit) == 0 &&
         fighter[target_fighter_index].sts[S_STOP] == 0) {
-      fighter[target_fighter_index].sts[S_STOP] = kq_rnd(2, 5);
+      fighter[target_fighter_index].sts[S_STOP] = kqrandom->random_range_exclusive(2, 5);
     } else {
       ta[target_fighter_index] = MISS;
     }
@@ -282,7 +282,7 @@ static void beffect_one_enemy(size_t caster_fighter_index,
   case M_SLEEP:
     if (non_dmg_save(target_fighter_index, sp_hit) == 0 &&
         fighter[target_fighter_index].sts[S_SLEEP] == 0) {
-      fighter[target_fighter_index].sts[S_SLEEP] = kq_rnd(4, 6);
+      fighter[target_fighter_index].sts[S_SLEEP] = kqrandom->random_range_exclusive(4, 6);
     } else {
       ta[target_fighter_index] = MISS;
     }
@@ -414,7 +414,7 @@ int cast_spell(size_t caster_fighter_index, int is_item) {
     /*  DS IDEA: move this code to the function non_dmg_save() */
     if (magic[spell_number].dmg == 0 && magic[spell_number].bon == 0 &&
         magic[spell_number].hit == 0) {
-      if (kq_rnd(1, 101) > fighter[caster_fighter_index]
+      if (kqrandom->random_range_exclusive(1, 101) > fighter[caster_fighter_index]
                                .stats[A_AUR + magic[spell_number].stat]) {
 
         /*  DS: The spell fail, so set ta[target] to MISS */
@@ -664,9 +664,9 @@ static void cure_oneall_allies(size_t caster_fighter_index, int tgt,
       (fighter[caster_fighter_index].stats[A_INT + magic[spell_number].stat] *
        magic[spell_number].bon / 100);
   if (spwr < DMG_RND_MIN * 5) {
-    b = kq_rnd(DMG_RND_MIN) + spwr;
+    b = kqrandom->random_range_exclusive(0, DMG_RND_MIN) + spwr;
   } else {
-    b = kq_rnd(spwr / 5) + spwr;
+    b = kqrandom->random_range_exclusive(0, spwr / 5) + spwr;
   }
   a = fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat];
   b = b * a / 100;
@@ -821,7 +821,7 @@ static void geffect_all_allies(size_t caster_fighter_index,
     end_fighter_index = num_enemies;
     start_fighter_index = PSIZE;
   }
-  if (kq_rnd(1, 101) >
+  if (kqrandom->random_range_exclusive(1, 101) >
       fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat]) {
     for (fighter_index = start_fighter_index;
          fighter_index < start_fighter_index + end_fighter_index;
@@ -1063,7 +1063,7 @@ int mp_needed(size_t fighter_index, int spell_number) {
  */
 int non_dmg_save(int tgt, int per) {
   (void)tgt;
-  if (kq_rnd(100) < per) {
+  if (kqrandom->random_range_exclusive(0, 100) < per) {
     return 0;
   } else {
     return 1;
@@ -1126,7 +1126,7 @@ int res_throw(int tgt, int rs) {
   if (tf.res[rs] >= 10) {
     return 1;
   }
-  if (kq_rnd(10) < tf.res[rs]) {
+  if (kqrandom->random_range_exclusive(0, 10) < tf.res[rs]) {
     return 1;
   }
   return 0;
@@ -1196,9 +1196,9 @@ void special_damage_oneall_enemies(size_t caster_index, int spell_dmg,
   }
 
   if (spell_dmg < DMG_RND_MIN * 5) {
-    average_damage = kq_rnd(DMG_RND_MIN) + spell_dmg;
+    average_damage = kqrandom->random_range_exclusive(0, DMG_RND_MIN) + spell_dmg;
   } else {
-    average_damage = kq_rnd(spell_dmg / 5) + spell_dmg;
+    average_damage = kqrandom->random_range_exclusive(0, spell_dmg / 5) + spell_dmg;
   }
 
   if (number_of_enemies > 1 && split == 0) {
@@ -1350,9 +1350,9 @@ static void spell_damage(size_t caster_fighter_index, int spell_number,
        (fighter[caster_fighter_index].stats[A_INT + magic[spell_number].stat] *
         magic[spell_number].bon / 100);
   if (ad < DMG_RND_MIN * 5) {
-    ad += kq_rnd(DMG_RND_MIN);
+    ad += kqrandom->random_range_exclusive(0, DMG_RND_MIN);
   } else {
-    ad += kq_rnd(ad / 5);
+    ad += kqrandom->random_range_exclusive(0, ad / 5);
   }
   if (ad < 1) {
     ad = 1;

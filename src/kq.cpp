@@ -500,7 +500,7 @@ Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap
   return tmp;
 }
 #else
-Raster *KGame::alloc_bmp(int w, int h, const char */*n*/) {
+Raster *KGame::alloc_bmp(int w, int h, const char * /*n*/) {
   return new Raster(w, h);
 }
 #endif
@@ -1065,6 +1065,7 @@ int main(int argc, const char *argv[]) {
 
   Game.startup();
   game_on = 1;
+  kqrandom = nullptr;
   /* While KQ is running (playing or at startup menu) */
   while (game_on) {
     switch (SaveGame.start_menu(skip_splash)) {
@@ -1072,7 +1073,11 @@ int main(int argc, const char *argv[]) {
       break;
     case 1: /* New game */
       Game.change_map("starting", 0, 0, 0, 0);
-      kq_init_random();
+	  if (kqrandom)
+	  {
+		  delete kqrandom;
+	  }
+	  kqrandom = new KQRandom();
       break;
     default: /* Exit */
       game_on = 0;
@@ -1205,13 +1210,13 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy) {
   for (i = 0; i < MAX_ENTITIES; i++) {
     if (g_ent[i].chrx == 38 && g_ent[i].active == 1) {
       g_ent[i].eid = ID_ENEMY;
-      g_ent[i].speed = kq_rnd(1, 5);
+      g_ent[i].speed = kqrandom->random_range_exclusive(1, 5);
       g_ent[i].obsmode = 1;
       g_ent[i].moving = 0;
       g_ent[i].movemode = MM_CHASE;
       g_ent[i].chasing = 0;
-      g_ent[i].extra = kq_rnd(50, 100);
-      g_ent[i].delay = kq_rnd(25, 50);
+      g_ent[i].extra = kqrandom->random_range_exclusive(50, 100);
+      g_ent[i].delay = kqrandom->random_range_exclusive(25, 50);
     }
   }
 

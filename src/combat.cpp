@@ -149,9 +149,9 @@ eAttackResult attack_result(int ar, int dr) {
 
   attacker_attack += (tempa.stats[tempa.bstat] * tempa.bonus / 100);
   if (attacker_attack < DMG_RND_MIN * 5) {
-    base = kq_rnd(DMG_RND_MIN);
+    base = kqrandom->random_range_exclusive(0, DMG_RND_MIN);
   } else {
-    base = kq_rnd(attacker_attack / 5);
+    base = kqrandom->random_range_exclusive(0, attacker_attack / 5);
   }
 
   base += attacker_attack - defender_defense;
@@ -165,7 +165,7 @@ eAttackResult attack_result(int ar, int dr) {
     to_hit = 1;
   }
 
-  if (kq_rnd(to_hit) < attacker_hit) {
+  if (kqrandom->random_range_exclusive(0, to_hit) < attacker_hit) {
     mult++;
   }
 
@@ -187,7 +187,7 @@ eAttackResult attack_result(int ar, int dr) {
       }
 
       check_for_critical_hit = (20 - check_for_critical_hit);
-      if (kq_rnd(20) >= check_for_critical_hit) {
+      if (kqrandom->random_range_exclusive(0, 20) >= check_for_critical_hit) {
         crit_hit = 1;
         base = ((int)base * 3) / 2;
       }
@@ -215,7 +215,7 @@ eAttackResult attack_result(int ar, int dr) {
           if ((c == R_POISON) || (c == R_PETRIFY) || (c == R_SILENCE)) {
             tempd.sts[c - R_POISON] = 1;
           } else {
-            tempd.sts[c - R_POISON] = kq_rnd(2, 5);
+            tempd.sts[c - R_POISON] = kqrandom->random_range_exclusive(2, 5);
           }
         }
       }
@@ -464,7 +464,7 @@ int combat(int bno) {
 
     /* skip battle if haven't moved enough steps since last battle,
      * or if it's just not time for one yet */
-    if ((steps < STEPS_NEEDED) || (kq_rnd(battles[bno].enc) > 0)) {
+    if ((steps < STEPS_NEEDED) || (kqrandom->random_range_exclusive(0, battles[bno].enc) > 0)) {
       return 0;
     }
 
@@ -476,7 +476,7 @@ int combat(int bno) {
       }
 
       /* Although Repulse is active, there's still a chance of battle */
-      if (kq_rnd(100) < lc) {
+      if (kqrandom->random_range_exclusive(0, 100) < lc) {
         return 0;
       }
     }
@@ -488,7 +488,7 @@ int combat(int bno) {
     /* TT: This will skip battles based on a random number from hero's
      *     level minus enemy's level.
      */
-    if (kq_rnd(100) < lc) {
+    if (kqrandom->random_range_exclusive(0, 100) < lc) {
       return 0;
     }
   }
@@ -521,7 +521,7 @@ static void do_action(size_t fighter_index) {
 
   spell_type_status = fighter[fighter_index].sts[S_MALISON];
   if (spell_type_status > 0) {
-    if (kq_rnd(100) < spell_type_status * 5) {
+    if (kqrandom->random_range_exclusive(0, 100) < spell_type_status * 5) {
       cact[fighter_index] = 0;
     }
   }
@@ -569,15 +569,15 @@ static int do_combat(char *bg, char *mus, int is_rnd) {
   backart = get_cached_image(bg);
   if (is_rnd) {
     if ((numchrs == 1) && (pidx[0] == AYLA)) {
-      hs = kq_rnd(1, 101);
-      ms = kq_rnd(1, 4);
+      hs = kqrandom->random_range_exclusive(1, 101);
+      ms = kqrandom->random_range_exclusive(1, 4);
     } else {
       if (numchrs > 1 && (Game.in_party(AYLA) < MAXCHRS)) {
-        hs = kq_rnd(1, 21);
-        ms = kq_rnd(1, 6);
+        hs = kqrandom->random_range_exclusive(1, 21);
+        ms = kqrandom->random_range_exclusive(1, 6);
       } else {
-        hs = kq_rnd(1, 11);
-        ms = kq_rnd(1, 11);
+        hs = kqrandom->random_range_exclusive(1, 11);
+        ms = kqrandom->random_range_exclusive(1, 11);
       }
     }
   } else {
@@ -663,7 +663,7 @@ static void do_round(void) {
         if ((fighter_index < numchrs) || (fighter_index >= PSIZE)) {
           if (((fighter[fighter_index].sts[S_POISON] - 1) == rcount) &&
               fighter[fighter_index].hp > 1) {
-            a = kq_rnd(fighter[fighter_index].mhp / 20) + 1;
+            a = kqrandom->random_range_exclusive(0, fighter[fighter_index].mhp / 20) + 1;
 
             if (a < 2) {
               a = 2;
@@ -682,7 +682,7 @@ static void do_round(void) {
           /*      random value (never lower than 5), and increase    */
           /*      the character's health by that amount.             */
           if ((fighter[fighter_index].sts[S_REGEN] - 1) == rcount) {
-            a = kq_rnd(5) + (fighter[fighter_index].mhp / 10);
+            a = kqrandom->random_range_exclusive(0, 5) + (fighter[fighter_index].mhp / 10);
 
             if (a < 5) {
               a = 5;
@@ -981,7 +981,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk) {
   display_amount(defend_fighter_index, FONT_DECIDE, 0);
   if (ta[defend_fighter_index] != MISS) {
     fighter[defend_fighter_index].hp += ta[defend_fighter_index];
-    if ((fighter[attack_fighter_index].imb_s > 0) && (kq_rnd(5) == 0)) {
+    if ((fighter[attack_fighter_index].imb_s > 0) && (kqrandom->random_range_exclusive(0, 5) == 0)) {
       cast_imbued_spell(
           attack_fighter_index, fighter[attack_fighter_index].imb_s,
           fighter[attack_fighter_index].imb_a, defend_fighter_index);
@@ -1114,13 +1114,13 @@ static void heroes_win(void) {
     /* PH bug: (?) should found_item be reset to zero at the start of this loop?
      * If you defeat 2 enemies, you should (possibly) get 2 items, right?
      */
-    if (kq_rnd(100) < fighter[fighter_index + PSIZE].dip) {
+    if (kqrandom->random_range_exclusive(0, 100) < fighter[fighter_index + PSIZE].dip) {
       if (fighter[fighter_index + PSIZE].defeat_item_common > 0) {
         found_item = fighter[fighter_index + PSIZE].defeat_item_common;
       }
 
       if (fighter[fighter_index + PSIZE].defeat_item_rare > 0) {
-        if (kq_rnd(100) < 5) {
+        if (kqrandom->random_range_exclusive(0, 100) < 5) {
           found_item = fighter[fighter_index + PSIZE].defeat_item_rare;
         }
       }
@@ -1364,7 +1364,7 @@ static void roll_initiative(void) {
       j = 1;
     }
 
-    bspeed[fighter_index] = kq_rnd(j);
+    bspeed[fighter_index] = kqrandom->random_range_exclusive(0, j);
   }
 
   for (fighter_index = 0; fighter_index < numchrs; fighter_index++) {

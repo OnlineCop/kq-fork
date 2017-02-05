@@ -136,7 +136,7 @@ void combat_skill(size_t fighter_index) {
       if (fighter[target_fighter_index].sts[S_DEAD] == 0) {
         if (res_throw(target_fighter_index, R_PETRIFY) == 0 &&
             non_dmg_save(target_fighter_index, 75) == 0) {
-          fighter[target_fighter_index].sts[S_STONE] = kq_rnd(2, 5);
+          fighter[target_fighter_index].sts[S_STONE] = kqrandom->random_range_exclusive(2, 5);
           ta[target_fighter_index] = NODISPLAY;
         } else {
           ta[target_fighter_index] = MISS;
@@ -152,7 +152,7 @@ void combat_skill(size_t fighter_index) {
   case 9:
     affected_targets = 0;
     strcpy(attack_string, _("Zemmel Rod"));
-    if (kq_rnd(4) < 2) {
+    if (kqrandom->random_range_exclusive(0, 4) < 2) {
       draw_spellsprite(0, 1, 11, 1);
       /*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
       special_damage_oneall_enemies(fighter_index, 25, R_THUNDER,
@@ -208,7 +208,7 @@ void combat_skill(size_t fighter_index) {
       if (res_throw(target_fighter_index, S_STOP) == 0 &&
           non_dmg_save(target_fighter_index, 65) == 0 &&
           fighter[target_fighter_index].sts[S_STONE] == 0) {
-        fighter[target_fighter_index].sts[S_STOP] = kq_rnd(2, 4);
+        fighter[target_fighter_index].sts[S_STOP] = kqrandom->random_range_exclusive(2, 4);
         ta[target_fighter_index] = NODISPLAY;
       } else {
         ta[target_fighter_index] = MISS;
@@ -259,7 +259,7 @@ void combat_skill(size_t fighter_index) {
         if (res_throw(target_fighter_index, S_CHARM) == 0 &&
             non_dmg_save(target_fighter_index, 65) == 0 &&
             fighter[target_fighter_index].sts[S_STONE] == 0) {
-          fighter[target_fighter_index].sts[S_CHARM] = kq_rnd(2, 4);
+          fighter[target_fighter_index].sts[S_CHARM] = kqrandom->random_range_exclusive(2, 4);
           ta[target_fighter_index] = NODISPLAY;
         } else {
           ta[target_fighter_index] = MISS;

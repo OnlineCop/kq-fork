@@ -125,7 +125,7 @@ static void enemy_attack(size_t target_fighter_index) {
   if (fighter[target_fighter_index].hp <
           (fighter[target_fighter_index].mhp / 5) &&
       fighter[target_fighter_index].sts[S_CHARM] == 0) {
-    if (kq_rnd(4) == 0) {
+    if (kqrandom->random_range_exclusive(0, 4) == 0) {
       fighter[target_fighter_index].defend = 1;
       cact[target_fighter_index] = 0;
       return;
@@ -221,7 +221,7 @@ void enemy_charmaction(size_t fighter_index) {
       fighter[fighter_index].atrack[a]--;
     }
   }
-  a = kq_rnd(4);
+  a = kqrandom->random_range_exclusive(0, 4);
   if (a == 0) {
     cact[fighter_index] = 0;
     return;
@@ -264,14 +264,14 @@ void enemy_chooseaction(size_t fighter_index) {
   fighter[fighter_index].defend = 0;
   fighter[fighter_index].facing = 1;
   if (fighter[fighter_index].hp < fighter[fighter_index].mhp * 2 / 3 &&
-      kq_rnd(100) < 50 && fighter[fighter_index].sts[S_MUTE] == 0) {
+      kqrandom->random_range_exclusive(0, 100) < 50 && fighter[fighter_index].sts[S_MUTE] == 0) {
     enemy_curecheck(fighter_index);
     if (cact[fighter_index] == 0) {
       return;
     }
   }
 
-  ap = kq_rnd(100);
+  ap = kqrandom->random_range_exclusive(0, 100);
   for (a = 0; a < 8; a++) {
     if (ap < fighter[fighter_index].aip[a]) {
       if (fighter[fighter_index].ai[a] >= 100 &&
@@ -818,7 +818,7 @@ int select_encounter(int en, int etid) {
     }
   }
   if (etid == 99) {
-    i = kq_rnd(1, 101);
+    i = kqrandom->random_range_exclusive(1, 101);
     while (entry < 0) {
       if (i <= erows[where].per) {
         entry = where;
@@ -939,7 +939,7 @@ static int spell_setup(int whom, int z) {
         fighter[whom].ctmem = auto_select_enemy(whom, CURE_CHECK);
       }
     } else {
-      if (kq_rnd(4) < 2) {
+      if (kqrandom->random_range_exclusive(0, 4) < 2) {
         fighter[whom].ctmem = SEL_ALL_ALLIES;
       } else {
         fighter[whom].ctmem = auto_select_enemy(whom, CURE_CHECK);
@@ -953,7 +953,7 @@ static int spell_setup(int whom, int z) {
     fighter[whom].ctmem = SEL_ALL_ENEMIES;
     break;
   case TGT_ENEMY_ONEALL:
-    if (kq_rnd(4) < 3) {
+    if (kqrandom->random_range_exclusive(0, 4) < 3) {
       fighter[whom].ctmem = SEL_ALL_ENEMIES;
     } else {
       fighter[whom].ctmem = auto_select_hero(whom, NO_STS_CHECK);

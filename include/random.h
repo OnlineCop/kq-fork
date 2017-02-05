@@ -19,12 +19,48 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __RANDOM_H
-#define __RANDOM_H
+#pragma once
+
+#include <random>
+#include <sstream>
 #include <string>
-void kq_init_random();
-int kq_rnd(int v0, int v1);
-inline int kq_rnd(int v1) { return kq_rnd(0, v1); }
-std::string kq_get_random_state();
-void kq_set_random_state(const std::string &s);
-#endif
+#include <time.h>
+
+class KQRandom
+{
+public:
+	/** initialize the random generator */
+	KQRandom();
+
+	/** Get random integer: [min_inclusive, max_exclusive)
+	 *  \param min_inclusive lowest number (included)
+	 *  \param max_exclusive highest number (not included)
+	 *  \returns new random greater between min (inclusive) and max (exclusive).
+	 */
+	int random_range_exclusive(int min_inclusive, int max_exclusive);
+
+	/** Get random integer: [min_inclusive, max_inclusive]
+	*  \param min_inclusive lowest number (included)
+	*  \param max_inclusive highest number (included)
+	*  \returns new random greater between min (inclusive) and max (inclusive).
+	*/
+	int random_range_inclusive(int min_inclusive, int max_inclusive);
+
+	/** Return the internal random state.
+	 *  You can store this state, and restore it later to resume the random sequence where it left off.
+	 *  \returns the state
+	 */
+	std::string kq_get_random_state();
+
+	/** Set the internal random state.
+	 *  Call this with a string returned from kq_random_state.
+	 *  \param new_state a string
+	 */
+	void kq_set_random_state(const std::string &new_state);
+
+private:
+	// Name a specific engine here rather than default just in case different platforms have different implementations of default.
+	std::minstd_rand engine;
+};
+
+extern KQRandom* kqrandom;

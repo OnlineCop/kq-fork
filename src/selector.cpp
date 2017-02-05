@@ -106,7 +106,7 @@ int auto_select_enemy(int whom, int csts) {
   }
   if (csts != NO_STS_CHECK) {
     for (i = 0; i < number_enemies; i++) {
-      if (tmpd[i] == whom && kq_rnd(4) != 3) {
+      if (tmpd[i] == whom && kqrandom->random_range_exclusive(0, 4) != 3) {
         return whom;
       }
     }
@@ -114,7 +114,7 @@ int auto_select_enemy(int whom, int csts) {
   if (number_enemies < 2) {
     return tmpd[0];
   }
-  return tmpd[kq_rnd(number_enemies)];
+  return tmpd[kqrandom->random_range_exclusive(0, number_enemies)];
 }
 
 /*! \brief  Select a party member automatically
@@ -141,7 +141,7 @@ int auto_select_hero(int whom, int csts) {
     }
   }
 
-  return cntr == 0 ? PIDX_UNDEFINED : tmpd[kq_rnd(cntr)];
+  return cntr == 0 ? PIDX_UNDEFINED : tmpd[kqrandom->random_range_exclusive(0, cntr)];
 }
 
 /*! \brief  Check if attacker is able to attack

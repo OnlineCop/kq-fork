@@ -100,7 +100,7 @@ void auto_herochooseact(int who) {
     return;
   }
   fighter[who].facing = 0;
-  eact = kq_rnd(4);
+  eact = kqrandom->random_range_exclusive(0, 4);
   if (eact == 0) {
     cact[who] = 0;
     return;
@@ -1004,7 +1004,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index) {
     }
   }
   if (item_index == I_ROD1) {
-    unsigned int random_fighter_index = kq_rnd(1, 4);
+    unsigned int random_fighter_index = kqrandom->random_range_exclusive(1, 4);
     strcpy(attack_string, _("Magic Missiles"));
     display_attack_string = 1;
     ta[defender_fighter_index] = 0;
@@ -1068,8 +1068,8 @@ static void hero_run(void) {
   if (bt < ct) {
     a -= 25;
   }
-  if (kq_rnd(100) < a) {
-    if (kq_rnd(100) < (100 - a)) {
+  if (kqrandom->random_range_exclusive(0, 100) < a) {
+    if (kqrandom->random_range_exclusive(0, 100) < (100 - a)) {
       g = b * fighter[PSIZE].lvl * c;
       if (gp < g) {
         g = gp;
