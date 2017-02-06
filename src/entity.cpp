@@ -400,7 +400,7 @@ static void getcommand(t_entity target_entity) {
  */
 static int move(t_entity target_entity, int dx, int dy) {
   int tile_x, tile_y, source_tile, oldfacing;
-  s_entity *ent = &g_ent[target_entity];
+  KQEntity *ent = &g_ent[target_entity];
 
   if (dx == 0 && dy == 0) // Speed optimization.
   {
@@ -683,7 +683,7 @@ void process_entities(void) {
  * function
  */
 static void process_entity(t_entity target_entity) {
-  s_entity *ent = &g_ent[target_entity];
+  KQEntity *ent = &g_ent[target_entity];
   s_player *player = 0;
 
   ent->scount = 0;
@@ -855,7 +855,7 @@ static void speed_adjust(t_entity target_entity) {
  */
 static void target(t_entity target_entity) {
   int dx, dy, ax, ay, emoved = 0;
-  s_entity *ent = &g_ent[target_entity];
+  KQEntity *ent = &g_ent[target_entity];
 
   ax = dx = ent->target_x - ent->tilex;
   ay = dy = ent->target_y - ent->tiley;

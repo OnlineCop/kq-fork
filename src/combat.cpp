@@ -1,4 +1,4 @@
-/*! \page License
+/*! License
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -468,7 +468,7 @@ int combat(int bno) {
       return 0;
     }
 
-    /* Likely (not always) skip random battle if repluse is active */
+    /* Likely (not always) skip random battle if repulse is active */
     if (save_spells[P_REPULSE] > 0) {
       lc = (hero_level - erows[encounter].lvl) * 20;
       if (lc < 5) {

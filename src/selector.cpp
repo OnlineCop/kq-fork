@@ -251,7 +251,7 @@ static eMiniMenu mini_menu(int omask) {
  * \param   lead - Whether or not they will lead the party or follow
  */
 static void party_add(ePIDX id, int lead) {
-  s_entity *t;
+  KQEntity *t;
 
   if (numchrs < MAXCHRS) {
     if (numchrs > 0) {

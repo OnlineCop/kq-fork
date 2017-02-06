@@ -135,7 +135,7 @@ extern unsigned char treasure[SIZE_TREASURE];
 extern unsigned char save_spells[SIZE_SAVE_SPELL];
 extern Raster *kfonts;
 extern s_map g_map;
-extern s_entity g_ent[MAX_ENTITIES];
+extern KQEntity g_ent[MAX_ENTITIES];
 extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
 extern s_anim adata[MAX_ANIM];
 extern uint32_t numchrs;

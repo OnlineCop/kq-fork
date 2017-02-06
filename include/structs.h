@@ -83,7 +83,7 @@ typedef struct {
   char script[60];   //!< Movement/action script (pacing, etc.)
   uint16_t target_x; //!< Scripted x-coord the ent is moving to
   uint16_t target_y; //!< Scripted y-coord the ent is moving to
-} s_entity;
+} KQEntity;
 
 /*! \brief Animation specifier
  *

@@ -26,7 +26,7 @@
 #include "maps.h"
 #include "structs.h"
 
-int save_s_entity(s_entity *, PACKFILE *);
+int save_s_entity(KQEntity *, PACKFILE *);
 int load_s_player(s_player *, PACKFILE *);
 int save_s_player(s_player *, PACKFILE *);
 int load_game_xml(const char *);

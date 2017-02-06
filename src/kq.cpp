@@ -120,7 +120,7 @@ uint8_t save_spells[SIZE_SAVE_SPELL];
 s_map g_map;
 
 /*! Current entities (players+NPCs) */
-s_entity g_ent[MAX_ENTITIES];
+KQEntity g_ent[MAX_ENTITIES];
 
 /*! Number of enemies */
 uint32_t noe = 0;
@@ -279,9 +279,10 @@ int every_hit_999 = 0;
  *
  * Holds the information relating to a forthcoming event
  */
-static struct timer_event {
-  char name[32]; /*!< Name of the event */
-  int when;      /*!< Time when it will trigger */
+static struct timer_event
+{
+	char name[32]; /*!< Name of the event */
+	int when;      /*!< Time when it will trigger */
 } timer_events[5];
 
 static int next_event_time; /*!< The time the next event will trigger */
@@ -368,7 +369,7 @@ s_progress progresses[SIZE_PROGRESS] = {
 #endif
 
 KGame::KGame()
-  : WORLD_MAP("main"), KQ_TICKS(100)
+	: WORLD_MAP("main"), KQ_TICKS(100)
 {
 
 }
@@ -379,75 +380,82 @@ KGame::KGame()
  * Things that can be activated are entities and zones that are
  * obstructed.
  */
-void KGame::activate(void) {
-  int zx, zy, looking_at_x = 0, looking_at_y = 0, q, target_char_facing = 0, tf;
+void KGame::activate(void)
+{
+	int zx, zy, looking_at_x = 0, looking_at_y = 0, q, target_char_facing = 0, tf;
 
-  uint32_t p;
+	uint32_t p;
 
-  Game.unpress();
+	Game.unpress();
 
-  /* Determine which direction the player's character is facing.  For
-   * 'looking_at_y', a negative value means "toward north" or "facing up",
-   * and a positive means that you are "facing down".  For 'looking_at_x',
-   * negative means to face left and positive means to face right.
-   */
+	/* Determine which direction the player's character is facing.  For
+	 * 'looking_at_y', a negative value means "toward north" or "facing up",
+	 * and a positive means that you are "facing down".  For 'looking_at_x',
+	 * negative means to face left and positive means to face right.
+	 */
 
-  switch (g_ent[0].facing) {
-  case FACE_DOWN:
-    looking_at_y = 1;
-    target_char_facing = FACE_UP;
-    break;
+	switch (g_ent[0].facing)
+	{
+	case FACE_DOWN:
+		looking_at_y = 1;
+		target_char_facing = FACE_UP;
+		break;
 
-  case FACE_UP:
-    looking_at_y = -1;
-    target_char_facing = FACE_DOWN;
-    break;
+	case FACE_UP:
+		looking_at_y = -1;
+		target_char_facing = FACE_DOWN;
+		break;
 
-  case FACE_LEFT:
-    looking_at_x = -1;
-    target_char_facing = FACE_RIGHT;
-    break;
+	case FACE_LEFT:
+		looking_at_x = -1;
+		target_char_facing = FACE_RIGHT;
+		break;
 
-  case FACE_RIGHT:
-    looking_at_x = 1;
-    target_char_facing = FACE_LEFT;
-    break;
-  }
+	case FACE_RIGHT:
+		looking_at_x = 1;
+		target_char_facing = FACE_LEFT;
+		break;
+	}
 
-  zx = g_ent[0].x / TILE_W;
-  zy = g_ent[0].y / TILE_H;
+	zx = g_ent[0].x / TILE_W;
+	zy = g_ent[0].y / TILE_H;
 
-  looking_at_x += zx;
-  looking_at_y += zy;
+	looking_at_x += zx;
+	looking_at_y += zy;
 
-  q = looking_at_y * g_map.xsize + looking_at_x;
+	q = looking_at_y * g_map.xsize + looking_at_x;
 
-  if (o_seg[q] != BLOCK_NONE && z_seg[q] > 0) {
-    do_zone(z_seg[q]);
-  }
+	if (o_seg[q] != BLOCK_NONE && z_seg[q] > 0)
+	{
+		do_zone(z_seg[q]);
+	}
 
-  p = entityat(looking_at_x, looking_at_y, 0);
+	p = entityat(looking_at_x, looking_at_y, 0);
 
-  if (p >= PSIZE) {
-    tf = g_ent[p - 1].facing;
+	if (p >= PSIZE)
+	{
+		tf = g_ent[p - 1].facing;
 
-    if (g_ent[p - 1].facehero == 0) {
-      g_ent[p - 1].facing = target_char_facing;
-    }
+		if (g_ent[p - 1].facehero == 0)
+		{
+			g_ent[p - 1].facing = target_char_facing;
+		}
 
-    drawmap();
-    blit2screen(xofs, yofs);
+		drawmap();
+		blit2screen(xofs, yofs);
 
-    zx = abs(g_ent[p - 1].x - g_ent[0].x);
-    zy = abs(g_ent[p - 1].y - g_ent[0].y);
+		zx = abs(g_ent[p - 1].x - g_ent[0].x);
+		zy = abs(g_ent[p - 1].y - g_ent[0].y);
 
-    if ((zx <= 16 && zy <= 3) || (zx <= 3 && zy <= 16)) {
-      do_entity(p - 1);
-    }
-    if (g_ent[p - 1].movemode == MM_STAND) {
-      g_ent[p - 1].facing = tf;
-    }
-  }
+		if ((zx <= 16 && zy <= 3) || (zx <= 3 && zy <= 16))
+		{
+			do_entity(p - 1);
+		}
+		if (g_ent[p - 1].movemode == MM_STAND)
+		{
+			g_ent[p - 1].facing = tf;
+		}
+	}
 }
 
 /* \brief Add a new timer event to the list
@@ -460,21 +468,25 @@ void KGame::activate(void) {
  *        five seconds in the future
  * \returns <0 if an error occurred (i.e. too many pending events)
  */
-int KGame::add_timer_event(const char *n, int delta) {
-  int w = delta + ksec;
-  int i;
+int KGame::add_timer_event(const char *n, int delta)
+{
+	int w = delta + ksec;
+	int i;
 
-  for (i = 0; i < 5; ++i) {
-    if (*timer_events[i].name == '\0') {
-      memcpy(timer_events[i].name, n, sizeof(timer_events[i].name));
-      if (w < next_event_time) {
-        next_event_time = w;
-      }
-      timer_events[i].when = w;
-      return i;
-    }
-  }
-  return -1;
+	for (i = 0; i < 5; ++i)
+	{
+		if (*timer_events[i].name == '\0')
+		{
+			memcpy(timer_events[i].name, n, sizeof(timer_events[i].name));
+			if (w < next_event_time)
+			{
+				next_event_time = w;
+			}
+			timer_events[i].when = w;
+			return i;
+		}
+	}
+	return -1;
 }
 
 #ifdef DEBUGMODE
@@ -490,18 +502,21 @@ int KGame::add_timer_event(const char *n, int delta) {
  * \param   bitmap_name Name of bitmap
  * \returns the pointer to the created bitmap
  */
-Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name) {
-  Raster *tmp = new Raster(bitmap_width, bitmap_height);
+Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name)
+{
+	Raster *tmp = new Raster(bitmap_width, bitmap_height);
 
-  if (!tmp) {
-    sprintf(strbuf, _("Could not allocate %s!."), bitmap_name);
-    program_death(strbuf);
-  }
-  return tmp;
+	if (!tmp)
+	{
+		sprintf(strbuf, _("Could not allocate %s!."), bitmap_name);
+		program_death(strbuf);
+	}
+	return tmp;
 }
 #else
-Raster *KGame::alloc_bmp(int w, int h, const char * /*n*/) {
-  return new Raster(w, h);
+Raster *KGame::alloc_bmp(int w, int h, const char * /*n*/)
+{
+	return new Raster(w, h);
 }
 #endif
 
@@ -509,85 +524,100 @@ Raster *KGame::alloc_bmp(int w, int h, const char * /*n*/) {
  *
  * A separate function to create all global bitmaps needed in the game.
  */
-void KGame::allocate_stuff(void) {
-  size_t i, p;
+void KGame::allocate_stuff(void)
+{
+	size_t i, p;
 
-  kfonts = alloc_bmp(1024, 60, "kfonts");
+	kfonts = alloc_bmp(1024, 60, "kfonts");
 
-  for (i = 0; i < 5; i++) {
-    sfonts[i] = alloc_bmp(60, 8, "sfonts[i]");
-  }
+	for (i = 0; i < 5; i++)
+	{
+		sfonts[i] = alloc_bmp(60, 8, "sfonts[i]");
+	}
 
-  menuptr = alloc_bmp(16, 8, "menuptr");
-  sptr = alloc_bmp(8, 8, "sptr");
-  mptr = alloc_bmp(8, 8, "mptr");
-  stspics = alloc_bmp(8, 216, "stspics");
-  sicons = alloc_bmp(8, 640, "sicons");
-  bptr = alloc_bmp(16, 8, "bptr");
-  upptr = alloc_bmp(8, 8, "upptr");
-  dnptr = alloc_bmp(8, 8, "dnptr");
-  noway = alloc_bmp(16, 16, "noway");
-  missbmp = alloc_bmp(20, 6, "missbmp");
+	menuptr = alloc_bmp(16, 8, "menuptr");
+	sptr = alloc_bmp(8, 8, "sptr");
+	mptr = alloc_bmp(8, 8, "mptr");
+	stspics = alloc_bmp(8, 216, "stspics");
+	sicons = alloc_bmp(8, 640, "sicons");
+	bptr = alloc_bmp(16, 8, "bptr");
+	upptr = alloc_bmp(8, 8, "upptr");
+	dnptr = alloc_bmp(8, 8, "dnptr");
+	noway = alloc_bmp(16, 16, "noway");
+	missbmp = alloc_bmp(20, 6, "missbmp");
 
-  for (i = 0; i < 9; i++) {
-    pgb[i] = alloc_bmp(9, 9, "pgb[x]");
-  }
+	for (i = 0; i < 9; i++)
+	{
+		pgb[i] = alloc_bmp(9, 9, "pgb[x]");
+	}
 
-  tc = alloc_bmp(16, 16, "tc");
-  tc2 = alloc_bmp(16, 16, "tc2");
-  b_shield = alloc_bmp(48, 48, "b_shield");
-  b_shell = alloc_bmp(48, 48, "b_shell");
-  b_repulse = alloc_bmp(16, 166, "b_repulse");
-  b_mp = alloc_bmp(10, 8, "b_mp");
+	tc = alloc_bmp(16, 16, "tc");
+	tc2 = alloc_bmp(16, 16, "tc2");
+	b_shield = alloc_bmp(48, 48, "b_shield");
+	b_shell = alloc_bmp(48, 48, "b_shell");
+	b_repulse = alloc_bmp(16, 166, "b_repulse");
+	b_mp = alloc_bmp(10, 8, "b_mp");
 
-  for (p = 0; p < MAXE; p++) {
-    for (i = 0; i < MAXEFRAMES; i++) {
-      eframes[p][i] = alloc_bmp(16, 16, "eframes[x][x]");
-    }
-  }
+	for (p = 0; p < MAXE; p++)
+	{
+		for (i = 0; i < MAXEFRAMES; i++)
+		{
+			eframes[p][i] = alloc_bmp(16, 16, "eframes[x][x]");
+		}
+	}
 
-  for (i = 0; i < MAXCHRS; i++) {
-    for (p = 0; p < MAXFRAMES; p++) {
-      frames[i][p] = alloc_bmp(16, 16, "frames[x][x]");
-    }
-  }
+	for (i = 0; i < MAXCHRS; i++)
+	{
+		for (p = 0; p < MAXFRAMES; p++)
+		{
+			frames[i][p] = alloc_bmp(16, 16, "frames[x][x]");
+		}
+	}
 
-  for (p = 0; p < MAXCFRAMES; p++) {
-    for (i = 0; i < NUM_FIGHTERS; i++) {
-      cframes[i][p] = alloc_bmp(32, 32, "cframes[x][x]");
-      tcframes[i][p] = alloc_bmp(32, 32, "tcframes[x][x]");
-    }
-  }
+	for (p = 0; p < MAXCFRAMES; p++)
+	{
+		for (i = 0; i < NUM_FIGHTERS; i++)
+		{
+			cframes[i][p] = alloc_bmp(32, 32, "cframes[x][x]");
+			tcframes[i][p] = alloc_bmp(32, 32, "tcframes[x][x]");
+		}
+	}
 
-  double_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "double_buffer");
-  back = alloc_bmp(SCREEN_W2, SCREEN_H2, "back");
-  fx_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "fx_buffer");
+	double_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "double_buffer");
+	back = alloc_bmp(SCREEN_W2, SCREEN_H2, "back");
+	fx_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "fx_buffer");
 
-  for (p = 0; p < MAX_SHADOWS; p++) {
-    shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
-  }
+	for (p = 0; p < MAX_SHADOWS; p++)
+	{
+		shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
+	}
 
-  for (p = 0; p < 8; p++) {
-    bub[p] = alloc_bmp(16, 16, "bub[x]");
-  }
+	for (p = 0; p < 8; p++)
+	{
+		bub[p] = alloc_bmp(16, 16, "bub[x]");
+	}
 
-  for (p = 0; p < 3; p++) {
-    bord[p] = alloc_bmp(8, 8, "bord[x]");
-    bord[p + 5] = alloc_bmp(8, 8, "bord[x]");
-  }
+	for (p = 0; p < 3; p++)
+	{
+		bord[p] = alloc_bmp(8, 8, "bord[x]");
+		bord[p + 5] = alloc_bmp(8, 8, "bord[x]");
+	}
 
-  for (p = 3; p < 5; p++) {
-    bord[p] = alloc_bmp(8, 12, "bord[x]");
-  }
+	for (p = 3; p < 5; p++)
+	{
+		bord[p] = alloc_bmp(8, 12, "bord[x]");
+	}
 
-  for (p = 0; p < 8; p++) {
-    players[p].portrait = alloc_bmp(40, 40, "portrait[x]");
-  }
+	for (p = 0; p < 8; p++)
+	{
+		players[p].portrait = alloc_bmp(40, 40, "portrait[x]");
+	}
 
-  for (p = 0; p < MAX_TILES; p++) {
-    map_icons[p] = alloc_bmp(TILE_W, TILE_H, "map_icons[x]");
-  }
-  allocate_credits();
+	for (p = 0; p < MAX_TILES; p++)
+	{
+		map_icons[p] = alloc_bmp(TILE_W, TILE_H, "map_icons[x]");
+	}
+	allocate_credits();
 }
 
 /*! \brief Move the viewport if necessary to include the players
@@ -600,62 +630,76 @@ void KGame::allocate_stuff(void) {
  *
  * \param   center Unused variable
  */
-void KGame::calc_viewport(int /*center*/) {
-  int sx, sy, bl, br, bu, bd, zx, zy;
+void KGame::calc_viewport(int /*center*/)
+{
+	int sx, sy, bl, br, bu, bd, zx, zy;
 
-  if (vfollow && numchrs > 0) {
-    zx = g_ent[0].x;
-    zy = g_ent[0].y;
-  } else {
-    zx = vx;
-    zy = vy;
-  }
+	if (vfollow && numchrs > 0)
+	{
+		zx = g_ent[0].x;
+		zy = g_ent[0].y;
+	}
+	else
+	{
+		zx = vx;
+		zy = vy;
+	}
 
-  bl = 152;
-  br = 152;
-  bu = 112;
-  bd = 112;
+	bl = 152;
+	br = 152;
+	bu = 112;
+	bd = 112;
 
-  sx = zx - vx;
-  sy = zy - vy;
-  if (sx < bl) {
-    vx = zx - bl;
+	sx = zx - vx;
+	sy = zy - vy;
+	if (sx < bl)
+	{
+		vx = zx - bl;
 
-    if (vx < 0) {
-      vx = 0;
-    }
-  }
+		if (vx < 0)
+		{
+			vx = 0;
+		}
+	}
 
-  if (sy < bu) {
-    vy = zy - bu;
+	if (sy < bu)
+	{
+		vy = zy - bu;
 
-    if (vy < 0) {
-      vy = 0;
-    }
-  }
+		if (vy < 0)
+		{
+			vy = 0;
+		}
+	}
 
-  if (sx > br) {
-    vx = zx - br;
+	if (sx > br)
+	{
+		vx = zx - br;
 
-    if (vx > mx) {
-      vx = mx;
-    }
-  }
+		if (vx > mx)
+		{
+			vx = mx;
+		}
+	}
 
-  if (sy > bd) {
-    vy = zy - bd;
+	if (sy > bd)
+	{
+		vy = zy - bd;
 
-    if (vy > my) {
-      vy = my;
-    }
-  }
+		if (vy > my)
+		{
+			vy = my;
+		}
+	}
 
-  if (vx > mx) {
-    vx = mx;
-  }
-  if (vy > my) {
-    vy = my;
-  }
+	if (vx > mx)
+	{
+		vx = mx;
+	}
+	if (vy > my)
+	{
+		vy = my;
+	}
 }
 
 /*! \brief Free old map data and load a new one
@@ -673,9 +717,10 @@ void KGame::calc_viewport(int /*center*/) {
  * \param   mvy New y-coord for camera
  */
 void KGame::change_map(const string &map_name, int msx, int msy, int mvx,
-                       int mvy) {
-  TiledMap.load_tmx(map_name);
-  prepare_map(msx, msy, mvx, mvy);
+	int mvy)
+{
+	TiledMap.load_tmx(map_name);
+	prepare_map(msx, msy, mvx, mvy);
 }
 
 /*! \brief Free old map data and load a new one
@@ -694,19 +739,21 @@ void KGame::change_map(const string &map_name, int msx, int msy, int mvx,
  * \param   offset_y Push player up/down this many tiles from the marker
  */
 void KGame::change_mapm(const string &map_name, const string &marker_name,
-                        int offset_x, int offset_y) {
-  int msx = 0, msy = 0, mvx = 0, mvy = 0;
+	int offset_x, int offset_y)
+{
+	int msx = 0, msy = 0, mvx = 0, mvy = 0;
 
-  TiledMap.load_tmx(map_name);
-  /* Search for the marker with the name passed into the function. Both
-   * player's starting position and camera position will be the same
-   */
-  auto marker = g_map.markers.GetMarker(marker_name);
-  if (marker != nullptr) {
-    msx = mvx = marker->x + offset_x;
-    msy = mvy = marker->y + offset_y;
-  }
-  prepare_map(msx, msy, mvx, mvy);
+	TiledMap.load_tmx(map_name);
+	/* Search for the marker with the name passed into the function. Both
+	 * player's starting position and camera position will be the same
+	 */
+	auto marker = g_map.markers.GetMarker(marker_name);
+	if (marker != nullptr)
+	{
+		msx = mvx = marker->x + offset_x;
+		msy = mvy = marker->y + offset_y;
+	}
+	prepare_map(msx, msy, mvx, mvy);
 }
 
 /*! \brief Do tile animation
@@ -716,10 +763,11 @@ void KGame::change_mapm(const string &map_name, const string &marker_name,
  * tile index, and a delay. The smaller the delay value, the faster that the
  * animation cycles through the tiles.
  */
-void KGame::do_check_animation(void) {
-  int millis = (1000 * animation_count) / KQ_TICKS;
-  animation_count -= (KQ_TICKS * millis) / 1000;
-  Animation.check_animation(millis, tilex);
+void KGame::do_check_animation(void)
+{
+	int millis = (1000 * animation_count) / KQ_TICKS;
+	animation_count -= (KQ_TICKS * millis) / 1000;
+	Animation.check_animation(millis, tilex);
 }
 
 #ifdef DEBUGMODE
@@ -730,34 +778,41 @@ void KGame::do_check_animation(void) {
  * and "progress.log" respectively. This happens in response to user hitting
  * the F11 key.
  */
-void KGame::data_dump(void) {
-  FILE *ff;
-  int a;
+void KGame::data_dump(void)
+{
+	FILE *ff;
+	int a;
 
-  if (debugging > 0) {
-    ff = fopen("treasure.log", "w");
-    if (!ff) {
-      program_death(_("Could not open treasure.log!"));
-    }
-    for (a = 0; a < SIZE_TREASURE; a++) {
-      fprintf(ff, "%d = %d\n", a, treasure[a]);
-    }
-    fclose(ff);
+	if (debugging > 0)
+	{
+		ff = fopen("treasure.log", "w");
+		if (!ff)
+		{
+			program_death(_("Could not open treasure.log!"));
+		}
+		for (a = 0; a < SIZE_TREASURE; a++)
+		{
+			fprintf(ff, "%d = %d\n", a, treasure[a]);
+		}
+		fclose(ff);
 
-    ff = fopen("progress.log", "w");
-    if (!ff) {
-      program_death(_("Could not open progress.log!"));
-    }
-    for (a = 0; a < SIZE_PROGRESS; a++) {
-      fprintf(ff, "%d: %s = %d\n", progresses[a].num_progress,
-              progresses[a].name, progress[a]);
-    }
-    fprintf(ff, "\n");
-    for (a = 0; a < NUMSHOPS; a++) {
-      fprintf(ff, "shop-%d = %d\n", a, shop_time[a]);
-    }
-    fclose(ff);
-  }
+		ff = fopen("progress.log", "w");
+		if (!ff)
+		{
+			program_death(_("Could not open progress.log!"));
+		}
+		for (a = 0; a < SIZE_PROGRESS; a++)
+		{
+			fprintf(ff, "%d: %s = %d\n", progresses[a].num_progress,
+				progresses[a].name, progress[a]);
+		}
+		fprintf(ff, "\n");
+		for (a = 0; a < NUMSHOPS; a++)
+		{
+			fprintf(ff, "shop-%d = %d\n", a, shop_time[a]);
+		}
+		fclose(ff);
+	}
 }
 #endif
 
@@ -827,43 +882,54 @@ void KGame::deallocate_stuff(void) {
     delete (bub[p]);
   }
 
-  for (p = 0; p < 8; p++) {
-    delete (bord[p]);
+  for (p = 0; p < 8; p++)
+  {
+	  delete (bord[p]);
   }
 
-  for (p = 0; p < MAXCHRS; p++) {
-    delete (players[p].portrait);
+  for (p = 0; p < MAXCHRS; p++)
+  {
+	  delete (players[p].portrait);
   }
 
-  for (p = 0; p < MAX_TILES; p++) {
-    delete (map_icons[p]);
+  for (p = 0; p < MAX_TILES; p++)
+  {
+	  delete (map_icons[p]);
   }
 
-  if (map_seg) {
-    free(map_seg);
+  if (map_seg)
+  {
+	  free(map_seg);
   }
-  if (b_seg) {
-    free(b_seg);
+  if (b_seg)
+  {
+	  free(b_seg);
   }
-  if (f_seg) {
-    free(f_seg);
+  if (f_seg)
+  {
+	  free(f_seg);
   }
-  if (z_seg) {
-    free(z_seg);
+  if (z_seg)
+  {
+	  free(z_seg);
   }
-  if (s_seg) {
-    free(s_seg);
+  if (s_seg)
+  {
+	  free(s_seg);
   }
-  if (o_seg) {
-    free(o_seg);
+  if (o_seg)
+  {
+	  free(o_seg);
   }
-  if (strbuf) {
-    free(strbuf);
+  if (strbuf)
+  {
+	  free(strbuf);
   }
 
-  if (is_sound) {
-    Music.shutdown_music();
-    free_samples();
+  if (is_sound)
+  {
+	  Music.shutdown_music();
+	  free_samples();
   }
   deallocate_credits();
   clear_image_cache();
@@ -871,7 +937,7 @@ void KGame::deallocate_stuff(void) {
 #ifdef DEBUGMODE
   delete (obj_mesh);
 #endif
-}
+  }
 
 /* \brief Get the next event if any
  *
@@ -886,33 +952,41 @@ void KGame::deallocate_stuff(void) {
  *
  * \returns name of the next event or NULL if none is ready
  */
-char *KGame::get_timer_event(void) {
-  static char buf[32];
-  int now = ksec;
-  int i;
-  int next = INT_MAX;
-  struct timer_event *t;
+char *KGame::get_timer_event(void)
+{
+	static char buf[32];
+	int now = ksec;
+	int i;
+	int next = INT_MAX;
+	struct timer_event *t;
 
-  if (now < next_event_time) {
-    return NULL;
-  }
+	if (now < next_event_time)
+	{
+		return NULL;
+	}
 
-  *buf = '\0';
-  for (i = 0; i < 5; ++i) {
-    t = &timer_events[i];
-    if (*t->name) {
-      if (t->when <= now) {
-        memcpy(buf, t->name, sizeof(buf));
-        *t->name = '\0';
-      } else {
-        if (t->when < next) {
-          next = t->when;
-        }
-      }
-    }
-  }
-  next_event_time = next;
-  return *buf ? buf : NULL;
+	*buf = '\0';
+	for (i = 0; i < 5; ++i)
+	{
+		t = &timer_events[i];
+		if (*t->name)
+		{
+			if (t->when <= now)
+			{
+				memcpy(buf, t->name, sizeof(buf));
+				*t->name = '\0';
+			}
+			else
+			{
+				if (t->when < next)
+				{
+					next = t->when;
+				}
+			}
+		}
+	}
+	next_event_time = next;
+	return *buf ? buf : NULL;
 }
 
 /*! \brief Is this character in the party?
@@ -922,16 +996,19 @@ char *KGame::get_timer_event(void) {
  * \param   pn Character to ask about
  * \returns index of member's ID if found, else MAXCHRS if NOT in party.
  */
-size_t KGame::in_party(ePIDX pn) {
-  size_t pidx_index;
+size_t KGame::in_party(ePIDX pn)
+{
+	size_t pidx_index;
 
-  for (pidx_index = 0; pidx_index < MAXCHRS; pidx_index++) {
-    if (pidx[pidx_index] == pn) {
-      return pidx_index;
-    }
-  }
+	for (pidx_index = 0; pidx_index < MAXCHRS; pidx_index++)
+	{
+		if (pidx[pidx_index] == pn)
+		{
+			return pidx_index;
+		}
+	}
 
-  return MAXCHRS;
+	return MAXCHRS;
 }
 
 /*! \brief Log events
@@ -964,48 +1041,57 @@ void KGame::kq_yield(void) { rest(cpu_usage); }
  *
  * \param   dtime Time in frames
  */
-void KGame::kwait(int dtime) {
-  int cnt = 0;
+void KGame::kwait(int dtime)
+{
+	int cnt = 0;
 
-  autoparty = 1;
-  timer_count = 0;
+	autoparty = 1;
+	timer_count = 0;
 
-  while (cnt < dtime) {
-    Music.poll_music();
-    while (timer_count > 0) {
-      Music.poll_music();
-      timer_count--;
-      cnt++;
-      process_entities();
-    }
-    Game.do_check_animation();
+	while (cnt < dtime)
+	{
+		Music.poll_music();
+		while (timer_count > 0)
+		{
+			Music.poll_music();
+			timer_count--;
+			cnt++;
+			process_entities();
+		}
+		Game.do_check_animation();
 
-    drawmap();
-    blit2screen(xofs, yofs);
+		drawmap();
+		blit2screen(xofs, yofs);
 #ifdef DEBUGMODE
-    if (debugging > 0) {
-      if (key[KEY_W] && key[KEY_ALT]) {
-        Game.klog(_("Alt+W Pressed:"));
-        sprintf(strbuf, "\tkwait(); cnt=%d, dtime=%d, timer_count=%d", cnt,
-                dtime, timer_count);
-        Game.klog(strbuf);
-        break;
-      }
-    }
+		if (debugging > 0)
+		{
+			if (key[KEY_W] && key[KEY_ALT])
+			{
+				Game.klog(_("Alt+W Pressed:"));
+				sprintf(strbuf, "\tkwait(); cnt=%d, dtime=%d, timer_count=%d", cnt,
+					dtime, timer_count);
+				Game.klog(strbuf);
+				break;
+			}
+		}
 #endif
-    if (key[KEY_X] && key[KEY_ALT]) {
-      if (debugging > 0) {
-        sprintf(strbuf, "kwait(); cnt = %d, dtime = %d, timer_count = %d", cnt,
-                dtime, timer_count);
-      } else {
-        sprintf(strbuf, _("Program terminated: user pressed Alt+X"));
-      }
-      program_death(strbuf);
-    }
-  }
+		if (key[KEY_X] && key[KEY_ALT])
+		{
+			if (debugging > 0)
+			{
+				sprintf(strbuf, "kwait(); cnt = %d, dtime = %d, timer_count = %d", cnt,
+					dtime, timer_count);
+			}
+			else
+			{
+				sprintf(strbuf, _("Program terminated: user pressed Alt+X"));
+			}
+			program_death(strbuf);
+		}
+	}
 
-  timer_count = 0;
-  autoparty = 0;
+	timer_count = 0;
+	autoparty = 0;
 }
 
 /*! \brief Load initial hero stuff from file
@@ -1015,115 +1101,133 @@ void KGame::kwait(int dtime) {
  * Loads the hero stats from a file.
  *
  */
-void KGame::load_heroes(void) {
-  Raster *eb = get_cached_image("uschrs.png");
+void KGame::load_heroes(void)
+{
+	Raster *eb = get_cached_image("uschrs.png");
 
-  if (!eb) {
-    program_death(_("Could not load character graphics!"));
-  }
+	if (!eb)
+	{
+		program_death(_("Could not load character graphics!"));
+	}
 
-  set_palette(pal);
+	set_palette(pal);
 
-  for (int party_index = 0; party_index < MAXCHRS; party_index++) {
-    for (int frame_index = 0; frame_index < MAXFRAMES; frame_index++) {
-      blit(eb, frames[party_index][frame_index], frame_index * 16,
-           party_index * 16, 0, 0, 16, 16);
-    }
-  }
-  /* portraits */
-  Raster *faces = get_cached_image("kqfaces.png");
+	for (int party_index = 0; party_index < MAXCHRS; party_index++)
+	{
+		for (int frame_index = 0; frame_index < MAXFRAMES; frame_index++)
+		{
+			blit(eb, frames[party_index][frame_index], frame_index * 16,
+				party_index * 16, 0, 0, 16, 16);
+		}
+	}
+	/* portraits */
+	Raster *faces = get_cached_image("kqfaces.png");
 
-  for (int player_index = 0; player_index < 4; ++player_index) {
-    faces->blitTo(players[player_index].portrait, 0, player_index * 40, 0, 0,
-                  40, 40);
-    faces->blitTo(players[player_index + 4].portrait, 40, player_index * 40, 0,
-                  0, 40, 40);
-  }
+	for (int player_index = 0; player_index < 4; ++player_index)
+	{
+		faces->blitTo(players[player_index].portrait, 0, player_index * 40, 0, 0,
+			40, 40);
+		faces->blitTo(players[player_index + 4].portrait, 40, player_index * 40, 0,
+			0, 40, 40);
+	}
 }
 
 /*! \brief Main function
  *
  * Well, this one is pretty obvious.
  */
-int main(int argc, const char *argv[]) {
-  int stop, game_on, skip_splash;
-  size_t i;
+int main(int argc, const char *argv[])
+{
+	int stop, game_on, skip_splash;
+	size_t i;
 
-  setlocale(LC_ALL, "");
+	setlocale(LC_ALL, "");
 
-  skip_splash = 0;
-  for (i = 1; i < (size_t)argc; i++) {
-    if (!strcmp(argv[i], "-nosplash") || !strcmp(argv[i], "--nosplash")) {
-      skip_splash = 1;
-    }
+	skip_splash = 0;
+	for (i = 1; i < (size_t)argc; i++)
+	{
+		if (!strcmp(argv[i], "-nosplash") || !strcmp(argv[i], "--nosplash"))
+		{
+			skip_splash = 1;
+		}
 
-    if (!strcmp(argv[i], "--help")) {
-      printf(_("Sorry, no help screen at this time.\n"));
-      return EXIT_SUCCESS;
-    }
-  }
+		if (!strcmp(argv[i], "--help"))
+		{
+			printf(_("Sorry, no help screen at this time.\n"));
+			return EXIT_SUCCESS;
+		}
+	}
 
-  Game.startup();
-  game_on = 1;
-  kqrandom = nullptr;
-  /* While KQ is running (playing or at startup menu) */
-  while (game_on) {
-    switch (SaveGame.start_menu(skip_splash)) {
-    case 0: /* Continue */
-      break;
-    case 1: /* New game */
-      Game.change_map("starting", 0, 0, 0, 0);
-	  if (kqrandom)
-	  {
-		  delete kqrandom;
-	  }
-	  kqrandom = new KQRandom();
-      break;
-    default: /* Exit */
-      game_on = 0;
-      break;
-    }
-    /* Only show it once at the start */
-    skip_splash = 1;
-    if (game_on) {
-      stop = 0;
-      timer_count = 0;
-      alldead = 0;
+	Game.startup();
+	game_on = 1;
+	kqrandom = nullptr;
+	/* While KQ is running (playing or at startup menu) */
+	while (game_on)
+	{
+		switch (SaveGame.start_menu(skip_splash))
+		{
+		case 0: /* Continue */
+			break;
+		case 1: /* New game */
+			Game.change_map("starting", 0, 0, 0, 0);
+			if (kqrandom)
+			{
+				delete kqrandom;
+			}
+			kqrandom = new KQRandom();
+			break;
+		default: /* Exit */
+			game_on = 0;
+			break;
+		}
+		/* Only show it once at the start */
+		skip_splash = 1;
+		if (game_on)
+		{
+			stop = 0;
+			timer_count = 0;
+			alldead = 0;
 
-      /* While the actual game is playing */
-      while (!stop) {
-        while (timer_count > 0) {
-          timer_count--;
-          process_entities();
-        }
-        Game.do_check_animation();
-        drawmap();
-        blit2screen(xofs, yofs);
-        Music.poll_music();
+			/* While the actual game is playing */
+			while (!stop)
+			{
+				while (timer_count > 0)
+				{
+					timer_count--;
+					process_entities();
+				}
+				Game.do_check_animation();
+				drawmap();
+				blit2screen(xofs, yofs);
+				Music.poll_music();
 
-        if (key[PlayerInput.kesc]) {
-          stop = SaveGame.system_menu();
-        }
-        if (PlayerInput.bhelp) {
-          /* TODO: In-game help system. */
-        }
+				if (key[PlayerInput.kesc])
+				{
+					stop = SaveGame.system_menu();
+				}
+				if (PlayerInput.bhelp)
+				{
+					/* TODO: In-game help system. */
+				}
 #ifdef DEBUGMODE
-        if (key[KEY_BACKSLASH]) {
-          run_console();
-        }
+				if (key[KEY_BACKSLASH])
+				{
+					run_console();
+				}
 #endif
-        if (alldead) {
-          clear(screen);
-          do_transition(TRANS_FADE_IN, 16);
-          stop = 1;
-        }
-      }
-    }
-  }
-  remove_int(my_counter);
-  remove_int(time_counter);
-  Game.deallocate_stuff();
-  return EXIT_SUCCESS;
+				if (alldead)
+				{
+					clear(screen);
+					do_transition(TRANS_FADE_IN, 16);
+					stop = 1;
+				}
+			}
+		}
+	}
+	remove_int(my_counter);
+	remove_int(time_counter);
+	Game.deallocate_stuff();
+	return EXIT_SUCCESS;
 }
 END_OF_MAIN()
 
@@ -1131,16 +1235,18 @@ END_OF_MAIN()
  *
  * New interrupt handler set to keep game time.
  */
-void my_counter(void) {
-  timer++;
+	void my_counter(void)
+{
+	timer++;
 
-  if (timer >= Game.KQ_TICKS) {
-    timer = 0;
-    ksec++;
-  }
+	if (timer >= Game.KQ_TICKS)
+	{
+		timer = 0;
+		ksec++;
+	}
 
-  animation_count++;
-  timer_count++;
+	animation_count++;
+	timer_count++;
 }
 END_OF_FUNCTION(my_counter)
 
@@ -1151,140 +1257,168 @@ END_OF_FUNCTION(my_counter)
  * \param   mvx - New x-coord for camera
  * \param   mvy - Same, for y-coord
  */
-void KGame::prepare_map(int msx, int msy, int mvx, int mvy) {
-  Raster *pcxb;
-  unsigned int i;
-  size_t mapsize;
-  unsigned int o;
+	void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
+{
+	Raster *pcxb;
+	unsigned int i;
+	size_t mapsize;
+	unsigned int o;
 
-  mapsize = (size_t)g_map.xsize * (size_t)g_map.ysize;
+	mapsize = (size_t)g_map.xsize * (size_t)g_map.ysize;
 
-  draw_background = draw_middle = draw_foreground = draw_shadow = 0;
+	draw_background = draw_middle = draw_foreground = draw_shadow = 0;
 
-  for (i = 0; i < mapsize; i++) {
-    if (map_seg[i] > 0) {
-      draw_background = 1;
-      break;
-    }
-  }
+	for (i = 0; i < mapsize; i++)
+	{
+		if (map_seg[i] > 0)
+		{
+			draw_background = 1;
+			break;
+		}
+	}
 
-  for (i = 0; i < mapsize; i++) {
-    if (b_seg[i] > 0) {
-      draw_middle = 1;
-      break;
-    }
-  }
+	for (i = 0; i < mapsize; i++)
+	{
+		if (b_seg[i] > 0)
+		{
+			draw_middle = 1;
+			break;
+		}
+	}
 
-  for (i = 0; i < mapsize; i++) {
-    if (f_seg[i] > 0) {
-      draw_foreground = 1;
-      break;
-    }
-  }
+	for (i = 0; i < mapsize; i++)
+	{
+		if (f_seg[i] > 0)
+		{
+			draw_foreground = 1;
+			break;
+		}
+	}
 
-  for (i = 0; i < mapsize; i++) {
-    if (s_seg[i] > 0) {
-      draw_shadow = 1;
-      break;
-    }
-  }
+	for (i = 0; i < mapsize; i++)
+	{
+		if (s_seg[i] > 0)
+		{
+			draw_shadow = 1;
+			break;
+		}
+	}
 
-  for (i = 0; i < (size_t)numchrs; i++) {
-    /* This allows us to either go to the map's default starting coords
-     * or specify exactly where on the map to go to (like when there
-     * are stairs or a doorway that they should start at).
-     */
-    if (msx == 0 && msy == 0) {
-      // Place players at default map starting coords
-      place_ent(i, g_map.stx, g_map.sty);
-    } else {
-      // Place players at specific coordinates in the map
-      place_ent(i, msx, msy);
-    }
+	for (i = 0; i < (size_t)numchrs; i++)
+	{
+		/* This allows us to either go to the map's default starting coords
+		 * or specify exactly where on the map to go to (like when there
+		 * are stairs or a doorway that they should start at).
+		 */
+		if (msx == 0 && msy == 0)
+		{
+			// Place players at default map starting coords
+			place_ent(i, g_map.stx, g_map.sty);
+		}
+		else
+		{
+			// Place players at specific coordinates in the map
+			place_ent(i, msx, msy);
+		}
 
-    g_ent[i].speed = 4;
-    g_ent[i].obsmode = 1;
-    g_ent[i].moving = 0;
-  }
+		g_ent[i].speed = 4;
+		g_ent[i].obsmode = 1;
+		g_ent[i].moving = 0;
+	}
 
-  for (i = 0; i < MAX_ENTITIES; i++) {
-    if (g_ent[i].chrx == 38 && g_ent[i].active == 1) {
-      g_ent[i].eid = ID_ENEMY;
-      g_ent[i].speed = kqrandom->random_range_exclusive(1, 5);
-      g_ent[i].obsmode = 1;
-      g_ent[i].moving = 0;
-      g_ent[i].movemode = MM_CHASE;
-      g_ent[i].chasing = 0;
-      g_ent[i].extra = kqrandom->random_range_exclusive(50, 100);
-      g_ent[i].delay = kqrandom->random_range_exclusive(25, 50);
-    }
-  }
+	for (i = 0; i < MAX_ENTITIES; i++)
+	{
+		if (g_ent[i].chrx == 38 && g_ent[i].active == 1)
+		{
+			g_ent[i].eid = ID_ENEMY;
+			g_ent[i].speed = kqrandom->random_range_exclusive(1, 5);
+			g_ent[i].obsmode = 1;
+			g_ent[i].moving = 0;
+			g_ent[i].movemode = MM_CHASE;
+			g_ent[i].chasing = 0;
+			g_ent[i].extra = kqrandom->random_range_exclusive(50, 100);
+			g_ent[i].delay = kqrandom->random_range_exclusive(25, 50);
+		}
+	}
 
-  pcxb = g_map.map_tiles;
-  for (o = 0; o < (size_t)pcxb->height / 16; o++) {
-    for (i = 0; i < (size_t)pcxb->width / 16; i++) {
-      pcxb->blitTo(map_icons[o * (pcxb->width / 16) + i], i * 16, o * 16, 0, 0,
-                   16, 16);
-    }
-  }
+	pcxb = g_map.map_tiles;
+	for (o = 0; o < (size_t)pcxb->height / 16; o++)
+	{
+		for (i = 0; i < (size_t)pcxb->width / 16; i++)
+		{
+			pcxb->blitTo(map_icons[o * (pcxb->width / 16) + i], i * 16, o * 16, 0, 0,
+				16, 16);
+		}
+	}
 
-  for (o = 0; o < MAX_ANIM; o++) {
-    adelay[o] = 0;
-  }
+	for (o = 0; o < MAX_ANIM; o++)
+	{
+		adelay[o] = 0;
+	}
 
-  Music.play_music(g_map.song_file, 0);
-  mx = g_map.xsize * TILE_W - 304;
-  /*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
-  my = g_map.ysize * TILE_H - 256;
+	Music.play_music(g_map.song_file, 0);
+	mx = g_map.xsize * TILE_W - 304;
+	/*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
+	my = g_map.ysize * TILE_H - 256;
 
-  if (mvx == 0 && mvy == 0) {
-    vx = g_map.stx * TILE_W;
-    vy = g_map.sty * TILE_H;
-  } else {
-    vx = mvx * TILE_W;
-    vy = mvy * TILE_H;
-  }
+	if (mvx == 0 && mvy == 0)
+	{
+		vx = g_map.stx * TILE_W;
+		vy = g_map.sty * TILE_H;
+	}
+	else
+	{
+		vx = mvx * TILE_W;
+		vy = mvy * TILE_H;
+	}
 
-  calc_viewport(1);
+	calc_viewport(1);
 
-  for (i = 0; i < MAX_TILES; i++) {
-    tilex[i] = (uint16_t)i;
-  }
+	for (i = 0; i < MAX_TILES; i++)
+	{
+		tilex[i] = (uint16_t)i;
+	}
 
-  noe = 0;
-  for (i = 0; i < (size_t)numchrs; i++) {
-    g_ent[i].active = 1;
-  }
+	noe = 0;
+	for (i = 0; i < (size_t)numchrs; i++)
+	{
+		g_ent[i].active = 1;
+	}
 
-  count_entities();
+	count_entities();
 
-  for (i = 0; i < MAX_ENTITIES; i++) {
-    g_ent[i].delayctr = 0;
-  }
+	for (i = 0; i < MAX_ENTITIES; i++)
+	{
+		g_ent[i].delayctr = 0;
+	}
 
-  set_view(0, 0, 0, 0, 0);
+	set_view(0, 0, 0, 0, 0);
 
-  if (g_map.map_desc.length() > 0) {
-    display_desc = 1;
-  } else {
-    display_desc = 0;
-  }
+	if (g_map.map_desc.length() > 0)
+	{
+		display_desc = 1;
+	}
+	else
+	{
+		display_desc = 0;
+	}
 
-  do_luakill();
-  do_luainit(Game.GetCurmap().c_str(), 1);
-  do_autoexec();
+	do_luakill();
+	do_luainit(Game.GetCurmap().c_str(), 1);
+	do_autoexec();
 
-  if (hold_fade == 0 && numchrs > 0) {
-    drawmap();
-    blit2screen(xofs, yofs);
-    do_transition(TRANS_FADE_IN, 4);
-  }
+	if (hold_fade == 0 && numchrs > 0)
+	{
+		drawmap();
+		blit2screen(xofs, yofs);
+		do_transition(TRANS_FADE_IN, 4);
+	}
 
-  use_sstone = g_map.use_sstone;
-  cansave = g_map.can_save;
-  timer_count = 0;
-  do_postexec();
-  timer_count = 0;
+	use_sstone = g_map.use_sstone;
+	cansave = g_map.can_save;
+	timer_count = 0;
+	do_postexec();
+	timer_count = 0;
 }
 
 /*! \brief End program due to fatal error
@@ -1293,62 +1427,69 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy) {
  *
  * \param   message Text to put into log
  */
-void KGame::program_death(const char *message) {
-  TRACE("%s\n", message);
-  char tmp[1024];
-  memset(tmp, 0, sizeof(tmp));
-  strncpy(tmp, message, sizeof(tmp) - 1);
-  deallocate_stuff();
-  set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-  allegro_message("%s\n", tmp);
-  exit(EXIT_FAILURE);
+void KGame::program_death(const char *message)
+{
+	TRACE("%s\n", message);
+	char tmp[1024];
+	memset(tmp, 0, sizeof(tmp));
+	strncpy(tmp, message, sizeof(tmp) - 1);
+	deallocate_stuff();
+	set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+	allegro_message("%s\n", tmp);
+	exit(EXIT_FAILURE);
 }
 
 /*! \brief Delete any pending events
  *
  * This removes any events from the list
  */
-void KGame::reset_timer_events(void) {
-  int i;
+void KGame::reset_timer_events(void)
+{
+	int i;
 
-  for (i = 0; i < 5; ++i) {
-    *timer_events[i].name = '\0';
-  }
-  next_event_time = INT_MAX;
+	for (i = 0; i < 5; ++i)
+	{
+		*timer_events[i].name = '\0';
+	}
+	next_event_time = INT_MAX;
 }
 
 /*! \brief Resets the world. Called every new game and load game
  *  This function may be called multiple times in some cases. That should be ok.
  */
-void KGame::reset_world(void) {
-  int i, j;
+void KGame::reset_world(void)
+{
+	int i, j;
 
-  /* Reset timer */
-  timer = 0;
-  khr = 0;
-  kmin = 0;
-  ksec = 0;
+	/* Reset timer */
+	timer = 0;
+	khr = 0;
+	kmin = 0;
+	ksec = 0;
 
-  /* Initialize special_items array */
-  for (i = 0; i < MAX_SPECIAL_ITEMS; i++) {
-    special_items[i].name[0] = 0;
-    special_items[i].description[0] = 0;
-    special_items[i].icon = 0;
-    player_special_items[i] = 0;
-  }
+	/* Initialize special_items array */
+	for (i = 0; i < MAX_SPECIAL_ITEMS; i++)
+	{
+		special_items[i].name[0] = 0;
+		special_items[i].description[0] = 0;
+		special_items[i].icon = 0;
+		player_special_items[i] = 0;
+	}
 
-  /* Initialize shops */
-  for (i = 0; i < NUMSHOPS; i++) {
-    shops[i].name[0] = 0;
-    for (j = 0; j < SHOPITEMS; j++) {
-      shops[i].items[j] = 0;
-      shops[i].items_current[j] = 0;
-      shops[i].items_max[j] = 0;
-      shops[i].items_replenish_time[j] = 0;
-    }
-  }
+	/* Initialize shops */
+	for (i = 0; i < NUMSHOPS; i++)
+	{
+		shops[i].name[0] = 0;
+		for (j = 0; j < SHOPITEMS; j++)
+		{
+			shops[i].items[j] = 0;
+			shops[i].items_current[j] = 0;
+			shops[i].items_max[j] = 0;
+			shops[i].items_replenish_time[j] = 0;
+		}
+	}
 
-  lua_user_init();
+	lua_user_init();
 }
 
 /*! \brief Application start-up code
@@ -1518,13 +1659,17 @@ void KGame::startup(void) {
 
 /*! \brief Keep track of the time the game has been in play
  */
-void time_counter(void) {
-  if (kmin < 60) {
-    ++kmin;
-  } else {
-    kmin -= 60;
-    ++khr;
-  }
+void time_counter(void)
+{
+	if (kmin < 60)
+	{
+		++kmin;
+	}
+	else
+	{
+		kmin -= 60;
+		++khr;
+	}
 }
 END_OF_FUNCTION(time_counter)
 
@@ -1536,38 +1681,44 @@ END_OF_FUNCTION(time_counter)
  *
  * \note Waits at most 20 'ticks'
  */
-void KGame::unpress(void) {
-  timer_count = 0;
-  while (timer_count < 20) {
-    PlayerInput.readcontrols();
-    if (!(PlayerInput.balt || PlayerInput.bctrl || PlayerInput.benter ||
-          PlayerInput.besc || PlayerInput.up || PlayerInput.down ||
-          PlayerInput.right || PlayerInput.left || PlayerInput.bcheat)) {
-      break;
-    }
-  }
-  timer_count = 0;
+	void KGame::unpress(void)
+{
+	timer_count = 0;
+	while (timer_count < 20)
+	{
+		PlayerInput.readcontrols();
+		if (!(PlayerInput.balt || PlayerInput.bctrl || PlayerInput.benter ||
+			PlayerInput.besc || PlayerInput.up || PlayerInput.down ||
+			PlayerInput.right || PlayerInput.left || PlayerInput.bcheat))
+		{
+			break;
+		}
+	}
+	timer_count = 0;
 }
 
 /*! \brief Wait for ALT
  *
  * Simply wait for the 'alt' key to be pressed.
  */
-void KGame::wait_enter(void) {
-  int stop = 0;
+void KGame::wait_enter(void)
+{
+	int stop = 0;
 
-  Game.unpress();
+	Game.unpress();
 
-  while (!stop) {
-    PlayerInput.readcontrols();
-    if (PlayerInput.balt) {
-      Game.unpress();
-      stop = 1;
-    }
-    kq_yield();
-  }
+	while (!stop)
+	{
+		PlayerInput.readcontrols();
+		if (PlayerInput.balt)
+		{
+			Game.unpress();
+			stop = 1;
+		}
+		kq_yield();
+	}
 
-  timer_count = 0;
+	timer_count = 0;
 }
 
 /*! \brief Wait for scripted movement to finish
@@ -1584,49 +1735,57 @@ void KGame::wait_enter(void) {
  * \param   last_entity_index Last entity
  */
 void KGame::wait_for_entity(size_t first_entity_index,
-                            size_t last_entity_index) {
-  int any_following_entities;
-  uint8_t move_mode;
-  size_t entity_index;
+	size_t last_entity_index)
+{
+	int any_following_entities;
+	uint8_t move_mode;
+	size_t entity_index;
 
-  if (first_entity_index > last_entity_index) {
-    int temp = first_entity_index;
+	if (first_entity_index > last_entity_index)
+	{
+		int temp = first_entity_index;
 
-    first_entity_index = last_entity_index;
-    last_entity_index = temp;
-  }
+		first_entity_index = last_entity_index;
+		last_entity_index = temp;
+	}
 
-  autoparty = 1;
-  do {
-    while (timer_count > 0) {
-      timer_count--;
-      process_entities();
-    }
-    Music.poll_music();
-    Game.do_check_animation();
-    drawmap();
-    blit2screen(xofs, yofs);
+	autoparty = 1;
+	do
+	{
+		while (timer_count > 0)
+		{
+			timer_count--;
+			process_entities();
+		}
+		Music.poll_music();
+		Game.do_check_animation();
+		drawmap();
+		blit2screen(xofs, yofs);
 
-    if (key[KEY_W] && key[KEY_ALT]) {
-      break;
-    }
+		if (key[KEY_W] && key[KEY_ALT])
+		{
+			break;
+		}
 
-    if (key[KEY_X] && key[KEY_ALT]) {
-      program_death(_("X-Alt pressed - exiting"));
-    }
+		if (key[KEY_X] && key[KEY_ALT])
+		{
+			program_death(_("X-Alt pressed - exiting"));
+		}
 
-    any_following_entities = 0;
-    for (entity_index = first_entity_index; entity_index <= last_entity_index;
-         ++entity_index) {
-      move_mode = g_ent[entity_index].movemode;
-      if (g_ent[entity_index].active == 1 &&
-          (move_mode == MM_SCRIPT || move_mode == MM_TARGET)) {
-        any_following_entities = 1;
-        break; // for()
-      }
-    }
-  } while (any_following_entities);
-  autoparty = 0;
+		any_following_entities = 0;
+		for (entity_index = first_entity_index; entity_index <= last_entity_index;
+			++entity_index)
+		{
+			move_mode = g_ent[entity_index].movemode;
+			if (g_ent[entity_index].active == 1 &&
+				(move_mode == MM_SCRIPT || move_mode == MM_TARGET))
+			{
+				any_following_entities = 1;
+				break; // for()
+			}
+		}
+	} while (any_following_entities);
+	autoparty = 0;
 }
 
 /*! \brief Move player(s) to new coordinates
@@ -1639,38 +1798,45 @@ void KGame::wait_for_entity(size_t first_entity_index,
  * \param   wty New y-coord
  * \param   fspeed Speed of fading (See do_transition())
  */
-void KGame::warp(int wtx, int wty, int fspeed) {
-  size_t entity_index, last_entity;
+void KGame::warp(int wtx, int wty, int fspeed)
+{
+	size_t entity_index, last_entity;
 
-  if (hold_fade == 0) {
-    do_transition(TRANS_FADE_OUT, fspeed);
-  }
+	if (hold_fade == 0)
+	{
+		do_transition(TRANS_FADE_OUT, fspeed);
+	}
 
-  if (numchrs == 0) {
-    last_entity = 1;
-  } else {
-    last_entity = numchrs;
-  }
+	if (numchrs == 0)
+	{
+		last_entity = 1;
+	}
+	else
+	{
+		last_entity = numchrs;
+	}
 
-  for (entity_index = 0; entity_index < last_entity; entity_index++) {
-    place_ent(entity_index, wtx, wty);
-    g_ent[entity_index].moving = 0;
-    g_ent[entity_index].movcnt = 0;
-    g_ent[entity_index].framectr = 0;
-  }
+	for (entity_index = 0; entity_index < last_entity; entity_index++)
+	{
+		place_ent(entity_index, wtx, wty);
+		g_ent[entity_index].moving = 0;
+		g_ent[entity_index].movcnt = 0;
+		g_ent[entity_index].framectr = 0;
+	}
 
-  vx = wtx * TILE_W;
-  vy = wty * TILE_H;
+	vx = wtx * TILE_W;
+	vy = wty * TILE_H;
 
-  calc_viewport(1);
-  drawmap();
-  blit2screen(xofs, yofs);
+	calc_viewport(1);
+	drawmap();
+	blit2screen(xofs, yofs);
 
-  if (hold_fade == 0) {
-    do_transition(TRANS_FADE_IN, fspeed);
-  }
+	if (hold_fade == 0)
+	{
+		do_transition(TRANS_FADE_IN, fspeed);
+	}
 
-  timer_count = 0;
+	timer_count = 0;
 }
 
 /*! \brief Zone event handler
@@ -1684,37 +1850,50 @@ void KGame::warp(int wtx, int wty, int fspeed) {
  * wish.
  * This function also handles the Repulse functionality
  */
-void KGame::zone_check(void) {
-  uint16_t stc, zx, zy;
+void KGame::zone_check(void)
+{
+	uint16_t stc, zx, zy;
 
-  zx = g_ent[0].x / TILE_W;
-  zy = g_ent[0].y / TILE_H;
+	zx = g_ent[0].x / TILE_W;
+	zy = g_ent[0].y / TILE_H;
 
-  if (save_spells[P_REPULSE] > 0) {
-    if (Game.IsOverworldMap()) {
-      save_spells[P_REPULSE]--;
-    } else {
-      if (save_spells[P_REPULSE] > 1) {
-        save_spells[P_REPULSE] -= 2;
-      } else {
-        save_spells[P_REPULSE] = 0;
-      }
-    }
+	if (save_spells[P_REPULSE] > 0)
+	{
+		if (Game.IsOverworldMap())
+		{
+			save_spells[P_REPULSE]--;
+		}
+		else
+		{
+			if (save_spells[P_REPULSE] > 1)
+			{
+				save_spells[P_REPULSE] -= 2;
+			}
+			else
+			{
+				save_spells[P_REPULSE] = 0;
+			}
+		}
 
-    if (save_spells[P_REPULSE] < 1) {
-      message(_("Repulse has worn off!"), 255, 0, xofs, yofs);
-    }
-  }
+		if (save_spells[P_REPULSE] < 1)
+		{
+			message(_("Repulse has worn off!"), 255, 0, xofs, yofs);
+		}
+	}
 
-  stc = z_seg[zy * g_map.xsize + zx];
+	stc = z_seg[zy * g_map.xsize + zx];
 
-  if (g_map.zero_zone != 0) {
-    do_zone(stc);
-  } else {
-    if (stc > 0) {
-      do_zone(stc);
-    }
-  }
+	if (g_map.zero_zone != 0)
+	{
+		do_zone(stc);
+	}
+	else
+	{
+		if (stc > 0)
+		{
+			do_zone(stc);
+		}
+	}
 }
 
 /*! \mainpage KQ - The Classic Computer Role-Playing Game
