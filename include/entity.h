@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __ENTITY_H
-#define __ENTITY_H
+#pragma once
 
 /*! \file
  * \brief Stuff related to entities on the map
@@ -54,5 +53,3 @@ enum eCommands {
 
   NUM_COMMANDS // always last
 };
-
-#endif /* __ENTITY_H */

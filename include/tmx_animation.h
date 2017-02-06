@@ -1,5 +1,4 @@
-#ifndef __TMX_ANIMATION_H
-#define __TMX_ANIMATION_H
+#pragma once
 
 #include <vector>
 
@@ -12,5 +11,3 @@ public:
   };
   std::vector<animation_frame> frames; //!< Sequence of animation frames
 };
-
-#endif // __TMX_ANIMATION_H

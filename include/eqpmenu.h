@@ -19,9 +19,6 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __EQPMENU_H
-#define __EQPMENU_H
+#pragma once
 
 void equip_menu(uint32_t);
-
-#endif /* __EQPMENU_H */

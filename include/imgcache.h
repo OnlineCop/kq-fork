@@ -19,11 +19,10 @@ the Free Software Foundation,
 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __IMGCACHE_H
-#define __IMGCACHE_H
+#pragma once
+
 #include <string>
+
 class Raster;
 Raster *get_cached_image(const std::string &name);
 void clear_image_cache();
-
-#endif

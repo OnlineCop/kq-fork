@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __SELECTOR_H
-#define __SELECTOR_H
+#pragma once
 
 #include "enums.h"
 #include "heroc.h"
@@ -33,5 +32,3 @@ int auto_select_hero(int, int);
 int auto_select_enemy(int, int);
 int select_party(ePIDX *, size_t, size_t);
 void party_newlead(void);
-
-#endif /* __SELECTOR_H */

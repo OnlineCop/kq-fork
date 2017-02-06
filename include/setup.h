@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __SETUP_H
-#define __SETUP_H
+#pragma once
 
 /*! \file */
 
@@ -87,5 +86,3 @@ static char *keynames[] = {
 #define N_KEYNAMES (sizeof(keynames) / sizeof(*keynames))
 const char *kq_keyname(int);
 #endif
-
-#endif /* __SETUP_H */

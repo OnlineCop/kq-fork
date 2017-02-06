@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __KQ_H
-#define __KQ_H
+#pragma once
 
 /*! \file
  * \brief Main include file for KQ
@@ -179,4 +178,3 @@ extern KGame Game;
 #ifndef TRACE
 extern void TRACE(const char *message, ...);
 #endif
-#endif /* __KQ_H */

@@ -1,5 +1,4 @@
-#ifndef __FIGHTER_H
-#define __FIGHTER_H
+#pragma once
 
 #include <allegro.h>
 class Raster;
@@ -71,5 +70,3 @@ typedef struct {
   int imb[2];
   Raster *img;
 } s_fighter;
-
-#endif /* __FIGHTER_H */

@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __FADE_H
-#define __FADE_H
+#pragma once
 
 enum eTransitionFade {
   TRANS_FADE_IN = 1,
@@ -31,5 +30,3 @@ enum eTransitionFade {
 };
 
 void do_transition(eTransitionFade, int);
-
-#endif /* __FADE_H */

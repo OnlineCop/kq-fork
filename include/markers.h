@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __MARKERS_H
-#define __MARKERS_H
+#pragma once
 
 #include <memory>
 using std::shared_ptr;
@@ -87,5 +86,3 @@ protected:
 };
 
 extern KMarker Marker;
-
-#endif /* __MARKERS_H */

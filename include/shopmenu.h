@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __SHOPMENU_H
-#define __SHOPMENU_H
+#pragma once
 
 #define NUMSHOPS 50
 #define SHOPITEMS 12
@@ -44,5 +43,3 @@ typedef struct {
 
 extern s_shop shops[NUMSHOPS];
 extern uint16_t num_shops;
-
-#endif /* __SHOPMENU_H */

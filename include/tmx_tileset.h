@@ -1,5 +1,4 @@
-#ifndef __TMX_TILESET
-#define __TMX_TILESET
+#pragma once
 
 class KTmxTileset {
 public:
@@ -13,5 +12,3 @@ public:
   int width;
   int height;
 };
-
-#endif // __TMX_TILESET

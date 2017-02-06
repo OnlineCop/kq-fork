@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __DRAW_H
-#define __DRAW_H
+#pragma once
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -108,5 +107,3 @@ Raster *copy_bitmap(Raster *, Raster *);
 extern uint8_t BLUE;
 extern uint8_t DARKBLUE;
 extern uint8_t DARKRED;
-
-#endif /* __DRAW_H */

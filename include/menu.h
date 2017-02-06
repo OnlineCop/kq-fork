@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __MENU_H
-#define __MENU_H
+#pragma once
 
 #include "kq.h"
 
@@ -57,5 +56,3 @@ typedef struct info_list {
   int count;    /*!< The number of items currently in the array */
   int capacity; /*!< The total capacity of the array */
 } ILIST;
-
-#endif /* __MENU_H */

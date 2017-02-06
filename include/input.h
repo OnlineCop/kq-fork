@@ -1,6 +1,4 @@
 #pragma once
-#ifndef __INPUT_H
-#define __INPUT_H
 
 class KPlayerInput {
 public:
@@ -25,5 +23,3 @@ public:
 };
 
 extern KPlayerInput PlayerInput;
-
-#endif /* __INPUT_H */

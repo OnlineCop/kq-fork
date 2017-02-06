@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __RES_H
-#define __RES_H
+#pragma once
 
 #include <allegro.h>
 #include <stdint.h>
@@ -169,5 +168,3 @@ extern s_encounter battles[NUM_BATTLES];
 /*! \var magic
  *\brief The spells used in the game
  */
-
-#endif /* __RES_H */

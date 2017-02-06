@@ -1,5 +1,4 @@
-#ifndef __CONSTANTS
-#define __CONSTANTS
+#pragma once
 
 enum eSize {
   TILE_W = 16U,
@@ -29,5 +28,3 @@ enum eSize {
 
 // The same blit() function was called all over the place, so this simplifies the call.
 #define fullblit(a, b) blit((a), (b), 0, 0, 0, 0, SCREEN_W2, SCREEN_H2)
-
-#endif // __CONSTANTS

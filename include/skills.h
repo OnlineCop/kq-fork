@@ -19,10 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __SKILLS_H
-#define __SKILLS_H
+#pragma once
 
 int hero_skillcheck(int);
 void infusion(int, int);
-
-#endif /* __SKILLS_H */

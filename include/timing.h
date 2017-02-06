@@ -19,10 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __TIMING_H
-#define __TIMING_H
+#pragma once
 
 void kq_wait(long ms);
 int limit_frame_rate(int fps);
-
-#endif /* __TIMING_H */

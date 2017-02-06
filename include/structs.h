@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __STRUCTS_H
-#define __STRUCTS_H
+#pragma once
 
 /*! \file
  * \brief Structures common to mapedit and the game (s_map and s_entity)
@@ -184,5 +183,3 @@ struct s_sgstats {
   } characters[PSIZE];
   static s_sgstats get_current(void);
 };
-
-#endif /* __STRUCTS_H */

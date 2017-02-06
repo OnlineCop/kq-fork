@@ -19,8 +19,8 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __HEROC_H
-#define __HEROC_H
+#pragma once
+
 #include <stdlib.h>
 /*! \file
  * \brief Hero combat header file
@@ -51,5 +51,3 @@ void hero_choose_action(size_t); /*  combat.c  */
 void auto_herochooseact(int);    /*  combat.c  */
 int available_spells(int);       /*  hskill.c  */
 int combat_spell_menu(int);      /*  hskill.c  */
-
-#endif /* __HEROC_H */

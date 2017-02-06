@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __COMBAT_H
-#define __COMBAT_H
+#pragma once
 
 /*! \file
  * \brief Combat header file
@@ -62,5 +61,3 @@ extern int rcount;
 extern uint8_t vspell;
 extern uint8_t ms;
 extern Raster *backart;
-
-#endif /* __COMBAT_H */

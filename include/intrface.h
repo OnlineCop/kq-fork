@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __INTRFACE_H
-#define __INTRFACE_H
+#pragma once
 
 /* Special identifiers for bubble() */
 enum eHero { HERO1 = 200, HERO2 = 201 };
@@ -34,5 +33,3 @@ void do_postexec(void);
 void do_timefunc(const char *funcname);
 void do_zone(int zn_num);
 void lua_user_init(void);
-
-#endif /* __INTRFACE_H */

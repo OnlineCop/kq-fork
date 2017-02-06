@@ -19,13 +19,10 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __ESKILL_H
-#define __ESKILL_H
+#pragma once
 
 /*! \file
  * \brief Enemy Skills header file
  */
 
 void combat_skill(size_t);
-
-#endif /* __ESKILL_H */

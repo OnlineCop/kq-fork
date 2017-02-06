@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __MUSIC_H
-#define __MUSIC_H
+#pragma once
 
 #include <string>
 using std::string;
@@ -45,5 +44,3 @@ public:
 };
 
 extern KMusic Music;
-
-#endif /* __MUSIC_H */

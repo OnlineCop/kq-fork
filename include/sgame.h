@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __SGAME_H
-#define __SGAME_H
+#pragma once
 
 #include "kq.h"
 
@@ -58,5 +57,3 @@ protected:
 };
 
 extern KSaveGame SaveGame;
-
-#endif /* __SGAME_H */

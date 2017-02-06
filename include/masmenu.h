@@ -19,12 +19,9 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __MASMENU_H
-#define __MASMENU_H
+#pragma once
 
 int learn_new_spells(int);
 void camp_spell_menu(int);
 
 extern int close_menu;
-
-#endif /* __MASMENU_H */

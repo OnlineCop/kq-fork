@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __ITEMDEFS_H
-#define __ITEMDEFS_H
+#pragma once
 
 /*! \file
  * \brief Defines for all items
@@ -221,5 +220,3 @@
 #define I_CHENDIGAL 188      /* Chendigal */
 #define I_CHENDIGRA 189      /* Chendigra */
 #define I_DYNAMITE 190       /* Dynamite */
-
-#endif /* __ITEMDEFS_H */

@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __PLATFORM_H
-#define __PLATFORM_H
+#pragma once
 
 /*! \file
  * \brief Platform-specific interfaces, prototypes, and #defines
@@ -49,5 +48,3 @@ const string get_lua_file_path(const string, const string);
 const string get_resource_file_path(const string, const string, const string);
 
 #define maybe_poll_joystick poll_joystick
-
-#endif /* __PLATFORM_H */

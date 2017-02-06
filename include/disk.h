@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __DISK_H
-#define __DISK_H
+#pragma once
 
 #include "entity.h"
 #include "maps.h"
@@ -32,5 +31,3 @@ int save_s_player(s_player *, PACKFILE *);
 int load_game_xml(const char *);
 int save_game_xml(const char *);
 int load_stats_only(const char *, s_sgstats &);
-
-#endif /* __DISK_H */

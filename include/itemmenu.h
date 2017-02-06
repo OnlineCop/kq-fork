@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __ITEMMENU_H
-#define __ITEMMENU_H
+#pragma once
 
 #define MAX_ITEMS 9
 
@@ -35,5 +34,3 @@ int check_inventory(size_t, int);
 eItemEffectResult item_effects(size_t, size_t, int);
 void remove_item(size_t, int);
 int useup_item(int);
-
-#endif /* __ITEMMENU_H */

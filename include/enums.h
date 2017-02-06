@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __ENUMS_H
-#define __ENUMS_H
+#pragma once
 
 /*! \file
  * \brief Moves most of the #defines into one location
@@ -315,5 +314,3 @@ enum eEquipment {
 
   NUM_EQUIPMENT // always last
 };
-
-#endif /* __ENUMS_H */
