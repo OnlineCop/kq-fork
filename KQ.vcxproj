@@ -156,6 +156,7 @@
     <ClInclude Include="include\fade.h" />
     <ClInclude Include="include\fighter.h" />
     <ClInclude Include="include\gettext.h" />
+    <ClInclude Include="include\gfx.h" />
     <ClInclude Include="include\heroc.h" />
     <ClInclude Include="include\hskill.h" />
     <ClInclude Include="include\imgcache.h" />

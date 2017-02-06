@@ -303,6 +303,9 @@
     <ClInclude Include="include\zone.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\gfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="scripts\bridge.lua">
