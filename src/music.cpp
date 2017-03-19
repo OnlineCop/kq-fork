@@ -108,7 +108,8 @@ void KMusic::poll_music(void) {
  */
 void KMusic::play_music(const std::string &music_name, long position) {
   if (is_sound != 0) {
-    const char *filename = kqres(MUSIC_DIR, music_name).c_str();
+    const std::string fstr = kqres(MUSIC_DIR, music_name);
+    const char *filename = fstr.c_str();
 
     stop_music();
     if (exists(filename)) {
