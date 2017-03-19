@@ -334,7 +334,6 @@ static int combat_item(int ss, int t1, int tg) {
  */
 static int combat_item_menu(int whom) {
   int z, stop = 0, ptr = 0, pptr = 0;
-  unsigned short inventory = g_inv[pptr * 16 + ptr].item;
 
   fullblit(double_buffer, back);
   while (!stop) {
@@ -382,6 +381,7 @@ static int combat_item_menu(int whom) {
       play_effect(SND_CLICK, 128);
     }
     if (PlayerInput.balt) {
+      unsigned short inventory = g_inv[pptr * 16 + ptr].item;
       Game.unpress();
       if (items[inventory].tgt >= TGT_ENEMY_ONE) {
         z = select_enemy(whom, (eTarget)(items[inventory].tgt));
