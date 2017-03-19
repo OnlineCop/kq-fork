@@ -2,13 +2,13 @@
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="95" height="70" tilewidth="16" tileheight="16" backgroundcolor="#0e0e0e" nextobjectid="94">
  <properties>
   <property name="can_save" value="0"/>
-  <property name="description" value="Ekla"/>
-  <property name="song_file" value="town.mod"/>
   <property name="can_warp" value="0"/>
+  <property name="description" value="Ekla"/>
   <property name="map_mode" value="0"/>
   <property name="map_no" value="0"/>
   <property name="pdiv" value="1"/>
   <property name="pmult" value="1"/>
+  <property name="song_file" value="town.mod"/>
   <property name="stx" value="11"/>
   <property name="sty" value="21"/>
   <property name="tileset" value="1"/>
