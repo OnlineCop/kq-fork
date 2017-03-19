@@ -1160,7 +1160,7 @@ int main(int argc, const char *argv[])
 
 	Game.startup();
 	game_on = 1;
-	kqrandom = nullptr;
+	kqrandom = new KQRandom();
 	/* While KQ is running (playing or at startup menu) */
 	while (game_on)
 	{
