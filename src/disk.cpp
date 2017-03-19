@@ -487,16 +487,16 @@ static int load_treasures(XMLElement *node) {
   auto startp = std::begin(treasure);
   auto endp = std::end(treasure);
   std::fill(startp, endp, 0);
-  XMLElement *elem = node->FirstChildElement("treasure");
+  XMLElement *elem = node->FirstChildElement("treasures");
   if (elem && !elem->NoChildren()) {
     auto vs = parse_list(elem->FirstChild()->Value());
     auto it = startp;
     for (auto &v : vs) {
-      *it++ = v;
       if (it == endp) {
         // Too much data supplied...
-        Game.program_death("Too much data supplied");
+        Game.program_death("Error while loading treasures: More entries for treasures in saved game than there should be!");
       }
+      *it++ = v;
     }
   }
   return 1;
