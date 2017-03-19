@@ -568,10 +568,10 @@ static int save_specials(XMLElement *node) {
   return 1;
 }
 static int load_specials(XMLElement *node) {
-  auto startp = std::begin(treasure);
-  auto endp = std::end(treasure);
+  auto startp = std::begin(player_special_items);
+  auto endp = std::end(player_special_items);
   std::fill(startp, endp, 0);
-  XMLElement *elem = node->FirstChildElement("treasure");
+  XMLElement *elem = node->FirstChildElement("special");
   if (elem && !elem->NoChildren()) {
     auto vs = parse_list(elem->FirstChild()->Value());
     auto it = startp;
