@@ -2317,7 +2317,7 @@ static int KQ_get_treasure(lua_State *L)
 {
 	auto a = lua_tointeger(L, 1);
 
-	if (a >= 0 && a <= 999)
+	if (a >= 0 && a < SIZE_TREASURE)
 	{
 		lua_pushnumber(L, treasure[a]);
 	}
