@@ -34,21 +34,6 @@
 #include "res.h"
 class Raster;
 
-enum eHeroBitFlags {
-  BITS_NO_HERO = 0,
-  BITS_SENSAR = 1 << 0,
-  BITS_SARINA = 1 << 1,
-  BITS_CORIN = 1 << 2,
-  BITS_AJATHAR = 1 << 3,
-  BITS_CASANDRA = 1 << 4,
-  BITS_TEMMIN = 1 << 5,
-  BITS_AYLA = 1 << 6,
-  BITS_NOSLOM = 1 << 7,
-
-  BITS_ALL_HERO = BITS_SENSAR | BITS_SARINA | BITS_CORIN | BITS_AJATHAR |
-                  BITS_CASANDRA | BITS_TEMMIN | BITS_AYLA | BITS_NOSLOM
-};
-
 /*! \brief Entity
  *
  * Contains info on an entities appearance, position and behaviour */
