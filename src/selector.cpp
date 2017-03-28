@@ -352,8 +352,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg) {
     }
     for (unsigned int k = 0; k < numchrs; k++) {
       menubox(double_buffer, 80 + xofs, k * 56 + shy + yofs, 18, 5, BLUE);
-      draw_playerstat(double_buffer, pidx[k], 88 + xofs,
-                      k * 56 + shy + 8 + yofs);
+      kmenu.draw_playerstat(double_buffer, pidx[k], 88 + xofs, k * 56 + shy + 8 + yofs);
       // Draw the pointer
       if (select_all || k == ptr) {
         draw_sprite(double_buffer, menuptr, 72 + xofs,
@@ -668,7 +667,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max) {
     }
     menubox(double_buffer, 92, 152, 18, 5, DARKBLUE);
     if (hero != PIDX_UNDEFINED) {
-      draw_playerstat(double_buffer, hero, 100, 160);
+      kmenu.draw_playerstat(double_buffer, hero, 100, 160);
     }
     /* Show on the screen */
     blit2screen(xofs, yofs);
@@ -787,7 +786,7 @@ int select_player(void) {
   while (!stop) {
     Game.do_check_animation();
     drawmap();
-    draw_mainmenu(ptr);
+    kmenu.draw_mainmenu(ptr);
     blit2screen(xofs, yofs);
 
     PlayerInput.readcontrols();

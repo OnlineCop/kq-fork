@@ -1067,7 +1067,7 @@ static int KQ_add_quest_item(lua_State *L)
 	const char *keyname = lua_tostring(L, 1);
 	const char *info = lua_tostring(L, 2);
 
-	add_questinfo(keyname, info);
+	kmenu.add_questinfo(keyname, info);
 	return 0;
 }
 
@@ -1754,7 +1754,7 @@ static int KQ_draw_pstat(lua_State *L)
 
 	if (a >= 0 && a < MAXCHRS)
 	{
-		draw_playerstat(double_buffer, a, (int)lua_tonumber(L, 2) + xofs, (int)lua_tonumber(L, 3) + yofs);
+		kmenu.draw_playerstat(double_buffer, a, (int)lua_tonumber(L, 2) + xofs, (int)lua_tonumber(L, 3) + yofs);
 	}
 	return 0;
 }
@@ -2365,7 +2365,7 @@ static int KQ_give_item(lua_State *L)
 
 static int KQ_give_xp(lua_State *L)
 {
-	give_xp((int)lua_tonumber(L, 1), (int)lua_tonumber(L, 2), (int)lua_tonumber(L, 3));
+	kmenu.give_xp((int)lua_tonumber(L, 1), (int)lua_tonumber(L, 2), (int)lua_tonumber(L, 3));
 	return 0;
 }
 

@@ -1283,7 +1283,7 @@ static void special_spells(size_t caster_fighter_index, size_t spell_number) {
   case M_WARP:
     if (in_combat == 1) {
       do_transition(TRANS_FADE_OUT, 2);
-      revert_equipstats();
+      kmenu.revert_equipstats();
       drawmap();
       blit2screen(xofs, yofs);
       do_transition(TRANS_FADE_IN, 2);

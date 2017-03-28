@@ -30,6 +30,7 @@ void do_luacheat(void);
 void do_luainit(const char *fname, int global);
 void do_luakill(void);
 void do_postexec(void);
+void do_questinfo(void);
 void do_timefunc(const char *funcname);
 void do_zone(int zn_num);
 void lua_user_init(void);

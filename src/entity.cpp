@@ -634,7 +634,7 @@ static void player_move(void) {
     Game.activate();
   }
   if (PlayerInput.benter) {
-    menu();
+    kmenu.menu();
   }
 #ifdef KQ_CHEATS
   if (PlayerInput.bcheat) {

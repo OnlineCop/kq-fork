@@ -198,7 +198,7 @@ static void camp_item_targetting(int pp) {
     return;
   }
   while (1) {
-    update_equipstats();
+    kmenu.update_equipstats();
     ePIDX tg = select_any_player((eTarget)items[t1].tgt, items[t1].icon,
                                  items[t1].name);
     if (tg != PIDX_UNDEFINED) {
@@ -206,7 +206,7 @@ static void camp_item_targetting(int pp) {
       if (z == ITEM_EFFECT_INEFFECTIVE) {
         play_effect(SND_BAD, 128);
       } else {
-        revert_equipstats();
+        kmenu.revert_equipstats();
         if (z == ITEM_EFFECT_SUCCESS_SINGLE) {
           play_effect(SND_ITEM, 128);
           select_any_player(TGT_NONE, 0, "");

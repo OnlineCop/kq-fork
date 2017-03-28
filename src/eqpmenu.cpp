@@ -72,7 +72,7 @@ static void calc_equippreview(uint32_t aa, uint32_t p2, int ii) {
 
   c = party[pidx[aa]].eqp[p2];
   party[pidx[aa]].eqp[p2] = ii;
-  update_equipstats();
+  kmenu.update_equipstats();
   for (z = 0; z < 13; z++) {
     tstats[z] = fighter[aa].stats[z];
   }
@@ -80,7 +80,7 @@ static void calc_equippreview(uint32_t aa, uint32_t p2, int ii) {
     tres[z] = fighter[aa].res[z];
   }
   party[pidx[aa]].eqp[p2] = c;
-  update_equipstats();
+  kmenu.update_equipstats();
 }
 
 /*! \brief List equipment that can go in a slot
@@ -326,7 +326,7 @@ static void draw_equippreview(int ch, int ptr, int pp) {
   if (ptr >= 0) {
     calc_equippreview(ch, ptr, pp);
   } else {
-    update_equipstats();
+    kmenu.update_equipstats();
   }
   menubox(double_buffer, 188 + xofs, 92 + yofs, 13, 13, BLUE);
   print_font(double_buffer, 196 + xofs, 100 + yofs, _("Str:"), FNORMAL);

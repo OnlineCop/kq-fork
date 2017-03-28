@@ -1071,7 +1071,7 @@ static void heroes_win(void) {
 
   Music.play_music("rend5.s3m", 0);
   kq_wait(500);
-  revert_equipstats();
+  kmenu.revert_equipstats();
   for (fighter_index = 0; fighter_index < numchrs; fighter_index++) {
     fighter[fighter_index].aframe = 4;
   }
@@ -1149,7 +1149,7 @@ static void heroes_win(void) {
         party[pidx[pidx_index]].sts[S_DEAD] == 0) {
       b = pidx_index * 160;
       player2fighter(pidx[pidx_index], &t1);
-      if (give_xp(pidx[pidx_index], txp, 0) == 1) {
+      if (kmenu.give_xp(pidx[pidx_index], txp, 0) == 1) {
         menubox(double_buffer, b, 40, 18, 9, BLUE);
         player2fighter(pidx[pidx_index], &t2);
         print_font(double_buffer, b + 8, 48, _("Level up!"), FGOLD);

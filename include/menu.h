@@ -23,16 +23,6 @@
 
 #include "kq.h"
 
-void add_questinfo(const char *key, const char *text);
-void do_questinfo(void);
-void draw_mainmenu(int);
-void draw_playerstat(Raster *, int, int, int);
-int give_xp(int, int, int);
-void menu(void);
-void revert_equipstats(void);
-void spec_items(void);
-void update_equipstats(void);
-
 s_fighter *player2fighter(int, s_fighter *);
 
 /* These are hints/reminders about the game - e.g:
@@ -58,3 +48,30 @@ struct ILIST
   int count;    /*!< The number of items currently in the array */
   int capacity; /*!< The total capacity of the array */
 };
+
+
+class KMenu
+{
+public:
+	KMenu();
+
+	void add_questinfo(const char *key, const char *text);
+	void draw_mainmenu(int);
+	void draw_playerstat(Raster *where, int player_index_in_party, int dx, int dy);
+	int give_xp(int, int, int);
+	void menu(void);
+	void revert_equipstats(void);
+	void spec_items(void);
+	void update_equipstats(void);
+
+private:
+	int check_xp(int, int);
+	void ilist_add(ILIST *l, const char *key, const char *text);
+	void ilist_clear(ILIST *l);
+	void level_up(int);
+	void quest_info(void);
+	void status_screen(size_t);
+	ILIST quest_list;
+};
+
+extern KMenu kmenu;

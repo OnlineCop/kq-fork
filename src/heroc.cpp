@@ -805,7 +805,7 @@ void hero_choose_action(size_t fighter_index) {
  * The shape is chosen by s_fighter::current_weapon_type
  */
 void hero_init(void) {
-  update_equipstats();
+  kmenu.update_equipstats();
   Raster *eb = get_cached_image("usbat.png");
 
   // Load all 8 fighters' stances into the `cframes` array.
@@ -1118,6 +1118,6 @@ static void hero_run(void) {
       kq_wait(10);
     }
   }
-  revert_equipstats();
+  kmenu.revert_equipstats();
   combatend = 2;
 }

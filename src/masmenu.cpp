@@ -93,7 +93,7 @@ static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
   menubox(double_buffer, 80 + xofs, 12 + yofs, 18, 1, BLUE);
   print_font(double_buffer, 140 + xofs, 20 + yofs, _("Magic"), FGOLD);
   menubox(double_buffer, 80 + xofs, 36 + yofs, 18, 5, BLUE);
-  draw_playerstat(double_buffer, pidx_index, 88 + xofs, 44 + yofs);
+  kmenu.draw_playerstat(double_buffer, pidx_index, 88 + xofs, 44 + yofs);
   menubox(double_buffer, 80 + xofs, 92 + yofs, 18, 12, BLUE);
   for (current_spell = 0; current_spell < NUM_SPELLS_PER_PAGE;
        current_spell++) {
@@ -136,7 +136,7 @@ void camp_spell_menu(int c) {
     play_effect(SND_BAD, 128);
     return;
   }
-  update_equipstats();
+  kmenu.update_equipstats();
   play_effect(SND_MENU, 128);
   while (!stop) {
     Game.do_check_animation();
@@ -289,7 +289,7 @@ static void camp_spell_targeting(size_t caster_fighter_index,
     } else {
       play_effect(SND_TWINKLE, 128); /* this should be a failure sound */
     }
-    revert_equipstats();
+    kmenu.revert_equipstats();
     Game.kq_yield();
   }
 }
