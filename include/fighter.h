@@ -7,7 +7,8 @@ class Raster;
  * s_player is transformed into a s_fighter during combat.
  * See enemy_init() for more information on the fields.
  */
-typedef struct {
+struct s_fighter
+{
   char name[25];          /*!<\brief Name */
   int xp;                 /*!<\brief eXperience Points */
   int gp;                 /*!<\brief Gold Points */
@@ -69,4 +70,4 @@ typedef struct {
   int imb_a;
   int imb[2];
   Raster *img;
-} s_fighter;
+};

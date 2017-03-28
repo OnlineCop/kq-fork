@@ -45,14 +45,16 @@ s_fighter *player2fighter(int, s_fighter *);
  * \author PH
  * \date 20050429
  */
-typedef struct info_item {
+struct IITEM
+{
   char *key;  /*!< The identifying title */
   char *text; /*!< The actual info */
-} IITEM;
+};
 
 /* Dynamic array for the hints/reminders */
-typedef struct info_list {
+struct ILIST
+{
   IITEM *root;  /*!< The array of active info items */
   int count;    /*!< The number of items currently in the array */
   int capacity; /*!< The total capacity of the array */
-} ILIST;
+};

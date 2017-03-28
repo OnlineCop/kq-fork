@@ -29,7 +29,8 @@ void draw_shopgold(void);
 void inn(const char *, uint32_t, int);
 int shop(int);
 
-typedef struct {
+struct s_shop
+{
   char name[40];                     /* Name of this shop */
   uint16_t items[SHOPITEMS];         /* A list of items in this shop */
   uint16_t items_current[SHOPITEMS]; /* Quantity of this type of item */
@@ -39,7 +40,7 @@ typedef struct {
    */
   unsigned short items_replenish_time[SHOPITEMS];
   unsigned short time; /* The last time (in minutes) that you visited this shop */
-} s_shop;
+};
 
 extern s_shop shops[NUMSHOPS];
 extern uint16_t num_shops;

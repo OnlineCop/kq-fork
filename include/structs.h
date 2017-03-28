@@ -36,8 +36,9 @@ class Raster;
 
 /*! \brief Entity
  *
- * Contains info on an entities appearance, position and behaviour */
-typedef struct {
+ * Contains info on an entity's appearance, position and behaviour */
+struct KQEntity
+{
   uint8_t chrx;     //!< Entity's identity (what s/he looks like)
   uint16_t x;       //!< x-coord on map
   uint16_t y;       //!< y-coord on map
@@ -67,18 +68,19 @@ typedef struct {
   char script[60];   //!< Movement/action script (pacing, etc.)
   uint16_t target_x; //!< Scripted x-coord the ent is moving to
   uint16_t target_y; //!< Scripted y-coord the ent is moving to
-} KQEntity;
+};
 
 /*! \brief Animation specifier
  *
  * Marks a block of tiles that are interchanged to give
  * an animation effect. Used in check_animation()
  */
-typedef struct {
+struct s_anim
+{
   uint16_t start; /*!< First tile in sequence  */
   uint16_t end;   /*!< Last tile in sequence */
   uint16_t delay; /*!< Frames to wait between tile changes */
-} s_anim;
+};
 
 /*! \brief Tileset definition
  *
@@ -86,22 +88,25 @@ typedef struct {
  * \author PH
  * \date 20031222
  */
-typedef struct {
+struct s_tileset
+{
   char icon_set[16];
   s_anim tanim[MAX_ANIM];
-} s_tileset;
+};
 
 /*! \brief Progress Dump
  *
  * Contains the names of all the P_* progress constants
  */
-typedef struct {
+struct s_progress
+{
   uint32_t num_progress; /*!< Number of current progress */
   char name[18];         /*!< Name of current progress */
-} s_progress;
+};
 
 /*! \brief Player */
-typedef struct {
+struct s_player
+{
   char name[9]; /*!< Entity name */
   int xp;       /*!< Entity experience */
   int next;     /*!< Experience needed for level-up */
@@ -124,37 +129,40 @@ typedef struct {
                                * the level you're on.
                                */
   unsigned short lup[NUM_LUP];
-} s_player;
+};
 
 /*! \brief Hero information
  *
  * This holds static or constant information about a hero.
  * the intention is to cut down on some of those globals.
  */
-typedef struct {
+struct s_heroinfo
+{
   // s_player plr;                /*!< all other statistics */
   Raster *portrait;            /*!< The hero's portrait for the stats screen */
   Raster *frames[MAXFRAMES];   /*!< Frames for movement */
   Raster *cframes[MAXCFRAMES]; /*!< Frames for combat */
-} s_heroinfo;
+};
 
 /*! \brief Special Items
  *
  * Contains a list of the special items in the player's party (Opal Armor et al)
  */
-typedef struct {
+struct s_special_item
+{
   char name[38];
   char description[40];
   short icon;
-} s_special_item;
+};
 
 /*! \brief Inventory
 * An item ID and the quantity of that thing in the inventory.
 */
-typedef struct {
+struct s_inventory
+{
   unsigned short item;
   unsigned short quantity;
-} s_inventory;
+};
 
 /*! \brief Save Game Stats
  * The information that's shown when picking a slot to save/load.
