@@ -20,7 +20,6 @@
 */
 
 #include <stdio.h>
-#include <string.h>
 
 #include "constants.h"
 #include "draw.h"
@@ -65,7 +64,9 @@ KMenu::KMenu()
  */
 void KMenu::add_questinfo(const char *key, const char *text)
 {
-	ilist_add(&quest_list, key, text);
+	string key_str(key);
+	string text_str(text);
+	ilist_add(quest_list, key_str, text_str);
 }
 
 /*! \brief Check for level-ups
@@ -199,27 +200,58 @@ bool KMenu::give_xp(int pl, int the_xp, int ls)
 
 /*! \brief Add a new quest into the list
  *
- * \param   l - Array for the list we'll modify
+ * \param   inList - Array for the list we'll modify
  * \param   key - Title of the item
  * \param   text - Text to associate with the quest
  */
-void KMenu::ilist_add(ILIST *l, const char *key, const char *text)
+void KMenu::ilist_add(ILIST &inList, const string &key, const string &text)
 {
-	if (l->count >= l->capacity)
+	if (inList.count >= inList.capacity)
 	{
-		if (l->capacity == 0)
+		if (inList.capacity == 0)
 		{
-			l->capacity = 10;
+			inList.capacity = 10;
 		}
 		else
 		{
-			l->capacity *= 2;
+			inList.capacity *= 2;
 		}
-		l->root = (IITEM *)realloc(l->root, l->capacity * sizeof(IITEM));
+		inList.root = (IITEM *)realloc(inList.root, inList.capacity * sizeof(IITEM));
 	}
-	l->root[l->count].key = strcpy((char *)malloc(strlen(key) + 1), key);
-	l->root[l->count].text = strcpy((char *)malloc(strlen(text) + 1), text);
-	++l->count;
+	vector<char> key_str(key.begin(), key.end());
+	key_str.push_back('\0');
+	inList.root[inList.count].key = &key_str[0];
+
+	vector<char> text_str(text.begin(), text.end());
+	text_str.push_back('\0');
+	inList.root[inList.count].text = &text_str[0];
+
+	++inList.count;
+}
+
+/*! \brief Add a new quest into the list
+ *
+ * \param   inList - Array for the list we'll modify
+ * \param   key - Title of the item
+ * \param   text - Text to associate with the quest
+ */
+void KMenu::ilist_add(ILIST *inList, const char *key, const char *text)
+{
+	if (inList->count >= inList->capacity)
+	{
+		if (inList->capacity == 0)
+		{
+			inList->capacity = 10;
+		}
+		else
+		{
+			inList->capacity *= 2;
+		}
+		inList->root = (IITEM *)realloc(inList->root, inList->capacity * sizeof(IITEM));
+	}
+	inList->root[inList->count].key = strcpy((char *)malloc(strlen(key) + 1), key);
+	inList->root[inList->count].text = strcpy((char *)malloc(strlen(text) + 1), text);
+	++inList->count;
 }
 
 /*! \brief Remove all items
@@ -229,16 +261,16 @@ void KMenu::ilist_add(ILIST *l, const char *key, const char *text)
  * \author PH
  * \date 20050429
  */
-void KMenu::ilist_clear(ILIST *l)
+void KMenu::ilist_clear(ILIST *inList)
 {
 	int i;
 
-	for (i = 0; i < l->count; ++i)
+	for (i = 0; i < inList->count; ++i)
 	{
-		free(l->root[i].key);
-		free(l->root[i].text);
+		free(inList->root[i].key);
+		free(inList->root[i].text);
 	}
-	l->count = 0;
+	inList->count = 0;
 }
 
 /*! \brief Levels up player

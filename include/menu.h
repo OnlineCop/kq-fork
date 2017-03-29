@@ -22,6 +22,11 @@
 #pragma once
 
 #include "kq.h"
+#include <string>
+#include <vector>
+
+using std::string;
+using std::vector;
 
 s_fighter *player2fighter(int, s_fighter *);
 
@@ -66,7 +71,8 @@ public:
 
 private:
 	bool check_xp(int, int);
-	void ilist_add(ILIST *l, const char *key, const char *text);
+	void ilist_add(ILIST &inList, const string &key, const string &text);
+	void ilist_add(ILIST *inList, const char *key, const char *text);
 	void ilist_clear(ILIST *l);
 	void level_up(int);
 	void quest_info(void);
