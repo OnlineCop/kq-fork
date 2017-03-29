@@ -85,6 +85,9 @@
     <ClCompile Include="src\fade.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\fighter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\heroc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -112,4 +112,4 @@ void adjust_hp(size_t,
 void adjust_mp(size_t, int);
 int do_shell_check(int, int);
 int do_shield_check(int, int);
-s_fighter status_adjust(size_t);
+KFighter status_adjust(size_t);

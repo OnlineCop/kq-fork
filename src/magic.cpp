@@ -1335,7 +1335,7 @@ int non_dmg_save(int tgt, int per)
 int res_adjust(size_t target_fighter_index, size_t rune_index, int amt)
 {
 	int ad, b;
-	s_fighter tf;
+	KFighter tf;
 	char current_res;
 
 	if (rune_index >= R_TOTAL_RES)
@@ -1373,7 +1373,7 @@ int res_adjust(size_t target_fighter_index, size_t rune_index, int amt)
  */
 int res_throw(int tgt, int rs)
 {
-	s_fighter tf;
+	KFighter tf;
 
 	if (rs > R_TIME || rs < R_EARTH)
 	{
@@ -1729,9 +1729,9 @@ static void spell_damage(size_t caster_fighter_index, int spell_number,
  *
  * \returns a struct by value (PH: a good thing???)
  */
-s_fighter status_adjust(size_t fighter_index)
+KFighter status_adjust(size_t fighter_index)
 {
-	s_fighter tf;
+	KFighter tf;
 
 	tf = fighter[fighter_index];
 	if (tf.sts[S_STRENGTH] > 0)

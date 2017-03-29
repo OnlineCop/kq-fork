@@ -56,7 +56,7 @@ static void enemy_skillcheck(int, int);
 static void enemy_spellcheck(size_t, size_t);
 static int enemy_stscheck(int, int);
 static void load_enemies(void);
-static s_fighter *make_enemy(int, s_fighter *);
+static KFighter *make_enemy(int, KFighter *);
 static int skill_setup(int, int);
 static int spell_setup(int, int);
 void unload_enemies(void);
@@ -104,7 +104,7 @@ void unload_enemies(void);
  */
 
 /*! \brief Array of enemy 'fighters'  */
-static s_fighter **enemy_fighters = NULL;
+static KFighter **enemy_fighters = NULL;
 static int enemies_n = 0;
 static int enemies_cap = 0;
 
@@ -397,7 +397,7 @@ static void enemy_curecheck(int w)
 void enemy_init(void)
 {
 	size_t fighter_index, frame_index;
-	s_fighter *f;
+	KFighter *f;
 
 	if (enemy_fighters == NULL)
 	{
@@ -691,8 +691,8 @@ static int enemy_stscheck(int ws, int s)
 
 static void dump_en()
 {
-	extern int save_fighters(const char *, s_fighter *, int);
-	std::unique_ptr<s_fighter[]> tmp(new s_fighter[enemies_n]);
+	extern int save_fighters(const char *, KFighter *, int);
+	std::unique_ptr<KFighter[]> tmp(new KFighter[enemies_n]);
 	for (int i = 0; i < enemies_n; ++i)
 	{
 		tmp[i] = *enemy_fighters[i];
@@ -710,7 +710,7 @@ static void load_enemies(void)
 {
 	int i, tmp, lx, ly, p;
 	FILE *edat;
-	s_fighter *f;
+	KFighter *f;
 
 	if (enemy_fighters != NULL)
 	{
@@ -731,18 +731,18 @@ static void load_enemies(void)
 	}
 	enemies_n = 0;
 	enemies_cap = 128;
-	enemy_fighters = (s_fighter **)malloc(sizeof(s_fighter *) * enemies_cap);
+	enemy_fighters = (KFighter **)malloc(sizeof(KFighter *) * enemies_cap);
 	// Loop through for every monster in allstat.mon
 	while (fscanf(edat, "%s", strbuf) != EOF)
 	{
 		if (enemies_n >= enemies_cap)
 		{
 			enemies_cap *= 2;
-			enemy_fighters = (s_fighter **)realloc(enemy_fighters,
-				sizeof(s_fighter *) * enemies_cap);
+			enemy_fighters = (KFighter **)realloc(enemy_fighters,
+				sizeof(KFighter *) * enemies_cap);
 		}
-		f = enemy_fighters[enemies_n++] = (s_fighter *)malloc(sizeof(s_fighter));
-		memset(f, 0, sizeof(s_fighter));
+		f = enemy_fighters[enemies_n++] = (KFighter *)malloc(sizeof(KFighter));
+		memset(f, 0, sizeof(KFighter));
 		// Enemy name
 		strncpy(f->name, strbuf, sizeof(f->name));
 		// Index number (ignored; automatically generated)
@@ -877,20 +877,20 @@ static void load_enemies(void)
 
 /*! \brief Prepare an enemy for battle
  *
- * Fills out a supplied s_fighter structure with the default,
+ * Fills out a supplied KFighter structure with the default,
  * starting values for an enemy.
  * \author PH
  * \date 2003????
  * \param   who The numeric id of the enemy to make
- * \param   en Pointer to an s_fighter structure to initialize
+ * \param   en Pointer to an KFighter instance to initialize
  * \returns the value of en, for convenience, or NULL if an error occurred.
  * \sa make_enemy_by_name()
  */
-static s_fighter *make_enemy(int who, s_fighter *en)
+static KFighter *make_enemy(int who, KFighter *en)
 {
 	if (enemy_fighters && who >= 0 && who < enemies_n)
 	{
-		memcpy(en, enemy_fighters[who], sizeof(s_fighter));
+		memcpy(en, enemy_fighters[who], sizeof(KFighter));
 		return en;
 	}
 	else

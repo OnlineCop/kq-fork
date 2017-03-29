@@ -284,7 +284,7 @@ void KMenu::level_up(int pr)
 	int a, b = 0;
 	float z;
 	int bxp, xpi;
-	s_fighter tmpf;
+	KFighter tmpf;
 	unsigned short *lup = party[pr].lup;
 
 	player2fighter(pr, &tmpf);
@@ -776,48 +776,48 @@ void KMenu::update_equipstats(void)
 * value.
 *
 * \param   who - Index of player to convert
-* \returns tf (fighter structure)
+* \returns current_fighter (fighter structure)
 */
-s_fighter *player2fighter(int who, s_fighter *pf)
+KFighter *player2fighter(int who, KFighter *pf)
 {
-	s_fighter tf;
+	KFighter current_fighter;
 	s_player &plr = party[who];
 
-	tf.imb_s = 0;
-	tf.imb_a = 0;
-	tf.imb[0] = 0;
-	tf.imb[1] = 0;
-	strcpy(tf.name, plr.name);
-	tf.xp = plr.xp;
-	tf.lvl = plr.lvl;
-	tf.hp = plr.hp;
-	tf.mhp = plr.mhp;
-	tf.mp = plr.mp;
-	tf.mmp = plr.mmp;
+	current_fighter.imb_s = 0;
+	current_fighter.imb_a = 0;
+	current_fighter.imb[0] = 0;
+	current_fighter.imb[1] = 0;
+	strcpy(current_fighter.name, plr.name);
+	current_fighter.xp = plr.xp;
+	current_fighter.lvl = plr.lvl;
+	current_fighter.hp = plr.hp;
+	current_fighter.mhp = plr.mhp;
+	current_fighter.mp = plr.mp;
+	current_fighter.mmp = plr.mmp;
 	for (int j = 0; j < 8; j++)
 	{
-		tf.sts[j] = plr.sts[j];
+		current_fighter.sts[j] = plr.sts[j];
 	}
 	for (int j = 8; j < NUM_SPELLTYPES; j++)
 	{
-		tf.sts[j] = 0;
+		current_fighter.sts[j] = 0;
 	}
 	for (int j = 0; j < NUM_ATTRIBUTES; j++)
 	{
-		tf.stats[j] = ((plr.lvl - 1) * plr.lup[j + 4] + plr.stats[j]) / 100;
+		current_fighter.stats[j] = ((plr.lvl - 1) * plr.lup[j + 4] + plr.stats[j]) / 100;
 	}
 	for (int j = 0; j < R_TOTAL_RES; j++)
 	{
-		tf.res[j] = plr.res[j];
+		current_fighter.res[j] = plr.res[j];
 	}
 
 	/* set weapon elemental power and imbuements for easy use in combat */
 	int weapon_index = plr.eqp[EQP_WEAPON];
-	tf.welem = items[weapon_index].elem;
+	current_fighter.welem = items[weapon_index].elem;
 	if (items[weapon_index].use == USE_ATTACK)
 	{
-		tf.imb_s = items[weapon_index].imb;
-		tf.imb_a = items[weapon_index].stats[A_ATT];
+		current_fighter.imb_s = items[weapon_index].imb;
+		current_fighter.imb_a = items[weapon_index].stats[A_ATT];
 	}
 
 	/* Set instants for equipment... these are imbuements that
@@ -834,9 +834,9 @@ s_fighter *player2fighter(int who, s_fighter *pf)
 		{
 			for (int b = 0; b < 2; b++)
 			{
-				if (tf.imb[b] == 0)
+				if (current_fighter.imb[b] == 0)
 				{
-					tf.imb[b] = items[current_equipment_slot].imb;
+					current_fighter.imb[b] = items[current_equipment_slot].imb;
 					b = 2;
 				}
 			}
@@ -848,9 +848,9 @@ s_fighter *player2fighter(int who, s_fighter *pf)
 	* it has no other power to begin with (the "welem" property
 	* is 1-based: value of 0 means "no imbue".
 	*/
-	if (who == AJATHAR && tf.welem == 0)
+	if (who == AJATHAR && current_fighter.welem == 0)
 	{
-		tf.welem = R_WHITE + 1;
+		current_fighter.welem = R_WHITE + 1;
 	}
 	for (int j = 0; j < NUM_EQUIPMENT; j++)
 	{
@@ -859,28 +859,28 @@ s_fighter *player2fighter(int who, s_fighter *pf)
 		{
 			if (a == 0)
 			{
-				tf.bonus = 50;
+				current_fighter.bonus = 50;
 			}
 			else
 			{
-				tf.bonus = items[a].bon;
+				current_fighter.bonus = items[a].bon;
 			}
 			if (items[a].icon == 1 || items[a].icon == 3 || items[a].icon == 21)
 			{
-				tf.bstat = 1;
+				current_fighter.bstat = 1;
 			}
 			else
 			{
-				tf.bstat = 0;
+				current_fighter.bstat = 0;
 			}
 			/* Set current weapon type. When the hero wields a weapon
 			* in combat, it will look like this.
 			* The colour comes from s_item::kol
 			*/
-			tf.current_weapon_type = items[a].icon;
-			if (tf.current_weapon_type == W_CHENDIGAL)
+			current_fighter.current_weapon_type = items[a].icon;
+			if (current_fighter.current_weapon_type == W_CHENDIGAL)
 			{
-				tf.current_weapon_type = W_SWORD;
+				current_fighter.current_weapon_type = W_SWORD;
 			}
 		}
 		for (int b = 0; b < NUM_STATS; b++)
@@ -889,84 +889,84 @@ s_fighter *player2fighter(int who, s_fighter *pf)
 			{
 				if (items[a].stats[A_SPI] > 0)
 				{
-					tf.stats[A_SPI] += items[a].stats[A_SPI];
+					current_fighter.stats[A_SPI] += items[a].stats[A_SPI];
 				}
 			}
 			else
 			{
-				tf.stats[b] += items[a].stats[b];
+				current_fighter.stats[b] += items[a].stats[b];
 			}
 		}
 		for (int b = 0; b < R_TOTAL_RES; b++)
 		{
-			tf.res[b] += items[a].res[b];
+			current_fighter.res[b] += items[a].res[b];
 		}
 	}
 	if (who == CORIN)
 	{
-		tf.res[R_EARTH] += tf.lvl / 4;
-		tf.res[R_FIRE] += tf.lvl / 4;
-		tf.res[R_AIR] += tf.lvl / 4;
-		tf.res[R_WATER] += tf.lvl / 4;
+		current_fighter.res[R_EARTH] += current_fighter.lvl / 4;
+		current_fighter.res[R_FIRE] += current_fighter.lvl / 4;
+		current_fighter.res[R_AIR] += current_fighter.lvl / 4;
+		current_fighter.res[R_WATER] += current_fighter.lvl / 4;
 	}
 	if (plr.eqp[5] == I_AGRAN)
 	{
 		int a = 0;
 		for (int j = 0; j < R_TOTAL_RES; j++)
 		{
-			a += tf.res[j];
+			a += current_fighter.res[j];
 		}
 		int b = ((a * 10) / 16 + 5) / 10;
 		for (int j = 0; j < R_TOTAL_RES; j++)
 		{
-			tf.res[j] = b;
+			current_fighter.res[j] = b;
 		}
 	}
 	for (int j = 0; j < 8; j++)
 	{
-		if (tf.res[j] < -10)
+		if (current_fighter.res[j] < -10)
 		{
-			tf.res[j] = -10;
+			current_fighter.res[j] = -10;
 		}
-		else if (tf.res[j] > 20)
+		else if (current_fighter.res[j] > 20)
 		{
-			tf.res[j] = 20;
+			current_fighter.res[j] = 20;
 		}
 	}
 	for (int j = 8; j < R_TOTAL_RES; j++)
 	{
-		if (tf.res[j] < 0)
+		if (current_fighter.res[j] < 0)
 		{
-			tf.res[j] = 0;
+			current_fighter.res[j] = 0;
 		}
-		else if (tf.res[j] > 10)
+		else if (current_fighter.res[j] > 10)
 		{
-			tf.res[j] = 10;
+			current_fighter.res[j] = 10;
 		}
 	}
 	if (plr.eqp[5] == I_MANALOCKET)
 	{
-		tf.mrp = plr.mrp / 2;
+		current_fighter.mrp = plr.mrp / 2;
 	}
 	else
 	{
-		tf.mrp = plr.mrp;
+		current_fighter.mrp = plr.mrp;
 	}
-	tf.stats[A_HIT] += tf.stats[A_STR] / 5;
-	tf.stats[A_HIT] += tf.stats[A_AGI] / 5;
-	tf.stats[A_DEF] += tf.stats[A_VIT] / 8;
-	tf.stats[A_EVD] += tf.stats[A_AGI] / 5;
-	tf.stats[A_MAG] += (tf.stats[A_INT] + tf.stats[A_SAG]) / 20;
+	current_fighter.stats[A_HIT] += current_fighter.stats[A_STR] / 5;
+	current_fighter.stats[A_HIT] += current_fighter.stats[A_AGI] / 5;
+	current_fighter.stats[A_DEF] += current_fighter.stats[A_VIT] / 8;
+	current_fighter.stats[A_EVD] += current_fighter.stats[A_AGI] / 5;
+	current_fighter.stats[A_MAG] += (current_fighter.stats[A_INT] + current_fighter.stats[A_SAG]) / 20;
 	for (int j = 0; j < NUM_STATS; j++)
 	{
-		if (tf.stats[j] < 1)
+		if (current_fighter.stats[j] < 1)
 		{
-			tf.stats[j] = 1;
+			current_fighter.stats[j] = 1;
 		}
 	}
-	tf.crit = 1;
-	tf.aux = 0;
-	tf.unl = 0;
-	memcpy(pf, &tf, sizeof(tf));
+	current_fighter.crit = 1;
+	current_fighter.aux = 0;
+	current_fighter.unl = 0;
+	memcpy(pf, &current_fighter, sizeof(current_fighter));
 	return pf;
 }

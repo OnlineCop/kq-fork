@@ -940,7 +940,7 @@ void draw_fighter(size_t fighter_index, size_t dcur)
 	int xx;
 	int yy;
 	int ff;
-	s_fighter *fr = &fighter[fighter_index];
+	KFighter *fr = &fighter[fighter_index];
 
 	xx = fr->cx;
 	yy = fr->cy;
@@ -949,6 +949,7 @@ void draw_fighter(size_t fighter_index, size_t dcur)
 
 	if (fr->sts[S_STONE] > 0)
 	{
+		// Green, for sickness
 		convert_cframes(fighter_index, 2, 12, 0);
 	}
 
@@ -1237,8 +1238,8 @@ static void heroes_win(void)
 	int found_item = 0;
 	int nr = 0;
 	int ent = 0;
-	s_fighter t1;
-	s_fighter t2;
+	KFighter t1;
+	KFighter t2;
 
 	Music.play_music("rend5.s3m", 0);
 	kq_wait(500);

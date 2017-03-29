@@ -1058,7 +1058,7 @@ static void printprop(tinyxml2::XMLPrinter &out, const char *name, const char *v
 	out.CloseElement();
 }
 
-static int save_s_fighter(tinyxml2::XMLPrinter &out, const s_fighter &f)
+static int save_s_fighter(tinyxml2::XMLPrinter &out, const KFighter &f)
 {
 	out.OpenElement("fighter");
 	out.PushAttribute("id", f.name);
@@ -1120,7 +1120,7 @@ static int save_s_fighter(tinyxml2::XMLPrinter &out, const s_fighter &f)
 	return 0;
 }
 
-int save_fighters(const char *filename, s_fighter *fighters, int count)
+int save_fighters(const char *filename, KFighter *fighters, int count)
 {
 	FILE *f = fopen(filename, "wb");
 	if (f)
@@ -1130,7 +1130,7 @@ int save_fighters(const char *filename, s_fighter *fighters, int count)
 		out.OpenElement("fighters");
 		for (int i = 0; i < count; ++i)
 		{
-			s_fighter &fighter = fighters[i];
+			KFighter &fighter = fighters[i];
 			save_s_fighter(out, fighter);
 		}
 		out.CloseElement();

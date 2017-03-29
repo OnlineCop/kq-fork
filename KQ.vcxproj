@@ -113,6 +113,7 @@
     <ClCompile Include="src\eqpmenu.cpp" />
     <ClCompile Include="src\eskill.cpp" />
     <ClCompile Include="src\fade.cpp" />
+    <ClCompile Include="src\fighter.cpp" />
     <ClCompile Include="src\gfx.cpp" />
     <ClCompile Include="src\heroc.cpp" />
     <ClCompile Include="src\hskill.cpp" />

@@ -29,7 +29,6 @@
 
 #include "bounds.h"
 #include "enums.h"
-#include "fighter.h"
 #include "markers.h"
 #include "res.h"
 class Raster;

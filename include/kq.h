@@ -58,6 +58,7 @@ using std::string;
 #include "constants.h"
 #include "entity.h"
 #include "enums.h"
+#include "fighter.h"
 #include "heroc.h"
 #include "maps.h"
 #include "structs.h"
@@ -148,8 +149,8 @@ extern uint16_t tilex[MAX_TILES], adelay[MAX_ANIM];
 extern char *strbuf, *savedir;
 extern s_player party[MAXCHRS];
 extern s_heroinfo players[MAXCHRS];
-extern s_fighter fighter[NUM_FIGHTERS];
-extern s_fighter tempa, tempd;
+extern KFighter fighter[NUM_FIGHTERS];
+extern KFighter tempa, tempd;
 extern int shin[12], display_attack_string;
 extern string shop_name;
 extern char attack_string[39];
