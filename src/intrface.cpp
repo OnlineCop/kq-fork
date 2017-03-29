@@ -722,10 +722,10 @@ void do_postexec(void)
 
 /*! \brief Get quest info items from script
  *
- * Call the get_quest_info function. This is called
- * when quest info is selected from the menu
+ * When user opens the Quest menu, the actual quest data is imported from Lua.
+ * The get_quest_info() function returns its quests via a callback to add_quest_item().
  */
-void do_questinfo(void)
+void do_importquests(void)
 {
 	int oldtop = lua_gettop(theL);
 
@@ -1062,12 +1062,13 @@ static int KQ_add_chr(lua_State *L)
 	return 0;
 }
 
+/* Callback from get_quest_info */
 static int KQ_add_quest_item(lua_State *L)
 {
-	const char *keyname = lua_tostring(L, 1);
-	const char *info = lua_tostring(L, 2);
+	string key = lua_tostring(L, 1);
+	string text = lua_tostring(L, 2);
 
-	kmenu.add_questinfo(keyname, info);
+	kmenu.add_questinfo(key, text);
 	return 0;
 }
 

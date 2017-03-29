@@ -53,20 +53,18 @@ KMenu::KMenu()
 
 }
 
-/*! \brief Add a new quest item
+/*! \brief Add a new quest into the list
  *
- * Add a Quest info item to the current set
- * \sa ILIST
  * \param key The title of the item
- * \param text The text to associate with it
- * \author PH
- * \date 20050429
+ * \param text The text to display to the player regarding this quest
  */
-void KMenu::add_questinfo(const char *key, const char *text)
+void KMenu::add_questinfo(const string &key, const string &text)
 {
-	string key_str(key);
-	string text_str(text);
-	ilist_add(quest_list, key_str, text_str);
+	KQuestItem* newItem = new KQuestItem(key, text);
+	if (newItem)
+	{
+		quest_list.push_back(newItem);
+	}
 }
 
 /*! \brief Check for level-ups
@@ -198,62 +196,6 @@ bool KMenu::give_xp(int pl, int the_xp, int ls)
 	return check_xp(pl, ls);
 }
 
-/*! \brief Add a new quest into the list
- *
- * \param   inList - Array for the list we'll modify
- * \param   key - Title of the item
- * \param   text - Text to associate with the quest
- */
-void KMenu::ilist_add(ILIST &inList, const string &key, const string &text)
-{
-	if (inList.count >= inList.capacity)
-	{
-		if (inList.capacity == 0)
-		{
-			inList.capacity = 10;
-		}
-		else
-		{
-			inList.capacity *= 2;
-		}
-		inList.root = (IITEM *)realloc(inList.root, inList.capacity * sizeof(IITEM));
-	}
-	vector<char> key_str(key.begin(), key.end());
-	key_str.push_back('\0');
-	inList.root[inList.count].key = &key_str[0];
-
-	vector<char> text_str(text.begin(), text.end());
-	text_str.push_back('\0');
-	inList.root[inList.count].text = &text_str[0];
-
-	++inList.count;
-}
-
-/*! \brief Add a new quest into the list
- *
- * \param   inList - Array for the list we'll modify
- * \param   key - Title of the item
- * \param   text - Text to associate with the quest
- */
-void KMenu::ilist_add(ILIST *inList, const char *key, const char *text)
-{
-	if (inList->count >= inList->capacity)
-	{
-		if (inList->capacity == 0)
-		{
-			inList->capacity = 10;
-		}
-		else
-		{
-			inList->capacity *= 2;
-		}
-		inList->root = (IITEM *)realloc(inList->root, inList->capacity * sizeof(IITEM));
-	}
-	inList->root[inList->count].key = strcpy((char *)malloc(strlen(key) + 1), key);
-	inList->root[inList->count].text = strcpy((char *)malloc(strlen(text) + 1), text);
-	++inList->count;
-}
-
 /*! \brief Remove all items
  *
  * Remove all items from the array
@@ -261,16 +203,13 @@ void KMenu::ilist_add(ILIST *inList, const char *key, const char *text)
  * \author PH
  * \date 20050429
  */
-void KMenu::ilist_clear(ILIST *inList)
+void KMenu::clear_quests()
 {
-	int i;
-
-	for (i = 0; i < inList->count; ++i)
+	for (KQuestItem* item : quest_list)
 	{
-		free(inList->root[i].key);
-		free(inList->root[i].text);
+		delete item;
 	}
-	inList->count = 0;
+	quest_list.clear();
 }
 
 /*! \brief Levels up player
@@ -363,7 +302,7 @@ void KMenu::menu(void)
 				spec_items();
 				break;
 			case 5:
-				quest_info();
+				display_quest_window();
 				break;
 			default:
 				z = select_player();
@@ -399,84 +338,108 @@ void KMenu::menu(void)
 }
 
 /*! \brief Do the Quest Info menu
- *
- * Show the current list of quest information items
- * \sa ILIST
- * \author PH
- * \date 20050429
+ *  Show the current list of quest information items
  */
-void KMenu::quest_info(void)
+void KMenu::display_quest_window(void)
 {
-	int ii = 0;
-	int i, base;
+	// Show up to this number of quest entries in the menu.
+	const size_t VisibleQuestEntries = 10;
 
 	/* Call into the script */
-	ilist_clear(&quest_list);
-	do_questinfo();
-	if (quest_list.count == 0)
+	clear_quests();
+	
+	// Non-async: this does a Lua call, which uses callbacks to populate the quest_list array.
+	// Blocking call
+	do_importquests();
+
+	if (quest_list.size() == 0)
 	{
 		/* There was nothing.. */
 		play_effect(SND_BAD, 128);
 		return;
 	}
 
-	while (1)
+	// quest_list.size() will always be > 0 (the method exits before this point if ==0)
+	//   1..10 entries: roundedUpNumEntries == 1,
+	//   2..20 entries: roundedUpNumEntries == 2, etc.
+	const size_t roundedUpNumEntries = ((quest_list.size() - 1) / VisibleQuestEntries + 1) * VisibleQuestEntries;
+
+	const int FontWidthFNORMAL = 8;  //MagicNumber: FNORMAL font width is 8
+	const int FontHeightFNORMAL = 8; //MagicNumber: FNORMAL font height is 8
+	const int MenuboxWidth = 18;
+	const int UpperMenuboxTopOffset = 92; // Top of the upper menubox
+	const int LowerMenuboxTopOffset = UpperMenuboxTopOffset + (VisibleQuestEntries + 2) * FontHeightFNORMAL; // Top of the lower menubox
+	const int MenuboxLeftOffset = 88;
+
+	size_t currentQuestSelected = 0;
+	while (true)
 	{
 		timer_count = 0;
+		/* Redraw the map below the open menu */
 		drawmap();
-		base = ii - ii % 10;
-		menubox(double_buffer, 88 + xofs, 92 + yofs, 18, 10, BLUE);
-		menubox(double_buffer, 88 + xofs, 188 + yofs, 18, 3, BLUE);
-		for (i = 0; i < 10; ++i)
+
+		int base = currentQuestSelected - currentQuestSelected % VisibleQuestEntries;
+		menubox(double_buffer, xofs + MenuboxLeftOffset, yofs + UpperMenuboxTopOffset, MenuboxWidth, (int)VisibleQuestEntries, BLUE);
+		for (size_t someRandomIndex = 0; someRandomIndex < VisibleQuestEntries; ++someRandomIndex)
 		{
-			if (i + base < quest_list.count)
+			if (someRandomIndex + base < quest_list.size())
 			{
-				print_font(double_buffer, 104 + xofs, 100 + 8 * i + yofs, quest_list.root[i + base].key, FNORMAL);
+				print_font(double_buffer,
+					xofs + MenuboxLeftOffset + 2 * FontWidthFNORMAL,
+					yofs + UpperMenuboxTopOffset + FontHeightFNORMAL * (someRandomIndex + 1),
+					quest_list[someRandomIndex + base]->key.c_str(),
+					FNORMAL);
 			}
 		}
-		draw_sprite(double_buffer, menuptr, 88 + xofs, 100 + 8 * (ii - base) + yofs);
-		if (ii < quest_list.count)
+		// Show the pointer beside the selected entry
+		draw_sprite(double_buffer, menuptr,
+			xofs + MenuboxLeftOffset,
+			yofs + UpperMenuboxTopOffset + FontHeightFNORMAL * (currentQuestSelected - base + 1));
+
+		menubox(double_buffer, xofs + MenuboxLeftOffset, yofs + LowerMenuboxTopOffset, MenuboxWidth, 3, BLUE);
+		if (currentQuestSelected < quest_list.size())
 		{
-			print_font(double_buffer, 96 + xofs, 196 + yofs, quest_list.root[ii].text, FNORMAL);
+			print_font(double_buffer,
+				xofs + MenuboxLeftOffset + 1 * FontWidthFNORMAL,
+				yofs + LowerMenuboxTopOffset + 1 * FontHeightFNORMAL,
+				quest_list[currentQuestSelected]->text.c_str(),
+				FNORMAL);
 		}
 		blit2screen(xofs, yofs);
 		PlayerInput.readcontrols();
+		// Players can be holding UP and DOWN at the same time: don't give one precedence over another.
+		int newSelectedQuest = currentQuestSelected;
 		if (PlayerInput.up)
 		{
-			--ii;
-			play_effect(SND_CLICK, 128);
-			Game.unpress();
+			newSelectedQuest--;
 		}
 		if (PlayerInput.down)
 		{
-			++ii;
-			play_effect(SND_CLICK, 128);
-			Game.unpress();
+			newSelectedQuest++;
 		}
 		if (PlayerInput.left)
 		{
-			ii -= 10;
-			play_effect(SND_CLICK, 128);
-			Game.unpress();
+			newSelectedQuest -= (int)VisibleQuestEntries;
 		}
 		if (PlayerInput.right)
 		{
-			ii += 10;
+			newSelectedQuest += (int)VisibleQuestEntries;
+		}
+
+		// If player pressed any of the inputs, newSelectedQuest will have changed.
+		if (newSelectedQuest != currentQuestSelected)
+		{
 			play_effect(SND_CLICK, 128);
 			Game.unpress();
 		}
-		if (ii < 0)
-		{
-			ii = quest_list.count - 1;
-		}
-		if (ii >= quest_list.count)
-		{
-			ii = 0;
-		}
+
+		// Positive modulus: Keep the selected quest 
+		currentQuestSelected = (newSelectedQuest % roundedUpNumEntries + roundedUpNumEntries) % roundedUpNumEntries;
+
 		if (PlayerInput.balt || PlayerInput.bctrl)
 		{
 			Game.unpress();
-			return;
+			break;
 		}
 	}
 }

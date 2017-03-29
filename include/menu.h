@@ -40,18 +40,18 @@ KFighter *player2fighter(int, KFighter *);
  * \author PH
  * \date 20050429
  */
-struct IITEM
+struct KQuestItem
 {
-  char *key;  /*!< The identifying title */
-  char *text; /*!< The actual info */
-};
+	KQuestItem()
+	{}
 
-/* Dynamic array for the hints/reminders */
-struct ILIST
-{
-  IITEM *root;  /*!< The array of active info items */
-  int count;    /*!< The number of items currently in the array */
-  int capacity; /*!< The total capacity of the array */
+	KQuestItem(const string &inKey, const string &inText)
+		: key(inKey)
+		, text(inText)
+	{}
+
+	string key;  /*!< The identifying title */
+	string text; /*!< The actual info */
 };
 
 
@@ -60,7 +60,7 @@ class KMenu
 public:
 	KMenu();
 
-	void add_questinfo(const char *key, const char *text);
+	void add_questinfo(const string &key, const string &text);
 	void draw_mainmenu(int);
 	void draw_playerstat(Raster *where, int player_index_in_party, int dx, int dy);
 	bool give_xp(int, int, int);
@@ -71,13 +71,11 @@ public:
 
 private:
 	bool check_xp(int, int);
-	void ilist_add(ILIST &inList, const string &key, const string &text);
-	void ilist_add(ILIST *inList, const char *key, const char *text);
-	void ilist_clear(ILIST *l);
+	void clear_quests();
 	void level_up(int);
-	void quest_info(void);
+	void display_quest_window(void);
 	void status_screen(size_t);
-	ILIST quest_list;
+	vector<KQuestItem*> quest_list;
 };
 
 extern KMenu kmenu;
