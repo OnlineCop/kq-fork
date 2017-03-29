@@ -74,22 +74,23 @@ void KMenu::add_questinfo(const char *key, const char *text)
  *
  * \param   pl - Player
  * \param   ls - Learned new spell
- * \returns 1 if new spell learned, 0 otherwise
+ * \returns true if new spell learned, false otherwise
  */
-int KMenu::check_xp(int pl, int ls)
+bool KMenu::check_xp(int pl, int ls)
 {
-	int stp = 0, z = 0;
+	int stp = 0;
+	bool z = false;
 
 	if (party[pl].lvl >= 50)
 	{
-		return 0;
+		return false;
 	}
 	while (!stp)
 	{
 		if (party[pl].xp >= party[pl].next)
 		{
 			level_up(pl);
-			z = 1;
+			z = true;
 		}
 		else
 		{
@@ -190,7 +191,7 @@ void KMenu::draw_playerstat(Raster *where, int player_index_in_party, int dx, in
  * \param   ls Learned new spell (always 1?)
  * \returns whether or not player raised levels
  */
-int KMenu::give_xp(int pl, int the_xp, int ls)
+bool KMenu::give_xp(int pl, int the_xp, int ls)
 {
 	party[pl].xp += the_xp;
 	return check_xp(pl, ls);
@@ -466,7 +467,7 @@ void KMenu::revert_equipstats(void)
 	{
 		end_fighter_index = numchrs;
 	}
-	for (fighter_index = 0; fighter_index < end_fighter_index; fighter_index++)
+	for (fighter_index = 0; fighter_index < end_fighter_index && fighter_index < MAXCHRS; fighter_index++)
 	{
 		pidx_index = pidx[fighter_index];
 		party[pidx_index].hp = fighter[fighter_index].hp;

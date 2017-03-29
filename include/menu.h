@@ -58,14 +58,14 @@ public:
 	void add_questinfo(const char *key, const char *text);
 	void draw_mainmenu(int);
 	void draw_playerstat(Raster *where, int player_index_in_party, int dx, int dy);
-	int give_xp(int, int, int);
+	bool give_xp(int, int, int);
 	void menu(void);
 	void revert_equipstats(void);
 	void spec_items(void);
 	void update_equipstats(void);
 
 private:
-	int check_xp(int, int);
+	bool check_xp(int, int);
 	void ilist_add(ILIST *l, const char *key, const char *text);
 	void ilist_clear(ILIST *l);
 	void level_up(int);
