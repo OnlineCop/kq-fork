@@ -1773,8 +1773,7 @@ void KGame::wait_for_entity(size_t first_entity_index,
 		}
 
 		any_following_entities = 0;
-		for (entity_index = first_entity_index; entity_index <= last_entity_index;
-			++entity_index)
+		for (entity_index = first_entity_index; entity_index <= last_entity_index; ++entity_index)
 		{
 			move_mode = g_ent[entity_index].movemode;
 			if (g_ent[entity_index].active == 1 &&
