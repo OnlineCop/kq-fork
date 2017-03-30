@@ -28,7 +28,7 @@
 using std::string;
 using std::vector;
 
-KFighter *player2fighter(int, KFighter *);
+void player2fighter(int, KFighter *);
 
 /* These are hints/reminders about the game - e.g:
  * - Something you have been told by an important character

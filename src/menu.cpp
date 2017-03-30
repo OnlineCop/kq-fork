@@ -224,20 +224,19 @@ void KMenu::level_up(int pr)
 	float z;
 	int bxp, xpi;
 	KFighter tmpf;
-	unsigned short *lup = party[pr].lup;
 
 	player2fighter(pr, &tmpf);
-	xpi = lup[0];
-	bxp = lup[1];
+	xpi = party[pr].lup[0];
+	bxp = party[pr].lup[1];
 	party[pr].lvl++;
 	a = party[pr].lvl + 1;
 	z = ((a / 3) + (xpi * (a / 20 + 1) - 1)) * (((a - 2) / 2) * (a - 1));
 	z += (bxp * (a / 20 + 1) * (a - 1));
 	party[pr].next += (int)z;
-	a = (kqrandom->random_range_exclusive(0, lup[2] / 2)) + lup[2] + (tmpf.stats[A_VIT] / 5);
+	a = (kqrandom->random_range_exclusive(0, party[pr].lup[2] / 2)) + party[pr].lup[2] + (tmpf.stats[A_VIT] / 5);
 	party[pr].hp += a;
 	party[pr].mhp += a;
-	b = (kqrandom->random_range_exclusive(0, lup[3] / 2)) + lup[3];
+	b = (kqrandom->random_range_exclusive(0, party[pr].lup[3] / 2)) + party[pr].lup[3];
 	b += (tmpf.stats[A_INT] + tmpf.stats[A_SAG]) / 25;
 	party[pr].mp += b;
 	party[pr].mmp += b;
@@ -731,17 +730,17 @@ void KMenu::update_equipstats(void)
 }
 
 /* \brief Convert character-->fighter structure
-*
-* This function converts from the party structure to fighter structure.
-* Pass the character index and the function returns a fighter structure.
-* This is used for combat and for menu functions.
-* PH modified 20030308 I didn't like the way this returned a structure by
-* value.
-*
-* \param   who - Index of player to convert
-* \returns current_fighter (fighter structure)
-*/
-KFighter *player2fighter(int who, KFighter *pf)
+ *
+ * This function converts from the party structure to fighter structure.
+ * Pass the character index and the function returns a fighter structure.
+ * This is used for combat and for menu functions.
+ * PH modified 20030308 I didn't like the way this returned a structure by
+ * value.
+ *
+ * \param   who - Index of player to convert
+ * \returns current_fighter (fighter structure)
+ */
+void player2fighter(int who, KFighter *pf)
 {
 	KFighter current_fighter;
 	s_player &plr = party[who];
@@ -784,11 +783,11 @@ KFighter *player2fighter(int who, KFighter *pf)
 	}
 
 	/* Set instants for equipment... these are imbuements that
-	* take effect at the start of combat.  Technically, there
-	* are only two imbue slots but there are five pieces of equipment
-	* that can be imbued, so some item types get priority over
-	* others... hence the need to run through each in this loop.
-	*/
+	 * take effect at the start of combat.  Technically, there
+	 * are only two imbue slots but there are five pieces of equipment
+	 * that can be imbued, so some item types get priority over
+	 * others... hence the need to run through each in this loop.
+	 */
 	for (int a = 0; a < 5; a++)
 	{
 		static const int z[5] = { EQP_SPECIAL, EQP_ARMOR, EQP_HELMET, EQP_SHIELD, EQP_HAND };
@@ -800,17 +799,17 @@ KFighter *player2fighter(int who, KFighter *pf)
 				if (current_fighter.imb[b] == 0)
 				{
 					current_fighter.imb[b] = items[current_equipment_slot].imb;
-					b = 2;
+					break;
 				}
 			}
 		}
 	}
 
 	/*
-	* Any weapon used by Ajathar gains the power of White if
-	* it has no other power to begin with (the "welem" property
-	* is 1-based: value of 0 means "no imbue".
-	*/
+	 * Any weapon used by Ajathar gains the power of White if
+	 * it has no other power to begin with (the "welem" property
+	 * is 1-based: value of 0 means "no imbue".
+	 */
 	if (who == AJATHAR && current_fighter.welem == 0)
 	{
 		current_fighter.welem = R_WHITE + 1;
@@ -837,9 +836,9 @@ KFighter *player2fighter(int who, KFighter *pf)
 				current_fighter.bstat = 0;
 			}
 			/* Set current weapon type. When the hero wields a weapon
-			* in combat, it will look like this.
-			* The colour comes from s_item::kol
-			*/
+			 * in combat, it will look like this.
+			 * The colour comes from s_item::kol
+			 */
 			current_fighter.current_weapon_type = items[a].icon;
 			if (current_fighter.current_weapon_type == W_CHENDIGAL)
 			{
@@ -915,8 +914,7 @@ KFighter *player2fighter(int who, KFighter *pf)
 	{
 		current_fighter.mrp = plr.mrp;
 	}
-	current_fighter.stats[A_HIT] += current_fighter.stats[A_STR] / 5;
-	current_fighter.stats[A_HIT] += current_fighter.stats[A_AGI] / 5;
+	current_fighter.stats[A_HIT] += (current_fighter.stats[A_STR] + current_fighter.stats[A_AGI]) / 5;
 	current_fighter.stats[A_DEF] += current_fighter.stats[A_VIT] / 8;
 	current_fighter.stats[A_EVD] += current_fighter.stats[A_AGI] / 5;
 	current_fighter.stats[A_MAG] += (current_fighter.stats[A_INT] + current_fighter.stats[A_SAG]) / 20;
@@ -931,5 +929,4 @@ KFighter *player2fighter(int who, KFighter *pf)
 	current_fighter.aux = 0;
 	current_fighter.unl = 0;
 	memcpy(pf, &current_fighter, sizeof(current_fighter));
-	return pf;
 }

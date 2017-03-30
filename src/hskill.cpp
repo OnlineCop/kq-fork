@@ -512,8 +512,7 @@ void reveal(int tgt)
  */
 int skill_use(size_t attack_fighter_index)
 {
-	int tgt, found_item, a, b, c, p, cts, tx, ty, next_target = 0,
-		nn[NUM_FIGHTERS];
+	int tgt, found_item, a, b, c, p, cts, tx, ty, next_target = 0, nn[NUM_FIGHTERS];
 	size_t enemy_index;
 	size_t fighter_index;
 	std::unique_ptr<Raster> temp;

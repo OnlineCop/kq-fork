@@ -124,8 +124,7 @@ struct s_player
                                * * Item 0, 1 - used to calculate the XP you need for the next level
                                * * Item 2 - Boost to your HP/MHP
                                * * Item 3 - Boost to your MP/MMP
-                               * * Items 4..16 - Actually used by player2fighter to adjust your base stats to
-                               * the level you're on.
+                               * * Items 4..16 - Actually used by player2fighter to adjust your base stats to the level you're on.
                                */
   unsigned short lup[NUM_LUP];
 };
