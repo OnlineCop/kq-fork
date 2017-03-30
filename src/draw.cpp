@@ -302,6 +302,12 @@ Raster *copy_bitmap(Raster *target, Raster *source)
 	return target;
 }
 
+static void recalculate_offsets(int dx, int dy)
+{
+	xofs = 16 - (dx & 15);
+	yofs = 16 - (dy & 15);
+}
+
 /*! \brief Draw background
  *
  * Draw the background layer.  Accounts for parallaxing.
@@ -342,8 +348,7 @@ static void draw_backlayer(void)
 		box.right = view_x2 * g_map.pmult / g_map.pdiv;
 		box.bottom = view_y2 * g_map.pmult / g_map.pdiv;
 	}
-	xofs = 16 - (dx & 15);
-	yofs = 16 - (dy & 15);
+	recalculate_offsets(dx, dy);
 
 	for (dy = 0; dy < 16; dy++)
 	{
@@ -607,8 +612,7 @@ static void draw_forelayer(void)
 	xtc = dx >> 4;
 	ytc = dy >> 4;
 
-	xofs = 16 - (dx & 15);
-	yofs = 16 - (dy & 15);
+	recalculate_offsets(dx, dy);
 
 	for (dy = 0; dy < 16; dy++)
 	{
@@ -808,8 +812,7 @@ static void draw_midlayer(void)
 		box.right = view_x2 * g_map.pmult / g_map.pdiv;
 		box.bottom = view_y2 * g_map.pmult / g_map.pdiv;
 	}
-	xofs = 16 - (dx & 15);
-	yofs = 16 - (dy & 15);
+	recalculate_offsets(dx, dy);
 
 	for (dy = 0; dy < 16; dy++)
 	{
@@ -852,8 +855,7 @@ static void draw_playerbound(void)
 	xtc = vx >> 4;
 	ytc = vy >> 4;
 
-	xofs = 16 - (vx & 15);
-	yofs = 16 - (vy & 15);
+	recalculate_offsets(vx, vy);
 
 	/* If the player is inside the bounded area, draw everything OUTSIDE the
 	 * bounded area with the tile specified by that area.
@@ -919,8 +921,7 @@ static void draw_shadows(void)
 	}
 	xtc = vx >> 4;
 	ytc = vy >> 4;
-	xofs = 16 - (vx & 15);
-	yofs = 16 - (vy & 15);
+	recalculate_offsets(vx, vy);
 
 	for (dy = 0; dy < 16; dy++)
 	{
@@ -1107,8 +1108,7 @@ void drawmap(void)
 	 *  my code, I just put this hack in place.  It's actually kind of handy in
 	 *  case I ever have to adjust stuff again.
 	 */
-	xofs = 16;
-	yofs = 16;
+	recalculate_offsets(0, 0);
 	if (save_spells[P_REPULSE] > 0)
 	{
 		rectfill(b_repulse, 0, 16, 15, 165, 0);
