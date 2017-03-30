@@ -842,12 +842,12 @@ static void draw_playerbound(void)
 	uint16_t ent_y = g_ent[0].tiley;
 
 	/* Is the player standing inside a bounding area? */
-	uint32_t found_index = g_map.bounds.IsBound(ent_x, ent_y, ent_x, ent_y);
-	if (!found_index)
+	uint32_t found_index;
+	if(!g_map.bounds.IsBound(found_index, ent_x, ent_y, ent_x, ent_y))
 	{
 		return;
 	}
-	found = g_map.bounds.GetBound(found_index - 1);
+	found = g_map.bounds.GetBound(found_index);
 
 	xtc = vx >> 4;
 	ytc = vy >> 4;
@@ -865,8 +865,7 @@ static void draw_playerbound(void)
 	{
 		for (dx = 0; dx <= ONSCREEN_TILES_W; dx++)
 		{
-			blit(map_icons[tilex[found->btile]], double_buffer, 0, 0,
-				dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
+			blit(map_icons[tilex[found->btile]], double_buffer, 0, 0, dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
 		}
 	}
 
@@ -876,15 +875,13 @@ static void draw_playerbound(void)
 		// Left side
 		for (dx = 0; dx < found->left - xtc; dx++)
 		{
-			blit(map_icons[tilex[found->btile]], double_buffer, 0, 0,
-				dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
+			blit(map_icons[tilex[found->btile]], double_buffer, 0, 0, dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
 		}
 
 		// Right side
 		for (dx = found->right - xtc + 1; dx <= ONSCREEN_TILES_W; dx++)
 		{
-			blit(map_icons[tilex[found->btile]], double_buffer, 0, 0,
-				dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
+			blit(map_icons[tilex[found->btile]], double_buffer, 0, 0, dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
 		}
 	}
 
@@ -893,8 +890,7 @@ static void draw_playerbound(void)
 	{
 		for (dx = 0; dx <= ONSCREEN_TILES_W; dx++)
 		{
-			blit(map_icons[tilex[found->btile]], double_buffer, 0, 0,
-				dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
+			blit(map_icons[tilex[found->btile]], double_buffer, 0, 0, dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W, TILE_H);
 		}
 	}
 }

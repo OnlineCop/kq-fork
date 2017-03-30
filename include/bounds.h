@@ -85,8 +85,7 @@ public:
 		return m_bounds.size();
 	}
 
-	uint32_t IsBound(const uint16_t left, const uint16_t top,
-		const uint16_t right, const uint16_t bottom) const;
+	bool IsBound(uint32_t &outIndex, uint32_t left, uint32_t top, uint32_t right, uint32_t bottom) const;
 
 protected:
 	vector<shared_ptr<KBound>> m_bounds;
