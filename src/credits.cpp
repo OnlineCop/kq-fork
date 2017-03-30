@@ -108,7 +108,7 @@ void display_credits(Raster *double_buffer)
 	if (ticks > max_ticks)
 	{
 		clear_bitmap(wk);
-		print_font(wk, (wk->width - 8 * strlen(*cc)) / 2, 42, *cc, FNORMAL);
+		Draw.print_font(wk, (wk->width - 8 * strlen(*cc)) / 2, 42, *cc, FNORMAL);
 
 		/* After each 'max_ticks' number of ticks, increment the current line of
 		 * credits displayed, looping back to the beginning as needed.
@@ -117,7 +117,7 @@ void display_credits(Raster *double_buffer)
 		{
 			cc = credits;
 		}
-		print_font(wk, (wk->width - 8 * strlen(*cc)) / 2, 10, *cc, FNORMAL);
+		Draw.print_font(wk, (wk->width - 8 * strlen(*cc)) / 2, 10, *cc, FNORMAL);
 		ticks = 0;
 	}
 	else
@@ -132,19 +132,19 @@ void display_credits(Raster *double_buffer)
 		blit(wk, double_buffer, i, ease(i + ease_amount), i + x0, KQ_SCREEN_H - 55,
 			1, 32);
 	}
-	print_font(double_buffer, (KQ_SCREEN_W - 8 * strlen(pressf1)) / 2,
+	Draw.print_font(double_buffer, (KQ_SCREEN_W - 8 * strlen(pressf1)) / 2,
 		KQ_SCREEN_H - 30, pressf1, FNORMAL);
 #ifdef KQ_CHEATS
 	/* Put an un-ignorable cheat message; this should stop
 	 * PH releasing versions with cheat mode compiled in ;)
 	 */
 	extern int cheat;
-	print_font(double_buffer, 80, 40,
+	Draw.print_font(double_buffer, 80, 40,
 		cheat ? _("*CHEAT MODE ON*") : _("*CHEAT MODE OFF*"), FGOLD);
 #endif
 #ifdef DEBUGMODE
 	/* TT: Similarly, if we are in debug mode, we should be warned. */
-	print_font(double_buffer, 80, 48, _("*DEBUG MODE ON*"), FGOLD);
+	Draw.print_font(double_buffer, 80, 48, _("*DEBUG MODE ON*"), FGOLD);
 #endif
 }
 

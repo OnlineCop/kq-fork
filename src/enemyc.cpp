@@ -419,7 +419,7 @@ void enemy_init(void)
 			blit(f->img, cframes[fighter_index + PSIZE][frame_index], 0, 0, 0, 0,
 				f->img->width, f->img->height);
 			tcframes[fighter_index + PSIZE][frame_index] =
-				copy_bitmap(tcframes[fighter_index + PSIZE][frame_index], f->img);
+				Draw.copy_bitmap(tcframes[fighter_index + PSIZE][frame_index], f->img);
 		}
 	}
 }

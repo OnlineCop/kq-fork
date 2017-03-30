@@ -48,6 +48,8 @@
 #include "setup.h"
 #include "timing.h"
 
+KDraw Draw;
+
 /* Globals */
 #define MSG_ROWS 4
 #define MSG_COLS 36
@@ -55,28 +57,6 @@ char msgbuf[MSG_ROWS][MSG_COLS];
 int gbx, gby, gbbx, gbby, gbbw, gbbh, gbbs;
 eBubbleStemStyle bubble_stem_style;
 uint8_t BLUE = 2, DARKBLUE = 0, DARKRED = 4;
-
-/*  Internal prototypes  */
-static void border(Raster *, int, int, int, int);
-static void draw_backlayer(void);
-static void draw_char(int, int);
-static void draw_forelayer(void);
-static void draw_midlayer(void);
-static void draw_playerbound(void);
-static void draw_shadows(void);
-static void draw_textbox(int);
-static void draw_porttextbox(int, int);
-static void generic_text(int, int, int);
-const char *parse_string(const char *);
-static const char *relay(const char *);
-static void set_textpos(uint32_t);
-static int get_glyph_index(uint32_t);
-
-/*! \brief The internal processing modes during text reformatting
- *
- * \sa relay()
- */
-enum m_mode { M_UNDEF, M_SPACE, M_NONSPACE, M_END };
 
 /*! \brief Blit from double buffer to the screen
  *
@@ -88,7 +68,7 @@ enum m_mode { M_UNDEF, M_SPACE, M_NONSPACE, M_END };
  * \param   xw x-coord in double_buffer of the top-left of the screen
  * \param   yw y-coord in double_buffer of the top-left of the screen
  */
-void blit2screen(int xw, int yw)
+void KDraw::blit2screen(int xw, int yw)
 {
 	static int frate;
 
@@ -145,7 +125,7 @@ void blit2screen(int xw, int yw)
  * \param   right Bottom-right x-coord
  * \param   bottom Bottom-right y-coord
  */
-static void border(Raster *where, int left, int top, int right, int bottom)
+void KDraw::border(Raster *where, int left, int top, int right, int bottom)
 {
 	vline(where, left + 1, top + 3, bottom - 3, GREY2);
 	vline(where, left + 2, top + 3, bottom - 3, GREY3);
@@ -194,7 +174,7 @@ static void border(Raster *where, int left, int top, int right, int bottom)
  * \param   output_range_start Start of output color range
  * \param   output_range_end End of output color range
  */
-void color_scale(Raster *src, Raster *dest, int output_range_start,
+void KDraw::color_scale(Raster *src, Raster *dest, int output_range_start,
 	int output_range_end)
 {
 	int ix, iy, z;
@@ -234,7 +214,7 @@ void color_scale(Raster *src, Raster *dest, int output_range_start,
  * \param   convert_heroes If ==1 then \cframe_index fighter_index<PSIZE means
  * convert all heroes, otherwise all enemies
  */
-void convert_cframes(size_t fighter_index, int output_range_start,
+void KDraw::convert_cframes(size_t fighter_index, int output_range_start,
 	int output_range_end, int convert_heroes)
 {
 	size_t start_fighter_index, end_fighter_index, cframe_index;
@@ -281,7 +261,7 @@ void convert_cframes(size_t fighter_index, int output_range_start,
  * \param   source Bitmap to copy from
  * \returns target or a new bitmap.
  */
-Raster *copy_bitmap(Raster *target, Raster *source)
+Raster *KDraw::copy_bitmap(Raster *target, Raster *source)
 {
 	if (target)
 	{
@@ -302,7 +282,7 @@ Raster *copy_bitmap(Raster *target, Raster *source)
 	return target;
 }
 
-static void recalculate_offsets(int dx, int dy)
+void KDraw::recalculate_offsets(int dx, int dy)
 {
 	xofs = 16 - (dx & 15);
 	yofs = 16 - (dy & 15);
@@ -313,7 +293,7 @@ static void recalculate_offsets(int dx, int dy)
  * Draw the background layer.  Accounts for parallaxing.
  * Parallax is on for modes 2 & 3
  */
-static void draw_backlayer(void)
+void KDraw::draw_backlayer(void)
 {
 	int dx, dy, pix, xtc, ytc;
 	int here;
@@ -381,7 +361,7 @@ static void draw_backlayer(void)
  * \param   xw x-offset - always ==16
  * \param   yw y-offset - always ==16
  */
-static void draw_char(int xw, int yw)
+void KDraw::draw_char(int xw, int yw)
 {
 	signed int dx, dy;
 	int f;
@@ -578,7 +558,7 @@ static void draw_char(int xw, int yw)
  * Draw the foreground layer.  Accounts for parallaxing.
  * Parallax is on for modes 4 & 5.
  */
-static void draw_forelayer(void)
+void KDraw::draw_forelayer(void)
 {
 	int dx, dy, pix, xtc, ytc;
 	int here;
@@ -701,7 +681,7 @@ static void draw_forelayer(void)
  * \param   icx x-coord
  * \param   icy y-coord
  */
-void draw_icon(Raster *where, int ino, int icx, int icy)
+void KDraw::draw_icon(Raster *where, int ino, int icx, int icy)
 {
 	masked_blit(sicons, where, 0, ino * 8, icx, icy, 8, 8);
 }
@@ -723,8 +703,7 @@ void draw_icon(Raster *where, int ino, int icx, int icy)
  * \param   bg Colour/style of background
  * \param   bstyle Style of border
  */
-static void draw_kq_box(Raster *where, int x1, int y1, int x2, int y2, int bg,
-	int bstyle)
+void KDraw::draw_kq_box(Raster *where, int x1, int y1, int x2, int y2, int bg, int bstyle)
 {
 	int a;
 
@@ -777,7 +756,7 @@ static void draw_kq_box(Raster *where, int x1, int y1, int x2, int y2, int bg,
  * Draw the middle layer.  Accounts for parallaxing.
  * Parallax is on for modes 3 & 4
  */
-static void draw_midlayer(void)
+void KDraw::draw_midlayer(void)
 {
 	int dx, dy, pix, xtc, ytc;
 	int here;
@@ -837,7 +816,7 @@ static void draw_midlayer(void)
  *
  * \param   map - The map containing the bounded area data
  */
-static void draw_playerbound(void)
+void KDraw::draw_playerbound(void)
 {
 	int dx, dy, xtc, ytc;
 	shared_ptr<KBound> found = nullptr;
@@ -903,7 +882,7 @@ static void draw_playerbound(void)
  * moved in the future to fall between the background and foreground layers.
  * Shadows are never parallaxed.
  */
-static void draw_shadows(void)
+void KDraw::draw_shadows(void)
 {
 	int dx, dy, pix, xtc, ytc;
 	int here;
@@ -957,7 +936,7 @@ static void draw_shadows(void)
  * \param   icx x-coord to draw to
  * \param   icy y-coord to draw to
  */
-void draw_stsicon(Raster *where, int cc, int who, int inum, int icx, int icy)
+void KDraw::draw_stsicon(Raster *where, int cc, int who, int inum, int icx, int icy)
 {
 	int j, st = 0, s;
 
@@ -990,7 +969,7 @@ void draw_stsicon(Raster *where, int cc, int who, int inum, int icx, int icy)
  * \date 20030417 PH This now draws the text as well as just the box
  * \param   bstyle Style (B_TEXT or B_THOUGHT or B_MESSAGE)
  */
-static void draw_textbox(int bstyle)
+void KDraw::draw_textbox(int bstyle)
 {
 	int wid, hgt, a;
 	Raster *stem;
@@ -1025,7 +1004,7 @@ static void draw_textbox(int bstyle)
  * \param   chr (what chr is talking)
  */
 
-static void draw_porttextbox(int bstyle, int chr)
+void KDraw::draw_porttextbox(int bstyle, int chr)
 {
 	int wid, hgt, a;
 	int linexofs;
@@ -1070,7 +1049,7 @@ static void draw_porttextbox(int bstyle, int chr)
  * Also handles the Repulse indicator and the map description display.
  * \bug PH: Shadows are never drawn with parallax (is this a bug?)
  */
-void drawmap(void)
+void KDraw::drawmap(void)
 {
 	if (g_map.xsize <= 0)
 	{
@@ -1132,7 +1111,7 @@ void drawmap(void)
  * style)
  * \param   box_style Style (B_TEXT or B_THOUGHT or B_MESSAGE)
  */
-static void generic_text(int who, int box_style, int isPort)
+void KDraw::generic_text(int who, int box_style, int isPort)
 {
 	int a, stop = 0;
 	int len;
@@ -1195,7 +1174,7 @@ static void generic_text(int who, int box_style, int isPort)
  * \param   fy y-coord to check
  * \returns 1 if it is a forest square, 0 otherwise
  */
-int is_forestsquare(int fx, int fy)
+int KDraw::is_forestsquare(int fx, int fy)
 {
 	if (!Game.IsOverworldMap())
 	{
@@ -1231,7 +1210,7 @@ int is_forestsquare(int fx, int fy)
  * \param   h Height
  * \param   c Colour (see note above)
  */
-void menubox(Raster *where, int x, int y, int w, int h, int c)
+void KDraw::menubox(Raster *where, int x, int y, int w, int h, int c)
 {
 	draw_kq_box(where, x, y, x + w * 8 + TILE_W, y + h * 8 + TILE_H, c, B_TEXT);
 }
@@ -1247,7 +1226,7 @@ void menubox(Raster *where, int x, int y, int w, int h, int c)
  * \param   x_m X-coord of top-left (like xofs)
  * \param   y_m Y-coord of top-left
  */
-void message(const char *m, int icn, int delay, int x_m, int y_m)
+void KDraw::message(const char *m, int icn, int delay, int x_m, int y_m)
 {
 	char msg[1024];
 	const char *s;
@@ -1326,7 +1305,7 @@ void message(const char *m, int icn, int delay, int x_m, int y_m)
  * \returns processed string, in a static buffer \p strbuf
  *          or \p the_string, if it had no replacement chars.
  */
-const char *parse_string(const char *the_string)
+const char *KDraw::parse_string(const char *the_string)
 {
 	static char strbuf[1024];
 	const char *ap;
@@ -1369,7 +1348,7 @@ const char *parse_string(const char *the_string)
  * \author PH
  * \date 20071116
  */
-static const char *decode_utf8(const char *string, uint32_t *cp)
+const char *decode_utf8(const char *string, uint32_t *cp)
 {
 	char ch = *string;
 
@@ -1502,7 +1481,7 @@ static uint32_t glyph_lookup[][2] = {
  * \date 20071116
  * \note uses inefficient linear search for now.
  */
-static int get_glyph_index(uint32_t cp)
+int KDraw::get_glyph_index(uint32_t cp)
 {
 	int i;
 
@@ -1539,7 +1518,7 @@ static int get_glyph_index(uint32_t cp)
  * \param   msg String to draw
  * \param   font_index Font index (0..6)
  */
-void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor font_index)
+void KDraw::print_font(Raster *where, int sx, int sy, const char *msg, eFontColor font_index)
 {
 	int z = 0;
 	int hgt = 8;//MagicNumber: font height for NORMAL text
@@ -1581,7 +1560,7 @@ void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor font_
  * \param   msg String to draw
  * \param   font_index Font index (0..4)
  */
-void print_num(Raster *where, int sx, int sy, const string msg, eFont font_index)
+void KDraw::print_num(Raster *where, int sx, int sy, const string msg, eFont font_index)
 {
 	assert(where && "where == NULL");
 	// Check ought not to be necessary if using the enum correctly.
@@ -1616,7 +1595,7 @@ void print_num(Raster *where, int sx, int sy, const string msg, eFont font_index
  * \param   sp4 Line 4 of text
  * \returns index of option chosen (0..numopt-1)
  */
-int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2,
+int KDraw::prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2,
 	const char *sp3, const char *sp4)
 {
 	int ly, stop = 0, ptr = 0, a;
@@ -1708,7 +1687,7 @@ int prompt(int who, int numopt, int bstyle, const char *sp1, const char *sp2,
  * \param   n_opt The number of options
  * \return  option selected, 0= first option etc.
  */
-int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
+int KDraw::prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
 {
 	int curopt = 0;
 	int topopt = 0;
@@ -1850,7 +1829,7 @@ int prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
  * \returns the rest of the string that has not been processed, or NULL if
  *          it has all been processed.
  */
-static const char *relay(const char *buf)
+const char *KDraw::relay(const char *buf)
 {
 	int lasts, lastc, i, cr, cc;
 	char tc;
@@ -1970,7 +1949,7 @@ static const char *relay(const char *buf)
  * \param   revert_heroes If ==1 then convert all heroes if fighter_index <
  * PSIZE, otherwise convert all enemies
  */
-void revert_cframes(size_t fighter_index, int revert_heroes)
+void KDraw::revert_cframes(size_t fighter_index, int revert_heroes)
 {
 	size_t start_fighter_index, end_fighter_index;
 	size_t cframe_index;
@@ -2015,7 +1994,7 @@ void revert_cframes(size_t fighter_index, int revert_heroes)
  * \param   entity_index If value is between 0..MAX_ENTITIES (exclusive),
  *              character that is speaking, otherwise 'general'.
  */
-static void set_textpos(uint32_t entity_index)
+void KDraw::set_textpos(uint32_t entity_index)
 {
 	if (entity_index < MAX_ENTITIES)
 	{
@@ -2115,7 +2094,7 @@ static void set_textpos(uint32_t entity_index)
  * \param   x2 Bottom-right of view
  * \param   y2 Bottom-right of view
  */
-void set_view(int vw, int x1, int y1, int x2, int y2)
+void KDraw::set_view(int vw, int x1, int y1, int x2, int y2)
 {
 	view_on = vw;
 	if (view_on)
@@ -2146,7 +2125,7 @@ void set_view(int vw, int x1, int y1, int x2, int y2)
  * \param   who Character that is speaking
  * \param   s The text to display
  */
-void text_ex(int fmt, int who, const char *s)
+void KDraw::text_ex(int fmt, int who, const char *s)
 {
 	s = parse_string(s);
 
@@ -2169,7 +2148,7 @@ void text_ex(int fmt, int who, const char *s)
  * \param   who Character that is speaking
  * \param   s The text to display
  */
-void porttext_ex(int fmt, int who, const char *s)
+void KDraw::porttext_ex(int fmt, int who, const char *s)
 {
 	s = parse_string(s);
 

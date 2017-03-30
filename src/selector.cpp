@@ -200,37 +200,37 @@ static eMiniMenu mini_menu(int omask)
 	/* If no actions were allowed, or just one, skip the menu */
 	if (omask == MM_JOIN)
 	{
-		message(_("Join"), 255, 1000, xofs, yofs);
+		Draw.message(_("Join"), 255, 1000, xofs, yofs);
 		return MM_JOIN;
 	}
 	if (omask == MM_LEAVE)
 	{
-		message(_("Leave"), 255, 1000, xofs, yofs);
+		Draw.message(_("Leave"), 255, 1000, xofs, yofs);
 		return MM_LEAVE;
 	}
 	if (omask == MM_LEAD)
 	{
-		message(_("Lead"), 255, 1000, xofs, yofs);
+		Draw.message(_("Lead"), 255, 1000, xofs, yofs);
 		return MM_LEAD;
 	}
 	if (omask == MM_NONE)
 	{
-		message(_("No options"), 255, 1000, xofs, yofs);
+		Draw.message(_("No options"), 255, 1000, xofs, yofs);
 		return MM_NONE;
 	}
 
 	while (1)
 	{
 		Game.do_check_animation();
-		menubox(double_buffer, mini_menu_x - 13, mini_menu_y - 8, 6, 3, DARKBLUE);
-		print_font(double_buffer, mini_menu_x, mini_menu_y, _("Join"),
+		Draw.menubox(double_buffer, mini_menu_x - 13, mini_menu_y - 8, 6, 3, DARKBLUE);
+		Draw.print_font(double_buffer, mini_menu_x, mini_menu_y, _("Join"),
 			(omask & MM_JOIN) ? FNORMAL : FDARK);
-		print_font(double_buffer, mini_menu_x, mini_menu_y + 8, _("Leave"),
+		Draw.print_font(double_buffer, mini_menu_x, mini_menu_y + 8, _("Leave"),
 			(omask & MM_LEAVE) ? FNORMAL : FDARK);
-		print_font(double_buffer, mini_menu_x, mini_menu_y + 16, _("Lead"),
+		Draw.print_font(double_buffer, mini_menu_x, mini_menu_y + 16, _("Lead"),
 			(omask & MM_LEAD) ? FNORMAL : FDARK);
 		draw_sprite(double_buffer, menuptr, mini_menu_x - 13, mini_menu_y + 8 * cp);
-		blit2screen(xofs, yofs);
+		Draw.blit2screen(xofs, yofs);
 
 		PlayerInput.readcontrols();
 		if (PlayerInput.up)
@@ -380,11 +380,11 @@ static void party_remove(ePIDX id)
  * If targetting mode is TGT_NONE, just show the player but don't allow
  * any change in selection.
  *
- * \sa draw_icon()
+ * \sa kdraw.draw_icon()
  * \sa camp_item_targetting()
  *
  * \param   csa - Mode (TGT_ALLY_ONE, TGT_ALLY_ONEALL, TGT_ALLY_ALL or TGT_NONE)
- * \param   icn - Icon to draw (see also draw_icon() in draw.c)
+ * \param   icn - Icon to draw (see also kdraw.draw_icon() in draw.c)
  * \param   msg - Prompt message
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled or
  *          SEL_ALL_ALLIES if 'all' was selected (by pressing L or R)
@@ -399,19 +399,19 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
 	while (!stop)
 	{
 		Game.do_check_animation();
-		drawmap();
+		Draw.drawmap();
 		if (csa != TGT_NONE)
 		{
-			menubox(double_buffer, 152 - ((strlen(msg) + 1) * 4) + xofs, 8 + yofs,
+			Draw.menubox(double_buffer, 152 - ((strlen(msg) + 1) * 4) + xofs, 8 + yofs,
 				strlen(msg) + 1, 1, BLUE);
-			draw_icon(double_buffer, icn, 160 - ((strlen(msg) + 1) * 4) + xofs,
+			Draw.draw_icon(double_buffer, icn, 160 - ((strlen(msg) + 1) * 4) + xofs,
 				16 + yofs);
-			print_font(double_buffer, 168 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs,
+			Draw.print_font(double_buffer, 168 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs,
 				msg, FNORMAL);
 		}
 		for (unsigned int k = 0; k < numchrs; k++)
 		{
-			menubox(double_buffer, 80 + xofs, k * 56 + shy + yofs, 18, 5, BLUE);
+			Draw.menubox(double_buffer, 80 + xofs, k * 56 + shy + yofs, 18, 5, BLUE);
 			kmenu.draw_playerstat(double_buffer, pidx[k], 88 + xofs, k * 56 + shy + 8 + yofs);
 			// Draw the pointer
 			if (select_all || k == ptr)
@@ -420,7 +420,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
 					k * 56 + shy + 24 + yofs);
 			}
 		}
-		blit2screen(xofs, yofs);
+		Draw.blit2screen(xofs, yofs);
 
 		PlayerInput.readcontrols();
 		if (csa == TGT_NONE)
@@ -540,7 +540,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 			battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 0);
 		}
 
-		blit2screen(0, 0);
+		Draw.blit2screen(0, 0);
 		PlayerInput.readcontrols();
 
 		if (PlayerInput.balt)
@@ -649,7 +649,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target,
 		{
 			battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 0);
 		}
-		blit2screen(0, 0);
+		Draw.blit2screen(0, 0);
 
 		PlayerInput.readcontrols();
 
@@ -750,9 +750,9 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
 		}
 	}
 
-	menubox(double_buffer, 16 + xofs, 24 + yofs, 34, 12, BLUE);
-	print_font(double_buffer, 24 + xofs, 32 + yofs, _("Available:"), FGOLD);
-	print_font(double_buffer, 24 + xofs, 80 + yofs, _("In party:"), FGOLD);
+	Draw.menubox(double_buffer, 16 + xofs, 24 + yofs, 34, 12, BLUE);
+	Draw.print_font(double_buffer, 24 + xofs, 32 + yofs, _("Available:"), FGOLD);
+	Draw.print_font(double_buffer, 24 + xofs, 80 + yofs, _("In party:"), FGOLD);
 	while (running)
 	{
 		Game.do_check_animation();
@@ -762,7 +762,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
 		for (fighter_index = 0; fighter_index < n_avail; ++fighter_index)
 		{
 			x = xofs + (KQ_SCREEN_W - 32 * n_avail) / 2 + 32 * fighter_index;
-			menubox(double_buffer, x, y, 2, 2,
+			Draw.menubox(double_buffer, x, y, 2, 2,
 				(fighter_index == cur ? DARKRED : DARKBLUE));
 			if (avail[fighter_index] != PIDX_UNDEFINED)
 			{
@@ -775,7 +775,7 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
 		y = yofs + 88;
 		for (fighter_index = 0; fighter_index < PSIZE; ++fighter_index)
 		{
-			menubox(double_buffer, x, y, 2, 2,
+			Draw.menubox(double_buffer, x, y, 2, 2,
 				(cur == MAXCHRS + fighter_index ? DARKRED : DARKBLUE));
 			if (fighter_index < numchrs && pidx[fighter_index] != PIDX_UNDEFINED)
 			{
@@ -785,9 +785,9 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
 			x += 40;
 		}
 		/* Draw the 'Exit' button */
-		menubox(double_buffer, x, y, 4, 1,
+		Draw.menubox(double_buffer, x, y, 4, 1,
 			(cur == PSIZE + MAXCHRS ? DARKRED : DARKBLUE));
-		print_font(double_buffer, x + 8, y + 8, _("Exit"), FNORMAL);
+		Draw.print_font(double_buffer, x + 8, y + 8, _("Exit"), FNORMAL);
 		/* See which hero is selected and draw his/her stats */
 		if (cur < n_avail)
 		{
@@ -801,13 +801,13 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
 		{
 			hero = PIDX_UNDEFINED;
 		}
-		menubox(double_buffer, 92, 152, 18, 5, DARKBLUE);
+		Draw.menubox(double_buffer, 92, 152, 18, 5, DARKBLUE);
 		if (hero != PIDX_UNDEFINED)
 		{
 			kmenu.draw_playerstat(double_buffer, hero, 100, 160);
 		}
 		/* Show on the screen */
-		blit2screen(xofs, yofs);
+		Draw.blit2screen(xofs, yofs);
 
 		oldcur = cur;
 		PlayerInput.readcontrols();
@@ -959,9 +959,9 @@ int select_player(void)
 	while (!stop)
 	{
 		Game.do_check_animation();
-		drawmap();
+		Draw.drawmap();
 		kmenu.draw_mainmenu(ptr);
-		blit2screen(xofs, yofs);
+		Draw.blit2screen(xofs, yofs);
 
 		PlayerInput.readcontrols();
 		if (PlayerInput.up)

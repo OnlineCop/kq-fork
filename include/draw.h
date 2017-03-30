@@ -83,27 +83,56 @@ enum eBubbleStemStyle {
 
 /*  draw global functions  */
 
-void blit2screen(int, int);
-void color_scale(Raster *, Raster *, int, int);
-void convert_cframes(size_t, int, int, int);
-void revert_cframes(size_t, int);
-void draw_icon(Raster *, int, int, int);
-void draw_stsicon(Raster *, int, int, int, int, int);
-int is_forestsquare(int, int);
-void drawmap(void);
-void menubox(Raster *where, int x, int y, int w, int h, int c);
-void print_font(Raster *, int, int, const char *, eFontColor);
-void print_num(Raster *where, int sx, int sy, const string msg, eFont font_index);
-void text_ex(int, int, const char *);
-void porttext_ex(int, int, const char *);
-int prompt(int, int, int, const char *, const char *, const char *, const char *);
-int prompt_ex(int, const char *, const char *[], int);
-void message(const char *, int, int, int, int);
-void set_view(int, int, int, int, int);
+class KDraw
+{
+public:
+	void blit2screen(int, int);
+	void color_scale(Raster *, Raster *, int, int);
+	void convert_cframes(size_t, int, int, int);
+	void revert_cframes(size_t, int);
+	void draw_icon(Raster *, int, int, int);
+	void draw_stsicon(Raster *, int, int, int, int, int);
+	int is_forestsquare(int, int);
+	void drawmap(void);
+	void menubox(Raster *where, int x, int y, int w, int h, int c);
+	void print_font(Raster *, int, int, const char *, eFontColor);
+	void print_num(Raster *where, int sx, int sy, const string msg, eFont font_index);
+	void text_ex(int, int, const char *);
+	void porttext_ex(int, int, const char *);
+	int prompt(int, int, int, const char *, const char *, const char *, const char *);
+	int prompt_ex(int, const char *, const char *[], int);
+	void message(const char *, int, int, int, int);
+	void set_view(int, int, int, int, int);
+	Raster *copy_bitmap(Raster *, Raster *);
 
-Raster *copy_bitmap(Raster *, Raster *);
+private:
+	void border(Raster *, int, int, int, int);
+	void draw_backlayer(void);
+	void draw_char(int, int);
+	void draw_forelayer(void);
+	void draw_kq_box(Raster *where, int x1, int y1, int x2, int y2, int bg, int bstyle);
+	void draw_midlayer(void);
+	void draw_playerbound(void);
+	void draw_shadows(void);
+	void draw_textbox(int);
+	void draw_porttextbox(int, int);
+	void generic_text(int, int, int);
+	const char *relay(const char *);
+	void set_textpos(uint32_t);
+	int get_glyph_index(uint32_t);
+	const char *parse_string(const char *);
+	void recalculate_offsets(int dx, int dy);
+
+	// The internal processing modes during text reformatting; used in \sa relay()
+	enum m_mode
+	{
+		M_UNDEF, M_SPACE, M_NONSPACE, M_END
+	};
+};
 
 /*  global variables  */
 extern uint8_t BLUE;
 extern uint8_t DARKBLUE;
 extern uint8_t DARKRED;
+
+extern KDraw Draw;

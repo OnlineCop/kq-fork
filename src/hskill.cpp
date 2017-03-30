@@ -445,23 +445,23 @@ void reveal(int tgt)
 	char resistance;
 
 	do_transition(TRANS_FADE_OUT, 4);
-	menubox(double_buffer, 84, 56, 17, 13, BLUE);
+	Draw.menubox(double_buffer, 84, 56, 17, 13, BLUE);
 	sprintf(strbuf, _("Name: %s"), fighter[tgt].name);
-	print_font(double_buffer, 92, 64, strbuf, FNORMAL);
+	Draw.print_font(double_buffer, 92, 64, strbuf, FNORMAL);
 	sprintf(strbuf, _("Level: %d"), fighter[tgt].lvl);
-	print_font(double_buffer, 92, 72, strbuf, FNORMAL);
+	Draw.print_font(double_buffer, 92, 72, strbuf, FNORMAL);
 	sprintf(strbuf, _("HP: %d/%d"), fighter[tgt].hp, fighter[tgt].mhp);
-	print_font(double_buffer, 92, 80, strbuf, FNORMAL);
+	Draw.print_font(double_buffer, 92, 80, strbuf, FNORMAL);
 	sprintf(strbuf, _("MP: %d/%d"), fighter[tgt].mp, fighter[tgt].mmp);
-	print_font(double_buffer, 92, 88, strbuf, FNORMAL);
-	print_font(double_buffer, 92, 96, _("Earth"), FNORMAL);
-	print_font(double_buffer, 92, 104, _("Black"), FNORMAL);
-	print_font(double_buffer, 92, 112, _("Fire"), FNORMAL);
-	print_font(double_buffer, 92, 120, _("Thunder"), FNORMAL);
-	print_font(double_buffer, 92, 128, _("Air"), FNORMAL);
-	print_font(double_buffer, 92, 136, _("White"), FNORMAL);
-	print_font(double_buffer, 92, 144, _("Water"), FNORMAL);
-	print_font(double_buffer, 92, 152, _("Ice"), FNORMAL);
+	Draw.print_font(double_buffer, 92, 88, strbuf, FNORMAL);
+	Draw.print_font(double_buffer, 92, 96, _("Earth"), FNORMAL);
+	Draw.print_font(double_buffer, 92, 104, _("Black"), FNORMAL);
+	Draw.print_font(double_buffer, 92, 112, _("Fire"), FNORMAL);
+	Draw.print_font(double_buffer, 92, 120, _("Thunder"), FNORMAL);
+	Draw.print_font(double_buffer, 92, 128, _("Air"), FNORMAL);
+	Draw.print_font(double_buffer, 92, 136, _("White"), FNORMAL);
+	Draw.print_font(double_buffer, 92, 144, _("Water"), FNORMAL);
+	Draw.print_font(double_buffer, 92, 152, _("Ice"), FNORMAL);
 	for (c = 0; c < 8; c++)
 	{
 		draw_x = 156;
@@ -497,7 +497,7 @@ void reveal(int tgt)
 			}
 		}
 	}
-	blit2screen(0, 0);
+	Draw.blit2screen(0, 0);
 	do_transition(TRANS_FADE_IN, 4);
 	Game.wait_enter();
 }
@@ -528,7 +528,7 @@ int skill_use(size_t attack_fighter_index)
 		enemy_index = (unsigned int)tgt;
 		temp = std::unique_ptr<Raster>(new Raster(320, 240));
 		blit(backart, temp.get(), 0, 0, 0, 0, 320, 240);
-		color_scale(temp.get(), backart, 16, 31);
+		Draw.color_scale(temp.get(), backart, 16, 31);
 		b = fighter[attack_fighter_index].mhp / 20;
 		strcpy(attack_string, _("Rage"));
 		display_attack_string = 1;
@@ -579,7 +579,7 @@ int skill_use(size_t attack_fighter_index)
 		curx = -1;
 		cury = -1;
 		battle_render(0, 0, 0);
-		blit2screen(0, 0);
+		Draw.blit2screen(0, 0);
 		kq_wait(150);
 		multi_fight(attack_fighter_index);
 		display_attack_string = 0;
@@ -597,7 +597,7 @@ int skill_use(size_t attack_fighter_index)
 			curx = -1;
 			cury = -1;
 			play_effect(22, 128);
-			convert_cframes(
+			Draw.convert_cframes(
 				attack_fighter_index,
 				eff[magic[fighter[attack_fighter_index].csmem].eff].kolor - 3,
 				eff[magic[fighter[attack_fighter_index].csmem].eff].kolor + 3, 0);
@@ -624,14 +624,14 @@ int skill_use(size_t attack_fighter_index)
 							eff[magic[fighter[attack_fighter_index].csmem].eff].kolor);
 						draw_fighter(attack_fighter_index, 0);
 					}
-					blit2screen(0, 0);
+					Draw.blit2screen(0, 0);
 					kq_wait(50);
 					fullblit(back, double_buffer);
 				}
 			}
-			revert_cframes(attack_fighter_index, 0);
+			Draw.revert_cframes(attack_fighter_index, 0);
 			battle_render(0, 0, 0);
-			blit2screen(0, 0);
+			Draw.blit2screen(0, 0);
 			infusion(attack_fighter_index, fighter[attack_fighter_index].csmem);
 			c = mp_needed(attack_fighter_index, fighter[attack_fighter_index].csmem);
 			if (c < 1)
@@ -661,7 +661,7 @@ int skill_use(size_t attack_fighter_index)
 			fullblit(double_buffer, back);
 			for (a = 0; a < 14; a++)
 			{
-				convert_cframes(PSIZE, 1 + a, 15, 1);
+				Draw.convert_cframes(PSIZE, 1 + a, 15, 1);
 				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 				{
 					if (is_active(fighter_index))
@@ -669,11 +669,11 @@ int skill_use(size_t attack_fighter_index)
 						draw_fighter(fighter_index, 0);
 					}
 				}
-				blit2screen(0, 0);
+				Draw.blit2screen(0, 0);
 				kq_wait(50);
 				fullblit(back, double_buffer);
 			}
-			revert_cframes(PSIZE, 1);
+			Draw.revert_cframes(PSIZE, 1);
 			display_attack_string = 0;
 			b = fighter[attack_fighter_index].lvl * 15;
 			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
@@ -815,7 +815,7 @@ int skill_use(size_t attack_fighter_index)
 		strcpy(attack_string, _("Steal"));
 		display_attack_string = 1;
 		battle_render(0, attack_fighter_index + 1, 0);
-		blit2screen(0, 0);
+		Draw.blit2screen(0, 0);
 		kq_wait(100);
 		play_effect(SND_MENU, 128);
 		kq_wait(500);
@@ -842,7 +842,7 @@ int skill_use(size_t attack_fighter_index)
 				if (check_inventory(found_item, 1) != 0)
 				{
 					sprintf(strbuf, _("%s taken!"), items[found_item].name);
-					message(strbuf, items[found_item].icon, 0, 0, 0);
+					Draw.message(strbuf, items[found_item].icon, 0, 0, 0);
 				}
 			}
 			else
@@ -850,11 +850,11 @@ int skill_use(size_t attack_fighter_index)
 				if (fighter[enemy_index].steal_item_common == 0 &&
 					fighter[enemy_index].steal_item_rare == 0)
 				{
-					message(_("Nothing to steal!"), 255, 0, 0, 0);
+					Draw.message(_("Nothing to steal!"), 255, 0, 0, 0);
 				}
 				else
 				{
-					message(_("Couldn't steal!"), 255, 0, 0, 0);
+					Draw.message(_("Couldn't steal!"), 255, 0, 0, 0);
 				}
 			}
 		}
@@ -884,7 +884,7 @@ int skill_use(size_t attack_fighter_index)
 				if (check_inventory(found_item, 1) != 0)
 				{
 					sprintf(strbuf, _("%s taken!"), items[found_item].name);
-					message(strbuf, items[found_item].icon, 0, 0, 0);
+					Draw.message(strbuf, items[found_item].icon, 0, 0, 0);
 				}
 			}
 			else
@@ -892,17 +892,17 @@ int skill_use(size_t attack_fighter_index)
 				if (fighter[enemy_index].steal_item_common == 0 &&
 					fighter[enemy_index].steal_item_rare == 0)
 				{
-					message(_("Nothing to steal!"), 255, 0, 0, 0);
+					Draw.message(_("Nothing to steal!"), 255, 0, 0, 0);
 				}
 				else
 				{
-					message(_("Couldn't steal!"), 255, 0, 0, 0);
+					Draw.message(_("Couldn't steal!"), 255, 0, 0, 0);
 				}
 			}
 		}
 		else
 		{
-			message(_("Couldn't steal!"), 255, 0, 0, 0);
+			Draw.message(_("Couldn't steal!"), 255, 0, 0, 0);
 		}
 #endif
 		fighter[attack_fighter_index].cx = tx;
@@ -910,7 +910,7 @@ int skill_use(size_t attack_fighter_index)
 		display_attack_string = 0;
 		fighter[attack_fighter_index].facing = 0;
 		battle_render(attack_fighter_index, attack_fighter_index, 0);
-		blit2screen(0, 0);
+		Draw.blit2screen(0, 0);
 		break;
 
 	case NOSLOM:

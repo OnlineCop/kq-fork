@@ -92,7 +92,7 @@ void death_animation(size_t target_fighter_index, int target_all_flag)
 		// TT: slow_computer additions for speed-ups
 		for (color_range = 0; color_range < 16; color_range += count)
 		{
-			convert_cframes(target_fighter_index, 1, 15 - (color_range / 2),
+			Draw.convert_cframes(target_fighter_index, 1, 15 - (color_range / 2),
 				target_all_flag);
 			for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_targets; fighter_index++)
 			{
@@ -111,7 +111,7 @@ void death_animation(size_t target_fighter_index, int target_all_flag)
 					}
 				}
 			}
-			blit2screen(0, 0);
+			Draw.blit2screen(0, 0);
 			kq_wait(30);
 			fullblit(back, double_buffer);
 		}
@@ -123,9 +123,9 @@ void death_animation(size_t target_fighter_index, int target_all_flag)
 			deffect[fighter_index] = 0;
 		}
 	}
-	revert_cframes(target_fighter_index, target_all_flag);
+	Draw.revert_cframes(target_fighter_index, target_all_flag);
 	battle_render(0, 0, 0);
-	blit2screen(0, 0);
+	Draw.blit2screen(0, 0);
 }
 
 /*! \brief Show various stats
@@ -226,16 +226,16 @@ void display_amount(size_t target_fighter_index, eFont font_color, int multiple_
 					}
 					else
 					{
-						print_num(double_buffer, dx - string_length, sprite_height, strbuf, new_font_color);
+						Draw.print_num(double_buffer, dx - string_length, sprite_height, strbuf, new_font_color);
 					}
 				}
 			}
-			blit2screen(0, 0);
+			Draw.blit2screen(0, 0);
 			kq_wait(30);
 		}
 	}
 	battle_render(0, 0, 0);
-	blit2screen(0, 0);
+	Draw.blit2screen(0, 0);
 }
 
 /*! \brief Attack animation
@@ -326,7 +326,7 @@ void draw_attacksprite(size_t target_fighter_index, int multiple_target,
 					eff[magic_effect_index].ysize);
 			}
 		}
-		blit2screen(0, 0);
+		Draw.blit2screen(0, 0);
 		kq_wait(eff[magic_effect_index].delay);
 		fullblit(back, double_buffer);
 	}
@@ -394,7 +394,7 @@ void draw_castersprite(size_t caster_fighter_index, int new_pal_color)
 			masked_blit(cs, double_buffer, 0, frame_index * 32, dx - 16, dy - 16, 32,
 				32);
 		}
-		blit2screen(0, 0);
+		Draw.blit2screen(0, 0);
 		kq_wait(120);
 		fullblit(back, double_buffer);
 	}
@@ -423,7 +423,7 @@ void draw_hugesprite(size_t target_fighter_index, int hx, int hy,
 	size_t start_fighter_index, num_fighters;
 	Raster *eb = get_cached_image(eff[effect_index].ename);
 
-	convert_cframes(target_fighter_index, eff[effect_index].kolor - 3,
+	Draw.convert_cframes(target_fighter_index, eff[effect_index].kolor - 3,
 		eff[effect_index].kolor + 3, 1);
 	if (target_fighter_index < PSIZE)
 	{
@@ -468,11 +468,11 @@ void draw_hugesprite(size_t target_fighter_index, int hx, int hy,
 			masked_blit(eb, double_buffer, 0, eff[effect_index].ysize * frame_index,
 				hx, hy, eff[effect_index].xsize, eff[effect_index].ysize);
 		}
-		blit2screen(0, 0);
+		Draw.blit2screen(0, 0);
 		kq_wait(eff[effect_index].delay);
 		fullblit(back, double_buffer);
 	}
-	revert_cframes(target_fighter_index, 1);
+	Draw.revert_cframes(target_fighter_index, 1);
 }
 
 /*! \brief Draw spell sprite
@@ -500,7 +500,7 @@ void draw_spellsprite(size_t target_fighter_index, int multiple_target,
 	size_t start_fighter_index, num_fighers, fighter_index;
 	Raster *eb = get_cached_image(eff[effect_index].ename);
 
-	convert_cframes(target_fighter_index, eff[effect_index].kolor - 3,
+	Draw.convert_cframes(target_fighter_index, eff[effect_index].kolor - 3,
 		eff[effect_index].kolor + 3, multiple_target);
 	if (multiple_target == 1)
 	{
@@ -561,11 +561,11 @@ void draw_spellsprite(size_t target_fighter_index, int multiple_target,
 					dx, dy, eff[effect_index].xsize, eff[effect_index].ysize);
 			}
 		}
-		blit2screen(0, 0);
+		Draw.blit2screen(0, 0);
 		kq_wait(eff[effect_index].delay);
 		fullblit(back, double_buffer);
 	}
-	revert_cframes(target_fighter_index, multiple_target);
+	Draw.revert_cframes(target_fighter_index, multiple_target);
 }
 
 /*! \brief Draw fighting animations

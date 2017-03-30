@@ -95,11 +95,11 @@ static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
 	first_spell_index =
 		party[pidx_index]
 		.spells[spell_page * NUM_SPELLS_PER_PAGE + spell_page_cursor];
-	menubox(double_buffer, 80 + xofs, 12 + yofs, 18, 1, BLUE);
-	print_font(double_buffer, 140 + xofs, 20 + yofs, _("Magic"), FGOLD);
-	menubox(double_buffer, 80 + xofs, 36 + yofs, 18, 5, BLUE);
+	Draw.menubox(double_buffer, 80 + xofs, 12 + yofs, 18, 1, BLUE);
+	Draw.print_font(double_buffer, 140 + xofs, 20 + yofs, _("Magic"), FGOLD);
+	Draw.menubox(double_buffer, 80 + xofs, 36 + yofs, 18, 5, BLUE);
 	kmenu.draw_playerstat(double_buffer, pidx_index, 88 + xofs, 44 + yofs);
-	menubox(double_buffer, 80 + xofs, 92 + yofs, 18, 12, BLUE);
+	Draw.menubox(double_buffer, 80 + xofs, 92 + yofs, 18, 12, BLUE);
 	for (current_spell = 0; current_spell < NUM_SPELLS_PER_PAGE; current_spell++)
 	{
 		spell_index = party[pidx_index]
@@ -111,17 +111,17 @@ static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
 		}
 		if (spell_index > 0)
 		{
-			draw_icon(double_buffer, magic[spell_index].icon, 96 + xofs,
+			Draw.draw_icon(double_buffer, magic[spell_index].icon, 96 + xofs,
 				current_spell * 8 + 100 + yofs);
-			print_font(double_buffer, 104 + xofs, current_spell * 8 + 100 + yofs,
+			Draw.print_font(double_buffer, 104 + xofs, current_spell * 8 + 100 + yofs,
 				magic[spell_index].name, text_color);
 			sprintf(strbuf, "%d", mp_needed(caster_fighter_index, spell_index));
-			print_font(double_buffer, 232 - (strlen(strbuf) * 8) + xofs,
+			Draw.print_font(double_buffer, 232 - (strlen(strbuf) * 8) + xofs,
 				current_spell * 8 + 100 + yofs, strbuf, text_color);
 		}
 	}
-	menubox(double_buffer, 40 + xofs, 204 + yofs, 28, 1, BLUE);
-	print_font(double_buffer,
+	Draw.menubox(double_buffer, 40 + xofs, 204 + yofs, 28, 1, BLUE);
+	Draw.print_font(double_buffer,
 		(160 - (strlen(magic[first_spell_index].desc) * 4)) + xofs,
 		212 + yofs, magic[first_spell_index].desc, FNORMAL);
 	draw_sprite(double_buffer, pgb[spell_page], 230 + xofs, 194 + yofs);
@@ -150,7 +150,7 @@ void camp_spell_menu(int c)
 	while (!stop)
 	{
 		Game.do_check_animation();
-		drawmap();
+		Draw.drawmap();
 		camp_draw_spell_menu(c, pg[smove], ptr[smove]);
 		if (smove == 0)
 		{
@@ -164,7 +164,7 @@ void camp_spell_menu(int c)
 			}
 			draw_sprite(double_buffer, sptr, 88 + xofs, ptr[1] * 8 + 100 + yofs);
 		}
-		blit2screen(xofs, yofs);
+		Draw.blit2screen(xofs, yofs);
 		PlayerInput.readcontrols();
 		if (PlayerInput.down)
 		{
@@ -392,13 +392,13 @@ int learn_new_spells(int who)
 				{
 					sprintf(strbuf, _("%s learned %s"), party[who].name, magic[a].name);
 					fullblit(back, double_buffer);
-					menubox(double_buffer, 148 - (strlen(strbuf) * 4), 152,
+					Draw.menubox(double_buffer, 148 - (strlen(strbuf) * 4), 152,
 						strlen(strbuf) + 1, 1, BLUE);
-					draw_icon(double_buffer, magic[a].icon, 156 - (strlen(strbuf) * 4),
+					Draw.draw_icon(double_buffer, magic[a].icon, 156 - (strlen(strbuf) * 4),
 						160);
-					print_font(double_buffer, 164 - (strlen(strbuf) * 4), 160, strbuf,
+					Draw.print_font(double_buffer, 164 - (strlen(strbuf) * 4), 160, strbuf,
 						FNORMAL);
-					blit2screen(0, 0);
+					Draw.blit2screen(0, 0);
 					Game.wait_enter();
 					g++;
 				}
