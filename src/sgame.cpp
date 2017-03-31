@@ -174,7 +174,7 @@ void KSaveGame::delete_game(void)
 int KSaveGame::load_game(void)
 {
 	sprintf(strbuf, "sg%d.xml", save_ptr);
-	load_game_xml(kqres(SAVE_DIR, strbuf).c_str());
+	Disk.load_game_from_file(kqres(SAVE_DIR, strbuf).c_str());
 	timer_count = 0;
 	ksec = 0;
 	hold_fade = 0;
@@ -201,7 +201,7 @@ void KSaveGame::load_sgstats(void)
 		sprintf(buf, "sg%u.xml", sg);
 		string path = kqres(SAVE_DIR, string(buf));
 		s_sgstats &stats = savegame[sg];
-		if (exists(path.c_str()) && (load_stats_only(path.c_str(), stats) != 0))
+		if (exists(path.c_str()) && (Disk.load_stats_only(path.c_str(), stats) != 0))
 		{
 			// Not found (which is OK), so zero out the struct
 			stats.num_characters = 0;
@@ -218,7 +218,7 @@ void KSaveGame::load_sgstats(void)
 int KSaveGame::save_game(void)
 {
 	sprintf(strbuf, "sg%d.xml", save_ptr);
-	int rc = save_game_xml(kqres(SAVE_DIR, strbuf).c_str());
+	int rc = Disk.save_game_to_file(kqres(SAVE_DIR, strbuf).c_str());
 	if (rc)
 	{
 		savegame[save_ptr] = s_sgstats::get_current();
@@ -662,8 +662,7 @@ int KSaveGame::start_menu(int skip_splash)
 	if (stop == 2)
 	{
 		/* New game init */
-		extern int load_game_xml(const char *filename);
-		load_game_xml(kqres(eDirectories::DATA_DIR, "starting.xml").c_str());
+		Disk.load_game_from_file(kqres(eDirectories::DATA_DIR, "starting.xml").c_str());
 	}
 	return stop - 1;
 }

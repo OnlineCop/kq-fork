@@ -31,6 +31,7 @@
 #include <string.h>
 
 #include "combat.h"
+#include "disk.h"
 #include "draw.h"
 #include "enemyc.h"
 #include "eskill.h"
@@ -691,13 +692,12 @@ static int enemy_stscheck(int ws, int s)
 
 static void dump_en()
 {
-	extern int save_fighters(const char *, KFighter *, int);
 	std::unique_ptr<KFighter[]> tmp(new KFighter[enemies_n]);
 	for (int i = 0; i < enemies_n; ++i)
 	{
 		tmp[i] = *enemy_fighters[i];
 	}
-	save_fighters("save-f.xml", tmp.get(), enemies_n);
+	Disk.save_fighters_to_file("save-f.xml", tmp.get(), enemies_n);
 }
 
 /*! \brief Load all enemies from disk

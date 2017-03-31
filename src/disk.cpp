@@ -27,16 +27,6 @@
  * \date 20030629
  */
 
-#include <algorithm>
-#include <assert.h>
-#include <iterator>
-#include <map>
-#include <stdint.h>
-#include <stdio.h>
-#include <string>
-#include <tinyxml2.h>
-#include <vector>
-
 #include "bounds.h"
 #include "disk.h"
 #include "heroc.h"
@@ -47,89 +37,10 @@
 #include "shopmenu.h"
 #include "sgame.h"
 
-using tinyxml2::XMLElement;
-using tinyxml2::XMLDocument;
-using std::vector;
-using std::copy;
-using std::begin;
-using std::end;
+KDisk Disk;
 
-static const char* TAG_ATTRIBUTES = "attributes";
-static const char* TAG_EQUIPMENT = "equipment";
-static const char* TAG_HEROES = "heroes";
-static const char* TAG_HERO = "hero";
-static const char* TAG_INVENTORY = "inventory";
-static const char* TAG_ITEM = "item";
-static const char* TAG_LEVEL_UP = "level-up";
-static const char* TAG_PROGRESS = "progress";
-static const char* TAG_PROPERTIES = "properties";
-static const char* TAG_PROPERTY = "property";
-static const char* TAG_RESISTANCES = "resistances";
-static const char* TAG_SAVE_SPELLS = "save-spells";
-static const char* TAG_SHOP = "shop";
-static const char* TAG_SHOPS = "shops";
-static const char* TAG_SPECIAL = "special";
-static const char* TAG_SPELLS = "spells";
-static const char* TAG_SPELL_TYPES = "spelltypes";
-static const char* TAG_TREASURES = "treasures";
 
-/*! Iteration helper class.
- * Allows use of C++11's range-based for syntax to iterate
- * through child elements.
- */
-typedef std::pair<XMLElement *, const char *> xiterator;
-struct xiterable : public std::pair<XMLElement *, const char *>
-{
-	using std::pair<XMLElement *, const char *>::pair;
-	xiterator begin()
-	{
-		return xiterator(first->FirstChildElement(second), second);
-	}
-	xiterator end()
-	{
-		return xiterator(nullptr, second);
-	}
-};
-
-xiterator &operator++(xiterator &it)
-{
-	it.first = it.first->NextSiblingElement(it.second);
-	return it;
-}
-
-XMLElement *operator*(xiterator &it) { return it.first; }
-
-xiterable children(XMLElement *parent, const char *tag = nullptr)
-{
-	return xiterable(parent, tag);
-}
-
-/** Convert a comma-separated list of ints into a vector.
- * Supplied string can be null or empty (giving an empty list)
- * \param str a string containing the list
- * \returns the numbers in a vector
- */
-static vector<int> parse_list(const char *str)
-{
-	vector<int> list;
-	while (str && *str)
-	{
-		const char *next = strchr(str, ',');
-		list.push_back(static_cast<int>(strtol(str, nullptr, 10)));
-		if (next)
-		{
-			str = next + 1;
-		}
-		else
-		{
-			str = nullptr;
-		}
-	}
-	return list;
-}
-
-/** Generate a comma-separated list from
- * a range specified by two iterators
+/** Generate a comma-separated list from a range specified by two iterators
  * \param begin the start of the range (inclusive)
  * \param end the end of the range (exclusive)
  * \returns a new comma-separated list
@@ -158,8 +69,7 @@ static std::string make_list(_InputIterator begin, _InputIterator end)
 template <typename _InputIterator>
 static XMLElement *value_list(XMLElement *elem, _InputIterator begin, _InputIterator end)
 {
-	tinyxml2::XMLText *content =
-		elem->GetDocument()->NewText(make_list(begin, end).c_str());
+	tinyxml2::XMLText *content = elem->GetDocument()->NewText(make_list(begin, end).c_str());
 	elem->DeleteChildren();
 	elem->InsertFirstChild(content);
 	return elem;
@@ -211,7 +121,63 @@ bool range_is_default(_InputIterator first, _InputIterator last)
 	return true;
 }
 
-static int load_resistances(s_player *s, XMLElement *node)
+
+/*! Iteration helper class.
+ * Allows use of C++11's range-based for syntax to iterate
+ * through child elements.
+ */
+typedef std::pair<XMLElement *, const char *> xiterator;
+struct xiterable : public std::pair<XMLElement *, const char *>
+{
+	using std::pair<XMLElement *, const char *>::pair;
+	xiterator begin()
+	{
+		return xiterator(first->FirstChildElement(second), second);
+	}
+	xiterator end()
+	{
+		return xiterator(nullptr, second);
+	}
+};
+
+xiterator &operator++(xiterator &it)
+{
+	it.first = it.first->NextSiblingElement(it.second);
+	return it;
+}
+
+XMLElement *operator*(xiterator &it)
+{
+	return it.first;
+}
+
+xiterable children(XMLElement *parent, const char *tag = nullptr)
+{
+	return xiterable(parent, tag);
+}
+
+
+
+vector<int> KDisk::parse_list(const char *str)
+{
+	vector<int> list;
+	while (str && *str)
+	{
+		const char *next = strchr(str, ',');
+		list.push_back(static_cast<int>(strtol(str, nullptr, 10)));
+		if (next)
+		{
+			str = next + 1;
+		}
+		else
+		{
+			str = nullptr;
+		}
+	}
+	return list;
+}
+
+int KDisk::load_resistances(s_player *s, XMLElement *node)
 {
 	std::fill(std::begin(s->res), std::end(s->res), 0);
 	XMLElement *resistances = node->FirstChildElement(TAG_RESISTANCES);
@@ -235,7 +201,7 @@ static int load_resistances(s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int load_spelltypes(s_player *s, XMLElement *node)
+int KDisk::load_spelltypes(s_player *s, XMLElement *node)
 {
 	std::fill(std::begin(s->sts), std::end(s->sts), 0);
 	XMLElement *spelltypes = node->FirstChildElement(TAG_SPELL_TYPES);
@@ -258,7 +224,7 @@ static int load_spelltypes(s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int load_spells(s_player *s, XMLElement *node)
+int KDisk::load_spells(s_player *s, XMLElement *node)
 {
 	std::fill(std::begin(s->spells), std::end(s->spells), 0);
 	XMLElement *spells = node->FirstChildElement(TAG_SPELLS);
@@ -281,7 +247,7 @@ static int load_spells(s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int load_equipment(s_player *s, XMLElement *node)
+int KDisk::load_equipment(s_player *s, XMLElement *node)
 {
 	std::fill(std::begin(s->eqp), std::end(s->eqp), 0);
 	XMLElement *eqp = node->FirstChildElement(TAG_EQUIPMENT);
@@ -304,7 +270,7 @@ static int load_equipment(s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int load_attributes(s_player *s, XMLElement *node)
+int KDisk::load_attributes(s_player *s, XMLElement *node)
 {
 	XMLElement *attributes = node->FirstChildElement(TAG_ATTRIBUTES);
 	if (attributes)
@@ -368,7 +334,7 @@ static int load_attributes(s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int load_core_properties(s_player *s, XMLElement *node)
+int KDisk::load_core_properties(s_player *s, XMLElement *node)
 {
 	XMLElement *properties = node->FirstChildElement(TAG_PROPERTIES);
 	if (properties)
@@ -421,7 +387,7 @@ static int load_core_properties(s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int load_lup(s_player *s, XMLElement *node)
+int KDisk::load_lup(s_player *s, XMLElement *node)
 {
 	XMLElement *elem = node->FirstChildElement(TAG_LEVEL_UP);
 	if (elem && !elem->NoChildren())
@@ -437,12 +403,7 @@ static int load_lup(s_player *s, XMLElement *node)
 	}
 }
 
-/** Get player (hero) data from an XML node.
- * @param s the structure to write to
- * @param node a node within an XML document.
- * @returns 0 if OK otherwise -1
- */
-int load_s_player(s_player *s, XMLElement *node)
+int KDisk::load_s_player(s_player *s, XMLElement *node)
 {
 	load_core_properties(s, node);
 	load_attributes(s, node);
@@ -458,7 +419,7 @@ int load_s_player(s_player *s, XMLElement *node)
 template <typename T>
 static XMLElement *addprop(XMLElement *parent, const char *name, T value)
 {
-	XMLElement *property = parent->GetDocument()->NewElement(TAG_PROPERTY);
+	XMLElement *property = parent->GetDocument()->NewElement("property");
 	property->SetAttribute("name", name);
 	property->SetAttribute("value", value);
 	parent->InsertEndChild(property);
@@ -470,8 +431,8 @@ static XMLElement *addprop(XMLElement *parent, const char *name, const std::stri
 	return addprop(parent, name, value.c_str());
 }
 
-// Store spell info or nothing if all spells are 'zero'
-static int store_spells(const s_player *s, XMLElement *node)
+/** Store spell info or nothing if all spells are 'zero' */
+int KDisk::store_spells(const s_player *s, XMLElement *node)
 {
 	auto startp = std::begin(s->spells);
 	auto endp = std::end(s->spells);
@@ -484,7 +445,7 @@ static int store_spells(const s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int store_equipment(const s_player *s, XMLElement *node)
+int KDisk::store_equipment(const s_player *s, XMLElement *node)
 {
 	auto startp = std::begin(s->eqp);
 	auto endp = std::end(s->eqp);
@@ -497,7 +458,7 @@ static int store_equipment(const s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int store_spelltypes(const s_player *s, XMLElement *node)
+int KDisk::store_spelltypes(const s_player *s, XMLElement *node)
 {
 	auto startp = std::begin(s->sts);
 	auto endp = std::end(s->sts);
@@ -510,7 +471,7 @@ static int store_spelltypes(const s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int store_resistances(const s_player *s, XMLElement *node)
+int KDisk::store_resistances(const s_player *s, XMLElement *node)
 {
 	auto startp = std::begin(s->res);
 	auto endp = std::end(s->res);
@@ -523,7 +484,7 @@ static int store_resistances(const s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int store_stats(const s_player *s, XMLElement *node)
+int KDisk::store_stats(const s_player *s, XMLElement *node)
 {
 	auto startp = std::begin(s->stats);
 	auto endp = std::end(s->stats);
@@ -536,7 +497,7 @@ static int store_stats(const s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int store_lup(const s_player *s, XMLElement *node)
+int KDisk::store_lup(const s_player *s, XMLElement *node)
 {
 	XMLElement *elem = node->GetDocument()->NewElement(TAG_LEVEL_UP);
 	value_list(elem, std::begin(s->lup), std::end(s->lup));
@@ -565,7 +526,7 @@ static const std::map<const char *, ePIDX, cstring_less> id_lookup = {
 
 /** Store player inside a node that you supply.
  */
-static int save_player(const s_player *s, XMLElement *node)
+int KDisk::save_player(const s_player *s, XMLElement *node)
 {
 	XMLDocument *doc = node->GetDocument();
 	XMLElement *hero = doc->NewElement(TAG_HERO);
@@ -603,7 +564,7 @@ static int save_player(const s_player *s, XMLElement *node)
 	return 0;
 }
 
-static int load_players(XMLElement *root)
+int KDisk::load_players(XMLElement *root)
 {
 	XMLElement *heroes_elem = root->FirstChildElement(TAG_HEROES);
 	if (heroes_elem)
@@ -628,12 +589,7 @@ static int load_players(XMLElement *root)
 	return 1;
 }
 
-/** Save all hero data into an XML node.
- * \param heroes array of all heroes
- * \param node a node to save into
- * \returns 0 if error otherwise 1
- */
-int save_players(XMLElement *node)
+int KDisk::save_players(XMLElement *node)
 {
 	XMLDocument *doc = node->GetDocument();
 	XMLElement *hs = doc->NewElement(TAG_HEROES);
@@ -645,8 +601,7 @@ int save_players(XMLElement *node)
 	return 1;
 }
 
-// Helper functions for various chunks of data that need saving or loading
-static int save_treasures(XMLElement *node)
+int KDisk::save_treasures(XMLElement *node)
 {
 	auto startp = std::begin(treasure);
 	auto endp = std::end(treasure);
@@ -659,7 +614,7 @@ static int save_treasures(XMLElement *node)
 	return 1;
 }
 
-static int load_treasures(XMLElement *node)
+int KDisk::load_treasures(XMLElement *node)
 {
 	auto startp = std::begin(treasure);
 	auto endp = std::end(treasure);
@@ -682,7 +637,7 @@ static int load_treasures(XMLElement *node)
 	return 1;
 }
 
-static int save_progress(XMLElement *node)
+int KDisk::save_progress(XMLElement *node)
 {
 	auto startp = std::begin(progress);
 	auto endp = std::end(progress);
@@ -695,7 +650,7 @@ static int save_progress(XMLElement *node)
 	return 1;
 }
 
-static int load_progress(XMLElement *node)
+int KDisk::load_progress(XMLElement *node)
 {
 	auto startp = std::begin(progress);
 	auto endp = std::end(progress);
@@ -718,7 +673,7 @@ static int load_progress(XMLElement *node)
 	return 1;
 }
 
-static int save_save_spells(XMLElement *node)
+int KDisk::save_save_spells(XMLElement *node)
 {
 	auto startp = std::begin(save_spells);
 	auto endp = std::end(save_spells);
@@ -731,7 +686,7 @@ static int save_save_spells(XMLElement *node)
 	return 1;
 }
 
-static int load_save_spells(XMLElement *node)
+int KDisk::load_save_spells(XMLElement *node)
 {
 	auto startp = std::begin(save_spells);
 	auto endp = std::end(save_spells);
@@ -754,7 +709,7 @@ static int load_save_spells(XMLElement *node)
 	return 1;
 }
 
-static int save_specials(XMLElement *node)
+int KDisk::save_specials(XMLElement *node)
 {
 	auto startp = std::begin(player_special_items);
 	auto endp = std::end(player_special_items);
@@ -767,7 +722,7 @@ static int save_specials(XMLElement *node)
 	return 1;
 }
 
-static int load_specials(XMLElement *node)
+int KDisk::load_specials(XMLElement *node)
 {
 	auto startp = std::begin(player_special_items);
 	auto endp = std::end(player_special_items);
@@ -790,7 +745,7 @@ static int load_specials(XMLElement *node)
 	return 1;
 }
 
-static int save_global_inventory(XMLElement *node)
+int KDisk::save_global_inventory(XMLElement *node)
 {
 	XMLDocument *doc = node->GetDocument();
 	XMLElement *inventory = doc->NewElement(TAG_INVENTORY);
@@ -808,7 +763,7 @@ static int save_global_inventory(XMLElement *node)
 	return 1;
 }
 
-static int load_global_inventory(XMLElement *node)
+int KDisk::load_global_inventory(XMLElement *node)
 {
 	for (auto &item : g_inv)
 	{
@@ -829,7 +784,7 @@ static int load_global_inventory(XMLElement *node)
 	return 0;
 }
 
-static int save_shop_info(XMLElement *node)
+int KDisk::save_shop_info(XMLElement *node)
 {
 	bool visited = false;
 	// Check if any shops have been visited
@@ -863,7 +818,7 @@ static int save_shop_info(XMLElement *node)
 	return 1;
 }
 
-static int load_shop_info(XMLElement *node)
+int KDisk::load_shop_info(XMLElement *node)
 {
 	for (auto &shop : shops)
 	{
@@ -893,7 +848,7 @@ static int load_shop_info(XMLElement *node)
 	return 1;
 }
 
-static int save_general_props(XMLElement *node)
+int KDisk::save_general_props(XMLElement *node)
 {
 	XMLElement *properties = node->GetDocument()->NewElement(TAG_PROPERTIES);
 	s_sgstats stats = s_sgstats::get_current();
@@ -922,7 +877,7 @@ static int save_general_props(XMLElement *node)
 	return 1;
 }
 
-static int load_general_props(XMLElement *node)
+int KDisk::load_general_props(XMLElement *node)
 {
 	XMLElement *properties = node->FirstChildElement(TAG_PROPERTIES);
 	if (properties)
@@ -931,7 +886,7 @@ static int load_general_props(XMLElement *node)
 		{
 			if (property->Attribute("name", "gold"))
 			{
-				gp = property->IntAttribute("value");
+				Game.gp = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "random-state"))
 			{
@@ -983,9 +938,7 @@ static int load_general_props(XMLElement *node)
 	return 0;
 }
 
-/** Save everything into a node
- */
-int save_game_xml(XMLElement *node)
+int KDisk::save_game_xml(XMLElement *node)
 {
 	node->SetAttribute("version", "93");
 	save_general_props(node);
@@ -999,7 +952,7 @@ int save_game_xml(XMLElement *node)
 	return 1;
 }
 
-int save_game_xml(const char *filename)
+int KDisk::save_game_to_file(const char *filename)
 {
 	XMLDocument doc;
 	XMLElement *save = doc.NewElement("save");
@@ -1010,9 +963,7 @@ int save_game_xml(const char *filename)
 	return k;
 }
 
-/** Load everything from a node
- */
-int load_game_xml(XMLElement *node)
+int KDisk::load_game_xml(XMLElement *node)
 {
 	load_general_props(node);
 	load_players(node);
@@ -1025,8 +976,7 @@ int load_game_xml(XMLElement *node)
 	return 1;
 }
 
-/** Load everything from a file */
-int load_game_xml(const char *filename)
+int KDisk::load_game_from_file(const char *filename)
 {
 	XMLDocument doc;
 	doc.LoadFile(filename);
@@ -1042,7 +992,7 @@ int load_game_xml(const char *filename)
 	return 0;
 }
 
-static void printprop(tinyxml2::XMLPrinter &out, const char *name, int value)
+void KDisk::printprop(tinyxml2::XMLPrinter &out, const char *name, int value)
 {
 	out.OpenElement(TAG_PROPERTY);
 	out.PushAttribute("name", name);
@@ -1050,7 +1000,7 @@ static void printprop(tinyxml2::XMLPrinter &out, const char *name, int value)
 	out.CloseElement();
 }
 
-static void printprop(tinyxml2::XMLPrinter &out, const char *name, const char *value)
+void KDisk::printprop(tinyxml2::XMLPrinter &out, const char *name, const char *value)
 {
 	out.OpenElement(TAG_PROPERTY);
 	out.PushAttribute("name", name);
@@ -1058,7 +1008,7 @@ static void printprop(tinyxml2::XMLPrinter &out, const char *name, const char *v
 	out.CloseElement();
 }
 
-static int save_s_fighter(tinyxml2::XMLPrinter &out, const KFighter &f)
+int KDisk::save_s_fighter(tinyxml2::XMLPrinter &out, const KFighter &f)
 {
 	out.OpenElement("fighter");
 	out.PushAttribute("id", f.name);
@@ -1120,7 +1070,7 @@ static int save_s_fighter(tinyxml2::XMLPrinter &out, const KFighter &f)
 	return 0;
 }
 
-int save_fighters(const char *filename, KFighter *fighters, int count)
+int KDisk::save_fighters_to_file(const char *filename, KFighter *fighters, int count)
 {
 	FILE *f = fopen(filename, "wb");
 	if (f)
@@ -1139,12 +1089,7 @@ int save_fighters(const char *filename, KFighter *fighters, int count)
 	return 0;
 }
 
-/*! Load an XML file but only to get the stats out of it.
- * \param filename the file name
- * \param stats where to put the stats
- * \returns 0 if OK, otherwise 1
- */
-int load_stats_only(const char *filename, s_sgstats &stats)
+int KDisk::load_stats_only(const char *filename, s_sgstats &stats)
 {
 	XMLDocument doc;
 	doc.LoadFile(filename);
@@ -1188,25 +1133,4 @@ int load_stats_only(const char *filename, s_sgstats &stats)
 		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());
 	}
 	return 1;
-}
-
-/*! Get the save-game stats that apply to the current state.
- * \returns a structure containing the stats;
- */
-s_sgstats s_sgstats::get_current()
-{
-	s_sgstats stats;
-	stats.gold = gp;
-	stats.time = khr * 60 + kmin;
-	stats.num_characters = numchrs;
-	for (auto i = 0U; i < numchrs; ++i)
-	{
-		auto &chr = stats.characters[i];
-		chr.id = pidx[i];
-		auto &pp = party[chr.id];
-		chr.hp = pp.mhp > 0 ? pp.hp * 100 / pp.mhp : 0;
-		chr.mp = pp.mmp > 0 ? pp.mp * 100 / pp.mmp : 0;
-		chr.level = pp.lvl;
-	}
-	return stats;
 }
