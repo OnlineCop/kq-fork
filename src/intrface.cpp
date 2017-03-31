@@ -533,7 +533,7 @@ static int KQ_check_map_change(void)
 		break;
 
 	case CHANGE_TO_MARKER:
-		Game.change_mapm(tmap_name, marker_name, tmx, tmy);
+		Game.change_map(tmap_name, marker_name, tmx, tmy);
 		changing_map = NOT_CHANGING;
 		break;
 

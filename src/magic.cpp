@@ -1594,7 +1594,7 @@ static void special_spells(size_t caster_fighter_index, size_t spell_number)
 				 * house, etc.
 				 */
 
-				Game.change_mapm("town4", "warp", 0, 0);
+				Game.change_map("town4", "warp", 0, 0);
 			}
 			else
 			{

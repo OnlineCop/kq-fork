@@ -372,12 +372,6 @@ KGame::KGame()
 
 }
 
-/*! \brief Alt key handler
- *
- * This function is called when the player presses the 'alt' key.
- * Things that can be activated are entities and zones that are
- * obstructed.
- */
 void KGame::activate(void)
 {
 	int zx, zy, looking_at_x = 0, looking_at_y = 0, q, target_char_facing = 0, tf;
@@ -456,16 +450,6 @@ void KGame::activate(void)
 	}
 }
 
-/* \brief Add a new timer event to the list
- *
- * Up to five pending events can be stored
- * at once.
- * \param n the name of the event
- * \param delta the number of seconds before the
- *        event will be called. For example 5 means
- *        five seconds in the future
- * \returns <0 if an error occurred (i.e. too many pending events)
- */
 int KGame::add_timer_event(const char *n, int delta)
 {
 	int w = delta + ksec;
@@ -489,17 +473,6 @@ int KGame::add_timer_event(const char *n, int delta)
 
 #ifdef DEBUGMODE
 
-/*! \brief Creates a bitmap, giving an error message with the specified name if it fails.
- *
- * This function terminates the program with an error message if it fails to
- * allocate the specified bitmap. The name supplied is shown if this happens
- * to help you trace which bitmap caused the issue.
- *
- * \param   bitmap_width Width
- * \param   bitmap_height Height
- * \param   bitmap_name Name of bitmap
- * \returns the pointer to the created bitmap
- */
 Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap_name)
 {
 	Raster *tmp = new Raster(bitmap_width, bitmap_height);
@@ -512,16 +485,12 @@ Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char *bitmap
 	return tmp;
 }
 #else
-Raster *KGame::alloc_bmp(int w, int h, const char * /*n*/)
+Raster *KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char *)
 {
-	return new Raster(w, h);
+	return new Raster(bitmap_width, bitmap_height);
 }
 #endif
 
-/*! \brief Create bitmaps
- *
- * A separate function to create all global bitmaps needed in the game.
- */
 void KGame::allocate_stuff(void)
 {
 	size_t i, p;
@@ -618,17 +587,7 @@ void KGame::allocate_stuff(void)
 	allocate_credits();
 }
 
-/*! \brief Move the viewport if necessary to include the players
- *
- * This is used to determine what part of the map is
- * visible on the screen.  Usually, the party can walk around
- * in the center of the screen a bit without causing it to
- * scroll.  The center parameter is mostly used for warps and
- * such, so that the players start in the center of the screen.
- *
- * \param   center Unused variable
- */
-void KGame::calc_viewport(int /*center*/)
+void KGame::calc_viewport()
 {
 	int sx, sy, bl, br, bu, bd, zx, zy;
 
@@ -700,44 +659,13 @@ void KGame::calc_viewport(int /*center*/)
 	}
 }
 
-/*! \brief Free old map data and load a new one
- *
- * This loads a new map and performs all of the functions
- * that accompany the loading of a new map.
- *
- * \param   map_name Base name of map (xxx -> maps/xxx.map)
- * \param   msx New x-coord for player. Pass 0 for msx and msy
- *              to use the 'default' position stored in the
- *              map file: s_map::stx and s_map::sty
- * \param   msy New y-coord for player
- * \param   mvx New x-coord for camera. Pass 0 for mvx and mvy
- *              to use the default: s_map::stx and s_map::sty)
- * \param   mvy New y-coord for camera
- */
-void KGame::change_map(const string &map_name, int msx, int msy, int mvx,
-	int mvy)
+void KGame::change_map(const string &map_name, int player_x, int player_y, int camera_x, int camera_y)
 {
 	TiledMap.load_tmx(map_name);
-	prepare_map(msx, msy, mvx, mvy);
+	prepare_map(player_x, player_y, camera_x, camera_y);
 }
 
-/*! \brief Free old map data and load a new one
- *
- * This loads a new map and performs all of the functions
- * that accompany the loading of a new map and is 99% identical to the
- * change_map function, but uses Markers to specify the starting
- * coords of the player instead of hard-coded coords.
- *
- * \param   map_name Base name of map (xxx -> maps/xxx.map)
- * \param   marker_name Marker containing both x and y coords for player.  If
- *              the marker's name doesn't exist on the map, pass 0 for msx and
- *              msy to use the 'default' position stored in the map file
- *              (s_map::stx and s_map::sty)
- * \param   offset_x Push player left/right this many tiles from the marker
- * \param   offset_y Push player up/down this many tiles from the marker
- */
-void KGame::change_mapm(const string &map_name, const string &marker_name,
-	int offset_x, int offset_y)
+void KGame::change_map(const string &map_name, const string &marker_name, int offset_x, int offset_y)
 {
 	int msx = 0, msy = 0, mvx = 0, mvy = 0;
 
@@ -754,13 +682,6 @@ void KGame::change_mapm(const string &map_name, const string &marker_name,
 	prepare_map(msx, msy, mvx, mvy);
 }
 
-/*! \brief Do tile animation
- *
- * This updates tile indexes for animation threads.
- * Animations within tilemaps consist of a starting tile index, an ending
- * tile index, and a delay. The smaller the delay value, the faster that the
- * animation cycles through the tiles.
- */
 void KGame::do_check_animation(void)
 {
 	int millis = (1000 * animation_count) / KQ_TICKS;
@@ -770,12 +691,6 @@ void KGame::do_check_animation(void)
 
 #ifdef DEBUGMODE
 
-/*! \brief Write debug data to disk
- *
- * Writes the treasure and progress arrays in text format to "treasure.log"
- * and "progress.log" respectively. This happens in response to user hitting
- * the F11 key.
- */
 void KGame::data_dump(void)
 {
 	FILE *ff;
@@ -814,10 +729,6 @@ void KGame::data_dump(void)
 }
 #endif
 
-/*! \brief Free allocated memory
- *
- * This frees memory and such things.
- */
 void KGame::deallocate_stuff(void)
 {
 	int i, p;
@@ -948,19 +859,6 @@ void KGame::deallocate_stuff(void)
 #endif
 }
 
-/* \brief Get the next event if any
- *
- * Checks the pending events and returns the name
- * of the next one, or NULL if nothing is ready
- * to be triggered.
- * If more than one event is ready, only one will be returned;
- * the next one will be returned next time.
- * Each event is removed after it is triggered. If a repeating
- * event is desired, you should call add_timer_event() again
- * in the handler function.
- *
- * \returns name of the next event or NULL if none is ready
- */
 char *KGame::get_timer_event(void)
 {
 	static char buf[32];
@@ -998,13 +896,6 @@ char *KGame::get_timer_event(void)
 	return *buf ? buf : NULL;
 }
 
-/*! \brief Is this character in the party?
- *
- * Determine whether the specified character is currently in play.
- *
- * \param   pn Character to ask about
- * \returns index of member's ID if found, else MAXCHRS if NOT in party.
- */
 size_t KGame::in_party(ePIDX pn)
 {
 	size_t pidx_index;
@@ -1020,36 +911,13 @@ size_t KGame::in_party(ePIDX pn)
 	return MAXCHRS;
 }
 
-/*! \brief Log events
- *
- * This is for logging events within the program.  Very
- * useful for debugging and tracing.
- * \note klog is deprecated; use Allegro's TRACE instead.
- *
- * \param   msg String to add to log file
- */
-void KGame::klog(const char *msg) { TRACE("%s\n", msg); }
+void KGame::klog(const char *msg)
+{
+	TRACE("%s\n", msg);
+}
 
-/*! \brief Yield processor for other tasks
- *
- * This function calls rest() with the value of 'cpu_usage' as its parameter
- *
- * \author PH
- * \date 20050423
- * \author OC
- * \date 20100228
- */
 void KGame::kq_yield(void) { rest(cpu_usage); }
 
-/*! \brief Pause for a time
- *
- * Why not just use rest() you ask?  Well, this function
- * kills time, but it also processes entities.  This function
- * is basically used to run entity scripts and for automatic
- * party movement.
- *
- * \param   dtime Time in frames
- */
 void KGame::kwait(int dtime)
 {
 	int cnt = 0;
@@ -1103,13 +971,6 @@ void KGame::kwait(int dtime)
 	autoparty = 0;
 }
 
-/*! \brief Load initial hero stuff from file
- *
- * \author PH
- * \date 20030320
- * Loads the hero stats from a file.
- *
- */
 void KGame::load_heroes(void)
 {
 	Raster *eb = get_cached_image("uschrs.png");
@@ -1244,7 +1105,7 @@ END_OF_MAIN()
  *
  * New interrupt handler set to keep game time.
  */
-	void my_counter(void)
+void my_counter(void)
 {
 	timer++;
 
@@ -1259,14 +1120,7 @@ END_OF_MAIN()
 }
 END_OF_FUNCTION(my_counter)
 
-/*! \brief Do everything necessary to load a map
- *
- * \param   msx - New x-coord for player
- * \param   msy - Same, for y-coord
- * \param   mvx - New x-coord for camera
- * \param   mvy - Same, for y-coord
- */
-	void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
+void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 {
 	Raster *pcxb;
 	unsigned int i;
@@ -1430,12 +1284,6 @@ END_OF_FUNCTION(my_counter)
 	timer_count = 0;
 }
 
-/*! \brief End program due to fatal error
- *
- * Kill the program and spit out a message.
- *
- * \param   message Text to put into log
- */
 void KGame::program_death(const char *message)
 {
 	TRACE("%s\n", message);
@@ -1448,10 +1296,6 @@ void KGame::program_death(const char *message)
 	exit(EXIT_FAILURE);
 }
 
-/*! \brief Delete any pending events
- *
- * This removes any events from the list
- */
 void KGame::reset_timer_events(void)
 {
 	int i;
@@ -1463,9 +1307,6 @@ void KGame::reset_timer_events(void)
 	next_event_time = INT_MAX;
 }
 
-/*! \brief Resets the world. Called every new game and load game
- *  This function may be called multiple times in some cases. That should be ok.
- */
 void KGame::reset_world(void)
 {
 	int i, j;
@@ -1501,11 +1342,6 @@ void KGame::reset_world(void)
 	lua_user_init();
 }
 
-/*! \brief Application start-up code
- *
- * Set up allegro, set up variables, load stuff, blah...
- * This is called once per game.
- */
 void KGame::startup(void)
 {
 	int p, i, q;
@@ -1707,15 +1543,7 @@ void time_counter(void)
 }
 END_OF_FUNCTION(time_counter)
 
-/*! \brief Wait for key release
- *
- * This is used to wait and make sure that the user has
- * released a key before moving on.
- * 20030728 PH re-implemented in IMHO a neater way
- *
- * \note Waits at most 20 'ticks'
- */
-	void KGame::unpress(void)
+void KGame::unpress(void)
 {
 	timer_count = 0;
 	while (timer_count < 20)
@@ -1731,10 +1559,6 @@ END_OF_FUNCTION(time_counter)
 	timer_count = 0;
 }
 
-/*! \brief Wait for ALT
- *
- * Simply wait for the 'alt' key to be pressed.
- */
 void KGame::wait_enter(void)
 {
 	int stop = 0;
@@ -1755,21 +1579,7 @@ void KGame::wait_enter(void)
 	timer_count = 0;
 }
 
-/*! \brief Wait for scripted movement to finish
- *
- * This does like kq_wait() and processes entities...
- * however, this function waits for particular entities
- * to finish scripted movement rather than waiting for
- * a specific amount of time to pass.
- * Specify a range of entities to wait for.
- * \note 20030810 PH implemented this in a neater way, need to check if it
- * always works though.
- *
- * \param   first_entity_index First entity
- * \param   last_entity_index Last entity
- */
-void KGame::wait_for_entity(size_t first_entity_index,
-	size_t last_entity_index)
+void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
 {
 	int any_following_entities;
 	uint8_t move_mode;
@@ -1821,16 +1631,6 @@ void KGame::wait_for_entity(size_t first_entity_index,
 	autoparty = 0;
 }
 
-/*! \brief Move player(s) to new coordinates
- *
- * Fade out... change co-ordinates... fade in.
- * The wtx/wty co-ordinates indicate where to put the player.
- * The wvx/wvy co-ordinates indicate where to put the camera.
- *
- * \param   wtx New x-coord
- * \param   wty New y-coord
- * \param   fspeed Speed of fading (See do_transition())
- */
 void KGame::warp(int wtx, int wty, int fspeed)
 {
 	size_t entity_index, last_entity;
@@ -1872,17 +1672,6 @@ void KGame::warp(int wtx, int wty, int fspeed)
 	timer_count = 0;
 }
 
-/*! \brief Zone event handler
- *
- * This routine is called after every final step onto
- * a new tile (not after warps or such things).  It
- * just checks if the zone value for this co-ordinate is
- * not zero and then it calls the event handler.  However,
- * there is a member of the map structure called zero_zone
- * that let's you call the event handler on 0 zones if you
- * wish.
- * This function also handles the Repulse functionality
- */
 void KGame::zone_check(void)
 {
 	uint16_t stc, zx, zy;
