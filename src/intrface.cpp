@@ -1189,7 +1189,7 @@ static int KQ_portbubble_ex(lua_State *L)
 
 static int KQ_calc_viewport(lua_State *L)
 {
-	Game.calc_viewport((int)lua_tonumber(L, 1));
+	Game.calc_viewport();
 	return 0;
 }
 

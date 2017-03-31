@@ -55,7 +55,7 @@ void combat_skill(size_t fighter_index)
 	size_t affected_targets;
 	int b;
 
-	tempa = status_adjust(fighter_index);
+	tempa = Magic.status_adjust(fighter_index);
 	battle_render(0, 0, 0);
 	Draw.blit2screen(0, 0);
 	switch (sk)
@@ -80,7 +80,7 @@ void combat_skill(size_t fighter_index)
 		strcpy(attack_string, _("Chill Touch"));
 		display_attack_string = 1;
 		draw_spellsprite(tgt, 0, 10, 1);
-		special_damage_oneall_enemies(fighter_index, 60, R_ICE, tgt, 0);
+		Magic.special_damage_oneall_enemies(fighter_index, 60, R_ICE, tgt, 0);
 		display_attack_string = 0;
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
 		break;
@@ -89,7 +89,7 @@ void combat_skill(size_t fighter_index)
 		display_attack_string = 1;
 		draw_hugesprite(0, 80, 108, 21, 1);
 		/*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
-		special_damage_oneall_enemies(fighter_index, 40, R_ICE, SEL_ALL_ENEMIES, 1);
+		Magic.special_damage_oneall_enemies(fighter_index, 40, R_ICE, SEL_ALL_ENEMIES, 1);
 		display_attack_string = 0;
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 		break;
@@ -139,8 +139,8 @@ void combat_skill(size_t fighter_index)
 		{
 			if (fighter[target_fighter_index].sts[S_DEAD] == 0)
 			{
-				if (res_throw(target_fighter_index, R_PETRIFY) == 0 &&
-					non_dmg_save(target_fighter_index, 75) == 0)
+				if (Magic.res_throw(target_fighter_index, R_PETRIFY) == 0 &&
+					Magic.non_dmg_save(target_fighter_index, 75) == 0)
 				{
 					fighter[target_fighter_index].sts[S_STONE] = kqrandom->random_range_exclusive(2, 5);
 					ta[target_fighter_index] = NODISPLAY;
@@ -165,7 +165,7 @@ void combat_skill(size_t fighter_index)
 		{
 			draw_spellsprite(0, 1, 11, 1);
 			/*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
-			special_damage_oneall_enemies(fighter_index, 25, R_THUNDER,
+			Magic.special_damage_oneall_enemies(fighter_index, 25, R_THUNDER,
 				SEL_ALL_ENEMIES, 1);
 			fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
 			return;
@@ -173,9 +173,9 @@ void combat_skill(size_t fighter_index)
 		draw_spellsprite(0, 1, 40, 0);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
-			if (res_throw(target_fighter_index, R_TIME) == 0)
+			if (Magic.res_throw(target_fighter_index, R_TIME) == 0)
 			{
-				if (non_dmg_save(target_fighter_index, 75) == 0 &&
+				if (Magic.non_dmg_save(target_fighter_index, 75) == 0 &&
 					fighter[target_fighter_index].sts[S_STONE] == 0)
 				{
 					if (fighter[target_fighter_index].sts[S_TIME] == 2)
@@ -218,7 +218,7 @@ void combat_skill(size_t fighter_index)
 		strcpy(attack_string, _("Poison Gas"));
 		draw_spellsprite(0, 1, 47, 1);
 		/*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
-		special_damage_oneall_enemies(fighter_index, 40, R_POISON, SEL_ALL_ENEMIES,
+		Magic.special_damage_oneall_enemies(fighter_index, 40, R_POISON, SEL_ALL_ENEMIES,
 			1);
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 		break;
@@ -228,8 +228,8 @@ void combat_skill(size_t fighter_index)
 		draw_spellsprite(0, 1, 24, 0);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
-			if (res_throw(target_fighter_index, S_STOP) == 0 &&
-				non_dmg_save(target_fighter_index, 65) == 0 &&
+			if (Magic.res_throw(target_fighter_index, S_STOP) == 0 &&
+				Magic.non_dmg_save(target_fighter_index, 65) == 0 &&
 				fighter[target_fighter_index].sts[S_STONE] == 0)
 			{
 				fighter[target_fighter_index].sts[S_STOP] = kqrandom->random_range_exclusive(2, 4);
@@ -261,7 +261,7 @@ void combat_skill(size_t fighter_index)
 		strcpy(attack_string, _("Maul of the Titans"));
 		draw_hugesprite(0, 80, 110, 29, 1);
 		/*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
-		special_damage_oneall_enemies(fighter_index, 60, R_EARTH, SEL_ALL_ENEMIES,
+		Magic.special_damage_oneall_enemies(fighter_index, 60, R_EARTH, SEL_ALL_ENEMIES,
 			1);
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 		break;
@@ -271,7 +271,7 @@ void combat_skill(size_t fighter_index)
 		tempa.stats[A_ATT] = tempa.stats[A_ATT] * 8 / 10;
 		fight(fighter_index, tgt, 1);
 		display_attack_string = 0;
-		if (non_dmg_save(tgt, 80) == 0 && ta[tgt] != MISS)
+		if (Magic.non_dmg_save(tgt, 80) == 0 && ta[tgt] != MISS)
 		{
 			fighter[tgt].sts[S_STOP] = 2;
 		}
@@ -285,8 +285,8 @@ void combat_skill(size_t fighter_index)
 		{
 			if (fighter[fighter_index].sts[S_MUTE] == 0)
 			{
-				if (res_throw(target_fighter_index, S_CHARM) == 0 &&
-					non_dmg_save(target_fighter_index, 65) == 0 &&
+				if (Magic.res_throw(target_fighter_index, S_CHARM) == 0 &&
+					Magic.non_dmg_save(target_fighter_index, 65) == 0 &&
 					fighter[target_fighter_index].sts[S_STONE] == 0)
 				{
 					fighter[target_fighter_index].sts[S_CHARM] = kqrandom->random_range_exclusive(2, 4);
@@ -321,7 +321,7 @@ void combat_skill(size_t fighter_index)
 		display_amount(0, FONT_WHITE, 1);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
-			adjust_hp(target_fighter_index, ta[target_fighter_index]);
+			Magic.adjust_hp(target_fighter_index, ta[target_fighter_index]);
 		}
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
@@ -331,14 +331,14 @@ void combat_skill(size_t fighter_index)
 		display_amount(0, FONT_RED, 1);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
-			adjust_mp(target_fighter_index, ta[target_fighter_index]);
+			Magic.adjust_mp(target_fighter_index, ta[target_fighter_index]);
 		}
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 		break;
 	case 17:
 		strcpy(attack_string, _("Shadow Blast"));
 		draw_spellsprite(0, 1, 49, 1);
-		special_damage_oneall_enemies(fighter_index, 75, R_BLACK, SEL_ALL_ENEMIES,
+		Magic.special_damage_oneall_enemies(fighter_index, 75, R_BLACK, SEL_ALL_ENEMIES,
 			1);
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 	default:

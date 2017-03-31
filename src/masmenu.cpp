@@ -69,7 +69,7 @@ static int camp_castable(int who, int sno)
 	}
 	if (magic[sno].use == USE_ANY_INF || magic[sno].use == USE_CAMP_INF)
 	{
-		if (party[pidx[who]].mp >= mp_needed(who, sno))
+		if (party[pidx[who]].mp >= Magic.mp_needed(who, sno))
 		{
 			return 1;
 		}
@@ -115,7 +115,7 @@ static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
 				current_spell * 8 + 100 + yofs);
 			Draw.print_font(double_buffer, 104 + xofs, current_spell * 8 + 100 + yofs,
 				magic[spell_index].name, text_color);
-			sprintf(strbuf, "%d", mp_needed(caster_fighter_index, spell_index));
+			sprintf(strbuf, "%d", Magic.mp_needed(caster_fighter_index, spell_index));
 			Draw.print_font(double_buffer, 232 - (strlen(strbuf) * 8) + xofs,
 				current_spell * 8 + 100 + yofs, strbuf, text_color);
 		}
@@ -286,7 +286,7 @@ static void camp_spell_targeting(size_t caster_fighter_index,
 	while (tg != PIDX_UNDEFINED)
 	{
 		if (party[pidx[caster_fighter_index]].mp <
-			mp_needed(caster_fighter_index, spell_number))
+			Magic.mp_needed(caster_fighter_index, spell_number))
 		{
 			return;
 		}
@@ -320,7 +320,7 @@ static void camp_spell_targeting(size_t caster_fighter_index,
 		{
 			ta[fighter_index] = 0;
 		}
-		if (cast_spell(caster_fighter_index, 0) == 1)
+		if (Magic.cast_spell(caster_fighter_index, 0) == 1)
 		{
 			if (spell_number == M_WARP || spell_number == M_REPULSE)
 			{
@@ -334,7 +334,7 @@ static void camp_spell_targeting(size_t caster_fighter_index,
 				 */
 				for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 				{
-					adjust_hp(fighter_index, ta[fighter_index]);
+					Magic.adjust_hp(fighter_index, ta[fighter_index]);
 				}
 			}
 			play_effect(SND_TWINKLE, 128);

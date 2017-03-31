@@ -452,14 +452,14 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		tmp = kqrandom->random_range_exclusive(0, items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
 		if (in_combat == 0)
 		{
-			adjust_hp(fighter_index, tmp);
+			Magic.adjust_hp(fighter_index, tmp);
 		}
 		else
 		{
 			ta[fighter_index] = tmp;
 			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 			display_amount(fighter_index, FONT_YELLOW, 0);
-			adjust_hp(fighter_index, ta[fighter_index]);
+			Magic.adjust_hp(fighter_index, ta[fighter_index]);
 		}
 		break;
 	case I_OSEED:
@@ -475,14 +475,14 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		tmp = kqrandom->random_range_exclusive(0, items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
 		if (in_combat == 0)
 		{
-			adjust_mp(fighter_index, tmp);
+			Magic.adjust_mp(fighter_index, tmp);
 		}
 		else
 		{
 			ta[fighter_index] = tmp;
 			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 			display_amount(fighter_index, FONT_GREEN, 0);
-			adjust_mp(fighter_index, ta[fighter_index]);
+			Magic.adjust_mp(fighter_index, ta[fighter_index]);
 		}
 		break;
 	case I_NLEAF:
@@ -588,11 +588,11 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 				tmp = kqrandom->random_range_exclusive(0, b) + b + 1;
 				if (in_combat == 0)
 				{
-					adjust_hp(fighter_index, tmp);
+					Magic.adjust_hp(fighter_index, tmp);
 				}
 				else
 				{
-					ta[fighter_index] = do_shell_check(fighter_index, tmp);
+					ta[fighter_index] = Magic.do_shell_check(fighter_index, tmp);
 				}
 			}
 		}
@@ -602,7 +602,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 			display_amount(attack_fighter_index, FONT_YELLOW, 1);
 			for (fighter_index = attack_fighter_index; fighter_index < attack_fighter_index + san; fighter_index++)
 			{
-				adjust_hp(fighter_index, ta[fighter_index]);
+				Magic.adjust_hp(fighter_index, ta[fighter_index]);
 			}
 		}
 		break;
@@ -626,8 +626,8 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 				{
 					a = 250;
 				}
-				b = res_adjust(fighter_index, tmp, a);
-				a = do_shell_check(fighter_index, b);
+				b = Magic.res_adjust(fighter_index, tmp, a);
+				a = Magic.do_shell_check(fighter_index, b);
 				ta[fighter_index] = 0 - a;
 			}
 			else

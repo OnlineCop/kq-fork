@@ -143,7 +143,7 @@ int available_spells(int who)
 			{
 				if (l == CORIN && fighter[who].aux == 2)
 				{
-					e = mp_needed(who, b);
+					e = Magic.mp_needed(who, b);
 					if (fighter[who].mp >= e && magic[b].elem < 9)
 					{
 						numsp++;
@@ -151,7 +151,7 @@ int available_spells(int who)
 				}
 				else
 				{
-					e = mp_needed(who, b);
+					e = Magic.mp_needed(who, b);
 					if (fighter[who].mp >= e)
 					{
 						numsp++;
@@ -217,7 +217,7 @@ static int combat_castable(int spell_caster, int spell_number)
 	{
 		if (pidx[spell_caster] == CORIN && fighter[c].aux == 2)
 		{
-			c = mp_needed(spell_caster, b);
+			c = Magic.mp_needed(spell_caster, b);
 			if (fighter[spell_caster].mp >= c && magic[b].elem < R_BLIND)
 			{
 				return 1;
@@ -225,7 +225,7 @@ static int combat_castable(int spell_caster, int spell_number)
 		}
 		else
 		{
-			c = mp_needed(spell_caster, b);
+			c = Magic.mp_needed(spell_caster, b);
 			if (fighter[spell_caster].mp >= c)
 			{
 				return 1;
@@ -299,7 +299,7 @@ static void combat_draw_spell_menu(int c, int ptr, int pg)
 			{
 				Draw.print_font(double_buffer, 104, j * 8 + 32, magic[z].name, FDARK);
 			}
-			b = mp_needed(c, z);
+			b = Magic.mp_needed(c, z);
 			sprintf(strbuf, "%d", b);
 			Draw.print_font(double_buffer, 222 - (strlen(strbuf) * 8), j * 8 + 32, strbuf,
 				FNORMAL);
@@ -353,7 +353,7 @@ static int combat_item(int ss, int t1, int tg)
 	display_amount(st, FONT_DECIDE, tl);
 	for (a = st; a < st + tt; a++)
 	{
-		adjust_hp(a, ta[a]);
+		Magic.adjust_hp(a, ta[a]);
 	}
 	b = 0;
 	for (a = st; a < st + tt; a++)
@@ -596,7 +596,7 @@ int combat_spell_menu(int c)
 		}
 		if (combat_spell_targeting(c) == 1)
 		{
-			if (combat_spell(c, 0) > -1)
+			if (Magic.combat_spell(c, 0) > -1)
 			{
 				return 1;
 			}
@@ -1173,7 +1173,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 
 	if (items[item_index].imb > 0)
 	{
-		cast_imbued_spell(attacker_fighter_index, items[item_index].imb,
+		Magic.cast_imbued_spell(attacker_fighter_index, items[item_index].imb,
 			items[item_index].stats[A_ATT], defender_fighter_index);
 		return 1;
 	}
@@ -1204,7 +1204,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 			if (fighter[defender_fighter_index].sts[S_DEAD] == 0)
 			{
 				draw_attacksprite(defender_fighter_index, 0, 4, 1);
-				special_damage_oneall_enemies(attacker_fighter_index, 16, -1,
+				Magic.special_damage_oneall_enemies(attacker_fighter_index, 16, -1,
 					defender_fighter_index, 0);
 			}
 		}

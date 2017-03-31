@@ -763,7 +763,7 @@ static void process_entity(t_entity target_entity) {
     }
 
     if (target_entity == 0 && vfollow == 1) {
-      Game.calc_viewport(0);
+      Game.calc_viewport();
     }
   }
 }

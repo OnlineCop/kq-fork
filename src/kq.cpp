@@ -1235,7 +1235,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 		vy = mvy * TILE_H;
 	}
 
-	calc_viewport(1);
+	calc_viewport();
 
 	for (i = 0; i < MAX_TILES; i++)
 	{
@@ -1660,7 +1660,7 @@ void KGame::warp(int wtx, int wty, int fspeed)
 	vx = wtx * TILE_W;
 	vy = wty * TILE_H;
 
-	calc_viewport(1);
+	calc_viewport();
 	Draw.drawmap();
 	Draw.blit2screen(xofs, yofs);
 

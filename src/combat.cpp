@@ -229,14 +229,14 @@ eAttackResult attack_result(int ar, int dr)
 		c = attacker_weapon_element - 1;
 		if ((c >= R_EARTH) && (c <= R_ICE))
 		{
-			base = res_adjust(dr, c, base);
+			base = Magic.res_adjust(dr, c, base);
 		}
 
 		if ((c >= R_POISON) && (c <= R_SLEEP))
 		{
-			if ((res_throw(dr, c) == 0) && (fighter[dr].sts[c - R_POISON] == 0))
+			if ((Magic.res_throw(dr, c) == 0) && (fighter[dr].sts[c - R_POISON] == 0))
 			{
-				if (non_dmg_save(dr, 50) == 0)
+				if (Magic.non_dmg_save(dr, 50) == 0)
 				{
 					if ((c == R_POISON) || (c == R_PETRIFY) || (c == R_SILENCE))
 					{
@@ -584,7 +584,7 @@ static void do_action(size_t fighter_index)
 		imbued_item = fighter[fighter_index].imb[imb_index];
 		if (imbued_item > 0)
 		{
-			cast_imbued_spell(fighter_index, imbued_item, 1, TGT_CASTER);
+			Magic.cast_imbued_spell(fighter_index, imbued_item, 1, TGT_CASTER);
 		}
 	}
 
@@ -786,7 +786,7 @@ static void do_round(void)
 
 						ta[fighter_index] = a;
 						display_amount(fighter_index, FONT_YELLOW, 0);
-						adjust_hp(fighter_index, a);
+						Magic.adjust_hp(fighter_index, a);
 					}
 
 					/*  RB: the character has ether actived?  */
@@ -1063,10 +1063,10 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 	/*  and such                                                  */
 	if (sk == 0)
 	{
-		tempa = status_adjust(attack_fighter_index);
+		tempa = Magic.status_adjust(attack_fighter_index);
 	}
 
-	tempd = status_adjust(defend_fighter_index);
+	tempd = Magic.status_adjust(defend_fighter_index);
 	ares = attack_result(attack_fighter_index, defend_fighter_index);
 	for (stats_index = 0; stats_index < 24; stats_index++)
 	{
@@ -1125,8 +1125,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 
 	if (ta[defend_fighter_index] != MISS)
 	{
-		ta[defend_fighter_index] =
-			do_shield_check(defend_fighter_index, ta[defend_fighter_index]);
+		ta[defend_fighter_index] = Magic.do_shield_check(defend_fighter_index, ta[defend_fighter_index]);
 	}
 
 	display_amount(defend_fighter_index, FONT_DECIDE, 0);
@@ -1135,7 +1134,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 		fighter[defend_fighter_index].hp += ta[defend_fighter_index];
 		if ((fighter[attack_fighter_index].imb_s > 0) && (kqrandom->random_range_exclusive(0, 5) == 0))
 		{
-			cast_imbued_spell(
+			Magic.cast_imbued_spell(
 				attack_fighter_index, fighter[attack_fighter_index].imb_s,
 				fighter[attack_fighter_index].imb_a, defend_fighter_index);
 		}
@@ -1468,7 +1467,7 @@ void multi_fight(size_t attack_fighter_index)
 
 	for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 	{
-		tempd = status_adjust(fighter_index);
+		tempd = Magic.status_adjust(fighter_index);
 		if ((fighter[fighter_index].sts[S_DEAD] == 0) &&
 			(fighter[fighter_index].mhp > 0))
 		{
@@ -1484,7 +1483,7 @@ void multi_fight(size_t attack_fighter_index)
 		{
 			if (ta[fighter_index] != MISS)
 			{
-				ta[fighter_index] = do_shield_check(fighter_index, ta[fighter_index]);
+				ta[fighter_index] = Magic.do_shield_check(fighter_index, ta[fighter_index]);
 			}
 
 			fighter[fighter_index].hp += ta[fighter_index];
@@ -1618,7 +1617,7 @@ static void roll_initiative(void)
 			{
 				if (fighter[fighter_index].imb[j] > 0)
 				{
-					cast_imbued_spell(fighter_index, fighter[fighter_index].imb[j], 1, TGT_CASTER);
+					Magic.cast_imbued_spell(fighter_index, fighter[fighter_index].imb[j], 1, TGT_CASTER);
 				}
 			}
 		}

@@ -46,18 +46,7 @@
  * \date ????????
  */
 
-/*  Internal functions  */
-static void beffect_all_enemies(size_t, size_t);
-static void beffect_one_enemy(size_t, size_t, size_t);
-static void cure_oneall_allies(size_t, int, size_t);
-static void damage_all_enemies(size_t, size_t);
-static void damage_oneall_enemies(size_t, int, size_t);
-static void geffect_all_allies(size_t, size_t);
-static void geffect_one_ally(size_t, size_t);
-static void heal_one_ally(size_t, size_t, size_t);
-static void set_timed_sts_effect(size_t, int);
-static void special_spells(size_t, size_t);
-static void spell_damage(size_t, int, size_t, size_t);
+KMagic Magic;
 
 /*! \brief Adjust character's HP
  *
@@ -66,7 +55,7 @@ static void spell_damage(size_t, int, size_t, size_t);
  * \param   fighter_index Index of character
  * \param   amt Amount to adjust
  */
-void adjust_hp(size_t fighter_index, int amt)
+void KMagic::adjust_hp(size_t fighter_index, int amt)
 {
 	fighter[fighter_index].hp += amt;
 	if (fighter[fighter_index].hp > fighter[fighter_index].mhp)
@@ -86,7 +75,7 @@ void adjust_hp(size_t fighter_index, int amt)
  * \param   fighter_index Index of character
  * \param   amt Amount to adjust
  */
-void adjust_mp(size_t fighter_index, int amt)
+void KMagic::adjust_mp(size_t fighter_index, int amt)
 {
 	fighter[fighter_index].mp += amt;
 	if (fighter[fighter_index].mp > fighter[fighter_index].mmp)
@@ -106,8 +95,7 @@ void adjust_mp(size_t fighter_index, int amt)
  * \param   caster_fighter_index Caster
  * \param   spell_number Spell number
  */
-static void beffect_all_enemies(size_t caster_fighter_index,
-	size_t spell_number)
+void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_number)
 {
 	size_t end_fighter_index, start_fighter_index, fighter_index;
 	int sp_hit;
@@ -210,9 +198,7 @@ static void beffect_all_enemies(size_t caster_fighter_index,
  * \param   target_fighter_index Target
  * \param   spell_number Spell number
  */
-static void beffect_one_enemy(size_t caster_fighter_index,
-	size_t target_fighter_index,
-	size_t spell_number)
+void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighter_index, size_t spell_number)
 {
 	int r, a = 0, sp_hit;
 	size_t stats_index;
@@ -435,8 +421,7 @@ static void beffect_one_enemy(size_t caster_fighter_index,
  * \param   sag_int_value Value for SAG and INT when casting imbued
  * \param   tgt Target (defender)
  */
-void cast_imbued_spell(size_t fighter_index, int target_item, int sag_int_value,
-	int tgt)
+void KMagic::cast_imbued_spell(size_t fighter_index, int target_item, int sag_int_value, int tgt)
 {
 	int temp_int = fighter[fighter_index].stats[A_INT];
 	int temp_sag = fighter[fighter_index].stats[A_SAG];
@@ -473,7 +458,7 @@ void cast_imbued_spell(size_t fighter_index, int target_item, int sag_int_value,
  * \param   is_item 0 if regular spell, 1 if item (no MP used)
  * \returns 1 if spell cast/used successfully, 0 otherwise
  */
-int cast_spell(size_t caster_fighter_index, int is_item)
+int KMagic::cast_spell(size_t caster_fighter_index, int is_item)
 {
 	int spell_number = fighter[caster_fighter_index].csmem;
 	int tgt = fighter[caster_fighter_index].ctmem;
@@ -589,7 +574,7 @@ int cast_spell(size_t caster_fighter_index, int is_item)
  * \param   is_item 0 if regular spell, 1 if item (no MP used)
  * \returns 1 if spell cast/used successfully, 0 otherwise
  */
-int combat_spell(size_t caster_fighter_index, int is_item)
+int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 {
 	int b, tgt, spell_number, tall = 0, ss = 0;
 	size_t fighter_index;
@@ -789,8 +774,7 @@ int combat_spell(size_t caster_fighter_index, int is_item)
  * \param   tgt Target
  * \param   spell_number Spell number
  */
-static void cure_oneall_allies(size_t caster_fighter_index, int tgt,
-	size_t spell_number)
+void KMagic::cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spell_number)
 {
 	int a = 0, b = 0, z = 0, spwr;
 	size_t fighter_index;
@@ -873,8 +857,7 @@ static void cure_oneall_allies(size_t caster_fighter_index, int tgt,
  * \param   caster_fighter_index Caster
  * \param   spell_number Spell number
  */
-static void damage_all_enemies(size_t caster_fighter_index,
-	size_t spell_number)
+void KMagic::damage_all_enemies(size_t caster_fighter_index, size_t spell_number)
 {
 	size_t end_fighter_index, start_fighter_index;
 
@@ -900,8 +883,7 @@ static void damage_all_enemies(size_t caster_fighter_index,
  * \param   tgt Traget
  * \param   spell_number Spell number
  */
-static void damage_oneall_enemies(size_t caster_fighter_index, int tgt,
-	size_t spell_number)
+void KMagic::damage_oneall_enemies(size_t caster_fighter_index, int tgt, size_t spell_number)
 {
 	size_t end_fighter_index, start_fighter_index;
 
@@ -935,7 +917,7 @@ static void damage_oneall_enemies(size_t caster_fighter_index, int tgt,
  * \param   amt Amount of damage to ricochet off shield
  * \returns the amount of damage that gets through to target
  */
-int do_shell_check(int tgt, int amt)
+int KMagic::do_shell_check(int tgt, int amt)
 {
 	int a = 0;
 
@@ -962,7 +944,7 @@ int do_shell_check(int tgt, int amt)
  * \param   amt Amount of damage to ricochet off shield
  * \returns the amount of damage that gets through to target
  */
-int do_shield_check(int tgt, int amt)
+int KMagic::do_shield_check(int tgt, int amt)
 {
 	int a = 0;
 
@@ -988,8 +970,7 @@ int do_shield_check(int tgt, int amt)
  * \param   caster_fighter_index Caster
  * \param   spell_number Spell Number
  */
-static void geffect_all_allies(size_t caster_fighter_index,
-	size_t spell_number)
+void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number)
 {
 	int fighter_hp;
 	size_t fighter_index = 0;
@@ -1104,7 +1085,7 @@ static void geffect_all_allies(size_t caster_fighter_index,
  * \param   target_fighter_index Target
  * \param   spell_number Spell number
  */
-static void geffect_one_ally(size_t target_fighter_index, size_t spell_number)
+void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 {
 	/* Validate the target_fighter_index parameter */
 	if (target_fighter_index >= NUM_FIGHTERS)
@@ -1213,8 +1194,7 @@ static void geffect_one_ally(size_t target_fighter_index, size_t spell_number)
  * \param   target_fighter_index Target
  * \param   spell_number Spell number
  */
-static void heal_one_ally(size_t caster_fighter_index,
-	size_t target_fighter_index, size_t spell_number)
+void KMagic::heal_one_ally(size_t caster_fighter_index, size_t target_fighter_index, size_t spell_number)
 {
 	size_t stat_index;
 
@@ -1280,7 +1260,7 @@ static void heal_one_ally(size_t caster_fighter_index,
  * \param   spell_number Spell number
  * \returns needed MP or 0 if insufficient MP
  */
-int mp_needed(size_t fighter_index, int spell_number)
+int KMagic::mp_needed(size_t fighter_index, int spell_number)
 {
 	int amt;
 
@@ -1308,7 +1288,7 @@ int mp_needed(size_t fighter_index, int spell_number)
  * \param   per Damage percent inflicted (?)
  * \returns 0 if damage taken, 1 otherwise (or vise-versa?)
  */
-int non_dmg_save(int tgt, int per)
+int KMagic::non_dmg_save(int tgt, int per)
 {
 	(void)tgt;
 	if (kqrandom->random_range_exclusive(0, 100) < per)
@@ -1332,7 +1312,7 @@ int non_dmg_save(int tgt, int per)
  * \param   amt Amount of resistence to given rune
  * \returns difference of resistance to damage given by rune
  */
-int res_adjust(size_t target_fighter_index, size_t rune_index, int amt)
+int KMagic::res_adjust(size_t target_fighter_index, size_t rune_index, int amt)
 {
 	int ad, b;
 	KFighter tf;
@@ -1371,7 +1351,7 @@ int res_adjust(size_t target_fighter_index, size_t rune_index, int amt)
  * \param   rs Rune/spell used
  * \returns 0 if not resistant, 1 otherwise
  */
-int res_throw(int tgt, int rs)
+int KMagic::res_throw(int tgt, int rs)
 {
 	KFighter tf;
 
@@ -1403,7 +1383,7 @@ int res_throw(int tgt, int rs)
  * \param   fighter_index Index of character affected
  * \param   ss Which stat is being affected
  */
-static void set_timed_sts_effect(size_t fighter_index, int ss)
+void KMagic::set_timed_sts_effect(size_t fighter_index, int ss)
 {
 	fighter[fighter_index].sts[ss] = rcount + 1;
 }
@@ -1420,9 +1400,7 @@ static void set_timed_sts_effect(size_t fighter_index, int ss)
  * \param   target_index: Target
  * \param   split: Total damage, split among targets
  */
-void special_damage_oneall_enemies(size_t caster_index, int spell_dmg,
-	int rune_type, size_t target_index,
-	int split)
+void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, int rune_type, size_t target_index, int split)
 {
 	int b = 0, average_damage = 1, multiple_targets = 0, number_of_enemies = 0;
 	size_t first_target, last_target;
@@ -1558,7 +1536,7 @@ void special_damage_oneall_enemies(size_t caster_index, int spell_dmg,
  * \param   caster_fighter_index Index of Caster
  * \param   spell_number Index of spell
  */
-static void special_spells(size_t caster_fighter_index, size_t spell_number)
+void KMagic::special_spells(size_t caster_fighter_index, size_t spell_number)
 {
 	if (caster_fighter_index >= PSIZE)
 	{
@@ -1620,8 +1598,7 @@ static void special_spells(size_t caster_fighter_index, size_t spell_number)
  * \param   start_fighter_index Starting target
  * \param   end_fighter_index Ending target
  */
-static void spell_damage(size_t caster_fighter_index, int spell_number,
-	size_t start_fighter_index, size_t end_fighter_index)
+void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t start_fighter_index, size_t end_fighter_index)
 {
 	int a = 0, b = 0, ad = 0, rt = 0, ne = 0;
 	size_t fighter_index = 0;
@@ -1729,7 +1706,7 @@ static void spell_damage(size_t caster_fighter_index, int spell_number,
  *
  * \returns a struct by value (PH: a good thing???)
  */
-KFighter status_adjust(size_t fighter_index)
+KFighter KMagic::status_adjust(size_t fighter_index)
 {
 	KFighter tf;
 

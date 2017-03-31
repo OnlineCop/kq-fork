@@ -210,7 +210,7 @@ static int enemy_cancast(size_t target_fighter_index, size_t sp)
 	{
 		return 0;
 	}
-	if (fighter[target_fighter_index].mp < mp_needed(target_fighter_index, sp))
+	if (fighter[target_fighter_index].mp < Magic.mp_needed(target_fighter_index, sp))
 	{
 		return 0;
 	}
@@ -379,7 +379,7 @@ static void enemy_curecheck(int w)
 	{
 		fighter[w].csmem = a;
 		fighter[w].ctmem = w;
-		combat_spell(w, 0);
+		Magic.combat_spell(w, 0);
 		cact[w] = 0;
 	}
 }
@@ -638,7 +638,7 @@ static void enemy_spellcheck(size_t attack_fighter_index,
 	}
 	if (spell_setup(attack_fighter_index, cs) == 1)
 	{
-		combat_spell(attack_fighter_index, 0);
+		Magic.combat_spell(attack_fighter_index, 0);
 		cact[attack_fighter_index] = 0;
 	}
 }

@@ -98,18 +98,35 @@ enum EMagic
 /*! non-combat spell states */
 #define P_REPULSE 48
 
-int combat_spell(size_t, int);
-int cast_spell(size_t, int);
-void cast_imbued_spell(size_t, int, int, int);
-void special_damage_oneall_enemies(size_t, int, int, size_t,
-                                   int);
-int res_adjust(size_t, size_t, int);
-int res_throw(int, int);
-int non_dmg_save(int, int);
-int mp_needed(size_t, int);
-void adjust_hp(size_t,
-               int);
-void adjust_mp(size_t, int);
-int do_shell_check(int, int);
-int do_shield_check(int, int);
-KFighter status_adjust(size_t);
+class KMagic
+{
+public:
+	int combat_spell(size_t, int);
+	int cast_spell(size_t, int);
+	void cast_imbued_spell(size_t, int, int, int);
+	void special_damage_oneall_enemies(size_t, int, int, size_t, int);
+	int res_adjust(size_t, size_t, int);
+	int res_throw(int, int);
+	int non_dmg_save(int, int);
+	int mp_needed(size_t, int);
+	void adjust_hp(size_t, int);
+	void adjust_mp(size_t, int);
+	int do_shell_check(int, int);
+	int do_shield_check(int, int);
+	KFighter status_adjust(size_t);
+
+private:
+	void beffect_all_enemies(size_t, size_t);
+	void beffect_one_enemy(size_t, size_t, size_t);
+	void cure_oneall_allies(size_t, int, size_t);
+	void damage_all_enemies(size_t, size_t);
+	void damage_oneall_enemies(size_t, int, size_t);
+	void geffect_all_allies(size_t, size_t);
+	void geffect_one_ally(size_t, size_t);
+	void heal_one_ally(size_t, size_t, size_t);
+	void set_timed_sts_effect(size_t, int);
+	void special_spells(size_t, size_t);
+	void spell_damage(size_t, int, size_t, size_t);
+};
+
+extern KMagic Magic;

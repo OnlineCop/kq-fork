@@ -516,7 +516,7 @@ int skill_use(size_t attack_fighter_index)
 	size_t enemy_index;
 	size_t fighter_index;
 	std::unique_ptr<Raster> temp;
-	tempa = status_adjust(attack_fighter_index);
+	tempa = Magic.status_adjust(attack_fighter_index);
 	switch (pidx[attack_fighter_index])
 	{
 	case SENSAR:
@@ -633,7 +633,7 @@ int skill_use(size_t attack_fighter_index)
 			battle_render(0, 0, 0);
 			Draw.blit2screen(0, 0);
 			infusion(attack_fighter_index, fighter[attack_fighter_index].csmem);
-			c = mp_needed(attack_fighter_index, fighter[attack_fighter_index].csmem);
+			c = Magic.mp_needed(attack_fighter_index, fighter[attack_fighter_index].csmem);
 			if (c < 1)
 			{
 				c = 1;
@@ -744,7 +744,7 @@ int skill_use(size_t attack_fighter_index)
 					fighter[fighter_index].sts[S_DEAD] == 0)
 				{
 					ta[fighter_index] = b;
-					ta[fighter_index] = do_shell_check(fighter_index, ta[fighter_index]);
+					ta[fighter_index] = Magic.do_shell_check(fighter_index, ta[fighter_index]);
 				}
 			}
 			display_amount(0, FONT_YELLOW, 1);
@@ -753,7 +753,7 @@ int skill_use(size_t attack_fighter_index)
 				if (fighter[fighter_index].sts[S_STONE] == 0 &&
 					fighter[fighter_index].sts[S_DEAD] == 0)
 				{
-					adjust_hp(fighter_index, ta[fighter_index]);
+					Magic.adjust_hp(fighter_index, ta[fighter_index]);
 				}
 			}
 		}
