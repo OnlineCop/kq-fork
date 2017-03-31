@@ -48,10 +48,10 @@ struct PACKFILE;
 struct KBound
 {
 public:
-	short left;   /*!< Left edge of the bounding box */
-	short top;    /*!< Top edge of the bounding box */
-	short right;  /*!< Right edge of the bounding box */
-	short bottom; /*!< Bottom edge of the bounding box */
+	int left;   /*!< Left edge of the bounding box */
+	int top;    /*!< Top edge of the bounding box */
+	int right;  /*!< Right edge of the bounding box */
+	int bottom; /*!< Bottom edge of the bounding box */
 	short btile;  /*!< Index of the tile to draw everywhere BUT here */
 };
 
@@ -85,7 +85,7 @@ public:
 		return m_bounds.size();
 	}
 
-	bool IsBound(uint32_t &outIndex, uint32_t left, uint32_t top, uint32_t right, uint32_t bottom) const;
+	bool IsBound(size_t &outIndex, int left, int top, int right, int bottom) const;
 
 protected:
 	vector<shared_ptr<KBound>> m_bounds;

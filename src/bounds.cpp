@@ -59,7 +59,7 @@ shared_ptr<KBound> KBounds::GetBound(size_t index)
 *
 * \returns true if the specified coordinate was found within a bounding area, else false.
 */
-bool KBounds::IsBound(uint32_t &outIndex, uint32_t left, uint32_t top, uint32_t right, uint32_t bottom) const
+bool KBounds::IsBound(size_t &outIndex, int left, int top, int right, int bottom) const
 {
 	if (left > right)
 	{

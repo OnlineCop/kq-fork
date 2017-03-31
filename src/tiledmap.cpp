@@ -217,10 +217,8 @@ KBounds KTiledMap::load_tmx_bounds(XMLElement const *el)
 				auto new_bound = make_shared<KBound>();
 				new_bound->left = i->IntAttribute("x") / TILE_W;
 				new_bound->top = i->IntAttribute("y") / TILE_H;
-				new_bound->right =
-					i->IntAttribute("width") / TILE_W + new_bound->left - 1;
-				new_bound->bottom =
-					i->IntAttribute("height") / TILE_H + new_bound->top - 1;
+				new_bound->right = i->IntAttribute("width") / TILE_W + new_bound->left - 1;
+				new_bound->bottom = i->IntAttribute("height") / TILE_H + new_bound->top - 1;
 				new_bound->btile = 0;
 				auto props = i->FirstChildElement("properties");
 				if (props)
@@ -611,8 +609,7 @@ void tmx_map::set_current()
 		else if (layer.name == "bmap")
 		{
 			free(b_seg);
-			unsigned short *ptr = b_seg =
-				static_cast<unsigned short *>(calloc(layer.size, sizeof(*b_seg)));
+			unsigned short *ptr = b_seg = static_cast<unsigned short *>(calloc(layer.size, sizeof(*b_seg)));
 			for (auto t : layer)
 			{
 				if (t > 0)
@@ -625,8 +622,7 @@ void tmx_map::set_current()
 		else if (layer.name == "fmap")
 		{
 			free(f_seg);
-			unsigned short *ptr = f_seg =
-				static_cast<unsigned short *>(calloc(layer.size, sizeof(*f_seg)));
+			unsigned short *ptr = f_seg = static_cast<unsigned short *>(calloc(layer.size, sizeof(*f_seg)));
 			for (auto t : layer)
 			{
 				if (t > 0)
@@ -639,8 +635,7 @@ void tmx_map::set_current()
 		else if (layer.name == "shadows")
 		{
 			// Shadows
-			unsigned short shadow_offset =
-				find_tileset("misc").firstgid + SHADOW_OFFSET;
+			unsigned short shadow_offset = find_tileset("misc").firstgid + SHADOW_OFFSET;
 			free(s_seg);
 			auto sptr = s_seg = static_cast<unsigned char *>(calloc(layer.size, sizeof(*s_seg)));
 			for (auto t : layer)
@@ -657,8 +652,7 @@ void tmx_map::set_current()
 			// Obstacles
 			unsigned short obstacle_offset = find_tileset("obstacles").firstgid - 1;
 			free(o_seg);
-			auto sptr = o_seg =
-				static_cast<unsigned char *>(calloc(layer.size, sizeof(*o_seg)));
+			auto sptr = o_seg = static_cast<unsigned char *>(calloc(layer.size, sizeof(*o_seg)));
 
 			for (auto t : layer)
 			{
