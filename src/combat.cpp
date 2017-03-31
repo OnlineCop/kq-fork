@@ -1264,7 +1264,7 @@ static void heroes_win(void)
 		txp /= nc;
 	}
 
-	gp += tgp;
+	Game.AddGold(tgp);
 	if (tgp > 0)
 	{
 		sprintf(strbuf, _("Gained %d xp and found %d gp."), txp, tgp);

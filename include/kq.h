@@ -332,6 +332,20 @@ public:
 		return m_curmap == WORLD_MAP;
 	}
 
+	/** Add or remove gold from the team's coffer.
+	 * Removing more gold than available will not drop total gold below 0.
+	 * \returns the amount of gold remaining in the team's coffer.
+	 */
+	int AddGold(signed int amount);
+
+	/** Return the gold pieces held by the player. */
+	int GetGold() const;
+
+	/** Ignoring previous amounts of gold, assign the exact amount of gold to the team.
+	 * \returns the amount of gold in team's coffer.
+	 */
+	int SetGold(int amount);
+
 public:
 	const string WORLD_MAP;
 	/*! The number of frames per second */
@@ -340,9 +354,16 @@ public:
 protected:
 	/*! Name of the current map */
 	string m_curmap;
+
+	/** Gold pieces held by the player */
+	int gp;
 };
 
-extern int vx, vy, mx, my, steps, lastm[PSIZE];
+/*! View and character positions */
+extern int vx, vy, mx, my;
+
+/*! What was the last direction each player moved in */
+extern int steps;
 
 extern Raster *double_buffer, *fx_buffer;
 extern Raster *map_icons[MAX_TILES];
@@ -352,19 +373,30 @@ extern Raster *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFR
 extern Raster *eframes[MAXE][MAXEFRAMES], *pgb[9], *sfonts[5], *bord[8];
 extern Raster *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr;
 extern Raster *shadow[MAX_SHADOWS];
-extern unsigned short *map_seg;
-extern unsigned short *b_seg, *f_seg;
-extern unsigned char *z_seg, *s_seg, *o_seg;
-extern unsigned char progress[SIZE_PROGRESS];
-extern unsigned char treasure[SIZE_TREASURE];
-extern unsigned char save_spells[SIZE_SAVE_SPELL];
+
+/*! Layers in the map */
+extern uint16_t *map_seg, *b_seg, *f_seg;
+
+/*! Zone, shadow and obstacle layers */
+extern uint8_t *z_seg, *s_seg, *o_seg;
+
+/*! Tasks completed */
+extern uint8_t progress[SIZE_PROGRESS];
+
+/*! Treasure chests opened */
+extern uint8_t treasure[SIZE_TREASURE];
+
+/*! Keeps track of non-combat spell statuses (currently only repulse) */
+extern uint8_t save_spells[SIZE_SAVE_SPELL];
+
 extern Raster *kfonts;
 extern s_map g_map;
 extern KQEntity g_ent[MAX_ENTITIES];
 extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
 extern s_anim adata[MAX_ANIM];
 extern uint32_t numchrs;
-extern int gp, xofs, yofs, gsvol, gmvol;
+extern int xofs, yofs;
+extern int gsvol, gmvol;
 extern uint32_t noe;
 extern ePIDX pidx[MAXCHRS];
 extern uint8_t autoparty, alldead, is_sound, deadeffect, vfollow, use_sstone, sound_avail;

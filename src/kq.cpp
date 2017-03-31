@@ -82,10 +82,7 @@ static void time_counter(void);
 
 KGame Game;
 
-/*! View and character positions */
 int vx, vy, mx, my;
-
-/*! What was the last direction each player moved in */
 int steps = 0;
 
 /*! 23: various global bitmaps */
@@ -100,20 +97,10 @@ Raster *double_buffer, *fx_buffer, *map_icons[MAX_TILES], *back, *tc, *tc2,
 Raster *obj_mesh;
 #endif
 
-/*! Layers in the map */
 uint16_t *map_seg = NULL, *b_seg = NULL, *f_seg = NULL;
-
-/*! Zone, shadow and obstacle layers */
 uint8_t *z_seg = NULL, *s_seg = NULL, *o_seg = NULL;
-
-/*! keeps track of tasks completed and treasure chests opened */
 uint8_t progress[SIZE_PROGRESS];
 uint8_t treasure[SIZE_TREASURE];
-
-/*! keeps track of when shops were last visited */
-uint16_t shop_time[NUMSHOPS];
-
-/*! keeps track of non-combat spell statuses (currently only repulse) */
 uint8_t save_spells[SIZE_SAVE_SPELL];
 
 /*! Current map */
@@ -130,9 +117,6 @@ ePIDX pidx[MAXCHRS];
 
 /*! Number of characters in the party */
 uint32_t numchrs = 0;
-
-/*! Current gold */
-int gp = 0;
 
 /*! pixel offset in the current map view */
 int xofs, yofs;
@@ -367,7 +351,9 @@ s_progress progresses[SIZE_PROGRESS] = {
 #endif
 
 KGame::KGame()
-	: WORLD_MAP("main"), KQ_TICKS(100)
+	: WORLD_MAP("main")
+	, KQ_TICKS(100)
+	, gp(0)
 {
 
 }
@@ -718,11 +704,6 @@ void KGame::data_dump(void)
 		{
 			fprintf(ff, "%d: %s = %d\n", progresses[a].num_progress,
 				progresses[a].name, progress[a]);
-		}
-		fprintf(ff, "\n");
-		for (a = 0; a < NUMSHOPS; a++)
-		{
-			fprintf(ff, "shop-%d = %d\n", a, shop_time[a]);
 		}
 		fclose(ff);
 	}
@@ -1716,6 +1697,27 @@ void KGame::zone_check(void)
 			do_zone(stc);
 		}
 	}
+}
+
+int KGame::AddGold(signed int amount)
+{
+	gp += amount;
+	if (gp < 0)
+	{
+		gp = 0;
+	}
+	return gp;
+}
+
+int KGame::GetGold() const
+{
+	return gp;
+}
+
+int KGame::SetGold(int amount)
+{
+	gp = amount >= 0 ? amount : 0;
+	return gp;
 }
 
 /*! \mainpage KQ - The Classic Computer Role-Playing Game

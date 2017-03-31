@@ -273,18 +273,6 @@ static void camp_item_targetting(int pp)
 	}
 }
 
-/*! \brief Check if we can add item quantity to inventory
- *
- * This is a handy function, which checks to see if a certain quantity of a
- * specified item can be stored in the inventory.
- *
- * \param   inventory_index Item index
- * \param   item_quantity Item quantity
- * \returns 0 if it was not possible
- * \returns 1 if it was possible, but that we added to an item slot that
- *            already had some of that item
- * \returns 2 if we put the item in a brand-new slot
- */
 int check_inventory(size_t inventory_index, int item_quantity)
 {
 	// v == "last empty inventory slot"

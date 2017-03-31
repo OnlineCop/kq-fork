@@ -886,7 +886,7 @@ int KDisk::load_general_props(XMLElement *node)
 		{
 			if (property->Attribute("name", "gold"))
 			{
-				Game.gp = property->IntAttribute("value");
+				Game.SetGold(property->IntAttribute("value"));
 			}
 			else if (property->Attribute("name", "random-state"))
 			{

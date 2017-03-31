@@ -1220,7 +1220,8 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
  */
 static void hero_run(void)
 {
-	int a, b = 0, c = 0, bt = 0, ct = 0, fr, fx, fy, g = 0;
+	int a, b = 0, c = 0, bt = 0, ct = 0, fr, fx, fy, g;
+	int gold_dropped = 0;
 	size_t fighter_index;
 
 	// TT: slow_computer additions for speed-ups
@@ -1260,8 +1261,7 @@ static void hero_run(void)
 	}
 	if (c == 0)
 	{
-		Game.program_death(
-			_("Fatal error: Why are the heroes running from dead enemies?"));
+		Game.program_death(_("Fatal error: Why are the heroes running from dead enemies?"));
 	}
 	else
 	{
@@ -1279,12 +1279,16 @@ static void hero_run(void)
 	{
 		if (kqrandom->random_range_exclusive(0, 100) < (100 - a))
 		{
-			g = b * fighter[PSIZE].lvl * c;
-			if (gp < g)
+			// Player will drop some amount of gold, but not more than they have.
+			// Amount is determined on the 1st enemy's level * num_remaining_enemeies.
+			gold_dropped = b * fighter[PSIZE].lvl * c;
+			if (Game.GetGold() < gold_dropped)
 			{
-				g = gp;
+				// 'gold_dropped' is used later, so update the amount actually dropped.
+				gold_dropped = Game.GetGold();
 			}
-			gp -= g;
+
+			Game.AddGold(-gold_dropped);
 		}
 	}
 	else
@@ -1295,26 +1299,29 @@ static void hero_run(void)
 		Game.wait_enter();
 		return;
 	}
-	if (g > 0)
+	if (gold_dropped > 0)
 	{
-		sprintf(strbuf, _("Escaped! Dropped %d gold!"), g);
+		sprintf(strbuf, _("Escaped! Dropped %d gold!"), gold_dropped);
 	}
 	else
 	{
 		sprintf(strbuf, _("Escaped!"));
 	}
-	g = strlen(strbuf) * 4;
+
+	static const int FontWidth = 8;
+	g = strlen(strbuf) * (FontWidth / 2);
 
 	/* TT: slow_computer addition for speed-ups */
 	if (slow_computer)
 	{
-		count = 3;
+		count = 4;
 	}
 	else
 	{
 		count = 20;
 	}
 
+	// TODO: Figure out why we have this outer loop.
 	for (c = 0; c < 5; c++)
 	{
 		for (a = 0; a < count; a++)
@@ -1326,11 +1333,7 @@ static void hero_run(void)
 			{
 				fx = fighter[fighter_index].cx;
 				fy = fighter[fighter_index].cy;
-				fr = 0;
-				if (a > 10)
-				{
-					fr++;
-				}
+				fr = (a > count / 2) ? 1 : 0;
 
 				if (fighter[fighter_index].sts[S_DEAD] == 0)
 				{

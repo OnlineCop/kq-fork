@@ -134,7 +134,7 @@ void KMenu::draw_mainmenu(int swho)
 	/* PH: print time as h:mm */
 	sprintf(strbuf, "%d:%02d", khr, kmin);
 	Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 144 + yofs,strbuf, FNORMAL);
-	sprintf(strbuf, "%d", gp);
+	sprintf(strbuf, "%d", Game.GetGold());
 	Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 172 + yofs,strbuf, FNORMAL);
 	if (swho != -1)
 	{

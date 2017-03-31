@@ -23,6 +23,21 @@
 
 #include "kq.h"
 
+/*! \brief Save Game Stats
+* The information that's shown when picking a slot to save/load.
+*/
+struct s_sgstats
+{
+	int num_characters;
+	int gold;
+	int time;
+	struct _characters
+	{
+		int id, level, hp, mp;
+	} characters[PSIZE];
+	static s_sgstats get_current(void);
+};
+
 class KSaveGame
 {
 public:

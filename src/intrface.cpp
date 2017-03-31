@@ -1476,28 +1476,29 @@ static int KQ_check_key(lua_State *L)
 static int KQ_chest(lua_State *L)
 {
 	size_t fighter_index = 0;
-	int gd = 0;
-	auto tno = lua_tointeger(L, 1);
-	auto ino = lua_tointeger(L, 2);
-	auto amt = lua_tointeger(L, 3);
+	bool able_to_store_new_item = false;
+	int treasure_index = lua_tointeger(L, 1);
+	int inventory_index = lua_tointeger(L, 2);
+	int item_quantity = lua_tointeger(L, 3);
 	uint32_t chestx = (uint32_t)lua_tonumber(L, 4);
 	uint32_t chesty = (uint32_t)lua_tonumber(L, 5);
 	auto tile = lua_tointeger(L, 6);
 
-	if (tno > -1 && treasure[tno] != 0)
+	if (treasure_index > -1 && treasure[treasure_index] != 0)
 	{
 		return 0;
 	}
 
-	if (ino == 0)
+	// An index of '0' indicates that the chest contains gold instead of 'items'.
+	if (inventory_index == 0)
 	{
-		gp += amt;
-		sprintf(strbuf, _("Found %d gp!"), (int)amt);
+		Game.AddGold(item_quantity);
+		sprintf(strbuf, _("Found %d gp!"), item_quantity);
 		play_effect(SND_MONEY, 128);
 		Draw.message(strbuf, 255, 0, xofs, yofs);
-		if (tno > -1)
+		if (treasure_index > -1)
 		{
-			treasure[tno] = 1;
+			treasure[treasure_index] = 1;
 		}
 
 		/* TT: Here I want to check whether L::[4-6] exist. If so, set that
@@ -1514,50 +1515,50 @@ static int KQ_chest(lua_State *L)
 	/* PH TODO: This next bit is not needed because the inventory is shared */
 	if (numchrs == 1)
 	{
-		if (check_inventory(ino, amt) > 0)
+		if (check_inventory(inventory_index, item_quantity) > 0)
 		{
-			gd = 1;
+			able_to_store_new_item = true;
 		}
 	}
 	else
 	{
 		while (fighter_index < numchrs)
 		{
-			if (check_inventory(ino, amt) > 0)
+			if (check_inventory(inventory_index, item_quantity) > 0)
 			{
-				gd = 1;
+				able_to_store_new_item = true;
 				fighter_index = numchrs;
 			}
 			fighter_index++;
 		}
 	}
-	if (gd == 1)
+	if (able_to_store_new_item)
 	{
-		if (amt == 1)
+		if (item_quantity == 1)
 		{
-			sprintf(strbuf, _("%s procured!"), items[ino].name);
+			sprintf(strbuf, _("%s procured!"), items[inventory_index].name);
 		}
 		else
 		{
-			sprintf(strbuf, _("%s ^%d procured!"), items[ino].name, (int)amt);
+			sprintf(strbuf, _("%s ^%d procured!"), items[inventory_index].name, (int)item_quantity);
 		}
 		play_effect(SND_UNEQUIP, 128);
-		Draw.message(strbuf, items[ino].icon, 0, xofs, yofs);
-		if (tno > -1)
+		Draw.message(strbuf, items[inventory_index].icon, 0, xofs, yofs);
+		if (treasure_index > -1)
 		{
-			treasure[tno] = 1;
+			treasure[treasure_index] = 1;
 		}
 		return 0;
 	}
-	if (amt == 1)
+	if (item_quantity == 1)
 	{
-		sprintf(strbuf, _("%s not taken!"), items[ino].name);
+		sprintf(strbuf, _("%s not taken!"), items[inventory_index].name);
 	}
 	else
 	{
-		sprintf(strbuf, _("%s ^%d not taken!"), items[ino].name, (int)amt);
+		sprintf(strbuf, _("%s ^%d not taken!"), items[inventory_index].name, (int)item_quantity);
 	}
-	Draw.message(strbuf, items[ino].icon, 0, xofs, yofs);
+	Draw.message(strbuf, items[inventory_index].icon, 0, xofs, yofs);
 	return 0;
 }
 
@@ -1990,7 +1991,7 @@ static int KQ_get_ent_transl(lua_State *L)
 
 static int KQ_get_gp(lua_State *L)
 {
-	lua_pushnumber(L, gp);
+	lua_pushnumber(L, Game.GetGold());
 	return 1;
 }
 
@@ -3215,7 +3216,7 @@ static int KQ_set_ftile(lua_State *L)
 
 static int KQ_set_gp(lua_State *L)
 {
-	gp = (int)lua_tonumber(L, 1);
+	Game.SetGold((int)lua_tonumber(L, 1));
 	return 0;
 }
 

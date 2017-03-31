@@ -59,6 +59,27 @@
 #include "structs.h"
 #include "timing.h"
 
+/*! Get the save-game stats that apply to the current state.
+ * \returns a structure containing the stats;
+ */
+s_sgstats s_sgstats::get_current()
+{
+	s_sgstats stats;
+	stats.gold = Game.GetGold();
+	stats.time = khr * 60 + kmin;
+	stats.num_characters = numchrs;
+	for (auto i = 0U; i < numchrs; ++i)
+	{
+		auto &chr = stats.characters[i];
+		chr.id = pidx[i];
+		auto &pp = party[chr.id];
+		chr.hp = pp.mhp > 0 ? pp.hp * 100 / pp.mhp : 0;
+		chr.mp = pp.mmp > 0 ? pp.mp * 100 / pp.mmp : 0;
+		chr.level = pp.lvl;
+	}
+	return stats;
+}
+
 /*! \brief No game-wide globals in this file. */
 
 /*! \brief Confirm save

@@ -83,7 +83,7 @@ static void buy_item(int how_many, int item_no)
 
 	l = shops[shop_no].items[item_no];
 	cost = items[l].price * how_many;
-	if (cost > gp || how_many == 0)
+	if (cost > Game.GetGold() || how_many == 0)
 	{
 		play_effect(SND_BAD, 128);
 		return;
@@ -112,7 +112,7 @@ static void buy_item(int how_many, int item_no)
 	z = check_inventory(l, how_many);
 	if (z > 0)
 	{
-		gp = gp - cost;
+		Game.AddGold(-cost);
 		shops[shop_no].items_current[item_no] -= how_many;
 		play_effect(SND_MONEY, 128);
 		return;
@@ -173,7 +173,7 @@ static void buy_menu(void)
 			}
 			Draw.draw_icon(double_buffer, items[item_index].icon, 48 + xofs, shop_item_index * 8 + 32 + yofs);
 			int cost = max * items[item_index].price;
-			eFontColor font_color = cost <= gp ? FNORMAL : FDARK;
+			eFontColor font_color = cost <= Game.GetGold() ? FNORMAL : FDARK;
 			Draw.print_font(double_buffer, 56 + xofs, shop_item_index * 8 + 32 + yofs, items[item_index].name, font_color);
 			if (max > 1)
 			{
@@ -297,7 +297,7 @@ void draw_shopgold(void)
 {
 	Draw.menubox(double_buffer, 248 + xofs, 208 + yofs, 7, 2, BLUE);
 	Draw.print_font(double_buffer, 256 + xofs, 216 + yofs, _("Gold:"), FGOLD);
-	sprintf(strbuf, "%d", gp);
+	sprintf(strbuf, "%d", Game.GetGold());
 	Draw.print_font(double_buffer, 312 - (strlen(strbuf) * 8) + xofs, 224 + yofs, strbuf, FNORMAL);
 }
 
@@ -504,20 +504,18 @@ void inn(const char *iname, uint32_t gold_per_character, int pay)
 			strbuf, FNORMAL);
 		Draw.menubox(double_buffer, 248 + xofs, 168 + yofs, 7, 2, BLUE);
 		Draw.print_font(double_buffer, 256 + xofs, 176 + yofs, _("Gold:"), FGOLD);
-		sprintf(strbuf, "%d", gp);
+		sprintf(strbuf, "%d", Game.GetGold());
 		Draw.print_font(double_buffer, 312 - (strlen(strbuf) * 8) + xofs, 184 + yofs,
 			strbuf, FNORMAL);
-		if ((uint32_t)gp >= total_gold_cost)
+		if ((uint32_t)Game.GetGold() >= total_gold_cost)
 		{
 			Draw.menubox(double_buffer, 52 + xofs, 96 + yofs, 25, 2, BLUE);
-			Draw.print_font(double_buffer, 60 + xofs, 108 + yofs,
-				_("Do you wish to stay?"), FNORMAL);
+			Draw.print_font(double_buffer, 60 + xofs, 108 + yofs, _("Do you wish to stay?"), FNORMAL);
 		}
 		else
 		{
 			Draw.menubox(double_buffer, 32 + xofs, 96 + yofs, 30, 2, BLUE);
-			Draw.print_font(double_buffer, 40 + xofs, 108 + yofs,
-				_("You can't afford to stay here."), FNORMAL);
+			Draw.print_font(double_buffer, 40 + xofs, 108 + yofs, _("You can't afford to stay here."), FNORMAL);
 			Draw.blit2screen(xofs, yofs);
 			Game.wait_enter();
 			return;
@@ -560,7 +558,7 @@ void inn(const char *iname, uint32_t gold_per_character, int pay)
 			Game.unpress();
 			if (my == 0)
 			{
-				gp -= total_gold_cost;
+				Game.AddGold(-(int)total_gold_cost);
 				do_inn_effects(pay);
 				stop = 1;
 			}
@@ -670,14 +668,14 @@ static void sell_howmany(int item_no, size_t inv_page)
  * complete the transaction.
  *
  * \param   itno Index of item
- * \param   ni Quantity being sold
+ * \param   qty_being_sold Quantity being sold
  */
-static void sell_item(int itno, int ni)
+static void sell_item(int itno, int qty_being_sold)
 {
 	int l, stop = 0, sp, a;
 
 	l = g_inv[itno].item;
-	sp = (items[l].price * 50 / 100) * ni;
+	sp = (items[l].price * 50 / 100) * qty_being_sold;
 	Draw.menubox(double_buffer, 96 + xofs, 192 + yofs, 14, 1, DARKBLUE);
 	Draw.print_font(double_buffer, 104 + xofs, 200 + yofs, _("Confirm/Cancel"),
 		FNORMAL);
@@ -688,12 +686,12 @@ static void sell_item(int itno, int ni)
 		if (PlayerInput.balt)
 		{
 			Game.unpress();
-			gp += sp;
+			Game.AddGold(sp);
 			for (a = 0; a < SHOPITEMS; a++)
 			{
 				if (l > 0 && shops[shop_no].items[a] == l)
 				{
-					shops[shop_no].items_current[a] += ni;
+					shops[shop_no].items_current[a] += qty_being_sold;
 					if (shops[shop_no].items_current[a] > shops[shop_no].items_max[a])
 					{
 						shops[shop_no].items_current[a] = shops[shop_no].items_max[a];
@@ -701,7 +699,7 @@ static void sell_item(int itno, int ni)
 				}
 			}
 			play_effect(SND_MONEY, 128);
-			remove_item(itno, ni);
+			remove_item(itno, qty_being_sold);
 			stop = 1;
 		}
 		if (PlayerInput.bctrl)
