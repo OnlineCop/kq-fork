@@ -680,34 +680,24 @@ static int do_combat(char *bg, char *mus, int is_rnd)
 	Music.pause_music();
 	Music.set_music_volume((gmvol / 250.0) * 0.75);
 	Music.play_music(mus, 0);
-	if (stretch_view == 2)
+
+	/* TT TODO:
+	 * Change this so when we zoom into the battle, it won't just zoom into the middle
+	 * of the screen.  Instead, it's going to zoom into the location where the player
+	 * is, so if he's on the side of the map somewhere...
+	 */
+	std::unique_ptr<Raster> temp(Draw.copy_bitmap(nullptr, double_buffer));
+	for (zoom_step = 0; zoom_step < 9; zoom_step++)
 	{
-		do_transition(TRANS_FADE_OUT, 2);
-		clear_bitmap(double_buffer);
-		do_transition(TRANS_FADE_IN, 64);
-	}
-	else
-	{
-		/* TT TODO:
-		 * Change this so when we zoom into the battle, it won't just zoom into the
-		 * middle
-		 * of the screen.  Instead, it's going to zoom into the location where the
-		 * player
-		 * is, so if he's on the side of the map somewhere...
-		 */
-		std::unique_ptr<Raster> temp(Draw.copy_bitmap(nullptr, double_buffer));
-		for (zoom_step = 0; zoom_step < 9; zoom_step++)
-		{
-			Music.poll_music();
-			stretch_blit(temp.get(), double_buffer,
-				zoom_step * (KQ_SCREEN_W / 20) + xofs,
-				zoom_step * (KQ_SCREEN_H / 20) + yofs,
-				KQ_SCREEN_W - (zoom_step * (KQ_SCREEN_W / 10)),
-				KQ_SCREEN_H - (zoom_step * (KQ_SCREEN_H / 10)),
-				0, 0,
-				KQ_SCREEN_W, KQ_SCREEN_H);
-			Draw.blit2screen(xofs, yofs);
-		}
+		Music.poll_music();
+		stretch_blit(temp.get(), double_buffer,
+			zoom_step * (KQ_SCREEN_W / 20) + xofs,
+			zoom_step * (KQ_SCREEN_H / 20) + yofs,
+			KQ_SCREEN_W - (zoom_step * (KQ_SCREEN_W / 10)),
+			KQ_SCREEN_H - (zoom_step * (KQ_SCREEN_H / 10)),
+			0, 0,
+			KQ_SCREEN_W, KQ_SCREEN_H);
+		Draw.blit2screen(xofs, yofs);
 	}
 
 	snap_togrid();

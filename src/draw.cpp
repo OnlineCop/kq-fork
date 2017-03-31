@@ -83,13 +83,18 @@ static uint32_t glyph_lookup[][2] = {
 
 void KDraw::blit2screen(int xw, int yw)
 {
-	static int frate;
+	static int frate = 0;
+	static int frate_old = -1;
+	static char fbuf[16] = "0";
 
-	if (show_frate == 1)
+	if (show_frate)
 	{
-		char fbuf[16];
-
-		sprintf(fbuf, "%3d", frate);
+		// Only update the framerate string if the value changed between the last call and now.
+		if (frate != frate_old)
+		{
+			frate_old = frate;
+			sprintf(fbuf, "%3d", frate);
+		}
 		double_buffer->fill(xw, yw, xw + 24, yw + 8, 0);
 		print_font(double_buffer, xw, yw, fbuf, FNORMAL);
 	}
@@ -97,7 +102,7 @@ void KDraw::blit2screen(int xw, int yw)
 	display_console(xw, yw);
 #endif
 	acquire_screen();
-	if (stretch_view == 1)
+	if (should_stretch_view)
 	{
 		for (int j = 0; j < 480; ++j)
 		{

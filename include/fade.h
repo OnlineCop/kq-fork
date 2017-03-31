@@ -29,4 +29,11 @@ enum eTransitionFade {
   NUM_TRANSITIONS
 };
 
-void do_transition(eTransitionFade, int);
+/*! \brief Perform one of a range of palette transitions
+ *
+ * Fade to black, white or to the game palette (pal)
+ *
+ * \param   type Any of TRANS_FADE_IN, TRANS_FADE_OUT, TRANS_FADE_WHITE
+ * \param   param Speed of transition
+ */
+void do_transition(eTransitionFade type, int param);

@@ -90,13 +90,6 @@ static void _fade_from_range(AL_CONST PALETTE source, AL_CONST PALETTE dest,
 	set_palette_range(dest, from, to, TRUE);
 }
 
-/*! \brief Perform one of a range of palette transitions
- *
- * Fade to black, white or to the game palette (pal)
- *
- * \param   type Any of TRANS_FADE_IN, TRANS_FADE_OUT, TRANS_FADE_WHITE
- * \param   param Speed of transition
- */
 void do_transition(eTransitionFade type, int param)
 {
 	if (type == TRANS_FADE_IN)

@@ -144,7 +144,8 @@ extern uint32_t noe;
 extern ePIDX pidx[MAXCHRS];
 extern uint8_t autoparty, alldead, is_sound, deadeffect, vfollow, use_sstone, sound_avail;
 extern const uint8_t kq_version;
-extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, stretch_view, cpu_usage;
+extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, cpu_usage;
+extern bool should_stretch_view;
 extern uint16_t tilex[MAX_TILES], adelay[MAX_ANIM];
 extern char *strbuf, *savedir;
 extern s_player party[MAXCHRS];
@@ -162,7 +163,8 @@ extern s_inventory g_inv[MAX_INV];
 extern s_special_item special_items[MAX_SPECIAL_ITEMS];
 extern short player_special_items[MAX_SPECIAL_ITEMS];
 extern int view_x1, view_y1, view_x2, view_y2, view_on, in_combat;
-extern int show_frate, use_joy;
+extern int use_joy;
+extern bool show_frate;
 
 /*! Variables used with KQ_CHEATS */
 extern int cheat;

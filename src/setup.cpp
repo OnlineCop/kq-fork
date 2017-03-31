@@ -165,14 +165,10 @@ void config_menu(void)
 			FGOLD);
 		Draw.menubox(double_buffer, 32 + xofs, 24 + yofs, 30, MENU_SIZE + 3, BLUE);
 
-		citem(row[0], _("Windowed mode:"), windowed == 1 ? _("YES") : _("NO"),
-			FNORMAL);
-		citem(row[1], _("Stretch Display:"), stretch_view == 1 ? _("YES") : _("NO"),
-			FNORMAL);
-		citem(row[2], _("Show Frame Rate:"), show_frate == 1 ? _("YES") : _("NO"),
-			FNORMAL);
-		citem(row[3], _("Wait for Retrace:"),
-			wait_retrace == 1 ? _("YES") : _("NO"), FNORMAL);
+		citem(row[0], _("Windowed mode:"), windowed == 1 ? _("YES") : _("NO"), FNORMAL);
+		citem(row[1], _("Stretch Display:"), should_stretch_view ? _("YES") : _("NO"), FNORMAL);
+		citem(row[2], _("Show Frame Rate:"), show_frate ? _("YES") : _("NO"), FNORMAL);
+		citem(row[3], _("Wait for Retrace:"), wait_retrace == 1 ? _("YES") : _("NO"), FNORMAL);
 		citem(row[4], _("Up Key:"), kq_keyname(PlayerInput.kup), FNORMAL);
 		citem(row[5], _("Down Key:"), kq_keyname(PlayerInput.kdown), FNORMAL);
 		citem(row[6], _("Left Key:"), kq_keyname(PlayerInput.kleft), FNORMAL);
@@ -180,8 +176,7 @@ void config_menu(void)
 		citem(row[8], _("Confirm Key:"), kq_keyname(PlayerInput.kalt), FNORMAL);
 		citem(row[9], _("Cancel Key:"), kq_keyname(PlayerInput.kctrl), FNORMAL);
 		citem(row[10], _("Menu Key:"), kq_keyname(PlayerInput.kenter), FNORMAL);
-		citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.kesc),
-			FNORMAL);
+		citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.kesc), FNORMAL);
 		citem(row[12], _("Sound System:"), is_sound ? _("ON") : _("OFF"), FNORMAL);
 
 		fontColor = FNORMAL;
@@ -306,7 +301,7 @@ void config_menu(void)
 				Draw.text_ex(B_TEXT, 255, _("Changing the stretched view option could have "
 					"serious ramifications. It is advised that you "
 					"save your game before trying this."));
-				if (stretch_view == 0)
+				if (!should_stretch_view)
 				{
 					sprintf(strbuf, _("Try to stretch the display?"));
 				}
@@ -317,8 +312,8 @@ void config_menu(void)
 				p = Draw.prompt(255, 2, B_TEXT, strbuf, _("  no"), _("  yes"), "");
 				if (p == 1)
 				{
-					stretch_view = !stretch_view;
-					set_config_int(NULL, "stretch_view", stretch_view);
+					should_stretch_view = !should_stretch_view;
+					set_config_int(NULL, "stretch_view", should_stretch_view);
 					set_graphics_mode();
 				}
 				break;
@@ -713,7 +708,7 @@ static void parse_allegro_setup(void)
 		set_config_int(NULL, "skip_intro", skip_intro);
 		set_config_int(NULL, "windowed", windowed);
 
-		set_config_int(NULL, "stretch_view", stretch_view);
+		set_config_int(NULL, "stretch_view", should_stretch_view);
 		set_config_int(NULL, "show_frate", show_frate);
 		set_config_int(NULL, "is_sound", is_sound);
 		set_config_int(NULL, "use_joy", use_joy);
@@ -741,9 +736,9 @@ static void parse_allegro_setup(void)
 	/* NB. JB's config file uses intro=yes --> skip_intro=0 */
 	skip_intro = get_config_int(NULL, "skip_intro", 0);
 	windowed = get_config_int(NULL, "windowed", 1);
-	stretch_view = get_config_int(NULL, "stretch_view", 1);
+	should_stretch_view = get_config_int(NULL, "stretch_view", 1) != 0;
 	wait_retrace = get_config_int(NULL, "wait_retrace", 1);
-	show_frate = get_config_int(NULL, "show_frate", 0);
+	show_frate = get_config_int(NULL, "show_frate", 0) != 0;
 	is_sound = get_config_int(NULL, "is_sound", 1);
 	gmvol = get_config_int(NULL, "gmvol", 250);
 	gsvol = get_config_int(NULL, "gsvol", 250);
@@ -844,7 +839,7 @@ static void parse_jb_setup(void)
 			fscanf(s, "%s", strbuf);
 			if (!strcmp(strbuf, "yes"))
 			{
-				stretch_view = 1;
+				should_stretch_view = true;
 			}
 		}
 		if (!strcmp(strbuf, "framerate"))
@@ -852,7 +847,7 @@ static void parse_jb_setup(void)
 			fscanf(s, "%s", strbuf);
 			if (!strcmp(strbuf, "on"))
 			{
-				show_frate = 1;
+				show_frate = true;
 			}
 		}
 		if (!strcmp(strbuf, "sound"))
@@ -1037,17 +1032,15 @@ void play_effect(int efc, int panning)
  */
 void set_graphics_mode(void)
 {
-	if (stretch_view == 1)
+	if (should_stretch_view)
 	{
 		if (windowed == 1)
 		{
-			set_gfx_mode(GFX_AUTODETECT_WINDOWED, KQ_SCALED_SCREEN_W,
-				KQ_SCALED_SCREEN_H, 0, 0);
+			set_gfx_mode(GFX_AUTODETECT_WINDOWED, KQ_SCALED_SCREEN_W, KQ_SCALED_SCREEN_H, 0, 0);
 		}
 		else
 		{
-			set_gfx_mode(GFX_AUTODETECT, KQ_SCALED_SCREEN_W, KQ_SCALED_SCREEN_H, 0,
-				0);
+			set_gfx_mode(GFX_AUTODETECT, KQ_SCALED_SCREEN_W, KQ_SCALED_SCREEN_H, 0,  0);
 		}
 	}
 	else
@@ -1076,8 +1069,7 @@ void show_help(void)
 	Draw.print_font(double_buffer, 132 + xofs, 8 + yofs, _("KQ Help"), FGOLD);
 	Draw.menubox(double_buffer, 32 + xofs, 32 + yofs, 30, 20, BLUE);
 	Draw.menubox(double_buffer, xofs, 216 + yofs, 38, 1, BLUE);
-	Draw.print_font(double_buffer, 16 + xofs, 224 + yofs,
-		_("Press CONFIRM to exit this screen"), FNORMAL);
+	Draw.print_font(double_buffer, 16 + xofs, 224 + yofs, _("Press CONFIRM to exit this screen"), FNORMAL);
 	citem(72, _("Up Key:"), kq_keyname(PlayerInput.kup), FNORMAL);
 	citem(80, _("Down Key:"), kq_keyname(PlayerInput.kdown), FNORMAL);
 	citem(88, _("Left Key:"), kq_keyname(PlayerInput.kleft), FNORMAL);

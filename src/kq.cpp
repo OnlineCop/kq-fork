@@ -173,7 +173,8 @@ uint8_t cansave = 0;
 uint8_t skip_intro = 0;
 
 /*! Graphics mode settings */
-uint8_t wait_retrace = 1, windowed = 1, stretch_view = 1, cpu_usage = 1;
+uint8_t wait_retrace = 1, windowed = 1, cpu_usage = 1;
+bool should_stretch_view = true;
 
 /*! Current sequence position of animated tiles */
 uint16_t tilex[MAX_TILES];
@@ -261,7 +262,7 @@ int view_x1, view_y1, view_x2, view_y2, view_on = 0;
 int in_combat = 0;
 
 /*! Frame rate stuff */
-int show_frate = 0;
+bool show_frate = false;
 
 /*! Should we use the joystick */
 int use_joy = 1;
