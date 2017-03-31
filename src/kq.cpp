@@ -90,11 +90,11 @@ int steps = 0;
 
 /*! 23: various global bitmaps */
 Raster *double_buffer, *fx_buffer, *map_icons[MAX_TILES], *back, *tc, *tc2,
-    *bub[8], *b_shield, *b_shell, *b_repulse, *b_mp,
-    *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES],
-    *frames[MAXCHRS][MAXFRAMES], *eframes[MAXE][MAXEFRAMES], *pgb[9],
-    *sfonts[5], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr,
-    *missbmp, *noway, *upptr, *dnptr, *shadow[MAX_SHADOWS], *kfonts;
+*bub[8], *b_shield, *b_shell, *b_repulse, *b_mp,
+*cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES],
+*frames[MAXCHRS][MAXFRAMES], *eframes[MAXE][MAXEFRAMES], *pgb[9],
+*sfonts[5], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr,
+*missbmp, *noway, *upptr, *dnptr, *shadow[MAX_SHADOWS], *kfonts;
 
 #ifdef DEBUGMODE
 Raster *obj_mesh;
@@ -224,8 +224,7 @@ char attack_string[39];
  * hours, minutes and seconds. They're all used in the my_counter() timer
  * function just below
  */
-volatile int timer = 0, ksec = 0, kmin = 0, khr = 0, timer_count = 0,
-             animation_count = 0;
+volatile int timer = 0, ksec = 0, kmin = 0, khr = 0, timer_count = 0, animation_count = 0;
 
 /*! Current colour map */
 COLOR_MAP cmap;
@@ -236,11 +235,9 @@ uint8_t can_run = 1;
 /*! Is the map description is displayed on screen? */
 uint8_t display_desc = 0;
 
-/*! Which map layers should be drawn. These are set when the map is loaded;
-     see change_map()
+/*! Which map layers should be drawn. These are set when the map is loaded; see change_map()
  */
-uint8_t draw_background = 1, draw_middle = 1, draw_foreground = 1,
-        draw_shadow = 1;
+uint8_t draw_background = 1, draw_middle = 1, draw_foreground = 1, draw_shadow = 1;
 
 /*! Items in inventory.  */
 s_inventory g_inv[MAX_INV];
@@ -306,66 +303,66 @@ static int next_event_time; /*!< The time the next event will trigger */
  * and "intrface".
  */
 s_progress progresses[SIZE_PROGRESS] = {
-    {0, "P_START"},           {1, "P_ODDWALL"},
-    {2, "P_DARKIMPBOSS"},     {3, "P_DYINGDUDE"},
-    {4, "P_BUYCURE"},         {5, "P_GETPARTNER"},
-    {6, "P_PARTNER1"},        {7, "P_PARTNER2"},
-    {8, "P_SHOWBRIDGE"},      {9, "P_TALKDERIG"},
-    {10, "P_FIGHTONBRIDGE"},  {11, "P_FELLINPIT"},
-    {12, "P_EKLAWELCOME"},    {13, "P_LOSERONBRIDGE"},
-    {14, "P_ASLEEPONBRIDGE"}, {15, "P_ALTARSWITCH"},
-    {16, "P_KILLBLORD"},      {17, "P_GOBLINITEM"},
-    {18, "P_ORACLE"},         {19, "P_FTOTAL"},
-    {20, "P_FLOOR1"},         {21, "P_FLOOR2"},
-    {22, "P_FLOOR3"},         {23, "P_FLOOR4"},
-    {24, "P_WSTONES"},        {25, "P_BSTONES"},
-    {26, "P_WALL1"},          {27, "P_WALL2"},
-    {28, "P_WALL3"},          {29, "P_WALL4"},
-    {30, "P_DOOROPEN"},       {31, "P_DOOROPEN2"},
-    {32, "P_TOWEROPEN"},      {33, "P_DRAGONDOWN"},
-    {34, "P_TREASUREROOM"},   {35, "P_UNDEADJEWEL"},
-    {36, "P_UCOIN"},          {37, "P_CANCELROD"},
-    {38, "P_PORTALGONE"},     {39, "P_WARPEDTOT4"},
-    {40, "P_OLDPARTNER"},     {41, "P_BOUGHTHOUSE"},
-    {42, "P_TALKGELIK"},      {43, "P_OPALHELMET"},
-    {44, "P_FOUNDMAYOR"},     {45, "P_TALK_TEMMIN"},
-    {46, "P_EMBERSKEY"},      {47, "P_FOUGHTGUILD"},
-    {48, "P_GUILDSECRET"},    {49, "P_SEECOLISEUM"},
-    {50, "P_OPALSHIELD"},     {51, "P_STONE1"},
-    {52, "P_STONE2"},         {53, "P_STONE3"},
-    {54, "P_STONE4"},         {55, "P_DENORIAN"},
-    {56, "P_C4DOORSOPEN"},    {57, "P_DEMNASDEAD"},
-    {58, "P_FIRSTTIME"},      {59, "P_ROUNDNUM"},
-    {60, "P_BATTLESTATUS"},   {61, "P_USEITEMINCOMBAT"},
-    {62, "P_FINALPARTNER"},   {63, "P_TALKGRAMPA"},
-    {64, "P_SAVEBREANNE"},    {65, "P_PASSGUARDS"},
-    {66, "P_IRONKEY"},        {67, "P_AVATARDEAD"},
-    {68, "P_GIANTDEAD"},      {69, "P_OPALBAND"},
-    {70, "P_BRONZEKEY"},      {71, "P_CAVEKEY"},
-    {72, "P_TOWN6INN"},       {73, "P_WARPSTONE"},
-    {74, "P_DOINTRO"},        {75, "P_GOTOFORT"},
-    {76, "P_GOTOESTATE"},     {77, "P_TALKBUTLER"},
-    {78, "P_PASSDOOR1"},      {79, "P_PASSDOOR2"},
-    {80, "P_PASSDOOR3"},      {81, "P_BOMB1"},
-    {82, "P_BOMB2"},          {83, "P_BOMB3"},
-    {84, "P_BOMB4"},          {85, "P_BOMB5"},
-    {86, "P_DYNAMITE"},       {87, "P_TALKRUFUS"},
-    {88, "P_EARLYPROGRESS"},  {89, "P_OPALDRAGONOUT"},
-    {90, "P_OPALARMOUR"},     {91, "P_MANORPARTY"},
-    {92, "P_MANORPARTY1"},    {93, "P_MANORPARTY2"},
-    {94, "P_MANORPARTY3"},    {95, "P_MANORPARTY4"},
-    {96, "P_MANORPARTY5"},    {97, "P_MANORPARTY6"},
-    {98, "P_MANORPARTY7"},    {99, "P_MANOR"},
-    {100, "P_PLAYERS"},       {101, "P_TALK_AJATHAR"},
-    {102, "P_BLADE"},         {103, "P_AYLA_QUEST"},
-    {104, "P_BANGTHUMB"},     {105, "P_WALKING"},
-    {106, "P_MAYORGUARD1"},   {107, "P_MAYORGUARD2"},
-    {108, "P_TALK_TSORIN"},   {109, "P_TALK_CORIN"},
-    {110, "P_TALKOLDMAN"},    {111, "P_ORACLEMONSTERS"},
-    {112, "P_TRAVELPOINT"},   {113, "P_SIDEQUEST1"},
-    {114, "P_SIDEQUEST2"},    {115, "P_SIDEQUEST3"},
-    {116, "P_SIDEQUEST4"},    {117, "P_SIDEQUEST5"},
-    {118, "P_SIDEQUEST6"},    {119, "P_SIDEQUEST7"},
+	{ 0, "P_START" }, { 1, "P_ODDWALL" },
+	{ 2, "P_DARKIMPBOSS" }, { 3, "P_DYINGDUDE" },
+	{ 4, "P_BUYCURE" }, { 5, "P_GETPARTNER" },
+	{ 6, "P_PARTNER1" }, { 7, "P_PARTNER2" },
+	{ 8, "P_SHOWBRIDGE" }, { 9, "P_TALKDERIG" },
+	{ 10, "P_FIGHTONBRIDGE" }, { 11, "P_FELLINPIT" },
+	{ 12, "P_EKLAWELCOME" }, { 13, "P_LOSERONBRIDGE" },
+	{ 14, "P_ASLEEPONBRIDGE" }, { 15, "P_ALTARSWITCH" },
+	{ 16, "P_KILLBLORD" }, { 17, "P_GOBLINITEM" },
+	{ 18, "P_ORACLE" }, { 19, "P_FTOTAL" },
+	{ 20, "P_FLOOR1" }, { 21, "P_FLOOR2" },
+	{ 22, "P_FLOOR3" }, { 23, "P_FLOOR4" },
+	{ 24, "P_WSTONES" }, { 25, "P_BSTONES" },
+	{ 26, "P_WALL1" }, { 27, "P_WALL2" },
+	{ 28, "P_WALL3" }, { 29, "P_WALL4" },
+	{ 30, "P_DOOROPEN" }, { 31, "P_DOOROPEN2" },
+	{ 32, "P_TOWEROPEN" }, { 33, "P_DRAGONDOWN" },
+	{ 34, "P_TREASUREROOM" }, { 35, "P_UNDEADJEWEL" },
+	{ 36, "P_UCOIN" }, { 37, "P_CANCELROD" },
+	{ 38, "P_PORTALGONE" }, { 39, "P_WARPEDTOT4" },
+	{ 40, "P_OLDPARTNER" }, { 41, "P_BOUGHTHOUSE" },
+	{ 42, "P_TALKGELIK" }, { 43, "P_OPALHELMET" },
+	{ 44, "P_FOUNDMAYOR" }, { 45, "P_TALK_TEMMIN" },
+	{ 46, "P_EMBERSKEY" }, { 47, "P_FOUGHTGUILD" },
+	{ 48, "P_GUILDSECRET" }, { 49, "P_SEECOLISEUM" },
+	{ 50, "P_OPALSHIELD" }, { 51, "P_STONE1" },
+	{ 52, "P_STONE2" }, { 53, "P_STONE3" },
+	{ 54, "P_STONE4" }, { 55, "P_DENORIAN" },
+	{ 56, "P_C4DOORSOPEN" }, { 57, "P_DEMNASDEAD" },
+	{ 58, "P_FIRSTTIME" }, { 59, "P_ROUNDNUM" },
+	{ 60, "P_BATTLESTATUS" }, { 61, "P_USEITEMINCOMBAT" },
+	{ 62, "P_FINALPARTNER" }, { 63, "P_TALKGRAMPA" },
+	{ 64, "P_SAVEBREANNE" }, { 65, "P_PASSGUARDS" },
+	{ 66, "P_IRONKEY" }, { 67, "P_AVATARDEAD" },
+	{ 68, "P_GIANTDEAD" }, { 69, "P_OPALBAND" },
+	{ 70, "P_BRONZEKEY" }, { 71, "P_CAVEKEY" },
+	{ 72, "P_TOWN6INN" }, { 73, "P_WARPSTONE" },
+	{ 74, "P_DOINTRO" }, { 75, "P_GOTOFORT" },
+	{ 76, "P_GOTOESTATE" }, { 77, "P_TALKBUTLER" },
+	{ 78, "P_PASSDOOR1" }, { 79, "P_PASSDOOR2" },
+	{ 80, "P_PASSDOOR3" }, { 81, "P_BOMB1" },
+	{ 82, "P_BOMB2" }, { 83, "P_BOMB3" },
+	{ 84, "P_BOMB4" }, { 85, "P_BOMB5" },
+	{ 86, "P_DYNAMITE" }, { 87, "P_TALKRUFUS" },
+	{ 88, "P_EARLYPROGRESS" }, { 89, "P_OPALDRAGONOUT" },
+	{ 90, "P_OPALARMOUR" }, { 91, "P_MANORPARTY" },
+	{ 92, "P_MANORPARTY1" }, { 93, "P_MANORPARTY2" },
+	{ 94, "P_MANORPARTY3" }, { 95, "P_MANORPARTY4" },
+	{ 96, "P_MANORPARTY5" }, { 97, "P_MANORPARTY6" },
+	{ 98, "P_MANORPARTY7" }, { 99, "P_MANOR" },
+	{ 100, "P_PLAYERS" }, { 101, "P_TALK_AJATHAR" },
+	{ 102, "P_BLADE" }, { 103, "P_AYLA_QUEST" },
+	{ 104, "P_BANGTHUMB" }, { 105, "P_WALKING" },
+	{ 106, "P_MAYORGUARD1" }, { 107, "P_MAYORGUARD2" },
+	{ 108, "P_TALK_TSORIN" }, { 109, "P_TALK_CORIN" },
+	{ 110, "P_TALKOLDMAN" }, { 111, "P_ORACLEMONSTERS" },
+	{ 112, "P_TRAVELPOINT" }, { 113, "P_SIDEQUEST1" },
+	{ 114, "P_SIDEQUEST2" }, { 115, "P_SIDEQUEST3" },
+	{ 116, "P_SIDEQUEST4" }, { 117, "P_SIDEQUEST5" },
+	{ 118, "P_SIDEQUEST6" }, { 119, "P_SIDEQUEST7" },
 };
 #endif
 
@@ -821,124 +818,135 @@ void KGame::data_dump(void)
  *
  * This frees memory and such things.
  */
-void KGame::deallocate_stuff(void) {
-  int i, p;
+void KGame::deallocate_stuff(void)
+{
+	int i, p;
 
-  delete kfonts;
+	delete kfonts;
 
-  for (i = 0; i < 5; i++) {
-    delete (sfonts[i]);
-  }
+	for (i = 0; i < 5; i++)
+	{
+		delete (sfonts[i]);
+	}
 
-  delete (menuptr);
-  delete (sptr);
-  delete (mptr);
-  delete (upptr);
-  delete (dnptr);
-  delete (stspics);
-  delete (sicons);
-  delete (bptr);
-  delete (noway);
-  delete (missbmp);
+	delete (menuptr);
+	delete (sptr);
+	delete (mptr);
+	delete (upptr);
+	delete (dnptr);
+	delete (stspics);
+	delete (sicons);
+	delete (bptr);
+	delete (noway);
+	delete (missbmp);
 
-  for (i = 0; i < 9; i++) {
-    delete (pgb[i]);
-  }
+	for (i = 0; i < 9; i++)
+	{
+		delete (pgb[i]);
+	}
 
-  delete (tc);
-  delete (tc2);
-  delete (b_shield);
-  delete (b_shell);
-  delete (b_repulse);
-  delete (b_mp);
+	delete (tc);
+	delete (tc2);
+	delete (b_shield);
+	delete (b_shell);
+	delete (b_repulse);
+	delete (b_mp);
 
-  for (p = 0; p < MAXE; p++) {
-    for (i = 0; i < MAXEFRAMES; i++) {
-      delete (eframes[p][i]);
-    }
-  }
+	for (p = 0; p < MAXE; p++)
+	{
+		for (i = 0; i < MAXEFRAMES; i++)
+		{
+			delete (eframes[p][i]);
+		}
+	}
 
-  for (i = 0; i < MAXFRAMES; i++) {
-    for (p = 0; p < MAXCHRS; p++) {
-      delete (frames[p][i]);
-    }
-  }
+	for (i = 0; i < MAXFRAMES; i++)
+	{
+		for (p = 0; p < MAXCHRS; p++)
+		{
+			delete (frames[p][i]);
+		}
+	}
 
-  for (i = 0; i < MAXCFRAMES; i++) {
-    for (p = 0; p < NUM_FIGHTERS; p++) {
-      delete (cframes[p][i]);
-      delete (tcframes[p][i]);
-    }
-  }
+	for (i = 0; i < MAXCFRAMES; i++)
+	{
+		for (p = 0; p < NUM_FIGHTERS; p++)
+		{
+			delete (cframes[p][i]);
+			delete (tcframes[p][i]);
+		}
+	}
 
-  delete (double_buffer);
-  delete (back);
-  delete (fx_buffer);
+	delete (double_buffer);
+	delete (back);
+	delete (fx_buffer);
 
-  for (p = 0; p < MAX_SHADOWS; p++) {
-    delete (shadow[p]);
-  }
+	for (p = 0; p < MAX_SHADOWS; p++)
+	{
+		delete (shadow[p]);
+	}
 
-  for (p = 0; p < 8; p++) {
-    delete (bub[p]);
-  }
+	for (p = 0; p < 8; p++)
+	{
+		delete (bub[p]);
+	}
 
-  for (p = 0; p < 8; p++)
-  {
-	  delete (bord[p]);
-  }
+	for (p = 0; p < 8; p++)
+	{
+		delete (bord[p]);
+	}
 
-  for (p = 0; p < MAXCHRS; p++)
-  {
-	  delete (players[p].portrait);
-  }
+	for (p = 0; p < MAXCHRS; p++)
+	{
+		delete (players[p].portrait);
+	}
 
-  for (p = 0; p < MAX_TILES; p++)
-  {
-	  delete (map_icons[p]);
-  }
+	for (p = 0; p < MAX_TILES; p++)
+	{
+		delete (map_icons[p]);
+	}
 
-  if (map_seg)
-  {
-	  free(map_seg);
-  }
-  if (b_seg)
-  {
-	  free(b_seg);
-  }
-  if (f_seg)
-  {
-	  free(f_seg);
-  }
-  if (z_seg)
-  {
-	  free(z_seg);
-  }
-  if (s_seg)
-  {
-	  free(s_seg);
-  }
-  if (o_seg)
-  {
-	  free(o_seg);
-  }
-  if (strbuf)
-  {
-	  free(strbuf);
-  }
+	if (map_seg)
+	{
+		free(map_seg);
+	}
+	if (b_seg)
+	{
+		free(b_seg);
+	}
+	if (f_seg)
+	{
+		free(f_seg);
+	}
+	if (z_seg)
+	{
+		free(z_seg);
+	}
+	if (s_seg)
+	{
+		free(s_seg);
+	}
+	if (o_seg)
+	{
+		free(o_seg);
+	}
+	if (strbuf)
+	{
+		free(strbuf);
+	}
 
-  if (is_sound)
-  {
-	  Music.shutdown_music();
-	  free_samples();
-  }
-  deallocate_credits();
-  clear_image_cache();
+	if (is_sound)
+	{
+		Music.shutdown_music();
+		free_samples();
+	}
+	deallocate_credits();
+	clear_image_cache();
 
 #ifdef DEBUGMODE
-  delete (obj_mesh);
+	delete (obj_mesh);
 #endif
-  }
+}
 
 /* \brief Get the next event if any
  *
@@ -1498,164 +1506,189 @@ void KGame::reset_world(void)
  * Set up allegro, set up variables, load stuff, blah...
  * This is called once per game.
  */
-void KGame::startup(void) {
-  int p, i, q;
-  time_t t;
+void KGame::startup(void)
+{
+	int p, i, q;
+	time_t t;
 
-  allegro_init();
+	allegro_init();
 
-  /* Buffers to allocate */
-  strbuf = (char *)malloc(4096);
+	/* Buffers to allocate */
+	strbuf = (char *)malloc(4096);
 
-  map_seg = b_seg = f_seg = NULL;
-  s_seg = z_seg = o_seg = NULL;
+	map_seg = b_seg = f_seg = NULL;
+	s_seg = z_seg = o_seg = NULL;
 
-  allocate_stuff();
-  install_keyboard();
-  install_timer();
+	allocate_stuff();
+	install_keyboard();
+	install_timer();
 
-  /* KQ uses digi sound but it doesn't use MIDI */
-  //   reserve_voices (8, 0);
-  sound_avail = (install_sound(DIGI_AUTODETECT, MIDI_NONE, NULL) < 0 ? 0 : 1);
-  if (!sound_avail) {
-    TRACE(_("Error with sound: %s\n"), allegro_error);
-  }
-  parse_setup();
-  sound_init();
-  set_graphics_mode();
+	/* KQ uses digi sound but it doesn't use MIDI */
+	//   reserve_voices (8, 0);
+	sound_avail = (install_sound(DIGI_AUTODETECT, MIDI_NONE, NULL) < 0 ? 0 : 1);
+	if (!sound_avail)
+	{
+		TRACE(_("Error with sound: %s\n"), allegro_error);
+	}
+	parse_setup();
+	sound_init();
+	set_graphics_mode();
 
-  if (use_joy == 1) {
-    install_joystick(JOY_TYPE_AUTODETECT);
-  }
+	if (use_joy == 1)
+	{
+		install_joystick(JOY_TYPE_AUTODETECT);
+	}
 
-  if (num_joysticks == 0) {
-    use_joy = 0;
-  } else {
-    use_joy = 0;
+	if (num_joysticks == 0)
+	{
+		use_joy = 0;
+	}
+	else
+	{
+		use_joy = 0;
 
-    if (poll_joystick() == 0) {
-      // Use first compatible joystick attached to computer
-      for (i = 0; i < num_joysticks; ++i) {
-        if (joy[i].num_buttons >= 4) {
-          use_joy = i + 1;
-          break;
-        }
-      }
-    }
+		if (poll_joystick() == 0)
+		{
+			// Use first compatible joystick attached to computer
+			for (i = 0; i < num_joysticks; ++i)
+			{
+				if (joy[i].num_buttons >= 4)
+				{
+					use_joy = i + 1;
+					break;
+				}
+			}
+		}
 
-    if (use_joy == 0) {
-      Game.klog(
-          _("Only joysticks/gamepads with at least 4 buttons can be used."));
-      remove_joystick();
-    }
-  }
+		if (use_joy == 0)
+		{
+			Game.klog(
+				_("Only joysticks/gamepads with at least 4 buttons can be used."));
+			remove_joystick();
+		}
+	}
 
-  srand((unsigned)time(&t));
-  Raster *misc = get_cached_image("misc.png");
-  misc->blitTo(menuptr, 24, 0, 0, 0, 16, 8);
-  misc->blitTo(sptr, 0, 0, 0, 0, 8, 8);
-  misc->blitTo(mptr, 8, 0, 0, 0, 8, 8);
-  misc->blitTo(upptr, 0, 8, 0, 0, 8, 8);
-  misc->blitTo(dnptr, 8, 8, 0, 0, 8, 8);
-  misc->blitTo(bptr, 24, 8, 0, 0, 16, 8);
-  misc->blitTo(noway, 64, 16, 0, 0, 16, 16);
-  misc->blitTo(missbmp, 0, 16, 0, 0, 20, 6);
-  misc->blitTo(b_shield, 0, 80, 0, 0, 48, 48);
-  misc->blitTo(b_shell, 48, 80, 0, 0, 48, 48);
-  misc->blitTo(b_repulse, 0, 64, 0, 0, 16, 16);
-  misc->blitTo(b_mp, 0, 24, 0, 0, 10, 8);
-  misc->blitTo(sfonts[0], 0, 128, 0, 0, 60, 8);
+	srand((unsigned)time(&t));
+	Raster *misc = get_cached_image("misc.png");
+	misc->blitTo(menuptr, 24, 0, 0, 0, 16, 8);
+	misc->blitTo(sptr, 0, 0, 0, 0, 8, 8);
+	misc->blitTo(mptr, 8, 0, 0, 0, 8, 8);
+	misc->blitTo(upptr, 0, 8, 0, 0, 8, 8);
+	misc->blitTo(dnptr, 8, 8, 0, 0, 8, 8);
+	misc->blitTo(bptr, 24, 8, 0, 0, 16, 8);
+	misc->blitTo(noway, 64, 16, 0, 0, 16, 16);
+	misc->blitTo(missbmp, 0, 16, 0, 0, 20, 6);
+	misc->blitTo(b_shield, 0, 80, 0, 0, 48, 48);
+	misc->blitTo(b_shell, 48, 80, 0, 0, 48, 48);
+	misc->blitTo(b_repulse, 0, 64, 0, 0, 16, 16);
+	misc->blitTo(b_mp, 0, 24, 0, 0, 10, 8);
+	misc->blitTo(sfonts[0], 0, 128, 0, 0, 60, 8);
 
-  // sfonts[1-4] are the same font shape, just colored differently.
-  sfonts[0]->blitTo(sfonts[1]);
-  sfonts[0]->blitTo(sfonts[2]);
-  sfonts[0]->blitTo(sfonts[3]);
-  sfonts[0]->blitTo(sfonts[4]);
-  for (int16_t sfont_y = 0; sfont_y < 8; sfont_y++) {
-    for (int16_t sfont_x = 0; sfont_x < 60; sfont_x++) {
-      if (sfonts[0]->getpixel(sfont_x, sfont_y) == 15) {
-        sfonts[1]->setpixel(sfont_x, sfont_y, 22);
-        sfonts[2]->setpixel(sfont_x, sfont_y, 105);
-        sfonts[3]->setpixel(sfont_x, sfont_y, 39);
-        sfonts[4]->setpixel(sfont_x, sfont_y, 8);
-      }
-    }
-  }
+	// sfonts[1-4] are the same font shape, just colored differently.
+	sfonts[0]->blitTo(sfonts[1]);
+	sfonts[0]->blitTo(sfonts[2]);
+	sfonts[0]->blitTo(sfonts[3]);
+	sfonts[0]->blitTo(sfonts[4]);
+	for (int16_t sfont_y = 0; sfont_y < 8; sfont_y++)
+	{
+		for (int16_t sfont_x = 0; sfont_x < 60; sfont_x++)
+		{
+			if (sfonts[0]->getpixel(sfont_x, sfont_y) == 15)
+			{
+				sfonts[1]->setpixel(sfont_x, sfont_y, 22);
+				sfonts[2]->setpixel(sfont_x, sfont_y, 105);
+				sfonts[3]->setpixel(sfont_x, sfont_y, 39);
+				sfonts[4]->setpixel(sfont_x, sfont_y, 8);
+			}
+		}
+	}
 
-  for (p = 0; p < 27; p++) {
-    misc->blitTo(stspics, p * 8 + 40, 0, 0, p * 8, 8, 8);
-  }
+	for (p = 0; p < 27; p++)
+	{
+		misc->blitTo(stspics, p * 8 + 40, 0, 0, p * 8, 8, 8);
+	}
 
-  for (p = 0; p < 40; p++) {
-    misc->blitTo(sicons, p * 8, 32, 0, p * 8, 8, 8);
-  }
+	for (p = 0; p < 40; p++)
+	{
+		misc->blitTo(sicons, p * 8, 32, 0, p * 8, 8, 8);
+	}
 
-  for (p = 0; p < 40; p++) {
-    misc->blitTo(sicons, p * 8, 40, 0, p * 8 + 320, 8, 8);
-  }
+	for (p = 0; p < 40; p++)
+	{
+		misc->blitTo(sicons, p * 8, 40, 0, p * 8 + 320, 8, 8);
+	}
 
-  for (p = 0; p < MAX_SHADOWS; p++) {
-    misc->blitTo(shadow[p], p * 16, 160, 0, 0, 16, 16);
-  }
+	for (p = 0; p < MAX_SHADOWS; p++)
+	{
+		misc->blitTo(shadow[p], p * 16, 160, 0, 0, 16, 16);
+	}
 
-  for (p = 0; p < 8; p++) {
-    misc->blitTo(bub[p], p * 16, 144, 0, 0, 16, 16);
-  }
+	for (p = 0; p < 8; p++)
+	{
+		misc->blitTo(bub[p], p * 16, 144, 0, 0, 16, 16);
+	}
 
-  for (p = 0; p < 3; p++) {
-    misc->blitTo(bord[p], p * 8 + 96, 64, 0, 0, 8, 8);
-    misc->blitTo(bord[5 + p], p * 8 + 96, 84, 0, 0, 8, 8);
-  }
+	for (p = 0; p < 3; p++)
+	{
+		misc->blitTo(bord[p], p * 8 + 96, 64, 0, 0, 8, 8);
+		misc->blitTo(bord[5 + p], p * 8 + 96, 84, 0, 0, 8, 8);
+	}
 
-  misc->blitTo(bord[3], 96, 72, 0, 0, 8, 12);
-  misc->blitTo(bord[4], 112, 72, 0, 0, 8, 12);
+	misc->blitTo(bord[3], 96, 72, 0, 0, 8, 12);
+	misc->blitTo(bord[4], 112, 72, 0, 0, 8, 12);
 
-  for (i = 0; i < 9; i++) {
-    misc->blitTo(pgb[i], i * 16, 48, 0, 0, 9, 9);
-  }
+	for (i = 0; i < 9; i++)
+	{
+		misc->blitTo(pgb[i], i * 16, 48, 0, 0, 9, 9);
+	}
 
-  load_heroes();
+	load_heroes();
 
-  Raster *allfonts = get_cached_image("fonts.png");
-  allfonts->blitTo(kfonts, 0, 0, 0, 0, 1024, 60);
-  Raster *entities = get_cached_image("entities.png");
-  for (q = 0; q < MAXE; q++) {
-    for (p = 0; p < MAXEFRAMES; p++) {
-      entities->blitTo(eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
-    }
-  }
+	Raster *allfonts = get_cached_image("fonts.png");
+	allfonts->blitTo(kfonts, 0, 0, 0, 0, 1024, 60);
+	Raster *entities = get_cached_image("entities.png");
+	for (q = 0; q < MAXE; q++)
+	{
+		for (p = 0; p < MAXEFRAMES; p++)
+		{
+			entities->blitTo(eframes[q][p], p * 16, q * 16, 0, 0, 16, 16);
+		}
+	}
 
-  LOCK_VARIABLE(timer);
-  LOCK_VARIABLE(timer_count);
-  LOCK_VARIABLE(animation_count);
-  LOCK_VARIABLE(ksec);
-  LOCK_VARIABLE(kmin);
-  LOCK_VARIABLE(khr);
-  LOCK_FUNCTION(my_counter);
-  LOCK_FUNCTION(time_counter);
+	LOCK_VARIABLE(timer);
+	LOCK_VARIABLE(timer_count);
+	LOCK_VARIABLE(animation_count);
+	LOCK_VARIABLE(ksec);
+	LOCK_VARIABLE(kmin);
+	LOCK_VARIABLE(khr);
+	LOCK_FUNCTION(my_counter);
+	LOCK_FUNCTION(time_counter);
 
-  install_int_ex(my_counter, BPS_TO_TIMER(KQ_TICKS));
-  /* tick every minute */
-  install_int_ex(time_counter, BPM_TO_TIMER(1));
-  create_trans_table(&cmap, pal, 128, 128, 128, NULL);
-  color_map = &cmap;
-  SaveGame.load_sgstats();
+	install_int_ex(my_counter, BPS_TO_TIMER(KQ_TICKS));
+	/* tick every minute */
+	install_int_ex(time_counter, BPM_TO_TIMER(1));
+	create_trans_table(&cmap, pal, 128, 128, 128, NULL);
+	color_map = &cmap;
+	SaveGame.load_sgstats();
 
 #ifdef DEBUGMODE
-  /* TT: Create the mesh object to see 4-way obstacles (others ignored) */
-  obj_mesh = new Raster(16, 16);
-  clear_bitmap(obj_mesh);
-  for (q = 0; q < 16; q += 2) {
-    for (p = 0; p < TILE_W; p += 2) {
-      putpixel(obj_mesh, p, q, 255);
-    }
-    for (p = 1; p < TILE_W; p += 2) {
-      putpixel(obj_mesh, p, q + 1, 255);
-    }
-  }
+	/* TT: Create the mesh object to see 4-way obstacles (others ignored) */
+	obj_mesh = new Raster(16, 16);
+	clear_bitmap(obj_mesh);
+	for (q = 0; q < 16; q += 2)
+	{
+		for (p = 0; p < TILE_W; p += 2)
+		{
+			putpixel(obj_mesh, p, q, 255);
+		}
+		for (p = 1; p < TILE_W; p += 2)
+		{
+			putpixel(obj_mesh, p, q + 1, 255);
+		}
+	}
 #endif
 
-  init_console();
+	init_console();
 }
 
 /*! \brief Keep track of the time the game has been in play
