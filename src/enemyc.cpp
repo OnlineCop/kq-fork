@@ -872,7 +872,7 @@ static void load_enemies(void)
 		f->mrp = 100;
 	}
 	fclose(edat);
-	dump_en();
+	//dump_en();
 }
 
 /*! \brief Prepare an enemy for battle
