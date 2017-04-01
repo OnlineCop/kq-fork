@@ -46,21 +46,7 @@
 #include "selector.h"
 #include "skills.h"
 
-/*! Index related to enemies in an encounter */
-int cf[NUM_FIGHTERS];
-
-/*  internal prototypes  */
-static void enemy_attack(size_t);
-static int enemy_cancast(size_t, size_t);
-static void enemy_curecheck(int);
-static void enemy_skillcheck(int, int);
-static void enemy_spellcheck(size_t, size_t);
-static int enemy_stscheck(int, int);
-static void load_enemies(void);
-static KFighter *make_enemy(int, KFighter *);
-static int skill_setup(int, int);
-static int spell_setup(int, int);
-void unload_enemies(void);
+KEnemy Enemy;
 
 /*! \page monster The Format of allstat.mon
  *
@@ -104,22 +90,7 @@ void unload_enemies(void);
  * -# imb[1] (?)
  */
 
-/*! \brief Array of enemy 'fighters'  */
-static KFighter **enemy_fighters = NULL;
-static int enemies_n = 0;
-static int enemies_cap = 0;
-
-/*! \brief Melee attack
- *
- * Do an enemy melee attack.  Enemies only defend if they are in critical
- * status.  This could use a little more smarts, so that more-intelligent
- * enemies would know to hit spellcasters or injured heroes first, and so
- * that berserk-type enemies don't defend.  The hero selection is done in
- * a different function, but it all starts here.
- *
- * \param   target_fighter_index Target
- */
-static void enemy_attack(size_t target_fighter_index)
+void KEnemy::Attack(size_t target_fighter_index)
 {
 	int b, c;
 	size_t fighter_index;
@@ -179,17 +150,7 @@ static void enemy_attack(size_t target_fighter_index)
 	cact[target_fighter_index] = 0;
 }
 
-/*! \brief Check if enemy can cast this spell
- *
- * This function is fairly specific in that it will only
- * return 1 if the enemy has the spell in its list of spells,
- * is not mute, and has enough mp to cast the spell.
- *
- * \param   target_fighter_index Which enemy
- * \param   sp Spell to cast
- * \returns 1 if spell can be cast, 0 otherwise
- */
-static int enemy_cancast(size_t target_fighter_index, size_t sp)
+int KEnemy::CanCast(size_t target_fighter_index, size_t sp)
 {
 	size_t a;
 	uint32_t z = 0;
@@ -218,16 +179,7 @@ static int enemy_cancast(size_t target_fighter_index, size_t sp)
 	return 1;
 }
 
-/*! \brief Action for confused enemy
- *
- * Enemy actions are chosen differently if they are confused.  Confused
- * fighters either attack the enemy, an ally, or do nothing.  Confused
- * fighters never use spells or items.
- *
- * \sa auto_herochooseact()
- * \param   fighter_index Target
- */
-void enemy_charmaction(size_t fighter_index)
+void KEnemy::enemy_charmaction(size_t fighter_index)
 {
 	int a;
 
@@ -257,22 +209,14 @@ void enemy_charmaction(size_t fighter_index)
 	if (a == 1)
 	{
 		fighter[fighter_index].ctmem = 0;
-		enemy_attack(fighter_index);
+		Attack(fighter_index);
 		return;
 	}
 	fighter[fighter_index].ctmem = 1;
-	enemy_attack(fighter_index);
+	Attack(fighter_index);
 }
 
-/*! \brief Choose action for enemy
- *
- * There is the beginning of some intelligence to this... however, the
- * magic checking and skill checking functions aren't very smart yet :)
- * \todo PH would be good to have this script-enabled.
- *
- * \param   fighter_index Target action will be performed on
- */
-void enemy_chooseaction(size_t fighter_index)
+void KEnemy::enemy_chooseaction(size_t fighter_index)
 {
 	int ap;
 	size_t a;
@@ -300,7 +244,7 @@ void enemy_chooseaction(size_t fighter_index)
 	if (fighter[fighter_index].hp < fighter[fighter_index].mhp * 2 / 3 &&
 		kqrandom->random_range_exclusive(0, 100) < 50 && fighter[fighter_index].sts[S_MUTE] == 0)
 	{
-		enemy_curecheck(fighter_index);
+		CureCheck(fighter_index);
 		if (cact[fighter_index] == 0)
 		{
 			return;
@@ -315,7 +259,7 @@ void enemy_chooseaction(size_t fighter_index)
 			if (fighter[fighter_index].ai[a] >= 100 &&
 				fighter[fighter_index].ai[a] <= 253)
 			{
-				enemy_skillcheck(fighter_index, a);
+				SkillCheck(fighter_index, a);
 				if (cact[fighter_index] == 0)
 				{
 					return;
@@ -329,7 +273,7 @@ void enemy_chooseaction(size_t fighter_index)
 				fighter[fighter_index].ai[a] <= 99 &&
 				fighter[fighter_index].sts[S_MUTE] == 0)
 			{
-				enemy_spellcheck(fighter_index, a);
+				SpellCheck(fighter_index, a);
 				if (cact[fighter_index] == 0)
 				{
 					return;
@@ -341,38 +285,32 @@ void enemy_chooseaction(size_t fighter_index)
 			}
 		}
 	}
-	enemy_attack(fighter_index);
+	Attack(fighter_index);
 	cact[fighter_index] = 0;
 }
 
-/*! \brief Use cure spell
- *
- * If the caster has a cure/drain spell, use it to cure itself.
- *
- * \param   w Caster
- */
-static void enemy_curecheck(int w)
+void KEnemy::CureCheck(int w)
 {
 	int a;
 
 	a = -1;
-	if (enemy_cancast(w, M_DRAIN) == 1)
+	if (CanCast(w, M_DRAIN) == 1)
 	{
 		a = M_DRAIN;
 	}
-	if (enemy_cancast(w, M_CURE1) == 1)
+	if (CanCast(w, M_CURE1) == 1)
 	{
 		a = M_CURE1;
 	}
-	if (enemy_cancast(w, M_CURE2) == 1)
+	if (CanCast(w, M_CURE2) == 1)
 	{
 		a = M_CURE2;
 	}
-	if (enemy_cancast(w, M_CURE3) == 1)
+	if (CanCast(w, M_CURE3) == 1)
 	{
 		a = M_CURE3;
 	}
-	if (enemy_cancast(w, M_CURE4) == 1)
+	if (CanCast(w, M_CURE4) == 1)
 	{
 		a = M_CURE4;
 	}
@@ -385,28 +323,18 @@ static void enemy_curecheck(int w)
 	}
 }
 
-/*! \brief Initialize enemy & sprites for combat
- *
- * If required, load the all the enemies, then
- * init the ones that are going into battle, by calling make_enemy() and
- * copying the graphics sprites into cframes[] and tcframes[].
- * Looks at the cf[] array to see which enemies to do.
- *
- * \author PH
- * \date 2003????
- */
-void enemy_init(void)
+void KEnemy::enemy_init(void)
 {
 	size_t fighter_index, frame_index;
 	KFighter *f;
 
 	if (enemy_fighters == NULL)
 	{
-		load_enemies();
+		LoadEnemies();
 	}
 	for (fighter_index = 0; fighter_index < num_enemies; ++fighter_index)
 	{
-		f = make_enemy(cf[fighter_index], &fighter[fighter_index + PSIZE]);
+		f = MakeEnemyFighter(cf[fighter_index], &fighter[fighter_index + PSIZE]);
 		for (frame_index = 0; frame_index < MAXCFRAMES; ++frame_index)
 		{
 			/* If, in a previous combat, we made a bitmap, destroy it now */
@@ -425,14 +353,7 @@ void enemy_init(void)
 	}
 }
 
-/*! \brief Check skills
- *
- * Very simple... see if the skill that was selected can be used.
- *
- * \param   w Enemy index
- * \param   ws Enemy skill index
- */
-static void enemy_skillcheck(int w, int ws)
+void KEnemy::SkillCheck(int w, int ws)
 {
 	int sk;
 
@@ -456,7 +377,7 @@ static void enemy_skillcheck(int w, int ws)
 		{
 			return;
 		}
-		if (skill_setup(w, ws) == 1)
+		if (SkillSetup(w, ws) == 1)
 		{
 			combat_skill(w);
 			cact[w] = 0;
@@ -464,16 +385,7 @@ static void enemy_skillcheck(int w, int ws)
 	}
 }
 
-/*! \brief Check selected spell
- *
- * This function looks at the enemy's selected spell and tries to
- * determine whether to bother casting it or not.
- *
- * \param   attack_fighter_index Caster
- * \param   defend_fighter_index Target
- */
-static void enemy_spellcheck(size_t attack_fighter_index,
-	size_t defend_fighter_index)
+void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index)
 {
 	int cs = 0, aux, yes = 0;
 	size_t fighter_index;
@@ -482,13 +394,13 @@ static void enemy_spellcheck(size_t attack_fighter_index,
 		fighter[attack_fighter_index].ai[defend_fighter_index] <= 99)
 	{
 		cs = fighter[attack_fighter_index].ai[defend_fighter_index];
-		if (cs > 0 && enemy_cancast(attack_fighter_index, cs) == 1)
+		if (cs > 0 && CanCast(attack_fighter_index, cs) == 1)
 		{
 			switch (cs)
 			{
 			case M_SHIELD:
 			case M_SHIELDALL:
-				yes = enemy_stscheck(S_SHIELD, PSIZE);
+				yes = StatsCheck(S_SHIELD, PSIZE);
 				break;
 			case M_HOLYMIGHT:
 				aux = 0;
@@ -521,13 +433,13 @@ static void enemy_spellcheck(size_t attack_fighter_index,
 				}
 				break;
 			case M_TRUEAIM:
-				yes = enemy_stscheck(S_TRUESHOT, PSIZE);
+				yes = StatsCheck(S_TRUESHOT, PSIZE);
 				break;
 			case M_REGENERATE:
-				yes = enemy_stscheck(S_REGEN, PSIZE);
+				yes = StatsCheck(S_REGEN, PSIZE);
 				break;
 			case M_THROUGH:
-				yes = enemy_stscheck(S_ETHER, PSIZE);
+				yes = StatsCheck(S_ETHER, PSIZE);
 				break;
 			case M_HASTEN:
 			case M_QUICKEN:
@@ -545,7 +457,7 @@ static void enemy_spellcheck(size_t attack_fighter_index,
 				break;
 			case M_SHELL:
 			case M_WALL:
-				yes = enemy_stscheck(S_RESIST, PSIZE);
+				yes = StatsCheck(S_RESIST, PSIZE);
 				break;
 			case M_ABSORB:
 				if (fighter[attack_fighter_index].hp <
@@ -561,11 +473,11 @@ static void enemy_spellcheck(size_t attack_fighter_index,
 			case M_STONE:
 			case M_SILENCE:
 			case M_SLEEP:
-				yes = enemy_stscheck(magic[cs].elem - 8, 0);
+				yes = StatsCheck(magic[cs].elem - 8, 0);
 				break;
 			case M_NAUSEA:
 			case M_MALISON:
-				yes = enemy_stscheck(S_MALISON, 0);
+				yes = StatsCheck(S_MALISON, 0);
 				break;
 			case M_SLOW:
 				aux = 0;
@@ -637,22 +549,14 @@ static void enemy_spellcheck(size_t attack_fighter_index,
 	{
 		return;
 	}
-	if (spell_setup(attack_fighter_index, cs) == 1)
+	if (SpellSetup(attack_fighter_index, cs) == 1)
 	{
 		Magic.combat_spell(attack_fighter_index, 0);
 		cact[attack_fighter_index] = 0;
 	}
 }
 
-/*! \brief Check status
- *
- * Checks a passed status condition to see if anybody is affected by it and
- * determines whether it should be cast or not
- *
- * \param   ws Which stat to consider
- * \param   s Starting target for multiple targets
- */
-static int enemy_stscheck(int ws, int s)
+int KEnemy::StatsCheck(int ws, int s)
 {
 	uint32_t fighter_affected = 0;
 	size_t fighter_index;
@@ -690,7 +594,7 @@ static int enemy_stscheck(int ws, int s)
 	return 0;
 }
 
-static void dump_en()
+void KEnemy::dump_en()
 {
 	std::unique_ptr<KFighter[]> tmp(new KFighter[enemies_n]);
 	for (int i = 0; i < enemies_n; ++i)
@@ -700,13 +604,7 @@ static void dump_en()
 	Disk.save_fighters_to_file("save-f.xml", tmp.get(), enemies_n);
 }
 
-/*! \brief Load all enemies from disk
- *
- * Loads up enemies from the *.mon files and fills the enemies[] array.
- * \author PH
- * \date 2003????
- */
-static void load_enemies(void)
+void KEnemy::LoadEnemies(void)
 {
 	int i, tmp, lx, ly, p;
 	FILE *edat;
@@ -875,18 +773,7 @@ static void load_enemies(void)
 	//dump_en();
 }
 
-/*! \brief Prepare an enemy for battle
- *
- * Fills out a supplied KFighter structure with the default,
- * starting values for an enemy.
- * \author PH
- * \date 2003????
- * \param   who The numeric id of the enemy to make
- * \param   en Pointer to an KFighter instance to initialize
- * \returns the value of en, for convenience, or NULL if an error occurred.
- * \sa make_enemy_by_name()
- */
-static KFighter *make_enemy(int who, KFighter *en)
+KFighter *KEnemy::MakeEnemyFighter(int who, KFighter *en)
 {
 	if (enemy_fighters && who >= 0 && who < enemies_n)
 	{
@@ -900,22 +787,7 @@ static KFighter *make_enemy(int who, KFighter *en)
 	}
 }
 
-/*! \brief Enemy initialization
- *
- * This is the main enemy initialization routine.  This function sets up
- * the enemy types and then loads each one in.  It also calls a helper
- * function or two to complete the process.
- *
- * The encounter table consists of several 'sub-tables', grouped by
- * encounter number. Each row is one possible battle.
- * Fills in the cf[] array of enemies to load.
- *
- * \param   en Encounter number in the Encounter table.
- * \param   etid If =99, select a random row with that encounter number,
- *          otherwise select row etid.
- * \returns number of random encounter
- */
-int select_encounter(int en, int etid)
+int KEnemy::select_encounter(int en, int etid)
 {
 	size_t i, p, j;
 	int stop = 0, where = 0, entry = -1;
@@ -982,21 +854,12 @@ int select_encounter(int en, int etid)
 	return entry;
 }
 
-/*! \brief Set up skill targets
- *
- * This is just for aiding in skill setup... choosing skill targets.
- *
- * \param   whom Caster
- * \param   sn Which skill
- * \returns 1 for success, 0 otherwise
- */
-static int skill_setup(int whom, int sn)
+int KEnemy::SkillSetup(int whom, int sn)
 {
 	int sk = fighter[whom].ai[sn] - 100;
 
 	fighter[whom].csmem = sn;
-	if (sk == 1 || sk == 2 || sk == 3 || sk == 6 || sk == 7 || sk == 12 ||
-		sk == 14)
+	if (sk == 1 || sk == 2 || sk == 3 || sk == 6 || sk == 7 || sk == 12 || sk == 14)
 	{
 		fighter[whom].ctmem = auto_select_hero(whom, NO_STS_CHECK);
 		if (fighter[whom].ctmem == -1)
@@ -1013,16 +876,7 @@ static int skill_setup(int whom, int sn)
 	return 0;
 }
 
-/*! \brief Helper for casting
- *
- * This is just a helper function for setting up the casting of a spell
- * by an enemy.
- *
- * \param   whom Caster
- * \param   z Which spell will be cast
- * \returns 0 if spell ineffective, 1 otherwise
- */
-static int spell_setup(int whom, int z)
+int KEnemy::SpellSetup(int whom, int z)
 {
 	int zst = NO_STS_CHECK, aux;
 	size_t fighter_index;
@@ -1122,13 +976,7 @@ static int spell_setup(int whom, int z)
 	}
 }
 
-/*! \brief Unload the data loaded by load_enemies()
- *
- * JB would have said 'duh' here! Not much explanation required.
- * \author PH
- * \date 2003????
- */
-void unload_enemies(void)
+void KEnemy::UnloadEnemies(void)
 {
 	int i;
 

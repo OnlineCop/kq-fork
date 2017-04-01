@@ -85,6 +85,16 @@ public:
 		return m_bounds.size();
 	}
 
+	/*! \brief Determine whether given coordinates are within any bounding boxes
+	 *
+	 * \param   outIndex - Index of found bounding area
+	 * \param   left - Left edge of current bounding area
+	 * \param   top - Top edge of current bounding area
+	 * \param   right - Right edge of current bounding area
+	 * \param   bottom - Bottom edge of current bounding area
+	 *
+	 * \returns true if the specified coordinate was found within a bounding area, else false.
+	 */
 	bool IsBound(size_t &outIndex, int left, int top, int right, int bottom) const;
 
 protected:
