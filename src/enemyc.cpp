@@ -178,7 +178,7 @@ bool KEnemy::CanCast(size_t target_fighter_index, size_t spell_to_cast)
 	return 1;
 }
 
-void KEnemy::enemy_charmaction(size_t fighter_index)
+void KEnemy::CharmAction(size_t fighter_index)
 {
 	int a;
 
@@ -215,7 +215,7 @@ void KEnemy::enemy_charmaction(size_t fighter_index)
 	Attack(fighter_index);
 }
 
-void KEnemy::enemy_chooseaction(size_t fighter_index)
+void KEnemy::ChooseAction(size_t fighter_index)
 {
 	int ap;
 	size_t a;
@@ -322,7 +322,7 @@ void KEnemy::CureCheck(int w)
 	}
 }
 
-void KEnemy::enemy_init(void)
+void KEnemy::Init(void)
 {
 	size_t fighter_index, frame_index;
 	KFighter *f;
@@ -342,12 +342,9 @@ void KEnemy::enemy_init(void)
 				delete (cframes[fighter_index + PSIZE][frame_index]);
 			}
 			/* and create a new one */
-			cframes[fighter_index + PSIZE][frame_index] =
-				new Raster(f->img->width, f->img->height);
-			blit(f->img, cframes[fighter_index + PSIZE][frame_index], 0, 0, 0, 0,
-				f->img->width, f->img->height);
-			tcframes[fighter_index + PSIZE][frame_index] =
-				Draw.copy_bitmap(tcframes[fighter_index + PSIZE][frame_index], f->img);
+			cframes[fighter_index + PSIZE][frame_index] = new Raster(f->img->width, f->img->height);
+			blit(f->img, cframes[fighter_index + PSIZE][frame_index], 0, 0, 0, 0, f->img->width, f->img->height);
+			tcframes[fighter_index + PSIZE][frame_index] = Draw.copy_bitmap(tcframes[fighter_index + PSIZE][frame_index], f->img);
 		}
 	}
 }
@@ -635,8 +632,7 @@ void KEnemy::LoadEnemies(void)
 		if (m_num_enemies >= m_enemy_array_capacity)
 		{
 			m_enemy_array_capacity *= 2;
-			m_enemy_fighters = (KFighter **)realloc(m_enemy_fighters,
-				sizeof(KFighter *) * m_enemy_array_capacity);
+			m_enemy_fighters = (KFighter **)realloc(m_enemy_fighters, sizeof(KFighter *) * m_enemy_array_capacity);
 		}
 		fighter_loaded_from_disk = (KFighter *)malloc(sizeof(KFighter));
 		m_enemy_fighters[m_num_enemies++] = fighter_loaded_from_disk;
@@ -788,14 +784,14 @@ KFighter *KEnemy::MakeEnemyFighter(int who, KFighter *en)
 	}
 }
 
-int KEnemy::select_encounter(int en, int etid)
+int KEnemy::SelectEncounter(uint8_t encounterTableRow, uint8_t etid)
 {
 	size_t i, p, j;
 	int stop = 0, where = 0, entry = -1;
 
 	while (!stop)
 	{
-		if (erows[where].tnum == en)
+		if (erows[where].tnum == encounterTableRow)
 		{
 			stop = 1;
 		}
@@ -805,7 +801,7 @@ int KEnemy::select_encounter(int en, int etid)
 		}
 		if (where >= NUM_ETROWS)
 		{
-			sprintf(strbuf, _("There are no rows for encounter table #%d!"), en);
+			sprintf(strbuf, _("There are no rows for encounter table #%d!"), (int)encounterTableRow);
 			Game.program_death(strbuf);
 		}
 	}
@@ -822,7 +818,7 @@ int KEnemy::select_encounter(int en, int etid)
 			{
 				where++;
 			}
-			if (erows[where].tnum > en || where >= NUM_ETROWS)
+			if (erows[where].tnum > encounterTableRow || where >= NUM_ETROWS)
 			{
 				Game.program_death(_("Couldn't select random encounter table row!"));
 			}

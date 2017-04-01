@@ -36,11 +36,11 @@ public:
 	 * encounter number. Each row is one possible battle.
 	 * Fills in the cf[] array of enemies to load.
 	 *
-	 * \param   en Encounter number in the Encounter table.
+	 * \param   encounterTableRow Encounter number in the Encounter table.
 	 * \param   etid If =99, select a random row with that encounter number, otherwise select row etid.
 	 * \returns number of random encounter
 	 */
-	int select_encounter(int en, int etid);
+	int SelectEncounter(uint8_t encounterTableRow, uint8_t etid);
 
 	/*! \brief Initialize enemy & sprites for combat
 	 *
@@ -50,7 +50,7 @@ public:
 	 * Looks at the cf[] array to see which enemies to do.
 	 *
 	 */
-	void enemy_init(void);
+	void Init(void);
 
 	/*! \brief Choose action for enemy
 	 *
@@ -60,7 +60,7 @@ public:
 	 *
 	 * \param   fighter_index Target action will be performed on
 	 */
-	void enemy_chooseaction(size_t fighter_index);
+	void ChooseAction(size_t fighter_index);
 
 	/*! \brief Action for confused enemy
 	 *
@@ -71,7 +71,7 @@ public:
 	 * \sa auto_herochooseact()
 	 * \param   fighter_index Target
 	 */
-	void enemy_charmaction(size_t fighter_index);
+	void CharmAction(size_t fighter_index);
 
 private:
 	/*! \brief Melee attack

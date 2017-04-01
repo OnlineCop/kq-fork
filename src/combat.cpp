@@ -509,7 +509,7 @@ int combat(int bno)
 	}
 
 	hero_level = party[pidx[0]].lvl;
-	encounter = Enemy.select_encounter(battles[bno].etnum, battles[bno].eidx);
+	encounter = Enemy.SelectEncounter(battles[bno].etnum, battles[bno].eidx);
 
 	/*  RB: check if we had had a random encounter  */
 	if (battles[bno].enc > 1)
@@ -609,7 +609,7 @@ static void do_action(size_t fighter_index)
 		}
 		else
 		{
-			Enemy.enemy_charmaction(fighter_index);
+			Enemy.CharmAction(fighter_index);
 		}
 	}
 
@@ -625,7 +625,7 @@ static void do_action(size_t fighter_index)
 		}
 		else
 		{
-			Enemy.enemy_chooseaction(fighter_index);
+			Enemy.ChooseAction(fighter_index);
 		}
 	}
 
@@ -1415,7 +1415,7 @@ static void init_fighters(void)
 	 *     Should we move them here?
 	 */
 	hero_init();
-	Enemy.enemy_init();
+	Enemy.Init();
 	for (fighter_index = 0; fighter_index < (PSIZE + num_enemies);
 		fighter_index++)
 	{
