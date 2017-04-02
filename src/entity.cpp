@@ -762,7 +762,7 @@ static void process_entity(t_entity target_entity) {
       }
     }
 
-    if (target_entity == 0 && vfollow == 1) {
+    if (target_entity == 0 && bDoesViewportFollowPlayer) {
       Game.calc_viewport();
     }
   }

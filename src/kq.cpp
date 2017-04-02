@@ -82,7 +82,7 @@ static void time_counter(void);
 
 KGame Game;
 
-int vx, vy, mx, my;
+int viewport_x_coord, viewport_y_coord, mx, my;
 int steps = 0;
 
 /*! 23: various global bitmaps */
@@ -137,7 +137,7 @@ uint8_t is_sound = 1, sound_avail;
 uint8_t deadeffect = 0;
 
 /*! Does the viewport follow the characters?*/
-uint8_t vfollow = 1;
+bool bDoesViewportFollowPlayer = true;
 
 /*! Whether the sun stone can be used in this map*/
 uint8_t use_sstone = 0;
@@ -575,73 +575,73 @@ void KGame::allocate_stuff(void)
 
 void KGame::calc_viewport()
 {
-	int sx, sy, bl, br, bu, bd, zx, zy;
+	int sx, sy, bl, br, bu, bd, entity_x_coord, entity_y_coord;
 
-	if (vfollow && numchrs > 0)
+	if (bDoesViewportFollowPlayer && numchrs > 0)
 	{
-		zx = g_ent[0].x;
-		zy = g_ent[0].y;
+		entity_x_coord = g_ent[0].x;
+		entity_y_coord = g_ent[0].y;
 	}
 	else
 	{
-		zx = vx;
-		zy = vy;
+		entity_x_coord = viewport_x_coord;
+		entity_y_coord = viewport_y_coord;
 	}
 
-	bl = 152;
-	br = 152;
-	bu = 112;
-	bd = 112;
+	bl = 152;/* 19*8 */
+	br = 152;/* 19*8 */
+	bu = 112;/* 14*8 */
+	bd = 112;/* 14*8 */
 
-	sx = zx - vx;
-	sy = zy - vy;
+	sx = entity_x_coord - viewport_x_coord;
+	sy = entity_y_coord - viewport_y_coord;
 	if (sx < bl)
 	{
-		vx = zx - bl;
+		viewport_x_coord = entity_x_coord - bl;
 
-		if (vx < 0)
+		if (viewport_x_coord < 0)
 		{
-			vx = 0;
+			viewport_x_coord = 0;
 		}
 	}
 
 	if (sy < bu)
 	{
-		vy = zy - bu;
+		viewport_y_coord = entity_y_coord - bu;
 
-		if (vy < 0)
+		if (viewport_y_coord < 0)
 		{
-			vy = 0;
+			viewport_y_coord = 0;
 		}
 	}
 
 	if (sx > br)
 	{
-		vx = zx - br;
+		viewport_x_coord = entity_x_coord - br;
 
-		if (vx > mx)
+		if (viewport_x_coord > mx)
 		{
-			vx = mx;
+			viewport_x_coord = mx;
 		}
 	}
 
 	if (sy > bd)
 	{
-		vy = zy - bd;
+		viewport_y_coord = entity_y_coord - bd;
 
-		if (vy > my)
+		if (viewport_y_coord > my)
 		{
-			vy = my;
+			viewport_y_coord = my;
 		}
 	}
 
-	if (vx > mx)
+	if (viewport_x_coord > mx)
 	{
-		vx = mx;
+		viewport_x_coord = mx;
 	}
-	if (vy > my)
+	if (viewport_y_coord > my)
 	{
-		vy = my;
+		viewport_y_coord = my;
 	}
 }
 
@@ -1201,19 +1201,19 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 	}
 
 	Music.play_music(g_map.song_file, 0);
-	mx = g_map.xsize * TILE_W - 304;
+	mx = g_map.xsize * TILE_W - (19 * TILE_W);
 	/*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
-	my = g_map.ysize * TILE_H - 256;
+	my = g_map.ysize * TILE_H - (16 * TILE_H);
 
 	if (mvx == 0 && mvy == 0)
 	{
-		vx = g_map.stx * TILE_W;
-		vy = g_map.sty * TILE_H;
+		viewport_x_coord = g_map.stx * TILE_W;
+		viewport_y_coord = g_map.sty * TILE_H;
 	}
 	else
 	{
-		vx = mvx * TILE_W;
-		vy = mvy * TILE_H;
+		viewport_x_coord = mvx * TILE_W;
+		viewport_y_coord = mvy * TILE_H;
 	}
 
 	calc_viewport();
@@ -1638,8 +1638,8 @@ void KGame::warp(int wtx, int wty, int fspeed)
 		g_ent[entity_index].framectr = 0;
 	}
 
-	vx = wtx * TILE_W;
-	vy = wty * TILE_H;
+	viewport_x_coord = wtx * TILE_W;
+	viewport_y_coord = wty * TILE_H;
 
 	calc_viewport();
 	Draw.drawmap();

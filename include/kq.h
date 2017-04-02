@@ -360,7 +360,7 @@ protected:
 };
 
 /*! View and character positions */
-extern int vx, vy, mx, my;
+extern int viewport_x_coord, viewport_y_coord, mx, my;
 
 /*! What was the last direction each player moved in */
 extern int steps;
@@ -399,7 +399,8 @@ extern int xofs, yofs;
 extern int gsvol, gmvol;
 extern uint32_t noe;
 extern ePIDX pidx[MAXCHRS];
-extern uint8_t autoparty, alldead, is_sound, deadeffect, vfollow, use_sstone, sound_avail;
+extern uint8_t autoparty, alldead, is_sound, deadeffect, use_sstone, sound_avail;
+extern bool bDoesViewportFollowPlayer;
 extern const uint8_t kq_version;
 extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, cpu_usage;
 extern bool should_stretch_view;

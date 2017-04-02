@@ -2333,13 +2333,13 @@ static int KQ_get_skip_intro(lua_State *L)
 
 static int KQ_get_vx(lua_State *L)
 {
-	lua_pushnumber(L, vx);
+	lua_pushnumber(L, viewport_x_coord);
 	return 1;
 }
 
 static int KQ_get_vy(lua_State *L)
 {
-	lua_pushnumber(L, vy);
+	lua_pushnumber(L, viewport_y_coord);
 	return 1;
 }
 
@@ -2475,25 +2475,25 @@ static int KQ_move_camera(lua_State *L)
 	auto mcy = lua_tointeger(L, 2);
 	auto dtime = lua_tointeger(L, 3);
 
-	if (mcx > vx)
+	if (mcx > viewport_x_coord)
 	{
 		xinc = 1;
-		xtot = mcx - vx;
+		xtot = mcx - viewport_x_coord;
 	}
-	if (mcx < vx)
+	if (mcx < viewport_x_coord)
 	{
 		xinc = -1;
-		xtot = vx - mcx;
+		xtot = viewport_x_coord - mcx;
 	}
-	if (mcy > vy)
+	if (mcy > viewport_y_coord)
 	{
 		yinc = 1;
-		ytot = mcy - vy;
+		ytot = mcy - viewport_y_coord;
 	}
-	if (mcy < vy)
+	if (mcy < viewport_y_coord)
 	{
 		yinc = -1;
-		ytot = vy - mcy;
+		ytot = viewport_y_coord - mcy;
 	}
 	autoparty = 1;
 	timer_count = 0;
@@ -2504,12 +2504,12 @@ static int KQ_move_camera(lua_State *L)
 			timer_count -= dtime;
 			if (xtot > 0)
 			{
-				vx += xinc;
+				viewport_x_coord += xinc;
 				xtot--;
 			}
 			if (ytot > 0)
 			{
-				vy += yinc;
+				viewport_y_coord += yinc;
 				ytot--;
 			}
 		}
@@ -3714,23 +3714,20 @@ static int KQ_set_treasure(lua_State *L)
 static int KQ_set_vfollow(lua_State *L)
 {
 	auto a = lua_tointeger(L, 1);
+	bDoesViewportFollowPlayer = (a != 0);
 
-	if (a == 0 || a == 1)
-	{
-		vfollow = a;
-	}
 	return 0;
 }
 
 static int KQ_set_vx(lua_State *L)
 {
-	vx = (int)lua_tonumber(L, 1);
+	viewport_x_coord = (int)lua_tonumber(L, 1);
 	return 0;
 }
 
 static int KQ_set_vy(lua_State *L)
 {
-	vy = (int)lua_tonumber(L, 1);
+	viewport_y_coord = (int)lua_tonumber(L, 1);
 	return 0;
 }
 

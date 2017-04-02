@@ -499,6 +499,10 @@ private:
 	 */
 	int get_glyph_index(uint32_t cp);
 
+	/*! \brief Replace all occurrences of "from" with "to" and apply changes back to "str".
+	 */
+	void replaceAll(string& str, const string& from, const string& to);
+
 	/*! \brief Insert character names
 	 *
 	 * This checks a string for $0, or $1 and replaces with player names.
@@ -510,7 +514,7 @@ private:
 	 * \returns processed string, in a static buffer \p strbuf
 	 *          or \p the_string, if it had no replacement chars.
 	 */
-	const char *parse_string(const char *the_string);
+	const char *parse_string(const string the_string);
 
 	/*! \brief Parallax calculations for xofs and yofs.
 	 *

@@ -269,10 +269,10 @@ void KDraw::draw_backlayer(void)
 	}
 	if (g_map.map_mode < 2 || g_map.map_mode > 3)
 	{
-		xtc = vx >> 4;
-		ytc = vy >> 4;
-		dx = vx;
-		dy = vy;
+		xtc = viewport_x_coord >> 4;
+		ytc = viewport_y_coord >> 4;
+		dx = viewport_x_coord;
+		dy = viewport_y_coord;
 		box.left = view_x1;
 		box.top = view_y1;
 		box.right = view_x2;
@@ -280,8 +280,8 @@ void KDraw::draw_backlayer(void)
 	}
 	else
 	{
-		dx = vx * g_map.pmult / g_map.pdiv;
-		dy = vy * g_map.pmult / g_map.pdiv;
+		dx = viewport_x_coord * g_map.pmult / g_map.pdiv;
+		dy = viewport_y_coord * g_map.pmult / g_map.pdiv;
 		xtc = dx >> 4;
 		ytc = dy >> 4;
 		box.left = view_x1 * g_map.pmult / g_map.pdiv;
@@ -328,8 +328,8 @@ void KDraw::draw_char(int xw, int yw)
 	{
 		fighter_index = follower_fighter_index - 1;
 		fighter_type_id = g_ent[fighter_index].eid;
-		dx = g_ent[fighter_index].x - vx + xw;
-		dy = g_ent[fighter_index].y - vy + yw;
+		dx = g_ent[fighter_index].x - viewport_x_coord + xw;
+		dy = g_ent[fighter_index].y - viewport_y_coord + yw;
 		if (!g_ent[fighter_index].moving)
 		{
 			fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + 2;
@@ -431,9 +431,9 @@ void KDraw::draw_char(int xw, int yw)
 						/* Moving diag down */
 
 						// Final x-coord is one left/right of starting x-coord
-						x = (g_ent[fighter_index].tilex - horiz) * TILE_W - vx + xw;
+						x = (g_ent[fighter_index].tilex - horiz) * TILE_W - viewport_x_coord + xw;
 						// Final y-coord is same as starting y-coord
-						y = g_ent[fighter_index].tiley * TILE_H - vy + yw;
+						y = g_ent[fighter_index].tiley * TILE_H - viewport_y_coord + yw;
 						// Where the tile is on the map that we will draw over
 						there = (g_ent[fighter_index].tiley) * g_map.xsize +
 							g_ent[fighter_index].tilex - horiz;
@@ -446,9 +446,9 @@ void KDraw::draw_char(int xw, int yw)
 						/* Moving diag up */
 
 						// Final x-coord is same as starting x-coord
-						x = g_ent[fighter_index].tilex * TILE_W - vx + xw;
+						x = g_ent[fighter_index].tilex * TILE_W - viewport_x_coord + xw;
 						// Final y-coord is above starting y-coord
-						y = (g_ent[fighter_index].tiley - vert) * TILE_H - vy + yw;
+						y = (g_ent[fighter_index].tiley - vert) * TILE_H - viewport_y_coord + yw;
 						// Where the tile is on the map that we will draw over
 						there = (g_ent[fighter_index].tiley - vert) * g_map.xsize +
 							g_ent[fighter_index].tilex;
@@ -514,8 +514,8 @@ void KDraw::draw_forelayer(void)
 	}
 	if (g_map.map_mode < 4 || g_map.pdiv == 0)
 	{
-		dx = vx;
-		dy = vy;
+		dx = viewport_x_coord;
+		dy = viewport_y_coord;
 		box.left = view_x1;
 		box.top = view_y1;
 		box.right = view_x2;
@@ -523,8 +523,8 @@ void KDraw::draw_forelayer(void)
 		}
 	else
 	{
-		dx = vx * g_map.pmult / g_map.pdiv;
-		dy = vy * g_map.pmult / g_map.pdiv;
+		dx = viewport_x_coord * g_map.pmult / g_map.pdiv;
+		dy = viewport_y_coord * g_map.pmult / g_map.pdiv;
 		box.left = view_x1 * g_map.pmult / g_map.pdiv;
 		box.top = view_y1 * g_map.pmult / g_map.pdiv;
 		box.right = view_x2 * g_map.pmult / g_map.pdiv;
@@ -679,10 +679,10 @@ void KDraw::draw_midlayer(void)
 	}
 	if (g_map.map_mode < 3 || g_map.map_mode == 5)
 	{
-		xtc = vx >> 4;
-		ytc = vy >> 4;
-		dx = vx;
-		dy = vy;
+		xtc = viewport_x_coord >> 4;
+		ytc = viewport_y_coord >> 4;
+		dx = viewport_x_coord;
+		dy = viewport_y_coord;
 		box.left = view_x1;
 		box.top = view_y1;
 		box.right = view_x2;
@@ -690,8 +690,8 @@ void KDraw::draw_midlayer(void)
 	}
 	else
 	{
-		dx = vx * g_map.pmult / g_map.pdiv;
-		dy = vy * g_map.pmult / g_map.pdiv;
+		dx = viewport_x_coord * g_map.pmult / g_map.pdiv;
+		dy = viewport_y_coord * g_map.pmult / g_map.pdiv;
 		xtc = dx >> 4;
 		ytc = dy >> 4;
 		box.left = view_x1 * g_map.pmult / g_map.pdiv;
@@ -733,10 +733,10 @@ void KDraw::draw_playerbound(void)
 	}
 	found = g_map.bounds.GetBound(found_index);
 
-	xtc = vx >> 4;
-	ytc = vy >> 4;
+	xtc = viewport_x_coord >> 4;
+	ytc = viewport_y_coord >> 4;
 
-	recalculate_offsets(vx, vy);
+	recalculate_offsets(viewport_x_coord, viewport_y_coord);
 
 	/* If the player is inside the bounded area, draw everything OUTSIDE the
 	 * bounded area with the tile specified by that area.
@@ -794,9 +794,9 @@ void KDraw::draw_shadows(void)
 		view_x1 = 0;
 		view_x2 = g_map.xsize - 1;
 	}
-	xtc = vx >> 4;
-	ytc = vy >> 4;
-	recalculate_offsets(vx, vy);
+	xtc = viewport_x_coord >> 4;
+	ytc = viewport_y_coord >> 4;
+	recalculate_offsets(viewport_x_coord, viewport_y_coord);
 
 	for (dy = 0; dy < 16; dy++)
 	{
@@ -1030,7 +1030,8 @@ void KDraw::message(const char *m, int icn, int delay, int x_m, int y_m)
 {
 	char msg[1024];
 	const char *s;
-	int i, num_lines, max_len, len;
+	int num_lines, max_len, len;
+	int idx;
 
 	/* Do the $0 replacement stuff */
 	memset(msg, 0, sizeof(msg));
@@ -1046,9 +1047,9 @@ void KDraw::message(const char *m, int icn, int delay, int x_m, int y_m)
 		s = relay(s);
 		/* Calculate the box size */
 		num_lines = max_len = 0;
-		for (i = 0; i < MSG_ROWS; ++i)
+		for (idx = 0; idx < MSG_ROWS; ++idx)
 		{
-			len = strlen(msgbuf[i]);
+			len = strlen(msgbuf[idx]);
 			if (len > 0)
 			{
 				if (max_len < len)
@@ -1072,9 +1073,9 @@ void KDraw::message(const char *m, int icn, int delay, int x_m, int y_m)
 		}
 
 		/* Draw the text */
-		for (i = 0; i < num_lines; ++i)
+		for (idx = 0; idx < num_lines; ++idx)
 		{
-			print_font(double_buffer, 160 - (max_len * 4) + x_m, 116 + 8 * i + y_m, msgbuf[i], FNORMAL);
+			print_font(double_buffer, 160 - (max_len * 4) + x_m, 116 + 8 * idx + y_m, msgbuf[idx], FNORMAL);
 		}
 		/* Show it */
 		blit2screen(x_m, y_m);
@@ -1091,37 +1092,39 @@ void KDraw::message(const char *m, int icn, int delay, int x_m, int y_m)
 	}
 }
 
-const char *KDraw::parse_string(const char *the_string)
+// Origin: http://stackoverflow.com/a/3418285/801098
+void KDraw::replaceAll(string& str, const string& from, const string& to)
 {
-	static char strbuf[1024];
-	const char *ap;
-	char *bp, *name;
-
-	name = NULL;
-	memset(strbuf, 0, sizeof(strbuf));
-	bp = strbuf;
-	for (ap = the_string; *ap; ++ap)
+	if (from.empty())
 	{
-		if (*ap == '$')
-		{
-			for (name = party[pidx[ap[1] - '0']].name; *name; ++name)
-			{
-				if (bp < strbuf + sizeof(strbuf))
-				{
-					*bp++ = *name;
-				}
-			}
-			++ap;
-		}
-		else
-		{
-			if (bp < strbuf + sizeof(strbuf))
-			{
-				*bp++ = *ap;
-			}
-		}
+		return;
 	}
-	return name == NULL ? the_string : strbuf;
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+	{
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+	}
+}
+
+/** This only handles extremely simple strings; you CAN break it if you try hard enough:
+ *    "$$0" or "\\$0" or "\$0" or "$-1", etc.
+ */
+const char *KDraw::parse_string(const string the_string)
+{
+	if (the_string.find('$', 0) == string::npos)
+	{
+		return the_string.c_str();
+	}
+
+	string party0 = party[pidx[0]].name;
+	string party1 = party[pidx[1]].name;
+
+	string output = the_string;
+	replaceAll(output, "$0", party0);
+	replaceAll(output, "$1", party1);
+
+	return output.c_str();
 }
 
 const char *KDraw::decode_utf8(const char *string, uint32_t *cp)
@@ -1649,8 +1652,8 @@ void KDraw::set_textpos(uint32_t entity_index)
 {
 	if (entity_index < MAX_ENTITIES)
 	{
-		gbx = (g_ent[entity_index].tilex * TILE_W) - vx;
-		gby = (g_ent[entity_index].tiley * TILE_H) - vy;
+		gbx = (g_ent[entity_index].tilex * TILE_W) - viewport_x_coord;
+		gby = (g_ent[entity_index].tiley * TILE_H) - viewport_y_coord;
 		gbbx = gbx - (gbbw * 4);
 		if (gbbx < 8)
 		{
