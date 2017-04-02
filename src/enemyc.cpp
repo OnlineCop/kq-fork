@@ -150,9 +150,8 @@ void KEnemy::Attack(size_t target_fighter_index)
 	cact[target_fighter_index] = 0;
 }
 
-int KEnemy::CanCast(size_t target_fighter_index, size_t sp)
+bool KEnemy::CanCast(size_t target_fighter_index, size_t spell_to_cast)
 {
-	size_t a;
 	uint32_t z = 0;
 
 	/* Enemy is mute; cannot cast the spell */
@@ -161,9 +160,9 @@ int KEnemy::CanCast(size_t target_fighter_index, size_t sp)
 		return 0;
 	}
 
-	for (a = 0; a < 8; a++)
+	for (size_t a = 0; a < 8; a++)
 	{
-		if (fighter[target_fighter_index].ai[a] == sp)
+		if (fighter[target_fighter_index].ai[a] == spell_to_cast)
 		{
 			z++;
 		}
@@ -172,7 +171,7 @@ int KEnemy::CanCast(size_t target_fighter_index, size_t sp)
 	{
 		return 0;
 	}
-	if (fighter[target_fighter_index].mp < Magic.mp_needed(target_fighter_index, sp))
+	if (fighter[target_fighter_index].mp < Magic.mp_needed(target_fighter_index, spell_to_cast))
 	{
 		return 0;
 	}
@@ -294,23 +293,23 @@ void KEnemy::CureCheck(int w)
 	int a;
 
 	a = -1;
-	if (CanCast(w, M_DRAIN) == 1)
+	if (CanCast(w, M_DRAIN))
 	{
 		a = M_DRAIN;
 	}
-	if (CanCast(w, M_CURE1) == 1)
+	if (CanCast(w, M_CURE1))
 	{
 		a = M_CURE1;
 	}
-	if (CanCast(w, M_CURE2) == 1)
+	if (CanCast(w, M_CURE2))
 	{
 		a = M_CURE2;
 	}
-	if (CanCast(w, M_CURE3) == 1)
+	if (CanCast(w, M_CURE3))
 	{
 		a = M_CURE3;
 	}
-	if (CanCast(w, M_CURE4) == 1)
+	if (CanCast(w, M_CURE4))
 	{
 		a = M_CURE4;
 	}
@@ -328,7 +327,7 @@ void KEnemy::enemy_init(void)
 	size_t fighter_index, frame_index;
 	KFighter *f;
 
-	if (enemy_fighters == NULL)
+	if (m_enemy_fighters == NULL)
 	{
 		LoadEnemies();
 	}
@@ -394,7 +393,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 		fighter[attack_fighter_index].ai[defend_fighter_index] <= 99)
 	{
 		cs = fighter[attack_fighter_index].ai[defend_fighter_index];
-		if (cs > 0 && CanCast(attack_fighter_index, cs) == 1)
+		if (cs > 0 && CanCast(attack_fighter_index, cs))
 		{
 			switch (cs)
 			{
@@ -596,21 +595,21 @@ int KEnemy::StatsCheck(int ws, int s)
 
 void KEnemy::dump_en()
 {
-	std::unique_ptr<KFighter[]> tmp(new KFighter[enemies_n]);
-	for (int i = 0; i < enemies_n; ++i)
+	std::unique_ptr<KFighter[]> tmp(new KFighter[m_num_enemies]);
+	for (int i = 0; i < m_num_enemies; ++i)
 	{
-		tmp[i] = *enemy_fighters[i];
+		tmp[i] = *m_enemy_fighters[i];
 	}
-	Disk.save_fighters_to_file("save-f.xml", tmp.get(), enemies_n);
+	Disk.save_fighters_to_file("save-f.xml", tmp.get(), m_num_enemies);
 }
 
 void KEnemy::LoadEnemies(void)
 {
 	int i, tmp, lx, ly, p;
 	FILE *edat;
-	KFighter *f;
+	KFighter *fighter_loaded_from_disk;
 
-	if (enemy_fighters != NULL)
+	if (m_enemy_fighters != NULL)
 	{
 		/* Already done the loading */
 		return;
@@ -627,22 +626,24 @@ void KEnemy::LoadEnemies(void)
 	{
 		Game.program_death(_("Could not load 1st enemy datafile!"));
 	}
-	enemies_n = 0;
-	enemies_cap = 128;
-	enemy_fighters = (KFighter **)malloc(sizeof(KFighter *) * enemies_cap);
+	m_num_enemies = 0;
+	m_enemy_array_capacity = 128;
+	m_enemy_fighters = (KFighter **)malloc(sizeof(KFighter *) * m_enemy_array_capacity);
 	// Loop through for every monster in allstat.mon
 	while (fscanf(edat, "%s", strbuf) != EOF)
 	{
-		if (enemies_n >= enemies_cap)
+		if (m_num_enemies >= m_enemy_array_capacity)
 		{
-			enemies_cap *= 2;
-			enemy_fighters = (KFighter **)realloc(enemy_fighters,
-				sizeof(KFighter *) * enemies_cap);
+			m_enemy_array_capacity *= 2;
+			m_enemy_fighters = (KFighter **)realloc(m_enemy_fighters,
+				sizeof(KFighter *) * m_enemy_array_capacity);
 		}
-		f = enemy_fighters[enemies_n++] = (KFighter *)malloc(sizeof(KFighter));
-		memset(f, 0, sizeof(KFighter));
+		fighter_loaded_from_disk = (KFighter *)malloc(sizeof(KFighter));
+		m_enemy_fighters[m_num_enemies++] = fighter_loaded_from_disk;
+
+		memset(fighter_loaded_from_disk, 0, sizeof(KFighter));
 		// Enemy name
-		strncpy(f->name, strbuf, sizeof(f->name));
+		strncpy(fighter_loaded_from_disk->name, strbuf, sizeof(fighter_loaded_from_disk->name));
 		// Index number (ignored; automatically generated)
 		fscanf(edat, "%d", &tmp);
 		// x-coord of image in datafile
@@ -653,84 +654,84 @@ void KEnemy::LoadEnemies(void)
 		ly = tmp;
 		// Image width
 		fscanf(edat, "%d", &tmp);
-		f->cw = tmp;
+		fighter_loaded_from_disk->cw = tmp;
 		// Image length (height)
 		fscanf(edat, "%d", &tmp);
-		f->cl = tmp;
+		fighter_loaded_from_disk->cl = tmp;
 		// Experience points earned
 		fscanf(edat, "%d", &tmp);
-		f->xp = tmp;
+		fighter_loaded_from_disk->xp = tmp;
 		// Gold received
 		fscanf(edat, "%d", &tmp);
-		f->gp = tmp;
+		fighter_loaded_from_disk->gp = tmp;
 		// Level
 		fscanf(edat, "%d", &tmp);
-		f->lvl = tmp;
+		fighter_loaded_from_disk->lvl = tmp;
 		// Max HP
 		fscanf(edat, "%d", &tmp);
-		f->mhp = tmp;
+		fighter_loaded_from_disk->mhp = tmp;
 		// Max MP
 		fscanf(edat, "%d", &tmp);
-		f->mmp = tmp;
+		fighter_loaded_from_disk->mmp = tmp;
 		// Defeat Item Probability: chance of finding any items after defeat
 		fscanf(edat, "%d", &tmp);
-		f->dip = tmp;
+		fighter_loaded_from_disk->dip = tmp;
 		// Defeat Item Common: item found commonly of the time
 		fscanf(edat, "%d", &tmp);
-		f->defeat_item_common = tmp;
+		fighter_loaded_from_disk->defeat_item_common = tmp;
 		// Defeat Item Rare: item found rarely
 		fscanf(edat, "%d", &tmp);
-		f->defeat_item_rare = tmp;
+		fighter_loaded_from_disk->defeat_item_rare = tmp;
 		// Steal Item Common: item found commonly from stealing
 		fscanf(edat, "%d", &tmp);
-		f->steal_item_common = tmp;
+		fighter_loaded_from_disk->steal_item_common = tmp;
 		// Steal Item Rare: item found rarely when stealing
 		fscanf(edat, "%d", &tmp);
-		f->steal_item_rare = tmp;
+		fighter_loaded_from_disk->steal_item_rare = tmp;
 		// Enemy's strength (agility & vitality set to zero)
 		fscanf(edat, "%d", &tmp);
-		f->stats[A_STR] = tmp;
-		f->stats[A_AGI] = 0;
-		f->stats[A_VIT] = 0;
+		fighter_loaded_from_disk->stats[A_STR] = tmp;
+		fighter_loaded_from_disk->stats[A_AGI] = 0;
+		fighter_loaded_from_disk->stats[A_VIT] = 0;
 		// Intelligence & Sagacity (both the same)
 		fscanf(edat, "%d", &tmp);
-		f->stats[A_INT] = tmp;
-		f->stats[A_SAG] = tmp;
+		fighter_loaded_from_disk->stats[A_INT] = tmp;
+		fighter_loaded_from_disk->stats[A_SAG] = tmp;
 		// Defense against: Speed, Spirit, Attack, Hit, Defence, Evade, Magic (in
 		// that order)
 		for (p = 5; p < 13; p++)
 		{
 			fscanf(edat, "%d", &tmp);
-			f->stats[p] = tmp;
+			fighter_loaded_from_disk->stats[p] = tmp;
 		}
 		// Bonus
 		fscanf(edat, "%d", &tmp);
-		f->bonus = tmp;
-		f->bstat = 0;
+		fighter_loaded_from_disk->bonus = tmp;
+		fighter_loaded_from_disk->bstat = 0;
 		// Current weapon type
 		fscanf(edat, "%d", &tmp);
-		f->current_weapon_type = (uint32_t)tmp;
+		fighter_loaded_from_disk->current_weapon_type = (uint32_t)tmp;
 		// Weapon elemental type
 		fscanf(edat, "%d", &tmp);
-		f->welem = tmp;
+		fighter_loaded_from_disk->welem = tmp;
 		// Undead Level (defense against Undead attacks)
 		fscanf(edat, "%d", &tmp);
-		f->unl = tmp;
+		fighter_loaded_from_disk->unl = tmp;
 		// Critical attacks
 		fscanf(edat, "%d", &tmp);
-		f->crit = tmp;
+		fighter_loaded_from_disk->crit = tmp;
 		// Temp Sag & Int for Imbued
 		fscanf(edat, "%d", &tmp);
-		f->imb_s = tmp;
+		fighter_loaded_from_disk->imb_s = tmp;
 		// Imbued stat type (Spd, Spi, Att, Hit, Def, Evd, Mag)
 		fscanf(edat, "%d", &tmp);
-		f->imb_a = tmp;
-		f->img = new Raster(f->cw, f->cl);
-		enemy_gfx->blitTo(f->img, lx, ly, 0, 0, f->cw, f->cl);
+		fighter_loaded_from_disk->imb_a = tmp;
+		fighter_loaded_from_disk->img = new Raster(fighter_loaded_from_disk->cw, fighter_loaded_from_disk->cl);
+		enemy_gfx->blitTo(fighter_loaded_from_disk->img, lx, ly, 0, 0, fighter_loaded_from_disk->cw, fighter_loaded_from_disk->cl);
 		for (p = 0; p < 2; p++)
 		{
 			fscanf(edat, "%d", &tmp);
-			f->imb[p] = tmp;
+			fighter_loaded_from_disk->imb[p] = tmp;
 		}
 	}
 	fclose(edat);
@@ -739,35 +740,35 @@ void KEnemy::LoadEnemies(void)
 	{
 		Game.program_death(_("Could not load 2nd enemy datafile!"));
 	}
-	for (i = 0; i < enemies_n; i++)
+	for (i = 0; i < m_num_enemies; i++)
 	{
-		f = enemy_fighters[i];
+		fighter_loaded_from_disk = m_enemy_fighters[i];
 		fscanf(edat, "%s", strbuf);
 		fscanf(edat, "%d", &tmp);
 		for (p = 0; p < R_TOTAL_RES; p++)
 		{
 			fscanf(edat, "%d", &tmp);
-			f->res[p] = tmp;
+			fighter_loaded_from_disk->res[p] = tmp;
 		}
 		for (p = 0; p < 8; p++)
 		{
 			fscanf(edat, "%d", &tmp);
-			f->ai[p] = tmp;
+			fighter_loaded_from_disk->ai[p] = tmp;
 		}
 		for (p = 0; p < 8; p++)
 		{
 			fscanf(edat, "%d", &tmp);
-			f->aip[p] = tmp;
-			f->atrack[p] = 0;
+			fighter_loaded_from_disk->aip[p] = tmp;
+			fighter_loaded_from_disk->atrack[p] = 0;
 		}
-		f->hp = f->mhp;
-		f->mp = f->mmp;
+		fighter_loaded_from_disk->hp = fighter_loaded_from_disk->mhp;
+		fighter_loaded_from_disk->mp = fighter_loaded_from_disk->mmp;
 		for (p = 0; p < 24; p++)
 		{
-			f->sts[p] = 0;
+			fighter_loaded_from_disk->sts[p] = 0;
 		}
-		f->aux = 0;
-		f->mrp = 100;
+		fighter_loaded_from_disk->aux = 0;
+		fighter_loaded_from_disk->mrp = 100;
 	}
 	fclose(edat);
 	//dump_en();
@@ -775,9 +776,9 @@ void KEnemy::LoadEnemies(void)
 
 KFighter *KEnemy::MakeEnemyFighter(int who, KFighter *en)
 {
-	if (enemy_fighters && who >= 0 && who < enemies_n)
+	if (m_enemy_fighters && who >= 0 && who < m_num_enemies)
 	{
-		memcpy(en, enemy_fighters[who], sizeof(KFighter));
+		memcpy(en, m_enemy_fighters[who], sizeof(KFighter));
 		return en;
 	}
 	else
@@ -842,8 +843,7 @@ int KEnemy::select_encounter(int en, int etid)
 	}
 	num_enemies = p;
 	/* adjust 'too hard' combat where player is alone and faced by >2 enemies */
-	if (num_enemies > 2 && numchrs == 1 &&
-		erows[entry].lvl + 2 > party[pidx[0]].lvl && etid == 99)
+	if (num_enemies > 2 && numchrs == 1 && erows[entry].lvl + 2 > party[pidx[0]].lvl && etid == 99)
 	{
 		num_enemies = 2;
 	}
@@ -980,14 +980,14 @@ void KEnemy::UnloadEnemies(void)
 {
 	int i;
 
-	if (enemy_fighters != NULL)
+	if (m_enemy_fighters != NULL)
 	{
-		for (i = 0; i < enemies_n; ++i)
+		for (i = 0; i < m_num_enemies; ++i)
 		{
-			delete (enemy_fighters[i]->img);
-			free(enemy_fighters[i]);
+			delete (m_enemy_fighters[i]->img);
+			free(m_enemy_fighters[i]);
 		}
-		free(enemy_fighters);
-		enemy_fighters = NULL;
+		free(m_enemy_fighters);
+		m_enemy_fighters = NULL;
 	}
 }

@@ -93,10 +93,10 @@ private:
 	 * is not mute, and has enough mp to cast the spell.
 	 *
 	 * \param   target_fighter_index Which enemy
-	 * \param   sp Spell to cast
-	 * \returns 1 if spell can be cast, 0 otherwise
+	 * \param   spell_to_cast Spell to cast
+	 * \returns true if spell can be cast, false otherwise
 	 */
-	int CanCast(size_t target_fighter_index, size_t sp);
+	bool CanCast(size_t target_fighter_index, size_t spell_to_cast);
 
 	/*! \brief Use cure spell
 	 *
@@ -183,9 +183,9 @@ private:
 
 protected:
 	/*! \brief Array of enemy 'fighters'  */
-	KFighter **enemy_fighters = NULL;
-	int enemies_n = 0;
-	int enemies_cap = 0;
+	KFighter **m_enemy_fighters = NULL;
+	int m_num_enemies = 0;
+	int m_enemy_array_capacity = 0;
 
 	/*! Index related to enemies in an encounter */
 	int cf[NUM_FIGHTERS];
