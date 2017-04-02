@@ -104,3 +104,7 @@ compile_commands.json
 Session.vim
 .netrwhist
 *~
+
+# Visual Studio database files
+*.opendb
+*.db
