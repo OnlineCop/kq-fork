@@ -571,7 +571,7 @@ void KDraw::draw_forelayer(void)
 							char buf[8];
 							sprintf(buf, "%d", z_seg[here]);
 							size_t l = strlen(buf) * 8;
-							print_num(double_buffer, dx * 16 + 8 + xofs - l / 2, dy * 16 + 4 + yofs, buf, FNORMAL);
+							print_num(double_buffer, dx * 16 + 8 + xofs - l / 2, dy * 16 + 4 + yofs, buf, FONT_WHITE);
 						}
 #else
 						if (z_seg[here] == 0)

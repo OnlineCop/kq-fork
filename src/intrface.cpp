@@ -619,7 +619,7 @@ void do_luacheat(void)
 #ifdef DEBUGMODE
 	lua_pushcfunction(theL, KQ_traceback);
 #endif
-	lua_dofile(theL, cheatfile);
+	lua_dofile(theL, cheatfile.c_str());
 	lua_getglobal(theL, "cheat");
 #ifdef DEBUGMODE
 	lua_pcall(theL, 0, 0, oldtop + 1);

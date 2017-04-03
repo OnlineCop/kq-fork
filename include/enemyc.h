@@ -189,6 +189,10 @@ protected:
 
 	/*! Index related to enemies in an encounter */
 	int cf[NUM_FIGHTERS];
+
+	void LoadEnemies(const string& fullPath, Raster* enemy_gfx);
+
+	void LoadEnemyStats(const string &path_resabil);
 };
 
 extern KEnemy Enemy;

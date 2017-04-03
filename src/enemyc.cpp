@@ -26,7 +26,10 @@
  * \date ??????
  */
 
+#include <fstream>
 #include <memory>
+#include <sstream>
+#include <string>
 #include <stdio.h>
 #include <string.h>
 
@@ -602,9 +605,11 @@ void KEnemy::dump_en()
 
 void KEnemy::LoadEnemies(void)
 {
-	int i, tmp, lx, ly, p;
-	FILE *edat;
-	KFighter *fighter_loaded_from_disk;
+	Raster *enemy_gfx = get_cached_image("enemy.png");
+	if (!enemy_gfx)
+	{
+		Game.program_death(_("Could not load enemy sprites!"));
+	}
 
 	if (m_enemy_fighters != NULL)
 	{
@@ -612,23 +617,32 @@ void KEnemy::LoadEnemies(void)
 		return;
 	}
 
-	Raster *enemy_gfx = get_cached_image("enemy.png");
+	LoadEnemies(kqres(DATA_DIR, "allstat.mon"), enemy_gfx);
+	LoadEnemyStats(kqres(DATA_DIR, "resabil.mon"));
+	//dump_en();
+}
 
-	if (!enemy_gfx)
-	{
-		Game.program_death(_("Could not load enemy sprites!"));
-	}
-	edat = fopen(kqres(DATA_DIR, "allstat.mon").c_str(), "r");
-	if (!edat)
-	{
-		Game.program_death(_("Could not load 1st enemy datafile!"));
-	}
+void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
+{
+	int tmp, imagefile_x_coord, imagefile_y_coord;
+	KFighter *fighter_loaded_from_disk;
+
 	m_num_enemies = 0;
 	m_enemy_array_capacity = 128;
 	m_enemy_fighters = (KFighter **)malloc(sizeof(KFighter *) * m_enemy_array_capacity);
-	// Loop through for every monster in allstat.mon
-	while (fscanf(edat, "%s", strbuf) != EOF)
+
+	std::ifstream infile(fullPath.c_str());
+	if (infile.fail())
 	{
+		Game.program_death(_("Could not load 1st enemy datafile!"));
+	}
+	string line;
+
+	// Loop through for every monster in allstat.mon
+	while (std::getline(infile, line))
+	{
+		std::istringstream iss(line);
+
 		if (m_num_enemies >= m_enemy_array_capacity)
 		{
 			m_enemy_array_capacity *= 2;
@@ -640,134 +654,124 @@ void KEnemy::LoadEnemies(void)
 		memset(fighter_loaded_from_disk, 0, sizeof(KFighter));
 		// Enemy name
 		strncpy(fighter_loaded_from_disk->name, strbuf, sizeof(fighter_loaded_from_disk->name));
+
 		// Index number (ignored; automatically generated)
-		fscanf(edat, "%d", &tmp);
+		iss >> tmp;
+
 		// x-coord of image in datafile
-		fscanf(edat, "%d", &tmp);
-		lx = tmp;
+		iss >> imagefile_x_coord;
 		// y-coord of image in datafile
-		fscanf(edat, "%d", &tmp);
-		ly = tmp;
+		iss >> imagefile_y_coord;
+
 		// Image width
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->cw = tmp;
+		iss >> fighter_loaded_from_disk->cw;
 		// Image length (height)
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->cl = tmp;
+		iss >> fighter_loaded_from_disk->cl;
+
 		// Experience points earned
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->xp = tmp;
+		iss >> fighter_loaded_from_disk->xp;
 		// Gold received
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->gp = tmp;
+		iss >> fighter_loaded_from_disk->gp;
 		// Level
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->lvl = tmp;
+		iss >> fighter_loaded_from_disk->lvl;
 		// Max HP
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->mhp = tmp;
+		iss >> fighter_loaded_from_disk->mhp;
 		// Max MP
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->mmp = tmp;
+		iss >> fighter_loaded_from_disk->mmp;
 		// Defeat Item Probability: chance of finding any items after defeat
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->dip = tmp;
+		iss >> fighter_loaded_from_disk->dip;
 		// Defeat Item Common: item found commonly of the time
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->defeat_item_common = tmp;
+		iss >> fighter_loaded_from_disk->defeat_item_common;
 		// Defeat Item Rare: item found rarely
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->defeat_item_rare = tmp;
+		iss >> fighter_loaded_from_disk->defeat_item_rare;
 		// Steal Item Common: item found commonly from stealing
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->steal_item_common = tmp;
+		iss >> fighter_loaded_from_disk->steal_item_common;
 		// Steal Item Rare: item found rarely when stealing
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->steal_item_rare = tmp;
+		iss >> fighter_loaded_from_disk->steal_item_rare;
 		// Enemy's strength (agility & vitality set to zero)
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->stats[A_STR] = tmp;
+		iss >> fighter_loaded_from_disk->stats[A_STR];
 		fighter_loaded_from_disk->stats[A_AGI] = 0;
 		fighter_loaded_from_disk->stats[A_VIT] = 0;
 		// Intelligence & Sagacity (both the same)
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->stats[A_INT] = tmp;
-		fighter_loaded_from_disk->stats[A_SAG] = tmp;
-		// Defense against: Speed, Spirit, Attack, Hit, Defence, Evade, Magic (in
-		// that order)
-		for (p = 5; p < 13; p++)
+		iss >> fighter_loaded_from_disk->stats[A_INT];
+		fighter_loaded_from_disk->stats[A_SAG] = fighter_loaded_from_disk->stats[A_INT];
+		// Defense against: Speed, Spirit, Attack, Hit, Defense, Evade, Magic (in that order)
+		for (size_t i = 5; i < 13; i++)
 		{
-			fscanf(edat, "%d", &tmp);
-			fighter_loaded_from_disk->stats[p] = tmp;
+			iss >> fighter_loaded_from_disk->stats[i];
 		}
 		// Bonus
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->bonus = tmp;
+		iss >> fighter_loaded_from_disk->bonus;
 		fighter_loaded_from_disk->bstat = 0;
 		// Current weapon type
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->current_weapon_type = (uint32_t)tmp;
+		iss >> fighter_loaded_from_disk->current_weapon_type;
 		// Weapon elemental type
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->welem = tmp;
+		iss >> fighter_loaded_from_disk->welem;
 		// Undead Level (defense against Undead attacks)
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->unl = tmp;
+		iss >> fighter_loaded_from_disk->unl;
 		// Critical attacks
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->crit = tmp;
+		iss >> fighter_loaded_from_disk->crit;
 		// Temp Sag & Int for Imbued
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->imb_s = tmp;
+		iss >> fighter_loaded_from_disk->imb_s;
 		// Imbued stat type (Spd, Spi, Att, Hit, Def, Evd, Mag)
-		fscanf(edat, "%d", &tmp);
-		fighter_loaded_from_disk->imb_a = tmp;
+		iss >> fighter_loaded_from_disk->imb_a;
 		fighter_loaded_from_disk->img = new Raster(fighter_loaded_from_disk->cw, fighter_loaded_from_disk->cl);
-		enemy_gfx->blitTo(fighter_loaded_from_disk->img, lx, ly, 0, 0, fighter_loaded_from_disk->cw, fighter_loaded_from_disk->cl);
-		for (p = 0; p < 2; p++)
+		enemy_gfx->blitTo(fighter_loaded_from_disk->img, imagefile_x_coord, imagefile_y_coord, 0, 0, fighter_loaded_from_disk->cw, fighter_loaded_from_disk->cl);
+		for (size_t i = 0; i < 2; i++)
 		{
-			fscanf(edat, "%d", &tmp);
-			fighter_loaded_from_disk->imb[p] = tmp;
+			iss >> fighter_loaded_from_disk->imb[i];
 		}
 	}
-	fclose(edat);
-	edat = fopen(kqres(DATA_DIR, "resabil.mon").c_str(), "r");
-	if (!edat)
+	infile.close();
+}
+
+void KEnemy::LoadEnemyStats(const string &fullFilename)
+{
+	int tmp;
+	std::ifstream infile(fullFilename.c_str());
+	if (infile.fail())
 	{
 		Game.program_death(_("Could not load 2nd enemy datafile!"));
 	}
-	for (i = 0; i < m_num_enemies; i++)
+
+	size_t current_enemy = 0;
+	string line;
+	while (std::getline(infile, line) && current_enemy < (size_t)m_num_enemies)
 	{
-		fighter_loaded_from_disk = m_enemy_fighters[i];
-		fscanf(edat, "%s", strbuf);
-		fscanf(edat, "%d", &tmp);
-		for (p = 0; p < R_TOTAL_RES; p++)
+		KFighter* fighter_loaded_from_disk = m_enemy_fighters[current_enemy];
+		std::istringstream iss(line);
+
+		iss >> strbuf;
+
+		// Some index: ignored
+		iss >> tmp;
+
+		// Each of the 16 RES (resistances)
+		for (size_t somethingToLoopWith = 0; somethingToLoopWith < R_TOTAL_RES; somethingToLoopWith++)
 		{
-			fscanf(edat, "%d", &tmp);
-			fighter_loaded_from_disk->res[p] = tmp;
+			iss >> fighter_loaded_from_disk->res[somethingToLoopWith];
 		}
-		for (p = 0; p < 8; p++)
+		// Each of the 8 AI
+		for (size_t somethingToLoopWith = 0; somethingToLoopWith < 8; somethingToLoopWith++)
 		{
-			fscanf(edat, "%d", &tmp);
-			fighter_loaded_from_disk->ai[p] = tmp;
+			iss >> fighter_loaded_from_disk->ai[somethingToLoopWith];
 		}
-		for (p = 0; p < 8; p++)
+		// Each of the 8 AIP
+		for (size_t somethingToLoopWith = 0; somethingToLoopWith < 8; somethingToLoopWith++)
 		{
-			fscanf(edat, "%d", &tmp);
-			fighter_loaded_from_disk->aip[p] = tmp;
-			fighter_loaded_from_disk->atrack[p] = 0;
+			iss >> fighter_loaded_from_disk->aip[somethingToLoopWith];
+			fighter_loaded_from_disk->atrack[somethingToLoopWith] = 0;
 		}
 		fighter_loaded_from_disk->hp = fighter_loaded_from_disk->mhp;
 		fighter_loaded_from_disk->mp = fighter_loaded_from_disk->mmp;
-		for (p = 0; p < 24; p++)
+		for (size_t somethingToLoopWith = 0; somethingToLoopWith < 24; somethingToLoopWith++)
 		{
-			fighter_loaded_from_disk->sts[p] = 0;
+			fighter_loaded_from_disk->sts[somethingToLoopWith] = 0;
 		}
 		fighter_loaded_from_disk->aux = 0;
 		fighter_loaded_from_disk->mrp = 100;
+		++current_enemy;
 	}
-	fclose(edat);
-	//dump_en();
 }
 
 KFighter *KEnemy::MakeEnemyFighter(int who, KFighter *en)
