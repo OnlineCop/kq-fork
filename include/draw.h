@@ -514,7 +514,7 @@ private:
 	 * \returns processed string, in a static buffer \p strbuf
 	 *          or \p the_string, if it had no replacement chars.
 	 */
-	const char *parse_string(const string the_string);
+	string parse_string(const string the_string);
 
 	/*! \brief Parallax calculations for xofs and yofs.
 	 *

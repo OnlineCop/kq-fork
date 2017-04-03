@@ -53,6 +53,9 @@ KDraw Draw;
 /* Globals */
 #define MSG_ROWS 4
 #define MSG_COLS 36
+/*! \brief A 4-row buffer to contain text to display to the player.
+ * Messages to the player can be up to 4 rows of text (at a time).
+ */
 char msgbuf[MSG_ROWS][MSG_COLS];
 int gbx, gby, gbbx, gbby, gbbw, gbbh, gbbs;
 eBubbleStemStyle bubble_stem_style;
@@ -1026,17 +1029,19 @@ void KDraw::menubox(Raster *where, int x, int y, int width, int height, int colo
 	draw_kq_box(where, x, y, x + width * FontWidth + TILE_W, y + height * FontHeight + TILE_H, color, B_TEXT);
 }
 
-void KDraw::message(const char *m, int icn, int delay, int x_m, int y_m)
+void KDraw::message(const char *inMessage, int icn, int delay, int x_m, int y_m)
 {
-	char msg[1024];
-	const char *s;
 	int num_lines, max_len, len;
 	int idx;
 
 	/* Do the $0 replacement stuff */
-	memset(msg, 0, sizeof(msg));
-	strncpy(msg, parse_string(m), sizeof(msg) - 1);
-	s = msg;
+	string parsed = parse_string(inMessage);
+	char* unsplit_string = new char[1024];
+	memset(unsplit_string, 0, 1024);
+	strncpy(unsplit_string, parsed.c_str(), 1023);
+
+	// This will mangle the contents of unsplit_string, so be careful with this:
+	const char *s = unsplit_string;
 
 	/* Save a copy of the screen */
 	blit(double_buffer, back, x_m, y_m, 0, 0, SCREEN_W2, SCREEN_H2);
@@ -1090,6 +1095,7 @@ void KDraw::message(const char *m, int icn, int delay, int x_m, int y_m)
 		}
 		blit(back, double_buffer, 0, 0, x_m, y_m, SCREEN_W2, SCREEN_H2);
 	}
+	delete[] unsplit_string;
 }
 
 // Origin: http://stackoverflow.com/a/3418285/801098
@@ -1110,11 +1116,11 @@ void KDraw::replaceAll(string& str, const string& from, const string& to)
 /** This only handles extremely simple strings; you CAN break it if you try hard enough:
  *    "$$0" or "\\$0" or "\$0" or "$-1", etc.
  */
-const char *KDraw::parse_string(const string the_string)
+string KDraw::parse_string(const string the_string)
 {
 	if (the_string.find('$', 0) == string::npos)
 	{
-		return the_string.c_str();
+		return the_string;
 	}
 
 	string party0 = party[pidx[0]].name;
@@ -1124,7 +1130,7 @@ const char *KDraw::parse_string(const string the_string)
 	replaceAll(output, "$0", party0);
 	replaceAll(output, "$1", party1);
 
-	return output.c_str();
+	return output;
 }
 
 const char *KDraw::decode_utf8(const char *string, uint32_t *cp)
@@ -1312,10 +1318,10 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char *sp1, con
 	gbbw = 1;
 	gbbh = 0;
 	gbbs = 0;
-	strcpy(msgbuf[0], parse_string(sp1));
-	strcpy(msgbuf[1], parse_string(sp2));
-	strcpy(msgbuf[2], parse_string(sp3));
-	strcpy(msgbuf[3], parse_string(sp4));
+	strcpy(msgbuf[0], parse_string(sp1).c_str());
+	strcpy(msgbuf[1], parse_string(sp2).c_str());
+	strcpy(msgbuf[2], parse_string(sp3).c_str());
+	strcpy(msgbuf[3], parse_string(sp4).c_str());
 	Game.unpress();
 	for (a = 0; a < 4; a++)
 	{
@@ -1383,7 +1389,7 @@ int KDraw::prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
 	int winx, winy;
 	int i, w, running;
 
-	ptext = parse_string(ptext);
+	ptext = parse_string(ptext).c_str();
 	while (1)
 	{
 		gbbw = 1;
@@ -1755,7 +1761,7 @@ void KDraw::set_view(int vw, int x1, int y1, int x2, int y2)
 
 void KDraw::text_ex(eBubbleStyle fmt, int who, const char *s)
 {
-	s = parse_string(s);
+	s = parse_string(s).c_str();
 
 	while (s)
 	{
@@ -1766,7 +1772,7 @@ void KDraw::text_ex(eBubbleStyle fmt, int who, const char *s)
 
 void KDraw::porttext_ex(eBubbleStyle fmt, int who, const char *s)
 {
-	s = parse_string(s);
+	s = parse_string(s).c_str();
 
 	while (s)
 	{
