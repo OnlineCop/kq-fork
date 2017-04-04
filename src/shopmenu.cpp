@@ -474,7 +474,7 @@ void inn(const char *iname, uint32_t gold_per_character, int pay)
 	for (party_index = 0; party_index < numchrs; party_index++)
 	{
 		pidx_index = pidx[party_index];
-		if (party[pidx_index].sts[S_POISON] != 0)
+		if (party[pidx_index].IsPoisoned())
 		{
 			total_gold_cost += gold_per_character / 2;
 		}
@@ -486,7 +486,7 @@ void inn(const char *iname, uint32_t gold_per_character, int pay)
 		{
 			total_gold_cost += gold_per_character / 2;
 		}
-		if (party[pidx_index].sts[S_DEAD] != 0)
+		if (party[pidx_index].IsDead())
 		{
 			b = gold_per_character / 2;
 			total_gold_cost += (b * party[pidx_index].lvl / 5);

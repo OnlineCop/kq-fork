@@ -82,7 +82,7 @@ int auto_select_enemy(int whom, int csts)
 	int tmpd[NUM_FIGHTERS];
 	for (i = PSIZE; i < PSIZE + num_enemies; i++)
 	{
-		if (fighter[i].sts[S_DEAD] == 0)
+		if (fighter[i].IsAlive())
 		{
 			if (csts == NO_STS_CHECK)
 			{
@@ -175,7 +175,7 @@ int auto_select_hero(int whom, int csts)
 static int can_attack(int tgt)
 {
 	if (fighter[tgt].mhp < 1 || fighter[tgt].hp < 1 ||
-		fighter[tgt].sts[S_DEAD] != 0)
+		fighter[tgt].IsDead())
 	{
 		return 0;
 	}
@@ -622,10 +622,10 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target,
 	bool select_all = (multi_target == TGT_ALLY_ALL);
 	for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
 	{
-		if (can_select_dead || fighter[fighter_index].sts[S_DEAD] == 0)
+		if (can_select_dead || fighter[fighter_index].IsAlive())
 		{
 			tmpd[cntr] = fighter_index;
-			if (fighter[cntr].sts[S_DEAD])
+			if (fighter[cntr].IsDead())
 			{
 				ptr = cntr; /* default: select a dead char if there is one */
 			}

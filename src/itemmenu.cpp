@@ -429,7 +429,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 	case I_MHERB:
 	case I_SALVE:
 	case I_PCURING:
-		if (fighter[fighter_index].sts[S_DEAD] != 0)
+		if (fighter[fighter_index].IsDead())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
@@ -452,7 +452,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		break;
 	case I_OSEED:
 	case I_EDROPS:
-		if (fighter[fighter_index].sts[S_DEAD] != 0)
+		if (fighter[fighter_index].IsDead())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
@@ -476,7 +476,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 	case I_NLEAF:
 	case I_NPOULTICE:
 	case I_KBREW:
-		if (fighter[fighter_index].sts[S_DEAD] != 0 ||
+		if (fighter[fighter_index].IsDead() ||
 			fighter[fighter_index].sts[S_STONE] != 0)
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
@@ -495,7 +495,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		}
 		break;
 	case I_WENSAI:
-		if (fighter[fighter_index].sts[S_DEAD] != 0)
+		if (fighter[fighter_index].IsDead())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
@@ -521,11 +521,11 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 				tmp++;
 			}
 		}
-		if (tmp == 0 || fighter[fighter_index].sts[S_DEAD] != 0)
+		if (tmp == 0 || fighter[fighter_index].IsDead())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
-		if (fighter[fighter_index].sts[S_DEAD] != 0)
+		if (fighter[fighter_index].IsDead())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
@@ -539,7 +539,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		}
 		break;
 	case I_LTONIC:
-		if (fighter[fighter_index].sts[S_DEAD] == 0)
+		if (fighter[fighter_index].IsAlive())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
@@ -569,7 +569,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		}
 		for (fighter_index = attack_fighter_index; fighter_index < attack_fighter_index + san; fighter_index++)
 		{
-			if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+			if (fighter[fighter_index].IsAlive() &&
 				fighter[fighter_index].sts[S_STONE] == 0)
 			{
 				b = fighter[fighter_index].lvl * items[ti].stats[A_ATT];
@@ -605,7 +605,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		tmp = items[ti].elem;
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + sen; fighter_index++)
 		{
-			if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+			if (fighter[fighter_index].IsAlive() &&
 				fighter[fighter_index].mhp > 0)
 			{
 				b = fighter[fighter_index].lvl * items[ti].stats[A_ATT];
@@ -630,7 +630,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
-		if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+		if (fighter[fighter_index].IsAlive() &&
 			fighter[fighter_index].sts[S_STONE] == 0)
 		{
 			ta[fighter_index] = items[ti].stats[A_ATT];
@@ -644,7 +644,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 	}
 	if (ti >= I_STRSEED && ti <= I_WISSEED)
 	{
-		if (fighter[fighter_index].sts[S_DEAD] != 0 || in_combat == 1 ||
+		if (fighter[fighter_index].IsDead() || in_combat == 1 ||
 			fighter_index >= PSIZE)
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
@@ -715,7 +715,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 	}
 	if (ti == I_HPUP)
 	{
-		if (fighter[fighter_index].sts[S_DEAD] != 0)
+		if (fighter[fighter_index].IsDead())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
@@ -725,7 +725,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 	}
 	if (ti == I_MPUP)
 	{
-		if (fighter[fighter_index].sts[S_DEAD] != 0)
+		if (fighter[fighter_index].IsDead())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}

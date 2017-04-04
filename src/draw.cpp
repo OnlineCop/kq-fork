@@ -352,11 +352,11 @@ void KDraw::draw_char(int xw, int yw)
 				? eframes[g_ent[fighter_index].chrx]
 				: frames[fighter_type_id];
 
-			if (party[fighter_type_id].sts[S_DEAD] != 0)
+			if (party[fighter_type_id].IsDead())
 			{
 				fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + 2;
 			}
-			if (party[fighter_type_id].sts[S_POISON] != 0)
+			if (party[fighter_type_id].IsPoisoned())
 			{
 				/* PH: we are calling this every frame? */
 				color_scale(sprite_base[fighter_frame], tc2, 32, 47);
@@ -381,7 +381,7 @@ void KDraw::draw_char(int xw, int yw)
 				}
 			}
 
-			if (party[fighter_type_id].sts[S_DEAD] == 0)
+			if (party[fighter_type_id].IsAlive())
 			{
 				draw_sprite(double_buffer, spr, dx, dy);
 			}

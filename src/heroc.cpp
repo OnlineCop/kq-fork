@@ -97,7 +97,7 @@ void auto_herochooseact(int who)
 	{
 		return;
 	}
-	if (fighter[who].sts[S_DEAD] != 0 || fighter[who].hp <= 0)
+	if (fighter[who].IsDead() || fighter[who].hp <= 0)
 	{
 		cact[who] = 0;
 		return;
@@ -358,7 +358,7 @@ static int combat_item(int ss, int t1, int tg)
 	b = 0;
 	for (a = st; a < st + tt; a++)
 	{
-		if (fighter[a].sts[S_DEAD] == 0 && fighter[a].hp <= 0)
+		if (fighter[a].IsAlive() && fighter[a].hp <= 0)
 		{
 			fkill(a);
 			b++;
@@ -1187,9 +1187,9 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 		draw_spellsprite(0, 1, 27, 0);
 		for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
 		{
-			if (fighter[fighter_index].sts[S_DEAD] == 0)
+			if (fighter[fighter_index].IsAlive())
 			{
-				fighter[fighter_index].sts[S_POISON] = 0;
+				fighter[fighter_index].SetPoisoned(0);
 			}
 		}
 	}
@@ -1201,7 +1201,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 		ta[defender_fighter_index] = 0;
 		for (unsigned fighter_index = 0; fighter_index < random_fighter_index; fighter_index++)
 		{
-			if (fighter[defender_fighter_index].sts[S_DEAD] == 0)
+			if (fighter[defender_fighter_index].IsAlive())
 			{
 				draw_attacksprite(defender_fighter_index, 0, 4, 1);
 				Magic.special_damage_oneall_enemies(attacker_fighter_index, 16, -1,
@@ -1237,7 +1237,7 @@ static void hero_run(void)
 	}
 	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 	{
-		if (fighter[fighter_index].sts[S_DEAD] == 0)
+		if (fighter[fighter_index].IsAlive())
 		{
 			b++;
 			bt += fighter[fighter_index].stats[A_SPD];
@@ -1253,7 +1253,7 @@ static void hero_run(void)
 	}
 	for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 	{
-		if (fighter[fighter_index].sts[S_DEAD] == 0)
+		if (fighter[fighter_index].IsAlive())
 		{
 			c++;
 			ct += fighter[fighter_index].stats[A_SPD];
@@ -1335,7 +1335,7 @@ static void hero_run(void)
 				fy = fighter[fighter_index].cy;
 				fr = (a > count / 2) ? 1 : 0;
 
-				if (fighter[fighter_index].sts[S_DEAD] == 0)
+				if (fighter[fighter_index].IsAlive())
 				{
 					draw_sprite(double_buffer, frames[pidx[fighter_index]][fr], fx, fy);
 				}

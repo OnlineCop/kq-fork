@@ -478,10 +478,10 @@ void KMenu::revert_equipstats(void)
 		{
 			party[pidx_index].sts[stats_index] = 0;
 		}
-		party[pidx_index].sts[S_POISON] = fighter[fighter_index].sts[S_POISON];
+		party[pidx_index].SetPoisoned(fighter[fighter_index].GetRemainingPoison());
 		party[pidx_index].sts[S_BLIND] = fighter[fighter_index].sts[S_BLIND];
 		party[pidx_index].sts[S_MUTE] = fighter[fighter_index].sts[S_MUTE];
-		party[pidx_index].sts[S_DEAD] = fighter[fighter_index].sts[S_DEAD];
+		party[pidx_index].SetAlive(fighter[fighter_index].IsAlive());
 		for (stats_index = 0; stats_index < 12; stats_index++)
 		{
 			if (stats_index != S_POISON && stats_index != S_BLIND &&

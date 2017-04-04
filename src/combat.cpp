@@ -339,7 +339,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
 	{
 		b = z * x_offset;
 
-		if (fighter[z].sts[S_DEAD] == 0)
+		if (fighter[z].IsAlive())
 		{
 			draw_fighter(z, (sall == 1));
 		}
@@ -350,7 +350,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
 		}
 
 		Draw.menubox(double_buffer, b, 184, 11, 5, BLUE);
-		if (fighter[z].sts[S_DEAD] == 0)
+		if (fighter[z].IsAlive())
 		{
 			sz = bspeed[z] * 88 / ROUND_MAX;
 			if (sz > 88)
@@ -406,7 +406,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
 
 	for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 	{
-		if (fighter[fighter_index].sts[S_DEAD] == 0)
+		if (fighter[fighter_index].IsAlive())
 		{
 			draw_fighter(fighter_index, (sall == 2));
 		}
@@ -439,7 +439,7 @@ static int check_end(void)
 	/*      enemies won the battle.                                   */
 	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 	{
-		if (fighter[fighter_index].sts[S_DEAD] == 0)
+		if (fighter[fighter_index].IsAlive())
 		{
 			alive++;
 		}
@@ -456,7 +456,7 @@ static int check_end(void)
 	alive = 0;
 	for (fighter_index = 0; fighter_index < num_enemies; fighter_index++)
 	{
-		if (fighter[fighter_index + PSIZE].sts[S_DEAD] == 0)
+		if (fighter[fighter_index + PSIZE].IsAlive())
 		{
 			alive++;
 		}
@@ -752,7 +752,7 @@ static void do_round(void)
 			{
 				if ((fighter_index < numchrs) || (fighter_index >= PSIZE))
 				{
-					if (((fighter[fighter_index].sts[S_POISON] - 1) == rcount) &&
+					if (((fighter[fighter_index].GetRemainingPoison() - 1) == rcount) &&
 						fighter[fighter_index].hp > 1)
 					{
 						a = kqrandom->random_range_exclusive(0, fighter[fighter_index].mhp / 20) + 1;
@@ -844,7 +844,7 @@ static void do_round(void)
 						cact[fighter_index] = 0;
 					}
 
-					if (fighter[fighter_index].sts[S_DEAD] != 0 ||
+					if (fighter[fighter_index].IsDead() ||
 						fighter[fighter_index].mhp <= 0)
 					{
 						if (pidx[fighter_index] == TEMMIN)
@@ -1140,7 +1140,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 		}
 
 		if ((fighter[defend_fighter_index].hp <= 0) &&
-			(fighter[defend_fighter_index].sts[S_DEAD] == 0))
+			(fighter[defend_fighter_index].IsAlive()))
 		{
 			fkill(defend_fighter_index);
 			death_animation(defend_fighter_index, 0);
@@ -1197,7 +1197,7 @@ void fkill(size_t fighter_index)
 		fighter[fighter_index].sts[spell_index] = 0;
 	}
 
-	fighter[fighter_index].sts[S_DEAD] = 1;
+	fighter[fighter_index].SetAlive(false);
 	fighter[fighter_index].hp = 0;
 	if (fighter_index < PSIZE)
 	{
@@ -1244,7 +1244,7 @@ static void heroes_win(void)
 	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 	{
 		if (fighter[fighter_index].sts[S_STONE] == 0 &&
-			fighter[fighter_index].sts[S_DEAD] == 0)
+			fighter[fighter_index].IsAlive())
 		{
 			nc++;
 		}
@@ -1323,7 +1323,7 @@ static void heroes_win(void)
 	for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
 	{
 		if (party[pidx[pidx_index]].sts[S_STONE] == 0 &&
-			party[pidx[pidx_index]].sts[S_DEAD] == 0)
+			party[pidx[pidx_index]].IsAlive())
 		{
 			b = pidx_index * 160;
 			player2fighter(pidx[pidx_index], &t1);
@@ -1379,7 +1379,7 @@ static void heroes_win(void)
 	for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
 	{
 		if (party[pidx[pidx_index]].sts[S_STONE] == 0 &&
-			party[pidx[pidx_index]].sts[S_DEAD] == 0)
+			party[pidx[pidx_index]].IsAlive())
 		{
 			ent += learn_new_spells(pidx[pidx_index]);
 		}
@@ -1468,7 +1468,7 @@ void multi_fight(size_t attack_fighter_index)
 	for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 	{
 		tempd = Magic.status_adjust(fighter_index);
-		if ((fighter[fighter_index].sts[S_DEAD] == 0) &&
+		if ((fighter[fighter_index].IsAlive()) &&
 			(fighter[fighter_index].mhp > 0))
 		{
 			// ares[fighter_index] = attack_result(attack_fighter_index,
@@ -1488,7 +1488,7 @@ void multi_fight(size_t attack_fighter_index)
 
 			fighter[fighter_index].hp += ta[fighter_index];
 			if ((fighter[fighter_index].hp <= 0) &&
-				(fighter[fighter_index].sts[S_DEAD] == 0))
+				(fighter[fighter_index].IsAlive()))
 			{
 				fighter[fighter_index].hp = 0;
 				killed_warrior[fighter_index] = 1;

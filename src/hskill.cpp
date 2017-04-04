@@ -89,7 +89,7 @@ int hero_skillcheck(size_t fighter_index)
 		// See whether any enemies CAN be turned to stone.
 		for (target_fighter_index = PSIZE; target_fighter_index < PSIZE + num_enemies; target_fighter_index++)
 		{
-			if (fighter[target_fighter_index].sts[S_DEAD] == 0 &&
+			if (fighter[target_fighter_index].IsAlive() &&
 				fighter[target_fighter_index].sts[S_STONE] == 0)
 			{
 				can_be_affected++;
@@ -135,7 +135,7 @@ int hero_skillcheck(size_t fighter_index)
 		}
 		for (target_fighter_index = PSIZE; target_fighter_index < PSIZE + num_enemies; target_fighter_index++)
 		{
-			if (fighter[target_fighter_index].sts[S_DEAD] == 0 &&
+			if (fighter[target_fighter_index].IsAlive() &&
 				fighter[target_fighter_index].sts[S_STONE] == 0 &&
 				fighter[target_fighter_index].unl > 0)
 			{
@@ -186,7 +186,7 @@ int hero_skillcheck(size_t fighter_index)
 		}
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
-			if (fighter[target_fighter_index].sts[S_DEAD] == 0)
+			if (fighter[target_fighter_index].IsAlive())
 			{
 				can_be_affected++;
 			}
@@ -540,11 +540,11 @@ int skill_use(size_t attack_fighter_index)
 			tempa.stats[A_HIT] += b;
 		}
 		fight(attack_fighter_index, enemy_index, 1);
-		if (fighter[enemy_index].sts[S_DEAD] == 1)
+		if (fighter[enemy_index].IsDead())
 		{
 			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 			{
-				if (fighter[fighter_index].sts[S_DEAD] == 0)
+				if (fighter[fighter_index].IsAlive())
 				{
 					nn[next_target] = fighter_index;
 					next_target++;
@@ -562,7 +562,7 @@ int skill_use(size_t attack_fighter_index)
 		display_attack_string = 0;
 		blit(temp.get(), backart, 0, 0, 0, 0, 320, 240);
 		display_amount(attack_fighter_index, FONT_DECIDE, 0);
-		if (fighter[attack_fighter_index].sts[S_DEAD] == 0 &&
+		if (fighter[attack_fighter_index].IsAlive() &&
 			fighter[attack_fighter_index].hp <= 0)
 		{
 			fkill(attack_fighter_index);
@@ -678,7 +678,7 @@ int skill_use(size_t attack_fighter_index)
 			b = fighter[attack_fighter_index].lvl * 15;
 			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 			{
-				if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+				if (fighter[fighter_index].IsAlive() &&
 					fighter[fighter_index].mhp > 0)
 				{
 					if (fighter[fighter_index].unl == 99 ||
@@ -741,7 +741,7 @@ int skill_use(size_t attack_fighter_index)
 			for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 			{
 				if (fighter[fighter_index].sts[S_STONE] == 0 &&
-					fighter[fighter_index].sts[S_DEAD] == 0)
+					fighter[fighter_index].IsAlive())
 				{
 					ta[fighter_index] = b;
 					ta[fighter_index] = Magic.do_shell_check(fighter_index, ta[fighter_index]);
@@ -751,7 +751,7 @@ int skill_use(size_t attack_fighter_index)
 			for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 			{
 				if (fighter[fighter_index].sts[S_STONE] == 0 &&
-					fighter[fighter_index].sts[S_DEAD] == 0)
+					fighter[fighter_index].IsAlive())
 				{
 					Magic.adjust_hp(fighter_index, ta[fighter_index]);
 				}

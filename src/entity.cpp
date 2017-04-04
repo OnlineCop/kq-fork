@@ -745,7 +745,7 @@ static void process_entity(t_entity target_entity) {
         if (steps < STEPS_NEEDED) {
           steps++;
         }
-        if (player->sts[S_POISON] > 0) {
+        if (player->IsPoisoned()) {
           if (player->hp > 1) {
             player->hp--;
           }

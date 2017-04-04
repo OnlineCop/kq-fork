@@ -106,6 +106,40 @@ struct s_progress
 /*! \brief Player */
 struct s_player
 {
+	bool IsDead() const
+	{
+		return (sts[S_DEAD] != 0);
+	}
+
+	bool IsAlive() const
+	{
+		return (sts[S_DEAD] == 0);
+	}
+
+	void SetAlive(bool bIsAlive)
+	{
+		sts[S_DEAD] = (bIsAlive ? 0 : 1);
+	}
+
+	bool IsPoisoned() const
+	{
+		return (sts[S_POISON] > 0);
+	}
+
+	void SetPoisoned(int HowLongEffectShouldLast)
+	{
+		if (HowLongEffectShouldLast < 0)
+		{
+			HowLongEffectShouldLast = 0;
+		}
+		sts[S_POISON] = HowLongEffectShouldLast;
+	}
+
+	int GetRemainingPoison() const
+	{
+		return sts[S_POISON];
+	}
+
 	char name[9]; /*!< Entity name */
 	int xp;       /*!< Entity experience */
 	int next;     /*!< Experience needed for level-up */

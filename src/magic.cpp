@@ -746,7 +746,7 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 	b = 0;
 	for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 	{
-		if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+		if (fighter[fighter_index].IsAlive() &&
 			fighter[fighter_index].hp <= 0)
 		{
 			fkill(fighter_index);
@@ -819,7 +819,7 @@ void KMagic::cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spe
 	for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 	{
 		if (fighter[fighter_index].sts[S_STONE] == 0 &&
-			fighter[fighter_index].sts[S_DEAD] == 0)
+			fighter[fighter_index].IsAlive())
 		{
 			z++;
 		}
@@ -842,7 +842,7 @@ void KMagic::cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spe
 	for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 	{
 		if (fighter[fighter_index].sts[S_STONE] == 0 &&
-			fighter[fighter_index].sts[S_DEAD] == 0)
+			fighter[fighter_index].IsAlive())
 		{
 			ta[fighter_index] = b;
 			ta[fighter_index] = do_shell_check(fighter_index, ta[fighter_index]);
@@ -1202,14 +1202,14 @@ void KMagic::heal_one_ally(size_t caster_fighter_index, size_t target_fighter_in
 	switch (spell_number)
 	{
 	case M_RESTORE:
-		if (fighter[target_fighter_index].sts[S_DEAD] == 0)
+		if (fighter[target_fighter_index].IsAlive())
 		{
-			fighter[target_fighter_index].sts[S_POISON] = 0;
+			fighter[target_fighter_index].SetPoisoned(0);
 			fighter[target_fighter_index].sts[S_BLIND] = 0;
 		}
 		break;
 	case M_RECOVERY:
-		if (fighter[target_fighter_index].sts[S_DEAD] == 0)
+		if (fighter[target_fighter_index].IsAlive())
 		{
 			for (stat_index = 0; stat_index < 7; stat_index++)
 			{
@@ -1218,7 +1218,7 @@ void KMagic::heal_one_ally(size_t caster_fighter_index, size_t target_fighter_in
 		}
 		break;
 	case M_LIFE:
-		if (fighter[target_fighter_index].sts[S_DEAD] == 1)
+		if (fighter[target_fighter_index].IsDead())
 		{
 			for (stat_index = 0; stat_index < 24; stat_index++)
 			{
@@ -1233,7 +1233,7 @@ void KMagic::heal_one_ally(size_t caster_fighter_index, size_t target_fighter_in
 		}
 		break;
 	case M_FULLLIFE:
-		if (fighter[target_fighter_index].sts[S_DEAD] == 1)
+		if (fighter[target_fighter_index].IsDead())
 		{
 			for (stat_index = 0; stat_index < 24; stat_index++)
 			{
@@ -1415,7 +1415,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 			last_target = num_enemies;
 			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 			{
-				if (fighter[fighter_index].sts[S_DEAD] == 0)
+				if (fighter[fighter_index].IsAlive())
 				{
 					number_of_enemies++;
 				}
@@ -1428,7 +1428,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 			last_target = numchrs;
 			for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 			{
-				if (fighter[fighter_index].sts[S_DEAD] == 0)
+				if (fighter[fighter_index].IsAlive())
 				{
 					number_of_enemies++;
 				}
@@ -1464,7 +1464,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 
 	for (fighter_index = first_target; fighter_index < first_target + last_target; fighter_index++)
 	{
-		if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+		if (fighter[fighter_index].IsAlive() &&
 			fighter[fighter_index].mhp > 0)
 		{
 			tempd = status_adjust(fighter_index);
@@ -1511,7 +1511,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 	b = 0;
 	for (fighter_index = first_target; fighter_index < first_target + last_target; fighter_index++)
 	{
-		if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+		if (fighter[fighter_index].IsAlive() &&
 			fighter[fighter_index].hp <= 0)
 		{
 			fkill(fighter_index);
@@ -1609,7 +1609,7 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 		{
 			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 			{
-				if (fighter[fighter_index].sts[S_DEAD] == 0)
+				if (fighter[fighter_index].IsAlive())
 				{
 					ne++;
 				}
@@ -1619,7 +1619,7 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 		{
 			for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 			{
-				if (fighter[fighter_index].sts[S_DEAD] == 0)
+				if (fighter[fighter_index].IsAlive())
 				{
 					ne++;
 				}
@@ -1662,7 +1662,7 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 	}
 	for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 	{
-		if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+		if (fighter[fighter_index].IsAlive() &&
 			fighter[fighter_index].mhp > 0)
 		{
 			tempd = status_adjust(fighter_index);

@@ -97,7 +97,7 @@ void combat_skill(size_t fighter_index)
 		affected_targets = 0;
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
-			if (fighter[target_fighter_index].sts[S_DEAD] == 0)
+			if (fighter[target_fighter_index].IsAlive())
 			{
 				affected_targets++;
 			}
@@ -137,7 +137,7 @@ void combat_skill(size_t fighter_index)
 		draw_spellsprite(0, 1, 46, 1);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
-			if (fighter[target_fighter_index].sts[S_DEAD] == 0)
+			if (fighter[target_fighter_index].IsAlive())
 			{
 				if (Magic.res_throw(target_fighter_index, R_PETRIFY) == 0 &&
 					Magic.non_dmg_save(target_fighter_index, 75) == 0)

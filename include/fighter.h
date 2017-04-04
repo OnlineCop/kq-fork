@@ -16,6 +16,16 @@ public:
 	KFighter();
 	KFighter(const s_player &inPlayer);
 
+	// Death
+	bool IsDead() const;
+	bool IsAlive() const;
+	void SetAlive(bool bIsAlive);
+
+	// Poison
+	bool IsPoisoned() const;
+	void SetPoisoned(int HowLongEffectShouldLast);
+	int GetRemainingPoison() const;
+
 	char name[25];          /*!<\brief Name */
 	int xp;                 /*!<\brief eXperience Points */
 	int gp;                 /*!<\brief Gold Points */
@@ -53,7 +63,7 @@ public:
 	uint8_t aframe; /*!<\brief Battle sprite to display (standing, casting,
 					   attacking) */
 	uint8_t crit;
-	uint8_t sts[NUM_SPELLTYPES]; /*!< eSpellType */
+	uint8_t sts[NUM_SPELLTYPES]; /*!< eSpellType, how long a specific status effect remains on this fighter (such as "remaining poison", etc.). */
 	uint8_t defend;
 	uint8_t ai[8];
 	uint8_t aip[8];

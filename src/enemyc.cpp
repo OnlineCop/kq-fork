@@ -189,7 +189,7 @@ void KEnemy::CharmAction(size_t fighter_index)
 	{
 		return;
 	}
-	if (fighter[fighter_index].sts[S_DEAD] == 1 ||
+	if (fighter[fighter_index].IsDead() ||
 		fighter[fighter_index].hp <= 0)
 	{
 		cact[fighter_index] = 0;
@@ -227,7 +227,7 @@ void KEnemy::ChooseAction(size_t fighter_index)
 	{
 		return;
 	}
-	if (fighter[fighter_index].sts[S_DEAD] == 1 ||
+	if (fighter[fighter_index].IsDead() ||
 		fighter[fighter_index].hp <= 0)
 	{
 		cact[fighter_index] = 0;
@@ -366,8 +366,7 @@ void KEnemy::SkillCheck(int w, int ws)
 			{
 				fighter[w].atrack[ws] = 1;
 			}
-			if (numchrs == 2 &&
-				(fighter[0].sts[S_DEAD] > 0 || fighter[1].sts[S_DEAD] > 0))
+			if (numchrs == 2 && (fighter[0].IsDead() || fighter[1].IsDead()))
 			{
 				fighter[w].atrack[ws] = 1;
 			}
@@ -405,7 +404,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 				aux = 0;
 				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 				{
-					if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+					if (fighter[fighter_index].IsAlive() &&
 						fighter[fighter_index].sts[S_STRENGTH] < 2)
 					{
 						aux++;
@@ -420,7 +419,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 				aux = 0;
 				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 				{
-					if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+					if (fighter[fighter_index].IsAlive() &&
 						fighter[fighter_index].sts[S_BLESS] < 3)
 					{
 						aux++;
@@ -444,7 +443,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 			case M_QUICKEN:
 				aux = 0;
 				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
-					if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+					if (fighter[fighter_index].IsAlive() &&
 						fighter[fighter_index].sts[S_TIME] != 2)
 					{
 						aux++;
@@ -481,7 +480,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 			case M_SLOW:
 				aux = 0;
 				for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
-					if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+					if (fighter[fighter_index].IsAlive() &&
 						fighter[fighter_index].sts[S_TIME] != 1)
 					{
 						aux++;
@@ -494,7 +493,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 			case M_SLEEPALL:
 				aux = 0;
 				for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
-					if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+					if (fighter[fighter_index].IsAlive() &&
 						fighter[fighter_index].sts[S_SLEEP] == 0)
 					{
 						aux++;
@@ -507,7 +506,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 			case M_DIVINEGUARD:
 				aux = 0;
 				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
-					if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+					if (fighter[fighter_index].IsAlive() &&
 						fighter[fighter_index].sts[S_SHIELD] == 0 &&
 						fighter[fighter_index].sts[S_RESIST] == 0)
 					{
@@ -521,7 +520,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 			case M_DOOM:
 				aux = 0;
 				for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
-					if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+					if (fighter[fighter_index].IsAlive() &&
 						fighter[fighter_index].hp >= fighter[fighter_index].mhp / 3)
 					{
 						aux++;
@@ -564,7 +563,7 @@ int KEnemy::StatsCheck(int ws, int s)
 	{
 		for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 		{
-			if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+			if (fighter[fighter_index].IsAlive() &&
 				fighter[fighter_index].sts[ws] == 0)
 			{
 				fighter_affected++;
@@ -579,7 +578,7 @@ int KEnemy::StatsCheck(int ws, int s)
 	{
 		for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 		{
-			if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+			if (fighter[fighter_index].IsAlive() &&
 				fighter[fighter_index].sts[ws] == 0)
 			{
 				fighter_affected++;
@@ -922,7 +921,7 @@ int KEnemy::SpellSetup(int whom, int z)
 			aux = 0;
 			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 			{
-				if (fighter[fighter_index].sts[S_DEAD] == 0 &&
+				if (fighter[fighter_index].IsAlive() &&
 					fighter[fighter_index].hp < fighter[fighter_index].mhp * 75 / 100)
 				{
 					aux++;

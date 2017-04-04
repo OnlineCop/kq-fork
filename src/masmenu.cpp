@@ -431,7 +431,7 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 	switch (spell_number)
 	{
 	case M_RESTORE:
-		if (party[victim_figher_index].sts[S_POISON] == 0 &&
+		if (!party[victim_figher_index].IsPoisoned() &&
 			party[victim_figher_index].sts[S_BLIND] == 0)
 		{
 			return 0;
@@ -446,14 +446,14 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 				affected_targets++;
 			}
 		}
-		if (affected_targets == 0 || party[victim_figher_index].sts[S_DEAD] != 0)
+		if (affected_targets == 0 || party[victim_figher_index].IsDead())
 		{
 			return 0;
 		}
 		break;
 	case M_LIFE:
 	case M_FULLLIFE:
-		if (party[victim_figher_index].sts[S_DEAD] == 0)
+		if (party[victim_figher_index].IsAlive())
 		{
 			return 0;
 		}
@@ -469,7 +469,7 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 			{
 				if (party[pidx[figher_index]].hp == party[pidx[figher_index]].mhp ||
 					party[pidx[figher_index]].sts[S_STONE] != 0 ||
-					party[pidx[figher_index]].sts[S_DEAD] != 0)
+					party[pidx[figher_index]].IsDead())
 				{
 					affected_targets++;
 				}
