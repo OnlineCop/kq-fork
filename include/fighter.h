@@ -16,15 +16,19 @@ public:
 	KFighter();
 	KFighter(const s_player &inPlayer);
 
+	// S_POISON
+	bool IsPoisoned() const;
+	void SetPoisoned(int HowLongEffectShouldLast);
+	int GetRemainingPoison() const;
+
+	// S_BLIND
+	bool IsBlind() const;
+	void SetBlind(bool bIsBlind);
+
 	// Death
 	bool IsDead() const;
 	bool IsAlive() const;
 	void SetAlive(bool bIsAlive);
-
-	// Poison
-	bool IsPoisoned() const;
-	void SetPoisoned(int HowLongEffectShouldLast);
-	int GetRemainingPoison() const;
 
 	char name[25];          /*!<\brief Name */
 	int xp;                 /*!<\brief eXperience Points */
@@ -88,3 +92,5 @@ public:
 	int imb[2];
 	Raster *img;
 };
+
+extern KFighter Fighter;

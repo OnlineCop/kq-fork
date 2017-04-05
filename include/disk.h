@@ -24,6 +24,7 @@
 #include "entity.h"
 #include "maps.h"
 #include "fighter.h"
+#include "player.h"
 #include "sgame.h"
 #include "structs.h"
 

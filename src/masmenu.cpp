@@ -31,6 +31,7 @@
 #include "magic.h"
 #include "masmenu.h"
 #include "menu.h"
+#include "player.h"
 #include "res.h"
 #include "selector.h"
 #include "setup.h"
@@ -432,7 +433,7 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 	{
 	case M_RESTORE:
 		if (!party[victim_figher_index].IsPoisoned() &&
-			party[victim_figher_index].sts[S_BLIND] == 0)
+			!party[victim_figher_index].IsBlind())
 		{
 			return 0;
 		}

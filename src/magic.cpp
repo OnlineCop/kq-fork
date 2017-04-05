@@ -219,9 +219,9 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 	{
 	case M_BLIND:
 		if (non_dmg_save(target_fighter_index, sp_hit) == 0 &&
-			fighter[target_fighter_index].sts[S_BLIND] == 0)
+			!fighter[target_fighter_index].IsBlind())
 		{
-			fighter[target_fighter_index].sts[S_BLIND] = 1;
+			fighter[target_fighter_index].SetBlind(true);
 		}
 		else
 		{
@@ -1205,7 +1205,7 @@ void KMagic::heal_one_ally(size_t caster_fighter_index, size_t target_fighter_in
 		if (fighter[target_fighter_index].IsAlive())
 		{
 			fighter[target_fighter_index].SetPoisoned(0);
-			fighter[target_fighter_index].sts[S_BLIND] = 0;
+			fighter[target_fighter_index].SetBlind(false);
 		}
 		break;
 	case M_RECOVERY:
@@ -1748,7 +1748,7 @@ KFighter KMagic::status_adjust(size_t fighter_index)
 		tf.stats[A_HIT] = tf.stats[A_HIT] * 2;
 		tf.stats[A_EVD] = tf.stats[A_EVD] * 2;
 	}
-	if (tf.sts[S_BLIND] > 0)
+	if (tf.IsBlind())
 	{
 		tf.stats[A_HIT] /= 4;
 		if (tf.stats[A_HIT] < 1)

@@ -128,6 +128,7 @@
     <ClCompile Include="src\menu.cpp" />
     <ClCompile Include="src\movement.cpp" />
     <ClCompile Include="src\music.cpp" />
+    <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\random.cpp" />
     <ClCompile Include="src\res.cpp" />
     <ClCompile Include="src\selector.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="include\mpcx.h" />
     <ClInclude Include="include\music.h" />
     <ClInclude Include="include\platform.h" />
+    <ClInclude Include="include\player.h" />
     <ClInclude Include="include\res.h" />
     <ClInclude Include="include\selector.h" />
     <ClInclude Include="include\setup.h" />

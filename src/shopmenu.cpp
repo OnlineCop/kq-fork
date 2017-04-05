@@ -478,7 +478,7 @@ void inn(const char *iname, uint32_t gold_per_character, int pay)
 		{
 			total_gold_cost += gold_per_character / 2;
 		}
-		if (party[pidx_index].sts[S_BLIND] != 0)
+		if (party[pidx_index].IsBlind())
 		{
 			total_gold_cost += gold_per_character / 2;
 		}

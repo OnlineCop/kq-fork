@@ -88,6 +88,9 @@
     <ClCompile Include="src\fighter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\heroc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -127,6 +130,12 @@
     <ClCompile Include="src\music.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\random.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\res.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -149,12 +158,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\win.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\random.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -213,6 +216,9 @@
     <ClInclude Include="include\gettext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\gfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\heroc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -267,6 +273,9 @@
     <ClInclude Include="include\platform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\res.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -304,9 +313,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\zone.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\gfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

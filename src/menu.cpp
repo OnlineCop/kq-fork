@@ -24,6 +24,7 @@
 #include "constants.h"
 #include "draw.h"
 #include "eqpmenu.h"
+#include "fighter.h"
 #include "gfx.h"
 #include "heroc.h"
 #include "input.h"
@@ -33,6 +34,7 @@
 #include "kq.h"
 #include "masmenu.h"
 #include "menu.h"
+#include "player.h"
 #include "random.h"
 #include "res.h"
 #include "selector.h"
@@ -479,7 +481,7 @@ void KMenu::revert_equipstats(void)
 			party[pidx_index].sts[stats_index] = 0;
 		}
 		party[pidx_index].SetPoisoned(fighter[fighter_index].GetRemainingPoison());
-		party[pidx_index].sts[S_BLIND] = fighter[fighter_index].sts[S_BLIND];
+		party[pidx_index].SetBlind(fighter[fighter_index].IsBlind());
 		party[pidx_index].sts[S_MUTE] = fighter[fighter_index].sts[S_MUTE];
 		party[pidx_index].SetAlive(fighter[fighter_index].IsAlive());
 		for (stats_index = 0; stats_index < 12; stats_index++)

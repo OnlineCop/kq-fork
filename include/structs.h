@@ -30,6 +30,7 @@
 #include "bounds.h"
 #include "enums.h"
 #include "markers.h"
+#include "player.h"
 #include "res.h"
 class Raster;
 
@@ -101,66 +102,6 @@ struct s_progress
 {
 	uint32_t num_progress; /*!< Number of current progress */
 	char name[18];         /*!< Name of current progress */
-};
-
-/*! \brief Player */
-struct s_player
-{
-	bool IsDead() const
-	{
-		return (sts[S_DEAD] != 0);
-	}
-
-	bool IsAlive() const
-	{
-		return (sts[S_DEAD] == 0);
-	}
-
-	void SetAlive(bool bIsAlive)
-	{
-		sts[S_DEAD] = (bIsAlive ? 0 : 1);
-	}
-
-	bool IsPoisoned() const
-	{
-		return (sts[S_POISON] > 0);
-	}
-
-	void SetPoisoned(int HowLongEffectShouldLast)
-	{
-		if (HowLongEffectShouldLast < 0)
-		{
-			HowLongEffectShouldLast = 0;
-		}
-		sts[S_POISON] = HowLongEffectShouldLast;
-	}
-
-	int GetRemainingPoison() const
-	{
-		return sts[S_POISON];
-	}
-
-	char name[9]; /*!< Entity name */
-	int xp;       /*!< Entity experience */
-	int next;     /*!< Experience needed for level-up */
-	int lvl;      /*!< Entity's level */
-	int mrp;      /*!< Magic use rate (0-100) */
-	int hp;       /*!< Hit points */
-	int mhp;      /*!< Maximum hit points */
-	int mp;       /*!< Magic points */
-	int mmp;      /*!< Maximum magic points */
-	int stats[NUM_STATS];
-	char res[NUM_RES];           /*!< eResistance: See R_* constants */
-	uint8_t sts[NUM_SPELLTYPES]; /*!< eSpellType */
-	uint8_t eqp[NUM_EQUIPMENT];  /*!< eEquipment: Weapons, armor, etc. equipped */
-	uint8_t spells[NUM_SPELLS];  /*!< Known spells */
-								 /*! \brief Level up information
-								 * * Item 0, 1 - used to calculate the XP you need for the next level
-								 * * Item 2 - Boost to your HP/MHP
-								 * * Item 3 - Boost to your MP/MMP
-								 * * Items 4..16 - Actually used by player2fighter to adjust your base stats to the level you're on.
-								 */
-	unsigned short lup[NUM_LUP];
 };
 
 /*! \brief Hero information

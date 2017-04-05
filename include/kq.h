@@ -61,6 +61,7 @@ using std::string;
 #include "fighter.h"
 #include "heroc.h"
 #include "maps.h"
+#include "player.h"
 #include "structs.h"
 
 class Raster;
@@ -406,7 +407,6 @@ extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, cpu_usage
 extern bool should_stretch_view;
 extern uint16_t tilex[MAX_TILES], adelay[MAX_ANIM];
 extern char *strbuf, *savedir;
-extern s_player party[MAXCHRS];
 extern s_heroinfo players[MAXCHRS];
 extern KFighter fighter[NUM_FIGHTERS];
 extern KFighter tempa, tempd;

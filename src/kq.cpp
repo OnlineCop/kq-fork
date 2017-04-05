@@ -170,13 +170,6 @@ uint16_t adelay[MAX_ANIM];
 /*! Temporary buffer for string operations (used everywhere!) */
 char *strbuf = NULL;
 
-/*! Characters in play. The pidx[] array references this for the heroes actually
- * on screen, e.g. party[pidx[0]] is the 'lead' character,
- * party[pidx[1]] is the follower, if there are 2 in the party.
- * We need to store all of them, because heroes join and leave during the game.
- */
-s_player party[MAXCHRS];
-
 /*! Initial character data
  *
  * \note 23: Self explanatory. This would all correspond to the s_player
