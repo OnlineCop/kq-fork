@@ -74,11 +74,37 @@ void KFighter::AddCharm(signed int AmountOfEffectToAdd)
 	}
 }
 
-//bool KFighter::IsStopped() const
-//{
-//	bool isStopped = (sts[S_STOP])
-//	return false;
-//}
+bool KFighter::IsStopped() const
+{
+	bool isStopped = (sts[S_STOP] > 0);
+	return isStopped;
+}
+
+void KFighter::SetStopped(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_STOP] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingStop() const
+{
+	return sts[S_STOP];
+}
+
+void KFighter::AddStopped(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_STOP] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_STOP] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_STOP] = 0;
+	}
+}
 
 bool KFighter::IsDead() const
 {

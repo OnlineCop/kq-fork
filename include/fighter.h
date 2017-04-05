@@ -31,11 +31,11 @@ public:
 	uint8_t GetRemainingCharm() const;
 	void AddCharm(signed int AmountOfEffectToAdd);
 
-	//// S_STOP
-	//bool IsStopped() const;
-	//void SetStopped(bool bIsStopped);
-	//uint8_t GetRemainingStop() const;
-	//void AddStopped(signed int AmountOfEffectToAdd);
+	// S_STOP
+	bool IsStopped() const;
+	void SetStopped(int HowLongEffectShouldLast);
+	uint8_t GetRemainingStop() const;
+	void AddStopped(signed int AmountOfEffectToAdd);
 
 	//// S_STONE
 	//bool IsStone() const;

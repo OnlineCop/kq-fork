@@ -297,9 +297,9 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		break;
 	case M_HOLD:
 		if (non_dmg_save(target_fighter_index, sp_hit) == 0 &&
-			fighter[target_fighter_index].sts[S_STOP] == 0)
+			!fighter[target_fighter_index].IsStopped())
 		{
-			fighter[target_fighter_index].sts[S_STOP] = kqrandom->random_range_exclusive(2, 5);
+			fighter[target_fighter_index].SetStopped(kqrandom->random_range_exclusive(2, 5));
 		}
 		else
 		{
@@ -1761,7 +1761,7 @@ KFighter KMagic::status_adjust(size_t fighter_index)
 			tf.stats[A_EVD] = 1;
 		}
 	}
-	if (tf.sts[S_SLEEP] > 0 || tf.sts[S_STOP] > 0)
+	if (tf.sts[S_SLEEP] > 0 || tf.IsStopped())
 	{
 		tf.stats[A_EVD] = 0;
 	}

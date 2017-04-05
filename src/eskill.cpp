@@ -232,7 +232,7 @@ void combat_skill(size_t fighter_index)
 				Magic.non_dmg_save(target_fighter_index, 65) == 0 &&
 				fighter[target_fighter_index].sts[S_STONE] == 0)
 			{
-				fighter[target_fighter_index].sts[S_STOP] = kqrandom->random_range_exclusive(2, 4);
+				fighter[target_fighter_index].SetStopped(kqrandom->random_range_exclusive(2, 4));
 				ta[target_fighter_index] = NODISPLAY;
 			}
 			else
@@ -273,7 +273,7 @@ void combat_skill(size_t fighter_index)
 		display_attack_string = 0;
 		if (Magic.non_dmg_save(tgt, 80) == 0 && ta[tgt] != MISS)
 		{
-			fighter[tgt].sts[S_STOP] = 2;
+			fighter[tgt].SetStopped(2);
 		}
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 4;
 		break;

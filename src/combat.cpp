@@ -799,7 +799,7 @@ static void do_round(void)
 					}
 
 					/*  RB: the character is stopped?  */
-					if (fighter[fighter_index].sts[S_STOP] > 0)
+					if (fighter[fighter_index].IsStopped())
 					{
 						if (pidx[fighter_index] == TEMMIN)
 						{
@@ -808,7 +808,7 @@ static void do_round(void)
 
 						if (rcount == 0)
 						{
-							fighter[fighter_index].sts[S_STOP]--;
+							fighter[fighter_index].AddStopped(-1);
 						}
 
 						cact[fighter_index] = 0;
