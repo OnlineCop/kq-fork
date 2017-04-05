@@ -100,7 +100,7 @@ void KEnemy::Attack(size_t target_fighter_index)
 
 	if (fighter[target_fighter_index].hp <
 		(fighter[target_fighter_index].mhp / 5) &&
-		fighter[target_fighter_index].sts[S_CHARM] == 0)
+		!fighter[target_fighter_index].IsCharmed())
 	{
 		if (kqrandom->random_range_exclusive(0, 4) == 0)
 		{
@@ -109,7 +109,7 @@ void KEnemy::Attack(size_t target_fighter_index)
 			return;
 		}
 	}
-	if (fighter[target_fighter_index].sts[S_CHARM] == 0)
+	if (!fighter[target_fighter_index].IsCharmed())
 	{
 		b = auto_select_hero(target_fighter_index, NO_STS_CHECK);
 	}

@@ -599,11 +599,11 @@ static void do_action(size_t fighter_index)
 		}
 	}
 
-	spell_type_status = fighter[fighter_index].sts[S_CHARM];
+	spell_type_status = fighter[fighter_index].GetRemainingCharm();
 	if (spell_type_status > 0)
 	{
-		fighter[fighter_index].sts[S_CHARM]--;
-		spell_type_status = fighter[fighter_index].sts[S_CHARM];
+		fighter[fighter_index].AddCharm(-1);
+		spell_type_status = fighter[fighter_index].GetRemainingCharm();
 
 		if (fighter_index < PSIZE)
 		{
@@ -1158,10 +1158,10 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 			fighter[defend_fighter_index].sts[S_SLEEP] = 0;
 		}
 
-		if ((fighter[defend_fighter_index].sts[S_CHARM] > 0) &&
+		if ((fighter[defend_fighter_index].IsCharmed()) &&
 			(attack_fighter_index == defend_fighter_index))
 		{
-			fighter[defend_fighter_index].sts[S_CHARM] = 0;
+			fighter[defend_fighter_index].SetCharmed(0);
 		}
 
 		return 1;
@@ -1509,10 +1509,10 @@ void multi_fight(size_t attack_fighter_index)
 			}
 
 			/*  RB: if charmed, a good hit wakes him/her up  */
-			if (fighter[fighter_index].sts[S_CHARM] > 0 && ta[fighter_index] > 0 &&
+			if (fighter[fighter_index].IsCharmed() && ta[fighter_index] > 0 &&
 				attack_fighter_index == fighter_index)
 			{
-				fighter[fighter_index].sts[S_CHARM] = 0;
+				fighter[fighter_index].SetCharmed(0);
 			}
 		}
 	}

@@ -230,9 +230,9 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		break;
 	case M_CONFUSE:
 		if (non_dmg_save(target_fighter_index, sp_hit) == 0 &&
-			fighter[target_fighter_index].sts[S_CHARM] == 0)
+			!fighter[target_fighter_index].IsCharmed())
 		{
-			fighter[target_fighter_index].sts[S_CHARM] = kqrandom->random_range_exclusive(3, 6);
+			fighter[target_fighter_index].SetCharmed(kqrandom->random_range_exclusive(3, 6));
 		}
 		else
 		{

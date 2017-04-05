@@ -690,7 +690,7 @@ static int hero_attack(int whom)
 {
 	int tgt;
 
-	if (fighter[whom].sts[S_CHARM] == 0)
+	if (!fighter[whom].IsCharmed())
 	{
 		tgt = select_enemy(whom, TGT_ENEMY_ONE);
 	}

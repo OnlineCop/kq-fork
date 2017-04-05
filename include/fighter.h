@@ -25,10 +25,76 @@ public:
 	bool IsBlind() const;
 	void SetBlind(bool bIsBlind);
 
-	// Death
+	// S_CHARM
+	bool IsCharmed() const;
+	void SetCharmed(int HowLongEffectShouldLast);
+	uint8_t GetRemainingCharm() const;
+	void AddCharm(signed int AmountOfEffectToAdd);
+
+	//// S_STOP
+	//bool IsStopped() const;
+	//void SetStopped(bool bIsStopped);
+	//uint8_t GetRemainingStop() const;
+	//void AddStopped(signed int AmountOfEffectToAdd);
+
+	//// S_STONE
+	//bool IsStone() const;
+	//void SetStone(bool bIsStone);
+
+	//// S_MUTE
+	//bool IsMute() const;
+	//void SetMute(bool bIsMute);
+
+	//// S_SLEEP
+	//bool IsAsleep() const;
+	//void SetAsleep(bool bIsAsleep);
+
+	// S_DEAD
 	bool IsDead() const;
 	bool IsAlive() const;
 	void SetAlive(bool bIsAlive);
+	void SetDead(bool bIsDead);
+
+	//// S_MALISON
+	//bool IsMalison() const;
+	//void SetMalison(bool bIsMalison);
+
+	//// S_RESIST
+	//bool IsResist() const;
+	//void SetResist(bool bIsResist);
+
+	//// S_TIME
+	//bool IsTime() const;
+	//void SetTime(bool bIsTime);
+
+	//// S_SHIELD
+	//bool IsShield() const;
+	//void SetShield(bool bIsShield);
+
+	//// S_BLESS
+	//bool IsBlessed() const;
+	//void SetBlessed(bool bIsBlessed);
+
+	//// S_STRENGTH
+	//bool IsStrength() const;
+	//void SetStrength(bool bIsStrength);
+
+	//// S_ETHER
+	//bool IsEther() const;
+	//void SetEther(bool bIsEther);
+
+	//// S_TRUESHOT
+	//bool IsTrueshot() const;
+	//void SetTrueshot(bool bIsTrueshot);
+
+	//// S_REGEN
+	//bool IsRegen() const;
+	//void SetRegen(bool bIsRegen);
+
+	//// S_INFUSE
+	//bool IsInfused() const;
+	//void SetInfused(bool bIsInfused);
+
 
 	char name[25];          /*!<\brief Name */
 	int xp;                 /*!<\brief eXperience Points */

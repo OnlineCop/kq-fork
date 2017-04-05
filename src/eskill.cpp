@@ -289,7 +289,7 @@ void combat_skill(size_t fighter_index)
 					Magic.non_dmg_save(target_fighter_index, 65) == 0 &&
 					fighter[target_fighter_index].sts[S_STONE] == 0)
 				{
-					fighter[target_fighter_index].sts[S_CHARM] = kqrandom->random_range_exclusive(2, 4);
+					fighter[target_fighter_index].SetCharmed(kqrandom->random_range_exclusive(2, 4));
 					ta[target_fighter_index] = NODISPLAY;
 				}
 				else
