@@ -240,3 +240,35 @@ void KFighter::AddMalison(signed int AmountOfEffectToAdd)
 		sts[S_MALISON] = 0;
 	}
 }
+
+bool KFighter::IsResist() const
+{
+	bool isResist = (sts[S_RESIST] > 0);
+	return isResist;
+}
+
+void KFighter::SetResist(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_RESIST] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingResist() const
+{
+	return sts[S_RESIST];
+}
+
+void KFighter::AddResist(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_RESIST] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_RESIST] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_RESIST] = 0;
+	}
+}

@@ -453,7 +453,7 @@ void draw_hugesprite(size_t target_fighter_index, int hx, int hy,
 		{
 			if (is_active(fighter_index) == 1)
 			{
-				if (shows == 1 && fighter[fighter_index].sts[S_RESIST] > 0)
+				if (shows == 1 && fighter[fighter_index].IsResist())
 				{
 					draw_trans_sprite(
 						double_buffer, b_shell,
@@ -550,7 +550,7 @@ void draw_spellsprite(size_t target_fighter_index, int multiple_target,
 					break;
 				}
 				draw_fighter(fighter_index, 0);
-				if (shows == 1 && fighter[fighter_index].sts[S_RESIST] > 0)
+				if (shows == 1 && fighter[fighter_index].IsResist())
 				{
 					draw_trans_sprite(
 						double_buffer, b_shell,

@@ -66,9 +66,11 @@ public:
 	uint8_t GetRemainingMalison() const;
 	void AddMalison(signed int AmountOfEffectToAdd);
 
-	//// S_RESIST
-	//bool IsResist() const;
-	//void SetResist(bool bIsResist);
+	// S_RESIST
+	bool IsResist() const;
+	void SetResist(int HowLongEffectShouldLast);
+	uint8_t GetRemainingResist() const;
+	void AddResist(signed int AmountOfEffectToAdd);
 
 	//// S_TIME
 	//bool IsTime() const;

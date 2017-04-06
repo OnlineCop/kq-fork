@@ -260,9 +260,9 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		if (non_dmg_save(target_fighter_index, sp_hit) == 0)
 		{
 			r = 0;
-			if (fighter[target_fighter_index].sts[S_RESIST] > 0)
+			if (fighter[target_fighter_index].IsResist())
 			{
-				fighter[target_fighter_index].sts[S_RESIST] = 0;
+				fighter[target_fighter_index].SetResist(0);
 				r++;
 			}
 			if (fighter[target_fighter_index].sts[S_TIME] > 1)
@@ -921,15 +921,15 @@ int KMagic::do_shell_check(int tgt, int amt)
 {
 	int a = 0;
 
-	if (fighter[tgt].sts[S_RESIST] == 0)
+	if (!fighter[tgt].IsResist())
 	{
 		return amt;
 	}
-	if (fighter[tgt].sts[S_RESIST] == 1)
+	if (fighter[tgt].GetRemainingResist() == 1)
 	{
 		a = amt * 75 / 100;
 	}
-	if (fighter[tgt].sts[S_RESIST] == 2)
+	if (fighter[tgt].GetRemainingResist() == 2)
 	{
 		a = amt * 5 / 10;
 	}
@@ -1036,15 +1036,15 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 		{
 			if (fighter[fighter_index].sts[S_SHIELD] < 2 ||
-				fighter[fighter_index].sts[S_RESIST] < 2)
+				fighter[fighter_index].GetRemainingResist() < 2)
 			{
 				if (fighter[fighter_index].sts[S_SHIELD] < 2)
 				{
 					fighter[fighter_index].sts[S_SHIELD] = 2;
 				}
-				if (fighter[fighter_index].sts[S_RESIST] < 2)
+				if (fighter[fighter_index].GetRemainingResist() < 2)
 				{
-					fighter[fighter_index].sts[S_RESIST] = 2;
+					fighter[fighter_index].SetResist(2);
 				}
 			}
 			else
@@ -1136,9 +1136,9 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		break;
 	case M_SHELL:
-		if (fighter[target_fighter_index].sts[S_RESIST] == 0)
+		if (!fighter[target_fighter_index].IsResist())
 		{
-			fighter[target_fighter_index].sts[S_RESIST] = 1;
+			fighter[target_fighter_index].SetResist(1);
 		}
 		else
 		{
@@ -1146,9 +1146,9 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		break;
 	case M_WALL:
-		if (fighter[target_fighter_index].sts[S_RESIST] != 2)
+		if (fighter[target_fighter_index].GetRemainingResist() != 2)
 		{
-			fighter[target_fighter_index].sts[S_RESIST] = 2;
+			fighter[target_fighter_index].SetResist(2);
 		}
 		else
 		{
