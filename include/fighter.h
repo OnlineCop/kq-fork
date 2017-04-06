@@ -112,7 +112,11 @@ public:
 	uint8_t GetRemainingRegen() const;
 	void AddRegen(signed int AmountOfEffectToAdd);
 
-	//// S_INFUSE
+	// S_INFUSE
+	bool IsInfuse() const;
+	void SetInfuse(int HowLongEffectShouldLast);
+	uint8_t GetRemainingInfuse() const;
+	void AddInfuse(signed int AmountOfEffectToAdd);
 
 	char name[25];          /*!<\brief Name */
 	int xp;                 /*!<\brief eXperience Points */

@@ -475,3 +475,35 @@ void KFighter::AddRegen(signed int AmountOfEffectToAdd)
 		sts[S_REGEN] = 0;
 	}
 }
+
+bool KFighter::IsInfuse() const
+{
+	bool isInfuse = (sts[S_INFUSE] > 0);
+	return isInfuse;
+}
+
+void KFighter::SetInfuse(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_INFUSE] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingInfuse() const
+{
+	return sts[S_INFUSE];
+}
+
+void KFighter::AddInfuse(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_INFUSE] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_INFUSE] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_INFUSE] = 0;
+	}
+}

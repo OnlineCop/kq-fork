@@ -649,8 +649,7 @@ int skill_use(size_t attack_fighter_index)
 			return 0;
 		}
 		display_attack_string = 0;
-		fighter[attack_fighter_index].sts[S_INFUSE] =
-			magic[fighter[attack_fighter_index].csmem].elem;
+		fighter[attack_fighter_index].SetInfuse(magic[fighter[attack_fighter_index].csmem].elem);
 		break;
 
 	case AJATHAR:
