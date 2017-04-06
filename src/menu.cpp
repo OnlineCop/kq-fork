@@ -482,7 +482,7 @@ void KMenu::revert_equipstats(void)
 		}
 		party[pidx_index].SetPoisoned(fighter[fighter_index].GetRemainingPoison());
 		party[pidx_index].SetBlind(fighter[fighter_index].IsBlind());
-		party[pidx_index].sts[S_MUTE] = fighter[fighter_index].sts[S_MUTE];
+		party[pidx_index].SetMute(fighter[fighter_index].IsMute());
 		party[pidx_index].SetAlive(fighter[fighter_index].IsAlive());
 		for (stats_index = 0; stats_index < 12; stats_index++)
 		{

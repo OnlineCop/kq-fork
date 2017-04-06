@@ -142,7 +142,7 @@ void combat_skill(size_t fighter_index)
 				if (Magic.res_throw(target_fighter_index, R_PETRIFY) == 0 &&
 					Magic.non_dmg_save(target_fighter_index, 75) == 0)
 				{
-					fighter[target_fighter_index].sts[S_STONE] = kqrandom->random_range_exclusive(2, 5);
+					fighter[target_fighter_index].SetStone(kqrandom->random_range_exclusive(2, 5));
 					ta[target_fighter_index] = NODISPLAY;
 				}
 				else
@@ -176,7 +176,7 @@ void combat_skill(size_t fighter_index)
 			if (Magic.res_throw(target_fighter_index, R_TIME) == 0)
 			{
 				if (Magic.non_dmg_save(target_fighter_index, 75) == 0 &&
-					fighter[target_fighter_index].sts[S_STONE] == 0)
+					!fighter[target_fighter_index].IsStone())
 				{
 					if (fighter[target_fighter_index].sts[S_TIME] == 2)
 					{
@@ -230,7 +230,7 @@ void combat_skill(size_t fighter_index)
 		{
 			if (Magic.res_throw(target_fighter_index, S_STOP) == 0 &&
 				Magic.non_dmg_save(target_fighter_index, 65) == 0 &&
-				fighter[target_fighter_index].sts[S_STONE] == 0)
+				!fighter[target_fighter_index].IsStone())
 			{
 				fighter[target_fighter_index].SetStopped(kqrandom->random_range_exclusive(2, 4));
 				ta[target_fighter_index] = NODISPLAY;
@@ -283,11 +283,11 @@ void combat_skill(size_t fighter_index)
 		affected_targets = 0;
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
-			if (fighter[fighter_index].sts[S_MUTE] == 0)
+			if (!fighter[fighter_index].IsMute())
 			{
 				if (Magic.res_throw(target_fighter_index, S_CHARM) == 0 &&
 					Magic.non_dmg_save(target_fighter_index, 65) == 0 &&
-					fighter[target_fighter_index].sts[S_STONE] == 0)
+					!fighter[target_fighter_index].IsStone())
 				{
 					fighter[target_fighter_index].SetCharmed(kqrandom->random_range_exclusive(2, 4));
 					ta[target_fighter_index] = NODISPLAY;

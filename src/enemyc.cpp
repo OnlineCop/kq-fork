@@ -158,7 +158,7 @@ bool KEnemy::CanCast(size_t target_fighter_index, size_t spell_to_cast)
 	uint32_t z = 0;
 
 	/* Enemy is mute; cannot cast the spell */
-	if (fighter[target_fighter_index].sts[S_MUTE] != 0)
+	if (fighter[target_fighter_index].IsMute())
 	{
 		return 0;
 	}
@@ -244,7 +244,7 @@ void KEnemy::ChooseAction(size_t fighter_index)
 	fighter[fighter_index].defend = 0;
 	fighter[fighter_index].facing = 1;
 	if (fighter[fighter_index].hp < fighter[fighter_index].mhp * 2 / 3 &&
-		kqrandom->random_range_exclusive(0, 100) < 50 && fighter[fighter_index].sts[S_MUTE] == 0)
+		kqrandom->random_range_exclusive(0, 100) < 50 && !fighter[fighter_index].IsMute())
 	{
 		CureCheck(fighter_index);
 		if (cact[fighter_index] == 0)
@@ -273,7 +273,7 @@ void KEnemy::ChooseAction(size_t fighter_index)
 			}
 			if (fighter[fighter_index].ai[a] >= 1 &&
 				fighter[fighter_index].ai[a] <= 99 &&
-				fighter[fighter_index].sts[S_MUTE] == 0)
+				!fighter[fighter_index].IsMute())
 			{
 				SpellCheck(fighter_index, a);
 				if (cact[fighter_index] == 0)

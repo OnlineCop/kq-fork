@@ -831,7 +831,7 @@ static void do_round(void)
 					}
 
 					/*  RB: the character is petrified?  */
-					if (fighter[fighter_index].sts[S_STONE] > 0)
+					if (fighter[fighter_index].IsStone())
 					{
 						if (pidx[fighter_index] == TEMMIN)
 						{
@@ -840,7 +840,7 @@ static void do_round(void)
 
 						if (rcount == 0)
 						{
-							fighter[fighter_index].sts[S_STONE]--;
+							fighter[fighter_index].AddStone(-1);
 						}
 
 						cact[fighter_index] = 0;
@@ -939,7 +939,7 @@ void draw_fighter(size_t fighter_index, size_t dcur)
 
 	ff = (!fr->aframe) ? fr->facing : fr->aframe;
 
-	if (fr->sts[S_STONE] > 0)
+	if (fr->IsStone())
 	{
 		// Green, for sickness
 		Draw.convert_cframes(fighter_index, 2, 12, 0);
@@ -1245,7 +1245,7 @@ static void heroes_win(void)
 	kq_wait(250);
 	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 	{
-		if (fighter[fighter_index].sts[S_STONE] == 0 &&
+		if (!fighter[fighter_index].IsStone() &&
 			fighter[fighter_index].IsAlive())
 		{
 			nc++;
@@ -1324,7 +1324,7 @@ static void heroes_win(void)
 	nr = 0;
 	for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
 	{
-		if (party[pidx[pidx_index]].sts[S_STONE] == 0 &&
+		if (!party[pidx[pidx_index]].IsStone() &&
 			party[pidx[pidx_index]].IsAlive())
 		{
 			b = pidx_index * 160;
@@ -1380,7 +1380,7 @@ static void heroes_win(void)
 	Draw.blit2screen(0, 0);
 	for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
 	{
-		if (party[pidx[pidx_index]].sts[S_STONE] == 0 &&
+		if (!party[pidx[pidx_index]].IsStone() &&
 			party[pidx[pidx_index]].IsAlive())
 		{
 			ent += learn_new_spells(pidx[pidx_index]);

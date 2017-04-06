@@ -90,7 +90,7 @@ int hero_skillcheck(size_t fighter_index)
 		for (target_fighter_index = PSIZE; target_fighter_index < PSIZE + num_enemies; target_fighter_index++)
 		{
 			if (fighter[target_fighter_index].IsAlive() &&
-				fighter[target_fighter_index].sts[S_STONE] == 0)
+				!fighter[target_fighter_index].IsStone())
 			{
 				can_be_affected++;
 			}
@@ -106,7 +106,7 @@ int hero_skillcheck(size_t fighter_index)
 		break;
 
 	case CORIN:
-		if (fighter[fighter_index].sts[S_MUTE] > 0)
+		if (fighter[fighter_index].IsMute())
 		{
 			return 0;
 		}
@@ -129,14 +129,14 @@ int hero_skillcheck(size_t fighter_index)
 			return 0;
 		}
 	case AJATHAR:
-		if (fighter[fighter_index].sts[S_MUTE] > 0)
+		if (fighter[fighter_index].IsMute())
 		{
 			return 0;
 		}
 		for (target_fighter_index = PSIZE; target_fighter_index < PSIZE + num_enemies; target_fighter_index++)
 		{
 			if (fighter[target_fighter_index].IsAlive() &&
-				fighter[target_fighter_index].sts[S_STONE] == 0 &&
+				!fighter[target_fighter_index].IsStone() &&
 				fighter[target_fighter_index].unl > 0)
 			{
 				can_be_affected++;
@@ -154,7 +154,7 @@ int hero_skillcheck(size_t fighter_index)
 		break;
 
 	case CASANDRA:
-		if (fighter[fighter_index].sts[S_MUTE] > 0)
+		if (fighter[fighter_index].IsMute())
 		{
 			return 0;
 		}
@@ -740,7 +740,7 @@ int skill_use(size_t attack_fighter_index)
 			display_attack_string = 0;
 			for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 			{
-				if (fighter[fighter_index].sts[S_STONE] == 0 &&
+				if (!fighter[fighter_index].IsStone() &&
 					fighter[fighter_index].IsAlive())
 				{
 					ta[fighter_index] = b;
@@ -750,7 +750,7 @@ int skill_use(size_t attack_fighter_index)
 			display_amount(0, FONT_YELLOW, 1);
 			for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 			{
-				if (fighter[fighter_index].sts[S_STONE] == 0 &&
+				if (!fighter[fighter_index].IsStone() &&
 					fighter[fighter_index].IsAlive())
 				{
 					Magic.adjust_hp(fighter_index, ta[fighter_index]);

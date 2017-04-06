@@ -141,7 +141,7 @@ void camp_spell_menu(int c)
 	int pg[2] = { 0, 0 };
 	int ptr[2] = { 0, 0 };
 
-	if (party[pidx[c]].sts[S_MUTE] > 0)
+	if (party[pidx[c]]->IsMute())
 	{
 		play_effect(SND_BAD, 128);
 		return;
@@ -469,7 +469,7 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 			for (figher_index = 0; figher_index < numchrs; figher_index++)
 			{
 				if (party[pidx[figher_index]].hp == party[pidx[figher_index]].mhp ||
-					party[pidx[figher_index]].sts[S_STONE] != 0 ||
+					party[pidx[figher_index]].IsStone() ||
 					party[pidx[figher_index]].IsDead())
 				{
 					affected_targets++;

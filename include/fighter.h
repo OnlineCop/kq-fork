@@ -37,13 +37,15 @@ public:
 	uint8_t GetRemainingStop() const;
 	void AddStopped(signed int AmountOfEffectToAdd);
 
-	//// S_STONE
-	//bool IsStone() const;
-	//void SetStone(bool bIsStone);
+	// S_STONE
+	bool IsStone() const;
+	void SetStone(int HowLongEffectShouldLast);
+	uint8_t GetRemainingStone() const;
+	void AddStone(signed int AmountOfEffectToAdd);
 
-	//// S_MUTE
-	//bool IsMute() const;
-	//void SetMute(bool bIsMute);
+	// S_MUTE
+	bool IsMute() const;
+	void SetMute(bool bIsMute);
 
 	//// S_SLEEP
 	//bool IsAsleep() const;

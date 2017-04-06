@@ -773,7 +773,7 @@ void hero_choose_action(size_t fighter_index)
 			chi[my] = C_SKILL;
 			my++;
 		}
-		if (fighter[fighter_index].sts[S_MUTE] == 0 &&
+		if (!fighter[fighter_index].IsMute() &&
 			available_spells(fighter_index) > 0)
 		{
 			strcpy(ca[my], _("Spell"));

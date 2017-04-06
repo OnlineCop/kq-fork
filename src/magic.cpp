@@ -122,7 +122,7 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 		{
 			if (res_throw(fighter_index, magic[spell_number].elem) == 0 &&
 				non_dmg_save(fighter_index, sp_hit) == 0 &&
-				fighter[fighter_index].sts[S_STONE] == 0)
+				!fighter[fighter_index].IsStone())
 			{
 				if (fighter[fighter_index].sts[S_TIME] == 2)
 				{
@@ -159,7 +159,7 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 		{
 			if (non_dmg_save(fighter_index, sp_hit) == 0 &&
 				fighter[fighter_index].sts[S_MALISON] == 0 &&
-				fighter[fighter_index].sts[S_STONE] == 0)
+				!fighter[fighter_index].IsStone())
 			{
 				fighter[fighter_index].sts[S_MALISON] = 2;
 				ta[fighter_index] = NODISPLAY;
@@ -176,7 +176,7 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 			if (res_throw(fighter_index, magic[spell_number].elem) == 0 &&
 				non_dmg_save(fighter_index, sp_hit) == 0 &&
 				fighter[fighter_index].sts[S_SLEEP] == 0 &&
-				fighter[fighter_index].sts[S_STONE] == 0)
+				!fighter[fighter_index].IsStone())
 			{
 				fighter[fighter_index].sts[S_SLEEP] = kqrandom->random_range_exclusive(4, 6);
 				ta[fighter_index] = NODISPLAY;
@@ -204,7 +204,7 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 	size_t stats_index;
 
 	ta[target_fighter_index] = NODISPLAY;
-	if (fighter[target_fighter_index].sts[S_STONE] > 0)
+	if (fighter[target_fighter_index].IsStone())
 	{
 		ta[target_fighter_index] = MISS;
 		return;
@@ -249,7 +249,7 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 					fighter[target_fighter_index].sts[stats_index] = 0;
 				}
 			}
-			fighter[target_fighter_index].sts[S_STONE] = kqrandom->random_range_exclusive(3, 6);
+			fighter[target_fighter_index].SetStone(kqrandom->random_range_exclusive(3, 6));
 		}
 		else
 		{
@@ -308,9 +308,9 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		break;
 	case M_SILENCE:
 		if (non_dmg_save(target_fighter_index, sp_hit) == 0 &&
-			fighter[target_fighter_index].sts[S_MUTE] == 0)
+			!fighter[target_fighter_index]..IsMute())
 		{
-			fighter[target_fighter_index].sts[S_MUTE] = 1;
+			fighter[target_fighter_index].SetMute(true);
 		}
 		else
 		{
@@ -818,7 +818,7 @@ void KMagic::cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spe
 	}
 	for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 	{
-		if (fighter[fighter_index].sts[S_STONE] == 0 &&
+		if (!fighter[fighter_index].IsStone() &&
 			fighter[fighter_index].IsAlive())
 		{
 			z++;
@@ -841,7 +841,7 @@ void KMagic::cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spe
 	 */
 	for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 	{
-		if (fighter[fighter_index].sts[S_STONE] == 0 &&
+		if (!fighter[fighter_index].IsStone() &&
 			fighter[fighter_index].IsAlive())
 		{
 			ta[fighter_index] = b;
@@ -1057,7 +1057,7 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 		{
 			if (fighter[fighter_index].sts[S_TIME] != 2 &&
-				fighter[fighter_index].sts[S_STONE] == 0)
+				!fighter[fighter_index].IsStone())
 			{
 				if (fighter[fighter_index].sts[S_TIME] == 1)
 				{
@@ -1475,7 +1475,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 				b = 0;
 			}
 			b = res_adjust(fighter_index, rune_type, b);
-			if (fighter[fighter_index].sts[S_STONE] > 0 && rune_type != R_BLACK &&
+			if (fighter[fighter_index].IsStone() && rune_type != R_BLACK &&
 				rune_type != R_WHITE && rune_type != R_EARTH &&
 				rune_type != R_WATER)
 			{
@@ -1673,7 +1673,7 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 				b = 0;
 			}
 			b = res_adjust(fighter_index, rt, b);
-			if (fighter[fighter_index].sts[S_STONE] > 0 && rt != R_BLACK &&
+			if (fighter[fighter_index].IsStone() && rt != R_BLACK &&
 				rt != R_WHITE && rt != R_EARTH && rt != R_WATER)
 			{
 				b = b / 10;
@@ -1765,7 +1765,7 @@ KFighter KMagic::status_adjust(size_t fighter_index)
 	{
 		tf.stats[A_EVD] = 0;
 	}
-	if (tf.sts[S_STONE] > 0)
+	if (tf.IsStone())
 	{
 		tf.stats[A_DEF] *= 2;
 		tf.stats[A_EVD] = 0;

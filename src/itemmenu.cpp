@@ -477,7 +477,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 	case I_NPOULTICE:
 	case I_KBREW:
 		if (fighter[fighter_index].IsDead() ||
-			fighter[fighter_index].sts[S_STONE] != 0)
+			fighter[fighter_index].IsStone())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
@@ -499,9 +499,9 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
-		if (fighter[fighter_index].sts[S_STONE] != 0)
+		if (fighter[fighter_index].IsStone())
 		{
-			fighter[fighter_index].sts[S_STONE] = 0;
+			fighter[fighter_index].SetStone(0);
 		}
 		else
 		{
@@ -570,7 +570,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		for (fighter_index = attack_fighter_index; fighter_index < attack_fighter_index + san; fighter_index++)
 		{
 			if (fighter[fighter_index].IsAlive() &&
-				fighter[fighter_index].sts[S_STONE] == 0)
+				!fighter[fighter_index].IsStone())
 			{
 				b = fighter[fighter_index].lvl * items[ti].stats[A_ATT];
 				tmp = kqrandom->random_range_exclusive(0, b) + b + 1;
@@ -631,7 +631,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
 		if (fighter[fighter_index].IsAlive() &&
-			fighter[fighter_index].sts[S_STONE] == 0)
+			!fighter[fighter_index].IsStone())
 		{
 			ta[fighter_index] = items[ti].stats[A_ATT];
 		}

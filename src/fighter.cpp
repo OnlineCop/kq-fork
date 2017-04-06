@@ -106,6 +106,49 @@ void KFighter::AddStopped(signed int AmountOfEffectToAdd)
 	}
 }
 
+bool KFighter::IsStone() const
+{
+	bool isStone = (sts[S_STONE] > 0);
+	return isStone;
+}
+
+void KFighter::SetStone(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_STONE] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingStone() const
+{
+	return sts[S_STONE];
+}
+
+void KFighter::AddStone(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_STONE] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_STONE] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_STONE] = 0;
+	}
+}
+
+bool KFighter::IsMute() const
+{
+	bool isMute = (sts[S_MUTE] != 0);
+	return isMute;
+}
+
+void KFighter::SetMute(bool bIsMute)
+{
+	sts[S_MUTE] = (bIsMute ? 1 : 0);
+}
+
 bool KFighter::IsDead() const
 {
 	bool isDead = (sts[S_DEAD] != 0);
