@@ -1116,7 +1116,7 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		break;
 	case M_REGENERATE:
-		if (fighter[target_fighter_index].sts[S_REGEN] == 0)
+		if (!fighter[target_fighter_index].IsRegen())
 		{
 			set_timed_sts_effect(target_fighter_index, S_REGEN);
 		}

@@ -106,7 +106,12 @@ public:
 	bool IsTrueshot() const;
 	void SetTrueshot(bool bIsTrueshot);
 
-	//// S_REGEN
+	// S_REGEN
+	bool IsRegen() const;
+	void SetRegen(int HowLongEffectShouldLast);
+	uint8_t GetRemainingRegen() const;
+	void AddRegen(signed int AmountOfEffectToAdd);
+
 	//// S_INFUSE
 
 	char name[25];          /*!<\brief Name */

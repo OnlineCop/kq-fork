@@ -777,7 +777,7 @@ static void do_round(void)
 					/*  RB: the character is regenerating? when needed, get a  */
 					/*      random value (never lower than 5), and increase    */
 					/*      the character's health by that amount.             */
-					if ((fighter[fighter_index].sts[S_REGEN] - 1) == rcount)
+					if ((fighter[fighter_index].GetRemainingRegen() - 1) == rcount)
 					{
 						a = kqrandom->random_range_exclusive(0, 5) + (fighter[fighter_index].mhp / 10);
 

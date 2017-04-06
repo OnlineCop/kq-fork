@@ -443,3 +443,35 @@ void KFighter::SetTrueshot(bool bIsTrueshot)
 {
 	sts[S_TRUESHOT] = (bIsTrueshot ? 1 : 0);
 }
+
+bool KFighter::IsRegen() const
+{
+	bool isRegen = (sts[S_REGEN] > 0);
+	return isRegen;
+}
+
+void KFighter::SetRegen(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_REGEN] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingRegen() const
+{
+	return sts[S_REGEN];
+}
+
+void KFighter::AddRegen(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_REGEN] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_REGEN] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_REGEN] = 0;
+	}
+}
