@@ -141,7 +141,7 @@ void camp_spell_menu(int c)
 	int pg[2] = { 0, 0 };
 	int ptr[2] = { 0, 0 };
 
-	if (party[pidx[c]]->IsMute())
+	if (party[pidx[c]].IsMute())
 	{
 		play_effect(SND_BAD, 128);
 		return;

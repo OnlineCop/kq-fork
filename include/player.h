@@ -11,19 +11,73 @@ class s_player
 public:
 	s_player();
 
-	// S_DEAD
-	bool IsDead() const;
-	bool IsAlive() const;
-	void SetAlive(bool bIsAlive);
+	// S_POISON
+	bool IsPoisoned() const;
+	void SetPoisoned(int HowLongEffectShouldLast);
+	int GetRemainingPoison() const;
 
 	// S_BLIND
 	bool IsBlind() const;
 	void SetBlind(bool bIsBlind);
 
-	// S_POISON
-	bool IsPoisoned() const;
-	void SetPoisoned(int HowLongEffectShouldLast);
-	int GetRemainingPoison() const;
+	// S_CHARM
+	bool IsCharmed() const;
+	void SetCharmed(int HowLongEffectShouldLast);
+	uint8_t GetRemainingCharm() const;
+	void AddCharm(signed int AmountOfEffectToAdd);
+
+	// S_STOP
+	bool IsStopped() const;
+	void SetStopped(int HowLongEffectShouldLast);
+	uint8_t GetRemainingStop() const;
+	void AddStopped(signed int AmountOfEffectToAdd);
+
+	// S_STONE
+	bool IsStone() const;
+	void SetStone(int HowLongEffectShouldLast);
+	uint8_t GetRemainingStone() const;
+	void AddStone(signed int AmountOfEffectToAdd);
+
+	// S_MUTE
+	bool IsMute() const;
+	void SetMute(bool bIsMute);
+
+	// S_SLEEP
+	bool IsAsleep() const;
+	bool IsAwake() const;
+	void SetSleep(int HowLongEffectShouldLast);
+	uint8_t GetRemainingSleep() const;
+	void AddSleep(signed int AmountOfEffectToAdd);
+
+	// S_DEAD
+	bool IsDead() const;
+	bool IsAlive() const;
+	void SetAlive(bool bIsAlive);
+	void SetDead(bool bIsDead);
+
+	// S_MALISON
+	bool IsMalison() const;
+	void SetMalison(int HowLongEffectShouldLast);
+	uint8_t GetRemainingMalison() const;
+	void AddMalison(signed int AmountOfEffectToAdd);
+
+	// S_RESIST
+	bool IsResist() const;
+	void SetResist(int HowLongEffectShouldLast);
+	uint8_t GetRemainingResist() const;
+	void AddResist(signed int AmountOfEffectToAdd);
+
+	// S_TIME
+	bool IsTime() const;
+	void SetTime(int HowLongEffectShouldLast);
+	uint8_t GetRemainingTime() const;
+	void AddTime(signed int AmountOfEffectToAdd);
+
+	// S_SHIELD
+	bool IsShield() const;
+	void SetShield(int HowLongEffectShouldLast);
+	uint8_t GetRemainingShield() const;
+	void AddShield(signed int AmountOfEffectToAdd);
 
 	char name[9]; /*!< Entity name */
 	int xp;       /*!< Entity experience */

@@ -308,7 +308,7 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		break;
 	case M_SILENCE:
 		if (non_dmg_save(target_fighter_index, sp_hit) == 0 &&
-			!fighter[target_fighter_index]..IsMute())
+			!fighter[target_fighter_index].IsMute())
 		{
 			fighter[target_fighter_index].SetMute(true);
 		}
