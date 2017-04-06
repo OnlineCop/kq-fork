@@ -158,10 +158,10 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 		{
 			if (non_dmg_save(fighter_index, sp_hit) == 0 &&
-				fighter[fighter_index].sts[S_MALISON] == 0 &&
+				!fighter[fighter_index].IsMalison() &&
 				!fighter[fighter_index].IsStone())
 			{
-				fighter[fighter_index].sts[S_MALISON] = 2;
+				fighter[fighter_index].SetMalison(2);
 				ta[fighter_index] = NODISPLAY;
 			}
 			else
@@ -400,9 +400,9 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		break;
 	case M_NAUSEA:
 		if (non_dmg_save(target_fighter_index, sp_hit) == 0 &&
-			fighter[target_fighter_index].sts[S_MALISON] == 0)
+			!fighter[target_fighter_index].IsMalison())
 		{
-			fighter[target_fighter_index].sts[S_MALISON] = 1;
+			fighter[target_fighter_index].SetMalison(1);
 		}
 		else
 		{
@@ -1715,12 +1715,12 @@ KFighter KMagic::status_adjust(size_t fighter_index)
 	{
 		tf.stats[A_ATT] += tf.stats[A_STR] * tf.sts[S_STRENGTH] * 50 / 100;
 	}
-	if (tf.sts[S_MALISON] == 1)
+	if (tf.GetRemainingMalison() == 1)
 	{
 		tf.stats[A_HIT] = tf.stats[A_HIT] * 75 / 100;
 		tf.stats[A_EVD] = tf.stats[A_EVD] * 75 / 100;
 	}
-	if (tf.sts[S_MALISON] == 2)
+	if (tf.GetRemainingMalison() == 2)
 	{
 		tf.stats[A_HIT] = tf.stats[A_HIT] * 50 / 100;
 		tf.stats[A_EVD] = tf.stats[A_EVD] * 50 / 100;

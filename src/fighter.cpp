@@ -208,3 +208,35 @@ void KFighter::SetDead(bool bIsDead)
 {
 	sts[S_DEAD] = (bIsDead ? 1 : 0);
 }
+
+bool KFighter::IsMalison() const
+{
+	bool isMalison = (sts[S_MALISON] > 0);
+	return isMalison;
+}
+
+void KFighter::SetMalison(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_MALISON] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingMalison() const
+{
+	return sts[S_MALISON];
+}
+
+void KFighter::AddMalison(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_MALISON] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_MALISON] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_MALISON] = 0;
+	}
+}

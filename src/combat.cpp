@@ -217,7 +217,7 @@ eAttackResult attack_result(int ar, int dr)
 
 		/*  JB: if affected by a NAUSEA/MALISON spell, the defender  */
 		/*      takes more damage than normal                        */
-		if (tempd.sts[S_MALISON] > 0)
+		if (tempd.IsMalison())
 		{
 			base *= (int)5 / 4;
 		}
@@ -590,7 +590,7 @@ static void do_action(size_t fighter_index)
 		}
 	}
 
-	spell_type_status = fighter[fighter_index].sts[S_MALISON];
+	spell_type_status = fighter[fighter_index].GetRemainingMalison();
 	if (spell_type_status > 0)
 	{
 		if (kqrandom->random_range_exclusive(0, 100) < spell_type_status * 5)

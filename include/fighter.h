@@ -60,9 +60,11 @@ public:
 	void SetAlive(bool bIsAlive);
 	void SetDead(bool bIsDead);
 
-	//// S_MALISON
-	//bool IsMalison() const;
-	//void SetMalison(bool bIsMalison);
+	// S_MALISON
+	bool IsMalison() const;
+	void SetMalison(int HowLongEffectShouldLast);
+	uint8_t GetRemainingMalison() const;
+	void AddMalison(signed int AmountOfEffectToAdd);
 
 	//// S_RESIST
 	//bool IsResist() const;
