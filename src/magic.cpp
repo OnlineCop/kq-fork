@@ -275,9 +275,9 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 				fighter[target_fighter_index].SetShield(0);
 				r++;
 			}
-			if (fighter[target_fighter_index].sts[S_BLESS] > 0)
+			if (fighter[target_fighter_index].IsBless())
 			{
-				fighter[target_fighter_index].sts[S_BLESS] = 0;
+				fighter[target_fighter_index].SetBless(0);
 				r++;
 			}
 			if (fighter[target_fighter_index].sts[S_STRENGTH] > 0)
@@ -1000,7 +1000,7 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 	case M_BLESS:
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 		{
-			if (fighter[fighter_index].sts[S_BLESS] < 3)
+			if (fighter[fighter_index].GetRemainingBless() < 3)
 			{
 				fighter_hp = fighter[fighter_index].mhp / 10;
 				if (fighter_hp < 10)
@@ -1009,7 +1009,7 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 				}
 				fighter[fighter_index].hp += fighter_hp;
 				fighter[fighter_index].mhp += fighter_hp;
-				fighter[fighter_index].sts[S_BLESS]++;
+				fighter[fighter_index].AddBless(1);
 				ta[fighter_index] = NODISPLAY;
 			}
 			else
@@ -1725,10 +1725,10 @@ KFighter KMagic::status_adjust(size_t fighter_index)
 		tf.stats[A_HIT] = tf.stats[A_HIT] * 50 / 100;
 		tf.stats[A_EVD] = tf.stats[A_EVD] * 50 / 100;
 	}
-	if (tf.sts[S_BLESS] > 0)
+	if (tf.IsBless() > 0)
 	{
-		tf.stats[A_HIT] += tf.sts[S_BLESS] * 25;
-		tf.stats[A_EVD] += tf.sts[S_BLESS] * 10;
+		tf.stats[A_HIT] += tf.GetRemainingBless() * 25;
+		tf.stats[A_EVD] += tf.GetRemainingBless() * 10;
 	}
 	if (tf.GetRemainingTime() == 1)
 	{

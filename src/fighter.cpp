@@ -336,3 +336,35 @@ void KFighter::AddShield(signed int AmountOfEffectToAdd)
 		sts[S_SHIELD] = 0;
 	}
 }
+
+bool KFighter::IsBless() const
+{
+	bool isBless = (sts[S_BLESS] > 0);
+	return isBless;
+}
+
+void KFighter::SetBless(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_BLESS] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingBless() const
+{
+	return sts[S_BLESS];
+}
+
+void KFighter::AddBless(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_BLESS] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_BLESS] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_BLESS] = 0;
+	}
+}

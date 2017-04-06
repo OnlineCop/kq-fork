@@ -84,30 +84,17 @@ public:
 	uint8_t GetRemainingShield() const;
 	void AddShield(signed int AmountOfEffectToAdd);
 
-	//// S_BLESS
-	//bool IsBlessed() const;
-	//void SetBlessed(bool bIsBlessed);
+	// S_BLESS
+	bool IsBless() const;
+	void SetBless(int HowLongEffectShouldLast);
+	uint8_t GetRemainingBless() const;
+	void AddBless(signed int AmountOfEffectToAdd);
 
 	//// S_STRENGTH
-	//bool IsStrength() const;
-	//void SetStrength(bool bIsStrength);
-
 	//// S_ETHER
-	//bool IsEther() const;
-	//void SetEther(bool bIsEther);
-
 	//// S_TRUESHOT
-	//bool IsTrueshot() const;
-	//void SetTrueshot(bool bIsTrueshot);
-
 	//// S_REGEN
-	//bool IsRegen() const;
-	//void SetRegen(bool bIsRegen);
-
 	//// S_INFUSE
-	//bool IsInfused() const;
-	//void SetInfused(bool bIsInfused);
-
 
 	char name[25];          /*!<\brief Name */
 	int xp;                 /*!<\brief eXperience Points */
