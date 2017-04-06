@@ -400,3 +400,35 @@ void KFighter::AddStrength(signed int AmountOfEffectToAdd)
 		sts[S_STRENGTH] = 0;
 	}
 }
+
+bool KFighter::IsEther() const
+{
+	bool isEther = (sts[S_ETHER] > 0);
+	return isEther;
+}
+
+void KFighter::SetEther(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_ETHER] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingEther() const
+{
+	return sts[S_ETHER];
+}
+
+void KFighter::AddEther(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_ETHER] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_ETHER] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_ETHER] = 0;
+	}
+}

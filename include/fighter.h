@@ -97,6 +97,11 @@ public:
 	void AddStrength(signed int AmountOfEffectToAdd);
 
 	//// S_ETHER
+	bool IsEther() const;
+	void SetEther(int HowLongEffectShouldLast);
+	uint8_t GetRemainingEther() const;
+	void AddEther(signed int AmountOfEffectToAdd);
+
 	//// S_TRUESHOT
 	//// S_REGEN
 	//// S_INFUSE

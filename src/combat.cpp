@@ -186,7 +186,7 @@ eAttackResult attack_result(int ar, int dr)
 	}
 
 	/*  JB: If the defender is etherealized, set mult to 0  */
-	if (tempd.sts[S_ETHER] > 0)
+	if (tempd.IsEther())
 	{
 		mult = 0;
 	}
@@ -793,9 +793,9 @@ static void do_round(void)
 
 					/*  RB: the character has ether actived?  */
 					cact[fighter_index] = 1;
-					if ((fighter[fighter_index].sts[S_ETHER] > 0) && (rcount == 0))
+					if ((fighter[fighter_index].IsEther()) && (rcount == 0))
 					{
-						fighter[fighter_index].sts[S_ETHER]--;
+						fighter[fighter_index].AddEther(-1);
 					}
 
 					/*  RB: the character is stopped?  */
@@ -945,7 +945,7 @@ void draw_fighter(size_t fighter_index, size_t dcur)
 		Draw.convert_cframes(fighter_index, 2, 12, 0);
 	}
 
-	if (fr->sts[S_ETHER] > 0)
+	if (fr->IsEther())
 	{
 		draw_trans_sprite(double_buffer, cframes[fighter_index][ff], xx, yy);
 	}

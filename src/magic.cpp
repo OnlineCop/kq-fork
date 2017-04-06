@@ -1106,9 +1106,9 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		break;
 	case M_THROUGH:
-		if (fighter[target_fighter_index].sts[S_ETHER] == 0)
+		if (!fighter[target_fighter_index].IsEther())
 		{
-			fighter[target_fighter_index].sts[S_ETHER] = 3;
+			fighter[target_fighter_index].SetEther(3);
 		}
 		else
 		{
@@ -1725,7 +1725,7 @@ KFighter KMagic::status_adjust(size_t fighter_index)
 		tf.stats[A_HIT] = tf.stats[A_HIT] * 50 / 100;
 		tf.stats[A_EVD] = tf.stats[A_EVD] * 50 / 100;
 	}
-	if (tf.IsBless() > 0)
+	if (tf.IsBless())
 	{
 		tf.stats[A_HIT] += tf.GetRemainingBless() * 25;
 		tf.stats[A_EVD] += tf.GetRemainingBless() * 10;
