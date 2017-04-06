@@ -155,6 +155,12 @@ bool KFighter::IsAsleep() const
 	return isAsleep;
 }
 
+bool KFighter::IsAwake() const
+{
+	bool isAsleep = (sts[S_SLEEP] == 0);
+	return isAsleep;
+}
+
 void KFighter::SetSleep(int HowLongEffectShouldLast)
 {
 	if (HowLongEffectShouldLast < 0)

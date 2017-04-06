@@ -49,6 +49,7 @@ public:
 
 	// S_SLEEP
 	bool IsAsleep() const;
+	bool IsAwake() const;
 	void SetSleep(int HowLongEffectShouldLast);
 	uint8_t GetRemainingSleep() const;
 	void AddSleep(signed int AmountOfEffectToAdd);

@@ -175,7 +175,7 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 		{
 			if (res_throw(fighter_index, magic[spell_number].elem) == 0 &&
 				non_dmg_save(fighter_index, sp_hit) == 0 &&
-				!fighter[fighter_index].IsAsleep() &&
+				fighter[fighter_index].IsAwake() &&
 				!fighter[fighter_index].IsStone())
 			{
 				fighter[fighter_index].SetSleep(kqrandom->random_range_exclusive(4, 6));
@@ -319,7 +319,7 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		break;
 	case M_SLEEP:
 		if (non_dmg_save(target_fighter_index, sp_hit) == 0 &&
-			!fighter[target_fighter_index].IsAsleep())
+			fighter[target_fighter_index].IsAwake())
 		{
 			fighter[target_fighter_index].SetSleep(kqrandom->random_range_exclusive(4, 6));
 		}
