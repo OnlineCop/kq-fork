@@ -432,3 +432,14 @@ void KFighter::AddEther(signed int AmountOfEffectToAdd)
 		sts[S_ETHER] = 0;
 	}
 }
+
+bool KFighter::IsTrueshot() const
+{
+	bool isTrueshot = (sts[S_TRUESHOT] != 0);
+	return isTrueshot;
+}
+
+void KFighter::SetTrueshot(bool bIsTrueshot)
+{
+	sts[S_TRUESHOT] = (bIsTrueshot ? 1 : 0);
+}

@@ -90,19 +90,22 @@ public:
 	uint8_t GetRemainingBless() const;
 	void AddBless(signed int AmountOfEffectToAdd);
 
-	//// S_STRENGTH
+	// S_STRENGTH
 	bool IsStrength() const;
 	void SetStrength(int HowLongEffectShouldLast);
 	uint8_t GetRemainingStrength() const;
 	void AddStrength(signed int AmountOfEffectToAdd);
 
-	//// S_ETHER
+	// S_ETHER
 	bool IsEther() const;
 	void SetEther(int HowLongEffectShouldLast);
 	uint8_t GetRemainingEther() const;
 	void AddEther(signed int AmountOfEffectToAdd);
 
-	//// S_TRUESHOT
+	// S_TRUESHOT
+	bool IsTrueshot() const;
+	void SetTrueshot(bool bIsTrueshot);
+
 	//// S_REGEN
 	//// S_INFUSE
 

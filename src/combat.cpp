@@ -151,9 +151,9 @@ eAttackResult attack_result(int ar, int dr)
 	}
 
 	/*  JB: if the attacker is empowered by trueshot  */
-	if (tempa.sts[S_TRUESHOT] > 0)
+	if (tempa.IsTrueshot())
 	{
-		fighter[ar].sts[S_TRUESHOT] = 0;
+		fighter[ar].SetTrueshot(false);
 		defender_evade = 0;
 	}
 

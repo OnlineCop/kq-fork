@@ -1096,9 +1096,9 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 	switch (spell_number)
 	{
 	case M_TRUEAIM:
-		if (fighter[target_fighter_index].sts[S_TRUESHOT] == 0)
+		if (!fighter[target_fighter_index].IsTrueshot())
 		{
-			fighter[target_fighter_index].sts[S_TRUESHOT] = 1;
+			fighter[target_fighter_index].SetTrueshot(true);
 		}
 		else
 		{
