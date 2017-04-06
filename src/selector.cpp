@@ -101,10 +101,64 @@ int auto_select_enemy(int whom, int csts)
 				}
 				else
 				{
-					if ((csts == S_BLESS && fighter[i].sts[csts] < 3) ||
-						(csts == S_STRENGTH && fighter[i].sts[csts] < 2) ||
-						(csts != S_BLESS && csts != S_STRENGTH &&
-							fighter[i].sts[csts] == 0))
+					bool isBless = (csts == S_BLESS && fighter[i].GetRemainingBless() < 3);
+					bool isStrength = (csts == S_STRENGTH && fighter[i].GetRemainingStrength() < 2);
+					bool isOther = false;
+					switch (csts)
+					{
+					case S_POISON:
+						isOther = !fighter[i].IsPoisoned();
+						break;
+					case S_BLIND:
+						isOther = !fighter[i].IsBlind();
+						break;
+					case S_CHARM:
+						isOther = !fighter[i].IsCharmed();
+						break;
+					case S_STOP:
+						isOther = !fighter[i].IsStopped();
+						break;
+					case S_STONE:
+						isOther = !fighter[i].IsStone();
+						break;
+					case S_MUTE:
+						isOther = !fighter[i].IsMute();
+						break;
+					case S_SLEEP:
+						isOther = !fighter[i].IsAsleep();
+						break;
+					case S_DEAD:
+						isOther = !fighter[i].IsDead();
+						break;
+					case S_MALISON:
+						isOther = !fighter[i].IsMalison();
+						break;
+					case S_RESIST:
+						isOther = !fighter[i].IsResist();
+						break;
+					case S_TIME:
+						isOther = !fighter[i].IsTime();
+						break;
+					case S_SHIELD:
+						isOther = !fighter[i].IsShield();
+						break;
+					case S_ETHER:
+						isOther = !fighter[i].IsEther();
+						break;
+					case S_TRUESHOT:
+						isOther = !fighter[i].IsTrueshot();
+						break;
+					case S_REGEN:
+						isOther = !fighter[i].IsRegen();
+						break;
+					case S_INFUSE:
+						isOther = !fighter[i].IsInfuse();
+						break;
+					default:
+						break;
+					}
+
+					if (isBless || isStrength || isOther)
 					{
 						tmpd[number_enemies] = i;
 						number_enemies++;
@@ -154,7 +208,67 @@ int auto_select_hero(int whom, int csts)
 
 	for (unsigned int a = 0; a < numchrs; a++)
 	{
-		if ((csts == NO_STS_CHECK || fighter[a].sts[csts] == 0) && can_attack(a))
+		bool isAffected = false;
+		switch (csts)
+		{
+		case S_POISON:
+			isAffected = !fighter[a].IsPoisoned();
+			break;
+		case S_BLIND:
+			isAffected = !fighter[a].IsBlind();
+			break;
+		case S_CHARM:
+			isAffected = !fighter[a].IsCharmed();
+			break;
+		case S_STOP:
+			isAffected = !fighter[a].IsStopped();
+			break;
+		case S_STONE:
+			isAffected = !fighter[a].IsStone();
+			break;
+		case S_MUTE:
+			isAffected = !fighter[a].IsMute();
+			break;
+		case S_SLEEP:
+			isAffected = !fighter[a].IsAsleep();
+			break;
+		case S_DEAD:
+			isAffected = !fighter[a].IsDead();
+			break;
+		case S_MALISON:
+			isAffected = !fighter[a].IsMalison();
+			break;
+		case S_RESIST:
+			isAffected = !fighter[a].IsResist();
+			break;
+		case S_TIME:
+			isAffected = !fighter[a].IsTime();
+			break;
+		case S_SHIELD:
+			isAffected = !fighter[a].IsShield();
+			break;
+		case S_BLESS:
+			isAffected = !fighter[a].IsBless();
+			break;
+		case S_STRENGTH:
+			isAffected = !fighter[a].IsStrength();
+			break;
+		case S_ETHER:
+			isAffected = !fighter[a].IsEther();
+			break;
+		case S_TRUESHOT:
+			isAffected = !fighter[a].IsTrueshot();
+			break;
+		case S_REGEN:
+			isAffected = !fighter[a].IsRegen();
+			break;
+		case S_INFUSE:
+			isAffected = !fighter[a].IsInfuse();
+			break;
+		default:
+			break;
+		}
+		if ((csts == NO_STS_CHECK || isAffected) && can_attack(a))
 		{
 			tmpd[cntr] = a;
 			cntr++;

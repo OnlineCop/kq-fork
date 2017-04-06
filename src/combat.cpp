@@ -236,17 +236,67 @@ eAttackResult attack_result(int ar, int dr)
 
 		if ((c >= R_POISON) && (c <= R_SLEEP))
 		{
-			if ((Magic.res_throw(dr, c) == 0) && (fighter[dr].sts[c - R_POISON] == 0))
+			bool isAffected = false;
+			switch (c)
+			{
+			case R_POISON:
+				isAffected = !fighter[dr].IsPoisoned();
+				break;
+			case R_BLIND:
+				isAffected = !fighter[dr].IsBlind();
+				break;
+			case R_CHARM:
+				isAffected = !fighter[dr].IsCharmed();
+				break;
+			case R_PARALYZE:
+				isAffected = !fighter[dr].IsStopped();
+				break;
+			case R_PETRIFY:
+				isAffected = !fighter[dr].IsStone();
+				break;
+			case R_SILENCE:
+				isAffected = !fighter[dr].IsMute();
+				break;
+			case R_SLEEP:
+				isAffected = !fighter[dr].IsAsleep();
+				break;
+			default:
+				isAffected = false;
+			}
+
+			if ((Magic.res_throw(dr, c) == 0) && isAffected)
 			{
 				if (Magic.non_dmg_save(dr, 50) == 0)
 				{
+					uint8_t timeEffectShouldLast = kqrandom->random_range_exclusive(2, 5);
 					if ((c == R_POISON) || (c == R_PETRIFY) || (c == R_SILENCE))
 					{
-						tempd.sts[c - R_POISON] = 1;
+						timeEffectShouldLast = 1;
 					}
-					else
+
+					switch (c)
 					{
-						tempd.sts[c - R_POISON] = kqrandom->random_range_exclusive(2, 5);
+					case R_POISON:
+						fighter[dr].SetPoisoned(timeEffectShouldLast);
+						break;
+					case R_BLIND:
+						fighter[dr].SetBlind(timeEffectShouldLast);
+						break;
+					case R_CHARM:
+						fighter[dr].SetCharmed(timeEffectShouldLast);
+						break;
+					case R_PARALYZE:
+						fighter[dr].SetStopped(timeEffectShouldLast);
+						break;
+					case R_PETRIFY:
+						fighter[dr].SetStone(timeEffectShouldLast);
+						break;
+					case R_SILENCE:
+						fighter[dr].SetMute(timeEffectShouldLast);
+						break;
+					case R_SLEEP:
+						fighter[dr].SetSleep(timeEffectShouldLast);
+						break;
 					}
 				}
 			}

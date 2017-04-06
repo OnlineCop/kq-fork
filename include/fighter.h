@@ -155,7 +155,6 @@ public:
 	uint8_t aframe; /*!<\brief Battle sprite to display (standing, casting,
 					   attacking) */
 	uint8_t crit;
-	uint8_t sts[NUM_SPELL_TYPES]; /*!< eSpellType, how long a specific status effect remains on this fighter (such as "remaining poison", etc.). */
 	uint8_t defend;
 	uint8_t ai[8];
 	uint8_t aip[8];
@@ -179,6 +178,9 @@ public:
 	int imb_a;
 	int imb[2];
 	Raster *img;
+
+protected:
+	uint8_t sts[NUM_SPELL_TYPES]; /*!< eSpellType, how long a specific status effect remains on this fighter (such as "remaining poison", etc.). */
 };
 
 extern KFighter Fighter;
