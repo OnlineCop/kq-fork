@@ -149,6 +149,38 @@ void KFighter::SetMute(bool bIsMute)
 	sts[S_MUTE] = (bIsMute ? 1 : 0);
 }
 
+bool KFighter::IsAsleep() const
+{
+	bool isAsleep = (sts[S_SLEEP] > 0);
+	return isAsleep;
+}
+
+void KFighter::SetSleep(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_SLEEP] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingSleep() const
+{
+	return sts[S_SLEEP];
+}
+
+void KFighter::AddSleep(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_SLEEP] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_SLEEP] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_SLEEP] = 0;
+	}
+}
+
 bool KFighter::IsDead() const
 {
 	bool isDead = (sts[S_DEAD] != 0);

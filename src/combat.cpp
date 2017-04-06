@@ -815,7 +815,7 @@ static void do_round(void)
 					}
 
 					/*  RB: the character is sleeping?  */
-					if (fighter[fighter_index].sts[S_SLEEP] > 0)
+					if (fighter[fighter_index].IsAsleep())
 					{
 						if (pidx[fighter_index] == TEMMIN)
 						{
@@ -824,7 +824,7 @@ static void do_round(void)
 
 						if (rcount == 0)
 						{
-							fighter[fighter_index].sts[S_SLEEP]--;
+							fighter[fighter_index].AddSleep(-1);
 						}
 
 						cact[fighter_index] = 0;
@@ -1153,9 +1153,9 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 			fighter[defend_fighter_index].hp = fighter[defend_fighter_index].mhp;
 		}
 
-		if (fighter[defend_fighter_index].sts[S_SLEEP] > 0)
+		if (fighter[defend_fighter_index].IsAsleep())
 		{
-			fighter[defend_fighter_index].sts[S_SLEEP] = 0;
+			fighter[defend_fighter_index].SetSleep(0);
 		}
 
 		if ((fighter[defend_fighter_index].IsCharmed()) &&
@@ -1503,9 +1503,9 @@ void multi_fight(size_t attack_fighter_index)
 			}
 
 			/*  RB: if sleeping, a good hit wakes him/her up  */
-			if (fighter[fighter_index].sts[S_SLEEP] > 0)
+			if (fighter[fighter_index].IsAsleep())
 			{
-				fighter[fighter_index].sts[S_SLEEP] = 0;
+				fighter[fighter_index].SetSleep(0);
 			}
 
 			/*  RB: if charmed, a good hit wakes him/her up  */

@@ -47,9 +47,11 @@ public:
 	bool IsMute() const;
 	void SetMute(bool bIsMute);
 
-	//// S_SLEEP
-	//bool IsAsleep() const;
-	//void SetAsleep(bool bIsAsleep);
+	// S_SLEEP
+	bool IsAsleep() const;
+	void SetSleep(int HowLongEffectShouldLast);
+	uint8_t GetRemainingSleep() const;
+	void AddSleep(signed int AmountOfEffectToAdd);
 
 	// S_DEAD
 	bool IsDead() const;

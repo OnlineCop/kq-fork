@@ -175,10 +175,10 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 		{
 			if (res_throw(fighter_index, magic[spell_number].elem) == 0 &&
 				non_dmg_save(fighter_index, sp_hit) == 0 &&
-				fighter[fighter_index].sts[S_SLEEP] == 0 &&
+				!fighter[fighter_index].IsAsleep() &&
 				!fighter[fighter_index].IsStone())
 			{
-				fighter[fighter_index].sts[S_SLEEP] = kqrandom->random_range_exclusive(4, 6);
+				fighter[fighter_index].SetSleep(kqrandom->random_range_exclusive(4, 6));
 				ta[fighter_index] = NODISPLAY;
 			}
 			else
@@ -319,9 +319,9 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		break;
 	case M_SLEEP:
 		if (non_dmg_save(target_fighter_index, sp_hit) == 0 &&
-			fighter[target_fighter_index].sts[S_SLEEP] == 0)
+			!fighter[target_fighter_index].IsAsleep())
 		{
-			fighter[target_fighter_index].sts[S_SLEEP] = kqrandom->random_range_exclusive(4, 6);
+			fighter[target_fighter_index].SetSleep(kqrandom->random_range_exclusive(4, 6));
 		}
 		else
 		{
@@ -1492,7 +1492,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 			}
 			if (ta[fighter_index] != 0)
 			{
-				fighter[fighter_index].sts[S_SLEEP] = 0;
+				fighter[fighter_index].SetSleep(0);
 			}
 		}
 		else
@@ -1689,7 +1689,7 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 			}
 			if (ta[fighter_index] != 0)
 			{
-				fighter[fighter_index].sts[S_SLEEP] = 0;
+				fighter[fighter_index].SetSleep(0);
 			}
 		}
 		else
@@ -1761,7 +1761,7 @@ KFighter KMagic::status_adjust(size_t fighter_index)
 			tf.stats[A_EVD] = 1;
 		}
 	}
-	if (tf.sts[S_SLEEP] > 0 || tf.IsStopped())
+	if (tf.IsAsleep() || tf.IsStopped())
 	{
 		tf.stats[A_EVD] = 0;
 	}

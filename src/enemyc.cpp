@@ -494,7 +494,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 				aux = 0;
 				for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 					if (fighter[fighter_index].IsAlive() &&
-						fighter[fighter_index].sts[S_SLEEP] == 0)
+						!fighter[fighter_index].IsAsleep())
 					{
 						aux++;
 					}
