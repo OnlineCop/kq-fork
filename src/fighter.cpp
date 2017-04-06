@@ -368,3 +368,35 @@ void KFighter::AddBless(signed int AmountOfEffectToAdd)
 		sts[S_BLESS] = 0;
 	}
 }
+
+bool KFighter::IsStrength() const
+{
+	bool isStrength = (sts[S_STRENGTH] > 0);
+	return isStrength;
+}
+
+void KFighter::SetStrength(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_STRENGTH] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingStrength() const
+{
+	return sts[S_STRENGTH];
+}
+
+void KFighter::AddStrength(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_STRENGTH] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_STRENGTH] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_STRENGTH] = 0;
+	}
+}

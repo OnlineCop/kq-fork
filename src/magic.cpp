@@ -280,9 +280,9 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 				fighter[target_fighter_index].SetBless(0);
 				r++;
 			}
-			if (fighter[target_fighter_index].sts[S_STRENGTH] > 0)
+			if (fighter[target_fighter_index].IsStrength())
 			{
-				fighter[target_fighter_index].sts[S_STRENGTH] = 0;
+				fighter[target_fighter_index].SetStrength(0);
 				r++;
 			}
 			if (r == 0)
@@ -1126,9 +1126,9 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		break;
 	case M_HOLYMIGHT:
-		if (fighter[target_fighter_index].sts[S_STRENGTH] < 2)
+		if (fighter[target_fighter_index].GetRemainingStrength() < 2)
 		{
-			fighter[target_fighter_index].sts[S_STRENGTH]++;
+			fighter[target_fighter_index].AddStrength(1);
 		}
 		else
 		{
@@ -1711,9 +1711,9 @@ KFighter KMagic::status_adjust(size_t fighter_index)
 	KFighter tf;
 
 	tf = fighter[fighter_index];
-	if (tf.sts[S_STRENGTH] > 0)
+	if (tf.IsStrength())
 	{
-		tf.stats[A_ATT] += tf.stats[A_STR] * tf.sts[S_STRENGTH] * 50 / 100;
+		tf.stats[A_ATT] += tf.stats[A_STR] * tf.GetRemainingStrength() * 50 / 100;
 	}
 	if (tf.GetRemainingMalison() == 1)
 	{

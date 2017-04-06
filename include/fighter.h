@@ -91,6 +91,11 @@ public:
 	void AddBless(signed int AmountOfEffectToAdd);
 
 	//// S_STRENGTH
+	bool IsStrength() const;
+	void SetStrength(int HowLongEffectShouldLast);
+	uint8_t GetRemainingStrength() const;
+	void AddStrength(signed int AmountOfEffectToAdd);
+
 	//// S_ETHER
 	//// S_TRUESHOT
 	//// S_REGEN

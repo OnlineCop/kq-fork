@@ -69,7 +69,7 @@ static void party_remove(ePIDX id);
  *               likely to return 'whom'
  * \param   csts Only select characters whose .sts[csts]==0
  *               or special case if csts==S_BLESS then GetRemainingBless()<3
- *               or special case if csts==S_STRENGTH then .sts[S_STRENGTH]<2
+ *               or special case if csts==S_STRENGTH then GetRemainingStrength()<2
  *               or select only where HP<75% of MHP if csts==CURE_CHECK
  *               or select any if csts==NO_STS_CHECK
  *               (Never selects a dead enemy)
