@@ -272,3 +272,35 @@ void KFighter::AddResist(signed int AmountOfEffectToAdd)
 		sts[S_RESIST] = 0;
 	}
 }
+
+bool KFighter::IsTime() const
+{
+	bool isTime = (sts[S_TIME] > 0);
+	return isTime;
+}
+
+void KFighter::SetTime(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_TIME] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingTime() const
+{
+	return sts[S_TIME];
+}
+
+void KFighter::AddTime(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_TIME] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_TIME] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_TIME] = 0;
+	}
+}

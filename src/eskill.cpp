@@ -178,15 +178,15 @@ void combat_skill(size_t fighter_index)
 				if (Magic.non_dmg_save(target_fighter_index, 75) == 0 &&
 					!fighter[target_fighter_index].IsStone())
 				{
-					if (fighter[target_fighter_index].sts[S_TIME] == 2)
+					if (fighter[target_fighter_index].GetRemainingTime() == 2)
 					{
-						fighter[target_fighter_index].sts[S_TIME] = 0;
+						fighter[target_fighter_index].SetTime(0);
 					}
 					else
 					{
-						if (fighter[target_fighter_index].sts[S_TIME] == 0)
+						if (fighter[target_fighter_index].GetRemainingTime() == 0)
 						{
-							fighter[target_fighter_index].sts[S_TIME] = 1;
+							fighter[target_fighter_index].SetTime(1);
 							ta[target_fighter_index] = NODISPLAY;
 						}
 						else

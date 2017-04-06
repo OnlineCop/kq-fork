@@ -124,15 +124,15 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 				non_dmg_save(fighter_index, sp_hit) == 0 &&
 				!fighter[fighter_index].IsStone())
 			{
-				if (fighter[fighter_index].sts[S_TIME] == 2)
+				if (fighter[fighter_index].GetRemainingTime() == 2)
 				{
-					fighter[fighter_index].sts[S_TIME] = 0;
+					fighter[fighter_index].SetTime(0);
 				}
 				else
 				{
-					if (fighter[fighter_index].sts[S_TIME] == 0)
+					if (!fighter[fighter_index].IsTime())
 					{
-						fighter[fighter_index].sts[S_TIME] = 1;
+						fighter[fighter_index].SetTime(1);
 						ta[fighter_index] = NODISPLAY;
 					}
 					else
@@ -265,9 +265,9 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 				fighter[target_fighter_index].SetResist(0);
 				r++;
 			}
-			if (fighter[target_fighter_index].sts[S_TIME] > 1)
+			if (fighter[target_fighter_index].GetRemainingTime() > 1)
 			{
-				fighter[target_fighter_index].sts[S_TIME] = 0;
+				fighter[target_fighter_index].SetTime(0);
 				r++;
 			}
 			if (fighter[target_fighter_index].sts[S_SHIELD] > 0)
@@ -1056,16 +1056,16 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 	case M_QUICKEN:
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 		{
-			if (fighter[fighter_index].sts[S_TIME] != 2 &&
+			if (fighter[fighter_index].GetRemainingTime() != 2 &&
 				!fighter[fighter_index].IsStone())
 			{
-				if (fighter[fighter_index].sts[S_TIME] == 1)
+				if (fighter[fighter_index].GetRemainingTime() == 1)
 				{
-					fighter[fighter_index].sts[S_TIME] = 0;
+					fighter[fighter_index].SetTime(0);
 				}
 				else
 				{
-					fighter[fighter_index].sts[S_TIME] = 2;
+					fighter[fighter_index].SetTime(2);
 					ta[fighter_index] = NODISPLAY;
 				}
 			}
@@ -1166,15 +1166,15 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		break;
 	case M_HASTEN:
-		if (fighter[target_fighter_index].sts[S_TIME] != 2)
+		if (fighter[target_fighter_index].GetRemainingTime() != 2)
 		{
-			if (fighter[target_fighter_index].sts[S_TIME] == 1)
+			if (fighter[target_fighter_index].GetRemainingTime() == 1)
 			{
-				fighter[target_fighter_index].sts[S_TIME] = 0;
+				fighter[target_fighter_index].SetTime(0);
 			}
 			else
 			{
-				fighter[target_fighter_index].sts[S_TIME] = 2;
+				fighter[target_fighter_index].SetTime(2);
 			}
 		}
 		else
@@ -1730,19 +1730,19 @@ KFighter KMagic::status_adjust(size_t fighter_index)
 		tf.stats[A_HIT] += tf.sts[S_BLESS] * 25;
 		tf.stats[A_EVD] += tf.sts[S_BLESS] * 10;
 	}
-	if (tf.sts[S_TIME] == 1)
+	if (tf.GetRemainingTime() == 1)
 	{
 		tf.stats[A_SPD] = tf.stats[A_SPD] * 5 / 10;
 		tf.stats[A_HIT] = tf.stats[A_HIT] * 75 / 100;
 		tf.stats[A_EVD] = tf.stats[A_EVD] * 75 / 100;
 	}
-	if (tf.sts[S_TIME] == 2)
+	if (tf.GetRemainingTime() == 2)
 	{
 		tf.stats[A_SPD] = tf.stats[A_SPD] * 15 / 10;
 		tf.stats[A_HIT] = tf.stats[A_HIT] * 15 / 10;
 		tf.stats[A_EVD] = tf.stats[A_EVD] * 15 / 10;
 	}
-	if (tf.sts[S_TIME] == 3)
+	if (tf.GetRemainingTime() == 3)
 	{
 		tf.stats[A_SPD] = tf.stats[A_SPD] * 2;
 		tf.stats[A_HIT] = tf.stats[A_HIT] * 2;

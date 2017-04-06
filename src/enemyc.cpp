@@ -444,7 +444,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 				aux = 0;
 				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 					if (fighter[fighter_index].IsAlive() &&
-						fighter[fighter_index].sts[S_TIME] != 2)
+						fighter[fighter_index].GetRemainingTime() != 2)
 					{
 						aux++;
 					}
@@ -481,7 +481,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 				aux = 0;
 				for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 					if (fighter[fighter_index].IsAlive() &&
-						fighter[fighter_index].sts[S_TIME] != 1)
+						fighter[fighter_index].GetRemainingTime() != 1)
 					{
 						aux++;
 					}

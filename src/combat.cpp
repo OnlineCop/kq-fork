@@ -361,11 +361,11 @@ void battle_render(signed int plyr, size_t hl, int sall)
 			}
 
 			a = 116;
-			if (fighter[z].sts[S_TIME] == 1)
+			if (fighter[z].GetRemainingTime() == 1)
 			{
 				a = 83;
 			}
-			else if (fighter[z].sts[S_TIME] == 2)
+			else if (fighter[z].GetRemainingTime() == 2)
 			{
 				a = 36;
 			}
@@ -860,13 +860,13 @@ static void do_round(void)
 
 					if (cact[fighter_index] > 0)
 					{
-						if (fighter[fighter_index].sts[S_TIME] == 0)
+						if (!fighter[fighter_index].IsTime())
 						{
 							bspeed[fighter_index] += nspeed[fighter_index];
 						}
 						else
 						{
-							if (fighter[fighter_index].sts[S_TIME] == 1)
+							if (fighter[fighter_index].GetRemainingTime() == 1)
 							{
 								bspeed[fighter_index] += (nspeed[fighter_index] / 2 + 1);
 							}

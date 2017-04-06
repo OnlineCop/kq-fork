@@ -72,9 +72,11 @@ public:
 	uint8_t GetRemainingResist() const;
 	void AddResist(signed int AmountOfEffectToAdd);
 
-	//// S_TIME
-	//bool IsTime() const;
-	//void SetTime(bool bIsTime);
+	// S_TIME
+	bool IsTime() const;
+	void SetTime(int HowLongEffectShouldLast);
+	uint8_t GetRemainingTime() const;
+	void AddTime(signed int AmountOfEffectToAdd);
 
 	//// S_SHIELD
 	//bool IsShield() const;
