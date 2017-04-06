@@ -90,7 +90,7 @@ public:
 	int mmp;      /*!< Maximum magic points */
 	int stats[NUM_STATS];
 	char res[NUM_RES];           /*!< eResistance: See R_* constants */
-	uint8_t sts[NUM_SPELLTYPES]; /*!< eSpellType */
+	uint8_t sts[NUM_SPELL_TYPES]; /*!< eSpellType */
 	uint8_t eqp[NUM_EQUIPMENT];  /*!< eEquipment: Weapons, armor, etc. equipped */
 	uint8_t spells[NUM_SPELLS];  /*!< Known spells */
 								 /*! \brief Level up information

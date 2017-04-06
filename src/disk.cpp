@@ -210,13 +210,13 @@ int KDisk::load_spelltypes(s_player *s, XMLElement *node)
 		auto values = parse_list(spelltypes->FirstChild()->Value());
 		if (!values.empty())
 		{
-			if (values.size() == NUM_SPELLTYPES)
+			if (values.size() == NUM_SPELL_TYPES)
 			{
 				copy(values.begin(), values.end(), s->sts);
 			}
 			else
 			{
-				TRACE("Wrong number of spelltypes, expected %d and got %d", NUM_SPELLTYPES, values.size());
+				TRACE("Wrong number of spelltypes, expected %d and got %d", NUM_SPELL_TYPES, values.size());
 				Game.program_death("Error loading XML");
 			}
 		}

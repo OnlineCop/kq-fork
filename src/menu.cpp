@@ -762,7 +762,7 @@ void player2fighter(int who, KFighter *pf)
 	{
 		current_fighter.sts[j] = plr.sts[j];
 	}
-	for (int j = 8; j < NUM_SPELLTYPES; j++)
+	for (int j = 8; j < NUM_SPELL_TYPES; j++)
 	{
 		current_fighter.sts[j] = 0;
 	}

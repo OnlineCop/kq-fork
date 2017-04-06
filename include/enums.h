@@ -74,7 +74,6 @@ enum eShadow {
 #define MAX_ANIM 5
 #define NUM_STATS 13
 #define NUM_RES 16
-#define NUM_SPELLTYPES 24
 #define MISS 9999
 #define NODISPLAY 9998
 #define SCANALL 9995
