@@ -304,3 +304,35 @@ void KFighter::AddTime(signed int AmountOfEffectToAdd)
 		sts[S_TIME] = 0;
 	}
 }
+
+bool KFighter::IsShield() const
+{
+	bool isShield = (sts[S_SHIELD] > 0);
+	return isShield;
+}
+
+void KFighter::SetShield(int HowLongEffectShouldLast)
+{
+	if (HowLongEffectShouldLast < 0)
+	{
+		HowLongEffectShouldLast = 0;
+	}
+	sts[S_SHIELD] = HowLongEffectShouldLast;
+}
+
+uint8_t KFighter::GetRemainingShield() const
+{
+	return sts[S_SHIELD];
+}
+
+void KFighter::AddShield(signed int AmountOfEffectToAdd)
+{
+	if (sts[S_SHIELD] + AmountOfEffectToAdd >= 0)
+	{
+		sts[S_SHIELD] += AmountOfEffectToAdd;
+	}
+	else
+	{
+		sts[S_SHIELD] = 0;
+	}
+}

@@ -507,7 +507,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 				aux = 0;
 				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 					if (fighter[fighter_index].IsAlive() &&
-						fighter[fighter_index].sts[S_SHIELD] == 0 &&
+						!fighter[fighter_index].IsShield() &&
 						!fighter[fighter_index].IsResist())
 					{
 						aux++;

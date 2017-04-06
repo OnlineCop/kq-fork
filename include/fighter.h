@@ -78,9 +78,11 @@ public:
 	uint8_t GetRemainingTime() const;
 	void AddTime(signed int AmountOfEffectToAdd);
 
-	//// S_SHIELD
-	//bool IsShield() const;
-	//void SetShield(bool bIsShield);
+	// S_SHIELD
+	bool IsShield() const;
+	void SetShield(int HowLongEffectShouldLast);
+	uint8_t GetRemainingShield() const;
+	void AddShield(signed int AmountOfEffectToAdd);
 
 	//// S_BLESS
 	//bool IsBlessed() const;

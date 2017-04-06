@@ -312,7 +312,7 @@ void draw_attacksprite(size_t target_fighter_index, int multiple_target,
 				dy = fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) -
 					(eff[magic_effect_index].ysize / 2);
 				draw_fighter(fighter_index, 0);
-				if (shows == 1 && fighter[fighter_index].sts[S_SHIELD] > 0)
+				if (shows == 1 && fighter[fighter_index].IsShield())
 				{
 					// The shield sprite in MISC is 48x48 pixels, so center it over the
 					// fighter.

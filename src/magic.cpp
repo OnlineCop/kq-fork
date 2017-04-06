@@ -270,9 +270,9 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 				fighter[target_fighter_index].SetTime(0);
 				r++;
 			}
-			if (fighter[target_fighter_index].sts[S_SHIELD] > 0)
+			if (fighter[target_fighter_index].IsShield())
 			{
-				fighter[target_fighter_index].sts[S_SHIELD] = 0;
+				fighter[target_fighter_index].SetShield(0);
 				r++;
 			}
 			if (fighter[target_fighter_index].sts[S_BLESS] > 0)
@@ -948,15 +948,15 @@ int KMagic::do_shield_check(int tgt, int amt)
 {
 	int a = 0;
 
-	if (fighter[tgt].sts[S_SHIELD] == 0)
+	if (!fighter[tgt].IsShield())
 	{
 		return amt;
 	}
-	if (fighter[tgt].sts[S_SHIELD] == 1)
+	if (fighter[tgt].GetRemainingShield() == 1)
 	{
 		a = amt * 75 / 100;
 	}
-	if (fighter[tgt].sts[S_SHIELD] == 2)
+	if (fighter[tgt].GetRemainingShield() == 2)
 	{
 		a = amt * 666 / 1000;
 	}
@@ -1021,9 +1021,9 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 	case M_SHIELDALL:
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 		{
-			if (fighter[fighter_index].sts[S_SHIELD] < 2)
+			if (fighter[fighter_index].GetRemainingShield() < 2)
 			{
-				fighter[fighter_index].sts[S_SHIELD] = 2;
+				fighter[fighter_index].SetShield(2);
 				ta[fighter_index] = NODISPLAY;
 			}
 			else
@@ -1035,12 +1035,12 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 	case M_DIVINEGUARD:
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 		{
-			if (fighter[fighter_index].sts[S_SHIELD] < 2 ||
+			if (fighter[fighter_index].GetRemainingShield() < 2 ||
 				fighter[fighter_index].GetRemainingResist() < 2)
 			{
-				if (fighter[fighter_index].sts[S_SHIELD] < 2)
+				if (fighter[fighter_index].GetRemainingShield() < 2)
 				{
-					fighter[fighter_index].sts[S_SHIELD] = 2;
+					fighter[fighter_index].SetShield(2);
 				}
 				if (fighter[fighter_index].GetRemainingResist() < 2)
 				{
@@ -1156,9 +1156,9 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		break;
 	case M_SHIELD:
-		if (fighter[target_fighter_index].sts[S_SHIELD] == 0)
+		if (!fighter[target_fighter_index].IsShield())
 		{
-			fighter[target_fighter_index].sts[S_SHIELD] = 1;
+			fighter[target_fighter_index].SetShield(1);
 		}
 		else
 		{
