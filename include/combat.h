@@ -57,7 +57,7 @@ extern int cury;
 extern uint32_t num_enemies;
 extern int ta[NUM_FIGHTERS];
 extern int deffect[NUM_FIGHTERS];
-extern int RemainingRegenAmount;
+extern int RemainingBattleCounter;
 extern uint8_t vspell;
 extern uint8_t ms;
 extern Raster *backart;

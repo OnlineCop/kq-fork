@@ -1126,7 +1126,7 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 	case M_REGENERATE:
 		if (!fighter[target_fighter_index].IsRegen())
 		{
-			set_timed_sts_effect(target_fighter_index, S_REGEN);
+			fighter[target_fighter_index].SetRegen(RemainingBattleCounter + 1);
 		}
 		else
 		{
@@ -1412,19 +1412,6 @@ int KMagic::res_throw(int tgt, int rs)
 	return 0;
 }
 
-/*! \brief Set counter for effects
- *
- * This is used to set things like poison and regen
- * which activate based on the combat timer.
- *
- * \param   fighter_index Index of character affected
- * \param   ss Which stat is being affected
- */
-void KMagic::set_timed_sts_effect(size_t fighter_index, int ss)
-{
-	fighter[fighter_index].sts[ss] = RemainingRegenAmount + 1;
-}
-
 /*! \brief Special damage on one or all enemies
  *
  * This is for skills and items that cause damage, but don't duplicate spells.
@@ -1523,7 +1510,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 			{
 				if (!res_throw(fighter_index, rune_type) && !non_dmg_save(fighter_index, 75))
 				{
-					set_timed_sts_effect(fighter_index, S_POISON);
+					fighter[fighter_index].SetPoisoned(RemainingBattleCounter + 1);
 				}
 			}
 			if (ta[fighter_index] != 0)
@@ -1717,10 +1704,9 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 			ta[fighter_index] = 0 - b;
 			if (b < 0 && rt == R_POISON)
 			{
-				if (!res_throw(fighter_index, rt) &&
-					!non_dmg_save(fighter_index, magic[spell_number].hit))
+				if (!res_throw(fighter_index, rt) && !non_dmg_save(fighter_index, magic[spell_number].hit))
 				{
-					set_timed_sts_effect(fighter_index, S_POISON);
+					fighter[fighter_index].SetPoisoned(RemainingBattleCounter + 1);
 				}
 			}
 			if (ta[fighter_index] != 0)

@@ -124,7 +124,6 @@ private:
 	void geffect_all_allies(size_t, size_t);
 	void geffect_one_ally(size_t, size_t);
 	void heal_one_ally(size_t, size_t, size_t);
-	void set_timed_sts_effect(size_t, int);
 	void special_spells(size_t, size_t);
 	void spell_damage(size_t, int, size_t, size_t);
 };
