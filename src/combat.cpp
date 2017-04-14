@@ -66,7 +66,7 @@ int cury;
 uint32_t num_enemies;
 int ta[NUM_FIGHTERS];
 int deffect[NUM_FIGHTERS];
-int rcount;
+int RemainingRegenAmount;
 uint8_t vspell;
 uint8_t ms;
 Raster *backart;
@@ -793,18 +793,18 @@ static void do_round(void)
 	{
 		if (timer_count >= 10)
 		{
-			rcount += BATTLE_INC;
+			RemainingRegenAmount += BATTLE_INC;
 
-			if (rcount >= ROUND_MAX)
+			if (RemainingRegenAmount >= ROUND_MAX)
 			{
-				rcount = 0;
+				RemainingRegenAmount = 0;
 			}
 
 			for (fighter_index = 0; fighter_index < PSIZE + num_enemies; fighter_index++)
 			{
 				if ((fighter_index < numchrs) || (fighter_index >= PSIZE))
 				{
-					if (((fighter[fighter_index].GetRemainingPoison() - 1) == rcount) &&
+					if (((fighter[fighter_index].GetRemainingPoison() - 1) == RemainingRegenAmount) &&
 						fighter[fighter_index].hp > 1)
 					{
 						a = kqrandom->random_range_exclusive(0, fighter[fighter_index].mhp / 20) + 1;
@@ -827,7 +827,7 @@ static void do_round(void)
 					/*  RB: the character is regenerating? when needed, get a  */
 					/*      random value (never lower than 5), and increase    */
 					/*      the character's health by that amount.             */
-					if ((fighter[fighter_index].GetRemainingRegen() - 1) == rcount)
+					if ((fighter[fighter_index].GetRemainingRegen() - 1) == RemainingRegenAmount)
 					{
 						a = kqrandom->random_range_exclusive(0, 5) + (fighter[fighter_index].mhp / 10);
 
@@ -843,7 +843,7 @@ static void do_round(void)
 
 					/*  RB: the character has ether actived?  */
 					cact[fighter_index] = 1;
-					if ((fighter[fighter_index].IsEther()) && (rcount == 0))
+					if ((fighter[fighter_index].IsEther()) && (RemainingRegenAmount == 0))
 					{
 						fighter[fighter_index].AddEther(-1);
 					}
@@ -856,7 +856,7 @@ static void do_round(void)
 							fighter[fighter_index].aux = 0;
 						}
 
-						if (rcount == 0)
+						if (RemainingRegenAmount == 0)
 						{
 							fighter[fighter_index].AddStopped(-1);
 						}
@@ -872,7 +872,7 @@ static void do_round(void)
 							fighter[fighter_index].aux = 0;
 						}
 
-						if (rcount == 0)
+						if (RemainingRegenAmount == 0)
 						{
 							fighter[fighter_index].AddSleep(-1);
 						}
@@ -888,7 +888,7 @@ static void do_round(void)
 							fighter[fighter_index].aux = 0;
 						}
 
-						if (rcount == 0)
+						if (RemainingRegenAmount == 0)
 						{
 							fighter[fighter_index].AddStone(-1);
 						}
@@ -1693,7 +1693,7 @@ static void roll_initiative(void)
 		}
 	}
 
-	rcount = 0;
+	RemainingRegenAmount = 0;
 
 	/* PH: This should be ok */
 	for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)

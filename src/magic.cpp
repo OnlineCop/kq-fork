@@ -1422,7 +1422,7 @@ int KMagic::res_throw(int tgt, int rs)
  */
 void KMagic::set_timed_sts_effect(size_t fighter_index, int ss)
 {
-	fighter[fighter_index].sts[ss] = rcount + 1;
+	fighter[fighter_index].sts[ss] = RemainingRegenAmount + 1;
 }
 
 /*! \brief Special damage on one or all enemies
@@ -1521,8 +1521,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 			ta[fighter_index] = 0 - b;
 			if (b < 0 && rune_type == R_POISON)
 			{
-				if (!res_throw(fighter_index, rune_type) &&
-					!non_dmg_save(fighter_index, 75))
+				if (!res_throw(fighter_index, rune_type) && !non_dmg_save(fighter_index, 75))
 				{
 					set_timed_sts_effect(fighter_index, S_POISON);
 				}
