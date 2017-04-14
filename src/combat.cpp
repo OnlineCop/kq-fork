@@ -340,9 +340,9 @@ eAttackResult attack_result(int ar, int dr)
  * \param   plyr Player: -1 means "no one is selected" (roll_initiative()), else
  * index of fighter
  * \param   hl Highlighted
- * \param   sall Select all
+ * \param   SelectAll Select all
  */
-void battle_render(signed int plyr, size_t hl, int sall)
+void battle_render(signed int plyr, size_t hl, int SelectAll)
 {
 	int a = 0;
 	int b = 0;
@@ -368,7 +368,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
 	clear_bitmap(double_buffer);
 	blit(backart, double_buffer, 0, 0, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H);
 
-	if ((sall == 0) && (curx > -1) && (cury > -1))
+	if ((SelectAll == 0) && (curx > -1) && (cury > -1))
 	{
 		draw_sprite(double_buffer, bptr, curx + (curw / 2) - 8, cury - 8);
 		if (current_fighter_index >= PSIZE)
@@ -381,8 +381,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
 				: fighter[current_fighter_index].cy - 32);
 
 			Draw.menubox(double_buffer, t - 8, z, strlen(fighter[current_fighter_index].name), 1, BLUE);
-			Draw.print_font(double_buffer, t, z + 8, fighter[current_fighter_index].name,
-				FNORMAL);
+			Draw.print_font(double_buffer, t, z + 8, fighter[current_fighter_index].name, FNORMAL);
 		}
 	}
 
@@ -393,7 +392,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
 
 		if (fighter[z].IsAlive())
 		{
-			draw_fighter(z, (sall == 1));
+			draw_fighter(z, (SelectAll == 1));
 		}
 		else
 		{
@@ -460,7 +459,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
 	{
 		if (fighter[fighter_index].IsAlive())
 		{
-			draw_fighter(fighter_index, (sall == 2));
+			draw_fighter(fighter_index, (SelectAll == 2));
 		}
 	}
 

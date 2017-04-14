@@ -43,7 +43,7 @@ class Raster;
 /*! \name combat function prototypes  */
 int combat_check(int, int);
 int combat(int);
-void battle_render(signed int, size_t, int);
+void battle_render(signed int plyr, size_t hl, int SelectAll);
 void draw_fighter(size_t, size_t);
 int fight(size_t, size_t, int);
 void multi_fight(size_t);
