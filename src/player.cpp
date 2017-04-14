@@ -335,3 +335,12 @@ void s_player::AddShield(signed int AmountOfEffectToAdd)
 		sts[S_SHIELD] = 0;
 	}
 }
+
+uint8_t s_player::GetStatValueBySpellType(eSpellType spellType)
+{
+	if (spellType < eSpellType::NUM_SPELL_TYPES)
+	{
+		return sts[spellType];
+	}
+	return 0;
+}

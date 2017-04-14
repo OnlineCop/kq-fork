@@ -828,7 +828,7 @@ void KDraw::draw_stsicon(Raster *where, int cc, int who, eSpellType spellType, i
 	{
 		if (cc == 0)
 		{
-			s = party[who].sts[j];
+			s = party[who].GetStatValueBySpellType((eSpellType)j);
 		}
 		else
 		{
@@ -1124,8 +1124,8 @@ string KDraw::parse_string(const string& the_string)
 		return the_string;
 	}
 
-	string party0 = party[pidx[0]].name;
-	string party1 = party[pidx[1]].name;
+	string party0(party[pidx[0]].name);
+	string party1(party[pidx[1]].name);
 
 	string output = the_string;
 	replaceAll(output, "$0", party0);

@@ -421,9 +421,7 @@ int learn_new_spells(int who)
  */
 static int need_spell(size_t target_fighter_index, size_t spell_number)
 {
-	size_t stats_index;
 	size_t figher_index, victim_figher_index = 0;
-	uint32_t affected_targets;
 
 	if (target_fighter_index < numchrs)
 	{
@@ -439,19 +437,42 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 		}
 		break;
 	case M_RECOVERY:
-		affected_targets = 0;
-		for (stats_index = 0; stats_index <= S_SLEEP; stats_index++)
+	{
+		uint32_t affected_targets = 0;
+		if (party[victim_figher_index].IsPoisoned())
 		{
-			if (party[victim_figher_index].sts[stats_index] != 0)
-			{
-				affected_targets++;
-			}
+			affected_targets++;
+		}
+		if (party[victim_figher_index].IsBlind())
+		{
+			affected_targets++;
+		}
+		if (party[victim_figher_index].IsCharmed())
+		{
+			affected_targets++;
+		}
+		if (party[victim_figher_index].IsStopped())
+		{
+			affected_targets++;
+		}
+		if (party[victim_figher_index].IsStone())
+		{
+			affected_targets++;
+		}
+		if (party[victim_figher_index].IsMute())
+		{
+			affected_targets++;
+		}
+		if (party[victim_figher_index].IsAsleep())
+		{
+			affected_targets++;
 		}
 		if (affected_targets == 0 || party[victim_figher_index].IsDead())
 		{
 			return 0;
 		}
 		break;
+	}
 	case M_LIFE:
 	case M_FULLLIFE:
 		if (party[victim_figher_index].IsAlive())
@@ -463,9 +484,10 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 	case M_CURE2:
 	case M_CURE3:
 	case M_CURE4:
+	{
 		if (target_fighter_index == SEL_ALL_ALLIES)
 		{
-			affected_targets = 0;
+			uint32_t affected_targets = 0;
 			for (figher_index = 0; figher_index < numchrs; figher_index++)
 			{
 				if (party[pidx[figher_index]].hp == party[pidx[figher_index]].mhp ||
@@ -488,6 +510,7 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 			}
 		}
 		break;
+	}
 	case M_WARP:
 
 		/* RB FIXME What was this supposed to do? */

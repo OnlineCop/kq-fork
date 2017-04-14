@@ -8,6 +8,7 @@
 /*! \brief Player */
 class s_player
 {
+	friend class KDisk;
 public:
 	s_player();
 
@@ -79,6 +80,8 @@ public:
 	uint8_t GetRemainingShield() const;
 	void AddShield(signed int AmountOfEffectToAdd);
 
+	uint8_t GetStatValueBySpellType(eSpellType spellType);
+
 	char name[9]; /*!< Entity name */
 	int xp;       /*!< Entity experience */
 	int next;     /*!< Experience needed for level-up */
@@ -88,9 +91,8 @@ public:
 	int mhp;      /*!< Maximum hit points */
 	int mp;       /*!< Magic points */
 	int mmp;      /*!< Maximum magic points */
-	int stats[NUM_STATS];
+	int stats[NUM_STATS];        /*!< See A_* constants in kq.h */
 	char res[NUM_RES];           /*!< eResistance: See R_* constants */
-	uint8_t sts[NUM_SPELL_TYPES]; /*!< eSpellType */
 	uint8_t eqp[NUM_EQUIPMENT];  /*!< eEquipment: Weapons, armor, etc. equipped */
 	uint8_t spells[NUM_SPELLS];  /*!< Known spells */
 								 /*! \brief Level up information
@@ -100,6 +102,9 @@ public:
 								 * * Items 4..16 - Actually used by player2fighter to adjust your base stats to the level you're on.
 								 */
 	unsigned short lup[NUM_LUP];
+
+protected:
+	uint8_t sts[NUM_SPELL_TYPES]; /*!< eSpellType */
 };
 
 extern s_player party[MAXCHRS];

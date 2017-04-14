@@ -263,17 +263,21 @@ static void buy_menu(void)
  */
 void do_inn_effects(int do_delay)
 {
-	size_t pidx_index, stats_index, party_index;
+	size_t pidx_index, party_index;
 
 	for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
 	{
 		party_index = pidx[pidx_index];
 		party[party_index].hp = party[party_index].mhp;
 		party[party_index].mp = party[party_index].mmp;
-		for (stats_index = 0; stats_index < 8; stats_index++)
-		{
-			party[party_index].sts[stats_index] = 0;
-		}
+		party[party_index].SetPoisoned(0);
+		party[party_index].SetBlind(0);
+		party[party_index].SetCharmed(0);
+		party[party_index].SetStopped(0);
+		party[party_index].SetStone(0);
+		party[party_index].SetMute(0);
+		party[party_index].SetSleep(0);
+		party[party_index].SetDead(0);
 	}
 	Music.pause_music();
 	play_effect(36, 128);

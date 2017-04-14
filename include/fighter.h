@@ -176,7 +176,7 @@ public:
 	int aux;
 	int bonus;
 	int bstat;
-	int mrp;
+	int mrp;      /*!< Magic use rate (0-100) */
 	int imb_s;
 	int imb_a;
 	int imb[2];
