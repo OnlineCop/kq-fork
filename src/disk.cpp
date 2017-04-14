@@ -177,7 +177,7 @@ vector<int> KDisk::parse_list(const char *str)
 	return list;
 }
 
-int KDisk::load_resistances(KPlayer *s, XMLElement *node)
+int KDisk::load_resistances_xml(KPlayer *s, XMLElement *node)
 {
 	std::fill(std::begin(s->res), std::end(s->res), 0);
 	XMLElement *resistances = node->FirstChildElement(TAG_RESISTANCES);
@@ -201,7 +201,7 @@ int KDisk::load_resistances(KPlayer *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_spelltypes(KPlayer *s, XMLElement *node)
+int KDisk::load_spelltypes_xml(KPlayer *s, XMLElement *node)
 {
 	std::fill(std::begin(s->sts), std::end(s->sts), 0);
 	XMLElement *spelltypes = node->FirstChildElement(TAG_SPELL_TYPES);
@@ -224,7 +224,7 @@ int KDisk::load_spelltypes(KPlayer *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_spells(KPlayer *s, XMLElement *node)
+int KDisk::load_spells_xml(KPlayer *s, XMLElement *node)
 {
 	std::fill(std::begin(s->spells), std::end(s->spells), 0);
 	XMLElement *spells = node->FirstChildElement(TAG_SPELLS);
@@ -247,7 +247,7 @@ int KDisk::load_spells(KPlayer *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_equipment(KPlayer *s, XMLElement *node)
+int KDisk::load_equipment_xml(KPlayer *s, XMLElement *node)
 {
 	std::fill(std::begin(s->eqp), std::end(s->eqp), 0);
 	XMLElement *eqp = node->FirstChildElement(TAG_EQUIPMENT);
@@ -270,7 +270,7 @@ int KDisk::load_equipment(KPlayer *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_attributes(KPlayer *s, XMLElement *node)
+int KDisk::load_attributes_xml(KPlayer *s, XMLElement *node)
 {
 	XMLElement *attributes = node->FirstChildElement(TAG_ATTRIBUTES);
 	if (attributes)
@@ -334,7 +334,7 @@ int KDisk::load_attributes(KPlayer *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_core_properties(KPlayer *s, XMLElement *node)
+int KDisk::load_core_properties_xml(KPlayer *s, XMLElement *node)
 {
 	XMLElement *properties = node->FirstChildElement(TAG_PROPERTIES);
 	if (properties)
@@ -386,7 +386,7 @@ int KDisk::load_core_properties(KPlayer *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_lup(KPlayer *s, XMLElement *node)
+int KDisk::load_lup_xml(KPlayer *s, XMLElement *node)
 {
 	XMLElement *elem = node->FirstChildElement(TAG_LEVEL_UP);
 	if (elem && !elem->NoChildren())
@@ -402,15 +402,15 @@ int KDisk::load_lup(KPlayer *s, XMLElement *node)
 	}
 }
 
-int KDisk::load_s_player(KPlayer *s, XMLElement *node)
+int KDisk::load_s_player_xml(KPlayer *s, XMLElement *node)
 {
-	load_core_properties(s, node);
-	load_attributes(s, node);
-	load_resistances(s, node);
-	load_spelltypes(s, node);
-	load_spells(s, node);
-	load_equipment(s, node);
-	load_lup(s, node);
+	load_core_properties_xml(s, node);
+	load_attributes_xml(s, node);
+	load_resistances_xml(s, node);
+	load_spelltypes_xml(s, node);
+	load_spells_xml(s, node);
+	load_equipment_xml(s, node);
+	load_lup_xml(s, node);
 	return 0;
 }
 
@@ -431,7 +431,7 @@ static XMLElement *addprop(XMLElement *parent, const char *name, const std::stri
 }
 
 /** Store spell info or nothing if all spells are 'zero' */
-int KDisk::store_spells(const KPlayer *s, XMLElement *node)
+int KDisk::store_spells_xml(const KPlayer *s, XMLElement *node)
 {
 	auto startp = std::begin(s->spells);
 	auto endp = std::end(s->spells);
@@ -444,7 +444,7 @@ int KDisk::store_spells(const KPlayer *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::store_equipment(const KPlayer *s, XMLElement *node)
+int KDisk::store_equipment_xml(const KPlayer *s, XMLElement *node)
 {
 	auto startp = std::begin(s->eqp);
 	auto endp = std::end(s->eqp);
@@ -457,7 +457,7 @@ int KDisk::store_equipment(const KPlayer *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::store_spelltypes(const KPlayer *s, XMLElement *node)
+int KDisk::store_spelltypes_xml(const KPlayer *s, XMLElement *node)
 {
 	auto startp = std::begin(s->sts);
 	auto endp = std::end(s->sts);
@@ -470,7 +470,7 @@ int KDisk::store_spelltypes(const KPlayer *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::store_resistances(const KPlayer *s, XMLElement *node)
+int KDisk::store_resistances_xml(const KPlayer *s, XMLElement *node)
 {
 	auto startp = std::begin(s->res);
 	auto endp = std::end(s->res);
@@ -483,7 +483,7 @@ int KDisk::store_resistances(const KPlayer *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::store_stats(const KPlayer *s, XMLElement *node)
+int KDisk::store_stats_xml(const KPlayer *s, XMLElement *node)
 {
 	auto startp = std::begin(s->stats);
 	auto endp = std::end(s->stats);
@@ -496,7 +496,7 @@ int KDisk::store_stats(const KPlayer *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::store_lup(const KPlayer *s, XMLElement *node)
+int KDisk::store_lup_xml(const KPlayer *s, XMLElement *node)
 {
 	XMLElement *elem = node->GetDocument()->NewElement(TAG_LEVEL_UP);
 	value_list(elem, std::begin(s->lup), std::end(s->lup));
@@ -525,7 +525,7 @@ static const std::map<const char *, ePIDX, cstring_less> id_lookup = {
 
 /** Store player inside a node that you supply.
  */
-int KDisk::save_player(const KPlayer *s, XMLElement *node)
+int KDisk::save_player_xml(const KPlayer *s, XMLElement *node)
 {
 	XMLDocument *doc = node->GetDocument();
 	XMLElement *hero = doc->NewElement(TAG_HERO);
@@ -554,16 +554,16 @@ int KDisk::save_player(const KPlayer *s, XMLElement *node)
 	addprop(properties, "mmp", s->mmp);
 	addprop(properties, "mrp", s->mrp);
 	// All other data
-	store_stats(s, hero);
-	store_resistances(s, hero);
-	store_spelltypes(s, hero);
-	store_equipment(s, hero);
-	store_spells(s, hero);
-	store_lup(s, hero);
+	store_stats_xml(s, hero);
+	store_resistances_xml(s, hero);
+	store_spelltypes_xml(s, hero);
+	store_equipment_xml(s, hero);
+	store_spells_xml(s, hero);
+	store_lup_xml(s, hero);
 	return 0;
 }
 
-int KDisk::load_players(XMLElement *root)
+int KDisk::load_players_xml(XMLElement *root)
 {
 	XMLElement *heroes_elem = root->FirstChildElement(TAG_HEROES);
 	if (heroes_elem)
@@ -576,7 +576,7 @@ int KDisk::load_players(XMLElement *root)
 				auto it = id_lookup.find(attr);
 				if (it != std::end(id_lookup))
 				{
-					load_s_player(&party[it->second], hero);
+					load_s_player_xml(&party[it->second], hero);
 				}
 			}
 		}
@@ -588,19 +588,19 @@ int KDisk::load_players(XMLElement *root)
 	return 1;
 }
 
-int KDisk::save_players(XMLElement *node)
+int KDisk::save_players_xml(XMLElement *node)
 {
 	XMLDocument *doc = node->GetDocument();
 	XMLElement *hs = doc->NewElement(TAG_HEROES);
 	for (const auto &p : party)
 	{
-		save_player(&p, hs);
+		save_player_xml(&p, hs);
 	}
 	node->InsertEndChild(hs);
 	return 1;
 }
 
-int KDisk::save_treasures(XMLElement *node)
+int KDisk::save_treasures_xml(XMLElement *node)
 {
 	auto startp = std::begin(treasure);
 	auto endp = std::end(treasure);
@@ -613,7 +613,7 @@ int KDisk::save_treasures(XMLElement *node)
 	return 1;
 }
 
-int KDisk::load_treasures(XMLElement *node)
+int KDisk::load_treasures_xml(XMLElement *node)
 {
 	auto startp = std::begin(treasure);
 	auto endp = std::end(treasure);
@@ -636,7 +636,7 @@ int KDisk::load_treasures(XMLElement *node)
 	return 1;
 }
 
-int KDisk::save_progress(XMLElement *node)
+int KDisk::save_progress_xml(XMLElement *node)
 {
 	auto startp = std::begin(progress);
 	auto endp = std::end(progress);
@@ -649,7 +649,7 @@ int KDisk::save_progress(XMLElement *node)
 	return 1;
 }
 
-int KDisk::load_progress(XMLElement *node)
+int KDisk::load_progress_xml(XMLElement *node)
 {
 	auto startp = std::begin(progress);
 	auto endp = std::end(progress);
@@ -672,7 +672,7 @@ int KDisk::load_progress(XMLElement *node)
 	return 1;
 }
 
-int KDisk::save_save_spells(XMLElement *node)
+int KDisk::save_save_spells_xml(XMLElement *node)
 {
 	auto startp = std::begin(save_spells);
 	auto endp = std::end(save_spells);
@@ -685,7 +685,7 @@ int KDisk::save_save_spells(XMLElement *node)
 	return 1;
 }
 
-int KDisk::load_save_spells(XMLElement *node)
+int KDisk::load_save_spells_xml(XMLElement *node)
 {
 	auto startp = std::begin(save_spells);
 	auto endp = std::end(save_spells);
@@ -708,7 +708,7 @@ int KDisk::load_save_spells(XMLElement *node)
 	return 1;
 }
 
-int KDisk::save_specials(XMLElement *node)
+int KDisk::save_specials_xml(XMLElement *node)
 {
 	auto startp = std::begin(player_special_items);
 	auto endp = std::end(player_special_items);
@@ -721,7 +721,7 @@ int KDisk::save_specials(XMLElement *node)
 	return 1;
 }
 
-int KDisk::load_specials(XMLElement *node)
+int KDisk::load_specials_xml(XMLElement *node)
 {
 	auto startp = std::begin(player_special_items);
 	auto endp = std::end(player_special_items);
@@ -744,7 +744,7 @@ int KDisk::load_specials(XMLElement *node)
 	return 1;
 }
 
-int KDisk::save_global_inventory(XMLElement *node)
+int KDisk::save_global_inventory_xml(XMLElement *node)
 {
 	XMLDocument *doc = node->GetDocument();
 	XMLElement *inventory = doc->NewElement(TAG_INVENTORY);
@@ -762,7 +762,7 @@ int KDisk::save_global_inventory(XMLElement *node)
 	return 1;
 }
 
-int KDisk::load_global_inventory(XMLElement *node)
+int KDisk::load_global_inventory_xml(XMLElement *node)
 {
 	for (auto &item : g_inv)
 	{
@@ -783,7 +783,7 @@ int KDisk::load_global_inventory(XMLElement *node)
 	return 0;
 }
 
-int KDisk::save_shop_info(XMLElement *node)
+int KDisk::save_shop_info_xml(XMLElement *node)
 {
 	bool visited = false;
 	// Check if any shops have been visited
@@ -817,7 +817,7 @@ int KDisk::save_shop_info(XMLElement *node)
 	return 1;
 }
 
-int KDisk::load_shop_info(XMLElement *node)
+int KDisk::load_shop_info_xml(XMLElement *node)
 {
 	for (auto &shop : shops)
 	{
@@ -847,7 +847,7 @@ int KDisk::load_shop_info(XMLElement *node)
 	return 1;
 }
 
-int KDisk::save_general_props(XMLElement *node)
+int KDisk::save_general_props_xml(XMLElement *node)
 {
 	XMLElement *properties = node->GetDocument()->NewElement(TAG_PROPERTIES);
 	s_sgstats stats = s_sgstats::get_current();
@@ -876,7 +876,7 @@ int KDisk::save_general_props(XMLElement *node)
 	return 1;
 }
 
-int KDisk::load_general_props(XMLElement *node)
+int KDisk::load_general_props_xml(XMLElement *node)
 {
 	XMLElement *properties = node->FirstChildElement(TAG_PROPERTIES);
 	if (properties)
@@ -940,14 +940,14 @@ int KDisk::load_general_props(XMLElement *node)
 int KDisk::save_game_xml(XMLElement *node)
 {
 	node->SetAttribute("version", "93");
-	save_general_props(node);
-	save_players(node);
-	save_treasures(node);
-	save_progress(node);
-	save_save_spells(node);
-	save_specials(node);
-	save_global_inventory(node);
-	save_shop_info(node);
+	save_general_props_xml(node);
+	save_players_xml(node);
+	save_treasures_xml(node);
+	save_progress_xml(node);
+	save_save_spells_xml(node);
+	save_specials_xml(node);
+	save_global_inventory_xml(node);
+	save_shop_info_xml(node);
 	return 1;
 }
 
@@ -964,14 +964,14 @@ int KDisk::save_game_to_file(const char *filename)
 
 int KDisk::load_game_xml(XMLElement *node)
 {
-	load_general_props(node);
-	load_players(node);
-	load_treasures(node);
-	load_progress(node);
-	load_save_spells(node);
-	load_specials(node);
-	load_global_inventory(node);
-	load_shop_info(node);
+	load_general_props_xml(node);
+	load_players_xml(node);
+	load_treasures_xml(node);
+	load_progress_xml(node);
+	load_save_spells_xml(node);
+	load_specials_xml(node);
+	load_global_inventory_xml(node);
+	load_shop_info_xml(node);
 	return 1;
 }
 
@@ -991,19 +991,19 @@ int KDisk::load_game_from_file(const char *filename)
 	return 0;
 }
 
-void KDisk::printprop(tinyxml2::XMLPrinter &out, const char *name, int value)
+void KDisk::printprop(tinyxml2::XMLPrinter &out, const string& name, int value)
 {
 	out.OpenElement(TAG_PROPERTY);
-	out.PushAttribute("name", name);
+	out.PushAttribute("name", name.c_str());
 	out.PushAttribute("value", value);
 	out.CloseElement();
 }
 
-void KDisk::printprop(tinyxml2::XMLPrinter &out, const char *name, const char *value)
+void KDisk::printprop(tinyxml2::XMLPrinter &out, const string& name, const string& value)
 {
 	out.OpenElement(TAG_PROPERTY);
-	out.PushAttribute("name", name);
-	out.PushAttribute("value", value);
+	out.PushAttribute("name", name.c_str());
+	out.PushAttribute("value", value.c_str());
 	out.CloseElement();
 }
 
@@ -1012,7 +1012,7 @@ int KDisk::save_s_fighter(tinyxml2::XMLPrinter &out, const KFighter &f)
 	out.OpenElement("fighter");
 	out.PushAttribute("id", f.name.c_str());
 	out.OpenElement(TAG_PROPERTIES);
-	printprop(out, "name", f.name.c_str());
+	printprop(out, "name", f.name);
 	printprop(out, "xp", f.xp);
 	printprop(out, "gp", f.gp);
 	printprop(out, "lvl", f.lvl);
@@ -1054,13 +1054,13 @@ int KDisk::save_s_fighter(tinyxml2::XMLPrinter &out, const KFighter &f)
 	out.CloseElement(/*sts*/);
 	out.OpenElement("ai");
 	out.PushText(make_list(std::begin(f.ai), std::end(f.ai)).c_str());
-	out.CloseElement();
+	out.CloseElement(/*ai*/);
 	out.OpenElement("aip");
 	out.PushText(make_list(std::begin(f.aip), std::end(f.aip)).c_str());
-	out.CloseElement();
+	out.CloseElement(/*aip*/);
 	out.OpenElement("atrack");
 	out.PushText(make_list(std::begin(f.atrack), std::end(f.atrack)).c_str());
-	out.CloseElement();
+	out.CloseElement(/*atrack*/);
 	out.OpenElement("imb");
 	vector<int> imb{ f.imb_s, f.imb_a, f.imb[0], f.imb[1] };
 	out.PushText(make_list(imb.begin(), imb.end()).c_str());
