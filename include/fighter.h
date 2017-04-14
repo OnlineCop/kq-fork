@@ -12,6 +12,7 @@ class Raster;
  */
 class KFighter
 {
+	friend class KDisk;
 public:
 	KFighter();
 	KFighter(const s_player &inPlayer);
