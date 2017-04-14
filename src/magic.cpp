@@ -1346,7 +1346,7 @@ int KMagic::non_dmg_save(int tgt, int per)
  *
  * \param   target_fighter_index Target
  * \param   rune_index Rune/element
- * \param   amt Amount of resistence to given rune
+ * \param   amt Amount of resistance to given rune
  * \returns difference of resistance to damage given by rune
  */
 int KMagic::res_adjust(size_t target_fighter_index, size_t rune_index, int amt)

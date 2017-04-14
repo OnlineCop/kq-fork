@@ -473,16 +473,50 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 			Magic.adjust_mp(fighter_index, ta[fighter_index]);
 		}
 		break;
-	case I_NLEAF:
-	case I_NPOULTICE:
-	case I_KBREW:
+	case I_NLEAF:/*104*/
 		if (fighter[fighter_index].IsDead() || fighter[fighter_index].IsStone())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
-		if (fighter[fighter_index].sts[items[ti].elem] != 0)
+		if (fighter[fighter_index].IsPoisoned())
 		{
-			fighter[fighter_index].sts[items[ti].elem] = 0;
+			fighter[fighter_index].SetPoisoned(0);
+		}
+		else
+		{
+			return ITEM_EFFECT_INEFFECTIVE;
+		}
+		if (in_combat == 1)
+		{
+			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+		}
+		break;
+	case I_NPOULTICE:/*115*/
+		if (fighter[fighter_index].IsDead() || fighter[fighter_index].IsStone())
+		{
+			return ITEM_EFFECT_INEFFECTIVE;
+		}
+		if (fighter[fighter_index].IsBlind())
+		{
+			fighter[fighter_index].SetBlind(false);
+		}
+		else
+		{
+			return ITEM_EFFECT_INEFFECTIVE;
+		}
+		if (in_combat == 1)
+		{
+			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+		}
+		break;
+	case I_KBREW:/*113*/
+		if (fighter[fighter_index].IsDead() || fighter[fighter_index].IsStone())
+		{
+			return ITEM_EFFECT_INEFFECTIVE;
+		}
+		if (fighter[fighter_index].IsMute())
+		{
+			fighter[fighter_index].SetMute(0);
 		}
 		else
 		{
