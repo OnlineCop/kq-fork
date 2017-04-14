@@ -452,8 +452,6 @@ void KMenu::display_quest_window(void)
 void KMenu::revert_equipstats(void)
 {
 	size_t fighter_index, end_fighter_index;
-	size_t pidx_index;
-	size_t stats_index;
 
 	if (numchrs > PSIZE)
 	{
@@ -465,7 +463,7 @@ void KMenu::revert_equipstats(void)
 	}
 	for (fighter_index = 0; fighter_index < end_fighter_index && fighter_index < MAXCHRS; fighter_index++)
 	{
-		pidx_index = pidx[fighter_index];
+		size_t pidx_index = pidx[fighter_index];
 		party[pidx_index].hp = fighter[fighter_index].hp;
 		if (party[pidx_index].hp > party[pidx_index].mhp)
 		{
@@ -476,22 +474,28 @@ void KMenu::revert_equipstats(void)
 		{
 			party[pidx_index].mp = party[pidx_index].mmp;
 		}
-		for (stats_index = 0; stats_index < 12; stats_index++)
-		{
-			party[pidx_index].sts[stats_index] = 0;
-		}
+
 		party[pidx_index].SetPoisoned(fighter[fighter_index].GetRemainingPoison());
 		party[pidx_index].SetBlind(fighter[fighter_index].IsBlind());
+		party[pidx_index].SetCharmed(0);
+		party[pidx_index].SetStopped(0);
+		party[pidx_index].SetStone(0);
 		party[pidx_index].SetMute(fighter[fighter_index].IsMute());
-		party[pidx_index].SetAlive(fighter[fighter_index].IsAlive());
-		for (stats_index = 0; stats_index < 12; stats_index++)
-		{
-			if (stats_index != S_POISON && stats_index != S_BLIND &&
-				stats_index != S_MUTE && stats_index != S_DEAD)
-			{
-				fighter[fighter_index].sts[stats_index] = 0;
-			}
-		}
+		party[pidx_index].SetSleep(0);
+		party[pidx_index].SetDead(fighter[fighter_index].IsDead());
+		party[pidx_index].SetMalison(0);
+		party[pidx_index].SetResist(0);
+		party[pidx_index].SetTime(0);
+		party[pidx_index].SetShield(0);
+		
+		fighter[fighter_index].SetCharmed(0);
+		fighter[fighter_index].SetStopped(0);
+		fighter[fighter_index].SetStone(0);
+		fighter[fighter_index].SetSleep(0);
+		fighter[fighter_index].SetMalison(0);
+		fighter[fighter_index].SetResist(0);
+		fighter[fighter_index].SetTime(0);
+		fighter[fighter_index].SetShield(0);
 	}
 }
 
@@ -758,14 +762,27 @@ void player2fighter(int who, KFighter *pf)
 	current_fighter.mhp = plr.mhp;
 	current_fighter.mp = plr.mp;
 	current_fighter.mmp = plr.mmp;
-	for (int j = 0; j < 8; j++)
-	{
-		current_fighter.sts[j] = plr.sts[j];
-	}
-	for (int j = 8; j < NUM_SPELL_TYPES; j++)
-	{
-		current_fighter.sts[j] = 0;
-	}
+
+	current_fighter.SetPoisoned(plr.IsPoisoned());
+	current_fighter.SetBlind(plr.IsBlind());
+	current_fighter.SetCharmed(plr.IsCharmed());
+	current_fighter.SetStopped(plr.IsStopped());
+	current_fighter.SetStone(plr.IsStone());
+	current_fighter.SetMute(plr.IsMute());
+	current_fighter.SetSleep(plr.IsAsleep());
+	current_fighter.SetDead(plr.IsDead());
+
+	current_fighter.SetMalison(0);
+	current_fighter.SetResist(0);
+	current_fighter.SetTime(0);
+	current_fighter.SetShield(0);
+	current_fighter.SetBless(0);
+	current_fighter.SetStrength(0);
+	current_fighter.SetEther(0);
+	current_fighter.SetTrueshot(0);
+	current_fighter.SetRegen(0);
+	current_fighter.SetInfuse(0);
+
 	for (int j = 0; j < NUM_ATTRIBUTES; j++)
 	{
 		current_fighter.stats[j] = ((plr.lvl - 1) * plr.lup[j + 4] + plr.stats[j]) / 100;

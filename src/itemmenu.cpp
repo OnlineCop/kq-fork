@@ -476,8 +476,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 	case I_NLEAF:
 	case I_NPOULTICE:
 	case I_KBREW:
-		if (fighter[fighter_index].IsDead() ||
-			fighter[fighter_index].IsStone())
+		if (fighter[fighter_index].IsDead() || fighter[fighter_index].IsStone())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
@@ -514,13 +513,13 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		break;
 	case I_EDAENRA:
 		tmp = 0;
-		for (i = 0; i < 7; i++)
-		{
-			if (fighter[fighter_index].sts[i] != 0)
-			{
-				tmp++;
-			}
-		}
+		if (fighter[fighter_index].IsPoisoned()) tmp++;
+		if (fighter[fighter_index].IsBlind()) tmp++;
+		if (fighter[fighter_index].IsCharmed()) tmp++;
+		if (fighter[fighter_index].IsStopped()) tmp++;
+		if (fighter[fighter_index].IsStone()) tmp++;
+		if (fighter[fighter_index].IsMute()) tmp++;
+		if (fighter[fighter_index].IsAsleep()) tmp++;
 		if (tmp == 0 || fighter[fighter_index].IsDead())
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
@@ -529,10 +528,19 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
-		for (i = 0; i < 12; i++)
-		{
-			fighter[fighter_index].sts[i] = 0;
-		}
+		fighter[fighter_index].SetPoisoned(0);
+		fighter[fighter_index].SetBlind(0);
+		fighter[fighter_index].SetCharmed(0);
+		fighter[fighter_index].SetStopped(0);
+		fighter[fighter_index].SetStone(0);
+		fighter[fighter_index].SetMute(0);
+		fighter[fighter_index].SetSleep(0);
+		fighter[fighter_index].SetDead(0);
+		fighter[fighter_index].SetMalison(0);
+		fighter[fighter_index].SetResist(0);
+		fighter[fighter_index].SetTime(0);
+		fighter[fighter_index].SetShield(0);
+
 		if (in_combat == 1)
 		{
 			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
@@ -543,10 +551,24 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
-		for (a = 0; a < 24; a++)
-		{
-			fighter[fighter_index].sts[a] = 0;
-		}
+		fighter[fighter_index].SetPoisoned(0);
+		fighter[fighter_index].SetBlind(0);
+		fighter[fighter_index].SetCharmed(0);
+		fighter[fighter_index].SetStopped(0);
+		fighter[fighter_index].SetStone(0);
+		fighter[fighter_index].SetMute(0);
+		fighter[fighter_index].SetSleep(0);
+		fighter[fighter_index].SetDead(0);
+		fighter[fighter_index].SetMalison(0);
+		fighter[fighter_index].SetResist(0);
+		fighter[fighter_index].SetTime(0);
+		fighter[fighter_index].SetShield(0);
+		fighter[fighter_index].SetBless(0);
+		fighter[fighter_index].SetStrength(0);
+		fighter[fighter_index].SetEther(0);
+		fighter[fighter_index].SetTrueshot(0);
+		fighter[fighter_index].SetRegen(0);
+		fighter[fighter_index].SetInfuse(0);
 		fighter[fighter_index].hp = 1;
 		fighter[fighter_index].aframe = 0;
 		if (in_combat == 1)
@@ -743,10 +765,14 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		{
 			fighter[fighter_index].hp = fighter[fighter_index].mhp;
 			fighter[fighter_index].mp = fighter[fighter_index].mmp;
-			for (b = 0; b < 8; b++)
-			{
-				fighter[fighter_index].sts[b] = 0;
-			}
+			fighter[fighter_index].SetPoisoned(0);
+			fighter[fighter_index].SetBlind(0);
+			fighter[fighter_index].SetCharmed(0);
+			fighter[fighter_index].SetStopped(0);
+			fighter[fighter_index].SetStone(0);
+			fighter[fighter_index].SetMute(0);
+			fighter[fighter_index].SetSleep(0);
+			fighter[fighter_index].SetDead(0);
 		}
 	}
 	return ITEM_EFFECT_SUCCESS_SINGLE;

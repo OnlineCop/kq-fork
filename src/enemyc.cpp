@@ -563,8 +563,7 @@ int KEnemy::StatsCheck(int ws, int s)
 	{
 		for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 		{
-			if (fighter[fighter_index].IsAlive() &&
-				fighter[fighter_index].sts[ws] == 0)
+			if (fighter[fighter_index].IsAlive() && fighter[fighter_index].sts[ws] == 0)
 			{
 				fighter_affected++;
 			}
@@ -578,8 +577,7 @@ int KEnemy::StatsCheck(int ws, int s)
 	{
 		for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 		{
-			if (fighter[fighter_index].IsAlive() &&
-				fighter[fighter_index].sts[ws] == 0)
+			if (fighter[fighter_index].IsAlive() && fighter[fighter_index].sts[ws] == 0)
 			{
 				fighter_affected++;
 			}
@@ -763,10 +761,24 @@ void KEnemy::LoadEnemyStats(const string &fullFilename)
 		}
 		fighter_loaded_from_disk->hp = fighter_loaded_from_disk->mhp;
 		fighter_loaded_from_disk->mp = fighter_loaded_from_disk->mmp;
-		for (size_t somethingToLoopWith = 0; somethingToLoopWith < 24; somethingToLoopWith++)
-		{
-			fighter_loaded_from_disk->sts[somethingToLoopWith] = 0;
-		}
+		fighter_loaded_from_disk->SetPoisoned(0);
+		fighter_loaded_from_disk->SetBlind(0);
+		fighter_loaded_from_disk->SetCharmed(0);
+		fighter_loaded_from_disk->SetStopped(0);
+		fighter_loaded_from_disk->SetStone(0);
+		fighter_loaded_from_disk->SetMute(0);
+		fighter_loaded_from_disk->SetSleep(0);
+		fighter_loaded_from_disk->SetDead(0);
+		fighter_loaded_from_disk->SetMalison(0);
+		fighter_loaded_from_disk->SetResist(0);
+		fighter_loaded_from_disk->SetTime(0);
+		fighter_loaded_from_disk->SetShield(0);
+		fighter_loaded_from_disk->SetBless(0);
+		fighter_loaded_from_disk->SetStrength(0);
+		fighter_loaded_from_disk->SetEther(0);
+		fighter_loaded_from_disk->SetTrueshot(0);
+		fighter_loaded_from_disk->SetRegen(0);
+		fighter_loaded_from_disk->SetInfuse(0);
 		fighter_loaded_from_disk->aux = 0;
 		fighter_loaded_from_disk->mrp = 100;
 		++current_enemy;

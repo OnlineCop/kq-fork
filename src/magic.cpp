@@ -201,7 +201,6 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighter_index, size_t spell_number)
 {
 	int r, a = 0, sp_hit;
-	size_t stats_index;
 
 	ta[target_fighter_index] = NODISPLAY;
 	if (fighter[target_fighter_index].IsStone())
@@ -242,14 +241,23 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 	case M_STONE:
 		if (non_dmg_save(target_fighter_index, sp_hit) == 0)
 		{
-			for (stats_index = 0; stats_index < 24; stats_index++)
-			{
-				if (stats_index != S_DEAD)
-				{
-					fighter[target_fighter_index].sts[stats_index] = 0;
-				}
-			}
+			fighter[target_fighter_index].SetPoisoned(0);
+			fighter[target_fighter_index].SetBlind(0);
+			fighter[target_fighter_index].SetCharmed(0);
+			fighter[target_fighter_index].SetStopped(0);
 			fighter[target_fighter_index].SetStone(kqrandom->random_range_exclusive(3, 6));
+			fighter[target_fighter_index].SetMute(0);
+			fighter[target_fighter_index].SetSleep(0);
+			fighter[target_fighter_index].SetMalison(0);
+			fighter[target_fighter_index].SetResist(0);
+			fighter[target_fighter_index].SetTime(0);
+			fighter[target_fighter_index].SetShield(0);
+			fighter[target_fighter_index].SetBless(0);
+			fighter[target_fighter_index].SetStrength(0);
+			fighter[target_fighter_index].SetEther(0);
+			fighter[target_fighter_index].SetTrueshot(0);
+			fighter[target_fighter_index].SetRegen(0);
+			fighter[target_fighter_index].SetInfuse(0);
 		}
 		else
 		{
@@ -1190,14 +1198,12 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
  * This is for a special category of spells which are beneficial, but
  * not really effect spells or curative spells.
  *
- * \param   caster_fighter_index Caster
+ * \param   caster_fighter_index Caster (unused)
  * \param   target_fighter_index Target
  * \param   spell_number Spell number
  */
 void KMagic::heal_one_ally(size_t caster_fighter_index, size_t target_fighter_index, size_t spell_number)
 {
-	size_t stat_index;
-
 	(void)caster_fighter_index;
 	switch (spell_number)
 	{
@@ -1211,19 +1217,36 @@ void KMagic::heal_one_ally(size_t caster_fighter_index, size_t target_fighter_in
 	case M_RECOVERY:
 		if (fighter[target_fighter_index].IsAlive())
 		{
-			for (stat_index = 0; stat_index < 7; stat_index++)
-			{
-				fighter[target_fighter_index].sts[stat_index] = 0;
-			}
+			fighter[target_fighter_index].SetPoisoned(0);
+			fighter[target_fighter_index].SetBlind(0);
+			fighter[target_fighter_index].SetCharmed(0);
+			fighter[target_fighter_index].SetStopped(0);
+			fighter[target_fighter_index].SetStone(0);
+			fighter[target_fighter_index].SetMute(0);
+			fighter[target_fighter_index].SetSleep(0);
 		}
 		break;
 	case M_LIFE:
 		if (fighter[target_fighter_index].IsDead())
 		{
-			for (stat_index = 0; stat_index < 24; stat_index++)
-			{
-				fighter[target_fighter_index].sts[stat_index] = 0;
-			}
+			fighter[target_fighter_index].SetPoisoned(0);
+			fighter[target_fighter_index].SetBlind(0);
+			fighter[target_fighter_index].SetCharmed(0);
+			fighter[target_fighter_index].SetStopped(0);
+			fighter[target_fighter_index].SetStone(0);
+			fighter[target_fighter_index].SetMute(0);
+			fighter[target_fighter_index].SetSleep(0);
+			fighter[target_fighter_index].SetDead(0);
+			fighter[target_fighter_index].SetMalison(0);
+			fighter[target_fighter_index].SetResist(0);
+			fighter[target_fighter_index].SetTime(0);
+			fighter[target_fighter_index].SetShield(0);
+			fighter[target_fighter_index].SetBless(0);
+			fighter[target_fighter_index].SetStrength(0);
+			fighter[target_fighter_index].SetEther(0);
+			fighter[target_fighter_index].SetTrueshot(0);
+			fighter[target_fighter_index].SetRegen(0);
+			fighter[target_fighter_index].SetInfuse(0);
 			fighter[target_fighter_index].hp = 1;
 			fighter[target_fighter_index].aframe = 0;
 		}
@@ -1235,10 +1258,24 @@ void KMagic::heal_one_ally(size_t caster_fighter_index, size_t target_fighter_in
 	case M_FULLLIFE:
 		if (fighter[target_fighter_index].IsDead())
 		{
-			for (stat_index = 0; stat_index < 24; stat_index++)
-			{
-				fighter[target_fighter_index].sts[stat_index] = 0;
-			}
+			fighter[target_fighter_index].SetPoisoned(0);
+			fighter[target_fighter_index].SetBlind(0);
+			fighter[target_fighter_index].SetCharmed(0);
+			fighter[target_fighter_index].SetStopped(0);
+			fighter[target_fighter_index].SetStone(0);
+			fighter[target_fighter_index].SetMute(0);
+			fighter[target_fighter_index].SetSleep(0);
+			fighter[target_fighter_index].SetDead(0);
+			fighter[target_fighter_index].SetMalison(0);
+			fighter[target_fighter_index].SetResist(0);
+			fighter[target_fighter_index].SetTime(0);
+			fighter[target_fighter_index].SetShield(0);
+			fighter[target_fighter_index].SetBless(0);
+			fighter[target_fighter_index].SetStrength(0);
+			fighter[target_fighter_index].SetEther(0);
+			fighter[target_fighter_index].SetTrueshot(0);
+			fighter[target_fighter_index].SetRegen(0);
+			fighter[target_fighter_index].SetInfuse(0);
 			fighter[target_fighter_index].hp = fighter[target_fighter_index].mhp;
 			fighter[target_fighter_index].aframe = 0;
 		}

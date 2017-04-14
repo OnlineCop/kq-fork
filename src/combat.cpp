@@ -269,7 +269,7 @@ eAttackResult attack_result(int ar, int dr)
 				if (Magic.non_dmg_save(dr, 50) == 0)
 				{
 					uint8_t timeEffectShouldLast = kqrandom->random_range_exclusive(2, 5);
-					if ((c == R_POISON) || (c == R_PETRIFY) || (c == R_SILENCE))
+					if (c == R_POISON || c == R_PETRIFY || c == R_SILENCE)
 					{
 						timeEffectShouldLast = 1;
 					}
@@ -280,7 +280,7 @@ eAttackResult attack_result(int ar, int dr)
 						fighter[dr].SetPoisoned(timeEffectShouldLast);
 						break;
 					case R_BLIND:
-						fighter[dr].SetBlind(timeEffectShouldLast);
+						fighter[dr].SetBlind(timeEffectShouldLast != 0);
 						break;
 					case R_CHARM:
 						fighter[dr].SetCharmed(timeEffectShouldLast);
@@ -292,7 +292,7 @@ eAttackResult attack_result(int ar, int dr)
 						fighter[dr].SetStone(timeEffectShouldLast);
 						break;
 					case R_SILENCE:
-						fighter[dr].SetMute(timeEffectShouldLast);
+						fighter[dr].SetMute(timeEffectShouldLast != 0);
 						break;
 					case R_SLEEP:
 						fighter[dr].SetSleep(timeEffectShouldLast);
@@ -1102,7 +1102,6 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 	uint32_t f;
 	uint32_t ares;
 	size_t fighter_index;
-	size_t stats_index;
 
 	for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
 	{
@@ -1120,10 +1119,24 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 
 	tempd = Magic.status_adjust(defend_fighter_index);
 	ares = attack_result(attack_fighter_index, defend_fighter_index);
-	for (stats_index = 0; stats_index < 24; stats_index++)
-	{
-		fighter[defend_fighter_index].sts[stats_index] = tempd.sts[stats_index];
-	}
+	fighter[defend_fighter_index].SetPoisoned(tempd.IsPoisoned());
+	fighter[defend_fighter_index].SetBlind(tempd.IsBlind());
+	fighter[defend_fighter_index].SetCharmed(tempd.IsCharmed());
+	fighter[defend_fighter_index].SetStopped(tempd.IsStopped());
+	fighter[defend_fighter_index].SetStone(tempd.IsStone());
+	fighter[defend_fighter_index].SetMute(tempd.IsMute());
+	fighter[defend_fighter_index].SetSleep(tempd.IsAsleep());
+	fighter[defend_fighter_index].SetDead(tempd.IsDead());
+	fighter[defend_fighter_index].SetMalison(tempd.IsMalison());
+	fighter[defend_fighter_index].SetResist(tempd.IsResist());
+	fighter[defend_fighter_index].SetTime(tempd.IsTime());
+	fighter[defend_fighter_index].SetShield(tempd.IsShield());
+	fighter[defend_fighter_index].SetBless(tempd.IsBless());
+	fighter[defend_fighter_index].SetStrength(tempd.IsStrength());
+	fighter[defend_fighter_index].SetEther(tempd.IsEther());
+	fighter[defend_fighter_index].SetTrueshot(tempd.IsTrueshot());
+	fighter[defend_fighter_index].SetRegen(tempd.IsRegen());
+	fighter[defend_fighter_index].SetInfuse(tempd.IsInfuse());
 
 	/*  RB TODO: rest(20) or vsync() before the blit?  */
 	if (ares == 2)
@@ -1231,8 +1244,6 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
  */
 void fkill(size_t fighter_index)
 {
-	size_t spell_index;
-
 #ifdef KQ_CHEATS
 	/* PH Combat cheat - when a hero dies s/he is mysteriously boosted back
 	 * to full HP.
@@ -1244,12 +1255,25 @@ void fkill(size_t fighter_index)
 	}
 #endif
 
-	for (spell_index = 0; spell_index < 24; spell_index++)
-	{
-		fighter[fighter_index].sts[spell_index] = 0;
-	}
+	fighter[fighter_index].SetPoisoned(0);
+	fighter[fighter_index].SetBlind(0);
+	fighter[fighter_index].SetCharmed(0);
+	fighter[fighter_index].SetStopped(0);
+	fighter[fighter_index].SetStone(0);
+	fighter[fighter_index].SetMute(0);
+	fighter[fighter_index].SetSleep(0);
+	fighter[fighter_index].SetDead(true);
+	fighter[fighter_index].SetMalison(0);
+	fighter[fighter_index].SetResist(0);
+	fighter[fighter_index].SetTime(0);
+	fighter[fighter_index].SetShield(0);
+	fighter[fighter_index].SetBless(0);
+	fighter[fighter_index].SetStrength(0);
+	fighter[fighter_index].SetEther(0);
+	fighter[fighter_index].SetTrueshot(0);
+	fighter[fighter_index].SetRegen(0);
+	fighter[fighter_index].SetInfuse(0);
 
-	fighter[fighter_index].SetAlive(false);
 	fighter[fighter_index].hp = 0;
 	if (fighter_index < PSIZE)
 	{
@@ -1490,7 +1514,6 @@ static void init_fighters(void)
 void multi_fight(size_t attack_fighter_index)
 {
 	size_t fighter_index;
-	size_t spell_index;
 	size_t start_fighter_index;
 	size_t end_fighter_index;
 	uint32_t deadcount = 0;
@@ -1523,12 +1546,25 @@ void multi_fight(size_t attack_fighter_index)
 		if ((fighter[fighter_index].IsAlive()) &&
 			(fighter[fighter_index].mhp > 0))
 		{
-			// ares[fighter_index] = attack_result(attack_fighter_index,
-			// fighter_index);
-			for (spell_index = 0; spell_index < 24; spell_index++)
-			{
-				fighter[fighter_index].sts[spell_index] = tempd.sts[spell_index];
-			}
+			// ares[fighter_index] = attack_result(attack_fighter_index, fighter_index);
+			fighter[fighter_index].SetPoisoned(tempd.IsPoisoned());
+			fighter[fighter_index].SetBlind(tempd.IsBlind());
+			fighter[fighter_index].SetCharmed(tempd.IsCharmed());
+			fighter[fighter_index].SetStopped(tempd.IsStopped());
+			fighter[fighter_index].SetStone(tempd.IsStone());
+			fighter[fighter_index].SetMute(tempd.IsMute());
+			fighter[fighter_index].SetSleep(tempd.IsAsleep());
+			fighter[fighter_index].SetDead(tempd.IsDead());
+			fighter[fighter_index].SetMalison(tempd.IsMalison());
+			fighter[fighter_index].SetResist(tempd.IsResist());
+			fighter[fighter_index].SetTime(tempd.IsTime());
+			fighter[fighter_index].SetShield(tempd.IsShield());
+			fighter[fighter_index].SetBless(tempd.IsBless());
+			fighter[fighter_index].SetStrength(tempd.IsStrength());
+			fighter[fighter_index].SetEther(tempd.IsEther());
+			fighter[fighter_index].SetTrueshot(tempd.IsTrueshot());
+			fighter[fighter_index].SetRegen(tempd.IsRegen());
+			fighter[fighter_index].SetInfuse(tempd.IsInfuse());
 		}
 
 		if (ta[fighter_index] != MISS)

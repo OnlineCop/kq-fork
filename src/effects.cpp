@@ -599,10 +599,9 @@ void fight_animation(size_t target_fighter_index, size_t fighter_index,
 
 /*! \brief Fighter status
  *
- * Just make sure the fighter in question is dead or not.  Sometimes, we
- * still want to return true if s/he is dead.
- * This happens during the casting of the life and full-life spells, in
- * combatspell().
+ * Just make sure the fighter in question is dead or not.  Sometimes, we still want to
+ * return true if s/he is dead.
+ * This happens during the casting of the life and full-life spells, in combatspell().
  * deadeffect is normally 0, it is changed temporarily to 1
  *
  * \param   guy Id of character to check (index into fighter[] array)
@@ -610,5 +609,7 @@ void fight_animation(size_t target_fighter_index, size_t fighter_index,
  */
 int is_active(int guy)
 {
-	return (fighter[guy].sts[S_DEAD] == deadeffect ? 1 : 0);
+	// deadeffect:0 returns false, deadeffect:1..255 returns true
+	bool boolDeadEffect = deadeffect != 0;
+	return (fighter[guy].IsDead() == boolDeadEffect);
 }
