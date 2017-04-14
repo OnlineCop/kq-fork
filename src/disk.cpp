@@ -1011,9 +1011,9 @@ void KDisk::printprop(tinyxml2::XMLPrinter &out, const char *name, const char *v
 int KDisk::save_s_fighter(tinyxml2::XMLPrinter &out, const KFighter &f)
 {
 	out.OpenElement("fighter");
-	out.PushAttribute("id", f.name);
+	out.PushAttribute("id", f.name.c_str());
 	out.OpenElement(TAG_PROPERTIES);
-	printprop(out, "name", f.name);
+	printprop(out, "name", f.name.c_str());
 	printprop(out, "xp", f.xp);
 	printprop(out, "gp", f.gp);
 	printprop(out, "lvl", f.lvl);

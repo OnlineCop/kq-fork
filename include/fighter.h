@@ -121,7 +121,7 @@ public:
 
 	uint8_t GetStatValueBySpellType(eSpellType spellType);
 
-	char name[25];          /*!<\brief Name */
+	string name;            /*!<\brief Name */
 	int xp;                 /*!<\brief eXperience Points */
 	int gp;                 /*!<\brief Gold Points */
 	int lvl;                /*!<\brief LeVeL */

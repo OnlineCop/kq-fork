@@ -660,7 +660,7 @@ void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
 
 		memset(fighter_loaded_from_disk, 0, sizeof(KFighter));
 		// Enemy name
-		strncpy(fighter_loaded_from_disk->name, strbuf, 25/*sizeof(fighter_loaded_from_disk->name)*/);
+		fighter_loaded_from_disk->name = strbuf;
 
 		// Index number (ignored; automatically generated)
 		iss >> tmp;

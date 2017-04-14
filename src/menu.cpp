@@ -755,7 +755,7 @@ void player2fighter(int who, KFighter *pf)
 	current_fighter.imb_a = 0;
 	current_fighter.imb[0] = 0;
 	current_fighter.imb[1] = 0;
-	strcpy(current_fighter.name, plr.name);
+	current_fighter.name = plr.name;
 	current_fighter.xp = plr.xp;
 	current_fighter.lvl = plr.lvl;
 	current_fighter.hp = plr.hp;

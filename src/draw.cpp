@@ -1134,105 +1134,105 @@ string KDraw::parse_string(const string& the_string)
 	return output;
 }
 
-const char *KDraw::decode_utf8(const char *string, uint32_t *cp)
+const char *KDraw::decode_utf8(const char *InString, uint32_t *cp)
 {
-	char ch = *string;
+	char ch = *InString;
 
 	if ((ch & 0x80) == 0x0)
 	{
 		/* single byte */
 		*cp = (int)ch;
-		++string;
+		++InString;
 	}
 	else if ((ch & 0xe0) == 0xc0)
 	{
 		/* double byte */
 		*cp = ((ch & 0x1f) << 6);
-		++string;
-		ch = *string;
+		++InString;
+		ch = *InString;
 
 		if ((ch & 0xc0) == 0x80)
 		{
 			*cp |= (ch & 0x3f);
-			++string;
+			++InString;
 		}
 		else
 		{
-			string = NULL;
+			InString = NULL;
 		}
 	}
 	else if ((ch & 0xf0) == 0xe0)
 	{
 		/* triple */
 		*cp = (ch & 0x0f) << 12;
-		++string;
-		ch = *string;
+		++InString;
+		ch = *InString;
 		if ((ch & 0xc0) == 0x80)
 		{
 			*cp |= (ch & 0x3f) << 6;
-			++string;
-			ch = *string;
+			++InString;
+			ch = *InString;
 			if ((ch & 0xc0) == 0x80)
 			{
 				*cp |= (ch & 0x3f);
-				++string;
+				++InString;
 			}
 			else
 			{
-				string = NULL;
+				InString = NULL;
 			}
 		}
 		else
 		{
-			string = NULL;
+			InString = NULL;
 		}
 	}
 	else if ((ch & 0xf8) == 0xe0)
 	{
 		/* Quadruple */
 		*cp = (ch & 0x0f) << 18;
-		++string;
-		ch = *string;
+		++InString;
+		ch = *InString;
 		if ((ch & 0xc0) == 0x80)
 		{
 			*cp |= (ch & 0x3f) << 12;
-			++string;
-			ch = *string;
+			++InString;
+			ch = *InString;
 			if ((ch & 0xc0) == 0x80)
 			{
 				*cp |= (ch & 0x3f) << 6;
-				++string;
-				ch = *string;
+				++InString;
+				ch = *InString;
 				if ((ch & 0xc0) == 0x80)
 				{
 					*cp |= (ch & 0x3f);
-					++string;
+					++InString;
 				}
 				else
 				{
-					string = NULL;
+					InString = NULL;
 				}
 			}
 			else
 			{
-				string = NULL;
+				InString = NULL;
 			}
 		}
 		else
 		{
-			string = NULL;
+			InString = NULL;
 		}
 	}
 	else
 	{
-		string = NULL;
+		InString = NULL;
 	}
 
-	if (string == NULL)
+	if (InString == NULL)
 	{
 		Game.program_death(_("UTF-8 decode error"));
 	}
-	return string;
+	return InString;
 }
 
 int KDraw::get_glyph_index(uint32_t cp)
@@ -1261,7 +1261,7 @@ int KDraw::get_glyph_index(uint32_t cp)
 	return 0;
 }
 
-void KDraw::print_font(Raster *where, int sx, int sy, const char *msg, eFontColor font_index)
+void KDraw::print_font(Raster *where, int sx, int sy, const string& msg, eFontColor font_index)
 {
 	int z = 0;
 	int hgt = 8;//MagicNumber: font height for NORMAL text
@@ -1279,7 +1279,7 @@ void KDraw::print_font(Raster *where, int sx, int sy, const char *msg, eFontColo
 	}
 	while (1)
 	{
-		msg = decode_utf8(msg, &cc);
+		string msg2 = decode_utf8(msg.c_str(), &cc);
 		if (cc == 0)
 		{
 			break;

@@ -207,8 +207,7 @@ public:
 
 	/*! \brief Display string
 	 *
-	 * Display a string in a particular font on a bitmap at the specified
-	 * co-ordinates.
+	 * Display a string in a particular font on a bitmap at the specified coordinates.
 	 *
 	 * \param   where Bitmap to draw to
 	 * \param   sx x-coord
@@ -216,7 +215,7 @@ public:
 	 * \param   msg String to draw
 	 * \param   font_index Font index (0..6)
 	 */
-	void print_font(Raster *where, int sx, int sy, const char *msg, eFontColor font_index);
+	void print_font(Raster *where, int sx, int sy, const string& msg, eFontColor font_index);
 
 	/*! \brief Display number
 	 *
@@ -361,13 +360,13 @@ private:
 	 *
 	 * Extract the next unicode char from a UTF-8 string
 	 *
-	 * \param string Text to decode
+	 * \param InString Text to decode
 	 * \param cp The next character
 	 * \return Pointer to after the next character
 	 * \author PH
 	 * \date 20071116
 	 */
-	const char *decode_utf8(const char *string, uint32_t *cp);
+	const char *decode_utf8(const char *InString, uint32_t *cp);
 
 	/*! \brief Draw background
 	 *

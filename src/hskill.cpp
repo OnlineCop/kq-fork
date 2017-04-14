@@ -446,7 +446,7 @@ void reveal(int tgt)
 
 	do_transition(TRANS_FADE_OUT, 4);
 	Draw.menubox(double_buffer, 84, 56, 17, 13, BLUE);
-	sprintf(strbuf, _("Name: %s"), fighter[tgt].name);
+	sprintf(strbuf, _("Name: %s"), fighter[tgt].name.c_str());
 	Draw.print_font(double_buffer, 92, 64, strbuf, FNORMAL);
 	sprintf(strbuf, _("Level: %d"), fighter[tgt].lvl);
 	Draw.print_font(double_buffer, 92, 72, strbuf, FNORMAL);

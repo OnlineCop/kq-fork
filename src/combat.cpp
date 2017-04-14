@@ -375,12 +375,12 @@ void battle_render(signed int plyr, size_t hl, int SelectAll)
 		{
 			current_fighter_index = plyr - 1;
 			t = curx + (curw / 2);
-			t -= (strlen(fighter[current_fighter_index].name) * 4);
+			t -= (fighter[current_fighter_index].name.length() * 4);
 			z = (fighter[current_fighter_index].cy < 32
 				? fighter[current_fighter_index].cy + fighter[current_fighter_index].cl
 				: fighter[current_fighter_index].cy - 32);
 
-			Draw.menubox(double_buffer, t - 8, z, strlen(fighter[current_fighter_index].name), 1, BLUE);
+			Draw.menubox(double_buffer, t - 8, z, fighter[current_fighter_index].name.length(), 1, BLUE);
 			Draw.print_font(double_buffer, t, z + 8, fighter[current_fighter_index].name, FNORMAL);
 		}
 	}
