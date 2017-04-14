@@ -7,7 +7,7 @@ KFighter::KFighter()
 
 }
 
-KFighter::KFighter(const s_player &inPlayer)
+KFighter::KFighter(const KPlayer &inPlayer)
 {
 
 }

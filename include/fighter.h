@@ -15,7 +15,7 @@ class KFighter
 	friend class KDisk;
 public:
 	KFighter();
-	KFighter(const s_player &inPlayer);
+	KFighter(const KPlayer &inPlayer);
 
 	// S_POISON
 	bool IsPoisoned() const;

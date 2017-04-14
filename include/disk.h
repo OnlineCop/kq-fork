@@ -71,30 +71,30 @@ private:
 	 * \returns the numbers in a vector
 	 */
 	vector<int> parse_list(const char *str);
-	int load_spelltypes(s_player *s, XMLElement *node);
-	int load_resistances(s_player *s, XMLElement *node);
-	int load_spells(s_player *s, XMLElement *node);
-	int load_equipment(s_player *s, XMLElement *node);
-	int load_attributes(s_player *s, XMLElement *node);
-	int load_core_properties(s_player *s, XMLElement *node);
-	int load_lup(s_player *s, XMLElement *node);
+	int load_spelltypes(KPlayer *s, XMLElement *node);
+	int load_resistances(KPlayer *s, XMLElement *node);
+	int load_spells(KPlayer *s, XMLElement *node);
+	int load_equipment(KPlayer *s, XMLElement *node);
+	int load_attributes(KPlayer *s, XMLElement *node);
+	int load_core_properties(KPlayer *s, XMLElement *node);
+	int load_lup(KPlayer *s, XMLElement *node);
 
 	/** Store spell info or nothing if all spells are 'zero' */
-	int store_spells(const s_player *s, XMLElement *node);
-	int store_equipment(const s_player *s, XMLElement *node);
-	int store_spelltypes(const s_player *s, XMLElement *node);
-	int store_resistances(const s_player *s, XMLElement *node);
-	int store_stats(const s_player *s, XMLElement *node);
-	int store_lup(const s_player *s, XMLElement *node);
+	int store_spells(const KPlayer *s, XMLElement *node);
+	int store_equipment(const KPlayer *s, XMLElement *node);
+	int store_spelltypes(const KPlayer *s, XMLElement *node);
+	int store_resistances(const KPlayer *s, XMLElement *node);
+	int store_stats(const KPlayer *s, XMLElement *node);
+	int store_lup(const KPlayer *s, XMLElement *node);
 	/** Store player inside a node that you supply. */
-	int save_player(const s_player *s, XMLElement *node);
+	int save_player(const KPlayer *s, XMLElement *node);
 
 	/** Get player (hero) data from an XML node.
 	 * @param s the structure to write to
 	 * @param node a node within an XML document.
 	 * @returns 0 if OK otherwise -1
 	 */
-	int load_s_player(s_player *s, XMLElement *node);
+	int load_s_player(KPlayer *s, XMLElement *node);
 	int load_players(XMLElement *root);
 
 	/** Save all hero data into an XML node.

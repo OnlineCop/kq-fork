@@ -8,11 +8,11 @@
 using std::string;
 
 /*! \brief Player */
-class s_player
+class KPlayer
 {
 	friend class KDisk;
 public:
-	s_player();
+	KPlayer();
 
 	// S_POISON
 	bool IsPoisoned() const;
@@ -109,4 +109,4 @@ protected:
 	uint8_t sts[NUM_SPELL_TYPES]; /*!< eSpellType */
 };
 
-extern s_player party[MAXCHRS];
+extern KPlayer party[MAXCHRS];

@@ -1228,7 +1228,7 @@ static int KQ_char_getter(lua_State *L)
 {
 	signed int prop;
 	int top;
-	s_player *pl;
+	KPlayer *pl;
 	KQEntity *ent;
 
 	prop = get_field(lua_tostring(L, 2));
@@ -1240,7 +1240,7 @@ static int KQ_char_getter(lua_State *L)
 	}
 	lua_pushstring(L, LUA_PLR_KEY);
 	lua_rawget(L, 1);
-	pl = (s_player *)lua_touserdata(L, -1);
+	pl = (KPlayer *)lua_touserdata(L, -1);
 	lua_pop(L, 1);
 	lua_pushstring(L, LUA_ENT_KEY);
 	lua_rawget(L, 1);
@@ -1355,7 +1355,7 @@ static int KQ_char_getter(lua_State *L)
 static int KQ_char_setter(lua_State *L)
 {
 	int prop;
-	s_player *pl;
+	KPlayer *pl;
 	KQEntity *ent;
 
 	prop = get_field(lua_tostring(L, 2));
@@ -1367,7 +1367,7 @@ static int KQ_char_setter(lua_State *L)
 	}
 	lua_pushstring(L, LUA_PLR_KEY);
 	lua_rawget(L, 1);
-	pl = (s_player *)lua_touserdata(L, -1);
+	pl = (KPlayer *)lua_touserdata(L, -1);
 	lua_pop(L, 1);
 	lua_pushstring(L, LUA_ENT_KEY);
 	lua_rawget(L, 1);
@@ -4214,11 +4214,11 @@ static int KQ_party_setter(lua_State *L)
 		}
 		else if (lua_istable(L, 3))
 		{
-			s_player *tt;
+			KPlayer *tt;
 
 			lua_pushstring(L, LUA_PLR_KEY);
 			lua_rawget(L, -2);
-			tt = (s_player *)lua_touserdata(L, -1);
+			tt = (KPlayer *)lua_touserdata(L, -1);
 			if (tt)
 			{
 				/* OK so far */

@@ -5,18 +5,18 @@
 * party[pidx[1]] is the follower, if there are 2 in the party.
 * We need to store all of them, because heroes join and leave during the game.
 */
-s_player party[MAXCHRS];
+KPlayer party[MAXCHRS];
 
-s_player::s_player()
+KPlayer::KPlayer()
 {
 }
 
-bool s_player::IsPoisoned() const
+bool KPlayer::IsPoisoned() const
 {
 	return (sts[S_POISON] > 0);
 }
 
-void s_player::SetPoisoned(int HowLongEffectShouldLast)
+void KPlayer::SetPoisoned(int HowLongEffectShouldLast)
 {
 	if (HowLongEffectShouldLast < 0)
 	{
@@ -25,29 +25,29 @@ void s_player::SetPoisoned(int HowLongEffectShouldLast)
 	sts[S_POISON] = HowLongEffectShouldLast;
 }
 
-int s_player::GetRemainingPoison() const
+int KPlayer::GetRemainingPoison() const
 {
 	return sts[S_POISON];
 }
 
-bool s_player::IsBlind() const
+bool KPlayer::IsBlind() const
 {
 	bool isBlind = (sts[S_BLIND] != 0);
 	return isBlind;
 }
 
-void s_player::SetBlind(bool bIsBlind)
+void KPlayer::SetBlind(bool bIsBlind)
 {
 	sts[S_BLIND] = (bIsBlind ? 1 : 0);
 }
 
-bool s_player::IsCharmed() const
+bool KPlayer::IsCharmed() const
 {
 	bool isCharmed = (sts[S_CHARM] > 0);
 	return isCharmed;
 }
 
-void s_player::SetCharmed(int HowLongEffectShouldLast)
+void KPlayer::SetCharmed(int HowLongEffectShouldLast)
 {
 	if (HowLongEffectShouldLast < 0)
 	{
@@ -56,12 +56,12 @@ void s_player::SetCharmed(int HowLongEffectShouldLast)
 	sts[S_CHARM] = HowLongEffectShouldLast;
 }
 
-uint8_t s_player::GetRemainingCharm() const
+uint8_t KPlayer::GetRemainingCharm() const
 {
 	return sts[S_CHARM];
 }
 
-void s_player::AddCharm(signed int AmountOfEffectToAdd)
+void KPlayer::AddCharm(signed int AmountOfEffectToAdd)
 {
 	if (sts[S_CHARM] + AmountOfEffectToAdd >= 0)
 	{
@@ -73,13 +73,13 @@ void s_player::AddCharm(signed int AmountOfEffectToAdd)
 	}
 }
 
-bool s_player::IsStopped() const
+bool KPlayer::IsStopped() const
 {
 	bool isStopped = (sts[S_STOP] > 0);
 	return isStopped;
 }
 
-void s_player::SetStopped(int HowLongEffectShouldLast)
+void KPlayer::SetStopped(int HowLongEffectShouldLast)
 {
 	if (HowLongEffectShouldLast < 0)
 	{
@@ -88,12 +88,12 @@ void s_player::SetStopped(int HowLongEffectShouldLast)
 	sts[S_STOP] = HowLongEffectShouldLast;
 }
 
-uint8_t s_player::GetRemainingStop() const
+uint8_t KPlayer::GetRemainingStop() const
 {
 	return sts[S_STOP];
 }
 
-void s_player::AddStopped(signed int AmountOfEffectToAdd)
+void KPlayer::AddStopped(signed int AmountOfEffectToAdd)
 {
 	if (sts[S_STOP] + AmountOfEffectToAdd >= 0)
 	{
@@ -105,13 +105,13 @@ void s_player::AddStopped(signed int AmountOfEffectToAdd)
 	}
 }
 
-bool s_player::IsStone() const
+bool KPlayer::IsStone() const
 {
 	bool isStone = (sts[S_STONE] > 0);
 	return isStone;
 }
 
-void s_player::SetStone(int HowLongEffectShouldLast)
+void KPlayer::SetStone(int HowLongEffectShouldLast)
 {
 	if (HowLongEffectShouldLast < 0)
 	{
@@ -120,12 +120,12 @@ void s_player::SetStone(int HowLongEffectShouldLast)
 	sts[S_STONE] = HowLongEffectShouldLast;
 }
 
-uint8_t s_player::GetRemainingStone() const
+uint8_t KPlayer::GetRemainingStone() const
 {
 	return sts[S_STONE];
 }
 
-void s_player::AddStone(signed int AmountOfEffectToAdd)
+void KPlayer::AddStone(signed int AmountOfEffectToAdd)
 {
 	if (sts[S_STONE] + AmountOfEffectToAdd >= 0)
 	{
@@ -137,30 +137,30 @@ void s_player::AddStone(signed int AmountOfEffectToAdd)
 	}
 }
 
-bool s_player::IsMute() const
+bool KPlayer::IsMute() const
 {
 	bool isMute = (sts[S_MUTE] != 0);
 	return isMute;
 }
 
-void s_player::SetMute(bool bIsMute)
+void KPlayer::SetMute(bool bIsMute)
 {
 	sts[S_MUTE] = (bIsMute ? 1 : 0);
 }
 
-bool s_player::IsAsleep() const
+bool KPlayer::IsAsleep() const
 {
 	bool isAsleep = (sts[S_SLEEP] > 0);
 	return isAsleep;
 }
 
-bool s_player::IsAwake() const
+bool KPlayer::IsAwake() const
 {
 	bool isAsleep = (sts[S_SLEEP] == 0);
 	return isAsleep;
 }
 
-void s_player::SetSleep(int HowLongEffectShouldLast)
+void KPlayer::SetSleep(int HowLongEffectShouldLast)
 {
 	if (HowLongEffectShouldLast < 0)
 	{
@@ -169,12 +169,12 @@ void s_player::SetSleep(int HowLongEffectShouldLast)
 	sts[S_SLEEP] = HowLongEffectShouldLast;
 }
 
-uint8_t s_player::GetRemainingSleep() const
+uint8_t KPlayer::GetRemainingSleep() const
 {
 	return sts[S_SLEEP];
 }
 
-void s_player::AddSleep(signed int AmountOfEffectToAdd)
+void KPlayer::AddSleep(signed int AmountOfEffectToAdd)
 {
 	if (sts[S_SLEEP] + AmountOfEffectToAdd >= 0)
 	{
@@ -186,35 +186,35 @@ void s_player::AddSleep(signed int AmountOfEffectToAdd)
 	}
 }
 
-bool s_player::IsDead() const
+bool KPlayer::IsDead() const
 {
 	bool isDead = (sts[S_DEAD] != 0);
 	return isDead;
 }
 
-bool s_player::IsAlive() const
+bool KPlayer::IsAlive() const
 {
 	bool isAlive = (sts[S_DEAD] == 0);
 	return isAlive;
 }
 
-void s_player::SetAlive(bool bIsAlive)
+void KPlayer::SetAlive(bool bIsAlive)
 {
 	sts[S_DEAD] = (bIsAlive ? 0 : 1);
 }
 
-void s_player::SetDead(bool bIsDead)
+void KPlayer::SetDead(bool bIsDead)
 {
 	sts[S_DEAD] = (bIsDead ? 1 : 0);
 }
 
-bool s_player::IsMalison() const
+bool KPlayer::IsMalison() const
 {
 	bool isMalison = (sts[S_MALISON] > 0);
 	return isMalison;
 }
 
-void s_player::SetMalison(int HowLongEffectShouldLast)
+void KPlayer::SetMalison(int HowLongEffectShouldLast)
 {
 	if (HowLongEffectShouldLast < 0)
 	{
@@ -223,12 +223,12 @@ void s_player::SetMalison(int HowLongEffectShouldLast)
 	sts[S_MALISON] = HowLongEffectShouldLast;
 }
 
-uint8_t s_player::GetRemainingMalison() const
+uint8_t KPlayer::GetRemainingMalison() const
 {
 	return sts[S_MALISON];
 }
 
-void s_player::AddMalison(signed int AmountOfEffectToAdd)
+void KPlayer::AddMalison(signed int AmountOfEffectToAdd)
 {
 	if (sts[S_MALISON] + AmountOfEffectToAdd >= 0)
 	{
@@ -240,13 +240,13 @@ void s_player::AddMalison(signed int AmountOfEffectToAdd)
 	}
 }
 
-bool s_player::IsResist() const
+bool KPlayer::IsResist() const
 {
 	bool isResist = (sts[S_RESIST] > 0);
 	return isResist;
 }
 
-void s_player::SetResist(int HowLongEffectShouldLast)
+void KPlayer::SetResist(int HowLongEffectShouldLast)
 {
 	if (HowLongEffectShouldLast < 0)
 	{
@@ -255,12 +255,12 @@ void s_player::SetResist(int HowLongEffectShouldLast)
 	sts[S_RESIST] = HowLongEffectShouldLast;
 }
 
-uint8_t s_player::GetRemainingResist() const
+uint8_t KPlayer::GetRemainingResist() const
 {
 	return sts[S_RESIST];
 }
 
-void s_player::AddResist(signed int AmountOfEffectToAdd)
+void KPlayer::AddResist(signed int AmountOfEffectToAdd)
 {
 	if (sts[S_RESIST] + AmountOfEffectToAdd >= 0)
 	{
@@ -272,13 +272,13 @@ void s_player::AddResist(signed int AmountOfEffectToAdd)
 	}
 }
 
-bool s_player::IsTime() const
+bool KPlayer::IsTime() const
 {
 	bool isTime = (sts[S_TIME] > 0);
 	return isTime;
 }
 
-void s_player::SetTime(int HowLongEffectShouldLast)
+void KPlayer::SetTime(int HowLongEffectShouldLast)
 {
 	if (HowLongEffectShouldLast < 0)
 	{
@@ -287,12 +287,12 @@ void s_player::SetTime(int HowLongEffectShouldLast)
 	sts[S_TIME] = HowLongEffectShouldLast;
 }
 
-uint8_t s_player::GetRemainingTime() const
+uint8_t KPlayer::GetRemainingTime() const
 {
 	return sts[S_TIME];
 }
 
-void s_player::AddTime(signed int AmountOfEffectToAdd)
+void KPlayer::AddTime(signed int AmountOfEffectToAdd)
 {
 	if (sts[S_TIME] + AmountOfEffectToAdd >= 0)
 	{
@@ -304,13 +304,13 @@ void s_player::AddTime(signed int AmountOfEffectToAdd)
 	}
 }
 
-bool s_player::IsShield() const
+bool KPlayer::IsShield() const
 {
 	bool isShield = (sts[S_SHIELD] > 0);
 	return isShield;
 }
 
-void s_player::SetShield(int HowLongEffectShouldLast)
+void KPlayer::SetShield(int HowLongEffectShouldLast)
 {
 	if (HowLongEffectShouldLast < 0)
 	{
@@ -319,12 +319,12 @@ void s_player::SetShield(int HowLongEffectShouldLast)
 	sts[S_SHIELD] = HowLongEffectShouldLast;
 }
 
-uint8_t s_player::GetRemainingShield() const
+uint8_t KPlayer::GetRemainingShield() const
 {
 	return sts[S_SHIELD];
 }
 
-void s_player::AddShield(signed int AmountOfEffectToAdd)
+void KPlayer::AddShield(signed int AmountOfEffectToAdd)
 {
 	if (sts[S_SHIELD] + AmountOfEffectToAdd >= 0)
 	{
@@ -336,7 +336,7 @@ void s_player::AddShield(signed int AmountOfEffectToAdd)
 	}
 }
 
-uint8_t s_player::GetStatValueBySpellType(eSpellType spellType)
+uint8_t KPlayer::GetStatValueBySpellType(eSpellType spellType)
 {
 	if (spellType < eSpellType::NUM_SPELL_TYPES)
 	{

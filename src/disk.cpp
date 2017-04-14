@@ -177,7 +177,7 @@ vector<int> KDisk::parse_list(const char *str)
 	return list;
 }
 
-int KDisk::load_resistances(s_player *s, XMLElement *node)
+int KDisk::load_resistances(KPlayer *s, XMLElement *node)
 {
 	std::fill(std::begin(s->res), std::end(s->res), 0);
 	XMLElement *resistances = node->FirstChildElement(TAG_RESISTANCES);
@@ -201,7 +201,7 @@ int KDisk::load_resistances(s_player *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_spelltypes(s_player *s, XMLElement *node)
+int KDisk::load_spelltypes(KPlayer *s, XMLElement *node)
 {
 	std::fill(std::begin(s->sts), std::end(s->sts), 0);
 	XMLElement *spelltypes = node->FirstChildElement(TAG_SPELL_TYPES);
@@ -224,7 +224,7 @@ int KDisk::load_spelltypes(s_player *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_spells(s_player *s, XMLElement *node)
+int KDisk::load_spells(KPlayer *s, XMLElement *node)
 {
 	std::fill(std::begin(s->spells), std::end(s->spells), 0);
 	XMLElement *spells = node->FirstChildElement(TAG_SPELLS);
@@ -247,7 +247,7 @@ int KDisk::load_spells(s_player *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_equipment(s_player *s, XMLElement *node)
+int KDisk::load_equipment(KPlayer *s, XMLElement *node)
 {
 	std::fill(std::begin(s->eqp), std::end(s->eqp), 0);
 	XMLElement *eqp = node->FirstChildElement(TAG_EQUIPMENT);
@@ -270,7 +270,7 @@ int KDisk::load_equipment(s_player *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_attributes(s_player *s, XMLElement *node)
+int KDisk::load_attributes(KPlayer *s, XMLElement *node)
 {
 	XMLElement *attributes = node->FirstChildElement(TAG_ATTRIBUTES);
 	if (attributes)
@@ -334,7 +334,7 @@ int KDisk::load_attributes(s_player *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_core_properties(s_player *s, XMLElement *node)
+int KDisk::load_core_properties(KPlayer *s, XMLElement *node)
 {
 	XMLElement *properties = node->FirstChildElement(TAG_PROPERTIES);
 	if (properties)
@@ -386,7 +386,7 @@ int KDisk::load_core_properties(s_player *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::load_lup(s_player *s, XMLElement *node)
+int KDisk::load_lup(KPlayer *s, XMLElement *node)
 {
 	XMLElement *elem = node->FirstChildElement(TAG_LEVEL_UP);
 	if (elem && !elem->NoChildren())
@@ -402,7 +402,7 @@ int KDisk::load_lup(s_player *s, XMLElement *node)
 	}
 }
 
-int KDisk::load_s_player(s_player *s, XMLElement *node)
+int KDisk::load_s_player(KPlayer *s, XMLElement *node)
 {
 	load_core_properties(s, node);
 	load_attributes(s, node);
@@ -431,7 +431,7 @@ static XMLElement *addprop(XMLElement *parent, const char *name, const std::stri
 }
 
 /** Store spell info or nothing if all spells are 'zero' */
-int KDisk::store_spells(const s_player *s, XMLElement *node)
+int KDisk::store_spells(const KPlayer *s, XMLElement *node)
 {
 	auto startp = std::begin(s->spells);
 	auto endp = std::end(s->spells);
@@ -444,7 +444,7 @@ int KDisk::store_spells(const s_player *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::store_equipment(const s_player *s, XMLElement *node)
+int KDisk::store_equipment(const KPlayer *s, XMLElement *node)
 {
 	auto startp = std::begin(s->eqp);
 	auto endp = std::end(s->eqp);
@@ -457,7 +457,7 @@ int KDisk::store_equipment(const s_player *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::store_spelltypes(const s_player *s, XMLElement *node)
+int KDisk::store_spelltypes(const KPlayer *s, XMLElement *node)
 {
 	auto startp = std::begin(s->sts);
 	auto endp = std::end(s->sts);
@@ -470,7 +470,7 @@ int KDisk::store_spelltypes(const s_player *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::store_resistances(const s_player *s, XMLElement *node)
+int KDisk::store_resistances(const KPlayer *s, XMLElement *node)
 {
 	auto startp = std::begin(s->res);
 	auto endp = std::end(s->res);
@@ -483,7 +483,7 @@ int KDisk::store_resistances(const s_player *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::store_stats(const s_player *s, XMLElement *node)
+int KDisk::store_stats(const KPlayer *s, XMLElement *node)
 {
 	auto startp = std::begin(s->stats);
 	auto endp = std::end(s->stats);
@@ -496,7 +496,7 @@ int KDisk::store_stats(const s_player *s, XMLElement *node)
 	return 0;
 }
 
-int KDisk::store_lup(const s_player *s, XMLElement *node)
+int KDisk::store_lup(const KPlayer *s, XMLElement *node)
 {
 	XMLElement *elem = node->GetDocument()->NewElement(TAG_LEVEL_UP);
 	value_list(elem, std::begin(s->lup), std::end(s->lup));
@@ -525,7 +525,7 @@ static const std::map<const char *, ePIDX, cstring_less> id_lookup = {
 
 /** Store player inside a node that you supply.
  */
-int KDisk::save_player(const s_player *s, XMLElement *node)
+int KDisk::save_player(const KPlayer *s, XMLElement *node)
 {
 	XMLDocument *doc = node->GetDocument();
 	XMLElement *hero = doc->NewElement(TAG_HERO);

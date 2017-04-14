@@ -749,7 +749,7 @@ void KMenu::update_equipstats(void)
 void player2fighter(int who, KFighter *pf)
 {
 	KFighter current_fighter;
-	s_player &plr = party[who];
+	KPlayer &plr = party[who];
 
 	current_fighter.imb_s = 0;
 	current_fighter.imb_a = 0;
