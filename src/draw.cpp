@@ -1117,7 +1117,7 @@ void KDraw::replaceAll(string& str, const string& from, const string& to)
 /** This only handles extremely simple strings; you CAN break it if you try hard enough:
  *    "$$0" or "\\$0" or "\$0" or "$-1", etc.
  */
-string KDraw::parse_string(const string the_string)
+string KDraw::parse_string(const string& the_string)
 {
 	if (the_string.find('$', 0) == string::npos)
 	{
@@ -1319,10 +1319,14 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char *sp1, con
 	gbbw = 1;
 	gbbh = 0;
 	gbbs = 0;
-	strcpy(msgbuf[0], parse_string(sp1).c_str());
-	strcpy(msgbuf[1], parse_string(sp2).c_str());
-	strcpy(msgbuf[2], parse_string(sp3).c_str());
-	strcpy(msgbuf[3], parse_string(sp4).c_str());
+	string parsed1 = parse_string(sp1);
+	string parsed2 = parse_string(sp2);
+	string parsed3 = parse_string(sp3);
+	string parsed4 = parse_string(sp4);
+	strcpy(msgbuf[0], parsed1.c_str());
+	strcpy(msgbuf[1], parsed2.c_str());
+	strcpy(msgbuf[2], parsed3.c_str());
+	strcpy(msgbuf[3], parsed4.c_str());
 	Game.unpress();
 	for (a = 0; a < 4; a++)
 	{
@@ -1390,7 +1394,8 @@ int KDraw::prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
 	int winx, winy;
 	int i, w, running;
 
-	ptext = parse_string(ptext).c_str();
+	string parsed = parse_string(ptext);
+	ptext = parsed.c_str();
 	while (1)
 	{
 		gbbw = 1;
@@ -1762,7 +1767,8 @@ void KDraw::set_view(int vw, int x1, int y1, int x2, int y2)
 
 void KDraw::text_ex(eBubbleStyle fmt, int who, const char *s)
 {
-	s = parse_string(s).c_str();
+	string parsed = parse_string(s);
+	s = parsed.c_str();
 
 	while (s)
 	{
@@ -1773,7 +1779,8 @@ void KDraw::text_ex(eBubbleStyle fmt, int who, const char *s)
 
 void KDraw::porttext_ex(eBubbleStyle fmt, int who, const char *s)
 {
-	s = parse_string(s).c_str();
+	string parsed = parse_string(s);
+	s = parsed.c_str();
 
 	while (s)
 	{

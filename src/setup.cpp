@@ -1032,29 +1032,22 @@ void play_effect(int efc, int panning)
  */
 void set_graphics_mode(void)
 {
-	if (should_stretch_view)
+	set_color_depth(8);
+	int card = GFX_AUTODETECT_WINDOWED;
+	if (windowed != 1)
 	{
-		if (windowed == 1)
-		{
-			set_gfx_mode(GFX_AUTODETECT_WINDOWED, KQ_SCALED_SCREEN_W, KQ_SCALED_SCREEN_H, 0, 0);
-		}
-		else
-		{
-			set_gfx_mode(GFX_AUTODETECT, KQ_SCALED_SCREEN_W, KQ_SCALED_SCREEN_H, 0,  0);
-		}
-	}
-	else
-	{
-		if (windowed == 1)
-		{
-			set_gfx_mode(GFX_AUTODETECT_WINDOWED, KQ_SCREEN_W, KQ_SCREEN_H, 0, 0);
-		}
-		else
-		{
-			set_gfx_mode(GFX_AUTODETECT, KQ_SCREEN_W, KQ_SCREEN_H, 0, 0);
-		}
+		card = GFX_AUTODETECT;
 	}
 
+	int w = KQ_SCALED_SCREEN_W;
+	int h = KQ_SCALED_SCREEN_H;
+	if (!should_stretch_view)
+	{
+		w = KQ_SCREEN_W;
+		h = KQ_SCREEN_H;
+	}
+
+	set_gfx_mode(card, w, h, 0, 0);
 	set_palette(pal);
 }
 

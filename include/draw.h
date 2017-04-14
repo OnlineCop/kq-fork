@@ -508,14 +508,13 @@ private:
 	 *
 	 * This checks a string for $0, or $1 and replaces with player names.
 	 *
-	 * PH 20030107 Increased limit on length of the_string.
 	 * NB. Values for $ other than $0 or $1 will cause errors.
 	 *
 	 * \param   the_string Input string
-	 * \returns processed string, in a static buffer \p strbuf
-	 *          or \p the_string, if it had no replacement chars.
+	 * \returns a string where any $0 or $1 are replaced by player names, or the original
+	 * string if none found.
 	 */
-	string parse_string(const string the_string);
+	string parse_string(const string& the_string);
 
 	/*! \brief Parallax calculations for xofs and yofs.
 	 *
