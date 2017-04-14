@@ -343,8 +343,7 @@ int KDisk::load_core_properties(s_player *s, XMLElement *node)
 		{
 			if (property->Attribute("name", "name"))
 			{
-				const char *name = property->Attribute("value");
-				strncpy(s->name, name, 9/*sizeof(s->name)*/ - 1);
+				s->name = property->Attribute("value");
 			}
 			else if (property->Attribute("name", "xp"))
 			{

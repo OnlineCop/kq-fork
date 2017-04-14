@@ -4,6 +4,8 @@
 #include "heroc.h"
 #include "res.h"
 
+#include <string>
+using std::string;
 
 /*! \brief Player */
 class s_player
@@ -82,7 +84,7 @@ public:
 
 	uint8_t GetStatValueBySpellType(eSpellType spellType);
 
-	char name[9]; /*!< Entity name */
+	string name;  /*!< Entity name */
 	int xp;       /*!< Entity experience */
 	int next;     /*!< Experience needed for level-up */
 	int lvl;      /*!< Entity's level */

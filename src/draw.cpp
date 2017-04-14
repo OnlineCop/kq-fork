@@ -890,7 +890,7 @@ void KDraw::draw_porttextbox(eBubbleStyle bstyle, int chr)
 	linexofs = a * 12;
 
 	menubox(double_buffer, 19, 172 - linexofs, 4, 4, BLUE);
-	menubox(double_buffer, 66, 196 - linexofs, strlen(party[chr].name), 1, BLUE);
+	menubox(double_buffer, 66, 196 - linexofs, party[chr].name.length(), 1, BLUE);
 
 	draw_sprite(double_buffer, players[chr].portrait, 24, 177 - linexofs);
 	print_font(double_buffer, 74, 204 - linexofs, party[chr].name, FNORMAL);
@@ -1124,12 +1124,9 @@ string KDraw::parse_string(const string& the_string)
 		return the_string;
 	}
 
-	string party0(party[pidx[0]].name);
-	string party1(party[pidx[1]].name);
-
-	string output = the_string;
-	replaceAll(output, "$0", party0);
-	replaceAll(output, "$1", party1);
+	string output(the_string);
+	replaceAll(output, "$0", party[pidx[0]].name);
+	replaceAll(output, "$1", party[pidx[1]].name);
 
 	return output;
 }
