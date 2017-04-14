@@ -27,6 +27,7 @@
 using std::string;
 
 class Raster;
+enum eSpellType;
 
 // TODO: Find out whether these values paired to any color defined within
 // PALETTE 'pal'
@@ -155,7 +156,7 @@ public:
 	 * \param   icx x-coord to draw to
 	 * \param   icy y-coord to draw to
 	 */
-	void draw_stsicon(Raster *where, int cc, int who, int inum, int icx, int icy);
+	void draw_stsicon(Raster *where, int cc, int who, eSpellType inum, int icx, int icy);
 
 	/*! \brief Check for forest square
 	 *

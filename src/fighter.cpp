@@ -507,3 +507,12 @@ void KFighter::AddInfuse(signed int AmountOfEffectToAdd)
 		sts[S_INFUSE] = 0;
 	}
 }
+
+uint8_t KFighter::GetStatValueBySpellType(eSpellType spellType)
+{
+	if (spellType < eSpellType::NUM_SPELL_TYPES)
+	{
+		return sts[spellType];
+	}
+	return 0;
+}

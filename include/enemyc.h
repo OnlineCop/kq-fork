@@ -133,7 +133,7 @@ private:
 	 * \param   ws Which stat to consider
 	 * \param   s Starting target for multiple targets
 	 */
-	int StatsCheck(int ws, int s);
+	int StatsCheck(eSpellType whichSpellType, int s);
 
 	/*! \brief Prepare an enemy for battle
 	 *

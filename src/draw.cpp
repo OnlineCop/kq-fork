@@ -820,11 +820,11 @@ void KDraw::draw_shadows(void)
 	}
 }
 
-void KDraw::draw_stsicon(Raster *where, int cc, int who, int inum, int icx, int icy)
+void KDraw::draw_stsicon(Raster *where, int cc, int who, eSpellType spellType, int icx, int icy)
 {
 	int j, st = 0, s;
 
-	for (j = 0; j < inum; j++)
+	for (j = 0; j < spellType; j++)
 	{
 		if (cc == 0)
 		{
@@ -832,7 +832,7 @@ void KDraw::draw_stsicon(Raster *where, int cc, int who, int inum, int icx, int 
 		}
 		else
 		{
-			s = fighter[who].sts[j];
+			s = fighter[who].GetStatValueBySpellType((eSpellType)j);
 		}
 		if (s != 0)
 		{

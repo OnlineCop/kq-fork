@@ -161,7 +161,7 @@ void KMenu::draw_playerstat(Raster *where, int player_index_in_party, int dx, in
 	int j;
 	players[player_index_in_party].portrait->maskedBlitTo(where, dx, dy);
 	Draw.print_font(where, dx + 48, dy, party[player_index_in_party].name, FNORMAL);
-	Draw.draw_stsicon(where, 0, player_index_in_party, 8, dx + 48, dy + 8);
+	Draw.draw_stsicon(where, 0, player_index_in_party, eSpellType::S_MALISON, dx + 48, dy + 8);
 	Draw.print_font(where, dx + 48, dy + 16, _("LV"), FGOLD);
 	sprintf(strbuf, "%d", party[player_index_in_party].lvl);
 	Draw.print_font(where, dx + 104 - (strlen(strbuf) * 8), dy + 16, strbuf, FNORMAL);

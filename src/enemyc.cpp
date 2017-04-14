@@ -471,8 +471,14 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 			case M_STONE:
 			case M_SILENCE:
 			case M_SLEEP:
-				yes = StatsCheck(magic[cs].elem - 8, 0);
+			{
+				size_t spellTypeInt = magic[cs].elem - 8;
+				if (spellTypeInt < eSpellType::NUM_SPELL_TYPES)
+				{
+					yes = StatsCheck((eSpellType)spellTypeInt, 0);
+				}
 				break;
+			}
 			case M_NAUSEA:
 			case M_MALISON:
 				yes = StatsCheck(S_MALISON, 0);
@@ -480,8 +486,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 			case M_SLOW:
 				aux = 0;
 				for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
-					if (fighter[fighter_index].IsAlive() &&
-						fighter[fighter_index].GetRemainingTime() != 1)
+					if (fighter[fighter_index].IsAlive() && fighter[fighter_index].GetRemainingTime() != 1)
 					{
 						aux++;
 					}
@@ -554,16 +559,21 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 	}
 }
 
-int KEnemy::StatsCheck(int ws, int s)
+int KEnemy::StatsCheck(eSpellType whichSpellType, int s)
 {
 	uint32_t fighter_affected = 0;
 	size_t fighter_index;
+
+	if (whichSpellType >= eSpellType::NUM_SPELL_TYPES)
+	{
+		return 0;
+	}
 
 	if (s == PSIZE)
 	{
 		for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 		{
-			if (fighter[fighter_index].IsAlive() && fighter[fighter_index].sts[ws] == 0)
+			if (fighter[fighter_index].IsAlive() && fighter[fighter_index].GetStatValueBySpellType(whichSpellType) == 0)
 			{
 				fighter_affected++;
 			}
@@ -577,7 +587,7 @@ int KEnemy::StatsCheck(int ws, int s)
 	{
 		for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 		{
-			if (fighter[fighter_index].IsAlive() && fighter[fighter_index].sts[ws] == 0)
+			if (fighter[fighter_index].IsAlive() && fighter[fighter_index].GetStatValueBySpellType(whichSpellType) == 0)
 			{
 				fighter_affected++;
 			}

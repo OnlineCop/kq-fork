@@ -118,6 +118,8 @@ public:
 	uint8_t GetRemainingInfuse() const;
 	void AddInfuse(signed int AmountOfEffectToAdd);
 
+	uint8_t GetStatValueBySpellType(eSpellType spellType);
+
 	char name[25];          /*!<\brief Name */
 	int xp;                 /*!<\brief eXperience Points */
 	int gp;                 /*!<\brief Gold Points */

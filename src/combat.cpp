@@ -453,7 +453,7 @@ void battle_render(signed int plyr, size_t hl, int sall)
 		hline(double_buffer, b + 8, 226, b + 95, 21);
 		sz = (fighter[z].mp > 0) ? fighter[z].mp * 88 / fighter[z].mmp : 88;
 		hline(double_buffer, b + 8, 226, b + 8 + sz, 12);
-		Draw.draw_stsicon(double_buffer, 1, z, 17, b + 8, 200);
+		Draw.draw_stsicon(double_buffer, 1, z, eSpellType::S_INFUSE, b + 8, 200);
 	}
 
 	for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
