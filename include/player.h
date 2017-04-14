@@ -13,6 +13,7 @@ class KPlayer
 	friend class KDisk;
 public:
 	KPlayer();
+	uint8_t GetStatValueBySpellType(eSpellType spellType);
 
 	// S_POISON
 	bool IsPoisoned() const;
@@ -81,8 +82,6 @@ public:
 	void SetShield(int HowLongEffectShouldLast);
 	uint8_t GetRemainingShield() const;
 	void AddShield(signed int AmountOfEffectToAdd);
-
-	uint8_t GetStatValueBySpellType(eSpellType spellType);
 
 	string name;  /*!< Entity name */
 	int xp;       /*!< Entity experience */

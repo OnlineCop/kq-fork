@@ -328,7 +328,7 @@ void KDraw::draw_char(int xw, int yw)
 	size_t fighter_frame, fighter_frame_add;
 	size_t fighter_type_id;
 
-	for (follower_fighter_index = PSIZE + noe; follower_fighter_index > 0; follower_fighter_index--)
+	for (follower_fighter_index = PSIZE + number_of_entities; follower_fighter_index > 0; follower_fighter_index--)
 	{
 		fighter_index = follower_fighter_index - 1;
 		fighter_type_id = g_ent[fighter_index].eid;

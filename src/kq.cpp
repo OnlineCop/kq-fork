@@ -109,8 +109,7 @@ s_map g_map;
 /*! Current entities (players+NPCs) */
 KQEntity g_ent[MAX_ENTITIES];
 
-/*! Number of enemies */
-uint32_t noe = 0;
+uint32_t number_of_entities = 0;
 
 /*! Identifies characters in the party */
 ePIDX pidx[MAXCHRS];
@@ -1216,7 +1215,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 		tilex[i] = (uint16_t)i;
 	}
 
-	noe = 0;
+	number_of_entities = 0;
 	for (i = 0; i < (size_t)numchrs; i++)
 	{
 		g_ent[i].active = 1;

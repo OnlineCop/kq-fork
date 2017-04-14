@@ -398,7 +398,8 @@ extern s_anim adata[MAX_ANIM];
 extern uint32_t numchrs;
 extern int xofs, yofs;
 extern int gsvol, gmvol;
-extern uint32_t noe;
+/*! Number of entities (or enemies?) */
+extern uint32_t number_of_entities;
 extern ePIDX pidx[MAXCHRS];
 extern uint8_t autoparty, alldead, is_sound, deadeffect, use_sstone, sound_avail;
 extern bool bDoesViewportFollowPlayer;

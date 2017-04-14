@@ -1027,8 +1027,8 @@ static void init_obj(lua_State *L)
 	lua_setglobal(L, "player");
 	/* entity[] array */
 	lua_newtable(L);
-	/* ents */
-	for (i = 0; i < noe; ++i)
+	/* entities */
+	for (i = 0; i < number_of_entities; ++i)
 	{
 		lua_newtable(L);
 		lua_pushvalue(L, -2);
@@ -1042,7 +1042,7 @@ static void init_obj(lua_State *L)
 	for (i = 0; i < numchrs; ++i)
 	{
 		lua_getglobal(L, party[pidx[i]].name.c_str());
-		lua_rawseti(L, -2, i + noe);
+		lua_rawseti(L, -2, i + number_of_entities);
 	}
 	lua_setglobal(L, "entity");
 }
@@ -2037,7 +2037,7 @@ static int KQ_get_marker_tiley(lua_State *L)
 
 static int KQ_get_noe(lua_State *L)
 {
-	lua_pushnumber(L, noe);
+	lua_pushnumber(L, number_of_entities);
 	return 1;
 }
 
@@ -3312,7 +3312,7 @@ static int KQ_set_noe(lua_State *L)
 
 	if (a <= MAX_ENTITIES_PER_MAP + PSIZE)
 	{
-		noe = a;
+		number_of_entities = a;
 	}
 	return 0;
 }
