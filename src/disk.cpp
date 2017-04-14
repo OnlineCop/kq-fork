@@ -279,55 +279,55 @@ int KDisk::load_attributes_xml(KPlayer *s, XMLElement *node)
 		{
 			if (property->Attribute("name", "str"))
 			{
-				s->stats[A_STR] = property->IntAttribute("value");
+				s->stats[eStat::Strength] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "agi"))
 			{
-				s->stats[A_AGI] = property->IntAttribute("value");
+				s->stats[eStat::Agility] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "vit"))
 			{
-				s->stats[A_VIT] = property->IntAttribute("value");
+				s->stats[eStat::Vitality] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "int"))
 			{
-				s->stats[A_INT] = property->IntAttribute("value");
+				s->stats[eStat::Intellect] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "sag"))
 			{
-				s->stats[A_SAG] = property->IntAttribute("value");
+				s->stats[eStat::Sagacity] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "spd"))
 			{
-				s->stats[A_SPD] = property->IntAttribute("value");
+				s->stats[eStat::Speed] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "aur"))
 			{
-				s->stats[A_AUR] = property->IntAttribute("value");
+				s->stats[eStat::Aura] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "spi"))
 			{
-				s->stats[A_SPI] = property->IntAttribute("value");
+				s->stats[eStat::Spirit] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "att"))
 			{
-				s->stats[A_ATT] = property->IntAttribute("value");
+				s->stats[eStat::Attack] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "hit"))
 			{
-				s->stats[A_HIT] = property->IntAttribute("value");
+				s->stats[eStat::Hit] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "def"))
 			{
-				s->stats[A_DEF] = property->IntAttribute("value");
+				s->stats[eStat::Defense] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "evd"))
 			{
-				s->stats[A_EVD] = property->IntAttribute("value");
+				s->stats[eStat::Evade] = property->IntAttribute("value");
 			}
 			else if (property->Attribute("name", "mag"))
 			{
-				s->stats[A_MAG] = property->IntAttribute("value");
+				s->stats[eStat::MagicDefense] = property->IntAttribute("value");
 			}
 		}
 	}

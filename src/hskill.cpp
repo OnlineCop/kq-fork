@@ -231,15 +231,15 @@ static void infusion(int c, int sn)
 		 /* Increase resistance to Earthquake attacks */
 	case M_TREMOR:
 		fighter[c].res[R_EARTH] += 5;
-		fighter[c].stats[A_DEF] += 15;
-		fighter[c].stats[A_MAG] += 10;
+		fighter[c].stats[eStat::Defense] += 15;
+		fighter[c].stats[eStat::MagicDefense] += 10;
 		fighter[c].welem = 0;
 		break;
 
 	case M_EARTHQUAKE:
 		fighter[c].res[R_EARTH] += 10;
-		fighter[c].stats[A_DEF] += 30;
-		fighter[c].stats[A_MAG] += 20;
+		fighter[c].stats[eStat::Defense] += 30;
+		fighter[c].stats[eStat::MagicDefense] += 20;
 		fighter[c].welem = 0;
 		break;
 
@@ -248,14 +248,14 @@ static void infusion(int c, int sn)
 	case M_GLOOM:
 		fighter[c].res[R_BLACK] += 8;
 		fighter[c].res[R_WHITE] -= 4;
-		fighter[c].stats[A_AUR] += 20;
+		fighter[c].stats[eStat::Aura] += 20;
 		fighter[c].welem = 1;
 		break;
 
 	case M_NEGATIS:
 		fighter[c].res[R_BLACK] += 16;
 		fighter[c].res[R_WHITE] -= 8;
-		fighter[c].stats[A_AUR] += 40;
+		fighter[c].stats[eStat::Aura] += 40;
 		fighter[c].welem = 1;
 		break;
 
@@ -265,8 +265,8 @@ static void infusion(int c, int sn)
 		fighter[c].res[R_FIRE] += 4;
 		fighter[c].res[R_WATER]--;
 		fighter[c].res[R_ICE]--;
-		fighter[c].stats[A_ATT] += 10;
-		fighter[c].stats[A_HIT] += 10;
+		fighter[c].stats[eStat::Attack] += 10;
+		fighter[c].stats[eStat::Hit] += 10;
 		fighter[c].welem = 2;
 		break;
 
@@ -274,8 +274,8 @@ static void infusion(int c, int sn)
 		fighter[c].res[R_FIRE] += 8;
 		fighter[c].res[R_WATER] -= 2;
 		fighter[c].res[R_ICE] -= 2;
-		fighter[c].stats[A_ATT] += 20;
-		fighter[c].stats[A_HIT] += 20;
+		fighter[c].stats[eStat::Attack] += 20;
+		fighter[c].stats[eStat::Hit] += 20;
 		fighter[c].welem = 2;
 		break;
 
@@ -283,42 +283,42 @@ static void infusion(int c, int sn)
 		fighter[c].res[R_FIRE] += 12;
 		fighter[c].res[R_WATER] -= 4;
 		fighter[c].res[R_ICE] -= 4;
-		fighter[c].stats[A_ATT] += 40;
-		fighter[c].stats[A_HIT] += 40;
+		fighter[c].stats[eStat::Attack] += 40;
+		fighter[c].stats[eStat::Hit] += 40;
 		fighter[c].welem = 2;
 		break;
 
 		/* Increase resistance to Thunder attacks */
 	case M_SHOCK:
 		fighter[c].res[R_THUNDER] += 3;
-		fighter[c].stats[A_EVD] += 10;
+		fighter[c].stats[eStat::Evade] += 10;
 		fighter[c].welem = 3;
 		break;
 
 	case M_LIGHTNING:
 		fighter[c].res[R_THUNDER] += 6;
-		fighter[c].stats[A_EVD] += 25;
+		fighter[c].stats[eStat::Evade] += 25;
 		fighter[c].welem = 3;
 		break;
 
 	case M_THUNDERSTORM:
 		fighter[c].res[R_THUNDER] += 12;
-		fighter[c].stats[A_EVD] += 50;
+		fighter[c].stats[eStat::Evade] += 50;
 		fighter[c].welem = 3;
 		break;
 
 		/* Increase resistance to Air attacks */
 	case M_WHIRLWIND:
 		fighter[c].res[R_AIR] += 5;
-		fighter[c].stats[A_EVD] += 15;
-		fighter[c].stats[A_SPD] += 10;
+		fighter[c].stats[eStat::Evade] += 15;
+		fighter[c].stats[eStat::Speed] += 10;
 		fighter[c].welem = 4;
 		break;
 
 	case M_TORNADO:
 		fighter[c].res[R_AIR] += 10;
-		fighter[c].stats[A_EVD] += 30;
-		fighter[c].stats[A_SPD] += 20;
+		fighter[c].stats[eStat::Evade] += 30;
+		fighter[c].stats[eStat::Speed] += 20;
 		fighter[c].welem = 4;
 		break;
 
@@ -327,14 +327,14 @@ static void infusion(int c, int sn)
 	case M_FADE:
 		fighter[c].res[R_WHITE] += 5;
 		fighter[c].res[R_BLACK] -= 2;
-		fighter[c].stats[A_SPI] += 10;
+		fighter[c].stats[eStat::Spirit] += 10;
 		fighter[c].welem = 5;
 		break;
 
 	case M_LUMINE:
 		fighter[c].res[R_WHITE] += 10;
 		fighter[c].res[R_BLACK] -= 5;
-		fighter[c].stats[A_SPI] += 25;
+		fighter[c].stats[eStat::Spirit] += 25;
 		fighter[c].welem = 5;
 		break;
 
@@ -374,7 +374,7 @@ static void infusion(int c, int sn)
 		fighter[c].res[R_ICE] += 7;
 		fighter[c].res[R_WATER] += 4;
 		fighter[c].res[R_FIRE] -= 5;
-		fighter[c].stats[A_DEF] += 10;
+		fighter[c].stats[eStat::Defense] += 10;
 		fighter[c].welem = 7;
 		break;
 
@@ -382,7 +382,7 @@ static void infusion(int c, int sn)
 		fighter[c].res[R_ICE] += 14;
 		fighter[c].res[R_WATER] += 8;
 		fighter[c].res[R_FIRE] -= 10;
-		fighter[c].stats[A_DEF] += 25;
+		fighter[c].stats[eStat::Defense] += 25;
 		fighter[c].welem = 7;
 		break;
 
@@ -532,12 +532,12 @@ int skill_use(size_t attack_fighter_index)
 		b = fighter[attack_fighter_index].mhp / 20;
 		strcpy(attack_string, _("Rage"));
 		display_attack_string = 1;
-		tempa.stats[A_ATT] = fighter[attack_fighter_index].stats[A_ATT];
-		tempa.stats[A_HIT] = fighter[attack_fighter_index].stats[A_HIT];
+		tempa.stats[eStat::Attack] = fighter[attack_fighter_index].stats[eStat::Attack];
+		tempa.stats[eStat::Hit] = fighter[attack_fighter_index].stats[eStat::Hit];
 		if (fighter[enemy_index].crit == 1)
 		{
-			tempa.stats[A_ATT] += b;
-			tempa.stats[A_HIT] += b;
+			tempa.stats[eStat::Attack] += b;
+			tempa.stats[eStat::Hit] += b;
 		}
 		fight(attack_fighter_index, enemy_index, 1);
 		if (fighter[enemy_index].IsDead())
@@ -574,7 +574,7 @@ int skill_use(size_t attack_fighter_index)
 		fighter[attack_fighter_index].ctmem = 1000;
 		strcpy(attack_string, _("Sweep"));
 		display_attack_string = 1;
-		tempa.stats[A_ATT] = tempa.stats[A_ATT] * 75 / 100;
+		tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack] * 75 / 100;
 		fighter[attack_fighter_index].aframe = 6;
 		curx = -1;
 		cury = -1;
@@ -760,13 +760,13 @@ int skill_use(size_t attack_fighter_index)
 
 	case CASANDRA:
 		fighter[attack_fighter_index].atrack[0] =
-			fighter[attack_fighter_index].stats[A_AUR];
+			fighter[attack_fighter_index].stats[eStat::Aura];
 		fighter[attack_fighter_index].atrack[1] =
-			fighter[attack_fighter_index].stats[A_SPI];
-		fighter[attack_fighter_index].stats[A_AUR] =
-			fighter[attack_fighter_index].stats[A_AUR] * 15 / 10;
-		fighter[attack_fighter_index].stats[A_SPI] =
-			fighter[attack_fighter_index].stats[A_SPI] * 15 / 10;
+			fighter[attack_fighter_index].stats[eStat::Spirit];
+		fighter[attack_fighter_index].stats[eStat::Aura] =
+			fighter[attack_fighter_index].stats[eStat::Aura] * 15 / 10;
+		fighter[attack_fighter_index].stats[eStat::Spirit] =
+			fighter[attack_fighter_index].stats[eStat::Spirit] * 15 / 10;
 		fighter[attack_fighter_index].atrack[2] = fighter[attack_fighter_index].mrp;
 		fighter[attack_fighter_index].mrp =
 			fighter[attack_fighter_index].mrp * 15 / 10;
@@ -774,18 +774,18 @@ int skill_use(size_t attack_fighter_index)
 		{
 			cact[attack_fighter_index] = 0;
 			fighter[attack_fighter_index].aux = 1;
-			fighter[attack_fighter_index].stats[A_AUR] =
+			fighter[attack_fighter_index].stats[eStat::Aura] =
 				fighter[attack_fighter_index].atrack[0];
-			fighter[attack_fighter_index].stats[A_SPI] =
+			fighter[attack_fighter_index].stats[eStat::Spirit] =
 				fighter[attack_fighter_index].atrack[1];
 			fighter[attack_fighter_index].mrp =
 				fighter[attack_fighter_index].atrack[2];
 		}
 		else
 		{
-			fighter[attack_fighter_index].stats[A_AUR] =
+			fighter[attack_fighter_index].stats[eStat::Aura] =
 				fighter[attack_fighter_index].atrack[0];
-			fighter[attack_fighter_index].stats[A_SPI] =
+			fighter[attack_fighter_index].stats[eStat::Spirit] =
 				fighter[attack_fighter_index].atrack[1];
 			fighter[attack_fighter_index].mrp =
 				fighter[attack_fighter_index].atrack[2];

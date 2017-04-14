@@ -93,7 +93,7 @@ public:
 	int mhp;      /*!< Maximum hit points */
 	int mp;       /*!< Magic points */
 	int mmp;      /*!< Maximum magic points */
-	int stats[NUM_STATS];        /*!< See A_* constants in kq.h */
+	int stats[eStat::NUM_STATS];        /*!< eAttribute: (A_* enumerations) in enums.h */
 	char res[NUM_RES];           /*!< eResistance: See R_* constants */
 	uint8_t eqp[NUM_EQUIPMENT];  /*!< eEquipment: Weapons, armor, etc. equipped */
 	uint8_t spells[NUM_SPELLS];  /*!< Known spells */

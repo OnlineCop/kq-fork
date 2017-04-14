@@ -121,11 +121,11 @@ eAttackResult attack_result(int ar, int dr)
 	int defender_defense;
 	int defender_evade;
 
-	attacker_attack = tempa.stats[A_ATT];
-	attacker_hit = tempa.stats[A_HIT];
+	attacker_attack = tempa.stats[eStat::Attack];
+	attacker_hit = tempa.stats[eStat::Hit];
 	attacker_weapon_element = tempa.welem;
-	defender_defense = tempd.stats[A_DEF];
-	defender_evade = tempd.stats[A_EVD];
+	defender_defense = tempd.stats[eStat::Defense];
+	defender_evade = tempd.stats[eStat::Evade];
 
 	/*  JB: check to see if the attacker is in critical status...  */
 	/*      increases chance for a critical hit                    */
@@ -1493,7 +1493,7 @@ static void init_fighters(void)
 	for (fighter_index = 0; fighter_index < (PSIZE + num_enemies);
 		fighter_index++)
 	{
-		nspeed[fighter_index] = (fighter[fighter_index].stats[A_SPD] + 50) / 5;
+		nspeed[fighter_index] = (fighter[fighter_index].stats[eStat::Speed] + 50) / 5;
 	}
 }
 

@@ -235,11 +235,11 @@ void KMenu::level_up(int pr)
 	z = ((a / 3) + (xpi * (a / 20 + 1) - 1)) * (((a - 2) / 2) * (a - 1));
 	z += (bxp * (a / 20 + 1) * (a - 1));
 	party[pr].next += (int)z;
-	a = (kqrandom->random_range_exclusive(0, party[pr].lup[2] / 2)) + party[pr].lup[2] + (tmpf.stats[A_VIT] / 5);
+	a = (kqrandom->random_range_exclusive(0, party[pr].lup[2] / 2)) + party[pr].lup[2] + (tmpf.stats[eStat::Vitality] / 5);
 	party[pr].hp += a;
 	party[pr].mhp += a;
 	b = (kqrandom->random_range_exclusive(0, party[pr].lup[3] / 2)) + party[pr].lup[3];
-	b += (tmpf.stats[A_INT] + tmpf.stats[A_SAG]) / 25;
+	b += (tmpf.stats[eStat::Intellect] + tmpf.stats[eStat::Sagacity]) / 25;
 	party[pr].mp += b;
 	party[pr].mmp += b;
 }
@@ -628,12 +628,12 @@ void KMenu::status_screen(size_t fighter_index)
 		Draw.print_font(double_buffer, 8 + xofs, 192 + yofs, _("Defense"), FGOLD);
 		Draw.print_font(double_buffer, 8 + xofs, 200 + yofs, _("Evade"), FGOLD);
 		Draw.print_font(double_buffer, 8 + xofs, 208 + yofs, _("Mag.Def"), FGOLD);
-		for (stats_index = 0; stats_index < NUM_STATS; stats_index++)
+		for (stats_index = 0; stats_index < eStat::NUM_STATS; stats_index++)
 		{
 			// Coordinates of stats on display
 			stats_y = stats_index * 8 + 104;
 			// Add an extra 8-pixel space to separate these from the others
-			if (stats_index > A_SPI)
+			if (stats_index > eStat::Spirit)
 			{
 				stats_y += 8;
 			}
@@ -783,7 +783,7 @@ void player2fighter(int who, KFighter *pf)
 	current_fighter.SetRegen(0);
 	current_fighter.SetInfuse(0);
 
-	for (int j = 0; j < NUM_ATTRIBUTES; j++)
+	for (int j = 0; j < eStat::NUM_STATS; j++)
 	{
 		current_fighter.stats[j] = ((plr.lvl - 1) * plr.lup[j + 4] + plr.stats[j]) / 100;
 	}
@@ -798,7 +798,7 @@ void player2fighter(int who, KFighter *pf)
 	if (items[weapon_index].use == USE_ATTACK)
 	{
 		current_fighter.imb_s = items[weapon_index].imb;
-		current_fighter.imb_a = items[weapon_index].stats[A_ATT];
+		current_fighter.imb_a = items[weapon_index].stats[eStat::Attack];
 	}
 
 	/* Set instants for equipment... these are imbuements that
@@ -864,13 +864,13 @@ void player2fighter(int who, KFighter *pf)
 				current_fighter.current_weapon_type = W_SWORD;
 			}
 		}
-		for (int b = 0; b < NUM_STATS; b++)
+		for (int b = 0; b < eStat::NUM_STATS; b++)
 		{
-			if (b == A_SPI && who == TEMMIN)
+			if (b == eStat::Spirit && who == TEMMIN)
 			{
-				if (items[a].stats[A_SPI] > 0)
+				if (items[a].stats[eStat::Spirit] > 0)
 				{
-					current_fighter.stats[A_SPI] += items[a].stats[A_SPI];
+					current_fighter.stats[eStat::Spirit] += items[a].stats[eStat::Spirit];
 				}
 			}
 			else
@@ -933,11 +933,11 @@ void player2fighter(int who, KFighter *pf)
 	{
 		current_fighter.mrp = plr.mrp;
 	}
-	current_fighter.stats[A_HIT] += (current_fighter.stats[A_STR] + current_fighter.stats[A_AGI]) / 5;
-	current_fighter.stats[A_DEF] += current_fighter.stats[A_VIT] / 8;
-	current_fighter.stats[A_EVD] += current_fighter.stats[A_AGI] / 5;
-	current_fighter.stats[A_MAG] += (current_fighter.stats[A_INT] + current_fighter.stats[A_SAG]) / 20;
-	for (int j = 0; j < NUM_STATS; j++)
+	current_fighter.stats[eStat::Hit] += (current_fighter.stats[eStat::Strength] + current_fighter.stats[eStat::Agility]) / 5;
+	current_fighter.stats[eStat::Defense] += current_fighter.stats[eStat::Vitality] / 8;
+	current_fighter.stats[eStat::Evade] += current_fighter.stats[eStat::Agility] / 5;
+	current_fighter.stats[eStat::MagicDefense] += (current_fighter.stats[eStat::Intellect] + current_fighter.stats[eStat::Sagacity]) / 20;
+	for (int j = 0; j < eStat::NUM_STATS; j++)
 	{
 		if (current_fighter.stats[j] < 1)
 		{

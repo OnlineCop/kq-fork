@@ -431,15 +431,15 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
  */
 void KMagic::cast_imbued_spell(size_t fighter_index, int target_item, int sag_int_value, int tgt)
 {
-	int temp_int = fighter[fighter_index].stats[A_INT];
-	int temp_sag = fighter[fighter_index].stats[A_SAG];
-	int temp_aur = fighter[fighter_index].stats[A_AUR];
-	int temp_spi = fighter[fighter_index].stats[A_SPI];
+	int temp_int = fighter[fighter_index].stats[eStat::Intellect];
+	int temp_sag = fighter[fighter_index].stats[eStat::Sagacity];
+	int temp_aur = fighter[fighter_index].stats[eStat::Aura];
+	int temp_spi = fighter[fighter_index].stats[eStat::Spirit];
 
-	fighter[fighter_index].stats[A_INT] = sag_int_value;
-	fighter[fighter_index].stats[A_SAG] = sag_int_value;
-	fighter[fighter_index].stats[A_AUR] = 100;
-	fighter[fighter_index].stats[A_SPI] = 100;
+	fighter[fighter_index].stats[eStat::Intellect] = sag_int_value;
+	fighter[fighter_index].stats[eStat::Sagacity] = sag_int_value;
+	fighter[fighter_index].stats[eStat::Aura] = 100;
+	fighter[fighter_index].stats[eStat::Spirit] = 100;
 	fighter[fighter_index].csmem = target_item;
 	fighter[fighter_index].ctmem = tgt;
 	if (tgt == TGT_CASTER)
@@ -452,10 +452,10 @@ void KMagic::cast_imbued_spell(size_t fighter_index, int target_item, int sag_in
 		combat_spell(fighter_index, 1);
 	}
 
-	fighter[fighter_index].stats[A_INT] = temp_int;
-	fighter[fighter_index].stats[A_SAG] = temp_sag;
-	fighter[fighter_index].stats[A_AUR] = temp_aur;
-	fighter[fighter_index].stats[A_SPI] = temp_spi;
+	fighter[fighter_index].stats[eStat::Intellect] = temp_int;
+	fighter[fighter_index].stats[eStat::Sagacity] = temp_sag;
+	fighter[fighter_index].stats[eStat::Aura] = temp_aur;
+	fighter[fighter_index].stats[eStat::Spirit] = temp_spi;
 }
 
 /*! \brief Cast a spell
@@ -490,7 +490,7 @@ int KMagic::cast_spell(size_t caster_fighter_index, int is_item)
 			magic[spell_number].hit == 0)
 		{
 			if (kqrandom->random_range_exclusive(1, 101) > fighter[caster_fighter_index]
-				.stats[A_AUR + magic[spell_number].stat])
+				.stats[eStat::Aura + magic[spell_number].stat])
 			{
 
 				/*  DS: The spell fail, so set ta[target] to MISS */
@@ -808,7 +808,7 @@ void KMagic::cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spe
 	}
 	spwr =
 		magic[spell_number].dmg +
-		(fighter[caster_fighter_index].stats[A_INT + magic[spell_number].stat] *
+		(fighter[caster_fighter_index].stats[eStat::Intellect + magic[spell_number].stat] *
 			magic[spell_number].bon / 100);
 	if (spwr < DMG_RND_MIN * 5)
 	{
@@ -818,7 +818,7 @@ void KMagic::cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spe
 	{
 		b = kqrandom->random_range_exclusive(0, spwr / 5) + spwr;
 	}
-	a = fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat];
+	a = fighter[caster_fighter_index].stats[eStat::Aura + magic[spell_number].stat];
 	b = b * a / 100;
 	if (b < 1)
 	{
@@ -995,7 +995,7 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 		start_fighter_index = PSIZE;
 	}
 	if (kqrandom->random_range_exclusive(1, 101) >
-		fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat])
+		fighter[caster_fighter_index].stats[eStat::Aura + magic[spell_number].stat])
 	{
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 		{
@@ -1493,7 +1493,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 		{
 			tempd = status_adjust(fighter_index);
 			b = do_shell_check(fighter_index, average_damage);
-			b -= tempd.stats[A_MAG];
+			b -= tempd.stats[eStat::MagicDefense];
 			if (b < 0)
 			{
 				b = 0;
@@ -1659,7 +1659,7 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 	}
 	rt = magic[spell_number].elem;
 	ad = magic[spell_number].dmg +
-		(fighter[caster_fighter_index].stats[A_INT + magic[spell_number].stat] *
+		(fighter[caster_fighter_index].stats[eStat::Intellect + magic[spell_number].stat] *
 			magic[spell_number].bon / 100);
 	if (ad < DMG_RND_MIN * 5)
 	{
@@ -1673,7 +1673,7 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 	{
 		ad = 1;
 	}
-	a = fighter[caster_fighter_index].stats[A_AUR + magic[spell_number].stat];
+	a = fighter[caster_fighter_index].stats[eStat::Aura + magic[spell_number].stat];
 	ad = ad * a / 100;
 	if (ad < 0)
 	{
@@ -1690,7 +1690,7 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 		{
 			tempd = status_adjust(fighter_index);
 			b = do_shell_check(fighter_index, ad);
-			b -= tempd.stats[A_MAG];
+			b -= tempd.stats[eStat::MagicDefense];
 			if (b < 0)
 			{
 				b = 0;
@@ -1735,62 +1735,62 @@ KFighter KMagic::status_adjust(size_t fighter_index)
 	tf = fighter[fighter_index];
 	if (tf.IsStrength())
 	{
-		tf.stats[A_ATT] += tf.stats[A_STR] * tf.GetRemainingStrength() * 50 / 100;
+		tf.stats[eStat::Attack] += tf.stats[eStat::Strength] * tf.GetRemainingStrength() * 50 / 100;
 	}
 	if (tf.GetRemainingMalison() == 1)
 	{
-		tf.stats[A_HIT] = tf.stats[A_HIT] * 75 / 100;
-		tf.stats[A_EVD] = tf.stats[A_EVD] * 75 / 100;
+		tf.stats[eStat::Hit] = tf.stats[eStat::Hit] * 75 / 100;
+		tf.stats[eStat::Evade] = tf.stats[eStat::Evade] * 75 / 100;
 	}
 	if (tf.GetRemainingMalison() == 2)
 	{
-		tf.stats[A_HIT] = tf.stats[A_HIT] * 50 / 100;
-		tf.stats[A_EVD] = tf.stats[A_EVD] * 50 / 100;
+		tf.stats[eStat::Hit] = tf.stats[eStat::Hit] * 50 / 100;
+		tf.stats[eStat::Evade] = tf.stats[eStat::Evade] * 50 / 100;
 	}
 	if (tf.IsBless())
 	{
-		tf.stats[A_HIT] += tf.GetRemainingBless() * 25;
-		tf.stats[A_EVD] += tf.GetRemainingBless() * 10;
+		tf.stats[eStat::Hit] += tf.GetRemainingBless() * 25;
+		tf.stats[eStat::Evade] += tf.GetRemainingBless() * 10;
 	}
 	if (tf.GetRemainingTime() == 1)
 	{
-		tf.stats[A_SPD] = tf.stats[A_SPD] * 5 / 10;
-		tf.stats[A_HIT] = tf.stats[A_HIT] * 75 / 100;
-		tf.stats[A_EVD] = tf.stats[A_EVD] * 75 / 100;
+		tf.stats[eStat::Speed] = tf.stats[eStat::Speed] * 5 / 10;
+		tf.stats[eStat::Hit] = tf.stats[eStat::Hit] * 75 / 100;
+		tf.stats[eStat::Evade] = tf.stats[eStat::Evade] * 75 / 100;
 	}
 	if (tf.GetRemainingTime() == 2)
 	{
-		tf.stats[A_SPD] = tf.stats[A_SPD] * 15 / 10;
-		tf.stats[A_HIT] = tf.stats[A_HIT] * 15 / 10;
-		tf.stats[A_EVD] = tf.stats[A_EVD] * 15 / 10;
+		tf.stats[eStat::Speed] = tf.stats[eStat::Speed] * 15 / 10;
+		tf.stats[eStat::Hit] = tf.stats[eStat::Hit] * 15 / 10;
+		tf.stats[eStat::Evade] = tf.stats[eStat::Evade] * 15 / 10;
 	}
 	if (tf.GetRemainingTime() == 3)
 	{
-		tf.stats[A_SPD] = tf.stats[A_SPD] * 2;
-		tf.stats[A_HIT] = tf.stats[A_HIT] * 2;
-		tf.stats[A_EVD] = tf.stats[A_EVD] * 2;
+		tf.stats[eStat::Speed] = tf.stats[eStat::Speed] * 2;
+		tf.stats[eStat::Hit] = tf.stats[eStat::Hit] * 2;
+		tf.stats[eStat::Evade] = tf.stats[eStat::Evade] * 2;
 	}
 	if (tf.IsBlind())
 	{
-		tf.stats[A_HIT] /= 4;
-		if (tf.stats[A_HIT] < 1)
+		tf.stats[eStat::Hit] /= 4;
+		if (tf.stats[eStat::Hit] < 1)
 		{
-			tf.stats[A_HIT] = 1;
+			tf.stats[eStat::Hit] = 1;
 		}
-		tf.stats[A_EVD] /= 4;
-		if (tf.stats[A_EVD] < 1)
+		tf.stats[eStat::Evade] /= 4;
+		if (tf.stats[eStat::Evade] < 1)
 		{
-			tf.stats[A_EVD] = 1;
+			tf.stats[eStat::Evade] = 1;
 		}
 	}
 	if (tf.IsAsleep() || tf.IsStopped())
 	{
-		tf.stats[A_EVD] = 0;
+		tf.stats[eStat::Evade] = 0;
 	}
 	if (tf.IsStone())
 	{
-		tf.stats[A_DEF] *= 2;
-		tf.stats[A_EVD] = 0;
+		tf.stats[eStat::Defense] *= 2;
+		tf.stats[eStat::Evade] = 0;
 	}
 	return tf;
 }

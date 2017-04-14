@@ -734,9 +734,9 @@ static void optimize_equip(int c)
 	for (a = 0; a < tot; a++)
 	{
 		b = g_inv[t_inv[a]].item;
-		if (items[b].stats[A_ATT] > maxx)
+		if (items[b].stats[eStat::Attack] > maxx)
 		{
-			maxx = items[b].stats[A_ATT];
+			maxx = items[b].stats[eStat::Attack];
 			maxi = a;
 		}
 	}
@@ -755,9 +755,9 @@ static void optimize_equip(int c)
 		for (a = 0; a < tot; a++)
 		{
 			b = g_inv[t_inv[a]].item;
-			if (items[b].stats[A_DEF] + items[b].stats[A_MAG] > maxx)
+			if (items[b].stats[eStat::Defense] + items[b].stats[eStat::MagicDefense] > maxx)
 			{
-				maxx = items[b].stats[A_DEF] + items[b].stats[A_MAG];
+				maxx = items[b].stats[eStat::Defense] + items[b].stats[eStat::MagicDefense];
 				maxi = a;
 			}
 		}
@@ -775,7 +775,7 @@ static void optimize_equip(int c)
 	for (a = 0; a < tot; a++)
 	{
 		b = g_inv[t_inv[a]].item;
-		for (z = 0; z < NUM_STATS; z++)
+		for (z = 0; z < eStat::NUM_STATS; z++)
 		{
 			v += items[b].stats[z];
 		}

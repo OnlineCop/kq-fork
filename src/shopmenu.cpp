@@ -348,7 +348,7 @@ static void draw_sideshot(int selected_item)
 		{
 			if (party[pidx[pidx_index]].eqp[slot] > 0)
 			{
-				for (stats_index = 0; stats_index < NUM_STATS; stats_index++)
+				for (stats_index = 0; stats_index < eStat::NUM_STATS; stats_index++)
 				{
 					cs[stats_index] =
 						items[selected_item].stats[stats_index] -
@@ -357,7 +357,7 @@ static void draw_sideshot(int selected_item)
 			}
 			else
 			{
-				for (stats_index = 0; stats_index < NUM_STATS; stats_index++)
+				for (stats_index = 0; stats_index < eStat::NUM_STATS; stats_index++)
 				{
 					cs[stats_index] = items[selected_item].stats[stats_index];
 				}

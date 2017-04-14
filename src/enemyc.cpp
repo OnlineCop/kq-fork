@@ -72,16 +72,17 @@ KEnemy Enemy;
  * -# defeat_item_rare Defeat Item Rare
  * -# steal_item_common Steal Item Common
  * -# steal_item_rare Steal Item Rare
- * -# strength (agility and vitality are set to 0)
- * -# intelligence AND sagacity (both set to same)
- * -# stat[5] (A_SPD)
- * -# stat[6] (A_AUR)
- * -# stat[7] (A_SPI)
- * -# stat[8] (A_ATT)
- * -# stat[9] (A_HIT)
- * -# stat[10] (A_DEF)
- * -# stat[11] (A_EVD)
- * -# stat[12] (A_MAG)
+ * -# stat[0] (eStat::Strength)
+ *    stat[1] (eStat::Agility) and stat[2] (eStat::Vitality) are set to 0 and not saved to allstat.mon
+ * -# stat[3] (eStat::Intellect) AND stat[4] (eStat::Sagacity) both set to the same value
+ * -# stat[5] (eStat::Speed)
+ * -# stat[6] (eStat::Aura)
+ * -# stat[7] (eStat::Spirit)
+ * -# stat[8] (eStat::Attack)
+ * -# stat[9] (eStat::Hit)
+ * -# stat[10] (eStat::Defense)
+ * -# stat[11] (eStat::Evade)
+ * -# stat[12] (eStat::MagicDefense)
  * -# bonus (bstat set to 0)
  * -# current_weapon_type (current weapon type)
  * -# welem Weapon elemental power
@@ -696,12 +697,12 @@ void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
 		// Steal Item Rare: item found rarely when stealing
 		iss >> fighter_loaded_from_disk->steal_item_rare;
 		// Enemy's strength (agility & vitality set to zero)
-		iss >> fighter_loaded_from_disk->stats[A_STR];
-		fighter_loaded_from_disk->stats[A_AGI] = 0;
-		fighter_loaded_from_disk->stats[A_VIT] = 0;
+		iss >> fighter_loaded_from_disk->stats[eStat::Strength];
+		fighter_loaded_from_disk->stats[eStat::Agility] = 0;
+		fighter_loaded_from_disk->stats[eStat::Vitality] = 0;
 		// Intelligence & Sagacity (both the same)
-		iss >> fighter_loaded_from_disk->stats[A_INT];
-		fighter_loaded_from_disk->stats[A_SAG] = fighter_loaded_from_disk->stats[A_INT];
+		iss >> fighter_loaded_from_disk->stats[eStat::Intellect];
+		fighter_loaded_from_disk->stats[eStat::Sagacity] = fighter_loaded_from_disk->stats[eStat::Intellect];
 		// Defense against: Speed, Spirit, Attack, Hit, Defense, Evade, Magic (in that order)
 		for (size_t i = 5; i < 13; i++)
 		{

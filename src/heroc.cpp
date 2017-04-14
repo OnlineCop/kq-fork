@@ -1152,7 +1152,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 
 	if (items[item_index].imb > 0)
 	{
-		Magic.cast_imbued_spell(attacker_fighter_index, items[item_index].imb, items[item_index].stats[A_ATT], defender_fighter_index);
+		Magic.cast_imbued_spell(attacker_fighter_index, items[item_index].imb, items[item_index].stats[eStat::Attack], defender_fighter_index);
 		return 1;
 	}
 
@@ -1217,7 +1217,7 @@ static void hero_run(void)
 		if (fighter[fighter_index].IsAlive())
 		{
 			b++;
-			bt += fighter[fighter_index].stats[A_SPD];
+			bt += fighter[fighter_index].stats[eStat::Speed];
 		}
 	}
 	if (b == 0)
@@ -1233,7 +1233,7 @@ static void hero_run(void)
 		if (fighter[fighter_index].IsAlive())
 		{
 			c++;
-			ct += fighter[fighter_index].stats[A_SPD];
+			ct += fighter[fighter_index].stats[eStat::Speed];
 		}
 	}
 	if (c == 0)

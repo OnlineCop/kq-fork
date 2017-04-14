@@ -152,7 +152,7 @@ public:
 							 * If Ayla steals something, she will get this item 5% of
 							 * the time.
 							 */
-	int stats[NUM_STATS];   /*!<\brief See A_* constants in kq.h */
+	int stats[eStat::NUM_STATS];   /*!<\brief See A_* constants in enums.h */
 	char res[NUM_RES];      /*!<\brief eResistance: See R_* constants */
 	uint8_t facing;         /*!<\brief Direction character's sprite faces */
 	uint8_t aframe; /*!<\brief Battle sprite to display (standing, casting,

@@ -72,7 +72,6 @@ enum eShadow {
 #define MAX_TILESETS 8
 #define NUM_FIGHTERS 7
 #define MAX_ANIM 5
-#define NUM_STATS 13
 #define NUM_RES 16
 #define MISS 9999
 #define NODISPLAY 9998
@@ -91,26 +90,26 @@ enum eShadow {
 #define SIZE_SAVE_SPELL 50
 #define SIZE_TREASURE 1000
 
-/*! \name Attributes of characters */
-/*  These are the stats when you check your
- *  characters stats (on the left)
+/*! \name Stats of characters */
+/*  These are the stats when you check your characters stats (on the left)
  */
-enum eAttribute {
-  A_STR = 0,  // Strength
-  A_AGI = 1,  // Agility
-  A_VIT = 2,  // Vitality
-  A_INT = 3,  // Intellect
-  A_SAG = 4,  // Sagacity
-  A_SPD = 5,  // Speed
-  A_AUR = 6,  // Aura
-  A_SPI = 7,  // Spirit
-  A_ATT = 8,  // Attack
-  A_HIT = 9,  // Hit
-  A_DEF = 10, // Defense
-  A_EVD = 11, // Evade
-  A_MAG = 12, // Mag.Def
+enum eStat
+{
+	Strength = 0,  // Strength
+	Agility = 1,  // Agility
+	Vitality = 2,  // Vitality
+	Intellect = 3,  // Intellect
+	Sagacity = 4,  // Sagacity
+	Speed = 5,  // Speed
+	Aura = 6,  // Aura
+	Spirit = 7,  // Spirit
+	Attack = 8,  // Attack
+	Hit = 9,  // Hit
+	Defense = 10, // Defense
+	Evade = 11, // Evade
+	MagicDefense = 12, // Mag.Def
 
-  NUM_ATTRIBUTES // always last
+	NUM_STATS // always last
 };
 
 /*! \name Spells */

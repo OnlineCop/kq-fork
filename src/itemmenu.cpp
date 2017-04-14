@@ -437,7 +437,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
-		tmp = kqrandom->random_range_exclusive(0, items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
+		tmp = kqrandom->random_range_exclusive(0, items[ti].stats[eStat::Attack] / 2) + items[ti].stats[eStat::Attack];
 		if (in_combat == 0)
 		{
 			Magic.adjust_hp(fighter_index, tmp);
@@ -460,7 +460,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		{
 			return ITEM_EFFECT_INEFFECTIVE;
 		}
-		tmp = kqrandom->random_range_exclusive(0, items[ti].stats[A_ATT] / 2) + items[ti].stats[A_ATT];
+		tmp = kqrandom->random_range_exclusive(0, items[ti].stats[eStat::Attack] / 2) + items[ti].stats[eStat::Attack];
 		if (in_combat == 0)
 		{
 			Magic.adjust_mp(fighter_index, tmp);
@@ -628,7 +628,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 			if (fighter[fighter_index].IsAlive() &&
 				!fighter[fighter_index].IsStone())
 			{
-				b = fighter[fighter_index].lvl * items[ti].stats[A_ATT];
+				b = fighter[fighter_index].lvl * items[ti].stats[eStat::Attack];
 				tmp = kqrandom->random_range_exclusive(0, b) + b + 1;
 				if (in_combat == 0)
 				{
@@ -664,7 +664,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 			if (fighter[fighter_index].IsAlive() &&
 				fighter[fighter_index].mhp > 0)
 			{
-				b = fighter[fighter_index].lvl * items[ti].stats[A_ATT];
+				b = fighter[fighter_index].lvl * items[ti].stats[eStat::Attack];
 				a = kqrandom->random_range_exclusive(0, b) + b + 20;
 				if (a > 250)
 				{
@@ -689,7 +689,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		if (fighter[fighter_index].IsAlive() &&
 			!fighter[fighter_index].IsStone())
 		{
-			ta[fighter_index] = items[ti].stats[A_ATT];
+			ta[fighter_index] = items[ti].stats[eStat::Attack];
 		}
 		draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 		return ITEM_EFFECT_SUCCESS_MULTIPLE;
