@@ -445,8 +445,8 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		else
 		{
 			ta[fighter_index] = tmp;
-			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
-			display_amount(fighter_index, FONT_YELLOW, 0);
+			Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+			Effects.display_amount(fighter_index, FONT_YELLOW, 0);
 			Magic.adjust_hp(fighter_index, ta[fighter_index]);
 		}
 		break;
@@ -468,8 +468,8 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		else
 		{
 			ta[fighter_index] = tmp;
-			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
-			display_amount(fighter_index, FONT_GREEN, 0);
+			Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+			Effects.display_amount(fighter_index, FONT_GREEN, 0);
 			Magic.adjust_mp(fighter_index, ta[fighter_index]);
 		}
 		break;
@@ -488,7 +488,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		}
 		if (in_combat == 1)
 		{
-			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+			Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 		}
 		break;
 	case I_NPOULTICE:/*115*/
@@ -506,7 +506,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		}
 		if (in_combat == 1)
 		{
-			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+			Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 		}
 		break;
 	case I_KBREW:/*113*/
@@ -524,7 +524,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		}
 		if (in_combat == 1)
 		{
-			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+			Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 		}
 		break;
 	case I_WENSAI:
@@ -542,7 +542,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		}
 		if (in_combat == 1)
 		{
-			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+			Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 		}
 		break;
 	case I_EDAENRA:
@@ -577,7 +577,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 
 		if (in_combat == 1)
 		{
-			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+			Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 		}
 		break;
 	case I_LTONIC:
@@ -607,7 +607,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		fighter[fighter_index].aframe = 0;
 		if (in_combat == 1)
 		{
-			draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+			Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 		}
 		break;
 	case I_RRUNE:
@@ -642,8 +642,8 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		}
 		if (in_combat == 1)
 		{
-			draw_spellsprite(attack_fighter_index, 1, items[ti].eff, 1);
-			display_amount(attack_fighter_index, FONT_YELLOW, 1);
+			Effects.draw_spellsprite(attack_fighter_index, 1, items[ti].eff, 1);
+			Effects.display_amount(attack_fighter_index, FONT_YELLOW, 1);
 			for (fighter_index = attack_fighter_index; fighter_index < attack_fighter_index + san; fighter_index++)
 			{
 				Magic.adjust_hp(fighter_index, ta[fighter_index]);
@@ -679,7 +679,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 				ta[fighter_index] = 0;
 			}
 		}
-		draw_spellsprite(start_fighter_index, 1, items[ti].eff, 1);
+		Effects.draw_spellsprite(start_fighter_index, 1, items[ti].eff, 1);
 		return ITEM_EFFECT_SUCCESS_MULTIPLE;
 	case I_TP100S:
 		if (in_combat == 0)
@@ -691,7 +691,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		{
 			ta[fighter_index] = items[ti].stats[eStat::Attack];
 		}
-		draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
+		Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 		return ITEM_EFFECT_SUCCESS_MULTIPLE;
 	}
 	if (attack_fighter_index == PSIZE || in_combat == 1)

@@ -79,17 +79,17 @@ void combat_skill(size_t fighter_index)
 	case 3:
 		strcpy(attack_string, _("Chill Touch"));
 		display_attack_string = 1;
-		draw_spellsprite(tgt, 0, 10, 1);
-		Magic.special_damage_oneall_enemies(fighter_index, 60, R_ICE, tgt, 0);
+		Effects.draw_spellsprite(tgt, 0, 10, 1);
+		Magic.special_damage_oneall_enemies(fighter_index, 60, R_ICE, tgt, false);
 		display_attack_string = 0;
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
 		break;
 	case 4:
 		strcpy(attack_string, _("Flash Flood"));
 		display_attack_string = 1;
-		draw_hugesprite(0, 80, 108, 21, 1);
+		Effects.draw_hugesprite(0, 80, 108, 21, 1);
 		/*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
-		Magic.special_damage_oneall_enemies(fighter_index, 40, R_ICE, SEL_ALL_ENEMIES, 1);
+		Magic.special_damage_oneall_enemies(fighter_index, 40, R_ICE, SEL_ALL_ENEMIES, true);
 		display_attack_string = 0;
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 		break;
@@ -134,7 +134,7 @@ void combat_skill(size_t fighter_index)
 	case 8:
 		affected_targets = 0;
 		strcpy(attack_string, _("Stone Gas"));
-		draw_spellsprite(0, 1, 46, 1);
+		Effects.draw_spellsprite(0, 1, 46, 1);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
 			if (fighter[target_fighter_index].IsAlive())
@@ -154,7 +154,7 @@ void combat_skill(size_t fighter_index)
 		}
 		if (affected_targets > 0)
 		{
-			display_amount(0, FONT_WHITE, 1);
+			Effects.display_amount(0, FONT_WHITE, 1);
 		}
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 		break;
@@ -163,14 +163,13 @@ void combat_skill(size_t fighter_index)
 		strcpy(attack_string, _("Zemmel Rod"));
 		if (kqrandom->random_range_exclusive(0, 4) < 2)
 		{
-			draw_spellsprite(0, 1, 11, 1);
+			Effects.draw_spellsprite(0, 1, 11, 1);
 			/*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
-			Magic.special_damage_oneall_enemies(fighter_index, 25, R_THUNDER,
-				SEL_ALL_ENEMIES, 1);
+			Magic.special_damage_oneall_enemies(fighter_index, 25, R_THUNDER, SEL_ALL_ENEMIES, true);
 			fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
 			return;
 		}
-		draw_spellsprite(0, 1, 40, 0);
+		Effects.draw_spellsprite(0, 1, 40, 0);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
 			if (Magic.res_throw(target_fighter_index, R_TIME) == 0)
@@ -210,22 +209,21 @@ void combat_skill(size_t fighter_index)
 		}
 		if (affected_targets > 0)
 		{
-			display_amount(0, FONT_WHITE, 1);
+			Effects.display_amount(0, FONT_WHITE, 1);
 		}
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
 		break;
 	case 10:
 		strcpy(attack_string, _("Poison Gas"));
-		draw_spellsprite(0, 1, 47, 1);
+		Effects.draw_spellsprite(0, 1, 47, 1);
 		/*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
-		Magic.special_damage_oneall_enemies(fighter_index, 40, R_POISON, SEL_ALL_ENEMIES,
-			1);
+		Magic.special_damage_oneall_enemies(fighter_index, 40, R_POISON, SEL_ALL_ENEMIES, true);
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 		break;
 	case 11:
 		affected_targets = 0;
 		strcpy(attack_string, _("Tangle Root"));
-		draw_spellsprite(0, 1, 24, 0);
+		Effects.draw_spellsprite(0, 1, 24, 0);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
 			if (Magic.res_throw(target_fighter_index, S_STOP) == 0 &&
@@ -243,7 +241,7 @@ void combat_skill(size_t fighter_index)
 		}
 		if (affected_targets > 0)
 		{
-			display_amount(0, FONT_WHITE, 1);
+			Effects.display_amount(0, FONT_WHITE, 1);
 		}
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 		break;
@@ -259,10 +257,9 @@ void combat_skill(size_t fighter_index)
 		break;
 	case 13:
 		strcpy(attack_string, _("Maul of the Titans"));
-		draw_hugesprite(0, 80, 110, 29, 1);
+		Effects.draw_hugesprite(0, 80, 110, 29, 1);
 		/*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
-		Magic.special_damage_oneall_enemies(fighter_index, 60, R_EARTH, SEL_ALL_ENEMIES,
-			1);
+		Magic.special_damage_oneall_enemies(fighter_index, 60, R_EARTH, SEL_ALL_ENEMIES, true);
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 		break;
 	case 14:
@@ -279,7 +276,7 @@ void combat_skill(size_t fighter_index)
 		break;
 	case 15:
 		strcpy(attack_string, _("Howl"));
-		draw_spellsprite(0, 1, 14, 0);
+		Effects.draw_spellsprite(0, 1, 14, 0);
 		affected_targets = 0;
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
@@ -306,19 +303,19 @@ void combat_skill(size_t fighter_index)
 		}
 		if (affected_targets > 0)
 		{
-			display_amount(0, FONT_WHITE, 1);
+			Effects.display_amount(0, FONT_WHITE, 1);
 		}
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 		break;
 	case 16:
 		strcpy(attack_string, _("Rasp"));
-		draw_spellsprite(0, 1, 48, 0);
+		Effects.draw_spellsprite(0, 1, 48, 0);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
 			b = fighter[target_fighter_index].hp / 3;
 			ta[target_fighter_index] = 0 - b;
 		}
-		display_amount(0, FONT_WHITE, 1);
+		Effects.display_amount(0, FONT_WHITE, 1);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
 			Magic.adjust_hp(target_fighter_index, ta[target_fighter_index]);
@@ -328,7 +325,7 @@ void combat_skill(size_t fighter_index)
 			b = fighter[target_fighter_index].mp / 3;
 			ta[target_fighter_index] = 0 - b;
 		}
-		display_amount(0, FONT_RED, 1);
+		Effects.display_amount(0, FONT_RED, 1);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
 			Magic.adjust_mp(target_fighter_index, ta[target_fighter_index]);
@@ -337,9 +334,8 @@ void combat_skill(size_t fighter_index)
 		break;
 	case 17:
 		strcpy(attack_string, _("Shadow Blast"));
-		draw_spellsprite(0, 1, 49, 1);
-		Magic.special_damage_oneall_enemies(fighter_index, 75, R_BLACK, SEL_ALL_ENEMIES,
-			1);
+		Effects.draw_spellsprite(0, 1, 49, 1);
+		Magic.special_damage_oneall_enemies(fighter_index, 75, R_BLACK, SEL_ALL_ENEMIES, true);
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 	default:
 		break;

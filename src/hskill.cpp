@@ -81,16 +81,14 @@ int hero_skillcheck(size_t fighter_index)
 
 	case SARINA:
 		weapon_index = items[party[pidx_index].eqp[0]].icon;
-		if (weapon_index != W_SWORD && weapon_index != W_AXE &&
-			weapon_index != W_KNIFE && weapon_index != W_CHENDIGAL)
+		if (weapon_index != W_SWORD && weapon_index != W_AXE && weapon_index != W_KNIFE && weapon_index != W_CHENDIGAL)
 		{
 			return 0;
 		}
 		// See whether any enemies CAN be turned to stone.
 		for (target_fighter_index = PSIZE; target_fighter_index < PSIZE + num_enemies; target_fighter_index++)
 		{
-			if (fighter[target_fighter_index].IsAlive() &&
-				!fighter[target_fighter_index].IsStone())
+			if (fighter[target_fighter_index].IsAlive() && !fighter[target_fighter_index].IsStone())
 			{
 				can_be_affected++;
 			}
@@ -135,9 +133,7 @@ int hero_skillcheck(size_t fighter_index)
 		}
 		for (target_fighter_index = PSIZE; target_fighter_index < PSIZE + num_enemies; target_fighter_index++)
 		{
-			if (fighter[target_fighter_index].IsAlive() &&
-				!fighter[target_fighter_index].IsStone() &&
-				fighter[target_fighter_index].unl > 0)
+			if (fighter[target_fighter_index].IsAlive() && !fighter[target_fighter_index].IsStone() && fighter[target_fighter_index].unl > 0)
 			{
 				can_be_affected++;
 			}
@@ -561,12 +557,11 @@ int skill_use(size_t attack_fighter_index)
 		ta[attack_fighter_index] = (b * 2);
 		display_attack_string = 0;
 		blit(temp.get(), backart, 0, 0, 0, 0, 320, 240);
-		display_amount(attack_fighter_index, FONT_DECIDE, 0);
-		if (fighter[attack_fighter_index].IsAlive() &&
-			fighter[attack_fighter_index].hp <= 0)
+		Effects.display_amount(attack_fighter_index, FONT_DECIDE, 0);
+		if (fighter[attack_fighter_index].IsAlive() && fighter[attack_fighter_index].hp <= 0)
 		{
 			fkill(attack_fighter_index);
-			death_animation(attack_fighter_index, 0);
+			Effects.death_animation(attack_fighter_index, 0);
 		}
 		break;
 
@@ -591,7 +586,7 @@ int skill_use(size_t attack_fighter_index)
 		fighter[attack_fighter_index].aux = 2;
 		if (combat_spell_menu(attack_fighter_index) == 1)
 		{
-			draw_castersprite(
+			Effects.draw_castersprite(
 				attack_fighter_index,
 				eff[magic[fighter[attack_fighter_index].csmem].eff].kolor);
 			curx = -1;
@@ -658,12 +653,12 @@ int skill_use(size_t attack_fighter_index)
 			strcpy(attack_string, _("Dispel Undead"));
 			display_attack_string = 1;
 			fullblit(double_buffer, back);
-			for (a = 0; a < 14; a++)
+			for (a = 0; a < 14/*MagicNumber*/; a++)
 			{
 				Draw.convert_cframes(PSIZE, 1 + a, 15, 1);
 				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 				{
-					if (is_active(fighter_index))
+					if (Effects.is_active(fighter_index))
 					{
 						draw_fighter(fighter_index, 0);
 					}
@@ -677,18 +672,15 @@ int skill_use(size_t attack_fighter_index)
 			b = fighter[attack_fighter_index].lvl * 15;
 			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 			{
-				if (fighter[fighter_index].IsAlive() &&
-					fighter[fighter_index].mhp > 0)
+				if (fighter[fighter_index].IsAlive() && fighter[fighter_index].mhp > 0)
 				{
-					if (fighter[fighter_index].unl == 99 ||
-						fighter[fighter_index].unl == 0)
+					if (fighter[fighter_index].unl == 99 || fighter[fighter_index].unl == 0)
 					{
 						cts = 0;
 					}
 					else
 					{
-						a = (fighter[attack_fighter_index].lvl + 5) -
-							fighter[fighter_index].unl;
+						a = (fighter[attack_fighter_index].lvl + 5) - fighter[fighter_index].unl;
 						if (a > 0)
 						{
 							cts = a * 8;
@@ -709,7 +701,7 @@ int skill_use(size_t attack_fighter_index)
 					}
 				}
 			}
-			death_animation(PSIZE, 1);
+			Effects.death_animation(PSIZE, 1);
 			curx = -1;
 			cury = -1;
 			battle_render(attack_fighter_index, attack_fighter_index, 0);
@@ -735,22 +727,20 @@ int skill_use(size_t attack_fighter_index)
 			}
 			strcpy(attack_string, _("Divine Cure"));
 			display_attack_string = 1;
-			draw_spellsprite(0, 1, 15, 1);
+			Effects.draw_spellsprite(0, 1, 15, 1);
 			display_attack_string = 0;
 			for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 			{
-				if (!fighter[fighter_index].IsStone() &&
-					fighter[fighter_index].IsAlive())
+				if (!fighter[fighter_index].IsStone() && fighter[fighter_index].IsAlive())
 				{
 					ta[fighter_index] = b;
 					ta[fighter_index] = Magic.do_shell_check(fighter_index, ta[fighter_index]);
 				}
 			}
-			display_amount(0, FONT_YELLOW, 1);
+			Effects.display_amount(0, FONT_YELLOW, 1);
 			for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 			{
-				if (!fighter[fighter_index].IsStone() &&
-					fighter[fighter_index].IsAlive())
+				if (!fighter[fighter_index].IsStone() && fighter[fighter_index].IsAlive())
 				{
 					Magic.adjust_hp(fighter_index, ta[fighter_index]);
 				}
@@ -846,8 +836,7 @@ int skill_use(size_t attack_fighter_index)
 			}
 			else
 			{
-				if (fighter[enemy_index].steal_item_common == 0 &&
-					fighter[enemy_index].steal_item_rare == 0)
+				if (fighter[enemy_index].steal_item_common == 0 && fighter[enemy_index].steal_item_rare == 0)
 				{
 					Draw.message(_("Nothing to steal!"), 255, 0, 0, 0);
 				}
@@ -871,8 +860,7 @@ int skill_use(size_t attack_fighter_index)
 				found_item = fighter[enemy_index].steal_item_rare;
 				fighter[enemy_index].steal_item_rare = 0;
 			}
-			else if (fighter[enemy_index].steal_item_common > 0 &&
-				(kqrandom->random_range_exclusive(0, 100) < 95))
+			else if (fighter[enemy_index].steal_item_common > 0 && (kqrandom->random_range_exclusive(0, 100) < 95))
 			{
 				/* This steals a common item from a monster, if there is one */
 				found_item = fighter[enemy_index].steal_item_common;
@@ -888,8 +876,7 @@ int skill_use(size_t attack_fighter_index)
 			}
 			else
 			{
-				if (fighter[enemy_index].steal_item_common == 0 &&
-					fighter[enemy_index].steal_item_rare == 0)
+				if (fighter[enemy_index].steal_item_common == 0 && fighter[enemy_index].steal_item_rare == 0)
 				{
 					Draw.message(_("Nothing to steal!"), 255, 0, 0, 0);
 				}

@@ -349,7 +349,7 @@ static int combat_item(int ss, int t1, int tg)
 			tt = num_enemies;
 		}
 	}
-	display_amount(st, FONT_DECIDE, tl);
+	Effects.display_amount(st, FONT_DECIDE, tl);
 	for (a = st; a < st + tt; a++)
 	{
 		Magic.adjust_hp(a, ta[a]);
@@ -369,7 +369,7 @@ static int combat_item(int ss, int t1, int tg)
 	}
 	if (b > 0)
 	{
-		death_animation(st, tl);
+		Effects.death_animation(st, tl);
 	}
 	return 1;
 }
@@ -1162,7 +1162,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 	if (item_index == I_STAFF1)
 	{
 		strcpy(attack_string, _("Neutralize Poison"));
-		draw_spellsprite(0, 1, 27, 0);
+		Effects.draw_spellsprite(0, 1, 27, 0);
 		for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
 		{
 			if (fighter[fighter_index].IsAlive())
@@ -1181,8 +1181,8 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 		{
 			if (fighter[defender_fighter_index].IsAlive())
 			{
-				draw_attacksprite(defender_fighter_index, 0, 4, 1);
-				Magic.special_damage_oneall_enemies(attacker_fighter_index, 16, -1, defender_fighter_index, 0);
+				Effects.draw_attacksprite(defender_fighter_index, 0, 4, 1);
+				Magic.special_damage_oneall_enemies(attacker_fighter_index, 16, -1, defender_fighter_index, false);
 			}
 		}
 		display_attack_string = 0;

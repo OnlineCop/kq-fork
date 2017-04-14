@@ -818,7 +818,7 @@ static void do_round(void)
 						}
 
 						ta[fighter_index] = a;
-						display_amount(fighter_index, FONT_WHITE, 0);
+						Effects.display_amount(fighter_index, FONT_WHITE, 0);
 						fighter[fighter_index].hp -= a;
 					}
 
@@ -835,7 +835,7 @@ static void do_round(void)
 						}
 
 						ta[fighter_index] = a;
-						display_amount(fighter_index, FONT_YELLOW, 0);
+						Effects.display_amount(fighter_index, FONT_YELLOW, 0);
 						Magic.adjust_hp(fighter_index, a);
 					}
 
@@ -1170,7 +1170,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 		fighter[attack_fighter_index].cy += 10;
 	}
 
-	fight_animation(defend_fighter_index, attack_fighter_index, 0);
+	Effects.fight_animation(defend_fighter_index, attack_fighter_index, 0);
 	if (attack_fighter_index < PSIZE)
 	{
 		fighter[attack_fighter_index].aframe = 0;
@@ -1191,7 +1191,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 		ta[defend_fighter_index] = Magic.do_shield_check(defend_fighter_index, ta[defend_fighter_index]);
 	}
 
-	display_amount(defend_fighter_index, FONT_DECIDE, 0);
+	Effects.display_amount(defend_fighter_index, FONT_DECIDE, 0);
 	if (ta[defend_fighter_index] != MISS)
 	{
 		fighter[defend_fighter_index].hp += ta[defend_fighter_index];
@@ -1206,7 +1206,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 			(fighter[defend_fighter_index].IsAlive()))
 		{
 			fkill(defend_fighter_index);
-			death_animation(defend_fighter_index, 0);
+			Effects.death_animation(defend_fighter_index, 0);
 		}
 
 		if (fighter[defend_fighter_index].hp > fighter[defend_fighter_index].mhp)
@@ -1610,7 +1610,7 @@ void multi_fight(size_t attack_fighter_index)
 		fighter[attack_fighter_index].cy += 10;
 	}
 
-	fight_animation(start_fighter_index, attack_fighter_index, 1);
+	Effects.fight_animation(start_fighter_index, attack_fighter_index, 1);
 	if (attack_fighter_index < PSIZE)
 	{
 		fighter[attack_fighter_index].aframe = 0;
@@ -1620,7 +1620,7 @@ void multi_fight(size_t attack_fighter_index)
 		fighter[attack_fighter_index].cy -= 10;
 	}
 
-	display_amount(start_fighter_index, FONT_DECIDE, 1);
+	Effects.display_amount(start_fighter_index, FONT_DECIDE, 1);
 	for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 	{
 		if (killed_warrior[fighter_index] != 0)
@@ -1632,7 +1632,7 @@ void multi_fight(size_t attack_fighter_index)
 
 	if (deadcount > 0)
 	{
-		death_animation(start_fighter_index, 1);
+		Effects.death_animation(start_fighter_index, 1);
 	}
 }
 

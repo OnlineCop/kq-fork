@@ -635,7 +635,7 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 	strcpy(attack_string, magic[spell_number].name);
 	if (is_item == 0)
 	{
-		draw_castersprite(caster_fighter_index, eff[magic[spell_number].eff].kolor);
+		Effects.draw_castersprite(caster_fighter_index, eff[magic[spell_number].eff].kolor);
 	}
 	if (magic[spell_number].dmg > 0)
 	{
@@ -649,11 +649,11 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 	{
 		if (start_fighter_index == 0)
 		{
-			draw_hugesprite(start_fighter_index, 80, 126, magic[spell_number].eff, 1);
+			Effects.draw_hugesprite(start_fighter_index, 80, 126, magic[spell_number].eff, 1);
 		}
 		else
 		{
-			draw_hugesprite(start_fighter_index, 80, 66, magic[spell_number].eff, 1);
+			Effects.draw_hugesprite(start_fighter_index, 80, 66, magic[spell_number].eff, 1);
 		}
 	}
 	else
@@ -662,21 +662,18 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 		{
 			if (start_fighter_index == 0)
 			{
-				draw_hugesprite(start_fighter_index, 80, 108, magic[spell_number].eff,
-					1);
+				Effects.draw_hugesprite(start_fighter_index, 80, 108, magic[spell_number].eff, 1);
 			}
 			else
 			{
-				draw_hugesprite(start_fighter_index, 80, 56, magic[spell_number].eff,
-					1);
+				Effects.draw_hugesprite(start_fighter_index, 80, 56, magic[spell_number].eff, 1);
 			}
 		}
 		else
 		{
 			if (spell_number != M_VISION && spell_number != M_WARP)
 			{
-				draw_spellsprite(start_fighter_index, tall, magic[spell_number].eff,
-					ss);
+				Effects.draw_spellsprite(start_fighter_index, tall, magic[spell_number].eff, ss);
 			}
 		}
 	}
@@ -694,16 +691,16 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 		{
 			if (ta[tgt] <= 0)
 			{
-				display_amount(tgt, FONT_RED, 0);
+				Effects.display_amount(tgt, FONT_RED, 0);
 				adjust_mp(tgt, ta[tgt]);
-				display_amount(caster_fighter_index, FONT_GREEN, 0);
+				Effects.display_amount(caster_fighter_index, FONT_GREEN, 0);
 				adjust_mp(caster_fighter_index, ta[caster_fighter_index]);
 			}
 			else
 			{
-				display_amount(caster_fighter_index, FONT_RED, 0);
+				Effects.display_amount(caster_fighter_index, FONT_RED, 0);
 				adjust_mp(caster_fighter_index, ta[caster_fighter_index]);
-				display_amount(tgt, FONT_GREEN, 0);
+				Effects.display_amount(tgt, FONT_GREEN, 0);
 				adjust_mp(tgt, ta[tgt]);
 			}
 		}
@@ -711,16 +708,16 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 		{
 			if (ta[tgt] <= 0)
 			{
-				display_amount(tgt, FONT_WHITE, 0);
+				Effects.display_amount(tgt, FONT_WHITE, 0);
 				adjust_hp(tgt, ta[tgt]);
-				display_amount(caster_fighter_index, FONT_YELLOW, 0);
+				Effects.display_amount(caster_fighter_index, FONT_YELLOW, 0);
 				adjust_hp(caster_fighter_index, ta[caster_fighter_index]);
 			}
 			else
 			{
-				display_amount(caster_fighter_index, FONT_WHITE, 0);
+				Effects.display_amount(caster_fighter_index, FONT_WHITE, 0);
 				adjust_hp(caster_fighter_index, ta[caster_fighter_index]);
-				display_amount(tgt, FONT_YELLOW, 0);
+				Effects.display_amount(tgt, FONT_YELLOW, 0);
 				adjust_hp(tgt, ta[tgt]);
 			}
 		}
@@ -739,12 +736,12 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 			}
 			if (b > 0)
 			{
-				display_amount(start_fighter_index, FONT_WHITE, tall);
+				Effects.display_amount(start_fighter_index, FONT_WHITE, tall);
 			}
 		}
 		else
 		{
-			display_amount(start_fighter_index, FONT_DECIDE, tall);
+			Effects.display_amount(start_fighter_index, FONT_DECIDE, tall);
 			for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 			{
 				adjust_hp(fighter_index, ta[fighter_index]);
@@ -768,7 +765,7 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 	}
 	if (b > 0)
 	{
-		death_animation(start_fighter_index, tall);
+		Effects.death_animation(start_fighter_index, tall);
 	}
 
 	return 1;
@@ -1422,9 +1419,9 @@ int KMagic::res_throw(int tgt, int rs)
  * \param   spell_dmg: Damage that a spell does
  * \param   rune_type: Rune used
  * \param   target_index: Target
- * \param   split: Total damage, split among targets
+ * \param   bSplitAmongTargets: Is the damage dealt between all enemies
  */
-void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, int rune_type, size_t target_index, int split)
+void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, int rune_type, size_t target_index, bool bSplitAmongTargets)
 {
 	int b = 0, average_damage = 1, multiple_targets = 0, number_of_enemies = 0;
 	size_t first_target, last_target;
@@ -1481,7 +1478,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 		average_damage = kqrandom->random_range_exclusive(0, spell_dmg / 5) + spell_dmg;
 	}
 
-	if (number_of_enemies > 1 && split == 0)
+	if (number_of_enemies > 1 && bSplitAmongTargets == 0)
 	{
 		average_damage = average_damage / number_of_enemies;
 	}
@@ -1523,7 +1520,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 			ta[fighter_index] = 0;
 		}
 	}
-	display_amount(first_target, FONT_DECIDE, multiple_targets);
+	Effects.display_amount(first_target, FONT_DECIDE, multiple_targets);
 	for (fighter_index = first_target; fighter_index < first_target + last_target; fighter_index++)
 	{
 		if (ta[fighter_index] != MISS)
@@ -1548,7 +1545,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 	}
 	if (b > 0)
 	{
-		death_animation(first_target, multiple_targets);
+		Effects.death_animation(first_target, multiple_targets);
 	}
 }
 

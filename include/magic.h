@@ -104,7 +104,7 @@ public:
 	int combat_spell(size_t, int);
 	int cast_spell(size_t, int);
 	void cast_imbued_spell(size_t, int, int, int);
-	void special_damage_oneall_enemies(size_t, int, int, size_t, int);
+	void special_damage_oneall_enemies(size_t caster_index, int spell_dmg, int rune_type, size_t target_index, bool bSplitAmongTargets);
 	int res_adjust(size_t, size_t, int);
 	int res_throw(int, int);
 	int non_dmg_save(int, int);
