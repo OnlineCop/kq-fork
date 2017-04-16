@@ -707,8 +707,8 @@ static int hero_attack(int whom)
 		return 0;
 	}
 	fighter[whom].aframe = 6;
-	curx = -1;
-	cury = -1;
+	x_coord_image_in_datafile = -1;
+	y_coord_image_in_datafile = -1;
 	battle_render(0, 0, 0);
 	Draw.blit2screen(0, 0);
 	kq_wait(150);

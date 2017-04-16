@@ -61,8 +61,8 @@
 
 uint32_t combatend;
 int cact[NUM_FIGHTERS];
-int curx;
-int cury;
+int x_coord_image_in_datafile;
+int y_coord_image_in_datafile;
 uint32_t num_enemies;
 int ta[NUM_FIGHTERS];
 int deffect[NUM_FIGHTERS];
@@ -72,7 +72,6 @@ uint8_t ms;
 Raster *backart;
 
 /* Internal variables */
-static int curw;
 static int nspeed[NUM_FIGHTERS];
 static int bspeed[NUM_FIGHTERS];
 static uint8_t hs;
@@ -330,104 +329,93 @@ eAttackResult attack_result(int ar, int dr)
 	return crit_hit == 1 ? ATTACK_CRITICAL : ATTACK_SUCCESS;
 }
 
-/*! \brief Draw the battle screen
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated 20020914 - 16:16 (RB)
+/*! \brief Draw the battle screen.
  *
- * Draw the battle screen.
- *
- * \param   plyr Player: -1 means "no one is selected" (roll_initiative()), else
- * index of fighter
+ * \param   plyr Player: -1 means "no one is selected" (roll_initiative()), else index of fighter
  * \param   hl Highlighted
  * \param   SelectAll Select all
  */
 void battle_render(signed int plyr, size_t hl, int SelectAll)
 {
-	int a = 0;
-	int b = 0;
-	int sz;
-	int t;
-	size_t z;
 	size_t current_fighter_index = 0;
-	size_t fighter_index = 0;
+	static int curw = 0;
 
 	if (plyr > 0)
 	{
 		current_fighter_index = plyr - 1;
 		curw = fighter[current_fighter_index].cw;
-		curx = fighter[current_fighter_index].cx;
-		cury = fighter[current_fighter_index].cy;
+		x_coord_image_in_datafile = fighter[current_fighter_index].cx;
+		y_coord_image_in_datafile = fighter[current_fighter_index].cy;
 	}
 	else
 	{
-		curx = -1;
-		cury = -1;
+		x_coord_image_in_datafile = -1;
+		y_coord_image_in_datafile = -1;
 	}
 
 	clear_bitmap(double_buffer);
 	blit(backart, double_buffer, 0, 0, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H);
 
-	if ((SelectAll == 0) && (curx > -1) && (cury > -1))
+	if ((SelectAll == 0) && (x_coord_image_in_datafile > -1) && (y_coord_image_in_datafile > -1))
 	{
-		draw_sprite(double_buffer, bptr, curx + (curw / 2) - 8, cury - 8);
+		draw_sprite(double_buffer, bptr, x_coord_image_in_datafile + (curw / 2) - 8, y_coord_image_in_datafile - 8);
 		if (current_fighter_index >= PSIZE)
 		{
 			current_fighter_index = plyr - 1;
-			t = curx + (curw / 2);
-			t -= (fighter[current_fighter_index].name.length() * 4);
-			z = (fighter[current_fighter_index].cy < 32
+			int center_aligned_text = x_coord_image_in_datafile + (curw / 2);
+			center_aligned_text -= (fighter[current_fighter_index].name.length() * 4);
+			size_t top_aligned_text = (fighter[current_fighter_index].cy < 32
 				? fighter[current_fighter_index].cy + fighter[current_fighter_index].cl
 				: fighter[current_fighter_index].cy - 32);
 
-			Draw.menubox(double_buffer, t - 8, z, fighter[current_fighter_index].name.length(), 1, BLUE);
-			Draw.print_font(double_buffer, t, z + 8, fighter[current_fighter_index].name, FNORMAL);
+			Draw.menubox(double_buffer, center_aligned_text - 8, top_aligned_text, fighter[current_fighter_index].name.length(), 1, BLUE);
+			Draw.print_font(double_buffer, center_aligned_text, top_aligned_text + 8, fighter[current_fighter_index].name, FNORMAL);
 		}
 	}
 
-	auto x_offset = 216;
-	for (z = 0; z < numchrs; z++)
+	int x_offset = 216;
+	for (size_t fighter_index = 0; fighter_index < numchrs; fighter_index++)
 	{
-		b = z * x_offset;
+		int menubox_align_x = fighter_index * x_offset;
 
-		if (fighter[z].IsAlive())
+		if (fighter[fighter_index].IsAlive())
 		{
-			draw_fighter(z, (SelectAll == 1));
+			draw_fighter(fighter_index, (SelectAll == 1));
 		}
 		else
 		{
-			fighter[z].aframe = 3;
-			draw_fighter(z, 0);
+			fighter[fighter_index].aframe = 3;
+			draw_fighter(fighter_index, 0);
 		}
 
-		Draw.menubox(double_buffer, b, 184, 11, 5, BLUE);
-		if (fighter[z].IsAlive())
+		Draw.menubox(double_buffer, menubox_align_x, 184, 11, 5, BLUE);
+		if (fighter[fighter_index].IsAlive())
 		{
-			sz = bspeed[z] * 88 / ROUND_MAX;
-			if (sz > 88)
+			int right_edge = bspeed[fighter_index] * 88 / ROUND_MAX;
+			if (right_edge > 88)
 			{
-				sz = 88;
+				right_edge = 88;
 			}
 
-			a = 116;
-			if (fighter[z].GetRemainingTime() == 1)
+			int line_color = 116;
+			if (fighter[fighter_index].GetRemainingTime() == 1)
 			{
-				a = 83;
+				line_color = 83;
 			}
-			else if (fighter[z].GetRemainingTime() == 2)
+			else if (fighter[fighter_index].GetRemainingTime() == 2)
 			{
-				a = 36;
+				line_color = 36;
 			}
 
-			a += (sz / 11);
-			hline(double_buffer, b + 8, 229, b + sz + 8, a + 1);
-			hline(double_buffer, b + 8, 230, b + sz + 8, a);
-			hline(double_buffer, b + 8, 231, b + sz + 8, a - 1);
+			line_color += (right_edge / 11);
+			hline(double_buffer, menubox_align_x + 8, 229, menubox_align_x + right_edge + 8, line_color + 1);
+			hline(double_buffer, menubox_align_x + 8, 230, menubox_align_x + right_edge + 8, line_color);
+			hline(double_buffer, menubox_align_x + 8, 231, menubox_align_x + right_edge + 8, line_color - 1);
 		}
 
-		Draw.print_font(double_buffer, b + 8, 192, fighter[z].name, (hl == z + 1) ? FGOLD : FNORMAL);
+		Draw.print_font(double_buffer, menubox_align_x + 8, 192, fighter[fighter_index].name, (hl == fighter_index + 1) ? FGOLD : FNORMAL);
 
-		sprintf(strbuf, _("HP: %3d/%3d"), fighter[z].hp, fighter[z].mhp);
+		sprintf(strbuf, _("HP: %3d/%3d"), fighter[fighter_index].hp, fighter[fighter_index].mhp);
 		/*  RB IDEA: If the character has less than 1/5 of his/her max    */
 		/*           health points, it shows the amount with red (the     */
 		/*           character is in danger). I suggest setting that '5'  */
@@ -439,23 +427,23 @@ void battle_render(signed int plyr, size_t hl, int SelectAll)
 		/*           to warn the player, it's much more eye-pleasing than */
 		/*           just a solid color (and not too hard to implement).  */
 
-		Draw.print_font(double_buffer, b + 8, 208, strbuf, (fighter[z].hp < (fighter[z].mhp / 5)) ? FRED : FNORMAL);
+		Draw.print_font(double_buffer, menubox_align_x + 8, 208, strbuf, (fighter[fighter_index].hp < (fighter[fighter_index].mhp / 5)) ? FRED : FNORMAL);
 
-		hline(double_buffer, b + 8, 216, b + 95, 21);
-		sz = (fighter[z].hp > 0) ? fighter[z].hp * 88 / fighter[z].mhp : 88;
+		hline(double_buffer, menubox_align_x + 8, 216, menubox_align_x + 95, 21);
+		int right_edge = (fighter[fighter_index].hp > 0) ? fighter[fighter_index].hp * 88 / fighter[fighter_index].mhp : 88;
 
-		hline(double_buffer, b + 8, 216, b + 8 + sz, 12);
-		sprintf(strbuf, _("MP: %3d/%3d"), fighter[z].mp, fighter[z].mmp);
+		hline(double_buffer, menubox_align_x + 8, 216, menubox_align_x + 8 + right_edge, 12);
+		sprintf(strbuf, _("MP: %3d/%3d"), fighter[fighter_index].mp, fighter[fighter_index].mmp);
 
 		/*  RB IDEA: Same suggestion as with health, just above.  */
-		Draw.print_font(double_buffer, b + 8, 218, strbuf, (fighter[z].mp < (fighter[z].mmp / 5)) ? FRED : FNORMAL);
-		hline(double_buffer, b + 8, 226, b + 95, 21);
-		sz = (fighter[z].mp > 0) ? fighter[z].mp * 88 / fighter[z].mmp : 88;
-		hline(double_buffer, b + 8, 226, b + 8 + sz, 12);
-		Draw.draw_stsicon(double_buffer, 1, z, eSpellType::S_INFUSE, b + 8, 200);
+		Draw.print_font(double_buffer, menubox_align_x + 8, 218, strbuf, (fighter[fighter_index].mp < (fighter[fighter_index].mmp / 5)) ? FRED : FNORMAL);
+		hline(double_buffer, menubox_align_x + 8, 226, menubox_align_x + 95, 21);
+		right_edge = (fighter[fighter_index].mp > 0) ? fighter[fighter_index].mp * 88 / fighter[fighter_index].mmp : 88;
+		hline(double_buffer, menubox_align_x + 8, 226, menubox_align_x + 8 + right_edge, 12);
+		Draw.draw_stsicon(double_buffer, 1, fighter_index, eSpellType::S_INFUSE, menubox_align_x + 8, 200);
 	}
 
-	for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+	for (size_t fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 	{
 		if (fighter[fighter_index].IsAlive())
 		{
@@ -753,8 +741,8 @@ static int do_combat(char *bg, char *mus, int is_rnd)
 
 	snap_togrid();
 	roll_initiative();
-	curx = 0;
-	cury = 0;
+	x_coord_image_in_datafile = 0;
+	y_coord_image_in_datafile = 0;
 	vspell = 0;
 	combatend = 0;
 

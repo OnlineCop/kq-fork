@@ -52,8 +52,8 @@ void fkill(size_t);
 /*!  global combat related variables  */
 extern uint32_t combatend;
 extern int cact[NUM_FIGHTERS];
-extern int curx;
-extern int cury;
+extern int x_coord_image_in_datafile;
+extern int y_coord_image_in_datafile;
 extern uint32_t num_enemies;
 extern int ta[NUM_FIGHTERS];
 extern int deffect[NUM_FIGHTERS];

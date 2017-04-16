@@ -571,8 +571,8 @@ int skill_use(size_t attack_fighter_index)
 		display_attack_string = 1;
 		tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack] * 75 / 100;
 		fighter[attack_fighter_index].aframe = 6;
-		curx = -1;
-		cury = -1;
+		x_coord_image_in_datafile = -1;
+		y_coord_image_in_datafile = -1;
 		battle_render(0, 0, 0);
 		Draw.blit2screen(0, 0);
 		kq_wait(150);
@@ -589,8 +589,8 @@ int skill_use(size_t attack_fighter_index)
 			Effects.draw_castersprite(
 				attack_fighter_index,
 				eff[magic[fighter[attack_fighter_index].csmem].eff].kolor);
-			curx = -1;
-			cury = -1;
+			x_coord_image_in_datafile = -1;
+			y_coord_image_in_datafile = -1;
 			play_effect(22, 128);
 			Draw.convert_cframes(
 				attack_fighter_index,
@@ -702,8 +702,8 @@ int skill_use(size_t attack_fighter_index)
 				}
 			}
 			Effects.death_animation(PSIZE, 1);
-			curx = -1;
-			cury = -1;
+			x_coord_image_in_datafile = -1;
+			y_coord_image_in_datafile = -1;
 			battle_render(attack_fighter_index, attack_fighter_index, 0);
 		}
 		else
