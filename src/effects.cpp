@@ -84,8 +84,7 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
 		// TT: slow_computer additions for speed-ups
 		for (color_range = 0; color_range < 16; color_range += count)
 		{
-			Draw.convert_cframes(target_fighter_index, 1, 15 - (color_range / 2),
-				target_all_flag);
+			Draw.convert_cframes(target_fighter_index, 1, 15 - (color_range / 2), target_all_flag);
 			for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_targets; fighter_index++)
 			{
 				if (deffect[fighter_index] == 1)
@@ -166,7 +165,7 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
 			for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighters;
 				fighter_index++)
 			{
-				if (is_active(fighter_index) == 1)
+				if (is_active(fighter_index))
 				{
 					dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2);
 					if (fighter[fighter_index].cl <= 64)
@@ -277,7 +276,7 @@ void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_targe
 	{
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighters; fighter_index++)
 		{
-			if (is_active(fighter_index) == 1)
+			if (is_active(fighter_index))
 			{
 				dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) - (eff[magic_effect_index].xsize / 2);
 				dy = fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - (eff[magic_effect_index].ysize / 2);
@@ -345,13 +344,12 @@ void KEffects::draw_castersprite(size_t caster_fighter_index, int new_pal_color)
 	// This animation has 10 frames, each 32 pixels tall/wide.
 	for (frame_index = 0; frame_index < 10; frame_index++)
 	{
-		if (is_active(caster_fighter_index) == 1)
+		if (is_active(caster_fighter_index))
 		{
 			dx = fighter[caster_fighter_index].cx + (fighter[caster_fighter_index].cw / 2);
 			dy = fighter[caster_fighter_index].cy + (fighter[caster_fighter_index].cl / 2);
 			draw_fighter(caster_fighter_index, 0);
-			masked_blit(cs, double_buffer, 0, frame_index * 32, dx - 16, dy - 16, 32,
-				32);
+			masked_blit(cs, double_buffer, 0, frame_index * 32, dx - 16, dy - 16, 32, 32);
 		}
 		Draw.blit2screen(0, 0);
 		kq_wait(120);
@@ -367,8 +365,7 @@ void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size
 	size_t start_fighter_index, num_fighters;
 	Raster *eb = get_cached_image(eff[effect_index].ename);
 
-	Draw.convert_cframes(target_fighter_index, eff[effect_index].kolor - 3,
-		eff[effect_index].kolor + 3, 1);
+	Draw.convert_cframes(target_fighter_index, eff[effect_index].kolor - 3, eff[effect_index].kolor + 3, 1);
 	if (target_fighter_index < PSIZE)
 	{
 		start_fighter_index = 0;
@@ -395,7 +392,7 @@ void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size
 		}
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighters; fighter_index++)
 		{
-			if (is_active(fighter_index) == 1)
+			if (is_active(fighter_index))
 			{
 				if (shows == 1 && fighter[fighter_index].IsResist())
 				{
@@ -426,8 +423,7 @@ void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target
 	size_t start_fighter_index, num_fighers, fighter_index;
 	Raster *eb = get_cached_image(eff[effect_index].ename);
 
-	Draw.convert_cframes(target_fighter_index, eff[effect_index].kolor - 3,
-		eff[effect_index].kolor + 3, multiple_target);
+	Draw.convert_cframes(target_fighter_index, eff[effect_index].kolor - 3, eff[effect_index].kolor + 3, multiple_target);
 	if (multiple_target == 1)
 	{
 		if (target_fighter_index < PSIZE)
@@ -457,7 +453,7 @@ void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target
 	{
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighers; fighter_index++)
 		{
-			if (is_active(fighter_index) == 1)
+			if (is_active(fighter_index))
 			{
 				dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) -
 					(eff[effect_index].xsize / 2);
