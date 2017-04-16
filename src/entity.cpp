@@ -190,7 +190,6 @@ static int entity_near(t_entity eno, t_entity tgt, int rad)
  * Runs combat routines if a character and an enemy meet,
  * and de-activate the enemy if it was defeated.
  *
- * \sa combat_check()
  * \param   ox x-coord to check
  * \param   oy y-coord to check
  * \param   who Id of entity doing the checking
@@ -208,7 +207,7 @@ int entityat(int ox, int oy, t_entity who)
 			{
 				if (g_ent[who].eid == ID_ENEMY && i < PSIZE)
 				{
-					if (combat(0) == 1)
+					if (Combat.combat(0) == 1)
 					{
 						g_ent[who].active = 0;
 					}
@@ -220,7 +219,7 @@ int entityat(int ox, int oy, t_entity who)
 			{
 				if (g_ent[i].eid == ID_ENEMY)
 				{
-					if (combat(0) == 1)
+					if (Combat.combat(0) == 1)
 					{
 						g_ent[i].active = 0;
 					}

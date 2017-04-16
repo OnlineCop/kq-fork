@@ -359,7 +359,7 @@ static int combat_item(int ss, int t1, int tg)
 	{
 		if (fighter[a].IsAlive() && fighter[a].hp <= 0)
 		{
-			fkill(a);
+			Combat.fkill(a);
 			b++;
 		}
 		else
@@ -709,10 +709,10 @@ static int hero_attack(int whom)
 	fighter[whom].aframe = 6;
 	x_coord_image_in_datafile = -1;
 	y_coord_image_in_datafile = -1;
-	battle_render(0, 0, 0);
+	Combat.battle_render(0, 0, 0);
 	Draw.blit2screen(0, 0);
 	kq_wait(150);
-	fight(whom, tgt, 0);
+	Combat.fight(whom, tgt, 0);
 	return 1;
 }
 
@@ -757,7 +757,7 @@ void hero_choose_action(size_t fighter_index)
 	while (!stop)
 	{
 		Game.do_check_animation();
-		battle_render(fighter_index + 1, fighter_index + 1, 0);
+		Combat.battle_render(fighter_index + 1, fighter_index + 1, 0);
 		my = 0;
 		strcpy(ca[my], _("Attack"));
 		chi[my] = C_ATTACK;

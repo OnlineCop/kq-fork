@@ -150,7 +150,7 @@ void KEnemy::Attack(size_t target_fighter_index)
 			}
 		}
 	}
-	fight(target_fighter_index, b, 0);
+	Combat.fight(target_fighter_index, b, 0);
 	cact[target_fighter_index] = 0;
 }
 

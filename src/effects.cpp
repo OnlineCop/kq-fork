@@ -74,7 +74,7 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
 	x_coord_image_in_datafile = -1;
 	y_coord_image_in_datafile = -1;
 	play_effect(24, 128);
-	battle_render(0, 0, 0);
+	Combat.battle_render(0, 0, 0);
 	fullblit(double_buffer, back);
 
 	// TT: slow_computer addition for speed-ups
@@ -94,7 +94,7 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
 					if (p == 0)
 					{
 						circlefill(double_buffer, dx, dy, color_range, 0);
-						draw_fighter(fighter_index, 0);
+						Combat.draw_fighter(fighter_index, 0);
 					}
 					else
 					{
@@ -115,7 +115,7 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
 		}
 	}
 	Draw.revert_cframes(target_fighter_index, target_all_flag);
-	battle_render(0, 0, 0);
+	Combat.battle_render(0, 0, 0);
 	Draw.blit2screen(0, 0);
 }
 
@@ -149,7 +149,7 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
 	}
 	x_coord_image_in_datafile = -1;
 	y_coord_image_in_datafile = -1;
-	battle_render(0, 0, 0);
+	Combat.battle_render(0, 0, 0);
 	fullblit(double_buffer, back);
 
 	// TT: slow_computer addition for speed-ups
@@ -190,7 +190,7 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
 					{
 						new_font_color = (ta[fighter_index] > 0 ? FONT_YELLOW : FONT_WHITE);
 					}
-					draw_fighter(fighter_index, 0);
+					Combat.draw_fighter(fighter_index, 0);
 
 					if (p == 0)
 					{
@@ -215,7 +215,7 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
 			kq_wait(30);
 		}
 	}
-	battle_render(0, 0, 0);
+	Combat.battle_render(0, 0, 0);
 	Draw.blit2screen(0, 0);
 }
 
@@ -255,7 +255,7 @@ void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_targe
 	}
 	x_coord_image_in_datafile = -1;
 	y_coord_image_in_datafile = -1;
-	battle_render(0, 0, 0);
+	Combat.battle_render(0, 0, 0);
 	fullblit(double_buffer, back);
 	if (multiple_target == 0)
 	{
@@ -280,7 +280,7 @@ void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_targe
 			{
 				dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) - (eff[magic_effect_index].xsize / 2);
 				dy = fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - (eff[magic_effect_index].ysize / 2);
-				draw_fighter(fighter_index, 0);
+				Combat.draw_fighter(fighter_index, 0);
 				if (shows == 1 && fighter[fighter_index].IsShield())
 				{
 					// The shield sprite in MISC is 48x48 pixels, so center it over the
@@ -336,7 +336,7 @@ void KEffects::draw_castersprite(size_t caster_fighter_index, int new_pal_color)
 	y_coord_image_in_datafile = -1;
 	fighter[caster_fighter_index].aframe = 2;
 	display_attack_string = 1;
-	battle_render(0, 0, 0);
+	Combat.battle_render(0, 0, 0);
 	display_attack_string = 0;
 	fullblit(double_buffer, back);
 	play_effect(22, 128);
@@ -348,7 +348,7 @@ void KEffects::draw_castersprite(size_t caster_fighter_index, int new_pal_color)
 		{
 			dx = fighter[caster_fighter_index].cx + (fighter[caster_fighter_index].cw / 2);
 			dy = fighter[caster_fighter_index].cy + (fighter[caster_fighter_index].cl / 2);
-			draw_fighter(caster_fighter_index, 0);
+			Combat.draw_fighter(caster_fighter_index, 0);
 			masked_blit(cs, double_buffer, 0, frame_index * 32, dx - 16, dy - 16, 32, 32);
 		}
 		Draw.blit2screen(0, 0);
@@ -379,7 +379,7 @@ void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size
 	x_coord_image_in_datafile = -1;
 	y_coord_image_in_datafile = -1;
 	display_attack_string = 1;
-	battle_render(0, 0, 0);
+	Combat.battle_render(0, 0, 0);
 	display_attack_string = 0;
 	fullblit(double_buffer, back);
 	play_effect(eff[effect_index].snd, 128);
@@ -401,7 +401,7 @@ void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size
 						fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) - 24,
 						fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - 24);
 				}
-				draw_fighter(fighter_index, 0);
+				Combat.draw_fighter(fighter_index, 0);
 			}
 		}
 		if (eff[effect_index].orient == 1)
@@ -445,7 +445,7 @@ void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target
 	x_coord_image_in_datafile = -1;
 	y_coord_image_in_datafile = -1;
 	display_attack_string = 1;
-	battle_render(0, 0, 0);
+	Combat.battle_render(0, 0, 0);
 	display_attack_string = 0;
 	fullblit(double_buffer, back);
 	play_effect(eff[effect_index].snd, 128);
@@ -471,7 +471,7 @@ void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target
 					dy = fighter[fighter_index].cy + eff[effect_index].ysize;
 					break;
 				}
-				draw_fighter(fighter_index, 0);
+				Combat.draw_fighter(fighter_index, 0);
 				if (shows == 1 && fighter[fighter_index].IsResist())
 				{
 					draw_trans_sprite(

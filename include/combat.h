@@ -40,14 +40,20 @@
 
 class Raster;
 
+class KCombat
+{
+public:
+	KCombat();
+
+	int combat(int);
+	void battle_render(signed int plyr, size_t hl, int SelectAll);
+	void draw_fighter(size_t, size_t);
+	int fight(size_t, size_t, int);
+	void multi_fight(size_t);
+	void fkill(size_t);
+};
+
 /*! \name combat function prototypes  */
-int combat_check(int, int);
-int combat(int);
-void battle_render(signed int plyr, size_t hl, int SelectAll);
-void draw_fighter(size_t, size_t);
-int fight(size_t, size_t, int);
-void multi_fight(size_t);
-void fkill(size_t);
 
 /*!  global combat related variables  */
 extern uint32_t combatend;
@@ -61,3 +67,5 @@ extern int RemainingBattleCounter;
 extern uint8_t vspell;
 extern uint8_t ms;
 extern Raster *backart;
+
+extern KCombat Combat;

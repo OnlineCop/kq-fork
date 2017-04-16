@@ -535,7 +535,7 @@ int skill_use(size_t attack_fighter_index)
 			tempa.stats[eStat::Attack] += b;
 			tempa.stats[eStat::Hit] += b;
 		}
-		fight(attack_fighter_index, enemy_index, 1);
+		Combat.fight(attack_fighter_index, enemy_index, 1);
 		if (fighter[enemy_index].IsDead())
 		{
 			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
@@ -549,7 +549,7 @@ int skill_use(size_t attack_fighter_index)
 			if (next_target > 0)
 			{
 				enemy_index = nn[kqrandom->random_range_exclusive(0, next_target)];
-				fight(attack_fighter_index, enemy_index, 1);
+				Combat.fight(attack_fighter_index, enemy_index, 1);
 			}
 		}
 
@@ -560,7 +560,7 @@ int skill_use(size_t attack_fighter_index)
 		Effects.display_amount(attack_fighter_index, FONT_DECIDE, 0);
 		if (fighter[attack_fighter_index].IsAlive() && fighter[attack_fighter_index].hp <= 0)
 		{
-			fkill(attack_fighter_index);
+			Combat.fkill(attack_fighter_index);
 			Effects.death_animation(attack_fighter_index, 0);
 		}
 		break;
@@ -573,10 +573,10 @@ int skill_use(size_t attack_fighter_index)
 		fighter[attack_fighter_index].aframe = 6;
 		x_coord_image_in_datafile = -1;
 		y_coord_image_in_datafile = -1;
-		battle_render(0, 0, 0);
+		Combat.battle_render(0, 0, 0);
 		Draw.blit2screen(0, 0);
 		kq_wait(150);
-		multi_fight(attack_fighter_index);
+		Combat.multi_fight(attack_fighter_index);
 		display_attack_string = 0;
 		break;
 
@@ -596,7 +596,7 @@ int skill_use(size_t attack_fighter_index)
 				attack_fighter_index,
 				eff[magic[fighter[attack_fighter_index].csmem].eff].kolor - 3,
 				eff[magic[fighter[attack_fighter_index].csmem].eff].kolor + 3, 0);
-			battle_render(0, 0, 0);
+			Combat.battle_render(0, 0, 0);
 			fullblit(double_buffer, back);
 			for (p = 0; p < 2; p++)
 			{
@@ -617,7 +617,7 @@ int skill_use(size_t attack_fighter_index)
 						circlefill(
 							double_buffer, tx, ty, 15 - a,
 							eff[magic[fighter[attack_fighter_index].csmem].eff].kolor);
-						draw_fighter(attack_fighter_index, 0);
+						Combat.draw_fighter(attack_fighter_index, 0);
 					}
 					Draw.blit2screen(0, 0);
 					kq_wait(50);
@@ -625,7 +625,7 @@ int skill_use(size_t attack_fighter_index)
 				}
 			}
 			Draw.revert_cframes(attack_fighter_index, 0);
-			battle_render(0, 0, 0);
+			Combat.battle_render(0, 0, 0);
 			Draw.blit2screen(0, 0);
 			infusion(attack_fighter_index, fighter[attack_fighter_index].csmem);
 			c = Magic.mp_needed(attack_fighter_index, fighter[attack_fighter_index].csmem);
@@ -660,7 +660,7 @@ int skill_use(size_t attack_fighter_index)
 				{
 					if (Effects.is_active(fighter_index))
 					{
-						draw_fighter(fighter_index, 0);
+						Combat.draw_fighter(fighter_index, 0);
 					}
 				}
 				Draw.blit2screen(0, 0);
@@ -696,7 +696,7 @@ int skill_use(size_t attack_fighter_index)
 						{
 							b -= fighter[fighter_index].hp;
 							deffect[fighter_index] = 1;
-							fkill(fighter_index);
+							Combat.fkill(fighter_index);
 						}
 					}
 				}
@@ -704,7 +704,7 @@ int skill_use(size_t attack_fighter_index)
 			Effects.death_animation(PSIZE, 1);
 			x_coord_image_in_datafile = -1;
 			y_coord_image_in_datafile = -1;
-			battle_render(attack_fighter_index, attack_fighter_index, 0);
+			Combat.battle_render(attack_fighter_index, attack_fighter_index, 0);
 		}
 		else
 		{
@@ -803,13 +803,13 @@ int skill_use(size_t attack_fighter_index)
 		fighter[attack_fighter_index].facing = 1;
 		strcpy(attack_string, _("Steal"));
 		display_attack_string = 1;
-		battle_render(0, attack_fighter_index + 1, 0);
+		Combat.battle_render(0, attack_fighter_index + 1, 0);
 		Draw.blit2screen(0, 0);
 		kq_wait(100);
 		play_effect(SND_MENU, 128);
 		kq_wait(500);
 		display_attack_string = 0;
-		battle_render(attack_fighter_index, attack_fighter_index, 0);
+		Combat.battle_render(attack_fighter_index, attack_fighter_index, 0);
 		found_item = 0;
 #ifdef DEBUGMODE
 		if (debugging > 2)
@@ -895,7 +895,7 @@ int skill_use(size_t attack_fighter_index)
 		fighter[attack_fighter_index].cy = ty;
 		display_attack_string = 0;
 		fighter[attack_fighter_index].facing = 0;
-		battle_render(attack_fighter_index, attack_fighter_index, 0);
+		Combat.battle_render(attack_fighter_index, attack_fighter_index, 0);
 		Draw.blit2screen(0, 0);
 		break;
 

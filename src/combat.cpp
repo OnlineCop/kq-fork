@@ -57,6 +57,13 @@
 #include "structs.h"
 #include "timing.h"
 
+KCombat Combat;
+
+KCombat::KCombat()
+{
+
+}
+
 /*! \name global variables  */
 
 uint32_t combatend;
@@ -335,7 +342,7 @@ eAttackResult attack_result(int ar, int dr)
  * \param   hl Highlighted
  * \param   SelectAll Select all
  */
-void battle_render(signed int plyr, size_t hl, int SelectAll)
+void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
 {
 	size_t current_fighter_index = 0;
 	static int curw = 0;
@@ -520,7 +527,7 @@ static int check_end(void)
  * \param   bno Combat identifier (index into battles[])
  * \returns 0 if no combat, 1 otherwise
  */
-int combat(int bno)
+int KCombat::combat(int bno)
 {
 	int hero_level;
 	int encounter;
@@ -920,7 +927,7 @@ static void do_round(void)
 			}
 
 			PlayerInput.readcontrols();
-			battle_render(0, 0, 0);
+			Combat.battle_render(0, 0, 0);
 			Draw.blit2screen(0, 0);
 
 			for (fighter_index = 0; fighter_index < (PSIZE + num_enemies);
@@ -959,7 +966,7 @@ static void do_round(void)
  * stone, and if the fighter is selected. Also displays 'Vision'
  * spell information.
  */
-void draw_fighter(size_t fighter_index, size_t dcur)
+void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
 {
 	static const int AUGMENT_STRONGEST = 20;
 	static const int AUGMENT_STRONG = 10;
@@ -1054,7 +1061,7 @@ void draw_fighter(size_t fighter_index, size_t dcur)
 static void enemies_win(void)
 {
 	Music.play_music("rain.s3m", 0);
-	battle_render(0, 0, 0);
+	Combat.battle_render(0, 0, 0);
 	/*  RB FIXME: rest()?  */
 	Draw.blit2screen(0, 0);
 	kq_wait(1000);
@@ -1080,7 +1087,7 @@ static void enemies_win(void)
  * \param   sk If non-zero, override the attacker's stats.
  * \returns 1 if damage done, 0 otherwise
  */
-int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
+int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 {
 	int a;
 	int tx = -1;
@@ -1129,7 +1136,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 	{
 		for (f = 0; f < 3; f++)
 		{
-			battle_render(defend_fighter_index + 1, 0, 0);
+			Combat.battle_render(defend_fighter_index + 1, 0, 0);
 			Draw.blit2screen(0, 0);
 			kq_wait(20);
 			rectfill(double_buffer, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H, 15);
@@ -1228,7 +1235,7 @@ int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
  *
  * \param   fighter_index The one who will die
  */
-void fkill(size_t fighter_index)
+void KCombat::fkill(size_t fighter_index)
 {
 #ifdef KQ_CHEATS
 	/* PH Combat cheat - when a hero dies s/he is mysteriously boosted back
@@ -1300,7 +1307,7 @@ static void heroes_win(void)
 		fighter[fighter_index].aframe = 4;
 	}
 
-	battle_render(0, 0, 0);
+	Combat.battle_render(0, 0, 0);
 	Draw.blit2screen(0, 0);
 	kq_wait(250);
 	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
@@ -1497,7 +1504,7 @@ static void init_fighters(void)
  *
  * \param   attack_fighter_index Attacker
  */
-void multi_fight(size_t attack_fighter_index)
+void KCombat::multi_fight(size_t attack_fighter_index)
 {
 	size_t fighter_index;
 	size_t start_fighter_index;
@@ -1697,7 +1704,7 @@ static void roll_initiative(void)
 		}
 	}
 
-	battle_render(-1, -1, 0);
+	Combat.battle_render(-1, -1, 0);
 	Draw.blit2screen(0, 0);
 	if ((hs == 1) && (ms > 1))
 	{

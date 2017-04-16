@@ -647,11 +647,11 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 		Game.do_check_animation();
 		if (select_all)
 		{
-			battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 2);
+			Combat.battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 2);
 		}
 		else
 		{
-			battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 0);
+			Combat.battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 0);
 		}
 
 		Draw.blit2screen(0, 0);
@@ -757,11 +757,11 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target,
 		Game.do_check_animation();
 		if (select_all)
 		{
-			battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 1);
+			Combat.battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 1);
 		}
 		else
 		{
-			battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 0);
+			Combat.battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 0);
 		}
 		Draw.blit2screen(0, 0);
 

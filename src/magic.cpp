@@ -150,7 +150,7 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 	case M_VISION:
 		vspell = 1;
 		do_transition(TRANS_FADE_OUT, 2);
-		battle_render(0, 0, 0);
+		Combat.battle_render(0, 0, 0);
 		Draw.blit2screen(0, 0);
 		do_transition(TRANS_FADE_IN, 2);
 		break;
@@ -754,7 +754,7 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 		if (fighter[fighter_index].IsAlive() &&
 			fighter[fighter_index].hp <= 0)
 		{
-			fkill(fighter_index);
+			Combat.fkill(fighter_index);
 			ta[fighter_index] = 1;
 			b++;
 		}
@@ -1534,7 +1534,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 		if (fighter[fighter_index].IsAlive() &&
 			fighter[fighter_index].hp <= 0)
 		{
-			fkill(fighter_index);
+			Combat.fkill(fighter_index);
 			ta[fighter_index] = 1;
 			b++;
 		}
@@ -1569,7 +1569,7 @@ void KMagic::special_spells(size_t caster_fighter_index, size_t spell_number)
 	case M_VISION:
 		do_transition(TRANS_FADE_OUT, 2);
 		vspell = 1;
-		battle_render(0, 0, 0);
+		Combat.battle_render(0, 0, 0);
 		Draw.blit2screen(0, 0);
 		do_transition(TRANS_FADE_IN, 2);
 		break;

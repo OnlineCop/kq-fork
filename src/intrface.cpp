@@ -1571,7 +1571,7 @@ static int KQ_clear_buffer(lua_State *L)
 
 static int KQ_combat(lua_State *L)
 {
-	combat((int)lua_tonumber(L, 1));
+	Combat.combat((int)lua_tonumber(L, 1));
 	return 0;
 }
 
