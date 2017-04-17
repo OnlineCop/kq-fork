@@ -148,7 +148,7 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 		}
 		break;
 	case M_VISION:
-		Combat.vspell = 1;
+		Combat.SetVisionSpellActive(true);
 		do_transition(TRANS_FADE_OUT, 2);
 		Combat.battle_render(0, 0, 0);
 		Draw.blit2screen(0, 0);

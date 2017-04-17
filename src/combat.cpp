@@ -717,7 +717,7 @@ int KCombat::do_combat(char *bg, char *mus, int is_rnd)
 	roll_initiative();
 	x_coord_image_in_datafile = 0;
 	y_coord_image_in_datafile = 0;
-	vspell = 0;
+	SetVisionSpellActive(false);
 	combatend = KCombat::eCombatResult::StillFighting;
 
 	/*  RB: execute combat  */
@@ -990,7 +990,7 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
 		draw_sprite(double_buffer, bptr, xx + (fr->cw / 2) - 8, yy - 8);
 	}
 
-	if ((vspell == 1) && (fighter_index >= PSIZE))
+	if (IsVisionSpellActive() && (fighter_index >= PSIZE))
 	{
 		ff = fr->hp * 30 / fr->mhp;
 		if ((fr->hp > 0) && (ff < 1))
@@ -1267,6 +1267,26 @@ void KCombat::SetAttackMissed(size_t fighterIndex)
 	{
 		health_adjust[fighterIndex] = MISS;
 	}
+}
+
+uint32_t KCombat::GetNumEnemies() const
+{
+	return num_enemies;
+}
+
+void KCombat::SetNumEnemies(uint32_t numEnemies)
+{
+	num_enemies = numEnemies;
+}
+
+bool KCombat::IsVisionSpellActive() const
+{
+	return bIsVisionActive;
+}
+
+void KCombat::SetVisionSpellActive(bool bIsActive)
+{
+	bIsVisionActive = bIsActive;
 }
 
 /*! \brief Player defeated the enemies

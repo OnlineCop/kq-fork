@@ -63,15 +63,11 @@ public:
 	int GetHealthAdjust(size_t fighterIndex) const;
 	void SetAttackMissed(size_t fighterIndex);
 
-	inline uint32_t GetNumEnemies() const
-	{
-		return num_enemies;
-	}
+	uint32_t GetNumEnemies() const;
+	void SetNumEnemies(uint32_t numEnemies);
 
-	inline void SetNumEnemies(uint32_t numEnemies)
-	{
-		num_enemies = numEnemies;
-	}
+	bool IsVisionSpellActive() const;
+	void SetVisionSpellActive(bool bIsActive);
 
 public:
 	eCombatResult combatend;
@@ -103,7 +99,7 @@ protected:
 	int health_adjust[NUM_FIGHTERS];
 	int deffect[NUM_FIGHTERS];
 	int RemainingBattleCounter;
-	uint8_t vspell;
+	bool bIsVisionActive;
 	uint8_t ms;
 	Raster *backart;
 
