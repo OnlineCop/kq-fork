@@ -86,7 +86,7 @@ int hero_skillcheck(size_t fighter_index)
 			return 0;
 		}
 		// See whether any enemies CAN be turned to stone.
-		for (target_fighter_index = PSIZE; target_fighter_index < PSIZE + num_enemies; target_fighter_index++)
+		for (target_fighter_index = PSIZE; target_fighter_index < PSIZE + Combat.GetNumEnemies(); target_fighter_index++)
 		{
 			if (fighter[target_fighter_index].IsAlive() && !fighter[target_fighter_index].IsStone())
 			{
@@ -131,7 +131,7 @@ int hero_skillcheck(size_t fighter_index)
 		{
 			return 0;
 		}
-		for (target_fighter_index = PSIZE; target_fighter_index < PSIZE + num_enemies; target_fighter_index++)
+		for (target_fighter_index = PSIZE; target_fighter_index < PSIZE + Combat.GetNumEnemies(); target_fighter_index++)
 		{
 			if (fighter[target_fighter_index].IsAlive() && !fighter[target_fighter_index].IsStone() && fighter[target_fighter_index].unl > 0)
 			{
@@ -538,7 +538,7 @@ int skill_use(size_t attack_fighter_index)
 		Combat.fight(attack_fighter_index, enemy_index, 1);
 		if (fighter[enemy_index].IsDead())
 		{
-			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+			for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 			{
 				if (fighter[fighter_index].IsAlive())
 				{
@@ -656,7 +656,7 @@ int skill_use(size_t attack_fighter_index)
 			for (a = 0; a < 14/*MagicNumber*/; a++)
 			{
 				Draw.convert_cframes(PSIZE, 1 + a, 15, 1);
-				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+				for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 				{
 					if (Effects.is_active(fighter_index))
 					{
@@ -670,7 +670,7 @@ int skill_use(size_t attack_fighter_index)
 			Draw.revert_cframes(PSIZE, 1);
 			display_attack_string = 0;
 			b = fighter[attack_fighter_index].lvl * 15;
-			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+			for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 			{
 				if (fighter[fighter_index].IsAlive() && fighter[fighter_index].mhp > 0)
 				{
@@ -749,14 +749,10 @@ int skill_use(size_t attack_fighter_index)
 		break;
 
 	case CASANDRA:
-		fighter[attack_fighter_index].atrack[0] =
-			fighter[attack_fighter_index].stats[eStat::Aura];
-		fighter[attack_fighter_index].atrack[1] =
-			fighter[attack_fighter_index].stats[eStat::Spirit];
-		fighter[attack_fighter_index].stats[eStat::Aura] =
-			fighter[attack_fighter_index].stats[eStat::Aura] * 15 / 10;
-		fighter[attack_fighter_index].stats[eStat::Spirit] =
-			fighter[attack_fighter_index].stats[eStat::Spirit] * 15 / 10;
+		fighter[attack_fighter_index].atrack[0] = fighter[attack_fighter_index].stats[eStat::Aura];
+		fighter[attack_fighter_index].atrack[1] = fighter[attack_fighter_index].stats[eStat::Spirit];
+		fighter[attack_fighter_index].stats[eStat::Aura] = fighter[attack_fighter_index].stats[eStat::Aura] * 15 / 10;
+		fighter[attack_fighter_index].stats[eStat::Spirit] = fighter[attack_fighter_index].stats[eStat::Spirit] * 15 / 10;
 		fighter[attack_fighter_index].atrack[2] = fighter[attack_fighter_index].mrp;
 		fighter[attack_fighter_index].mrp =
 			fighter[attack_fighter_index].mrp * 15 / 10;
@@ -764,21 +760,15 @@ int skill_use(size_t attack_fighter_index)
 		{
 			cact[attack_fighter_index] = 0;
 			fighter[attack_fighter_index].aux = 1;
-			fighter[attack_fighter_index].stats[eStat::Aura] =
-				fighter[attack_fighter_index].atrack[0];
-			fighter[attack_fighter_index].stats[eStat::Spirit] =
-				fighter[attack_fighter_index].atrack[1];
-			fighter[attack_fighter_index].mrp =
-				fighter[attack_fighter_index].atrack[2];
+			fighter[attack_fighter_index].stats[eStat::Aura] = fighter[attack_fighter_index].atrack[0];
+			fighter[attack_fighter_index].stats[eStat::Spirit] = fighter[attack_fighter_index].atrack[1];
+			fighter[attack_fighter_index].mrp = fighter[attack_fighter_index].atrack[2];
 		}
 		else
 		{
-			fighter[attack_fighter_index].stats[eStat::Aura] =
-				fighter[attack_fighter_index].atrack[0];
-			fighter[attack_fighter_index].stats[eStat::Spirit] =
-				fighter[attack_fighter_index].atrack[1];
-			fighter[attack_fighter_index].mrp =
-				fighter[attack_fighter_index].atrack[2];
+			fighter[attack_fighter_index].stats[eStat::Aura] = fighter[attack_fighter_index].atrack[0];
+			fighter[attack_fighter_index].stats[eStat::Spirit] = fighter[attack_fighter_index].atrack[1];
+			fighter[attack_fighter_index].mrp = fighter[attack_fighter_index].atrack[2];
 			return 0;
 		}
 		break;
@@ -798,8 +788,7 @@ int skill_use(size_t attack_fighter_index)
 		tx = fighter[attack_fighter_index].cx;
 		ty = fighter[attack_fighter_index].cy;
 		fighter[attack_fighter_index].cx = fighter[enemy_index].cx - 16;
-		fighter[attack_fighter_index].cy =
-			fighter[enemy_index].cy + fighter[enemy_index].cl - 40;
+		fighter[attack_fighter_index].cy = fighter[enemy_index].cy + fighter[enemy_index].cl - 40;
 		fighter[attack_fighter_index].facing = 1;
 		strcpy(attack_string, _("Steal"));
 		display_attack_string = 1;

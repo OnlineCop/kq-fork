@@ -64,7 +64,7 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
 	if (target_all_flag == 1)
 	{
 		start_fighter_index = PSIZE;
-		num_targets = num_enemies;
+		num_targets = Combat.GetNumEnemies();
 	}
 	else
 	{
@@ -139,7 +139,7 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
 		else
 		{
 			start_fighter_index = PSIZE;
-			num_fighters = num_enemies;
+			num_fighters = Combat.GetNumEnemies();
 		}
 	}
 	else
@@ -236,7 +236,7 @@ void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_targe
 		else
 		{
 			start_fighter_index = PSIZE;
-			num_fighters = num_enemies;
+			num_fighters = Combat.GetNumEnemies();
 		}
 	}
 	else
@@ -374,7 +374,7 @@ void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size
 	else
 	{
 		start_fighter_index = PSIZE;
-		num_fighters = num_enemies;
+		num_fighters = Combat.GetNumEnemies();
 	}
 	x_coord_image_in_datafile = -1;
 	y_coord_image_in_datafile = -1;
@@ -434,7 +434,7 @@ void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target
 		else
 		{
 			start_fighter_index = PSIZE;
-			num_fighers = num_enemies;
+			num_fighers = Combat.GetNumEnemies();
 		}
 	}
 	else

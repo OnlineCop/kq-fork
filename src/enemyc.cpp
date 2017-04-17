@@ -335,7 +335,7 @@ void KEnemy::Init(void)
 	{
 		LoadEnemies();
 	}
-	for (fighter_index = 0; fighter_index < num_enemies; ++fighter_index)
+	for (fighter_index = 0; fighter_index < Combat.GetNumEnemies(); ++fighter_index)
 	{
 		f = MakeEnemyFighter(cf[fighter_index], &fighter[fighter_index + PSIZE]);
 		for (frame_index = 0; frame_index < MAXCFRAMES; ++frame_index)
@@ -403,7 +403,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 				break;
 			case M_HOLYMIGHT:
 				aux = 0;
-				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+				for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 				{
 					if (fighter[fighter_index].IsAlive() &&
 						fighter[fighter_index].GetRemainingStrength() < 2)
@@ -418,7 +418,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 				break;
 			case M_BLESS:
 				aux = 0;
-				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+				for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 				{
 					if (fighter[fighter_index].IsAlive() &&
 						fighter[fighter_index].GetRemainingBless() < 3)
@@ -443,7 +443,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 			case M_HASTEN:
 			case M_QUICKEN:
 				aux = 0;
-				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+				for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 					if (fighter[fighter_index].IsAlive() &&
 						fighter[fighter_index].GetRemainingTime() != 2)
 					{
@@ -511,7 +511,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 				break;
 			case M_DIVINEGUARD:
 				aux = 0;
-				for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+				for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 					if (fighter[fighter_index].IsAlive() &&
 						!fighter[fighter_index].IsShield() &&
 						!fighter[fighter_index].IsResist())
@@ -572,7 +572,7 @@ int KEnemy::StatsCheck(eSpellType whichSpellType, int s)
 
 	if (s == PSIZE)
 	{
-		for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+		for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 		{
 			if (fighter[fighter_index].IsAlive() && fighter[fighter_index].GetStatValueBySpellType(whichSpellType) == 0)
 			{
@@ -863,13 +863,13 @@ int KEnemy::SelectEncounter(uint8_t encounterTableRow, uint8_t etid)
 			p++;
 		}
 	}
-	num_enemies = p;
+	Combat.SetNumEnemies(p);
 	/* adjust 'too hard' combat where player is alone and faced by >2 enemies */
-	if (num_enemies > 2 && numchrs == 1 && erows[entry].lvl + 2 > party[pidx[0]].lvl && etid == 99)
+	if (Combat.GetNumEnemies() > 2 && numchrs == 1 && erows[entry].lvl + 2 > party[pidx[0]].lvl && etid == 99)
 	{
-		num_enemies = 2;
+		Combat.SetNumEnemies(2);
 	}
-	if (num_enemies == 0)
+	if (Combat.GetNumEnemies() == 0)
 	{
 		Game.program_death(_("Empty encounter table row!"));
 	}
@@ -942,7 +942,7 @@ int KEnemy::SpellSetup(int whom, int z)
 		if (z == M_CURE1 || z == M_CURE2 || z == M_CURE3 || z == M_CURE4)
 		{
 			aux = 0;
-			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+			for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 			{
 				if (fighter[fighter_index].IsAlive() &&
 					fighter[fighter_index].hp < fighter[fighter_index].mhp * 75 / 100)

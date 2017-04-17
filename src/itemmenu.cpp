@@ -416,11 +416,11 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 	{
 		san = numchrs;
 		start_fighter_index = PSIZE;
-		sen = num_enemies;
+		sen = Combat.GetNumEnemies();
 	}
 	else
 	{
-		san = num_enemies;
+		san = Combat.GetNumEnemies();
 		start_fighter_index = 0;
 		sen = numchrs;
 	}

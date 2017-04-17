@@ -60,50 +60,17 @@
 KCombat Combat;
 
 KCombat::KCombat()
+	: combatend(eCombatResult::StillFighting)
 {
 
 }
-
-/*! \name global variables  */
-
-uint32_t combatend;
-int cact[NUM_FIGHTERS];
-int x_coord_image_in_datafile;
-int y_coord_image_in_datafile;
-uint32_t num_enemies;
-int ta[NUM_FIGHTERS];
-int deffect[NUM_FIGHTERS];
-int RemainingBattleCounter;
-uint8_t vspell;
-uint8_t ms;
-Raster *backart;
-
-/* Internal variables */
-static int nspeed[NUM_FIGHTERS];
-static int bspeed[NUM_FIGHTERS];
-static uint8_t hs;
-
-enum eAttackResult { ATTACK_MISS, ATTACK_SUCCESS, ATTACK_CRITICAL };
-
-/* Internal prototypes */
-static eAttackResult attack_result(int, int);
-static int check_end(void);
-static void do_action(size_t);
-static int do_combat(char *, char *, int);
-static void do_round(void);
-static void enemies_win(void);
-static void heroes_win(void);
-static void init_fighters(void);
-static void roll_initiative(void);
-static void snap_togrid(void);
 
 /*! \brief Attack all enemies at once
  * \author Josh Bolduc
  * \date Created ????????
  * \date Updated
  *
- * This does the actual attack calculation. The damage done to
- * the target is kept in the ta[] array.
+ * This does the actual attack calculation. The damage done to the target is kept in the health_adjust[] array.
  *
  * \param   ar Attacker
  * \param   dr Defender
@@ -111,7 +78,7 @@ static void snap_togrid(void);
  *          ATTACK_SUCCESS if attack was successful,
  *          ATTACK_CRITICAL if attack was a critical hit.
  */
-eAttackResult attack_result(int ar, int dr)
+KCombat::eAttackResult KCombat::attack_result(int ar, int dr)
 {
 	int c;
 	int check_for_critical_hit;
@@ -319,8 +286,8 @@ eAttackResult attack_result(int ar, int dr)
 #ifdef KQ_CHEATS
 	if (cheat && every_hit_999)
 	{
-		ta[dr] = -999;
-		return ATTACK_SUCCESS;
+		health_adjust[dr] = -999;
+		return eAttackResult::ATTACK_SUCCESS;
 	}
 #endif
 
@@ -328,12 +295,12 @@ eAttackResult attack_result(int ar, int dr)
 	if (dmg == 0)
 	{
 		dmg = MISS;
-		ta[dr] = dmg;
+		health_adjust[dr] = dmg;
 		return ATTACK_MISS;
 	}
 
-	ta[dr] = 0 - dmg;
-	return crit_hit == 1 ? ATTACK_CRITICAL : ATTACK_SUCCESS;
+	health_adjust[dr] = 0 - dmg;
+	return crit_hit == 1 ? eAttackResult::ATTACK_CRITICAL : eAttackResult::ATTACK_SUCCESS;
 }
 
 /*! \brief Draw the battle screen.
@@ -476,7 +443,7 @@ void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
  * \returns 1 if the battle ended (either the heroes or the enemies won),
  *          0 otherwise.
  */
-static int check_end(void)
+int KCombat::check_end(void)
 {
 	size_t fighter_index;
 	int alive = 0;
@@ -619,7 +586,7 @@ int KCombat::combat(int bno)
  *
  * Choose a fighter action.
  */
-static void do_action(size_t fighter_index)
+void KCombat::do_action(size_t fighter_index)
 {
 	size_t imb_index;
 	uint8_t imbued_item;
@@ -678,7 +645,7 @@ static void do_action(size_t fighter_index)
 	cact[fighter_index] = 0;
 	if (check_end() == 1)
 	{
-		combatend = 1;
+		combatend = eCombatResult::HeroesWon;
 	}
 }
 
@@ -689,7 +656,7 @@ static void do_action(size_t fighter_index)
  * \param   is_rnd If !=0 then this is a random combat
  * \returns 1 if battle occurred
  */
-static int do_combat(char *bg, char *mus, int is_rnd)
+int KCombat::do_combat(char *bg, char *mus, int is_rnd)
 {
 	int zoom_step;
 
@@ -751,7 +718,7 @@ static int do_combat(char *bg, char *mus, int is_rnd)
 	x_coord_image_in_datafile = 0;
 	y_coord_image_in_datafile = 0;
 	vspell = 0;
-	combatend = 0;
+	combatend = KCombat::eCombatResult::StillFighting;
 
 	/*  RB: execute combat  */
 	do_round();
@@ -777,13 +744,13 @@ static int do_combat(char *bg, char *mus, int is_rnd)
  * when necessary. This is also where things like poison, sleep,
  * and what-not are checked.
  */
-static void do_round(void)
+void KCombat::do_round(void)
 {
 	size_t a;
 	size_t fighter_index;
 
 	timer_count = 0;
-	while (!combatend)
+	while (combatend == KCombat::eCombatResult::StillFighting)
 	{
 		if (timer_count >= 10)
 		{
@@ -812,7 +779,7 @@ static void do_round(void)
 							a = fighter[fighter_index].hp - 1;
 						}
 
-						ta[fighter_index] = a;
+						health_adjust[fighter_index] = a;
 						Effects.display_amount(fighter_index, FONT_WHITE, 0);
 						fighter[fighter_index].hp -= a;
 					}
@@ -829,7 +796,7 @@ static void do_round(void)
 							a = 5;
 						}
 
-						ta[fighter_index] = a;
+						health_adjust[fighter_index] = a;
 						Effects.display_amount(fighter_index, FONT_YELLOW, 0);
 						Magic.adjust_hp(fighter_index, a);
 					}
@@ -942,7 +909,7 @@ static void do_round(void)
 					bspeed[fighter_index] = 0;
 				}
 
-				if (combatend)
+				if (combatend != KCombat::StillFighting)
 				{
 					return;
 				}
@@ -1058,7 +1025,7 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
  * Play some sad music and set the dead flag so that the game
  * will return to the main menu.
  */
-static void enemies_win(void)
+void KCombat::enemies_win(void)
 {
 	Music.play_music("rain.s3m", 0);
 	Combat.battle_render(0, 0, 0);
@@ -1093,13 +1060,13 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
 	int tx = -1;
 	int ty = -1;
 	uint32_t f;
-	uint32_t ares;
+	eAttackResult ares;
 	size_t fighter_index;
 
 	for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
 	{
 		deffect[fighter_index] = 0;
-		ta[fighter_index] = 0;
+		health_adjust[fighter_index] = 0;
 	}
 
 	/*  check the 'sk' variable to see if we are over-riding the  */
@@ -1132,7 +1099,7 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
 	fighter[defend_fighter_index].SetInfuse(tempd.IsInfuse());
 
 	/*  RB TODO: rest(20) or vsync() before the blit?  */
-	if (ares == 2)
+	if (ares == eAttackResult::ATTACK_CRITICAL)
 	{
 		for (f = 0; f < 3; f++)
 		{
@@ -1181,15 +1148,15 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
 		fighter[defend_fighter_index].cy = ty;
 	}
 
-	if (ta[defend_fighter_index] != MISS)
+	if (health_adjust[defend_fighter_index] != MISS)
 	{
-		ta[defend_fighter_index] = Magic.do_shield_check(defend_fighter_index, ta[defend_fighter_index]);
+		health_adjust[defend_fighter_index] = Magic.do_shield_check(defend_fighter_index, health_adjust[defend_fighter_index]);
 	}
 
 	Effects.display_amount(defend_fighter_index, FONT_DECIDE, 0);
-	if (ta[defend_fighter_index] != MISS)
+	if (health_adjust[defend_fighter_index] != MISS)
 	{
-		fighter[defend_fighter_index].hp += ta[defend_fighter_index];
+		fighter[defend_fighter_index].hp += health_adjust[defend_fighter_index];
 		if ((fighter[attack_fighter_index].imb_s > 0) && (kqrandom->random_range_exclusive(0, 5) == 0))
 		{
 			Magic.cast_imbued_spell(
@@ -1277,6 +1244,31 @@ void KCombat::fkill(size_t fighter_index)
 	cact[fighter_index] = 0;
 }
 
+void KCombat::AdjustHealth(size_t fighterIndex, int amount)
+{
+	if (fighterIndex < NUM_FIGHTERS)
+	{
+		health_adjust[fighterIndex] = amount;
+	}
+}
+
+int KCombat::GetHealthAdjust(size_t fighterIndex) const
+{
+	if (fighterIndex < NUM_FIGHTERS)
+	{
+		return health_adjust[fighterIndex];
+	}
+	return 0;
+}
+
+void KCombat::SetAttackMissed(size_t fighterIndex)
+{
+	if (fighterIndex < NUM_FIGHTERS)
+	{
+		health_adjust[fighterIndex] = MISS;
+	}
+}
+
 /*! \brief Player defeated the enemies
  * \author Josh Bolduc
  * \date Created ????????
@@ -1284,7 +1276,7 @@ void KCombat::fkill(size_t fighter_index)
  *
  * Distribute the booty!
  */
-static void heroes_win(void)
+void KCombat::heroes_win(void)
 {
 	int tgp = 0;
 	size_t fighter_index;
@@ -1318,7 +1310,7 @@ static void heroes_win(void)
 			nc++;
 		}
 
-		ta[fighter_index] = 0;
+		health_adjust[fighter_index] = 0;
 	}
 
 	for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
@@ -1467,7 +1459,7 @@ static void heroes_win(void)
  *
  * Pre-combat setup of fighter structures and initial vars.
  */
-static void init_fighters(void)
+void KCombat::init_fighters(void)
 {
 	size_t fighter_index;
 
@@ -1516,7 +1508,7 @@ void KCombat::multi_fight(size_t attack_fighter_index)
 	for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
 	{
 		deffect[fighter_index] = 0;
-		ta[fighter_index] = 0;
+		health_adjust[fighter_index] = 0;
 		killed_warrior[fighter_index] = 0;
 	}
 
@@ -1560,14 +1552,15 @@ void KCombat::multi_fight(size_t attack_fighter_index)
 			fighter[fighter_index].SetInfuse(tempd.IsInfuse());
 		}
 
-		if (ta[fighter_index] != MISS)
+		if (health_adjust[fighter_index] != MISS)
 		{
-			if (ta[fighter_index] != MISS)
+			if (health_adjust[fighter_index] != MISS)
 			{
-				ta[fighter_index] = Magic.do_shield_check(fighter_index, ta[fighter_index]);
+				int amount = Magic.do_shield_check(fighter_index, health_adjust[fighter_index]);
+				Combat.AdjustHealth(fighter_index, amount);
 			}
 
-			fighter[fighter_index].hp += ta[fighter_index];
+			fighter[fighter_index].hp += health_adjust[fighter_index];
 			if ((fighter[fighter_index].hp <= 0) &&
 				(fighter[fighter_index].IsAlive()))
 			{
@@ -1588,7 +1581,7 @@ void KCombat::multi_fight(size_t attack_fighter_index)
 			}
 
 			/*  RB: if charmed, a good hit wakes him/her up  */
-			if (fighter[fighter_index].IsCharmed() && ta[fighter_index] > 0 &&
+			if (fighter[fighter_index].IsCharmed() && health_adjust[fighter_index] > 0 &&
 				attack_fighter_index == fighter_index)
 			{
 				fighter[fighter_index].SetCharmed(0);
@@ -1638,7 +1631,7 @@ void KCombat::multi_fight(size_t attack_fighter_index)
  *
  * Set up surprise vars, speeds, act vars, etc.
  */
-static void roll_initiative(void)
+void KCombat::roll_initiative(void)
 {
 	size_t fighter_index, j;
 
@@ -1724,7 +1717,7 @@ static void roll_initiative(void)
  *
  * Calculate where the fighters should be drawn.
  */
-static void snap_togrid(void)
+void KCombat::snap_togrid(void)
 {
 	size_t fighter_index;
 	int hf = 0;

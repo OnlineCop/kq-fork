@@ -80,7 +80,7 @@ int auto_select_enemy(int whom, int csts)
 {
 	unsigned int i, number_enemies = 0;
 	int tmpd[NUM_FIGHTERS];
-	for (i = PSIZE; i < PSIZE + num_enemies; i++)
+	for (i = PSIZE; i < PSIZE + Combat.GetNumEnemies(); i++)
 	{
 		if (fighter[i].IsAlive())
 		{
@@ -625,7 +625,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 	unsigned int cntr = 0;
 	size_t ptr;
 	int tmpd[NUM_FIGHTERS];
-	for (unsigned int fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+	for (unsigned int fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 	{
 		if (can_attack(fighter_index) == 1)
 		{

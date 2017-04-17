@@ -103,7 +103,7 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 	if (caster_fighter_index < PSIZE)
 	{
 		start_fighter_index = PSIZE;
-		end_fighter_index = num_enemies;
+		end_fighter_index = Combat.GetNumEnemies();
 	}
 	else
 	{
@@ -112,7 +112,7 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 	}
 	for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 	{
-		ta[fighter_index] = NODISPLAY;
+		Combat.AdjustHealth(fighter_index, NODISPLAY);
 	}
 	sp_hit = magic[spell_number].hit;
 	switch (spell_number)
@@ -133,22 +133,22 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 					if (!fighter[fighter_index].IsTime())
 					{
 						fighter[fighter_index].SetTime(1);
-						ta[fighter_index] = NODISPLAY;
+						Combat.AdjustHealth(fighter_index, NODISPLAY);
 					}
 					else
 					{
-						ta[fighter_index] = MISS;
+						Combat.SetAttackMissed(fighter_index);
 					}
 				}
 			}
 			else
 			{
-				ta[fighter_index] = MISS;
+				Combat.SetAttackMissed(fighter_index);
 			}
 		}
 		break;
 	case M_VISION:
-		vspell = 1;
+		Combat.vspell = 1;
 		do_transition(TRANS_FADE_OUT, 2);
 		Combat.battle_render(0, 0, 0);
 		Draw.blit2screen(0, 0);
@@ -162,11 +162,11 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 				!fighter[fighter_index].IsStone())
 			{
 				fighter[fighter_index].SetMalison(2);
-				ta[fighter_index] = NODISPLAY;
+				Combat.AdjustHealth(fighter_index, NODISPLAY);
 			}
 			else
 			{
-				ta[fighter_index] = MISS;
+				Combat.SetAttackMissed(fighter_index);
 			}
 		}
 		break;
@@ -179,11 +179,11 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
 				!fighter[fighter_index].IsStone())
 			{
 				fighter[fighter_index].SetSleep(kqrandom->random_range_exclusive(4, 6));
-				ta[fighter_index] = NODISPLAY;
+				Combat.AdjustHealth(fighter_index, NODISPLAY);
 			}
 			else
 			{
-				ta[fighter_index] = MISS;
+				Combat.SetAttackMissed(fighter_index);
 			}
 		}
 		break;
@@ -202,15 +202,15 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 {
 	int r, a = 0, sp_hit;
 
-	ta[target_fighter_index] = NODISPLAY;
+	Combat.AdjustHealth(target_fighter_index, NODISPLAY);
 	if (fighter[target_fighter_index].IsStone())
 	{
-		ta[target_fighter_index] = MISS;
+		Combat.SetAttackMissed(target_fighter_index);
 		return;
 	}
 	if (res_throw(target_fighter_index, magic[spell_number].elem) == 1)
 	{
-		ta[target_fighter_index] = MISS;
+		Combat.SetAttackMissed(target_fighter_index);
 		return;
 	}
 	sp_hit = magic[spell_number].hit;
@@ -224,7 +224,7 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_CONFUSE:
@@ -235,7 +235,7 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_STONE:
@@ -261,7 +261,7 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_DIFFUSE:
@@ -295,12 +295,12 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 			}
 			if (r == 0)
 			{
-				ta[target_fighter_index] = MISS;
+				Combat.SetAttackMissed(target_fighter_index);
 			}
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_HOLD:
@@ -311,7 +311,7 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_SILENCE:
@@ -322,7 +322,7 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_SLEEP:
@@ -333,12 +333,12 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_ABSORB:
 		spell_damage(caster_fighter_index, spell_number, target_fighter_index, 1);
-		r = ta[target_fighter_index];
+		r = Combat.GetHealthAdjust(target_fighter_index);
 		if (non_dmg_save(target_fighter_index, sp_hit) == 1)
 		{
 			r = r / 2;
@@ -347,12 +347,12 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		{
 			r = 0 - fighter[target_fighter_index].mp;
 		}
-		ta[target_fighter_index] = r;
-		ta[caster_fighter_index] = 0 - r;
+		Combat.AdjustHealth(target_fighter_index, r);
+		Combat.AdjustHealth(caster_fighter_index, 0 - r);
 		break;
 	case M_DRAIN:
 		spell_damage(caster_fighter_index, spell_number, target_fighter_index, 1);
-		r = ta[target_fighter_index];
+		r = Combat.GetHealthAdjust(target_fighter_index);
 		if (non_dmg_save(target_fighter_index, sp_hit) == 1)
 		{
 			r = r / 2;
@@ -363,8 +363,8 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 			{
 				r = 0 - fighter[caster_fighter_index].hp;
 			}
-			ta[target_fighter_index] = 0 - r;
-			ta[caster_fighter_index] = r;
+			Combat.AdjustHealth(target_fighter_index, 0 - r);
+			Combat.AdjustHealth(caster_fighter_index, r);
 		}
 		else
 		{
@@ -372,8 +372,8 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 			{
 				r = 0 - fighter[target_fighter_index].hp;
 			}
-			ta[target_fighter_index] = r;
-			ta[caster_fighter_index] = 0 - r;
+			Combat.AdjustHealth(target_fighter_index, r);
+			Combat.AdjustHealth(caster_fighter_index, 0 - r);
 		}
 		break;
 	case M_DOOM:
@@ -388,22 +388,22 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 			{
 				a = fighter[target_fighter_index].hp - 1;
 			}
-			ta[target_fighter_index] = 0 - a;
+			Combat.AdjustHealth(target_fighter_index, 0 - a);
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_DEATH:
 		if (non_dmg_save(target_fighter_index, sp_hit) == 0)
 		{
 			a = fighter[target_fighter_index].hp;
-			ta[target_fighter_index] = 0 - a;
+			Combat.AdjustHealth(target_fighter_index, 0 - a);
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_NAUSEA:
@@ -414,7 +414,7 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	}
@@ -493,10 +493,10 @@ int KMagic::cast_spell(size_t caster_fighter_index, int is_item)
 				.stats[eStat::Aura + magic[spell_number].stat])
 			{
 
-				/*  DS: The spell fail, so set ta[target] to MISS */
+				/*  DS: The spell fail, so set Combat.ta[target] to MISS */
 				if (tgt != SEL_ALL_ALLIES)
 				{
-					ta[tgt] = MISS;
+					Combat.SetAttackMissed(tgt);
 				}
 				else
 				{
@@ -509,12 +509,12 @@ int KMagic::cast_spell(size_t caster_fighter_index, int is_item)
 					}
 					else
 					{
-						end_fighter_index = num_enemies;
+						end_fighter_index = Combat.GetNumEnemies();
 						start_fighter_index = PSIZE;
 					}
 					for (i = start_fighter_index; i < end_fighter_index; i++)
 					{
-						ta[i] = MISS;
+						Combat.SetAttackMissed(i);
 					}
 				}
 
@@ -610,7 +610,7 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 			}
 			else
 			{
-				end_fighter_index = num_enemies;
+				end_fighter_index = Combat.GetNumEnemies();
 				start_fighter_index = PSIZE;
 			}
 		}
@@ -622,7 +622,7 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 			tall = 1;
 			if (caster_fighter_index < PSIZE)
 			{
-				end_fighter_index = num_enemies;
+				end_fighter_index = Combat.GetNumEnemies();
 				start_fighter_index = PSIZE;
 			}
 			else
@@ -689,36 +689,36 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 	{
 		if (spell_number == M_ABSORB)
 		{
-			if (ta[tgt] <= 0)
+			if (Combat.GetHealthAdjust(tgt) <= 0)
 			{
 				Effects.display_amount(tgt, FONT_RED, 0);
-				adjust_mp(tgt, ta[tgt]);
+				adjust_mp(tgt, Combat.GetHealthAdjust(tgt));
 				Effects.display_amount(caster_fighter_index, FONT_GREEN, 0);
-				adjust_mp(caster_fighter_index, ta[caster_fighter_index]);
+				adjust_mp(caster_fighter_index, Combat.GetHealthAdjust(caster_fighter_index));
 			}
 			else
 			{
 				Effects.display_amount(caster_fighter_index, FONT_RED, 0);
-				adjust_mp(caster_fighter_index, ta[caster_fighter_index]);
+				adjust_mp(caster_fighter_index, Combat.GetHealthAdjust(caster_fighter_index));
 				Effects.display_amount(tgt, FONT_GREEN, 0);
-				adjust_mp(tgt, ta[tgt]);
+				adjust_mp(tgt, Combat.GetHealthAdjust(tgt));
 			}
 		}
 		else
 		{
-			if (ta[tgt] <= 0)
+			if (Combat.GetHealthAdjust(tgt) <= 0)
 			{
 				Effects.display_amount(tgt, FONT_WHITE, 0);
-				adjust_hp(tgt, ta[tgt]);
+				adjust_hp(tgt, Combat.health_adjust[tgt]);
 				Effects.display_amount(caster_fighter_index, FONT_YELLOW, 0);
-				adjust_hp(caster_fighter_index, ta[caster_fighter_index]);
+				adjust_hp(caster_fighter_index, Combat.GetHealthAdjust(caster_fighter_index));
 			}
 			else
 			{
 				Effects.display_amount(caster_fighter_index, FONT_WHITE, 0);
-				adjust_hp(caster_fighter_index, ta[caster_fighter_index]);
+				adjust_hp(caster_fighter_index, Combat.GetHealthAdjust(caster_fighter_index));
 				Effects.display_amount(tgt, FONT_YELLOW, 0);
-				adjust_hp(tgt, ta[tgt]);
+				adjust_hp(tgt, Combat.GetHealthAdjust(tgt));
 			}
 		}
 	}
@@ -729,7 +729,7 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 			b = 0;
 			for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 			{
-				if (ta[fighter_index] == MISS)
+				if (Combat.health_adjust[fighter_index] == MISS)
 				{
 					b++;
 				}
@@ -744,7 +744,7 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 			Effects.display_amount(start_fighter_index, FONT_DECIDE, tall);
 			for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 			{
-				adjust_hp(fighter_index, ta[fighter_index]);
+				adjust_hp(fighter_index, Combat.GetHealthAdjust(fighter_index));
 			}
 		}
 	}
@@ -755,12 +755,12 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
 			fighter[fighter_index].hp <= 0)
 		{
 			Combat.fkill(fighter_index);
-			ta[fighter_index] = 1;
+			Combat.AdjustHealth(fighter_index, 1);
 			b++;
 		}
 		else
 		{
-			ta[fighter_index] = 0;
+			Combat.AdjustHealth(fighter_index, 0);
 		}
 	}
 	if (b > 0)
@@ -794,7 +794,7 @@ void KMagic::cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spe
 		}
 		else
 		{
-			end_fighter_index = num_enemies;
+			end_fighter_index = Combat.GetNumEnemies();
 			start_fighter_index = PSIZE;
 		}
 	}
@@ -849,8 +849,8 @@ void KMagic::cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spe
 		if (!fighter[fighter_index].IsStone() &&
 			fighter[fighter_index].IsAlive())
 		{
-			ta[fighter_index] = b;
-			ta[fighter_index] = do_shell_check(fighter_index, ta[fighter_index]);
+			Combat.AdjustHealth(fighter_index, b);
+			Combat.AdjustHealth(fighter_index, do_shell_check(fighter_index, Combat.GetHealthAdjust(fighter_index)));
 		}
 	}
 }
@@ -869,7 +869,7 @@ void KMagic::damage_all_enemies(size_t caster_fighter_index, size_t spell_number
 	if (caster_fighter_index < PSIZE)
 	{
 		start_fighter_index = PSIZE;
-		end_fighter_index = num_enemies;
+		end_fighter_index = Combat.GetNumEnemies();
 	}
 	else
 	{
@@ -896,7 +896,7 @@ void KMagic::damage_oneall_enemies(size_t caster_fighter_index, int tgt, size_t 
 	{
 		if (caster_fighter_index < PSIZE)
 		{
-			end_fighter_index = num_enemies;
+			end_fighter_index = Combat.GetNumEnemies();
 			start_fighter_index = PSIZE;
 		}
 		else
@@ -988,7 +988,7 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 	}
 	else
 	{
-		end_fighter_index = num_enemies;
+		end_fighter_index = Combat.GetNumEnemies();
 		start_fighter_index = PSIZE;
 	}
 	if (kqrandom->random_range_exclusive(1, 101) >
@@ -996,7 +996,7 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 	{
 		for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
 		{
-			ta[fighter_index] = MISS;
+			Combat.SetAttackMissed(fighter_index);
 		}
 		return;
 	}
@@ -1015,11 +1015,11 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 				fighter[fighter_index].hp += fighter_hp;
 				fighter[fighter_index].mhp += fighter_hp;
 				fighter[fighter_index].AddBless(1);
-				ta[fighter_index] = NODISPLAY;
+				Combat.AdjustHealth(fighter_index, NODISPLAY);
 			}
 			else
 			{
-				ta[fighter_index] = MISS;
+				Combat.SetAttackMissed(fighter_index);
 			}
 		}
 		break;
@@ -1029,11 +1029,11 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 			if (fighter[fighter_index].GetRemainingShield() < 2)
 			{
 				fighter[fighter_index].SetShield(2);
-				ta[fighter_index] = NODISPLAY;
+				Combat.AdjustHealth(fighter_index, NODISPLAY);
 			}
 			else
 			{
-				ta[fighter_index] = MISS;
+				Combat.SetAttackMissed(fighter_index);
 			}
 		}
 		break;
@@ -1054,7 +1054,7 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 			}
 			else
 			{
-				ta[fighter_index] = MISS;
+				Combat.SetAttackMissed(fighter_index);
 			}
 		}
 		break;
@@ -1071,12 +1071,12 @@ void KMagic::geffect_all_allies(size_t caster_fighter_index, size_t spell_number
 				else
 				{
 					fighter[fighter_index].SetTime(2);
-					ta[fighter_index] = NODISPLAY;
+					Combat.AdjustHealth(fighter_index, NODISPLAY);
 				}
 			}
 			else
 			{
-				ta[fighter_index] = MISS;
+				Combat.SetAttackMissed(fighter_index);
 			}
 		}
 		break;
@@ -1107,7 +1107,7 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_THROUGH:
@@ -1117,7 +1117,7 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_REGENERATE:
@@ -1127,7 +1127,7 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_HOLYMIGHT:
@@ -1137,7 +1137,7 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_SHELL:
@@ -1147,7 +1147,7 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_WALL:
@@ -1157,7 +1157,7 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_SHIELD:
@@ -1167,7 +1167,7 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_HASTEN:
@@ -1184,7 +1184,7 @@ void KMagic::geffect_one_ally(size_t target_fighter_index, size_t spell_number)
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	}
@@ -1249,7 +1249,7 @@ void KMagic::heal_one_ally(size_t caster_fighter_index, size_t target_fighter_in
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	case M_FULLLIFE:
@@ -1278,7 +1278,7 @@ void KMagic::heal_one_ally(size_t caster_fighter_index, size_t target_fighter_in
 		}
 		else
 		{
-			ta[target_fighter_index] = MISS;
+			Combat.SetAttackMissed(target_fighter_index);
 		}
 		break;
 	}
@@ -1433,8 +1433,8 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 		{
 			/* Enemies are the monsters; you are attacking */
 			first_target = PSIZE;
-			last_target = num_enemies;
-			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+			last_target = Combat.GetNumEnemies();
+			for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 			{
 				if (fighter[fighter_index].IsAlive())
 				{
@@ -1502,7 +1502,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 			{
 				b /= 10;
 			}
-			ta[fighter_index] = 0 - b;
+			Combat.AdjustHealth(fighter_index, 0 - b);
 			if (b < 0 && rune_type == R_POISON)
 			{
 				if (!res_throw(fighter_index, rune_type) && !non_dmg_save(fighter_index, 75))
@@ -1510,22 +1510,22 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 					fighter[fighter_index].SetPoisoned(RemainingBattleCounter + 1);
 				}
 			}
-			if (ta[fighter_index] != 0)
+			if (Combat.health_adjust[fighter_index] != 0)
 			{
 				fighter[fighter_index].SetSleep(0);
 			}
 		}
 		else
 		{
-			ta[fighter_index] = 0;
+			Combat.AdjustHealth(fighter_index, 0);
 		}
 	}
 	Effects.display_amount(first_target, FONT_DECIDE, multiple_targets);
 	for (fighter_index = first_target; fighter_index < first_target + last_target; fighter_index++)
 	{
-		if (ta[fighter_index] != MISS)
+		if (Combat.GetHealthAdjust(fighter_index) != MISS)
 		{
-			adjust_hp(fighter_index, ta[fighter_index]);
+			adjust_hp(fighter_index, Combat.GetHealthAdjust(fighter_index));
 		}
 	}
 	b = 0;
@@ -1535,12 +1535,12 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
 			fighter[fighter_index].hp <= 0)
 		{
 			Combat.fkill(fighter_index);
-			ta[fighter_index] = 1;
+			Combat.AdjustHealth(fighter_index, 1);
 			b++;
 		}
 		else
 		{
-			ta[fighter_index] = 0;
+			Combat.AdjustHealth(fighter_index, 0);
 		}
 	}
 	if (b > 0)
@@ -1581,7 +1581,7 @@ void KMagic::special_spells(size_t caster_fighter_index, size_t spell_number)
 			Draw.drawmap();
 			Draw.blit2screen(xofs, yofs);
 			do_transition(TRANS_FADE_IN, 2);
-			combatend = 2;
+			combatend = KCombat::eCombatResult::HeroesEscaped;
 		}
 		else
 		{
@@ -1611,7 +1611,7 @@ void KMagic::special_spells(size_t caster_fighter_index, size_t spell_number)
 /*! \brief Damage done from spells
  *
  * This function does all of the damage calculating for damage
- * spells, and fills the ta[] array with the damage amounts.
+ * spells, and fills the Combat.ta[] array with the damage amounts.
  *
  * \param   caster_fighter_index Caster
  * \param   spell_number Spell number
@@ -1627,7 +1627,7 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 	{
 		if (caster_fighter_index < PSIZE)
 		{
-			for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+			for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 			{
 				if (fighter[fighter_index].IsAlive())
 				{
@@ -1698,7 +1698,7 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 			{
 				b = b / 10;
 			}
-			ta[fighter_index] = 0 - b;
+			Combat.AdjustHealth(fighter_index, 0 - b);
 			if (b < 0 && rt == R_POISON)
 			{
 				if (!res_throw(fighter_index, rt) && !non_dmg_save(fighter_index, magic[spell_number].hit))
@@ -1706,14 +1706,14 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
 					fighter[fighter_index].SetPoisoned(RemainingBattleCounter + 1);
 				}
 			}
-			if (ta[fighter_index] != 0)
+			if (Combat.health_adjust[fighter_index] != 0)
 			{
 				fighter[fighter_index].SetSleep(0);
 			}
 		}
 		else
 		{
-			ta[fighter_index] = 0;
+			Combat.AdjustHealth(fighter_index, 0);
 		}
 	}
 }

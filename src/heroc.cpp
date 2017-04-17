@@ -346,7 +346,7 @@ static int combat_item(int ss, int t1, int tg)
 		else
 		{
 			st = PSIZE;
-			tt = num_enemies;
+			tt = Combat.GetNumEnemies();
 		}
 	}
 	Effects.display_amount(st, FONT_DECIDE, tl);
@@ -1228,7 +1228,7 @@ static void hero_run(void)
 	{
 		bt = bt / b;
 	}
-	for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+	for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 	{
 		if (fighter[fighter_index].IsAlive())
 		{
@@ -1322,5 +1322,5 @@ static void hero_run(void)
 		}
 	}
 	kmenu.revert_equipstats();
-	combatend = 2;
+	combatend = KCombat::eCombatResult::HeroesEscaped;
 }

@@ -210,7 +210,7 @@ void KDraw::convert_cframes(size_t fighter_index, int output_range_start, int ou
 		else
 		{
 			start_fighter_index = PSIZE;
-			end_fighter_index = PSIZE + num_enemies;
+			end_fighter_index = PSIZE + Combat.GetNumEnemies();
 		}
 	}
 	else
@@ -1636,7 +1636,7 @@ void KDraw::revert_cframes(size_t fighter_index, int revert_heroes)
 		else
 		{
 			start_fighter_index = PSIZE;
-			end_fighter_index = PSIZE + num_enemies;
+			end_fighter_index = PSIZE + Combat.GetNumEnemies();
 		}
 	}
 	else

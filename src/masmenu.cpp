@@ -86,8 +86,7 @@ static int camp_castable(int who, int sno)
  * \param   spell_page Page that spell is found on
  * \param   spell_page_cursor Cursor on current page
  */
-static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
-	size_t spell_page_cursor)
+static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page, size_t spell_page_cursor)
 {
 	eFontColor text_color;
 	size_t spell_index, pidx_index, current_spell, first_spell_index;
@@ -112,19 +111,14 @@ static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
 		}
 		if (spell_index > 0)
 		{
-			Draw.draw_icon(double_buffer, magic[spell_index].icon, 96 + xofs,
-				current_spell * 8 + 100 + yofs);
-			Draw.print_font(double_buffer, 104 + xofs, current_spell * 8 + 100 + yofs,
-				magic[spell_index].name, text_color);
+			Draw.draw_icon(double_buffer, magic[spell_index].icon, 96 + xofs, current_spell * 8 + 100 + yofs);
+			Draw.print_font(double_buffer, 104 + xofs, current_spell * 8 + 100 + yofs, magic[spell_index].name, text_color);
 			sprintf(strbuf, "%d", Magic.mp_needed(caster_fighter_index, spell_index));
-			Draw.print_font(double_buffer, 232 - (strlen(strbuf) * 8) + xofs,
-				current_spell * 8 + 100 + yofs, strbuf, text_color);
+			Draw.print_font(double_buffer, 232 - (strlen(strbuf) * 8) + xofs, current_spell * 8 + 100 + yofs, strbuf, text_color);
 		}
 	}
 	Draw.menubox(double_buffer, 40 + xofs, 204 + yofs, 28, 1, BLUE);
-	Draw.print_font(double_buffer,
-		(160 - (strlen(magic[first_spell_index].desc) * 4)) + xofs,
-		212 + yofs, magic[first_spell_index].desc, FNORMAL);
+	Draw.print_font(double_buffer, (160 - (strlen(magic[first_spell_index].desc) * 4)) + xofs, 212 + yofs, magic[first_spell_index].desc, FNORMAL);
 	draw_sprite(double_buffer, pgb[spell_page], 230 + xofs, 194 + yofs);
 }
 
@@ -273,14 +267,12 @@ void camp_spell_menu(int c)
  * \param   caster_fighter_index Index of spell caster
  * \param   spell_number Spell number
  */
-static void camp_spell_targeting(size_t caster_fighter_index,
-	size_t spell_number)
+static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_number)
 {
 	int tg = 0;
 	size_t fighter_index;
 
-	if (magic[spell_number].tgt == TGT_NONE ||
-		magic[spell_number].tgt > TGT_ALLY_ALL)
+	if (magic[spell_number].tgt == TGT_NONE || magic[spell_number].tgt > TGT_ALLY_ALL)
 	{
 		return;
 	}
@@ -291,16 +283,13 @@ static void camp_spell_targeting(size_t caster_fighter_index,
 		{
 			return;
 		}
-		if (magic[spell_number].use != USE_ANY_INF &&
-			magic[spell_number].use != USE_CAMP_INF)
+		if (magic[spell_number].use != USE_ANY_INF && magic[spell_number].use != USE_CAMP_INF)
 		{
 			return;
 		}
 		if (spell_number != M_WARP && spell_number != M_REPULSE)
 		{
-			tg =
-				select_any_player((eTarget)magic[spell_number].tgt,
-					magic[spell_number].icon, magic[spell_number].name);
+			tg = select_any_player((eTarget)magic[spell_number].tgt, magic[spell_number].icon, magic[spell_number].name);
 			if (tg == PIDX_UNDEFINED)
 			{
 				return;
@@ -319,7 +308,7 @@ static void camp_spell_targeting(size_t caster_fighter_index,
 		fighter[caster_fighter_index].csmem = spell_number;
 		for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 		{
-			ta[fighter_index] = 0;
+			Combat.AdjustHealth(fighter_index, 0);
 		}
 		if (Magic.cast_spell(caster_fighter_index, 0) == 1)
 		{
@@ -335,7 +324,7 @@ static void camp_spell_targeting(size_t caster_fighter_index,
 				 */
 				for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 				{
-					Magic.adjust_hp(fighter_index, ta[fighter_index]);
+					Magic.adjust_hp(fighter_index, Combat.GetHealthAdjust(fighter_index));
 				}
 			}
 			play_effect(SND_TWINKLE, 128);
@@ -393,12 +382,9 @@ int learn_new_spells(int who)
 				{
 					sprintf(strbuf, _("%s learned %s"), party[who].name.c_str(), magic[a].name);
 					fullblit(back, double_buffer);
-					Draw.menubox(double_buffer, 148 - (strlen(strbuf) * 4), 152,
-						strlen(strbuf) + 1, 1, BLUE);
-					Draw.draw_icon(double_buffer, magic[a].icon, 156 - (strlen(strbuf) * 4),
-						160);
-					Draw.print_font(double_buffer, 164 - (strlen(strbuf) * 4), 160, strbuf,
-						FNORMAL);
+					Draw.menubox(double_buffer, 148 - (strlen(strbuf) * 4), 152, strlen(strbuf) + 1, 1, BLUE);
+					Draw.draw_icon(double_buffer, magic[a].icon, 156 - (strlen(strbuf) * 4), 160);
+					Draw.print_font(double_buffer, 164 - (strlen(strbuf) * 4), 160, strbuf, FNORMAL);
 					Draw.blit2screen(0, 0);
 					Game.wait_enter();
 					g++;
@@ -430,8 +416,7 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 	switch (spell_number)
 	{
 	case M_RESTORE:
-		if (!party[victim_figher_index].IsPoisoned() &&
-			!party[victim_figher_index].IsBlind())
+		if (!party[victim_figher_index].IsPoisoned() && !party[victim_figher_index].IsBlind())
 		{
 			return 0;
 		}
@@ -490,9 +475,7 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
 			uint32_t affected_targets = 0;
 			for (figher_index = 0; figher_index < numchrs; figher_index++)
 			{
-				if (party[pidx[figher_index]].hp == party[pidx[figher_index]].mhp ||
-					party[pidx[figher_index]].IsStone() ||
-					party[pidx[figher_index]].IsDead())
+				if (party[pidx[figher_index]].hp == party[pidx[figher_index]].mhp || party[pidx[figher_index]].IsStone() || party[pidx[figher_index]].IsDead())
 				{
 					affected_targets++;
 				}
