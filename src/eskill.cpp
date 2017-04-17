@@ -143,11 +143,11 @@ void combat_skill(size_t fighter_index)
 					Magic.non_dmg_save(target_fighter_index, 75) == 0)
 				{
 					fighter[target_fighter_index].SetStone(kqrandom->random_range_exclusive(2, 5));
-					ta[target_fighter_index] = NODISPLAY;
+					Combat.AdjustHealth(target_fighter_index, NODISPLAY);
 				}
 				else
 				{
-					ta[target_fighter_index] = MISS;
+					Combat.AdjustHealth(target_fighter_index, MISS);
 					affected_targets++;
 				}
 			}
@@ -186,24 +186,24 @@ void combat_skill(size_t fighter_index)
 						if (fighter[target_fighter_index].GetRemainingTime() == 0)
 						{
 							fighter[target_fighter_index].SetTime(1);
-							ta[target_fighter_index] = NODISPLAY;
+							Combat.AdjustHealth(target_fighter_index, NODISPLAY);
 						}
 						else
 						{
-							ta[target_fighter_index] = MISS;
+							Combat.AdjustHealth(target_fighter_index, MISS);
 							affected_targets++;
 						}
 					}
 				}
 				else
 				{
-					ta[target_fighter_index] = MISS;
+					Combat.AdjustHealth(target_fighter_index, MISS);
 					affected_targets++;
 				}
 			}
 			else
 			{
-				ta[target_fighter_index] = MISS;
+				Combat.AdjustHealth(target_fighter_index, MISS);
 				affected_targets++;
 			}
 		}
@@ -231,11 +231,11 @@ void combat_skill(size_t fighter_index)
 				!fighter[target_fighter_index].IsStone())
 			{
 				fighter[target_fighter_index].SetStopped(kqrandom->random_range_exclusive(2, 4));
-				ta[target_fighter_index] = NODISPLAY;
+				Combat.AdjustHealth(target_fighter_index, NODISPLAY);
 			}
 			else
 			{
-				ta[target_fighter_index] = MISS;
+				Combat.AdjustHealth(target_fighter_index, MISS);
 				affected_targets++;
 			}
 		}
@@ -268,7 +268,7 @@ void combat_skill(size_t fighter_index)
 		tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack] * 8 / 10;
 		Combat.fight(fighter_index, tgt, 1);
 		display_attack_string = 0;
-		if (Magic.non_dmg_save(tgt, 80) == 0 && ta[tgt] != MISS)
+		if (Magic.non_dmg_save(tgt, 80) == 0 && Combat.GetHealthAdjust(tgt) != MISS)
 		{
 			fighter[tgt].SetStopped(2);
 		}
@@ -287,17 +287,17 @@ void combat_skill(size_t fighter_index)
 					!fighter[target_fighter_index].IsStone())
 				{
 					fighter[target_fighter_index].SetCharmed(kqrandom->random_range_exclusive(2, 4));
-					ta[target_fighter_index] = NODISPLAY;
+					Combat.AdjustHealth(target_fighter_index, NODISPLAY);
 				}
 				else
 				{
-					ta[target_fighter_index] = MISS;
+					Combat.AdjustHealth(target_fighter_index, MISS);
 					affected_targets++;
 				}
 			}
 			else
 			{
-				ta[target_fighter_index] = MISS;
+				Combat.AdjustHealth(target_fighter_index, MISS);
 				affected_targets++;
 			}
 		}
@@ -313,22 +313,22 @@ void combat_skill(size_t fighter_index)
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
 			b = fighter[target_fighter_index].hp / 3;
-			ta[target_fighter_index] = 0 - b;
+			Combat.AdjustHealth(target_fighter_index, -b);
 		}
 		Effects.display_amount(0, FONT_WHITE, 1);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
-			Magic.adjust_hp(target_fighter_index, ta[target_fighter_index]);
+			Magic.adjust_hp(target_fighter_index, Combat.GetHealthAdjust(target_fighter_index));
 		}
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
 			b = fighter[target_fighter_index].mp / 3;
-			ta[target_fighter_index] = 0 - b;
+			Combat.AdjustHealth(target_fighter_index, -b);
 		}
 		Effects.display_amount(0, FONT_RED, 1);
 		for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
 		{
-			Magic.adjust_mp(target_fighter_index, ta[target_fighter_index]);
+			Magic.adjust_mp(target_fighter_index, Combat.GetHealthAdjust(target_fighter_index));
 		}
 		fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
 		break;

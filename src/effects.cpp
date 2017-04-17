@@ -71,8 +71,7 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
 		start_fighter_index = target_fighter_index;
 		num_targets = 1;
 	}
-	x_coord_image_in_datafile = -1;
-	y_coord_image_in_datafile = -1;
+	Combat.UnsetDatafileImageCoords();
 	play_effect(24, 128);
 	Combat.battle_render(0, 0, 0);
 	fullblit(double_buffer, back);
@@ -87,7 +86,7 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
 			Draw.convert_cframes(target_fighter_index, 1, 15 - (color_range / 2), target_all_flag);
 			for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_targets; fighter_index++)
 			{
-				if (deffect[fighter_index] == 1)
+				if (Combat.ShowDeathEffectAnimation(fighter_index))
 				{
 					dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2);
 					dy = fighter[fighter_index].cy + (fighter[fighter_index].cl / 2);
@@ -109,9 +108,9 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
 	}
 	for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_targets; fighter_index++)
 	{
-		if (deffect[fighter_index] == 1)
+		if (Combat.ShowDeathEffectAnimation(fighter_index))
 		{
-			deffect[fighter_index] = 0;
+			Combat.SetShowDeathEffectAnimation(fighter_index, false);
 		}
 	}
 	Draw.revert_cframes(target_fighter_index, target_all_flag);
@@ -147,8 +146,7 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
 		start_fighter_index = target_fighter_index;
 		num_fighters = 1;
 	}
-	x_coord_image_in_datafile = -1;
-	y_coord_image_in_datafile = -1;
+	Combat.UnsetDatafileImageCoords();
 	Combat.battle_render(0, 0, 0);
 	fullblit(double_buffer, back);
 
@@ -176,19 +174,19 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
 					{
 						dy = fighter[fighter_index].cy + fighter[fighter_index].cl - 8;
 					}
-					if (ta[fighter_index] == NODISPLAY)
+					if (Combat.GetHealthAdjust(fighter_index) == NODISPLAY)
 					{
 						sprintf(strbuf, "_");
 					}
 					else
 					{
-						sprintf(strbuf, "%d", abs(ta[fighter_index]));
+						sprintf(strbuf, "%d", abs(Combat.GetHealthAdjust(fighter_index)));
 					}
 					string_length = strlen(strbuf) * 3;
 					eFont new_font_color = font_color;
 					if (font_color == FONT_DECIDE)
 					{
-						new_font_color = (ta[fighter_index] > 0 ? FONT_YELLOW : FONT_WHITE);
+						new_font_color = (Combat.GetHealthAdjust(fighter_index) > 0 ? FONT_YELLOW : FONT_WHITE);
 					}
 					Combat.draw_fighter(fighter_index, 0);
 
@@ -201,7 +199,7 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
 						sprite_height = dy - 9 + c;
 					}
 
-					if (ta[fighter_index] == MISS)
+					if (Combat.GetHealthAdjust(fighter_index) == MISS)
 					{
 						draw_sprite(double_buffer, missbmp, dx - 10, sprite_height);
 					}
@@ -253,13 +251,12 @@ void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_targe
 			fighter[fighter_index].aframe = 5;
 		}
 	}
-	x_coord_image_in_datafile = -1;
-	y_coord_image_in_datafile = -1;
+	Combat.UnsetDatafileImageCoords();
 	Combat.battle_render(0, 0, 0);
 	fullblit(double_buffer, back);
 	if (multiple_target == 0)
 	{
-		if (ta[start_fighter_index] == MISS)
+		if (Combat.GetHealthAdjust(start_fighter_index) == MISS)
 		{
 			play_effect(SND_MENU, 128);
 		}
@@ -332,8 +329,7 @@ void KEffects::draw_castersprite(size_t caster_fighter_index, int new_pal_color)
 			}
 		}
 	}
-	x_coord_image_in_datafile = -1;
-	y_coord_image_in_datafile = -1;
+	Combat.UnsetDatafileImageCoords();
 	fighter[caster_fighter_index].aframe = 2;
 	display_attack_string = 1;
 	Combat.battle_render(0, 0, 0);
@@ -376,8 +372,7 @@ void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size
 		start_fighter_index = PSIZE;
 		num_fighters = Combat.GetNumEnemies();
 	}
-	x_coord_image_in_datafile = -1;
-	y_coord_image_in_datafile = -1;
+	Combat.UnsetDatafileImageCoords();
 	display_attack_string = 1;
 	Combat.battle_render(0, 0, 0);
 	display_attack_string = 0;
@@ -442,8 +437,7 @@ void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target
 		start_fighter_index = target_fighter_index;
 		num_fighers = 1;
 	}
-	x_coord_image_in_datafile = -1;
-	y_coord_image_in_datafile = -1;
+	Combat.UnsetDatafileImageCoords();
 	display_attack_string = 1;
 	Combat.battle_render(0, 0, 0);
 	display_attack_string = 0;

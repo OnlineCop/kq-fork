@@ -40,17 +40,24 @@
 
 class Raster;
 
+enum eCombatResult
+{
+	StillFighting,
+	HeroesWon,
+	HeroesEscaped
+};
+
+enum eAttackResult
+{
+	ATTACK_MISS,
+	ATTACK_SUCCESS,
+	ATTACK_CRITICAL
+};
+
 class KCombat
 {
 public:
 	KCombat();
-
-	enum eCombatResult
-	{
-		StillFighting,
-		HeroesWon,
-		HeroesEscaped
-	};
 
 	int combat(int);
 	void battle_render(signed int plyr, size_t hl, int SelectAll);
@@ -69,17 +76,26 @@ public:
 	bool IsVisionSpellActive() const;
 	void SetVisionSpellActive(bool bIsActive);
 
+	int GetRemainingBattleCounter() const;
+	void SetRemainingBattleCounter(int amount);
+
+	eCombatResult GetCombatEndResult() const;
+	void SetCombatEndResult(eCombatResult combatEndResult);
+
+	void UnsetDatafileImageCoords();
+
+	bool GetEtherEffectActive(size_t fighterIndex) const;
+	void SetEtherEffectActive(size_t fighterIndex, bool bIsEtherEffectActive);
+
+	bool ShowDeathEffectAnimation(size_t fighterIndex) const;
+	void SetShowDeathEffectAnimation(size_t fighterIndex, bool bShowDeathEffect);
+
+	uint8_t GetMonsterSurprisesPartyValue() const;
+
 public:
-	eCombatResult combatend;
+	Raster *backart;
 
 protected:
-	enum eAttackResult
-	{
-		ATTACK_MISS,
-		ATTACK_SUCCESS,
-		ATTACK_CRITICAL
-	};
-
 	eAttackResult attack_result(int ar, int dr);
 	int check_end(void);
 	void do_action(size_t);
@@ -92,20 +108,30 @@ protected:
 	void snap_togrid(void);
 
 protected:
-	int cact[NUM_FIGHTERS];
+	eCombatResult combatend;
+	bool bHasEtherEffectActive[NUM_FIGHTERS];
 	int x_coord_image_in_datafile;
 	int y_coord_image_in_datafile;
 	uint32_t num_enemies;
 	int health_adjust[NUM_FIGHTERS];
-	int deffect[NUM_FIGHTERS];
+	bool bShowDeathEffectAnimation[NUM_FIGHTERS];
 	int RemainingBattleCounter;
 	bool bIsVisionActive;
-	uint8_t ms;
-	Raster *backart;
 
 	int nspeed[NUM_FIGHTERS];
 	int bspeed[NUM_FIGHTERS];
-	uint8_t hs;
+	/* The higher this value, the more likely the monsters attack first. The lower this
+	 * is, the better chance player can RUN from battle.
+	 * A value of '1' means the player can run from battle 100% of the time at no penalty.
+	 */
+	uint8_t monsters_surprise_heroes;
+	
+	/* The higher this value, the more likely the players attack first. Does not affect
+	 * the chance to run from a battle.
+	 * A value of '1' essentially means the enemies were expecting them, and will likely
+	 * ambush the party (attack first).
+	 */
+	uint8_t heroes_surprise_monsters;
 };
 
 extern KCombat Combat;

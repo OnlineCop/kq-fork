@@ -444,10 +444,10 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		}
 		else
 		{
-			ta[fighter_index] = tmp;
+			Combat.AdjustHealth(fighter_index, tmp);
 			Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 			Effects.display_amount(fighter_index, FONT_YELLOW, 0);
-			Magic.adjust_hp(fighter_index, ta[fighter_index]);
+			Magic.adjust_hp(fighter_index, Combat.GetHealthAdjust(fighter_index));
 		}
 		break;
 	case I_OSEED:
@@ -467,10 +467,10 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		}
 		else
 		{
-			ta[fighter_index] = tmp;
+			Combat.AdjustHealth(fighter_index, tmp);
 			Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 			Effects.display_amount(fighter_index, FONT_GREEN, 0);
-			Magic.adjust_mp(fighter_index, ta[fighter_index]);
+			Magic.adjust_mp(fighter_index, Combat.GetHealthAdjust(fighter_index));
 		}
 		break;
 	case I_NLEAF:/*104*/
@@ -636,7 +636,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 				}
 				else
 				{
-					ta[fighter_index] = Magic.do_shell_check(fighter_index, tmp);
+					Combat.AdjustHealth(fighter_index, Magic.do_shell_check(fighter_index, tmp));
 				}
 			}
 		}
@@ -646,7 +646,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 			Effects.display_amount(attack_fighter_index, FONT_YELLOW, 1);
 			for (fighter_index = attack_fighter_index; fighter_index < attack_fighter_index + san; fighter_index++)
 			{
-				Magic.adjust_hp(fighter_index, ta[fighter_index]);
+				Magic.adjust_hp(fighter_index, Combat.GetHealthAdjust(fighter_index));
 			}
 		}
 		break;
@@ -672,11 +672,11 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 				}
 				b = Magic.res_adjust(fighter_index, tmp, a);
 				a = Magic.do_shell_check(fighter_index, b);
-				ta[fighter_index] = 0 - a;
+				Combat.AdjustHealth(fighter_index, 0 - a);
 			}
 			else
 			{
-				ta[fighter_index] = 0;
+				Combat.AdjustHealth(fighter_index, 0);
 			}
 		}
 		Effects.draw_spellsprite(start_fighter_index, 1, items[ti].eff, 1);
@@ -689,7 +689,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index,
 		if (fighter[fighter_index].IsAlive() &&
 			!fighter[fighter_index].IsStone())
 		{
-			ta[fighter_index] = items[ti].stats[eStat::Attack];
+			Combat.AdjustHealth(fighter_index, items[ti].stats[eStat::Attack]);
 		}
 		Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
 		return ITEM_EFFECT_SUCCESS_MULTIPLE;

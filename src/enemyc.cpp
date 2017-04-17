@@ -106,7 +106,7 @@ void KEnemy::Attack(size_t target_fighter_index)
 		if (kqrandom->random_range_exclusive(0, 4) == 0)
 		{
 			fighter[target_fighter_index].defend = 1;
-			cact[target_fighter_index] = 0;
+			Combat.SetEtherEffectActive(target_fighter_index, false);
 			return;
 		}
 	}
@@ -128,7 +128,7 @@ void KEnemy::Attack(size_t target_fighter_index)
 	if (b < 0)
 	{
 		fighter[target_fighter_index].defend = 1;
-		cact[target_fighter_index] = 0;
+		Combat.SetEtherEffectActive(target_fighter_index, false);
 		return;
 	}
 	if ((uint32_t)b < PSIZE && numchrs > 1)
@@ -151,7 +151,7 @@ void KEnemy::Attack(size_t target_fighter_index)
 		}
 	}
 	Combat.fight(target_fighter_index, b, 0);
-	cact[target_fighter_index] = 0;
+	Combat.SetEtherEffectActive(target_fighter_index, false);
 }
 
 bool KEnemy::CanCast(size_t target_fighter_index, size_t spell_to_cast)
@@ -186,14 +186,14 @@ void KEnemy::CharmAction(size_t fighter_index)
 {
 	int a;
 
-	if (cact[fighter_index] == 0)
+	if (!Combat.GetEtherEffectActive(fighter_index))
 	{
 		return;
 	}
 	if (fighter[fighter_index].IsDead() ||
 		fighter[fighter_index].hp <= 0)
 	{
-		cact[fighter_index] = 0;
+		Combat.SetEtherEffectActive(fighter_index, false);
 		return;
 	}
 	for (a = 0; a < 5; a++)
@@ -206,7 +206,7 @@ void KEnemy::CharmAction(size_t fighter_index)
 	a = kqrandom->random_range_exclusive(0, 4);
 	if (a == 0)
 	{
-		cact[fighter_index] = 0;
+		Combat.SetEtherEffectActive(fighter_index, false);
 		return;
 	}
 	if (a == 1)
@@ -224,14 +224,14 @@ void KEnemy::ChooseAction(size_t fighter_index)
 	int ap;
 	size_t a;
 
-	if (cact[fighter_index] == 0)
+	if (!Combat.GetEtherEffectActive(fighter_index))
 	{
 		return;
 	}
 	if (fighter[fighter_index].IsDead() ||
 		fighter[fighter_index].hp <= 0)
 	{
-		cact[fighter_index] = 0;
+		Combat.SetEtherEffectActive(fighter_index, false);
 		return;
 	}
 
@@ -248,7 +248,7 @@ void KEnemy::ChooseAction(size_t fighter_index)
 		kqrandom->random_range_exclusive(0, 100) < 50 && !fighter[fighter_index].IsMute())
 	{
 		CureCheck(fighter_index);
-		if (cact[fighter_index] == 0)
+		if (!Combat.GetEtherEffectActive(fighter_index))
 		{
 			return;
 		}
@@ -263,7 +263,7 @@ void KEnemy::ChooseAction(size_t fighter_index)
 				fighter[fighter_index].ai[a] <= 253)
 			{
 				SkillCheck(fighter_index, a);
-				if (cact[fighter_index] == 0)
+				if (!Combat.GetEtherEffectActive(fighter_index))
 				{
 					return;
 				}
@@ -277,7 +277,7 @@ void KEnemy::ChooseAction(size_t fighter_index)
 				!fighter[fighter_index].IsMute())
 			{
 				SpellCheck(fighter_index, a);
-				if (cact[fighter_index] == 0)
+				if (!Combat.GetEtherEffectActive(fighter_index))
 				{
 					return;
 				}
@@ -289,7 +289,7 @@ void KEnemy::ChooseAction(size_t fighter_index)
 		}
 	}
 	Attack(fighter_index);
-	cact[fighter_index] = 0;
+	Combat.SetEtherEffectActive(fighter_index, false);
 }
 
 void KEnemy::CureCheck(int w)
@@ -322,7 +322,7 @@ void KEnemy::CureCheck(int w)
 		fighter[w].csmem = a;
 		fighter[w].ctmem = w;
 		Magic.combat_spell(w, 0);
-		cact[w] = 0;
+		Combat.SetEtherEffectActive(w, false);
 	}
 }
 
@@ -379,7 +379,7 @@ void KEnemy::SkillCheck(int w, int ws)
 		if (SkillSetup(w, ws) == 1)
 		{
 			combat_skill(w);
-			cact[w] = 0;
+			Combat.SetEtherEffectActive(w, false);
 		}
 	}
 }
@@ -556,7 +556,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
 	if (SpellSetup(attack_fighter_index, cs) == 1)
 	{
 		Magic.combat_spell(attack_fighter_index, 0);
-		cact[attack_fighter_index] = 0;
+		Combat.SetEtherEffectActive(attack_fighter_index, false);
 	}
 }
 

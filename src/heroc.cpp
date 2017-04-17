@@ -93,32 +93,32 @@ void auto_herochooseact(int who)
 {
 	int eact;
 
-	if (cact[who] == 0)
+	if (!Combat.GetEtherEffectActive(who))
 	{
 		return;
 	}
 	if (fighter[who].IsDead() || fighter[who].hp <= 0)
 	{
-		cact[who] = 0;
+		Combat.SetEtherEffectActive(who, false);
 		return;
 	}
 	fighter[who].facing = 0;
 	eact = kqrandom->random_range_exclusive(0, 4);
 	if (eact == 0)
 	{
-		cact[who] = 0;
+		Combat.SetEtherEffectActive(who, false);
 		return;
 	}
 	if (eact == 1)
 	{
 		fighter[who].ctmem = 0;
 		hero_attack(who);
-		cact[who] = 0;
+		Combat.SetEtherEffectActive(who, false);
 		return;
 	}
 	fighter[who].ctmem = auto_select_hero(who, 0);
 	hero_attack(who);
-	cact[who] = 0;
+	Combat.SetEtherEffectActive(who, false);
 }
 
 /*! \brief Count available spells
@@ -352,7 +352,7 @@ static int combat_item(int ss, int t1, int tg)
 	Effects.display_amount(st, FONT_DECIDE, tl);
 	for (a = st; a < st + tt; a++)
 	{
-		Magic.adjust_hp(a, ta[a]);
+		Magic.adjust_hp(a, Combat.GetHealthAdjust(a));
 	}
 	b = 0;
 	for (a = st; a < st + tt; a++)
@@ -364,7 +364,7 @@ static int combat_item(int ss, int t1, int tg)
 		}
 		else
 		{
-			ta[a] = 0;
+			Combat.AdjustHealth(a, 0);
 		}
 	}
 	if (b > 0)
@@ -707,8 +707,7 @@ static int hero_attack(int whom)
 		return 0;
 	}
 	fighter[whom].aframe = 6;
-	x_coord_image_in_datafile = -1;
-	y_coord_image_in_datafile = -1;
+	Combat.UnsetDatafileImageCoords();
 	Combat.battle_render(0, 0, 0);
 	Draw.blit2screen(0, 0);
 	kq_wait(150);
@@ -743,7 +742,7 @@ void hero_choose_action(size_t fighter_index)
 	strcpy(sk_names[6], _("Steal"));
 	strcpy(sk_names[7], _("Sense"));
 
-	if (cact[fighter_index] == 0)
+	if (!Combat.GetEtherEffectActive(fighter_index))
 	{
 		return;
 	}
@@ -884,13 +883,13 @@ void hero_choose_action(size_t fighter_index)
 			if (sptr == 0)
 			{
 				fighter[fighter_index].defend = 1;
-				cact[fighter_index] = 0;
+				Combat.SetEtherEffectActive(fighter_index, false);
 				stop = 1;
 			}
 			if (sptr == 2)
 			{
 				hero_run();
-				cact[fighter_index] = 0;
+				Combat.SetEtherEffectActive(fighter_index, false);
 				stop = 1;
 			}
 			if (sptr == 1)
@@ -900,35 +899,35 @@ void hero_choose_action(size_t fighter_index)
 				case C_ATTACK:
 					if (hero_attack(fighter_index) == 1)
 					{
-						cact[fighter_index] = 0;
+						Combat.SetEtherEffectActive(fighter_index, false);
 						stop = 1;
 					}
 					break;
 				case C_ITEM:
 					if (combat_item_menu(fighter_index) == 1)
 					{
-						cact[fighter_index] = 0;
+						Combat.SetEtherEffectActive(fighter_index, false);
 						stop = 1;
 					}
 					break;
 				case C_INVOKE:
 					if (hero_invoke(fighter_index) == 1)
 					{
-						cact[fighter_index] = 0;
+						Combat.SetEtherEffectActive(fighter_index, false);
 						stop = 1;
 					}
 					break;
 				case C_SPELL:
 					if (combat_spell_menu(fighter_index) == 1)
 					{
-						cact[fighter_index] = 0;
+						Combat.SetEtherEffectActive(fighter_index, false);
 						stop = 1;
 					}
 					break;
 				case C_SKILL:
 					if (skill_use(fighter_index) == 1)
 					{
-						cact[fighter_index] = 0;
+						Combat.SetEtherEffectActive(fighter_index, false);
 						stop = 1;
 					}
 					break;
@@ -1176,7 +1175,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 		unsigned int random_fighter_index = kqrandom->random_range_exclusive(1, 4);
 		strcpy(attack_string, _("Magic Missiles"));
 		display_attack_string = 1;
-		ta[defender_fighter_index] = 0;
+		Combat.AdjustHealth(defender_fighter_index, 0);
 		for (unsigned fighter_index = 0; fighter_index < random_fighter_index; fighter_index++)
 		{
 			if (fighter[defender_fighter_index].IsAlive())
@@ -1197,68 +1196,75 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
  */
 static void hero_run(void)
 {
-	int a, b = 0, c = 0, bt = 0, ct = 0, fr, fx, fy, g;
-	int gold_dropped = 0;
-	size_t fighter_index;
+	int num_living_party_members = 0, num_living_enemies = 0;
+	int party_average_speed = 0, enemy_average_speed = 0;
 
-	// TT: slow_computer additions for speed-ups
-	int count;
-
-	if (ms == 1)
-	{
-		a = 125;
-	}
-	else
-	{
-		a = 74;
-	}
-	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+	for (size_t fighter_index = 0; fighter_index < numchrs; fighter_index++)
 	{
 		if (fighter[fighter_index].IsAlive())
 		{
-			b++;
-			bt += fighter[fighter_index].stats[eStat::Speed];
+			num_living_party_members++;
+			party_average_speed += fighter[fighter_index].stats[eStat::Speed];
 		}
 	}
-	if (b == 0)
+	if (num_living_party_members == 0)
 	{
 		Game.program_death(_("Fatal error: How can a dead party run?"));
 	}
 	else
 	{
-		bt = bt / b;
+		party_average_speed = party_average_speed / num_living_party_members;
 	}
-	for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
+	for (size_t fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
 	{
 		if (fighter[fighter_index].IsAlive())
 		{
-			c++;
-			ct += fighter[fighter_index].stats[eStat::Speed];
+			num_living_enemies++;
+			enemy_average_speed += fighter[fighter_index].stats[eStat::Speed];
 		}
 	}
-	if (c == 0)
+	if (num_living_enemies == 0)
 	{
 		Game.program_death(_("Fatal error: Why are the heroes running from dead enemies?"));
 	}
 	else
 	{
-		ct = ct / c;
+		enemy_average_speed = enemy_average_speed / num_living_enemies;
 	}
-	if (bt > ct)
+
+	int chance_of_escape;
+	if (Combat.GetMonsterSurprisesPartyValue() == 1)
 	{
-		a += 25;
+		// Basically, if players were expecting the monster attack, guarantee that they can run,
+		// even if combined party speeds < combined monster speeds.
+		chance_of_escape = 125;
 	}
-	if (bt < ct)
+	else
 	{
-		a -= 25;
+		// 75% chance that players can run.
+		chance_of_escape = 74;
 	}
-	if (kqrandom->random_range_exclusive(0, 100) < a)
+
+	if (party_average_speed > enemy_average_speed)
 	{
-		if (kqrandom->random_range_exclusive(0, 100) < (100 - a))
+		// Combined party speeds > combined monster speeds, so 99% chance players can run.
+		chance_of_escape += 25;
+	}
+	if (party_average_speed < enemy_average_speed)
+	{
+		// Combined monster speeds > combined party speeds, so chance to run drops to 50%
+		// (unless, of course, they were already at 125%; they can still run at 100%).
+		chance_of_escape -= 25;
+	}
+
+	int gold_dropped = 0;
+	if (kqrandom->random_range_exclusive(0, 100) < chance_of_escape)
+	{
+		if (kqrandom->random_range_exclusive(0, 100) < (100 - chance_of_escape))
 		{
 			// Player will drop some amount of gold, but not more than they have.
 			// Amount is determined on the 1st enemy's level * num_remaining_enemeies.
-			gold_dropped = b * fighter[PSIZE].lvl * c;
+			gold_dropped = num_living_party_members * fighter[PSIZE].lvl * num_living_enemies;
 			if (Game.GetGold() < gold_dropped)
 			{
 				// 'gold_dropped' is used later, so update the amount actually dropped.
@@ -1286,35 +1292,26 @@ static void hero_run(void)
 	}
 
 	static const int FontWidth = 8;
-	g = strlen(strbuf) * (FontWidth / 2);
+	int text_center = strlen(strbuf) * (FontWidth / 2);
 
 	/* TT: slow_computer addition for speed-ups */
-	if (slow_computer)
-	{
-		count = 4;
-	}
-	else
-	{
-		count = 20;
-	}
+	int time_to_show_running_animation = (slow_computer ? 4 : 20);
 
-	// TODO: Figure out why we have this outer loop.
-	for (c = 0; c < 5; c++)
+	// TODO: Figure out why we have this outer loop as 'c' is never used.
+	for (size_t c = 0; c < 5; c++)
 	{
-		for (a = 0; a < count; a++)
+		for (int running_animation_count = 0; running_animation_count < time_to_show_running_animation; running_animation_count++)
 		{
 			clear_bitmap(double_buffer);
-			Draw.menubox(double_buffer, 152 - g, 32, strlen(strbuf), 1, BLUE);
-			Draw.print_font(double_buffer, 160 - g, 40, strbuf, FNORMAL);
-			for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+			Draw.menubox(double_buffer, 152 - text_center, 32, strlen(strbuf), 1, BLUE);
+			Draw.print_font(double_buffer, 160 - text_center, 40, strbuf, FNORMAL);
+			for (size_t fighter_index = 0; fighter_index < numchrs; fighter_index++)
 			{
-				fx = fighter[fighter_index].cx;
-				fy = fighter[fighter_index].cy;
-				fr = (a > count / 2) ? 1 : 0;
+				size_t animation_frame = (running_animation_count > time_to_show_running_animation / 2) ? 1 : 0;
 
 				if (fighter[fighter_index].IsAlive())
 				{
-					draw_sprite(double_buffer, frames[pidx[fighter_index]][fr], fx, fy);
+					draw_sprite(double_buffer, frames[pidx[fighter_index]][animation_frame], fighter[fighter_index].cx, fighter[fighter_index].cy);
 				}
 			}
 			Draw.blit2screen(0, 0);
@@ -1322,5 +1319,5 @@ static void hero_run(void)
 		}
 	}
 	kmenu.revert_equipstats();
-	combatend = KCombat::eCombatResult::HeroesEscaped;
+	Combat.SetCombatEndResult(eCombatResult::HeroesEscaped);
 }

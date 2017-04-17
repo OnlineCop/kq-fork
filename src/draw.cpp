@@ -1274,9 +1274,10 @@ void KDraw::print_font(Raster *where, int sx, int sy, const string& msg, eFontCo
 	{
 		hgt = 12;//MagicNumber: font height for BIG text
 	}
+	string chopped_message(msg);
 	while (1)
 	{
-		string msg2 = decode_utf8(msg.c_str(), &cc);
+		chopped_message = decode_utf8(chopped_message.c_str(), &cc);
 		if (cc == 0)
 		{
 			break;

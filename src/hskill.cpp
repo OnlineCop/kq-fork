@@ -523,8 +523,8 @@ int skill_use(size_t attack_fighter_index)
 		}
 		enemy_index = (unsigned int)tgt;
 		temp = std::unique_ptr<Raster>(new Raster(320, 240));
-		blit(backart, temp.get(), 0, 0, 0, 0, 320, 240);
-		Draw.color_scale(temp.get(), backart, 16, 31);
+		blit(Combat.backart, temp.get(), 0, 0, 0, 0, 320, 240);
+		Draw.color_scale(temp.get(), Combat.backart, 16, 31);
 		b = fighter[attack_fighter_index].mhp / 20;
 		strcpy(attack_string, _("Rage"));
 		display_attack_string = 1;
@@ -554,9 +554,9 @@ int skill_use(size_t attack_fighter_index)
 		}
 
 		fighter[attack_fighter_index].hp -= (b * 2);
-		ta[attack_fighter_index] = (b * 2);
+		Combat.AdjustHealth(attack_fighter_index, b * 2);
 		display_attack_string = 0;
-		blit(temp.get(), backart, 0, 0, 0, 0, 320, 240);
+		blit(temp.get(), Combat.backart, 0, 0, 0, 0, 320, 240);
 		Effects.display_amount(attack_fighter_index, FONT_DECIDE, 0);
 		if (fighter[attack_fighter_index].IsAlive() && fighter[attack_fighter_index].hp <= 0)
 		{
@@ -571,8 +571,7 @@ int skill_use(size_t attack_fighter_index)
 		display_attack_string = 1;
 		tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack] * 75 / 100;
 		fighter[attack_fighter_index].aframe = 6;
-		x_coord_image_in_datafile = -1;
-		y_coord_image_in_datafile = -1;
+		Combat.UnsetDatafileImageCoords();
 		Combat.battle_render(0, 0, 0);
 		Draw.blit2screen(0, 0);
 		kq_wait(150);
@@ -589,8 +588,7 @@ int skill_use(size_t attack_fighter_index)
 			Effects.draw_castersprite(
 				attack_fighter_index,
 				eff[magic[fighter[attack_fighter_index].csmem].eff].kolor);
-			x_coord_image_in_datafile = -1;
-			y_coord_image_in_datafile = -1;
+			Combat.UnsetDatafileImageCoords();
 			play_effect(22, 128);
 			Draw.convert_cframes(
 				attack_fighter_index,
@@ -634,7 +632,7 @@ int skill_use(size_t attack_fighter_index)
 				c = 1;
 			}
 			fighter[attack_fighter_index].mp -= c;
-			cact[attack_fighter_index] = 0;
+			Combat.SetEtherEffectActive(attack_fighter_index, false);
 			fighter[attack_fighter_index].aux = 1;
 		}
 		else
@@ -695,15 +693,14 @@ int skill_use(size_t attack_fighter_index)
 						if (b >= fighter[fighter_index].hp)
 						{
 							b -= fighter[fighter_index].hp;
-							deffect[fighter_index] = 1;
+							Combat.SetShowDeathEffectAnimation(fighter_index, true);
 							Combat.fkill(fighter_index);
 						}
 					}
 				}
 			}
 			Effects.death_animation(PSIZE, 1);
-			x_coord_image_in_datafile = -1;
-			y_coord_image_in_datafile = -1;
+			Combat.UnsetDatafileImageCoords();
 			Combat.battle_render(attack_fighter_index, attack_fighter_index, 0);
 		}
 		else
@@ -733,8 +730,8 @@ int skill_use(size_t attack_fighter_index)
 			{
 				if (!fighter[fighter_index].IsStone() && fighter[fighter_index].IsAlive())
 				{
-					ta[fighter_index] = b;
-					ta[fighter_index] = Magic.do_shell_check(fighter_index, ta[fighter_index]);
+					int amount = Magic.do_shell_check(fighter_index, b);
+					Combat.AdjustHealth(fighter_index, amount);
 				}
 			}
 			Effects.display_amount(0, FONT_YELLOW, 1);
@@ -742,7 +739,7 @@ int skill_use(size_t attack_fighter_index)
 			{
 				if (!fighter[fighter_index].IsStone() && fighter[fighter_index].IsAlive())
 				{
-					Magic.adjust_hp(fighter_index, ta[fighter_index]);
+					Magic.adjust_hp(fighter_index, Combat.GetHealthAdjust(fighter_index));
 				}
 			}
 		}
@@ -754,11 +751,10 @@ int skill_use(size_t attack_fighter_index)
 		fighter[attack_fighter_index].stats[eStat::Aura] = fighter[attack_fighter_index].stats[eStat::Aura] * 15 / 10;
 		fighter[attack_fighter_index].stats[eStat::Spirit] = fighter[attack_fighter_index].stats[eStat::Spirit] * 15 / 10;
 		fighter[attack_fighter_index].atrack[2] = fighter[attack_fighter_index].mrp;
-		fighter[attack_fighter_index].mrp =
-			fighter[attack_fighter_index].mrp * 15 / 10;
+		fighter[attack_fighter_index].mrp = fighter[attack_fighter_index].mrp * 15 / 10;
 		if (combat_spell_menu(attack_fighter_index) == 1)
 		{
-			cact[attack_fighter_index] = 0;
+			Combat.SetEtherEffectActive(attack_fighter_index, false);
 			fighter[attack_fighter_index].aux = 1;
 			fighter[attack_fighter_index].stats[eStat::Aura] = fighter[attack_fighter_index].atrack[0];
 			fighter[attack_fighter_index].stats[eStat::Spirit] = fighter[attack_fighter_index].atrack[1];

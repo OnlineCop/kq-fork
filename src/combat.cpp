@@ -78,7 +78,7 @@ KCombat::KCombat()
  *          ATTACK_SUCCESS if attack was successful,
  *          ATTACK_CRITICAL if attack was a critical hit.
  */
-KCombat::eAttackResult KCombat::attack_result(int ar, int dr)
+eAttackResult KCombat::attack_result(int ar, int dr)
 {
 	int c;
 	int check_for_critical_hit;
@@ -323,8 +323,7 @@ void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
 	}
 	else
 	{
-		x_coord_image_in_datafile = -1;
-		y_coord_image_in_datafile = -1;
+		UnsetDatafileImageCoords();
 	}
 
 	clear_bitmap(double_buffer);
@@ -606,7 +605,7 @@ void KCombat::do_action(size_t fighter_index)
 	{
 		if (kqrandom->random_range_exclusive(0, 100) < spell_type_status * 5)
 		{
-			cact[fighter_index] = 0;
+			SetEtherEffectActive(fighter_index, false);
 		}
 	}
 
@@ -626,7 +625,7 @@ void KCombat::do_action(size_t fighter_index)
 		}
 	}
 
-	if (cact[fighter_index] != 0)
+	if (GetEtherEffectActive(fighter_index))
 	{
 		Draw.revert_cframes(fighter_index, 0);
 		if (fighter_index < PSIZE)
@@ -642,7 +641,7 @@ void KCombat::do_action(size_t fighter_index)
 		}
 	}
 
-	cact[fighter_index] = 0;
+	SetEtherEffectActive(fighter_index, false);
 	if (check_end() == 1)
 	{
 		combatend = eCombatResult::HeroesWon;
@@ -666,27 +665,27 @@ int KCombat::do_combat(char *bg, char *mus, int is_rnd)
 	{
 		if ((numchrs == 1) && (pidx[0] == AYLA))
 		{
-			hs = kqrandom->random_range_exclusive(1, 101);
-			ms = kqrandom->random_range_exclusive(1, 4);
+			heroes_surprise_monsters = kqrandom->random_range_exclusive(1, 101);
+			monsters_surprise_heroes = kqrandom->random_range_exclusive(1, 4);
 		}
 		else
 		{
 			if (numchrs > 1 && (Game.in_party(AYLA) < MAXCHRS))
 			{
-				hs = kqrandom->random_range_exclusive(1, 21);
-				ms = kqrandom->random_range_exclusive(1, 6);
+				heroes_surprise_monsters = kqrandom->random_range_exclusive(1, 21);
+				monsters_surprise_heroes = kqrandom->random_range_exclusive(1, 6);
 			}
 			else
 			{
-				hs = kqrandom->random_range_exclusive(1, 11);
-				ms = kqrandom->random_range_exclusive(1, 11);
+				heroes_surprise_monsters = kqrandom->random_range_exclusive(1, 11);
+				monsters_surprise_heroes = kqrandom->random_range_exclusive(1, 11);
 			}
 		}
 	}
 	else
 	{
-		hs = 10;
-		ms = 10;
+		heroes_surprise_monsters = 10;
+		monsters_surprise_heroes = 10;
 	}
 
 	/*  RB: do the zoom at the beginning of the combat.  */
@@ -718,7 +717,7 @@ int KCombat::do_combat(char *bg, char *mus, int is_rnd)
 	x_coord_image_in_datafile = 0;
 	y_coord_image_in_datafile = 0;
 	SetVisionSpellActive(false);
-	combatend = KCombat::eCombatResult::StillFighting;
+	combatend = eCombatResult::StillFighting;
 
 	/*  RB: execute combat  */
 	do_round();
@@ -750,7 +749,7 @@ void KCombat::do_round(void)
 	size_t fighter_index;
 
 	timer_count = 0;
-	while (combatend == KCombat::eCombatResult::StillFighting)
+	while (combatend == eCombatResult::StillFighting)
 	{
 		if (timer_count >= 10)
 		{
@@ -802,7 +801,7 @@ void KCombat::do_round(void)
 					}
 
 					/*  RB: the character has ether active?  */
-					cact[fighter_index] = 1;
+					SetEtherEffectActive(fighter_index, true);
 					if ((fighter[fighter_index].IsEther()) && (RemainingBattleCounter == 0))
 					{
 						fighter[fighter_index].AddEther(-1);
@@ -821,7 +820,7 @@ void KCombat::do_round(void)
 							fighter[fighter_index].AddStopped(-1);
 						}
 
-						cact[fighter_index] = 0;
+						SetEtherEffectActive(fighter_index, false);
 					}
 
 					/*  RB: the character is sleeping?  */
@@ -837,7 +836,7 @@ void KCombat::do_round(void)
 							fighter[fighter_index].AddSleep(-1);
 						}
 
-						cact[fighter_index] = 0;
+						SetEtherEffectActive(fighter_index, false);
 					}
 
 					/*  RB: the character is petrified?  */
@@ -853,7 +852,7 @@ void KCombat::do_round(void)
 							fighter[fighter_index].AddStone(-1);
 						}
 
-						cact[fighter_index] = 0;
+						SetEtherEffectActive(fighter_index, false);
 					}
 
 					if (fighter[fighter_index].IsDead() ||
@@ -865,10 +864,10 @@ void KCombat::do_round(void)
 						}
 
 						bspeed[fighter_index] = 0;
-						cact[fighter_index] = 0;
+						SetEtherEffectActive(fighter_index, false);
 					}
 
-					if (cact[fighter_index] > 0)
+					if (GetEtherEffectActive(fighter_index))
 					{
 						if (!fighter[fighter_index].IsTime())
 						{
@@ -889,7 +888,7 @@ void KCombat::do_round(void)
 				}
 				else
 				{
-					cact[fighter_index] = 0;
+					SetEtherEffectActive(fighter_index, false);
 				}
 			}
 
@@ -900,16 +899,16 @@ void KCombat::do_round(void)
 			for (fighter_index = 0; fighter_index < (PSIZE + num_enemies);
 				fighter_index++)
 			{
-				if ((bspeed[fighter_index] >= ROUND_MAX) && (cact[fighter_index] > 0))
+				if ((bspeed[fighter_index] >= ROUND_MAX) && GetEtherEffectActive(fighter_index))
 				{
 					do_action(fighter_index);
 					fighter[fighter_index].ctmem = 0;
 					fighter[fighter_index].csmem = 0;
-					cact[fighter_index] = 1;
+					SetEtherEffectActive(fighter_index, true);
 					bspeed[fighter_index] = 0;
 				}
 
-				if (combatend != KCombat::StillFighting)
+				if (combatend != eCombatResult::StillFighting)
 				{
 					return;
 				}
@@ -1065,7 +1064,7 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
 
 	for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
 	{
-		deffect[fighter_index] = 0;
+		SetShowDeathEffectAnimation(fighter_index, false);
 		health_adjust[fighter_index] = 0;
 	}
 
@@ -1240,8 +1239,8 @@ void KCombat::fkill(size_t fighter_index)
 		fighter[fighter_index].defeat_item_common = 0;
 	}
 
-	deffect[fighter_index] = 1;
-	cact[fighter_index] = 0;
+	SetShowDeathEffectAnimation(fighter_index, true);
+	SetEtherEffectActive(fighter_index, false);
 }
 
 void KCombat::AdjustHealth(size_t fighterIndex, int amount)
@@ -1287,6 +1286,71 @@ bool KCombat::IsVisionSpellActive() const
 void KCombat::SetVisionSpellActive(bool bIsActive)
 {
 	bIsVisionActive = bIsActive;
+}
+
+int KCombat::GetRemainingBattleCounter() const
+{
+	return RemainingBattleCounter;
+}
+
+void KCombat::SetRemainingBattleCounter(int amount)
+{
+	RemainingBattleCounter = amount;
+}
+
+eCombatResult KCombat::GetCombatEndResult() const
+{
+	return combatend;
+}
+
+void KCombat::SetCombatEndResult(eCombatResult combatEndResult)
+{
+	combatend = combatEndResult;
+}
+
+void KCombat::UnsetDatafileImageCoords()
+{
+	x_coord_image_in_datafile = -1;
+	y_coord_image_in_datafile = -1;
+}
+
+bool KCombat::GetEtherEffectActive(size_t fighterIndex) const
+{
+	if (fighterIndex < NUM_FIGHTERS)
+	{
+		return bHasEtherEffectActive[fighterIndex];
+	}
+	return false;
+}
+
+void KCombat::SetEtherEffectActive(size_t fighterIndex, bool bIsEtherEffectActive)
+{
+	if (fighterIndex < NUM_FIGHTERS)
+	{
+		bHasEtherEffectActive[fighterIndex] = bIsEtherEffectActive;
+	}
+}
+
+bool KCombat::ShowDeathEffectAnimation(size_t fighterIndex) const
+{
+	if (fighterIndex < NUM_FIGHTERS)
+	{
+		return bShowDeathEffectAnimation[fighterIndex];
+	}
+	return false;
+}
+
+void KCombat::SetShowDeathEffectAnimation(size_t fighterIndex, bool bShowDeathEffect)
+{
+	if (fighterIndex < NUM_FIGHTERS)
+	{
+		bShowDeathEffectAnimation[fighterIndex] = bShowDeathEffect;
+	}
+}
+
+uint8_t KCombat::GetMonsterSurprisesPartyValue() const
+{
+	return monsters_surprise_heroes;
 }
 
 /*! \brief Player defeated the enemies
@@ -1485,7 +1549,7 @@ void KCombat::init_fighters(void)
 
 	for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
 	{
-		deffect[fighter_index] = 0;
+		SetShowDeathEffectAnimation(fighter_index, false);
 		fighter[fighter_index].mhp = 0;
 		fighter[fighter_index].aux = 0;
 		/* .defend was not initialized; patch supplied by Sam H */
@@ -1527,7 +1591,7 @@ void KCombat::multi_fight(size_t attack_fighter_index)
 
 	for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
 	{
-		deffect[fighter_index] = 0;
+		SetShowDeathEffectAnimation(fighter_index, false);
 		health_adjust[fighter_index] = 0;
 		killed_warrior[fighter_index] = 0;
 	}
@@ -1655,17 +1719,17 @@ void KCombat::roll_initiative(void)
 {
 	size_t fighter_index, j;
 
-	if (hs == 1 && ms == 1)
+	if (heroes_surprise_monsters == 1 && monsters_surprise_heroes == 1)
 	{
-		hs = 10;
-		ms = 10;
+		heroes_surprise_monsters = 10;
+		monsters_surprise_heroes = 10;
 	}
 
 	for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
 	{
 		fighter[fighter_index].csmem = 0;
 		fighter[fighter_index].ctmem = 0;
-		cact[fighter_index] = 1;
+		SetEtherEffectActive(fighter_index, true);
 		j = ROUND_MAX * 66 / 100;
 		if (j < 1)
 		{
@@ -1677,11 +1741,11 @@ void KCombat::roll_initiative(void)
 
 	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 	{
-		if (ms == 1)
+		if (monsters_surprise_heroes == 1)
 		{
 			bspeed[fighter_index] = ROUND_MAX;
 		}
-		else if (hs == 1)
+		else if (heroes_surprise_monsters == 1)
 		{
 			bspeed[fighter_index] = 0;
 		}
@@ -1689,11 +1753,11 @@ void KCombat::roll_initiative(void)
 
 	for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 	{
-		if (hs == 1)
+		if (heroes_surprise_monsters == 1)
 		{
 			bspeed[fighter_index] = ROUND_MAX;
 		}
-		else if (ms == 1)
+		else if (monsters_surprise_heroes == 1)
 		{
 			bspeed[fighter_index] = 0;
 		}
@@ -1719,12 +1783,12 @@ void KCombat::roll_initiative(void)
 
 	Combat.battle_render(-1, -1, 0);
 	Draw.blit2screen(0, 0);
-	if ((hs == 1) && (ms > 1))
+	if ((heroes_surprise_monsters == 1) && (monsters_surprise_heroes > 1))
 	{
 		Draw.message(_("You have been ambushed!"), 255, 1500, 0, 0);
 	}
 
-	if ((hs > 1) && (ms == 1))
+	if ((heroes_surprise_monsters > 1) && (monsters_surprise_heroes == 1))
 	{
 		Draw.message(_("You've surprised the enemy!"), 255, 1500, 0, 0);
 	}
@@ -1740,18 +1804,18 @@ void KCombat::roll_initiative(void)
 void KCombat::snap_togrid(void)
 {
 	size_t fighter_index;
-	int hf = 0;
-	int mf = 1;
+	int hf = 0; /* Heroes facing up, away from screen and toward monsters. */
+	int mf = 1; /* Monsters facing down, toward the screen and toward players. */
 	int a;
 
-	if (hs == 1)
+	if (heroes_surprise_monsters == 1)
 	{
-		hf = 1;
+		hf = 1; /* Heroes facing down, toward the screen and away from monsters. */
 	}
 
-	if (ms == 1)
+	if (monsters_surprise_heroes == 1)
 	{
-		mf = 0;
+		mf = 0; /* Monsters don't actually face away from the screen (not enough sprites) but probably should... */
 	}
 
 	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
@@ -1759,8 +1823,7 @@ void KCombat::snap_togrid(void)
 		fighter[fighter_index].facing = hf;
 	}
 
-	for (fighter_index = PSIZE; fighter_index < (PSIZE + num_enemies);
-		fighter_index++)
+	for (fighter_index = PSIZE; fighter_index < (PSIZE + num_enemies); fighter_index++)
 	{
 		fighter[fighter_index].facing = mf;
 	}
