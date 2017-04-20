@@ -21,11 +21,18 @@
 
 #pragma once
 
+#include <memory>
+#include <vector>
+using std::vector;
+
 class KFighter;
 
 class KEnemy
 {
 public:
+	KEnemy();
+	~KEnemy();
+
 	/*! \brief Enemy initialization
 	 *
 	 * This is the main enemy initialization routine.  This function sets up
@@ -140,11 +147,11 @@ private:
 	 * Fills out a supplied KFighter structure with the default, starting values for an enemy.
 	 * 
 	 * \param   who The numeric id of the enemy to make
-	 * \param   en Pointer to an KFighter instance to initialize
-	 * \returns the value of en, for convenience, or NULL if an error occurred.
+	 * \param   NewEnemyFighter Pointer to a KFighter instance to initialize
+	 * \returns the value of NewEnemyFighter, or NULL if an error occurred.
 	 * \sa make_enemy_by_name()
 	 */
-	KFighter *MakeEnemyFighter(int who, KFighter *en);
+	KFighter* MakeEnemyFighter(size_t who, KFighter *NewEnemyFighter);
 
 	/*! \brief Set up skill targets
 	 *
@@ -183,9 +190,12 @@ private:
 
 protected:
 	/*! \brief Array of enemy 'fighters'  */
-	KFighter **m_enemy_fighters = NULL;
-	int m_num_enemies = 0;
-	int m_enemy_array_capacity = 0;
+	KFighter **m_enemy_fighters;
+	size_t m_num_enemies;
+	size_t m_enemy_array_capacity;
+
+	/*! C++ version of enemy fighter array */
+	vector<KFighter*> m_EnemyFighters;
 
 	/*! Index related to enemies in an encounter */
 	int cf[NUM_FIGHTERS];

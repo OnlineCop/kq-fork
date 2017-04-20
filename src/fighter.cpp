@@ -7,9 +7,291 @@ KFighter::KFighter()
 
 }
 
+KFighter::KFighter(const KFighter & inFighter)
+{
+}
+
+/** C++11 move constructor */
+KFighter::KFighter(KFighter &&inFighter)
+{
+	name = inFighter.name;
+	xp = inFighter.xp;
+	gp = inFighter.gp;
+	lvl = inFighter.lvl;
+	cx = inFighter.cx;
+	cy = inFighter.cy;
+	cw = inFighter.cw;
+	cl = inFighter.cl;
+	hp = inFighter.hp;
+	mhp = inFighter.mhp;
+	mp = inFighter.mp;
+	mmp = inFighter.mmp;
+	dip = inFighter.dip;
+	defeat_item_common = inFighter.defeat_item_common;
+	defeat_item_rare = inFighter.defeat_item_rare;
+	steal_item_common = inFighter.steal_item_common;
+	steal_item_rare = inFighter.steal_item_rare;
+	for (size_t i = 0; i < eStat::NUM_STATS; i++)
+	{
+		stats[i] = inFighter.stats[i];
+	}
+	for (size_t i = 0; i < NUM_RES; i++)
+	{
+		res[i] = inFighter.res[i];
+	}
+	facing = inFighter.facing;
+	aframe = inFighter.aframe;
+	crit = inFighter.crit;
+	defend = inFighter.defend;
+	for (size_t i = 0; i < 8; i++)
+	{
+		ai[i] = inFighter.ai[i];
+	}
+	for (size_t i = 0; i < 8; i++)
+	{
+		aip[i] = inFighter.aip[i];
+	}
+	for (size_t i = 0; i < 8; i++)
+	{
+		atrack[i] = inFighter.atrack[i];
+	}
+	csmem = inFighter.csmem;
+	ctmem = inFighter.ctmem;
+	current_weapon_type = inFighter.current_weapon_type;
+	welem = inFighter.welem;
+	unl = inFighter.unl;
+	aux = inFighter.aux;
+	bonus = inFighter.bonus;
+	bstat = inFighter.bstat;
+	mrp = inFighter.mrp;
+	imb_s = inFighter.imb_s;
+	imb_a = inFighter.imb_a;
+	for (size_t i = 0; i < 2; i++)
+	{
+		imb[i] = inFighter.imb[i];
+	}
+	Raster *img = inFighter.img;
+	for (size_t i = 0; i < NUM_SPELL_TYPES; i++)
+	{
+		sts[i] = inFighter.sts[i];
+	}
+
+	EmptyOtherFighter(inFighter);
+}
+
+KFighter& KFighter::operator=(const KFighter& inFighter)
+{
+	if (this != &inFighter)
+	{
+		name = inFighter.name;
+		xp = inFighter.xp;
+		gp = inFighter.gp;
+		lvl = inFighter.lvl;
+		cx = inFighter.cx;
+		cy = inFighter.cy;
+		cw = inFighter.cw;
+		cl = inFighter.cl;
+		hp = inFighter.hp;
+		mhp = inFighter.mhp;
+		mp = inFighter.mp;
+		mmp = inFighter.mmp;
+		dip = inFighter.dip;
+		defeat_item_common = inFighter.defeat_item_common;
+		defeat_item_rare = inFighter.defeat_item_rare;
+		steal_item_common = inFighter.steal_item_common;
+		steal_item_rare = inFighter.steal_item_rare;
+		for (size_t i = 0; i < eStat::NUM_STATS; i++)
+		{
+			stats[i] = inFighter.stats[i];
+		}
+		for (size_t i = 0; i < NUM_RES; i++)
+		{
+			res[i] = inFighter.res[i];
+		}
+		facing = inFighter.facing;
+		aframe = inFighter.aframe;
+		crit = inFighter.crit;
+		defend = inFighter.defend;
+		for (size_t i = 0; i < 8; i++)
+		{
+			ai[i] = inFighter.ai[i];
+		}
+		for (size_t i = 0; i < 8; i++)
+		{
+			aip[i] = inFighter.aip[i];
+		}
+		for (size_t i = 0; i < 8; i++)
+		{
+			atrack[i] = inFighter.atrack[i];
+		}
+		csmem = inFighter.csmem;
+		ctmem = inFighter.ctmem;
+		current_weapon_type = inFighter.current_weapon_type;
+		welem = inFighter.welem;
+		unl = inFighter.unl;
+		aux = inFighter.aux;
+		bonus = inFighter.bonus;
+		bstat = inFighter.bstat;
+		mrp = inFighter.mrp;
+		imb_s = inFighter.imb_s;
+		imb_a = inFighter.imb_a;
+		for (size_t i = 0; i < 2; i++)
+		{
+			imb[i] = inFighter.imb[i];
+		}
+		Raster *img = inFighter.img;
+		for (size_t i = 0; i < NUM_SPELL_TYPES; i++)
+		{
+			sts[i] = inFighter.sts[i];
+		}
+	}
+	return *this;
+}
+
+/** C++11 move assignment operator */
+KFighter& KFighter::operator=(KFighter&& inFighter)
+{
+	if (this != &inFighter)
+	{
+		name = inFighter.name;
+		xp = inFighter.xp;
+		gp = inFighter.gp;
+		lvl = inFighter.lvl;
+		cx = inFighter.cx;
+		cy = inFighter.cy;
+		cw = inFighter.cw;
+		cl = inFighter.cl;
+		hp = inFighter.hp;
+		mhp = inFighter.mhp;
+		mp = inFighter.mp;
+		mmp = inFighter.mmp;
+		dip = inFighter.dip;
+		defeat_item_common = inFighter.defeat_item_common;
+		defeat_item_rare = inFighter.defeat_item_rare;
+		steal_item_common = inFighter.steal_item_common;
+		steal_item_rare = inFighter.steal_item_rare;
+		for (size_t i = 0; i < eStat::NUM_STATS; i++)
+		{
+			stats[i] = inFighter.stats[i];
+		}
+		for (size_t i = 0; i < NUM_RES; i++)
+		{
+			res[i] = inFighter.res[i];
+		}
+		facing = inFighter.facing;
+		aframe = inFighter.aframe;
+		crit = inFighter.crit;
+		defend = inFighter.defend;
+		for (size_t i = 0; i < 8; i++)
+		{
+			ai[i] = inFighter.ai[i];
+		}
+		for (size_t i = 0; i < 8; i++)
+		{
+			aip[i] = inFighter.aip[i];
+		}
+		for (size_t i = 0; i < 8; i++)
+		{
+			atrack[i] = inFighter.atrack[i];
+		}
+		csmem = inFighter.csmem;
+		ctmem = inFighter.ctmem;
+		current_weapon_type = inFighter.current_weapon_type;
+		welem = inFighter.welem;
+		unl = inFighter.unl;
+		aux = inFighter.aux;
+		bonus = inFighter.bonus;
+		bstat = inFighter.bstat;
+		mrp = inFighter.mrp;
+		imb_s = inFighter.imb_s;
+		imb_a = inFighter.imb_a;
+		for (size_t i = 0; i < 2; i++)
+		{
+			imb[i] = inFighter.imb[i];
+		}
+		Raster *img = inFighter.img;
+		for (size_t i = 0; i < NUM_SPELL_TYPES; i++)
+		{
+			sts[i] = inFighter.sts[i];
+		}
+
+		EmptyOtherFighter(inFighter);
+	}
+	return *this;
+}
+
 KFighter::KFighter(const KPlayer &inPlayer)
 {
+	// Not implemented yet
+}
 
+KFighter::~KFighter()
+{
+	// Not implemented yet
+}
+
+void KFighter::EmptyOtherFighter(KFighter& outFighter)
+{
+	outFighter.name = string();
+	outFighter.xp = 0;
+	outFighter.gp = 0;
+	outFighter.lvl = 0;
+	outFighter.cx = 0;
+	outFighter.cy = 0;
+	outFighter.cw = 0;
+	outFighter.cl = 0;
+	outFighter.hp = 0;
+	outFighter.mhp = 0;
+	outFighter.mp = 0;
+	outFighter.mmp = 0;
+	outFighter.dip = 0;
+	outFighter.defeat_item_common = 0;
+	outFighter.defeat_item_rare = 0;
+	outFighter.steal_item_common = 0;
+	outFighter.steal_item_rare = 0;
+	for (size_t i = 0; i < eStat::NUM_STATS; i++)
+	{
+		outFighter.stats[i] = 0;
+	}
+	for (size_t i = 0; i < NUM_RES; i++)
+	{
+		outFighter.res[i] = 0;
+	}
+	outFighter.facing = 0;
+	outFighter.aframe = 0;
+	outFighter.crit = 0;
+	outFighter.defend = 0;
+	for (size_t i = 0; i < 8; i++)
+	{
+		outFighter.ai[i] = 0;
+	}
+	for (size_t i = 0; i < 8; i++)
+	{
+		outFighter.aip[i] = 0;
+	}
+	for (size_t i = 0; i < 8; i++)
+	{
+		outFighter.atrack[i] = 0;
+	}
+	outFighter.csmem = 0;
+	outFighter.ctmem = 0;
+	outFighter.current_weapon_type = 0;
+	outFighter.welem = 0;
+	outFighter.unl = 0;
+	outFighter.aux = 0;
+	outFighter.bonus = 0;
+	outFighter.bstat = 0;
+	outFighter.mrp = 0;
+	outFighter.imb_s = 0;
+	outFighter.imb_a = 0;
+	for (size_t i = 0; i < 2; i++)
+	{
+		outFighter.imb[i] = 0;
+	}
+	for (size_t i = 0; i < NUM_SPELL_TYPES; i++)
+	{
+		outFighter.sts[i] = 0;
+	}
 }
 
 bool KFighter::IsPoisoned() const

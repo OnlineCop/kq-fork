@@ -329,9 +329,9 @@ void KEnemy::CureCheck(int w)
 void KEnemy::Init(void)
 {
 	size_t fighter_index, frame_index;
-	KFighter *f;
+	KFighter* f;
 
-	if (m_enemy_fighters == NULL)
+	if (m_EnemyFighters.size() == 0)
 	{
 		LoadEnemies();
 	}
@@ -604,7 +604,7 @@ int KEnemy::StatsCheck(eSpellType whichSpellType, int s)
 void KEnemy::dump_en()
 {
 	std::unique_ptr<KFighter[]> tmp(new KFighter[m_num_enemies]);
-	for (int i = 0; i < m_num_enemies; ++i)
+	for (size_t i = 0; i < m_num_enemies; ++i)
 	{
 		tmp[i] = *m_enemy_fighters[i];
 	}
@@ -613,16 +613,16 @@ void KEnemy::dump_en()
 
 void KEnemy::LoadEnemies(void)
 {
+	if (m_EnemyFighters.size() > 0)
+	{
+		/* Already done the loading */
+		return;
+	}
+
 	Raster *enemy_gfx = get_cached_image("enemy.png");
 	if (!enemy_gfx)
 	{
 		Game.program_death(_("Could not load enemy sprites!"));
-	}
-
-	if (m_enemy_fighters != NULL)
-	{
-		/* Already done the loading */
-		return;
 	}
 
 	LoadEnemies(kqres(DATA_DIR, "allstat.mon"), enemy_gfx);
@@ -633,11 +633,6 @@ void KEnemy::LoadEnemies(void)
 void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
 {
 	int tmp, imagefile_x_coord, imagefile_y_coord;
-	KFighter *fighter_loaded_from_disk;
-
-	m_num_enemies = 0;
-	m_enemy_array_capacity = 128;
-	m_enemy_fighters = (KFighter **)malloc(sizeof(KFighter *) * m_enemy_array_capacity);
 
 	std::ifstream infile(fullPath.c_str());
 	if (infile.fail())
@@ -650,17 +645,12 @@ void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
 	while (std::getline(infile, line))
 	{
 		std::istringstream iss(line);
+		KFighter* fighter_loaded_from_disk = new KFighter();
 
-		if (m_num_enemies >= m_enemy_array_capacity)
-		{
-			m_enemy_array_capacity *= 2;
-			m_enemy_fighters = (KFighter **)realloc(m_enemy_fighters, sizeof(KFighter *) * m_enemy_array_capacity);
-		}
-		fighter_loaded_from_disk = (KFighter *)malloc(sizeof(KFighter));
-		m_enemy_fighters[m_num_enemies++] = fighter_loaded_from_disk;
+		m_EnemyFighters.push_back(fighter_loaded_from_disk);
 
-		memset(fighter_loaded_from_disk, 0, sizeof(KFighter));
 		// Enemy name
+		iss >> strbuf;
 		fighter_loaded_from_disk->name = strbuf;
 
 		// Index number (ignored; automatically generated)
@@ -704,10 +694,14 @@ void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
 		iss >> fighter_loaded_from_disk->stats[eStat::Intellect];
 		fighter_loaded_from_disk->stats[eStat::Sagacity] = fighter_loaded_from_disk->stats[eStat::Intellect];
 		// Defense against: Speed, Spirit, Attack, Hit, Defense, Evade, Magic (in that order)
-		for (size_t i = 5; i < 13; i++)
-		{
-			iss >> fighter_loaded_from_disk->stats[i];
-		}
+		iss >> fighter_loaded_from_disk->stats[eStat::Speed];
+		iss >> fighter_loaded_from_disk->stats[eStat::Aura];
+		iss >> fighter_loaded_from_disk->stats[eStat::Spirit];
+		iss >> fighter_loaded_from_disk->stats[eStat::Attack];
+		iss >> fighter_loaded_from_disk->stats[eStat::Hit];
+		iss >> fighter_loaded_from_disk->stats[eStat::Defense];
+		iss >> fighter_loaded_from_disk->stats[eStat::Evade];
+		iss >> fighter_loaded_from_disk->stats[eStat::MagicDefense];
 		// Bonus
 		iss >> fighter_loaded_from_disk->bonus;
 		fighter_loaded_from_disk->bstat = 0;
@@ -723,6 +717,7 @@ void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
 		iss >> fighter_loaded_from_disk->imb_s;
 		// Imbued stat type (Spd, Spi, Att, Hit, Def, Evd, Mag)
 		iss >> fighter_loaded_from_disk->imb_a;
+
 		fighter_loaded_from_disk->img = new Raster(fighter_loaded_from_disk->cw, fighter_loaded_from_disk->cl);
 		enemy_gfx->blitTo(fighter_loaded_from_disk->img, imagefile_x_coord, imagefile_y_coord, 0, 0, fighter_loaded_from_disk->cw, fighter_loaded_from_disk->cl);
 		for (size_t i = 0; i < 2; i++)
@@ -744,7 +739,7 @@ void KEnemy::LoadEnemyStats(const string &fullFilename)
 
 	size_t current_enemy = 0;
 	string line;
-	while (std::getline(infile, line) && current_enemy < (size_t)m_num_enemies)
+	while (std::getline(infile, line) && current_enemy < m_num_enemies)
 	{
 		KFighter* fighter_loaded_from_disk = m_enemy_fighters[current_enemy];
 		std::istringstream iss(line);
@@ -796,18 +791,29 @@ void KEnemy::LoadEnemyStats(const string &fullFilename)
 	}
 }
 
-KFighter *KEnemy::MakeEnemyFighter(int who, KFighter *en)
+KFighter* KEnemy::MakeEnemyFighter(size_t who, KFighter *NewEnemyFighter)
 {
-	if (m_enemy_fighters && who >= 0 && who < m_num_enemies)
+	if (m_enemy_fighters && who < m_num_enemies)
 	{
-		memcpy(en, m_enemy_fighters[who], sizeof(KFighter));
-		return en;
+		memcpy(NewEnemyFighter, m_enemy_fighters[who], sizeof(KFighter));
+		return NewEnemyFighter;
 	}
 	else
 	{
 		/* PH probably should call program_death() here? */
 		return NULL;
 	}
+}
+
+KEnemy::KEnemy()
+	: m_enemy_fighters(nullptr)
+	, m_num_enemies(0)
+	, m_enemy_array_capacity(0)
+{
+}
+
+KEnemy::~KEnemy()
+{
 }
 
 int KEnemy::SelectEncounter(uint8_t encounterTableRow, uint8_t etid)
@@ -1000,11 +1006,9 @@ int KEnemy::SpellSetup(int whom, int z)
 
 void KEnemy::UnloadEnemies(void)
 {
-	int i;
-
 	if (m_enemy_fighters != NULL)
 	{
-		for (i = 0; i < m_num_enemies; ++i)
+		for (size_t i = 0; i < m_num_enemies; ++i)
 		{
 			delete (m_enemy_fighters[i]->img);
 			free(m_enemy_fighters[i]);

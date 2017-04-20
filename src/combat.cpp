@@ -1717,7 +1717,7 @@ void KCombat::multi_fight(size_t attack_fighter_index)
  */
 void KCombat::roll_initiative(void)
 {
-	size_t fighter_index, j;
+	size_t j;
 
 	if (heroes_surprise_monsters == 1 && monsters_surprise_heroes == 1)
 	{
@@ -1725,7 +1725,7 @@ void KCombat::roll_initiative(void)
 		monsters_surprise_heroes = 10;
 	}
 
-	for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
+	for (size_t fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
 	{
 		fighter[fighter_index].csmem = 0;
 		fighter[fighter_index].ctmem = 0;
@@ -1739,7 +1739,7 @@ void KCombat::roll_initiative(void)
 		bspeed[fighter_index] = kqrandom->random_range_exclusive(0, j);
 	}
 
-	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+	for (size_t fighter_index = 0; fighter_index < numchrs; fighter_index++)
 	{
 		if (monsters_surprise_heroes == 1)
 		{
@@ -1751,7 +1751,7 @@ void KCombat::roll_initiative(void)
 		}
 	}
 
-	for (fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
+	for (size_t fighter_index = PSIZE; fighter_index < PSIZE + num_enemies; fighter_index++)
 	{
 		if (heroes_surprise_monsters == 1)
 		{
@@ -1766,7 +1766,7 @@ void KCombat::roll_initiative(void)
 	RemainingBattleCounter = 0;
 
 	/* PH: This should be ok */
-	for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
+	for (size_t fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
 	{
 		if (fighter_index < numchrs ||
 			(fighter_index >= PSIZE && fighter_index < (PSIZE + num_enemies)))

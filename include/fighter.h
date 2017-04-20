@@ -15,6 +15,16 @@ class KFighter
 	friend class KDisk;
 public:
 	KFighter();
+	KFighter(const KFighter& inFighter); // Copy constructor
+	KFighter(KFighter &&inFighter); // C++11 move constructor
+
+	KFighter& operator=(const KFighter& inFighter); // Assignment operator
+	KFighter& operator=(KFighter&& inFighter); // C++11 move assignment
+	~KFighter();
+
+	void EmptyOtherFighter(KFighter& outFighter);
+
+	// Fighter constructor converted from a player instance
 	KFighter(const KPlayer &inPlayer);
 
 	// S_POISON
@@ -121,62 +131,80 @@ public:
 
 	uint8_t GetStatValueBySpellType(eSpellType spellType);
 
-	string name;            /*!<\brief Name */
-	int xp;                 /*!<\brief eXperience Points */
-	int gp;                 /*!<\brief Gold Points */
-	int lvl;                /*!<\brief LeVeL */
-	int cx;                 /*!<\brief x-coord of image in datafile */
-	int cy;                 /*!<\brief y-coord of image in datafile */
-	int cw;                 /*!<\brief width in datafile */
-	int cl;                 /*!<\brief height in datafile */
-	int hp;                 /*!<\brief Hit Points */
-	int mhp;                /*!<\brief Max Hit Points */
-	int mp;                 /*!<\brief Magic Points */
-	int mmp;                /*!<\brief Max Magic Points */
-	int dip;                /*!<\brief Defeat Item Probability
-							 * Probability in % that the enemy will yield an item when defeated.
-							 */
-	int defeat_item_common; /*!<\brief Defeat Item Common
-							 * If the enemy yields an item, you will get this item
-							 * 95% of the time.
-							 */
-	int defeat_item_rare;   /*!<\brief Defeat Item Rare
-							 * If the enemy yields an item, you will get this item
-							 * 5% of the time.
-							 */
-	int steal_item_common;  /*!<\brief Steal Item Common
-							 * If Ayla steals something, she will get this item 95%
-							 * of the time.
-							 */
-	int steal_item_rare;    /*!<\brief Steal Item Rare
-							 * If Ayla steals something, she will get this item 5% of
-							 * the time.
-							 */
-	int stats[eStat::NUM_STATS];   /*!<\brief See A_* constants in enums.h */
-	char res[NUM_RES];      /*!<\brief eResistance: See R_* constants */
-	uint8_t facing;         /*!<\brief Direction character's sprite faces */
-	uint8_t aframe; /*!<\brief Battle sprite to display (standing, casting,
-					   attacking) */
+	/*! \brief Name */
+	string name;
+	/*! \brief eXperience Points */
+	int xp;
+	/*! \brief Gold Points */
+	int gp;
+	/*! \brief LeVeL */
+	int lvl;
+	/*! \brief x-coord of image in datafile */
+	int cx;
+	/*! \brief y-coord of image in datafile */
+	int cy;
+	/*! \brief width in datafile */
+	int cw;
+	/*! \brief height in datafile */
+	int cl;
+	/*! \brief Hit Points */
+	int hp;
+	/*! \brief Max Hit Points */
+	int mhp;
+	/*! \brief Magic Points */
+	int mp;
+	/*! \brief Max Magic Points */
+	int mmp;
+	/*! \brief Defeat Item Probability
+	 * Probability in % that the enemy will yield an item when defeated.
+	 */
+	int dip;
+	/*! \brief Defeat Item Common
+	 * If the enemy yields an item, you will get this item 95% of the time.
+	 */
+	int defeat_item_common;
+	/*! \brief Defeat Item Rare
+	 * If the enemy yields an item, you will get this item 5% of the time.
+	 */
+	int defeat_item_rare;
+	/*! \brief Steal Item Common
+	 * If Ayla steals something, she will get this item 95% of the time.
+	 */
+	int steal_item_common;
+	/*! \brief Steal Item Rare
+	 * If Ayla steals something, she will get this item 5% of the time.
+	 */
+	int steal_item_rare;
+	/*! \brief See A_* constants in enums.h */
+	int stats[eStat::NUM_STATS];
+	/*! \brief eResistance: See R_* constants */
+	char res[NUM_RES];
+	/*! \brief Direction character's sprite faces */
+	uint8_t facing;
+	/*! \brief Battle sprite to display (standing, casting, attacking) */
+	uint8_t aframe;
 	uint8_t crit;
 	uint8_t defend;
 	uint8_t ai[8];
 	uint8_t aip[8];
 	uint8_t atrack[8];
-	uint32_t csmem; /*!<\brief Spell number, associated with M_* spells, used
-					   within s_spell magic[] array. */
-	int ctmem; /*!<\brief Spell target: who is going to be affected by the spell;
-				  can be set to -1 */
-	uint32_t current_weapon_type; /*!<\brief Current Weapon Type
-									   * The shape of the currently held weapon
-								   * (sword, dagger, axe etc) \sa hero_init()
-									   */
-	int welem; /*!<\brief eResistance: Which Element type (sick, fire, water,
-				  etc.) */
-	int unl;   /*!<\brief UNLiving (undead), like zombies, skeletons, etc. */
+	/*! \brief Spell number, associated with M_* spells, used within s_spell magic[] array. */
+	uint32_t csmem;
+	/*! \brief Spell target: who is going to be affected by the spell; can be set to -1 */
+	int ctmem;
+	/*! \brief Current Weapon Type
+	 * The shape of the currently held weapon (sword, dagger, axe etc) \sa hero_init()
+	 */
+	uint32_t current_weapon_type;
+	/*! \brief eResistance: Which Element type (sick, fire, water, etc.) */
+	int welem;
+	/*! \brief UNLiving (undead), like zombies, skeletons, etc. */
+	int unl;
 	int aux;
 	int bonus;
 	int bstat;
-	int mrp;      /*!< Magic use rate (0-100) */
+	/*! \brief Magic use rate (0-100) */
+	int mrp;
 	int imb_s;
 	int imb_a;
 	int imb[2];

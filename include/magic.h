@@ -113,7 +113,7 @@ public:
 	void adjust_mp(size_t, int);
 	int do_shell_check(int, int);
 	int do_shield_check(int, int);
-	KFighter status_adjust(size_t);
+	KFighter status_adjust(size_t fighterIndex);
 
 private:
 	void beffect_all_enemies(size_t, size_t);

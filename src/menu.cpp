@@ -880,7 +880,7 @@ void player2fighter(int who, KFighter *pf)
 		}
 		for (int b = 0; b < R_TOTAL_RES; b++)
 		{
-			current_fighter.res[b] += items[a].res[b];
+			current_fighter.res[b] += items[a].item_resistance[b];
 		}
 	}
 	if (who == CORIN)

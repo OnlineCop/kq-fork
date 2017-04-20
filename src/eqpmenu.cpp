@@ -781,7 +781,7 @@ static void optimize_equip(int c)
 		}
 		for (z = 0; z < R_TOTAL_RES; z++)
 		{
-			v += items[b].res[z];
+			v += items[b].item_resistance[z];
 		}
 		if (v > maxx)
 		{
