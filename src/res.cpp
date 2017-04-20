@@ -125,6 +125,15 @@ PALETTE pal = {
  * 6: `use`: Usage mode. See USE_* constants in kq.h.
  * 7: `ilvl`: What level this item is.
  * 8: `hnds`: Used to index into the ::magic[] array.
+ * 9: `bst`:
+ * 10: `elem`: For runes, what element will it affect (see rs parameter of res_adjust() ).
+ * 11: `imb`: What spell is cast when you "use" this item in combat.
+ * 12: `eff`:
+ * 13: `bon`:
+ * 14: `price`: Default price of this item.
+ * 15: `eq[8]`: Who can equip this item (see ePIDX enum in heroc.h).
+ * 16: `stats[13]`: Stat bonuses for equipping this item. See eStat enum.
+ * 17: `res[16]`: Resistances. See eResistance enum.
  */
 s_item items[NUM_ITEMS] = {
   { "", 0, 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } },

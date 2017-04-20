@@ -67,9 +67,9 @@ struct s_item
   uint8_t eff;  /*!< Effect ?? */
   int bon;      /*!< Bonus ?? */
   int price;    /*!< Default price of this item, in gp */
-  uint8_t eq[8]; /*!< Who can equip this item. See heroc.h */
-  int stats[13]; /*!< Stat bonuses for equipping this item See A_ constants in kq.h */
-  char res[16];  /*!< Resistances. See R_ constants in kq.h */
+  uint8_t eq[MAXCHRS]; /*!< Who can equip this item. See ePIDX enum in heroc.h. */
+  int stats[NUM_STATS]; /*!< Stat bonuses for equipping this item. See eStat enum. */
+  char res[R_TOTAL_RES];  /*!< Resistances. See eResistance enum. */
 };
 
 /*! \brief A spell */
