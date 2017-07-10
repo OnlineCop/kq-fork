@@ -118,7 +118,7 @@ void Raster::fill(uint8_t color)
 	fill(0, 0, width, height, color);
 }
 
-void ellipsefill(Raster *r, int x, int y, int rx, int ry, int color)
+void ellipsefill_slow(Raster *r, int x, int y, int rx, int ry, int color)
 {
 	for (int i = 0; i < rx; ++i)
 	{
@@ -131,6 +131,43 @@ void ellipsefill(Raster *r, int x, int y, int rx, int ry, int color)
 				r->setpixel(x - i, y + j, color);
 				r->setpixel(x - i, y - j, color);
 			}
+		}
+	}
+}
+
+// See https://stackoverflow.com/questions/10322341/simple-algorithm-for-drawing-filled-ellipse-in-c-c
+void ellipsefill_fast(Raster *r, int center_x, int center_y, int radius_x, int radius_y, int color)
+{
+	int hh = radius_y * radius_y;
+	int ww = radius_x * radius_x;
+	int hhww = hh * ww;
+	int x0 = radius_x;
+	int dx = 0;
+
+	// Do the horizontal diameter across the middle.
+	for (int x = -radius_x; x <= radius_x; x++)
+	{
+		r->setpixel(center_x + x, center_y, color);
+	}
+
+	// Now do both halves at the same time, away from the diameter
+	for (int y = 1; y <= radius_y; y++)
+	{
+		int x1 = x0 - (dx - 1); // Try slopes of dx - 1 or more
+		for (; x1 > 0; x1--)
+		{
+			if (x1 * x1 * hh + y * y * ww <= hhww)
+			{
+				break;
+			}
+		}
+		dx = x0 - x1; // Current approximation of the slope
+		x0 = x1;
+
+		for (int x = -x0; x <= x0; x++)
+		{
+			r->setpixel(radius_x + x, radius_y + y, color);
+			r->setpixel(radius_x + x, radius_y - y, color);
 		}
 	}
 }

@@ -966,7 +966,7 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
 			Raster *shad = new Raster(cframes[fighter_index][ff]->width * 2 / 3, cframes[fighter_index][ff]->height / 4);
 
 			clear_bitmap(shad);
-			ellipsefill(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2, makecol(128, 128, 128));
+			ellipsefill_fast(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2, makecol(128, 128, 128));
 			draw_trans_sprite(double_buffer, shad, xx + (shad->width / 3) - 2, yy + cframes[fighter_index][ff]->height - shad->height / 2);
 			delete shad;
 		}
@@ -976,7 +976,7 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
 			Raster *shad = new Raster(cframes[fighter_index][ff]->width, cframes[fighter_index][ff]->height / 4);
 
 			clear_bitmap(shad);
-			ellipsefill(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2, makecol(128, 128, 128));
+			ellipsefill_fast(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2, makecol(128, 128, 128));
 			draw_trans_sprite(double_buffer, shad, xx, yy + cframes[fighter_index][ff]->height - shad->height / 2);
 			delete (shad);
 		}
