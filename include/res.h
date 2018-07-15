@@ -23,6 +23,10 @@
 
 #include <allegro.h>
 #include <stdint.h>
+
+#include "enums.h"
+#include "heroc.h"
+
 /*! \file
  * \brief Definitions of resource types
  * \author JB
