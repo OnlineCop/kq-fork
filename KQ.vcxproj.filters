@@ -41,6 +41,9 @@
       <UniqueIdentifier>{8ef03e14-6bad-44f2-8451-98d9f82d3e1c}</UniqueIdentifier>
       <Extensions>png</Extensions>
     </Filter>
+    <Filter Include="Resource Files\Data">
+      <UniqueIdentifier>{6a5e5434-9971-4226-b760-2152096f2f49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\anim_sequence.cpp">
@@ -317,6 +320,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\allstat.mon">
+      <Filter>Resource Files\Data</Filter>
+    </None>
+    <None Include="data\resabil.mon">
+      <Filter>Resource Files\Data</Filter>
+    </None>
     <None Include="scripts\bridge.lua">
       <Filter>Resource Files\Lua Files</Filter>
     </None>

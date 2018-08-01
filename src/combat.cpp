@@ -648,14 +648,14 @@ void KCombat::do_action(size_t fighter_index)
 	}
 }
 
-/*! \brief Really do combat once fighters have been inited
+/*! \brief Really do combat once fighters have been initialized.
  *
  * \param   bg Background image
  * \param   mus Music
  * \param   is_rnd If !=0 then this is a random combat
  * \returns 1 if battle occurred
  */
-int KCombat::do_combat(char *bg, char *mus, int is_rnd)
+int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
 {
 	int zoom_step;
 
@@ -1055,7 +1055,6 @@ void KCombat::enemies_win(void)
  */
 int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 {
-	int a;
 	int tx = -1;
 	int ty = -1;
 	uint32_t f;
@@ -1078,24 +1077,27 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
 
 	tempd = Magic.status_adjust(defend_fighter_index);
 	ares = attack_result(attack_fighter_index, defend_fighter_index);
-	fighter[defend_fighter_index].SetPoisoned(tempd.IsPoisoned());
-	fighter[defend_fighter_index].SetBlind(tempd.IsBlind());
-	fighter[defend_fighter_index].SetCharmed(tempd.IsCharmed());
-	fighter[defend_fighter_index].SetStopped(tempd.IsStopped());
-	fighter[defend_fighter_index].SetStone(tempd.IsStone());
-	fighter[defend_fighter_index].SetMute(tempd.IsMute());
-	fighter[defend_fighter_index].SetSleep(tempd.IsAsleep());
-	fighter[defend_fighter_index].SetDead(tempd.IsDead());
-	fighter[defend_fighter_index].SetMalison(tempd.IsMalison());
-	fighter[defend_fighter_index].SetResist(tempd.IsResist());
-	fighter[defend_fighter_index].SetTime(tempd.IsTime());
-	fighter[defend_fighter_index].SetShield(tempd.IsShield());
-	fighter[defend_fighter_index].SetBless(tempd.IsBless());
-	fighter[defend_fighter_index].SetStrength(tempd.IsStrength());
-	fighter[defend_fighter_index].SetEther(tempd.IsEther());
-	fighter[defend_fighter_index].SetTrueshot(tempd.IsTrueshot());
-	fighter[defend_fighter_index].SetRegen(tempd.IsRegen());
-	fighter[defend_fighter_index].SetInfuse(tempd.IsInfuse());
+
+	auto& defender = fighter[defend_fighter_index];
+
+	defender.SetPoisoned(tempd.IsPoisoned());
+	defender.SetBlind(tempd.IsBlind());
+	defender.SetCharmed(tempd.IsCharmed());
+	defender.SetStopped(tempd.IsStopped());
+	defender.SetStone(tempd.IsStone());
+	defender.SetMute(tempd.IsMute());
+	defender.SetSleep(tempd.IsAsleep());
+	defender.SetDead(tempd.IsDead());
+	defender.SetMalison(tempd.IsMalison());
+	defender.SetResist(tempd.IsResist());
+	defender.SetTime(tempd.IsTime());
+	defender.SetShield(tempd.IsShield());
+	defender.SetBless(tempd.IsBless());
+	defender.SetStrength(tempd.IsStrength());
+	defender.SetEther(tempd.IsEther());
+	defender.SetTrueshot(tempd.IsTrueshot());
+	defender.SetRegen(tempd.IsRegen());
+	defender.SetInfuse(tempd.IsInfuse());
 
 	/*  RB TODO: rest(20) or vsync() before the blit?  */
 	if (ares == eAttackResult::ATTACK_CRITICAL)
@@ -1111,15 +1113,14 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
 		}
 	}
 
-	if ((pidx[defend_fighter_index] == TEMMIN) &&
-		(fighter[defend_fighter_index].aux == 2))
+	if ((pidx[defend_fighter_index] == TEMMIN) && (defender.aux == 2))
 	{
-		fighter[defend_fighter_index].aux = 1;
-		a = 1 - defend_fighter_index;
-		tx = fighter[defend_fighter_index].cx;
-		ty = fighter[defend_fighter_index].cy;
-		fighter[defend_fighter_index].cx = fighter[a].cx;
-		fighter[defend_fighter_index].cy = fighter[a].cy - 16;
+		defender.aux = 1;
+		int a = 1 - defend_fighter_index;
+		tx = defender.cx;
+		ty = defender.cy;
+		defender.cx = fighter[a].cx;
+		defender.cy = fighter[a].cy - 16;
 	}
 
 	if (attack_fighter_index < PSIZE)
@@ -1141,10 +1142,10 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
 		fighter[attack_fighter_index].cy -= 10;
 	}
 
-	if ((tx != -1) && (ty != -1))
+	if (tx != -1 && ty != -1)
 	{
-		fighter[defend_fighter_index].cx = tx;
-		fighter[defend_fighter_index].cy = ty;
+		defender.cx = tx;
+		defender.cy = ty;
 	}
 
 	if (health_adjust[defend_fighter_index] != MISS)
@@ -1155,7 +1156,7 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
 	Effects.display_amount(defend_fighter_index, FONT_DECIDE, 0);
 	if (health_adjust[defend_fighter_index] != MISS)
 	{
-		fighter[defend_fighter_index].hp += health_adjust[defend_fighter_index];
+		defender.hp += health_adjust[defend_fighter_index];
 		if ((fighter[attack_fighter_index].imb_s > 0) && (kqrandom->random_range_exclusive(0, 5) == 0))
 		{
 			Magic.cast_imbued_spell(
@@ -1163,27 +1164,25 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
 				fighter[attack_fighter_index].imb_a, defend_fighter_index);
 		}
 
-		if ((fighter[defend_fighter_index].hp <= 0) &&
-			(fighter[defend_fighter_index].IsAlive()))
+		if (defender.hp <= 0 && defender.IsAlive())
 		{
 			fkill(defend_fighter_index);
 			Effects.death_animation(defend_fighter_index, 0);
 		}
 
-		if (fighter[defend_fighter_index].hp > fighter[defend_fighter_index].mhp)
+		if (defender.hp > defender.mhp)
 		{
-			fighter[defend_fighter_index].hp = fighter[defend_fighter_index].mhp;
+			defender.hp = defender.mhp;
 		}
 
-		if (fighter[defend_fighter_index].IsAsleep())
+		if (defender.IsAsleep())
 		{
-			fighter[defend_fighter_index].SetSleep(0);
+			defender.SetSleep(0);
 		}
 
-		if ((fighter[defend_fighter_index].IsCharmed()) &&
-			(attack_fighter_index == defend_fighter_index))
+		if (defender.IsCharmed() && attack_fighter_index == defend_fighter_index)
 		{
-			fighter[defend_fighter_index].SetCharmed(0);
+			defender.SetCharmed(0);
 		}
 
 		return 1;
@@ -1545,9 +1544,7 @@ void KCombat::heroes_win(void)
  */
 void KCombat::init_fighters(void)
 {
-	size_t fighter_index;
-
-	for (fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
+	for (size_t fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
 	{
 		SetShowDeathEffectAnimation(fighter_index, false);
 		fighter[fighter_index].mhp = 0;
@@ -1561,8 +1558,7 @@ void KCombat::init_fighters(void)
 	 */
 	hero_init();
 	Enemy.Init();
-	for (fighter_index = 0; fighter_index < (PSIZE + num_enemies);
-		fighter_index++)
+	for (size_t fighter_index = 0; fighter_index < (PSIZE + num_enemies); fighter_index++)
 	{
 		nspeed[fighter_index] = (fighter[fighter_index].stats[eStat::Speed] + 50) / 5;
 	}

@@ -193,6 +193,8 @@
     <ClInclude Include="include\zone.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\allstat.mon" />
+    <None Include="data\resabil.mon" />
     <None Include="maps\bridge.tmx" />
     <None Include="maps\bridge2.tmx" />
     <None Include="maps\camp.tmx" />

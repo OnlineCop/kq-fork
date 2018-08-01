@@ -21,9 +21,7 @@
 
 #pragma once
 
-#include <memory>
 #include <vector>
-using std::vector;
 
 class KFighter;
 
@@ -31,7 +29,6 @@ class KEnemy
 {
 public:
 	KEnemy();
-	~KEnemy();
 
 	/*! \brief Enemy initialization
 	 *
@@ -57,7 +54,7 @@ public:
 	 * Looks at the cf[] array to see which enemies to do.
 	 *
 	 */
-	void Init(void);
+	void Init();
 
 	/*! \brief Choose action for enemy
 	 *
@@ -147,11 +144,11 @@ private:
 	 * Fills out a supplied KFighter structure with the default, starting values for an enemy.
 	 * 
 	 * \param   who The numeric id of the enemy to make
-	 * \param   NewEnemyFighter Pointer to a KFighter instance to initialize
-	 * \returns the value of NewEnemyFighter, or NULL if an error occurred.
+	 * \param   en Pointer to an KFighter instance to initialize
+	 * \returns the value of en, for convenience, or NULL if an error occurred.
 	 * \sa make_enemy_by_name()
 	 */
-	KFighter* MakeEnemyFighter(size_t who, KFighter *NewEnemyFighter);
+	bool MakeEnemyFighter(size_t who, KFighter& en);
 
 	/*! \brief Set up skill targets
 	 *
@@ -178,24 +175,17 @@ private:
 	 *
 	 * Loads up enemies from the *.mon files and fills the enemies[] array.
 	 */
-	void LoadEnemies(void);
+	void LoadEnemies();
 
 	/*! \brief Unload the data loaded by load_enemies()
 	 *
 	 * JB would have said 'duh' here! Not much explanation required.
 	 */
-	void UnloadEnemies(void);
-
-	void dump_en();
+	void UnloadEnemies();
 
 protected:
 	/*! \brief Array of enemy 'fighters'  */
-	KFighter **m_enemy_fighters;
-	size_t m_num_enemies;
-	size_t m_enemy_array_capacity;
-
-	/*! C++ version of enemy fighter array */
-	vector<KFighter*> m_EnemyFighters;
+	std::vector<KFighter> m_enemy_fighters;
 
 	/*! Index related to enemies in an encounter */
 	int cf[NUM_FIGHTERS];

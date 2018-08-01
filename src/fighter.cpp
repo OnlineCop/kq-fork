@@ -3,236 +3,347 @@
 KFighter Fighter;
 
 KFighter::KFighter()
+	: name{ "" }
+	, xp{ 0 }
+	, gp{ 0 }
+	, lvl{ 0 }
+	, cx{ 0 }
+	, cy{ 0 }
+	, cw{ 0 }
+	, cl{ 0 }
+	, hp{ 0 }
+	, mhp{ 0 }
+	, mp{ 0 }
+	, mmp{ 0 }
+	, dip{ 0 }
+	, defeat_item_common{ 0 }
+	, defeat_item_rare{ 0 }
+	, steal_item_common{ 0 }
+	, steal_item_rare{ 0 }
+	, facing{ 0 }
+	, aframe{ 0 }
+	, crit{ 0 }
+	, defend{ 0 }
+	, csmem{ 0 }
+	, ctmem{ 0 }
+	, current_weapon_type{ 0 }
+	, welem{ 0 }
+	, unl{ 0 }
+	, aux{ 0 }
+	, bonus{ 0 }
+	, bstat{ 0 }
+	, mrp{ 0 }
+	, imb_s{ 0 }
+	, imb_a{ 0 }
 {
-
+	for (int & stat : stats)
+	{
+		stat = 0;
+	}
+	for (char & re : res)
+	{
+		re = 0;
+	}
+	for (unsigned char & i : ai)
+	{
+		i = 0;
+	}
+	for (unsigned char & i : aip)
+	{
+		i = 0;
+	}
+	for (unsigned char & i : atrack)
+	{
+		i = 0;
+	}
+	for (int & i : imb)
+	{
+		i = 0;
+	}
+	for (unsigned char & st : sts)
+	{
+		st = 0;
+	}
+	img.reset();
 }
 
-KFighter::KFighter(const KFighter & inFighter)
+KFighter::KFighter(const KFighter& rhs)
+	: name{ rhs.name }
+	, xp{ rhs.xp }
+	, gp{ rhs.gp }
+	, lvl{ rhs.lvl }
+	, cx{ rhs.cx }
+	, cy{ rhs.cy }
+	, cw{ rhs.cw }
+	, cl{ rhs.cl }
+	, hp{ rhs.hp }
+	, mhp{ rhs.mhp }
+	, mp{ rhs.mp }
+	, mmp{ rhs.mmp }
+	, dip{ rhs.dip }
+	, defeat_item_common{ rhs.defeat_item_common }
+	, defeat_item_rare{ rhs.defeat_item_rare }
+	, steal_item_common{ rhs.steal_item_common }
+	, steal_item_rare{ rhs.steal_item_rare }
+	, facing{ rhs.facing }
+	, aframe{ rhs.aframe }
+	, crit{ rhs.crit }
+	, defend{ rhs.defend }
+	, csmem{ rhs.csmem }
+	, ctmem{ rhs.ctmem }
+	, current_weapon_type{ rhs.current_weapon_type }
+	, welem{ rhs.welem }
+	, unl{ rhs.unl }
+	, aux{ rhs.aux }
+	, bonus{ rhs.bonus }
+	, bstat{ rhs.bstat }
+	, mrp{ rhs.mrp }
+	, imb_s{ rhs.imb_s }
+	, imb_a{ rhs.imb_a }
 {
-}
-
-/** C++11 move constructor */
-KFighter::KFighter(KFighter &&inFighter)
-{
-	name = inFighter.name;
-	xp = inFighter.xp;
-	gp = inFighter.gp;
-	lvl = inFighter.lvl;
-	cx = inFighter.cx;
-	cy = inFighter.cy;
-	cw = inFighter.cw;
-	cl = inFighter.cl;
-	hp = inFighter.hp;
-	mhp = inFighter.mhp;
-	mp = inFighter.mp;
-	mmp = inFighter.mmp;
-	dip = inFighter.dip;
-	defeat_item_common = inFighter.defeat_item_common;
-	defeat_item_rare = inFighter.defeat_item_rare;
-	steal_item_common = inFighter.steal_item_common;
-	steal_item_rare = inFighter.steal_item_rare;
 	for (size_t i = 0; i < eStat::NUM_STATS; i++)
 	{
-		stats[i] = inFighter.stats[i];
+		stats[i] = rhs.stats[i];
 	}
 	for (size_t i = 0; i < NUM_RES; i++)
 	{
-		res[i] = inFighter.res[i];
-	}
-	facing = inFighter.facing;
-	aframe = inFighter.aframe;
-	crit = inFighter.crit;
-	defend = inFighter.defend;
-	for (size_t i = 0; i < 8; i++)
-	{
-		ai[i] = inFighter.ai[i];
+		res[i] = rhs.res[i];
 	}
 	for (size_t i = 0; i < 8; i++)
 	{
-		aip[i] = inFighter.aip[i];
+		ai[i] = rhs.ai[i];
 	}
 	for (size_t i = 0; i < 8; i++)
 	{
-		atrack[i] = inFighter.atrack[i];
+		aip[i] = rhs.aip[i];
 	}
-	csmem = inFighter.csmem;
-	ctmem = inFighter.ctmem;
-	current_weapon_type = inFighter.current_weapon_type;
-	welem = inFighter.welem;
-	unl = inFighter.unl;
-	aux = inFighter.aux;
-	bonus = inFighter.bonus;
-	bstat = inFighter.bstat;
-	mrp = inFighter.mrp;
-	imb_s = inFighter.imb_s;
-	imb_a = inFighter.imb_a;
+	for (size_t i = 0; i < 8; i++)
+	{
+		atrack[i] = rhs.atrack[i];
+	}
 	for (size_t i = 0; i < 2; i++)
 	{
-		imb[i] = inFighter.imb[i];
+		imb[i] = rhs.imb[i];
 	}
-	Raster *img = inFighter.img;
 	for (size_t i = 0; i < NUM_SPELL_TYPES; i++)
 	{
-		sts[i] = inFighter.sts[i];
+		sts[i] = rhs.sts[i];
 	}
-
-	EmptyOtherFighter(inFighter);
+	img = rhs.img;
 }
 
-KFighter& KFighter::operator=(const KFighter& inFighter)
+/** C++11 move constructor */
+KFighter::KFighter(KFighter &&rhs)
 {
-	if (this != &inFighter)
+	name = rhs.name;
+	xp = rhs.xp;
+	gp = rhs.gp;
+	lvl = rhs.lvl;
+	cx = rhs.cx;
+	cy = rhs.cy;
+	cw = rhs.cw;
+	cl = rhs.cl;
+	hp = rhs.hp;
+	mhp = rhs.mhp;
+	mp = rhs.mp;
+	mmp = rhs.mmp;
+	dip = rhs.dip;
+	defeat_item_common = rhs.defeat_item_common;
+	defeat_item_rare = rhs.defeat_item_rare;
+	steal_item_common = rhs.steal_item_common;
+	steal_item_rare = rhs.steal_item_rare;
+	for (size_t i = 0; i < eStat::NUM_STATS; i++)
 	{
-		name = inFighter.name;
-		xp = inFighter.xp;
-		gp = inFighter.gp;
-		lvl = inFighter.lvl;
-		cx = inFighter.cx;
-		cy = inFighter.cy;
-		cw = inFighter.cw;
-		cl = inFighter.cl;
-		hp = inFighter.hp;
-		mhp = inFighter.mhp;
-		mp = inFighter.mp;
-		mmp = inFighter.mmp;
-		dip = inFighter.dip;
-		defeat_item_common = inFighter.defeat_item_common;
-		defeat_item_rare = inFighter.defeat_item_rare;
-		steal_item_common = inFighter.steal_item_common;
-		steal_item_rare = inFighter.steal_item_rare;
+		stats[i] = rhs.stats[i];
+	}
+	for (size_t i = 0; i < NUM_RES; i++)
+	{
+		res[i] = rhs.res[i];
+	}
+	facing = rhs.facing;
+	aframe = rhs.aframe;
+	crit = rhs.crit;
+	defend = rhs.defend;
+	for (size_t i = 0; i < 8; i++)
+	{
+		ai[i] = rhs.ai[i];
+	}
+	for (size_t i = 0; i < 8; i++)
+	{
+		aip[i] = rhs.aip[i];
+	}
+	for (size_t i = 0; i < 8; i++)
+	{
+		atrack[i] = rhs.atrack[i];
+	}
+	csmem = rhs.csmem;
+	ctmem = rhs.ctmem;
+	current_weapon_type = rhs.current_weapon_type;
+	welem = rhs.welem;
+	unl = rhs.unl;
+	aux = rhs.aux;
+	bonus = rhs.bonus;
+	bstat = rhs.bstat;
+	mrp = rhs.mrp;
+	imb_s = rhs.imb_s;
+	imb_a = rhs.imb_a;
+	for (size_t i = 0; i < 2; i++)
+	{
+		imb[i] = rhs.imb[i];
+	}
+	img = rhs.img;
+	for (size_t i = 0; i < NUM_SPELL_TYPES; i++)
+	{
+		sts[i] = rhs.sts[i];
+	}
+
+	EmptyOtherFighter(rhs);
+}
+
+KFighter& KFighter::operator=(const KFighter& rhs)
+{
+	if (this != &rhs)
+	{
+		name = rhs.name;
+		xp = rhs.xp;
+		gp = rhs.gp;
+		lvl = rhs.lvl;
+		cx = rhs.cx;
+		cy = rhs.cy;
+		cw = rhs.cw;
+		cl = rhs.cl;
+		hp = rhs.hp;
+		mhp = rhs.mhp;
+		mp = rhs.mp;
+		mmp = rhs.mmp;
+		dip = rhs.dip;
+		defeat_item_common = rhs.defeat_item_common;
+		defeat_item_rare = rhs.defeat_item_rare;
+		steal_item_common = rhs.steal_item_common;
+		steal_item_rare = rhs.steal_item_rare;
 		for (size_t i = 0; i < eStat::NUM_STATS; i++)
 		{
-			stats[i] = inFighter.stats[i];
+			stats[i] = rhs.stats[i];
 		}
 		for (size_t i = 0; i < NUM_RES; i++)
 		{
-			res[i] = inFighter.res[i];
+			res[i] = rhs.res[i];
 		}
-		facing = inFighter.facing;
-		aframe = inFighter.aframe;
-		crit = inFighter.crit;
-		defend = inFighter.defend;
+		facing = rhs.facing;
+		aframe = rhs.aframe;
+		crit = rhs.crit;
+		defend = rhs.defend;
 		for (size_t i = 0; i < 8; i++)
 		{
-			ai[i] = inFighter.ai[i];
-		}
-		for (size_t i = 0; i < 8; i++)
-		{
-			aip[i] = inFighter.aip[i];
+			ai[i] = rhs.ai[i];
 		}
 		for (size_t i = 0; i < 8; i++)
 		{
-			atrack[i] = inFighter.atrack[i];
+			aip[i] = rhs.aip[i];
 		}
-		csmem = inFighter.csmem;
-		ctmem = inFighter.ctmem;
-		current_weapon_type = inFighter.current_weapon_type;
-		welem = inFighter.welem;
-		unl = inFighter.unl;
-		aux = inFighter.aux;
-		bonus = inFighter.bonus;
-		bstat = inFighter.bstat;
-		mrp = inFighter.mrp;
-		imb_s = inFighter.imb_s;
-		imb_a = inFighter.imb_a;
+		for (size_t i = 0; i < 8; i++)
+		{
+			atrack[i] = rhs.atrack[i];
+		}
+		csmem = rhs.csmem;
+		ctmem = rhs.ctmem;
+		current_weapon_type = rhs.current_weapon_type;
+		welem = rhs.welem;
+		unl = rhs.unl;
+		aux = rhs.aux;
+		bonus = rhs.bonus;
+		bstat = rhs.bstat;
+		mrp = rhs.mrp;
+		imb_s = rhs.imb_s;
+		imb_a = rhs.imb_a;
 		for (size_t i = 0; i < 2; i++)
 		{
-			imb[i] = inFighter.imb[i];
+			imb[i] = rhs.imb[i];
 		}
-		Raster *img = inFighter.img;
+		img = rhs.img;
 		for (size_t i = 0; i < NUM_SPELL_TYPES; i++)
 		{
-			sts[i] = inFighter.sts[i];
+			sts[i] = rhs.sts[i];
 		}
 	}
 	return *this;
 }
 
 /** C++11 move assignment operator */
-KFighter& KFighter::operator=(KFighter&& inFighter)
+KFighter& KFighter::operator=(KFighter&& rhs)
 {
-	if (this != &inFighter)
+	if (this != &rhs)
 	{
-		name = inFighter.name;
-		xp = inFighter.xp;
-		gp = inFighter.gp;
-		lvl = inFighter.lvl;
-		cx = inFighter.cx;
-		cy = inFighter.cy;
-		cw = inFighter.cw;
-		cl = inFighter.cl;
-		hp = inFighter.hp;
-		mhp = inFighter.mhp;
-		mp = inFighter.mp;
-		mmp = inFighter.mmp;
-		dip = inFighter.dip;
-		defeat_item_common = inFighter.defeat_item_common;
-		defeat_item_rare = inFighter.defeat_item_rare;
-		steal_item_common = inFighter.steal_item_common;
-		steal_item_rare = inFighter.steal_item_rare;
+		name = rhs.name;
+		xp = rhs.xp;
+		gp = rhs.gp;
+		lvl = rhs.lvl;
+		cx = rhs.cx;
+		cy = rhs.cy;
+		cw = rhs.cw;
+		cl = rhs.cl;
+		hp = rhs.hp;
+		mhp = rhs.mhp;
+		mp = rhs.mp;
+		mmp = rhs.mmp;
+		dip = rhs.dip;
+		defeat_item_common = rhs.defeat_item_common;
+		defeat_item_rare = rhs.defeat_item_rare;
+		steal_item_common = rhs.steal_item_common;
+		steal_item_rare = rhs.steal_item_rare;
 		for (size_t i = 0; i < eStat::NUM_STATS; i++)
 		{
-			stats[i] = inFighter.stats[i];
+			stats[i] = rhs.stats[i];
 		}
 		for (size_t i = 0; i < NUM_RES; i++)
 		{
-			res[i] = inFighter.res[i];
+			res[i] = rhs.res[i];
 		}
-		facing = inFighter.facing;
-		aframe = inFighter.aframe;
-		crit = inFighter.crit;
-		defend = inFighter.defend;
+		facing = rhs.facing;
+		aframe = rhs.aframe;
+		crit = rhs.crit;
+		defend = rhs.defend;
 		for (size_t i = 0; i < 8; i++)
 		{
-			ai[i] = inFighter.ai[i];
-		}
-		for (size_t i = 0; i < 8; i++)
-		{
-			aip[i] = inFighter.aip[i];
+			ai[i] = rhs.ai[i];
 		}
 		for (size_t i = 0; i < 8; i++)
 		{
-			atrack[i] = inFighter.atrack[i];
+			aip[i] = rhs.aip[i];
 		}
-		csmem = inFighter.csmem;
-		ctmem = inFighter.ctmem;
-		current_weapon_type = inFighter.current_weapon_type;
-		welem = inFighter.welem;
-		unl = inFighter.unl;
-		aux = inFighter.aux;
-		bonus = inFighter.bonus;
-		bstat = inFighter.bstat;
-		mrp = inFighter.mrp;
-		imb_s = inFighter.imb_s;
-		imb_a = inFighter.imb_a;
+		for (size_t i = 0; i < 8; i++)
+		{
+			atrack[i] = rhs.atrack[i];
+		}
+		csmem = rhs.csmem;
+		ctmem = rhs.ctmem;
+		current_weapon_type = rhs.current_weapon_type;
+		welem = rhs.welem;
+		unl = rhs.unl;
+		aux = rhs.aux;
+		bonus = rhs.bonus;
+		bstat = rhs.bstat;
+		mrp = rhs.mrp;
+		imb_s = rhs.imb_s;
+		imb_a = rhs.imb_a;
 		for (size_t i = 0; i < 2; i++)
 		{
-			imb[i] = inFighter.imb[i];
+			imb[i] = rhs.imb[i];
 		}
-		Raster *img = inFighter.img;
+		img = rhs.img;
 		for (size_t i = 0; i < NUM_SPELL_TYPES; i++)
 		{
-			sts[i] = inFighter.sts[i];
+			sts[i] = rhs.sts[i];
 		}
 
-		EmptyOtherFighter(inFighter);
+		EmptyOtherFighter(rhs);
 	}
 	return *this;
 }
 
-KFighter::KFighter(const KPlayer &inPlayer)
-{
-	// Not implemented yet
-}
-
-KFighter::~KFighter()
-{
-	// Not implemented yet
-}
-
 void KFighter::EmptyOtherFighter(KFighter& outFighter)
 {
-	outFighter.name = string();
+	outFighter.name = "";
 	outFighter.xp = 0;
 	outFighter.gp = 0;
 	outFighter.lvl = 0;

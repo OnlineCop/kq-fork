@@ -31,8 +31,10 @@
  * \date ????????
  */
 
-#include "enums.h"
 #include <stdint.h>
+#include <string>
+
+#include "enums.h"
 
 #define BATTLE_INC 20
 #define ROUND_MAX 400
@@ -99,7 +101,7 @@ protected:
 	eAttackResult attack_result(int ar, int dr);
 	int check_end(void);
 	void do_action(size_t);
-	int do_combat(char *, char *, int);
+	int do_combat(const std::string& bg, const std::string& mus, int is_rnd);
 	void do_round(void);
 	void enemies_win(void);
 	void heroes_win(void);

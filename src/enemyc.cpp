@@ -94,6 +94,10 @@ KEnemy Enemy;
  * -# imb[1] (?)
  */
 
+KEnemy::KEnemy()
+{
+}
+
 void KEnemy::Attack(size_t target_fighter_index)
 {
 	int b, c;
@@ -326,19 +330,25 @@ void KEnemy::CureCheck(int w)
 	}
 }
 
-void KEnemy::Init(void)
+void KEnemy::Init()
 {
-	size_t fighter_index, frame_index;
-	KFighter* f;
-
-	if (m_EnemyFighters.size() == 0)
+	if (m_enemy_fighters.empty())
 	{
 		LoadEnemies();
 	}
-	for (fighter_index = 0; fighter_index < Combat.GetNumEnemies(); ++fighter_index)
+
+	size_t numEnemies = Combat.GetNumEnemies();
+	for (size_t fighter_index = 0; fighter_index < numEnemies; ++fighter_index)
 	{
-		f = MakeEnemyFighter(cf[fighter_index], &fighter[fighter_index + PSIZE]);
-		for (frame_index = 0; frame_index < MAXCFRAMES; ++frame_index)
+		size_t safeFighterIndex = static_cast<size_t>(cf[fighter_index]);
+		const bool bSuccessful = MakeEnemyFighter(safeFighterIndex, fighter[fighter_index + PSIZE]);
+		if (!bSuccessful)
+		{
+			continue;
+		}
+
+		KFighter& enumeeFyturr = fighter[fighter_index + PSIZE];
+		for (size_t frame_index = 0; frame_index < MAXCFRAMES; ++frame_index)
 		{
 			/* If, in a previous combat, we made a bitmap, destroy it now */
 			if (cframes[fighter_index + PSIZE][frame_index])
@@ -346,9 +356,9 @@ void KEnemy::Init(void)
 				delete (cframes[fighter_index + PSIZE][frame_index]);
 			}
 			/* and create a new one */
-			cframes[fighter_index + PSIZE][frame_index] = new Raster(f->img->width, f->img->height);
-			blit(f->img, cframes[fighter_index + PSIZE][frame_index], 0, 0, 0, 0, f->img->width, f->img->height);
-			tcframes[fighter_index + PSIZE][frame_index] = Draw.copy_bitmap(tcframes[fighter_index + PSIZE][frame_index], f->img);
+			cframes[fighter_index + PSIZE][frame_index] = new Raster(enumeeFyturr.img->width, enumeeFyturr.img->height);
+			blit(enumeeFyturr.img.get(), cframes[fighter_index + PSIZE][frame_index], 0, 0, 0, 0, enumeeFyturr.img->width, enumeeFyturr.img->height);
+			tcframes[fighter_index + PSIZE][frame_index] = Draw.copy_bitmap(tcframes[fighter_index + PSIZE][frame_index], enumeeFyturr.img.get());
 		}
 	}
 }
@@ -601,39 +611,26 @@ int KEnemy::StatsCheck(eSpellType whichSpellType, int s)
 	return 0;
 }
 
-void KEnemy::dump_en()
+void KEnemy::LoadEnemies()
 {
-	std::unique_ptr<KFighter[]> tmp(new KFighter[m_num_enemies]);
-	for (size_t i = 0; i < m_num_enemies; ++i)
-	{
-		tmp[i] = *m_enemy_fighters[i];
-	}
-	Disk.save_fighters_to_file("save-f.xml", tmp.get(), m_num_enemies);
-}
-
-void KEnemy::LoadEnemies(void)
-{
-	if (m_EnemyFighters.size() > 0)
-	{
-		/* Already done the loading */
-		return;
-	}
-
 	Raster *enemy_gfx = get_cached_image("enemy.png");
 	if (!enemy_gfx)
 	{
 		Game.program_death(_("Could not load enemy sprites!"));
 	}
 
+	if (!m_enemy_fighters.empty())
+	{
+		/* Already done the loading */
+		return;
+	}
+
 	LoadEnemies(kqres(DATA_DIR, "allstat.mon"), enemy_gfx);
 	LoadEnemyStats(kqres(DATA_DIR, "resabil.mon"));
-	//dump_en();
 }
 
 void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
 {
-	int tmp, imagefile_x_coord, imagefile_y_coord;
-
 	std::ifstream infile(fullPath.c_str());
 	if (infile.fail())
 	{
@@ -644,14 +641,15 @@ void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
 	// Loop through for every monster in allstat.mon
 	while (std::getline(infile, line))
 	{
+		int tmp;
+		int imagefile_x_coord, imagefile_y_coord;
 		std::istringstream iss(line);
-		KFighter* fighter_loaded_from_disk = new KFighter();
 
-		m_EnemyFighters.push_back(fighter_loaded_from_disk);
+		KFighter fighter_loaded_from_disk;
 
 		// Enemy name
 		iss >> strbuf;
-		fighter_loaded_from_disk->name = strbuf;
+		fighter_loaded_from_disk.name = strbuf;
 
 		// Index number (ignored; automatically generated)
 		iss >> tmp;
@@ -662,68 +660,71 @@ void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
 		iss >> imagefile_y_coord;
 
 		// Image width
-		iss >> fighter_loaded_from_disk->cw;
+		iss >> fighter_loaded_from_disk.cw;
 		// Image length (height)
-		iss >> fighter_loaded_from_disk->cl;
+		iss >> fighter_loaded_from_disk.cl;
 
 		// Experience points earned
-		iss >> fighter_loaded_from_disk->xp;
+		iss >> fighter_loaded_from_disk.xp;
 		// Gold received
-		iss >> fighter_loaded_from_disk->gp;
+		iss >> fighter_loaded_from_disk.gp;
 		// Level
-		iss >> fighter_loaded_from_disk->lvl;
+		iss >> fighter_loaded_from_disk.lvl;
 		// Max HP
-		iss >> fighter_loaded_from_disk->mhp;
+		iss >> fighter_loaded_from_disk.mhp;
 		// Max MP
-		iss >> fighter_loaded_from_disk->mmp;
+		iss >> fighter_loaded_from_disk.mmp;
 		// Defeat Item Probability: chance of finding any items after defeat
-		iss >> fighter_loaded_from_disk->dip;
+		iss >> fighter_loaded_from_disk.dip;
 		// Defeat Item Common: item found commonly of the time
-		iss >> fighter_loaded_from_disk->defeat_item_common;
+		iss >> fighter_loaded_from_disk.defeat_item_common;
 		// Defeat Item Rare: item found rarely
-		iss >> fighter_loaded_from_disk->defeat_item_rare;
+		iss >> fighter_loaded_from_disk.defeat_item_rare;
 		// Steal Item Common: item found commonly from stealing
-		iss >> fighter_loaded_from_disk->steal_item_common;
+		iss >> fighter_loaded_from_disk.steal_item_common;
 		// Steal Item Rare: item found rarely when stealing
-		iss >> fighter_loaded_from_disk->steal_item_rare;
+		iss >> fighter_loaded_from_disk.steal_item_rare;
 		// Enemy's strength (agility & vitality set to zero)
-		iss >> fighter_loaded_from_disk->stats[eStat::Strength];
-		fighter_loaded_from_disk->stats[eStat::Agility] = 0;
-		fighter_loaded_from_disk->stats[eStat::Vitality] = 0;
+		iss >> fighter_loaded_from_disk.stats[eStat::Strength];
+		fighter_loaded_from_disk.stats[eStat::Agility] = 0;
+		fighter_loaded_from_disk.stats[eStat::Vitality] = 0;
 		// Intelligence & Sagacity (both the same)
-		iss >> fighter_loaded_from_disk->stats[eStat::Intellect];
-		fighter_loaded_from_disk->stats[eStat::Sagacity] = fighter_loaded_from_disk->stats[eStat::Intellect];
+		iss >> fighter_loaded_from_disk.stats[eStat::Intellect];
+		fighter_loaded_from_disk.stats[eStat::Sagacity] = fighter_loaded_from_disk.stats[eStat::Intellect];
 		// Defense against: Speed, Spirit, Attack, Hit, Defense, Evade, Magic (in that order)
-		iss >> fighter_loaded_from_disk->stats[eStat::Speed];
-		iss >> fighter_loaded_from_disk->stats[eStat::Aura];
-		iss >> fighter_loaded_from_disk->stats[eStat::Spirit];
-		iss >> fighter_loaded_from_disk->stats[eStat::Attack];
-		iss >> fighter_loaded_from_disk->stats[eStat::Hit];
-		iss >> fighter_loaded_from_disk->stats[eStat::Defense];
-		iss >> fighter_loaded_from_disk->stats[eStat::Evade];
-		iss >> fighter_loaded_from_disk->stats[eStat::MagicDefense];
+		iss >> fighter_loaded_from_disk.stats[eStat::Speed];
+		iss >> fighter_loaded_from_disk.stats[eStat::Aura];
+		iss >> fighter_loaded_from_disk.stats[eStat::Spirit];
+		iss >> fighter_loaded_from_disk.stats[eStat::Attack];
+		iss >> fighter_loaded_from_disk.stats[eStat::Hit];
+		iss >> fighter_loaded_from_disk.stats[eStat::Defense];
+		iss >> fighter_loaded_from_disk.stats[eStat::Evade];
+		iss >> fighter_loaded_from_disk.stats[eStat::MagicDefense];
 		// Bonus
-		iss >> fighter_loaded_from_disk->bonus;
-		fighter_loaded_from_disk->bstat = 0;
+		iss >> fighter_loaded_from_disk.bonus;
+		fighter_loaded_from_disk.bstat = 0;
 		// Current weapon type
-		iss >> fighter_loaded_from_disk->current_weapon_type;
+		iss >> fighter_loaded_from_disk.current_weapon_type;
 		// Weapon elemental type
-		iss >> fighter_loaded_from_disk->welem;
+		iss >> fighter_loaded_from_disk.welem;
 		// Undead Level (defense against Undead attacks)
-		iss >> fighter_loaded_from_disk->unl;
+		iss >> fighter_loaded_from_disk.unl;
 		// Critical attacks
-		iss >> fighter_loaded_from_disk->crit;
+		iss >> fighter_loaded_from_disk.crit;
 		// Temp Sag & Int for Imbued
-		iss >> fighter_loaded_from_disk->imb_s;
+		iss >> fighter_loaded_from_disk.imb_s;
 		// Imbued stat type (Spd, Spi, Att, Hit, Def, Evd, Mag)
-		iss >> fighter_loaded_from_disk->imb_a;
+		iss >> fighter_loaded_from_disk.imb_a;
 
-		fighter_loaded_from_disk->img = new Raster(fighter_loaded_from_disk->cw, fighter_loaded_from_disk->cl);
-		enemy_gfx->blitTo(fighter_loaded_from_disk->img, imagefile_x_coord, imagefile_y_coord, 0, 0, fighter_loaded_from_disk->cw, fighter_loaded_from_disk->cl);
-		for (size_t i = 0; i < 2; i++)
-		{
-			iss >> fighter_loaded_from_disk->imb[i];
-		}
+		fighter_loaded_from_disk.img = std::make_shared<Raster>(fighter_loaded_from_disk.cw, fighter_loaded_from_disk.cl);
+		enemy_gfx->blitTo(fighter_loaded_from_disk.img.get(),
+		                  imagefile_x_coord, imagefile_y_coord,
+		                  0, 0,
+		                  fighter_loaded_from_disk.cw, fighter_loaded_from_disk.cl);
+		iss >> fighter_loaded_from_disk.imb[0];
+		iss >> fighter_loaded_from_disk.imb[1];
+
+		m_enemy_fighters.push_back(fighter_loaded_from_disk);
 	}
 	infile.close();
 }
@@ -739,9 +740,9 @@ void KEnemy::LoadEnemyStats(const string &fullFilename)
 
 	size_t current_enemy = 0;
 	string line;
-	while (std::getline(infile, line) && current_enemy < m_num_enemies)
+	while (std::getline(infile, line))
 	{
-		KFighter* fighter_loaded_from_disk = m_enemy_fighters[current_enemy];
+		KFighter& fighter_loaded_from_disk = m_enemy_fighters[current_enemy];
 		std::istringstream iss(line);
 
 		iss >> strbuf;
@@ -752,45 +753,46 @@ void KEnemy::LoadEnemyStats(const string &fullFilename)
 		// Each of the 16 RES (resistances)
 		for (size_t somethingToLoopWith = 0; somethingToLoopWith < R_TOTAL_RES; somethingToLoopWith++)
 		{
-			iss >> fighter_loaded_from_disk->res[somethingToLoopWith];
+			iss >> fighter_loaded_from_disk.res[somethingToLoopWith];
 		}
 		// Each of the 8 AI
 		for (size_t somethingToLoopWith = 0; somethingToLoopWith < 8; somethingToLoopWith++)
 		{
-			iss >> fighter_loaded_from_disk->ai[somethingToLoopWith];
+			iss >> fighter_loaded_from_disk.ai[somethingToLoopWith];
 		}
 		// Each of the 8 AIP
 		for (size_t somethingToLoopWith = 0; somethingToLoopWith < 8; somethingToLoopWith++)
 		{
-			iss >> fighter_loaded_from_disk->aip[somethingToLoopWith];
-			fighter_loaded_from_disk->atrack[somethingToLoopWith] = 0;
+			iss >> fighter_loaded_from_disk.aip[somethingToLoopWith];
+			fighter_loaded_from_disk.atrack[somethingToLoopWith] = 0;
 		}
-		fighter_loaded_from_disk->hp = fighter_loaded_from_disk->mhp;
-		fighter_loaded_from_disk->mp = fighter_loaded_from_disk->mmp;
-		fighter_loaded_from_disk->SetPoisoned(0);
-		fighter_loaded_from_disk->SetBlind(0);
-		fighter_loaded_from_disk->SetCharmed(0);
-		fighter_loaded_from_disk->SetStopped(0);
-		fighter_loaded_from_disk->SetStone(0);
-		fighter_loaded_from_disk->SetMute(0);
-		fighter_loaded_from_disk->SetSleep(0);
-		fighter_loaded_from_disk->SetDead(0);
-		fighter_loaded_from_disk->SetMalison(0);
-		fighter_loaded_from_disk->SetResist(0);
-		fighter_loaded_from_disk->SetTime(0);
-		fighter_loaded_from_disk->SetShield(0);
-		fighter_loaded_from_disk->SetBless(0);
-		fighter_loaded_from_disk->SetStrength(0);
-		fighter_loaded_from_disk->SetEther(0);
-		fighter_loaded_from_disk->SetTrueshot(0);
-		fighter_loaded_from_disk->SetRegen(0);
-		fighter_loaded_from_disk->SetInfuse(0);
-		fighter_loaded_from_disk->aux = 0;
-		fighter_loaded_from_disk->mrp = 100;
+		fighter_loaded_from_disk.hp = fighter_loaded_from_disk.mhp;
+		fighter_loaded_from_disk.mp = fighter_loaded_from_disk.mmp;
+		fighter_loaded_from_disk.SetPoisoned(0);
+		fighter_loaded_from_disk.SetBlind(0);
+		fighter_loaded_from_disk.SetCharmed(0);
+		fighter_loaded_from_disk.SetStopped(0);
+		fighter_loaded_from_disk.SetStone(0);
+		fighter_loaded_from_disk.SetMute(0);
+		fighter_loaded_from_disk.SetSleep(0);
+		fighter_loaded_from_disk.SetDead(0);
+		fighter_loaded_from_disk.SetMalison(0);
+		fighter_loaded_from_disk.SetResist(0);
+		fighter_loaded_from_disk.SetTime(0);
+		fighter_loaded_from_disk.SetShield(0);
+		fighter_loaded_from_disk.SetBless(0);
+		fighter_loaded_from_disk.SetStrength(0);
+		fighter_loaded_from_disk.SetEther(0);
+		fighter_loaded_from_disk.SetTrueshot(0);
+		fighter_loaded_from_disk.SetRegen(0);
+		fighter_loaded_from_disk.SetInfuse(0);
+		fighter_loaded_from_disk.aux = 0;
+		fighter_loaded_from_disk.mrp = 100;
 		++current_enemy;
 	}
 }
 
+/*
 KFighter* KEnemy::MakeEnemyFighter(size_t who, KFighter *NewEnemyFighter)
 {
 	if (m_enemy_fighters && who < m_num_enemies)
@@ -800,23 +802,22 @@ KFighter* KEnemy::MakeEnemyFighter(size_t who, KFighter *NewEnemyFighter)
 	}
 	else
 	{
-		/* PH probably should call program_death() here? */
 		return NULL;
 	}
 }
-
-KEnemy::KEnemy()
-	: m_enemy_fighters(nullptr)
-	, m_num_enemies(0)
-	, m_enemy_array_capacity(0)
+*/
+bool KEnemy::MakeEnemyFighter(const size_t who, KFighter& en)
 {
+	if (who < m_enemy_fighters.size())
+	{
+		en = m_enemy_fighters[who];
+		return true;
+	}
+
+	return false;
 }
 
-KEnemy::~KEnemy()
-{
-}
-
-int KEnemy::SelectEncounter(uint8_t encounterTableRow, uint8_t etid)
+int KEnemy::SelectEncounter(const uint8_t encounterTableRow, const uint8_t etid)
 {
 	size_t i, p, j;
 	int stop = 0, where = 0, entry = -1;
@@ -1004,16 +1005,10 @@ int KEnemy::SpellSetup(int whom, int z)
 	}
 }
 
-void KEnemy::UnloadEnemies(void)
+void KEnemy::UnloadEnemies()
 {
-	if (m_enemy_fighters != NULL)
+	if (!m_enemy_fighters.empty())
 	{
-		for (size_t i = 0; i < m_num_enemies; ++i)
-		{
-			delete (m_enemy_fighters[i]->img);
-			free(m_enemy_fighters[i]);
-		}
-		free(m_enemy_fighters);
-		m_enemy_fighters = NULL;
+		m_enemy_fighters.clear();
 	}
 }

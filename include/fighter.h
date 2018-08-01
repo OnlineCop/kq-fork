@@ -15,17 +15,14 @@ class KFighter
 	friend class KDisk;
 public:
 	KFighter();
-	KFighter(const KFighter& inFighter); // Copy constructor
-	KFighter(KFighter &&inFighter); // C++11 move constructor
+	KFighter(const KFighter& rhs);              // Copy constructor
+	KFighter(KFighter&& rhs);                   // C++11 move constructor
 
-	KFighter& operator=(const KFighter& inFighter); // Assignment operator
-	KFighter& operator=(KFighter&& inFighter); // C++11 move assignment
-	~KFighter();
+	KFighter& operator=(const KFighter& rhs);   // Assignment operator
+	KFighter& operator=(KFighter&& rhs);        // C++11 move assignment
+	~KFighter() = default;
 
 	void EmptyOtherFighter(KFighter& outFighter);
-
-	// Fighter constructor converted from a player instance
-	KFighter(const KPlayer &inPlayer);
 
 	// S_POISON
 	bool IsPoisoned() const;
@@ -208,7 +205,7 @@ public:
 	int imb_s;
 	int imb_a;
 	int imb[2];
-	Raster *img;
+	std::shared_ptr<Raster> img;
 
 protected:
 	uint8_t sts[NUM_SPELL_TYPES]; /*!< eSpellType, how long a specific status effect remains on this fighter (such as "remaining poison", etc.). */
