@@ -1844,7 +1844,7 @@ static int KQ_get_bounds(lua_State *L)
 {
 	int a;
 	uint16_t ent_x, ent_y;
-	uint32_t found_index;
+	size_t found_index;
 
 	if (lua_isnumber(L, 1))
 	{

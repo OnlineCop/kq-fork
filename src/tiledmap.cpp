@@ -77,8 +77,8 @@ void KTiledMap::load_tmx(const string &name)
 	tmx.LoadFile(kqres(MAP_DIR, path).c_str());
 	if (tmx.Error())
 	{
-		TRACE("Error loading %s\n%s\n%s\n", name.c_str(), tmx.GetErrorStr1(),
-			tmx.GetErrorStr2());
+		// TRACE("Error loading %s\n%s\n%s\n", name.c_str(), tmx.GetErrorStr1(), tmx.GetErrorStr2());
+		TRACE("Error loading %s\n%s\n%s\n", name.c_str(), tmx.ErrorStr());
 		Game.program_death("Could not load map file ");
 	}
 	Game.reset_timer_events();
@@ -501,8 +501,8 @@ KTmxTileset KTiledMap::load_tmx_tileset(XMLElement const *el)
 		sourcedoc.LoadFile(kqres(MAP_DIR, source).c_str());
 		if (sourcedoc.Error())
 		{
-			TRACE("Error loading %s\n%s\n%s\n", source, sourcedoc.GetErrorStr1(),
-				sourcedoc.GetErrorStr2());
+			// TRACE("Error loading %s\n%s\n%s\n", source, sourcedoc.GetErrorStr1(), sourcedoc.GetErrorStr2());
+			TRACE("Error loading %s\n%s\n%s\n", source, sourcedoc.ErrorStr());
 			Game.program_death("Couldn't load external tileset");
 		}
 		tsx = sourcedoc.RootElement();

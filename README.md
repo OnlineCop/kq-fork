@@ -32,6 +32,13 @@ Check that you have these libraries installed:
 * libpng v1.2
 * zlib
 
+apt
+liblua5.2-dev
+libtinyxml2-dev
+liballegro4-dev
+libdumb1-dev
+libaldmb1-dev
+
 Then, you can compile the project using the following commands:
 ```
 mkdir build
