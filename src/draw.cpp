@@ -730,7 +730,7 @@ void KDraw::draw_playerbound(void)
 	uint16_t ent_y = g_ent[0].tiley;
 
 	/* Is the player standing inside a bounding area? */
-	uint32_t found_index;
+	size_t found_index;
 	if(!g_map.bounds.IsBound(found_index, ent_x, ent_y, ent_x, ent_y))
 	{
 		return;

@@ -272,7 +272,21 @@ int KDisk::load_equipment_xml(KPlayer *s, XMLElement *node)
 
 int KDisk::load_attributes_xml(KPlayer *s, XMLElement *node)
 {
-	XMLElement *attributes = node->FirstChildElement(TAG_ATTRIBUTES);
+
+  XMLElement *attributes = node->FirstChildElement(TAG_ATTRIBUTES);
+  if (attributes && !attributes->NoChildren())
+  {
+    auto vals = parse_list(attributes->FirstChild()->Value());    
+    copy(vals.begin(), vals.end(), s->stats);
+    return 0;
+  }
+  else
+  {
+    // The attribute list was not formatted correctly
+    return 1;
+  }
+
+	/*XMLElement *attributes = node->FirstChildElement(TAG_ATTRIBUTES);
 	if (attributes)
 	{
 		for (auto property : children(attributes, TAG_PROPERTY))
@@ -331,7 +345,7 @@ int KDisk::load_attributes_xml(KPlayer *s, XMLElement *node)
 			}
 		}
 	}
-	return 0;
+	return 0;*/
 }
 
 int KDisk::load_core_properties_xml(KPlayer *s, XMLElement *node)
@@ -985,7 +999,8 @@ int KDisk::load_game_from_file(const char *filename)
 	}
 	else
 	{
-		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());
+		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.ErrorStr());
+		// TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());
 		Game.program_death("Unable to load XML file");
 	}
 	return 0;
@@ -1129,7 +1144,8 @@ int KDisk::load_stats_only(const char *filename, s_sgstats &stats)
 	}
 	else
 	{
-		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());
+		// TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());
+		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.ErrorStr());
 	}
 	return 1;
 }
