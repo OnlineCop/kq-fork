@@ -36,7 +36,8 @@ set(KQ_DEBUGGING 0 CACHE BOOL "Features for debugging the game")
 
 
 set(kq-fork_SRCS
-        src/anim_sequence.cpp
+    src/anim_sequence.cpp
+	src/animation.cpp
 	src/bounds.cpp
 	src/combat.cpp
 	src/console.cpp
@@ -49,9 +50,11 @@ set(kq-fork_SRCS
 	src/eqpmenu.cpp
 	src/eskill.cpp
 	src/fade.cpp
+	src/fighter.cpp
 	src/gfx.cpp
 	src/heroc.cpp
 	src/hskill.cpp
+	src/imgcache.cpp
 	src/input.cpp
 	src/intrface.cpp
 	src/itemmenu.cpp
@@ -61,7 +64,9 @@ set(kq-fork_SRCS
 	src/masmenu.cpp
 	src/menu.cpp
 	src/movement.cpp
+	#src/music_dumb.cpp
 	src/music.cpp
+	src/player.cpp
 	src/random.cpp
 	src/res.cpp
 	src/selector.cpp
@@ -71,14 +76,12 @@ set(kq-fork_SRCS
 	src/timing.cpp
 	src/unix.cpp
 	src/tiledmap.cpp
-	src/imgcache.cpp
-	src/animation.cpp
 )
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/maps")
 
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS_DEBUG  ${CMAKE_CXX_FLAGS} "-O0 -g -DDEBUGMODE" )
+set(CMAKE_CXX_FLAGS_DEBUG  ${CMAKE_CXX_FLAGS} "-O0 -g -DDEBUGMODE -DKQ_CHEATS" )
 set(CMAKE_CXX_FLAGS_RELEASE  ${CMAKE_CXX_FLAGS} "-O2" )
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO  ${CMAKE_CXX_FLAGS} "-O2 -g" )
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra")
