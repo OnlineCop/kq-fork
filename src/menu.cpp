@@ -732,6 +732,7 @@ void KMenu::update_equipstats(void)
 	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 	{
 		player2fighter(pidx[fighter_index], &fighter[fighter_index]);
+		printf("converted %d, %s\n", fighter_index, fighter[fighter_index].name.c_str());
 	}
 }
 
@@ -755,10 +756,13 @@ void player2fighter(int who, KFighter *pf)
 	current_fighter.imb_a = 0;
 	current_fighter.imb[0] = 0;
 	current_fighter.imb[1] = 0;
+
+	printf("converting %d: %s\n", who, plr.name.c_str());
 	current_fighter.name = plr.name;
 	current_fighter.xp = plr.xp;
 	current_fighter.lvl = plr.lvl;
 	current_fighter.hp = plr.hp;
+	printf("converting hp %d\n", plr.hp);
 	current_fighter.mhp = plr.mhp;
 	current_fighter.mp = plr.mp;
 	current_fighter.mmp = plr.mmp;

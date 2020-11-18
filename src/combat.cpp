@@ -389,7 +389,12 @@ void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
 		}
 
 		//fighter[fighter_index].name = "Lance";
-		//Draw.print_font(double_buffer, menubox_align_x + 8, 192, fighter[fighter_index].name, (hl == fighter_index + 1) ? FGOLD : FNORMAL);
+		// if (hl == fighter_index + 1)
+		// 	printf("selected name %s\n", fighter[fighter_index].name.c_str());
+		// else
+		// 	printf("print name %s\n", fighter[fighter_index].name.c_str());
+
+		// Draw.print_font(double_buffer, menubox_align_x + 8, 192, fighter[fighter_index].name, (hl == fighter_index + 1) ? FGOLD : FNORMAL);
 
 		sprintf(strbuf, _("HP: %3d/%3d"), fighter[fighter_index].hp, fighter[fighter_index].mhp);
 		/*  RB IDEA: If the character has less than 1/5 of his/her max    */
@@ -578,6 +583,7 @@ int KCombat::combat(int bno)
 
 	steps = 0;
 	init_fighters();
+	printf("finished init %s\n", fighter[0].name.c_str());
 	return do_combat(battles[bno].backimg, battles[bno].bmusic, battles[bno].eidx == 99);
 }
 
