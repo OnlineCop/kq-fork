@@ -31,6 +31,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include<iostream>
+
 #include "combat.h"
 #include "constants.h"
 #include "draw.h"
@@ -386,7 +388,8 @@ void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
 			hline(double_buffer, menubox_align_x + 8, 231, menubox_align_x + right_edge + 8, line_color - 1);
 		}
 
-		Draw.print_font(double_buffer, menubox_align_x + 8, 192, fighter[fighter_index].name, (hl == fighter_index + 1) ? FGOLD : FNORMAL);
+		//fighter[fighter_index].name = "Lance";
+		//Draw.print_font(double_buffer, menubox_align_x + 8, 192, fighter[fighter_index].name, (hl == fighter_index + 1) ? FGOLD : FNORMAL);
 
 		sprintf(strbuf, _("HP: %3d/%3d"), fighter[fighter_index].hp, fighter[fighter_index].mhp);
 		/*  RB IDEA: If the character has less than 1/5 of his/her max    */

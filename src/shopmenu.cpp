@@ -39,6 +39,7 @@
 #include "kq.h"
 #include "magic.h"
 #include "music.h"
+#include "player.h"
 #include "res.h"
 #include "setup.h"
 #include "shopmenu.h"
