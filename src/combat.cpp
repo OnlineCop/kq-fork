@@ -388,13 +388,7 @@ void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
 			hline(double_buffer, menubox_align_x + 8, 231, menubox_align_x + right_edge + 8, line_color - 1);
 		}
 
-		//fighter[fighter_index].name = "Lance";
-		// if (hl == fighter_index + 1)
-		// 	printf("selected name %s\n", fighter[fighter_index].name.c_str());
-		// else
-		// 	printf("print name %s\n", fighter[fighter_index].name.c_str());
-
-		// Draw.print_font(double_buffer, menubox_align_x + 8, 192, fighter[fighter_index].name, (hl == fighter_index + 1) ? FGOLD : FNORMAL);
+		Draw.print_font(double_buffer, menubox_align_x + 8, 192, fighter[fighter_index].name, (hl == fighter_index + 1) ? FGOLD : FNORMAL);
 
 		sprintf(strbuf, _("HP: %3d/%3d"), fighter[fighter_index].hp, fighter[fighter_index].mhp);
 		/*  RB IDEA: If the character has less than 1/5 of his/her max    */
@@ -583,7 +577,6 @@ int KCombat::combat(int bno)
 
 	steps = 0;
 	init_fighters();
-	printf("finished init %s\n", fighter[0].name.c_str());
 	return do_combat(battles[bno].backimg, battles[bno].bmusic, battles[bno].eidx == 99);
 }
 
@@ -1479,11 +1472,11 @@ void KCombat::heroes_win(void)
 			party[pidx[pidx_index]].IsAlive())
 		{
 			b = pidx_index * 160;
-			player2fighter(pidx[pidx_index], &t1);
+			t1 = player2fighter(pidx[pidx_index]);
 			if (kmenu.give_xp(pidx[pidx_index], txp, 0))
 			{
 				Draw.menubox(double_buffer, b, 40, 18, 9, BLUE);
-				player2fighter(pidx[pidx_index], &t2);
+				t2 = player2fighter(pidx[pidx_index]);
 				Draw.print_font(double_buffer, b + 8, 48, _("Level up!"), FGOLD);
 				Draw.print_font(double_buffer, b + 8, 56, _("Max HP"), FNORMAL);
 				Draw.print_font(double_buffer, b + 8, 64, _("Max MP"), FNORMAL);

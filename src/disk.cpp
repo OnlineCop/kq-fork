@@ -591,7 +591,6 @@ int KDisk::load_players_xml(XMLElement *root)
 				if (it != std::end(id_lookup))
 				{
 					load_s_player_xml(&party[it->second], hero);
-					printf("loading stored name %s\n", party[it->second].name.c_str());
 				}
 			}
 		}
