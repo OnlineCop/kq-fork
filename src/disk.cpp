@@ -999,8 +999,11 @@ int KDisk::load_game_from_file(const char *filename)
 	}
 	else
 	{
+#ifdef WIN32    
+		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());    
+#else
 		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.ErrorStr());
-		// TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());
+#endif // WIN32
 		Game.program_death("Unable to load XML file");
 	}
 	return 0;
@@ -1144,8 +1147,11 @@ int KDisk::load_stats_only(const char *filename, s_sgstats &stats)
 	}
 	else
 	{
-		// TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());
+#ifdef WIN32
+		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());
+#else
 		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.ErrorStr());
+#endif // WIN32
 	}
 	return 1;
 }
