@@ -166,8 +166,8 @@ void ellipsefill_fast(Raster *r, int center_x, int center_y, int radius_x, int r
 
 		for (int x = -x0; x <= x0; x++)
 		{
-			r->setpixel(radius_x + x, radius_y + y, color);
-			r->setpixel(radius_x + x, radius_y - y, color);
+			r->setpixel(center_x + x, center_y + y, color);
+			r->setpixel(center_x + x, center_y - y, color);
 		}
 	}
 }
