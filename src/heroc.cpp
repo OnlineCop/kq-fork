@@ -957,9 +957,7 @@ void hero_choose_action(size_t fighter_index)
 void hero_init(void)
 {
 	kmenu.update_equipstats();	
-	printf("finished updating eq0 %s\n", fighter[0].name.c_str());
 	Raster *eb = get_cached_image("usbat.png");
-	printf("finished updating eq1 %s\n", fighter[0].name.c_str());
 	// Load all 8 fighters' stances into the `cframes` array.
 	// cframes[fighter's index][]
 	// cframes[][fighter's stance]
@@ -1046,7 +1044,6 @@ void hero_init(void)
 		fighter[fighter_index].cl = 32;
 		fighter[fighter_index].aframe = 0;
 	}
-	printf("finished updating eq %s\n", fighter[0].name.c_str());
 }
 
 /*! \brief Display and choose item

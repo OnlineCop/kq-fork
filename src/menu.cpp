@@ -227,7 +227,7 @@ void KMenu::level_up(int pr)
 	int bxp, xpi;
 	KFighter tmpf;
 
-	player2fighter(pr, &tmpf);
+	tmpf = player2fighter(pr);
 	xpi = party[pr].lup[0];
 	bxp = party[pr].lup[1];
 	party[pr].lvl++;
@@ -731,23 +731,19 @@ void KMenu::update_equipstats(void)
 
 	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
 	{
-		player2fighter(pidx[fighter_index], &fighter[fighter_index]);
-		printf("converted %d, %s\n", fighter_index, fighter[fighter_index].name.c_str());
+		fighter[fighter_index] = player2fighter(pidx[fighter_index]);
 	}
 }
 
 /* \brief Convert character-->fighter structure
  *
  * This function converts from the party structure to fighter structure.
- * Pass the character index and the function returns a fighter structure.
  * This is used for combat and for menu functions.
- * PH modified 20030308 I didn't like the way this returned a structure by
- * value.
  *
  * \param   who - Index of player to convert
- * \returns current_fighter (fighter structure)
+ * \returns current_fighter (fighter structure) which uses KFighter's move semantics.
  */
-void player2fighter(int who, KFighter *pf)
+KFighter player2fighter(int who)
 {
 	KFighter current_fighter;
 	KPlayer &plr = party[who];
@@ -757,12 +753,10 @@ void player2fighter(int who, KFighter *pf)
 	current_fighter.imb[0] = 0;
 	current_fighter.imb[1] = 0;
 
-	printf("converting %d: %s\n", who, plr.name.c_str());
 	current_fighter.name = plr.name;
 	current_fighter.xp = plr.xp;
 	current_fighter.lvl = plr.lvl;
 	current_fighter.hp = plr.hp;
-	printf("converting hp %d\n", plr.hp);
 	current_fighter.mhp = plr.mhp;
 	current_fighter.mp = plr.mp;
 	current_fighter.mmp = plr.mmp;
@@ -951,5 +945,6 @@ void player2fighter(int who, KFighter *pf)
 	current_fighter.crit = 1;
 	current_fighter.aux = 0;
 	current_fighter.unl = 0;
-	memcpy(pf, &current_fighter, sizeof(current_fighter));
+
+	return current_fighter;
 }
