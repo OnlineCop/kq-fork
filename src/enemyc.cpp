@@ -753,7 +753,9 @@ void KEnemy::LoadEnemyStats(const string &fullFilename)
 		// Each of the 16 RES (resistances)
 		for (size_t somethingToLoopWith = 0; somethingToLoopWith < R_TOTAL_RES; somethingToLoopWith++)
 		{
-			iss >> fighter_loaded_from_disk.res[somethingToLoopWith];
+      char tempval;
+			iss >> tempval;
+      fighter_loaded_from_disk.res[somethingToLoopWith] = tempval - '0';
 		}
 		// Each of the 8 AI
 		for (size_t somethingToLoopWith = 0; somethingToLoopWith < 8; somethingToLoopWith++)

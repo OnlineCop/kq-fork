@@ -283,7 +283,7 @@ function LOC_buy_house(en)
   if (progress.boughthouse == 0) then
     bubble(en, _"Hey, the name's Trezin, and have I got a deal for you!")
     if (party[0] == CASANDRA) then
-      thought(HERO1, _"Oh great. This guy sounds like another used-chariot salesman. Sign...")
+      thought(HERO1, _"Oh great. This guy sounds like another used-chariot salesman. Sigh...")
     end
     if (prompt(en, 2, 0, _"You can have this lovely house",
                          _"for a mere 7500 GP. Sound good?",

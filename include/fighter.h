@@ -175,7 +175,7 @@ public:
 	/*! \brief See A_* constants in enums.h */
 	int stats[eStat::NUM_STATS];
 	/*! \brief eResistance: See R_* constants */
-	char res[NUM_RES];
+  int8_t res[NUM_RES];
 	/*! \brief Direction character's sprite faces */
 	uint8_t facing;
 	/*! \brief Battle sprite to display (standing, casting, attacking) */

@@ -102,7 +102,7 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
 				}
 			}
 			Draw.blit2screen(0, 0);
-			kq_wait(30);
+			kq_wait(15);
 			fullblit(back, double_buffer);
 		}
 	}

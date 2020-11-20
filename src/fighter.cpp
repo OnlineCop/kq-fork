@@ -40,7 +40,7 @@ KFighter::KFighter()
 	{
 		stat = 0;
 	}
-	for (char & re : res)
+	for (int8_t & re : res)
 	{
 		re = 0;
 	}
