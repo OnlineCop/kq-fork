@@ -90,7 +90,6 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
 				{
 					dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2);
 					dy = fighter[fighter_index].cy + (fighter[fighter_index].cl / 2);
-					printf("%d, %d", dx, dy);
 					if (p == 0)
 					{
 						circlefill(double_buffer, dx, dy, color_range, 0);

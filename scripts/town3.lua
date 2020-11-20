@@ -43,6 +43,12 @@ function entity_handler(en)
 
   elseif (en == 3 or en == 4) then
     bubble(en, _"We're guarding against goblins.")
+    
+  elseif (en == 5) then
+    bubble(en, _"You seem like such nice young people.")
+
+  elseif (en == 7) then
+    bubble(en, _"That old guy outside is a little creepy.")
 
   elseif (en == 8) then
     bubble(en, _"Caffeine, caffeine, caffeine, caffeine...")
