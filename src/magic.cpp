@@ -1350,7 +1350,7 @@ int KMagic::res_adjust(size_t target_fighter_index, size_t rune_index, int amt)
 {
 	int ad, b;
 	KFighter tf;
-	char current_res;
+	int8_t current_res;
 
 	if (rune_index >= R_TOTAL_RES)
 	{

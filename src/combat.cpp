@@ -1211,6 +1211,7 @@ void KCombat::fkill(size_t fighter_index)
 	if (cheat && fighter_index < PSIZE)
 	{
 		fighter[fighter_index].hp = fighter[fighter_index].mhp;
+    fighter[fighter_index].mp = fighter[fighter_index].mmp;
 		return;
 	}
 #endif
