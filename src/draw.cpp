@@ -1430,6 +1430,7 @@ int KDraw::prompt_ex(int who, const char *ptext, const char *opt[], int n_opt)
 				while (isspace(*opt[i]))
 				{
 					++opt[i];
+          ++gbbs;
 				}
 				w = strlen(opt[i]);
 				if (winwidth < w)
@@ -1738,7 +1739,7 @@ void KDraw::set_textpos(uint32_t entity_index)
 	}
 	else
 	{
-		gbby = 216 - (gbbh * 12);
+		gbby = 216 - (gbbh * 12) - (gbbs * 12);
 		gbbx = 152 - (gbbw * 4);
 		bubble_stem_style = STEM_UNDEFINED;
 	}
