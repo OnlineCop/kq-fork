@@ -124,11 +124,11 @@ function showch(which_marker, which_chest)
   -- Set tiles if chest already opened
   if (get_treasure(which_chest) == 1) then
     set_zone(which_marker, 0)
-  end
 
-  -- Only the table where the warp spell is located needs to change its tile
-  if (which_marker == "warp_spell") then
-    set_mtile(which_marker, 237)
+    -- Only the table where the warp spell is located needs to change its tile
+    if (which_marker == "warp_spell") then
+      set_mtile(which_marker, 237)
+    end
   end
 end
 

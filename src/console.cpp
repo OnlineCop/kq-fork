@@ -145,9 +145,9 @@ void run_console(void)
 	int running;
 	uint32_t string_len;
 	uint32_t i;
-	static const char get[] = "return get_progress(P_";
+	static const char get[] = "return progress.";
 	static const char ret[] = "return ";
-	static const char set[] = "set_progress(P_";
+	static const char set[] = "progress.";
 
 	g_console.inputline[0] = '\0';
 	g_console.on = 1;
