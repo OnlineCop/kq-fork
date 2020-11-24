@@ -108,12 +108,12 @@ void KDraw::blit2screen(int xw, int yw)
 	acquire_screen();
 	if (should_stretch_view)
 	{
-		for (int j = 0; j < 480; ++j)
+		for (int j = 0; j < eSize::KQ_SCALED_SCREEN_H ; ++j)
 		{
 			uint8_t *lptr = reinterpret_cast<uint8_t *>(bmp_write_line(screen, j));
-			for (int i = 0; i < 640; i += 2)
+			for (int i = 0; i < eSize::KQ_SCALED_SCREEN_W; i += 2)
 			{
-				lptr[i] = lptr[i + 1] = double_buffer->ptr(xw + i / 2, yw + j / 2);
+				lptr[i] = lptr[i + 1] = double_buffer->ptr(xw + i / eSize::KQ_SCALE_FACTOR, yw + j / eSize::KQ_SCALE_FACTOR);
 			}
 			bmp_unwrite_line(screen);
 		}
@@ -131,7 +131,8 @@ void KDraw::blit2screen(int xw, int yw)
 		}
 	}
 	release_screen();
-	frate = limit_frame_rate(25);
+	//frate = limit_frame_rate(25);
+  frate = limit_frame_rate(30);
 }
 
 void KDraw::border(Raster *where, int left, int top, int right, int bottom)

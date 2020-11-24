@@ -50,6 +50,7 @@ enum eRunConsoleKeys
 	RUNKEY_RETURN = '\r',
 	RUNKEY_DELETE = 127,
 	RUNKEY_CTRL_G = 7,
+  RUNKEY_CTRL_Z = 26,
 	RUNKEY_BACKSPACE = 8,
 	RUNKEY_CTRL_R = 18,
 	RUNKEY_CTRL_S = 19
@@ -148,6 +149,7 @@ void run_console(void)
 	static const char get[] = "return progress.";
 	static const char ret[] = "return ";
 	static const char set[] = "progress.";
+  string prevCmd = "";
 
 	g_console.inputline[0] = '\0';
 	g_console.on = 1;
@@ -184,6 +186,7 @@ void run_console(void)
 			{
 				g_console.on = 0;
 				scroll_console(g_console.inputline);
+        prevCmd = g_console.inputline;
 				do_console_command(g_console.inputline);
 				g_console.inputline[0] = '\0';
 				g_console.on = 1;
@@ -206,6 +209,16 @@ void run_console(void)
 				g_console.inputline[i] = get[i];
 			}
 			break;
+
+    case RUNKEY_CTRL_Z:
+      do_console_command(g_console.inputline);
+
+      string_len = strlen(prevCmd.c_str());
+      for (i = 0; i < string_len; i++)
+      {
+        g_console.inputline[i] = prevCmd.c_str()[i];
+      }
+      break;
 
 		case RUNKEY_BACKSPACE: /* backspace */
 			if (strlen(g_console.inputline) > 0)
