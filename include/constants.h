@@ -13,11 +13,14 @@ enum eSize {
   //240
   KQ_SCREEN_H = TILE_H * ONSCREEN_TILES_H,
 
-  //640
-  KQ_SCALED_SCREEN_W = KQ_SCREEN_W << 1,
+  //1280  640
+  KQ_SCALED_SCREEN_W = KQ_SCREEN_W << 2,
 
-  //480
-  KQ_SCALED_SCREEN_H = KQ_SCREEN_H << 1,
+  //960   480
+  KQ_SCALED_SCREEN_H = KQ_SCREEN_H << 2,
+
+  // 3
+  KQ_SCALE_FACTOR = 4,
 
   // 352, or (320 + 16 + 16) == screen dimensions plus 1 tile on left and 1 tile on right
   SCREEN_W2 = (KQ_SCREEN_W + 2 * TILE_W),
