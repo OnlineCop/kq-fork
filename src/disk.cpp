@@ -193,7 +193,7 @@ int KDisk::load_resistances_xml(KPlayer *s, XMLElement *node)
 			}
 			else
 			{
-				TRACE("Wrong number of resistances, expected %d and got %d", NUM_RES, values.size());
+				TRACE("Wrong number of resistances, expected %d and got %zu", NUM_RES, values.size());
 				Game.program_death("Error loading XML");
 			}
 		}
@@ -216,7 +216,7 @@ int KDisk::load_spelltypes_xml(KPlayer *s, XMLElement *node)
 			}
 			else
 			{
-				TRACE("Wrong number of spelltypes, expected %d and got %d", NUM_SPELL_TYPES, values.size());
+				TRACE("Wrong number of spelltypes, expected %d and got %zu", NUM_SPELL_TYPES, values.size());
 				Game.program_death("Error loading XML");
 			}
 		}
@@ -239,7 +239,7 @@ int KDisk::load_spells_xml(KPlayer *s, XMLElement *node)
 			}
 			else
 			{
-				TRACE("Wrong number of spells, expected %d and got %d", NUM_SPELLS, values.size());
+				TRACE("Wrong number of spells, expected %d and got %zu", NUM_SPELLS, values.size());
 				Game.program_death("Error loading XML");
 			}
 		}
@@ -262,7 +262,7 @@ int KDisk::load_equipment_xml(KPlayer *s, XMLElement *node)
 			}
 			else
 			{
-				TRACE("Wrong number of equipment, expected %d and got %d", NUM_EQUIPMENT, values.size());
+				TRACE("Wrong number of equipment, expected %d and got %zu", NUM_EQUIPMENT, values.size());
 				Game.program_death("Error loading XML");
 			}
 		}
@@ -1002,7 +1002,7 @@ int KDisk::load_game_from_file(const char *filename)
 #ifdef WIN32    
 		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());    
 #else
-		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.ErrorStr());
+		TRACE("%s(%d)\n%s", doc.ErrorName(), doc.ErrorID(), doc.ErrorStr());
 #endif // WIN32
 		Game.program_death("Unable to load XML file");
 	}
@@ -1150,7 +1150,7 @@ int KDisk::load_stats_only(const char *filename, s_sgstats &stats)
 #ifdef WIN32
 		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.GetErrorStr1(), doc.GetErrorStr2());
 #else
-		TRACE("%s(%d)\n%s\n%s", doc.ErrorName(), doc.ErrorID(), doc.ErrorStr());
+		TRACE("%s(%d)\n%s", doc.ErrorName(), doc.ErrorID(), doc.ErrorStr());
 #endif // WIN32
 	}
 	return 1;

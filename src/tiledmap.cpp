@@ -80,7 +80,7 @@ void KTiledMap::load_tmx(const string &name)
 #ifdef WIN32
 		TRACE("Error loading %s\n%s\n%s\n", name.c_str(), tmx.GetErrorStr1(), tmx.GetErrorStr2());
 #else
-		TRACE("Error loading %s\n%s\n%s\n", name.c_str(), tmx.ErrorStr());
+		TRACE("Error loading %s\n%s\n", name.c_str(), tmx.ErrorStr());
 #endif // WIN32
 
 		Game.program_death("Could not load map file ");
@@ -508,7 +508,7 @@ KTmxTileset KTiledMap::load_tmx_tileset(XMLElement const *el)
 #ifdef WIN32
 			TRACE("Error loading %s\n%s\n%s\n", source, sourcedoc.GetErrorStr1(), sourcedoc.GetErrorStr2());
 #else
-			TRACE("Error loading %s\n%s\n%s\n", source, sourcedoc.ErrorStr());
+			TRACE("Error loading %s\n%s\n", source, sourcedoc.ErrorStr());
 #endif // WIN32
 			Game.program_death("Couldn't load external tileset");
 		}
