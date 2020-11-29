@@ -5,13 +5,29 @@
 #include "platform.h"
 
 KPlayerInput::KPlayerInput()
+  : right{0}
+  , left{0}
+  , up{0}
+  , down{0}
+  , besc{0}
+  , balt{0}
+  , bctrl{0}
+  , benter{0}
+  , bhelp{0}
+  , bcheat{0}
+  , kright{0}
+  , kleft{0}
+  , kup{0}
+  , kdown{0}
+  , kesc{0}
+  , kenter{0}
+  , kalt{0}
+  , kctrl{0}
+  , jbalt{0}
+  , jbctrl{0}
+  , jbenter{0}
+  , jbesc{0}
 {
-
-}
-
-KPlayerInput::~KPlayerInput()
-{
-
 }
 
 /*! \brief Handle user input.

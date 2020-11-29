@@ -956,7 +956,7 @@ void hero_choose_action(size_t fighter_index)
  */
 void hero_init(void)
 {
-	kmenu.update_equipstats();	
+	kmenu.update_equipstats();
 	Raster *eb = get_cached_image("usbat.png");
 	// Load all 8 fighters' stances into the `cframes` array.
 	// cframes[fighter's index][]

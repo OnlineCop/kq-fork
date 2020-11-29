@@ -4,7 +4,7 @@ class KPlayerInput
 {
 public:
 	KPlayerInput();
-	~KPlayerInput();
+	~KPlayerInput() = default;
 
 	void readcontrols();
 
