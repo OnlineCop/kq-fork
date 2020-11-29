@@ -34,7 +34,7 @@ Check that you have these libraries installed:
 
 On debian based systems:
 ```
-apt-get install liblua5.2-dev libtinyxml2-dev liballegro4-dev libdumb1-dev libaldmb1-dev
+apt-get install liblua5.2-dev libtinyxml2-dev liballegro4-dev libdumb1-dev libaldmb1-dev zlib1g-dev libpng-dev
 ```
  
 Then, you can compile the project using the following commands:
