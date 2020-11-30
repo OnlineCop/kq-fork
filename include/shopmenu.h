@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #define NUMSHOPS 50
 #define SHOPITEMS 12
 

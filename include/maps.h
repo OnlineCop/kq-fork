@@ -28,9 +28,10 @@
  */
 
 #include <allegro.h>
+#include <cstdint>
 #include <string>
-using std::string;
 #include <vector>
+using std::string;
 using std::vector;
 
 #include "bounds.h"

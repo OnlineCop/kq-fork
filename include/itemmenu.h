@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #define MAX_ITEMS 9
 
 enum eItemEffectResult {

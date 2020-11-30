@@ -24,6 +24,8 @@
 #include "animation.h"
 #include "tiledmap.h"
 
+#include <cstdint>
+
 class KAnimSequence
 {
 public:

@@ -22,6 +22,7 @@
 #pragma once
 
 #include "kq.h"
+#include <cstdint>
 #include <string>
 #include <vector>
 

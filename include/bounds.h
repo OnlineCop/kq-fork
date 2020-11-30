@@ -22,9 +22,10 @@
 #pragma once
 
 #include <allegro.h>
+#include <cstdint>
 #include <memory>
-using std::shared_ptr;
 #include <vector>
+using std::shared_ptr;
 using std::vector;
 
 struct PACKFILE;
