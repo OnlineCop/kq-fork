@@ -21,11 +21,12 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
-using std::shared_ptr;
 #include <string>
-using std::string;
 #include <vector>
+using std::shared_ptr;
+using std::string;
 using std::vector;
 
 /*! \file

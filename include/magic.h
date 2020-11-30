@@ -31,6 +31,8 @@
 #include "kq.h"
 #include "structs.h"
 
+#include <cstdint>
+
 enum EMagic
 {
 	M_CURE1 = 1,

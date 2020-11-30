@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 class KEffects
 {
 public:

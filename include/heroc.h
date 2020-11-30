@@ -21,7 +21,9 @@
 
 #pragma once
 
+#include <cstdint>
 #include <cstdlib>
+
 /*! \file
  * \brief Hero combat header file
  */

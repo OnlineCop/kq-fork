@@ -29,6 +29,8 @@
  * \date ??????
  */
 
+#include <cstdint>
+
 typedef uint32_t t_entity;
 
 void process_entities(void);

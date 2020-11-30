@@ -34,6 +34,8 @@
 #include "res.h"
 class Raster;
 
+#include <cstdint>
+
 /*! \brief Entity
  *
  * Contains info on an entity's appearance, position and behaviour */

@@ -21,4 +21,6 @@
 
 #pragma once
 
+#include <cstdint>
+
 void equip_menu(uint32_t);

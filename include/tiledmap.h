@@ -21,12 +21,14 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
-using std::unique_ptr;
 #include <string>
-using std::string;
 #include <tinyxml2.h>
 #include <vector>
+
+using std::unique_ptr;
+using std::string;
 using std::vector;
 using namespace tinyxml2;
 

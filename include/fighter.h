@@ -1,6 +1,7 @@
 #pragma once
 
 #include <allegro.h>
+#include <cstdint>
 #include "enums.h"
 #include "structs.h"
 class Raster;

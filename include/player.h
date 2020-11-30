@@ -4,6 +4,7 @@
 #include "heroc.h"
 #include "res.h"
 
+#include <cstdint>
 #include <string>
 using std::string;
 

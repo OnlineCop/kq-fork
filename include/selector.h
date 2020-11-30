@@ -24,6 +24,8 @@
 #include "enums.h"
 #include "heroc.h"
 
+#include <cstdint>
+
 int select_player(void);
 ePIDX select_any_player(eTarget, unsigned int, const char *);
 ePIDX select_hero(size_t, eTarget, bool);
