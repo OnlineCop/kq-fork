@@ -31,7 +31,7 @@
  * \date ????????
  */
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
 #include "enums.h"

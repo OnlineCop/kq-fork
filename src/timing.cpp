@@ -28,7 +28,7 @@
  */
 #ifdef _WIN32
 #include <allegro.h>
-#include <stdarg.h>
+#include <cstdarg>
 #include <winalleg.h>
 #endif
 

@@ -27,8 +27,8 @@
  */
 
 #include <memory>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #include "combat.h"
 #include "draw.h"

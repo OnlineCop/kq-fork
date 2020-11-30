@@ -28,10 +28,10 @@
  * Also some colour manipulation.
  */
 
-#include <assert.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <string.h>
+#include <cassert>
+#include <cctype>
+#include <cstdio>
+#include <cstring>
 
 #include "bounds.h"
 #include "combat.h"

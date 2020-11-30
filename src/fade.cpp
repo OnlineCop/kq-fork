@@ -27,7 +27,7 @@
  */
 
 #include "kq.h"
-#include <string.h>
+#include <cstring>
 
 #include "draw.h"
 #include "fade.h"

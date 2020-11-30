@@ -27,7 +27,7 @@
  */
 
 #include <aldumb.h>
-#include <string.h>
+#include <cstring>
 
 #include "kq.h"
 #include "music.h"

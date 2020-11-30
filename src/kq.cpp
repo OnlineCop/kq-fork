@@ -39,10 +39,10 @@
  * fixes
  */
 
-#include <assert.h>
-#include <locale.h>
+#include <cassert>
+#include <clocale>
 #include <memory>
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <time.h>
 #include <vector>

@@ -29,11 +29,11 @@
 #include "structs.h"
 
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <iterator>
 #include <map>
-#include <stdint.h>
-#include <stdio.h>
+#include <cstdint>
+#include <cstdio>
 #include <string>
 #include <tinyxml2.h>
 #include <vector>

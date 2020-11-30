@@ -31,8 +31,8 @@
 
 #include <allegro.h>
 #include <pwd.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <sys/stat.h>
 
 #include "platform.h"

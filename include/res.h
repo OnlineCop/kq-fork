@@ -22,7 +22,7 @@
 #pragma once
 
 #include <allegro.h>
-#include <stdint.h>
+#include <cstdint>
 
 #include "enums.h"
 #include "heroc.h"

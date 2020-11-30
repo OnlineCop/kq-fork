@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 using std::vector;
 
