@@ -31,8 +31,8 @@
 
 #include "movement.h"
 #include "kq.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 static int compose_path(AL_CONST int *, uint32_t, uint32_t, char *, size_t);
 static void copy_map(int *);

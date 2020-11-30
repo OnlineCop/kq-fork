@@ -48,7 +48,7 @@
 #endif /* MSVC */
 #endif /* GNUC */
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 using std::string;
 

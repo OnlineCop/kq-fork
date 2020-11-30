@@ -27,7 +27,7 @@
 #include "kq.h"
 #include "music.h"
 #include "structs.h"
-#include <stddef.h>
+#include <cstddef>
 
 /*! \file
 * \brief Lua console for debugging

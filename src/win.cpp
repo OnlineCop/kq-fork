@@ -31,7 +31,7 @@
 #include "kq.h"
 #include "platform.h"
 #include <allegro.h>
-#include <stdio.h>
+#include <cstdio>
 // This clashes with a Windows typedef
 #undef PSIZE
 #include <winalleg.h>

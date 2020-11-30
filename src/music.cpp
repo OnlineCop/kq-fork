@@ -26,8 +26,8 @@
  * Interfaces to DUMB
  */
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <string>
 
 #include "kq.h"

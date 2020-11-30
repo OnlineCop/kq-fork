@@ -32,9 +32,9 @@
  *          mode to be saved/loaded ?
  */
 
-#include <ctype.h>
-#include <stdio.h>
-#include <string.h>
+#include <cctype>
+#include <cstdio>
+#include <cstring>
 
 #include "combat.h"
 #include "constants.h"

@@ -44,7 +44,7 @@
    and also including <libintl.h> would fail on SunOS 4, whereas <locale.h>
    is OK.  */
 #if defined(__sun)
-#include <locale.h>
+#include <clocale>
 #endif
 
 /* Many header files from the libstdc++ coming with g++ 3.3 or newer include
@@ -183,7 +183,7 @@ inline
    can be arbitrary expressions.  But for string literals these macros are
    less efficient than those above.  */
 
-#include <string.h>
+#include <cstring>
 
 #if (((__GNUC__ >= 3 || __GNUG__ >= 2) && !defined __STRICT_ANSI__) &&         \
      !defined __cplusplus)
@@ -193,7 +193,7 @@ inline
 #endif
 
 #if !_LIBGETTEXT_HAVE_VARIABLE_SIZE_ARRAYS
-#include <stdlib.h>
+#include <cstdlib>
 #endif
 
 #define pgettext_expr(Msgctxt, Msgid)                                          \

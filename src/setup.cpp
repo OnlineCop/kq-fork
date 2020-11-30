@@ -27,8 +27,8 @@
  * \remark Updated  ML Oct-2002
  */
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <string>
 
 #include "combat.h"

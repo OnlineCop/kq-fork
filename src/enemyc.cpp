@@ -30,8 +30,8 @@
 #include <memory>
 #include <sstream>
 #include <string>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #include "combat.h"
 #include "disk.h"

@@ -25,8 +25,8 @@
  * \author Josh Bolduc
  * \date ????????
  */
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #include "combat.h"
 #include "constants.h"

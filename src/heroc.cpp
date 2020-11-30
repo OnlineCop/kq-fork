@@ -53,8 +53,8 @@
 #include "skills.h"
 #include "timing.h"
 #include <memory>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 /* External variables */
 int can_use_item = 1;
