@@ -52,9 +52,9 @@
 #include "setup.h"
 #include "skills.h"
 #include "timing.h"
-#include <memory>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 
 /* External variables */
 int can_use_item = 1;
@@ -91,34 +91,34 @@ static int combat_castable(int, int);
  */
 void auto_herochooseact(int who)
 {
-	int eact;
+    int eact;
 
-	if (!Combat.GetEtherEffectActive(who))
-	{
-		return;
-	}
-	if (fighter[who].IsDead() || fighter[who].hp <= 0)
-	{
-		Combat.SetEtherEffectActive(who, false);
-		return;
-	}
-	fighter[who].facing = 0;
-	eact = kqrandom->random_range_exclusive(0, 4);
-	if (eact == 0)
-	{
-		Combat.SetEtherEffectActive(who, false);
-		return;
-	}
-	if (eact == 1)
-	{
-		fighter[who].ctmem = 0;
-		hero_attack(who);
-		Combat.SetEtherEffectActive(who, false);
-		return;
-	}
-	fighter[who].ctmem = auto_select_hero(who, 0);
-	hero_attack(who);
-	Combat.SetEtherEffectActive(who, false);
+    if (!Combat.GetEtherEffectActive(who))
+    {
+        return;
+    }
+    if (fighter[who].IsDead() || fighter[who].hp <= 0)
+    {
+        Combat.SetEtherEffectActive(who, false);
+        return;
+    }
+    fighter[who].facing = 0;
+    eact = kqrandom->random_range_exclusive(0, 4);
+    if (eact == 0)
+    {
+        Combat.SetEtherEffectActive(who, false);
+        return;
+    }
+    if (eact == 1)
+    {
+        fighter[who].ctmem = 0;
+        hero_attack(who);
+        Combat.SetEtherEffectActive(who, false);
+        return;
+    }
+    fighter[who].ctmem = auto_select_hero(who, 0);
+    hero_attack(who);
+    Combat.SetEtherEffectActive(who, false);
 }
 
 /*! \brief Count available spells
@@ -131,36 +131,36 @@ void auto_herochooseact(int who)
  */
 int available_spells(int who)
 {
-	int a, b, e, l, numsp = 0;
+    int a, b, e, l, numsp = 0;
 
-	l = pidx[who];
-	for (a = 0; a < 60; a++)
-	{
-		b = party[l].spells[a];
-		if (b > 0)
-		{
-			if (magic[b].use == USE_ANY_INF || magic[b].use == USE_COMBAT_INF)
-			{
-				if (l == CORIN && fighter[who].aux == 2)
-				{
-					e = Magic.mp_needed(who, b);
-					if (fighter[who].mp >= e && magic[b].elem < 9)
-					{
-						numsp++;
-					}
-				}
-				else
-				{
-					e = Magic.mp_needed(who, b);
-					if (fighter[who].mp >= e)
-					{
-						numsp++;
-					}
-				}
-			}
-		}
-	}
-	return numsp;
+    l = pidx[who];
+    for (a = 0; a < 60; a++)
+    {
+        b = party[l].spells[a];
+        if (b > 0)
+        {
+            if (magic[b].use == USE_ANY_INF || magic[b].use == USE_COMBAT_INF)
+            {
+                if (l == CORIN && fighter[who].aux == 2)
+                {
+                    e = Magic.mp_needed(who, b);
+                    if (fighter[who].mp >= e && magic[b].elem < 9)
+                    {
+                        numsp++;
+                    }
+                }
+                else
+                {
+                    e = Magic.mp_needed(who, b);
+                    if (fighter[who].mp >= e)
+                    {
+                        numsp++;
+                    }
+                }
+            }
+        }
+    }
+    return numsp;
 }
 
 /*! \brief Is item invokable
@@ -172,15 +172,15 @@ int available_spells(int who)
  */
 static int can_invoke_item(int t1)
 {
-	if (items[t1].type > 5)
-	{
-		return 0;
-	}
-	if (items[t1].use != USE_COMBAT_ONCE && items[t1].use != USE_COMBAT_INF)
-	{
-		return 0;
-	}
-	return 1;
+    if (items[t1].type > 5)
+    {
+        return 0;
+    }
+    if (items[t1].use != USE_COMBAT_ONCE && items[t1].use != USE_COMBAT_INF)
+    {
+        return 0;
+    }
+    return 1;
 }
 
 /*! \brief Check spell is castable
@@ -194,45 +194,45 @@ static int can_invoke_item(int t1)
  */
 static int combat_castable(int spell_caster, int spell_number)
 {
-	int b, c = 0;
+    int b, c = 0;
 
-	b = party[pidx[spell_caster]].spells[spell_number];
-	if (b == M_WARP)
-	{
+    b = party[pidx[spell_caster]].spells[spell_number];
+    if (b == M_WARP)
+    {
 #ifdef DEBUGMODE
-		// They can only run if we are in debugging mode >= 3
-		if (can_run == 0 && debugging < 3)
-		{
-			return 0;
-		}
+        // They can only run if we are in debugging mode >= 3
+        if (can_run == 0 && debugging < 3)
+        {
+            return 0;
+        }
 #else
-		if (can_run == 0)
-		{
-			return 0;
-		}
+        if (can_run == 0)
+        {
+            return 0;
+        }
 #endif
-	}
+    }
 
-	if (magic[b].use == USE_ANY_INF || magic[b].use == USE_COMBAT_INF)
-	{
-		if (pidx[spell_caster] == CORIN && fighter[c].aux == 2)
-		{
-			c = Magic.mp_needed(spell_caster, b);
-			if (fighter[spell_caster].mp >= c && magic[b].elem < R_BLIND)
-			{
-				return 1;
-			}
-		}
-		else
-		{
-			c = Magic.mp_needed(spell_caster, b);
-			if (fighter[spell_caster].mp >= c)
-			{
-				return 1;
-			}
-		}
-	}
-	return 0;
+    if (magic[b].use == USE_ANY_INF || magic[b].use == USE_COMBAT_INF)
+    {
+        if (pidx[spell_caster] == CORIN && fighter[c].aux == 2)
+        {
+            c = Magic.mp_needed(spell_caster, b);
+            if (fighter[spell_caster].mp >= c && magic[b].elem < R_BLIND)
+            {
+                return 1;
+            }
+        }
+        else
+        {
+            c = Magic.mp_needed(spell_caster, b);
+            if (fighter[spell_caster].mp >= c)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 
 /*! \brief Display item list
@@ -243,33 +243,33 @@ static int combat_castable(int spell_caster, int spell_number)
  */
 static void combat_draw_items(int pg)
 {
-	int a, b, c;
-	eFontColor k;
+    int a, b, c;
+    eFontColor k;
 
-	Draw.menubox(double_buffer, 72, 8, 20, 16, BLUE);
-	for (a = 0; a < 16; a++)
-	{
-		// b == item index #
-		b = g_inv[pg * 16 + a].item;
-		// c == quantity of item
-		c = g_inv[pg * 16 + a].quantity;
-		Draw.draw_icon(double_buffer, items[b].icon, 88, a * 8 + 16);
-		if (combat_item_usable(b) == 1)
-		{
-			k = FNORMAL;
-		}
-		else
-		{
-			k = FDARK;
-		}
-		Draw.print_font(double_buffer, 96, a * 8 + 16, items[b].name, k);
-		if (c > 1)
-		{
-			sprintf(strbuf, "^%d", c);
-			Draw.print_font(double_buffer, 224, a * 8 + 16, strbuf, k);
-		}
-	}
-	draw_sprite(double_buffer, pgb[pg], 238, 142);
+    Draw.menubox(double_buffer, 72, 8, 20, 16, BLUE);
+    for (a = 0; a < 16; a++)
+    {
+        // b == item index #
+        b = g_inv[pg * 16 + a].item;
+        // c == quantity of item
+        c = g_inv[pg * 16 + a].quantity;
+        Draw.draw_icon(double_buffer, items[b].icon, 88, a * 8 + 16);
+        if (combat_item_usable(b) == 1)
+        {
+            k = FNORMAL;
+        }
+        else
+        {
+            k = FDARK;
+        }
+        Draw.print_font(double_buffer, 96, a * 8 + 16, items[b].name, k);
+        if (c > 1)
+        {
+            sprintf(strbuf, "^%d", c);
+            Draw.print_font(double_buffer, 224, a * 8 + 16, strbuf, k);
+        }
+    }
+    draw_sprite(double_buffer, pgb[pg], 238, 142);
 }
 
 /*! \brief Draw spell list
@@ -282,31 +282,31 @@ static void combat_draw_items(int pg)
  */
 static void combat_draw_spell_menu(int c, int ptr, int pg)
 {
-	int z, j, b;
+    int z, j, b;
 
-	Draw.menubox(double_buffer, 80, 24, 18, 12, BLUE);
-	for (j = 0; j < NUM_SPELLS_PER_PAGE; j++)
-	{
-		z = party[pidx[c]].spells[pg * NUM_SPELLS_PER_PAGE + j];
-		if (z > 0)
-		{
-			Draw.draw_icon(double_buffer, magic[z].icon, 96, j * 8 + 32);
-			if (combat_castable(c, pg * NUM_SPELLS_PER_PAGE + j) == 1)
-			{
-				Draw.print_font(double_buffer, 104, j * 8 + 32, magic[z].name, FNORMAL);
-			}
-			else
-			{
-				Draw.print_font(double_buffer, 104, j * 8 + 32, magic[z].name, FDARK);
-			}
-			b = Magic.mp_needed(c, z);
-			sprintf(strbuf, "%d", b);
-			Draw.print_font(double_buffer, 222 - (strlen(strbuf) * 8), j * 8 + 32, strbuf, FNORMAL);
-			draw_sprite(double_buffer, b_mp, 222, j * 8 + 32);
-		}
-	}
-	draw_sprite(double_buffer, menuptr, 80, ptr * 8 + 32);
-	draw_sprite(double_buffer, pgb[pg], 230, 126);
+    Draw.menubox(double_buffer, 80, 24, 18, 12, BLUE);
+    for (j = 0; j < NUM_SPELLS_PER_PAGE; j++)
+    {
+        z = party[pidx[c]].spells[pg * NUM_SPELLS_PER_PAGE + j];
+        if (z > 0)
+        {
+            Draw.draw_icon(double_buffer, magic[z].icon, 96, j * 8 + 32);
+            if (combat_castable(c, pg * NUM_SPELLS_PER_PAGE + j) == 1)
+            {
+                Draw.print_font(double_buffer, 104, j * 8 + 32, magic[z].name, FNORMAL);
+            }
+            else
+            {
+                Draw.print_font(double_buffer, 104, j * 8 + 32, magic[z].name, FDARK);
+            }
+            b = Magic.mp_needed(c, z);
+            sprintf(strbuf, "%d", b);
+            Draw.print_font(double_buffer, 222 - (strlen(strbuf) * 8), j * 8 + 32, strbuf, FNORMAL);
+            draw_sprite(double_buffer, b_mp, 222, j * 8 + 32);
+        }
+    }
+    draw_sprite(double_buffer, menuptr, 80, ptr * 8 + 32);
+    draw_sprite(double_buffer, pgb[pg], 230, 126);
 }
 
 /*! \brief Use item
@@ -320,58 +320,58 @@ static void combat_draw_spell_menu(int c, int ptr, int pg)
  */
 static int combat_item(int ss, int t1, int tg)
 {
-	int a, b, r, st = tg, tt = 0, tl = 0;
+    int a, b, r, st = tg, tt = 0, tl = 0;
 
-	// Item cannot be used in combat
-	if (combat_item_usable(t1) == 0)
-	{
-		return 0;
-	}
-	strcpy(attack_string, items[t1].name);
-	display_attack_string = 1;
-	r = item_effects(ss, tg, t1);
-	display_attack_string = 0;
-	if (r < 2)
-	{
-		return r;
-	}
-	if (items[t1].tgt == TGT_ENEMY_ALL)
-	{
-		tl = 1;
-		if (ss == PSIZE)
-		{
-			st = 0;
-			tt = numchrs;
-		}
-		else
-		{
-			st = PSIZE;
-			tt = Combat.GetNumEnemies();
-		}
-	}
-	Effects.display_amount(st, FONT_DECIDE, tl);
-	for (a = st; a < st + tt; a++)
-	{
-		Magic.adjust_hp(a, Combat.GetHealthAdjust(a));
-	}
-	b = 0;
-	for (a = st; a < st + tt; a++)
-	{
-		if (fighter[a].IsAlive() && fighter[a].hp <= 0)
-		{
-			Combat.fkill(a);
-			b++;
-		}
-		else
-		{
-			Combat.AdjustHealth(a, 0);
-		}
-	}
-	if (b > 0)
-	{
-		Effects.death_animation(st, tl);
-	}
-	return 1;
+    // Item cannot be used in combat
+    if (combat_item_usable(t1) == 0)
+    {
+        return 0;
+    }
+    strcpy(attack_string, items[t1].name);
+    display_attack_string = 1;
+    r = item_effects(ss, tg, t1);
+    display_attack_string = 0;
+    if (r < 2)
+    {
+        return r;
+    }
+    if (items[t1].tgt == TGT_ENEMY_ALL)
+    {
+        tl = 1;
+        if (ss == PSIZE)
+        {
+            st = 0;
+            tt = numchrs;
+        }
+        else
+        {
+            st = PSIZE;
+            tt = Combat.GetNumEnemies();
+        }
+    }
+    Effects.display_amount(st, FONT_DECIDE, tl);
+    for (a = st; a < st + tt; a++)
+    {
+        Magic.adjust_hp(a, Combat.GetHealthAdjust(a));
+    }
+    b = 0;
+    for (a = st; a < st + tt; a++)
+    {
+        if (fighter[a].IsAlive() && fighter[a].hp <= 0)
+        {
+            Combat.fkill(a);
+            b++;
+        }
+        else
+        {
+            Combat.AdjustHealth(a, 0);
+        }
+    }
+    if (b > 0)
+    {
+        Effects.death_animation(st, tl);
+    }
+    return 1;
 }
 
 /*! \brief Choose combat item
@@ -385,99 +385,100 @@ static int combat_item(int ss, int t1, int tg)
  */
 static int combat_item_menu(int whom)
 {
-	int z, stop = 0, ptr = 0, pptr = 0;
+    int z, stop = 0, ptr = 0, pptr = 0;
 
-	fullblit(double_buffer, back);
-	while (!stop)
-	{
-		Game.do_check_animation();
-		fullblit(back, double_buffer);
-		combat_draw_items(pptr);
-		draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 16);
-		/* put description of selected item */
-		Draw.menubox(double_buffer, 72, 152, 20, 1, BLUE);
-		Draw.print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16].item].desc, FNORMAL);
-		Draw.blit2screen(0, 0);
+    fullblit(double_buffer, back);
+    while (!stop)
+    {
+        Game.do_check_animation();
+        fullblit(back, double_buffer);
+        combat_draw_items(pptr);
+        draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 16);
+        /* put description of selected item */
+        Draw.menubox(double_buffer, 72, 152, 20, 1, BLUE);
+        Draw.print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16].item].desc, FNORMAL);
+        Draw.blit2screen(0, 0);
 
-		PlayerInput.readcontrols();
-		if (PlayerInput.up)
-		{
-			Game.unpress();
-			ptr--;
-			if (ptr < 0)
-			{
-				ptr = 15;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.down)
-		{
-			Game.unpress();
-			ptr++;
-			if (ptr > 15)
-			{
-				ptr = 0;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.left)
-		{
-			Game.unpress();
-			pptr--;
-			if (pptr < 0)
-			{
-				pptr = 3;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.right)
-		{
-			Game.unpress();
-			pptr++;
-			if (pptr > 3)
-			{
-				pptr = 0;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.balt)
-		{
-			unsigned short inventory = g_inv[pptr * 16 + ptr].item;
-			Game.unpress();
-			if (items[inventory].tgt >= TGT_ENEMY_ONE)
-			{
-				z = select_enemy(whom, (eTarget)(items[inventory].tgt));
-			}
-			else
-			{
-				if (inventory == I_LTONIC)
-				{
-					z = select_hero(whom, (eTarget)(items[inventory].tgt), 1);
-				}
-				else
-				{
-					z = select_hero(whom, (eTarget)(items[inventory].tgt), 0);
-				}
-			}
-			if (z > -1)
-			{
-				if (combat_item(0, inventory, z) == 1)
-				{
-					if (items[fighter[whom].csmem].use != USE_ANY_INF && items[fighter[whom].csmem].use != USE_COMBAT_INF)
-					{
-						remove_item(pptr * 16 + ptr, 1);
-					}
-					stop = 2;
-				}
-			}
-		}
-		if (PlayerInput.bctrl)
-		{
-			Game.unpress();
-			stop = 1;
-		}
-	}
-	return stop - 1;
+        PlayerInput.readcontrols();
+        if (PlayerInput.up)
+        {
+            Game.unpress();
+            ptr--;
+            if (ptr < 0)
+            {
+                ptr = 15;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.down)
+        {
+            Game.unpress();
+            ptr++;
+            if (ptr > 15)
+            {
+                ptr = 0;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.left)
+        {
+            Game.unpress();
+            pptr--;
+            if (pptr < 0)
+            {
+                pptr = 3;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.right)
+        {
+            Game.unpress();
+            pptr++;
+            if (pptr > 3)
+            {
+                pptr = 0;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.balt)
+        {
+            unsigned short inventory = g_inv[pptr * 16 + ptr].item;
+            Game.unpress();
+            if (items[inventory].tgt >= TGT_ENEMY_ONE)
+            {
+                z = select_enemy(whom, (eTarget)(items[inventory].tgt));
+            }
+            else
+            {
+                if (inventory == I_LTONIC)
+                {
+                    z = select_hero(whom, (eTarget)(items[inventory].tgt), 1);
+                }
+                else
+                {
+                    z = select_hero(whom, (eTarget)(items[inventory].tgt), 0);
+                }
+            }
+            if (z > -1)
+            {
+                if (combat_item(0, inventory, z) == 1)
+                {
+                    if (items[fighter[whom].csmem].use != USE_ANY_INF &&
+                        items[fighter[whom].csmem].use != USE_COMBAT_INF)
+                    {
+                        remove_item(pptr * 16 + ptr, 1);
+                    }
+                    stop = 2;
+                }
+            }
+        }
+        if (PlayerInput.bctrl)
+        {
+            Game.unpress();
+            stop = 1;
+        }
+    }
+    return stop - 1;
 }
 
 /*! \brief Can item be used in combat
@@ -489,16 +490,16 @@ static int combat_item_menu(int whom)
  */
 static int combat_item_usable(int itno)
 {
-	// FIXME: What is this magic number '6'?
-	if (items[itno].type != 6 || items[itno].tgt == TGT_NONE)
-	{
-		return 0;
-	}
-	if (items[itno].use == USE_NOT || items[itno].use == USE_CAMP_ONCE || items[itno].use == USE_CAMP_INF)
-	{
-		return 0;
-	}
-	return 1;
+    // FIXME: What is this magic number '6'?
+    if (items[itno].type != 6 || items[itno].tgt == TGT_NONE)
+    {
+        return 0;
+    }
+    if (items[itno].use == USE_NOT || items[itno].use == USE_CAMP_ONCE || items[itno].use == USE_CAMP_INF)
+    {
+        return 0;
+    }
+    return 1;
 }
 
 /*! \brief Choose spell
@@ -510,94 +511,93 @@ static int combat_item_usable(int itno)
  */
 int combat_spell_menu(int c)
 {
-	int ptr = 0, pgno = 0, stop = 0;
+    int ptr = 0, pgno = 0, stop = 0;
 
-	fullblit(double_buffer, back);
-	play_effect(SND_MENU, 128);
-	while (!stop)
-	{
-		Game.do_check_animation();
-		fullblit(back, double_buffer);
-		combat_draw_spell_menu(c, ptr, pgno);
-		Draw.blit2screen(0, 0);
+    fullblit(double_buffer, back);
+    play_effect(SND_MENU, 128);
+    while (!stop)
+    {
+        Game.do_check_animation();
+        fullblit(back, double_buffer);
+        combat_draw_spell_menu(c, ptr, pgno);
+        Draw.blit2screen(0, 0);
 
-		PlayerInput.readcontrols();
+        PlayerInput.readcontrols();
 
-		if (PlayerInput.down)
-		{
-			Game.unpress();
-			ptr++;
-			if (ptr > 11)
-			{
-				ptr = 0;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.up)
-		{
-			Game.unpress();
-			ptr--;
-			if (ptr < 0)
-			{
-				ptr = 11;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.right)
-		{
-			Game.unpress();
-			pgno++;
-			if (pgno > 4)
-			{
-				pgno = 0;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.left)
-		{
-			Game.unpress();
-			pgno--;
-			if (pgno < 0)
-			{
-				pgno = 4;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.balt)
-		{
-			Game.unpress();
-			if (combat_castable(c, pgno * NUM_SPELLS_PER_PAGE + ptr) == 1)
-			{
-				fighter[c].csmem =
-					party[pidx[c]].spells[pgno * NUM_SPELLS_PER_PAGE + ptr];
-				stop = 2;
-			}
-		}
-		if (PlayerInput.bctrl)
-		{
-			Game.unpress();
-			stop = 1;
-		}
-	}
-	if (stop == 2)
-	{
-		if ((fighter[c].csmem == M_LIFE || fighter[c].csmem == M_FULLLIFE) && numchrs == 1)
-		{
-			return 0;
-		}
-		if (pidx[c] == CORIN && fighter[c].aux == 2)
-		{
-			return 1;
-		}
-		if (combat_spell_targeting(c) == 1)
-		{
-			if (Magic.combat_spell(c, 0) > -1)
-			{
-				return 1;
-			}
-		}
-	}
-	return 0;
+        if (PlayerInput.down)
+        {
+            Game.unpress();
+            ptr++;
+            if (ptr > 11)
+            {
+                ptr = 0;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.up)
+        {
+            Game.unpress();
+            ptr--;
+            if (ptr < 0)
+            {
+                ptr = 11;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.right)
+        {
+            Game.unpress();
+            pgno++;
+            if (pgno > 4)
+            {
+                pgno = 0;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.left)
+        {
+            Game.unpress();
+            pgno--;
+            if (pgno < 0)
+            {
+                pgno = 4;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.balt)
+        {
+            Game.unpress();
+            if (combat_castable(c, pgno * NUM_SPELLS_PER_PAGE + ptr) == 1)
+            {
+                fighter[c].csmem = party[pidx[c]].spells[pgno * NUM_SPELLS_PER_PAGE + ptr];
+                stop = 2;
+            }
+        }
+        if (PlayerInput.bctrl)
+        {
+            Game.unpress();
+            stop = 1;
+        }
+    }
+    if (stop == 2)
+    {
+        if ((fighter[c].csmem == M_LIFE || fighter[c].csmem == M_FULLLIFE) && numchrs == 1)
+        {
+            return 0;
+        }
+        if (pidx[c] == CORIN && fighter[c].aux == 2)
+        {
+            return 1;
+        }
+        if (combat_spell_targeting(c) == 1)
+        {
+            if (Magic.combat_spell(c, 0) > -1)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 
 /*! \brief Check spell targetting
@@ -612,45 +612,45 @@ int combat_spell_menu(int c)
  */
 static int combat_spell_targeting(int whom)
 {
-	int a, tg;
+    int a, tg;
 
-	a = fighter[whom].csmem;
-	if (magic[a].tgt == 0)
-	{
-		return -1;
-	}
-	if (magic[a].tgt <= TGT_ALLY_ALL)
-	{
-		if (a == M_LIFE || a == M_FULLLIFE)
-		{
-			tg = select_hero(whom, (eTarget)(magic[a].tgt), NO_STS_CHECK);
-		}
-		else
-		{
-			tg = select_hero(whom, (eTarget)(magic[a].tgt), 0);
-		}
-		if (tg == -1)
-		{
-			return 0;
-		}
-		else
-		{
-			fighter[whom].ctmem = tg;
-		}
-	}
-	else
-	{
-		tg = select_enemy(whom, (eTarget)(magic[a].tgt));
-		if (tg == -1)
-		{
-			return 0;
-		}
-		else
-		{
-			fighter[whom].ctmem = tg;
-		}
-	}
-	return 1;
+    a = fighter[whom].csmem;
+    if (magic[a].tgt == 0)
+    {
+        return -1;
+    }
+    if (magic[a].tgt <= TGT_ALLY_ALL)
+    {
+        if (a == M_LIFE || a == M_FULLLIFE)
+        {
+            tg = select_hero(whom, (eTarget)(magic[a].tgt), NO_STS_CHECK);
+        }
+        else
+        {
+            tg = select_hero(whom, (eTarget)(magic[a].tgt), 0);
+        }
+        if (tg == -1)
+        {
+            return 0;
+        }
+        else
+        {
+            fighter[whom].ctmem = tg;
+        }
+    }
+    else
+    {
+        tg = select_enemy(whom, (eTarget)(magic[a].tgt));
+        if (tg == -1)
+        {
+            return 0;
+        }
+        else
+        {
+            fighter[whom].ctmem = tg;
+        }
+    }
+    return 1;
 }
 
 /*! \brief Draw equipment list
@@ -661,17 +661,17 @@ static int combat_spell_targeting(int whom)
  */
 static void draw_invokable(int dud)
 {
-	int a, tt;
-	eFontColor grd;
+    int a, tt;
+    eFontColor grd;
 
-	Draw.menubox(double_buffer, 72, 80, 20, 6, BLUE);
-	for (a = 0; a < NUM_EQUIPMENT; a++)
-	{
-		tt = party[dud].eqp[a];
-		grd = can_invoke_item(tt) ? FNORMAL : FDARK;
-		Draw.draw_icon(double_buffer, items[tt].icon, 88, a * 8 + 88);
-		Draw.print_font(double_buffer, 96, a * 8 + 88, items[tt].name, grd);
-	}
+    Draw.menubox(double_buffer, 72, 80, 20, 6, BLUE);
+    for (a = 0; a < NUM_EQUIPMENT; a++)
+    {
+        tt = party[dud].eqp[a];
+        grd = can_invoke_item(tt) ? FNORMAL : FDARK;
+        Draw.draw_icon(double_buffer, items[tt].icon, 88, a * 8 + 88);
+        Draw.print_font(double_buffer, 96, a * 8 + 88, items[tt].name, grd);
+    }
 }
 
 /*! \brief Select target for hero
@@ -683,36 +683,36 @@ static void draw_invokable(int dud)
  */
 static int hero_attack(int whom)
 {
-	int tgt;
+    int tgt;
 
-	if (!fighter[whom].IsCharmed())
-	{
-		tgt = select_enemy(whom, TGT_ENEMY_ONE);
-	}
-	else
-	{
-		/* PH fixme: replaced 99 with NO_STS_CHECK */
-		/* was 99 a bug? see auto_select_hero()  */
-		if (fighter[whom].ctmem == 0)
-		{
-			tgt = auto_select_enemy(whom, NO_STS_CHECK);
-		}
-		else
-		{
-			tgt = auto_select_hero(whom, NO_STS_CHECK);
-		}
-	}
-	if (tgt == -1)
-	{
-		return 0;
-	}
-	fighter[whom].aframe = 6;
-	Combat.UnsetDatafileImageCoords();
-	Combat.battle_render(0, 0, 0);
-	Draw.blit2screen(0, 0);
-	kq_wait(150);
-	Combat.fight(whom, tgt, 0);
-	return 1;
+    if (!fighter[whom].IsCharmed())
+    {
+        tgt = select_enemy(whom, TGT_ENEMY_ONE);
+    }
+    else
+    {
+        /* PH fixme: replaced 99 with NO_STS_CHECK */
+        /* was 99 a bug? see auto_select_hero()  */
+        if (fighter[whom].ctmem == 0)
+        {
+            tgt = auto_select_enemy(whom, NO_STS_CHECK);
+        }
+        else
+        {
+            tgt = auto_select_hero(whom, NO_STS_CHECK);
+        }
+    }
+    if (tgt == -1)
+    {
+        return 0;
+    }
+    fighter[whom].aframe = 6;
+    Combat.UnsetDatafileImageCoords();
+    Combat.battle_render(0, 0, 0);
+    Draw.blit2screen(0, 0);
+    kq_wait(150);
+    Combat.fight(whom, tgt, 0);
+    return 1;
 }
 
 /*! \brief Show menu for action selection
@@ -724,217 +724,217 @@ static int hero_attack(int whom)
  */
 void hero_choose_action(size_t fighter_index)
 {
-	int stop = 0, amy;
-	size_t equipment_index;
-	size_t ca_index;
-	uint32_t sptr = 1, ptr = 0, my = 0, tt, chi[9];
+    int stop = 0, amy;
+    size_t equipment_index;
+    size_t ca_index;
+    uint32_t sptr = 1, ptr = 0, my = 0, tt, chi[9];
 
-	// This is going to blow up if we translate _(...) text into a language
-	// where the text is longer than 8 characters.
-	char ca[9][8];
+    // This is going to blow up if we translate _(...) text into a language
+    // where the text is longer than 8 characters.
+    char ca[9][8];
 
-	strcpy(sk_names[0], _("Rage"));
-	strcpy(sk_names[1], _("Sweep"));
-	strcpy(sk_names[2], _("Infuse"));
-	strcpy(sk_names[3], _("Prayer"));
-	strcpy(sk_names[4], _("Boost"));
-	strcpy(sk_names[5], _("Cover"));
-	strcpy(sk_names[6], _("Steal"));
-	strcpy(sk_names[7], _("Sense"));
+    strcpy(sk_names[0], _("Rage"));
+    strcpy(sk_names[1], _("Sweep"));
+    strcpy(sk_names[2], _("Infuse"));
+    strcpy(sk_names[3], _("Prayer"));
+    strcpy(sk_names[4], _("Boost"));
+    strcpy(sk_names[5], _("Cover"));
+    strcpy(sk_names[6], _("Steal"));
+    strcpy(sk_names[7], _("Sense"));
 
-	if (!Combat.GetEtherEffectActive(fighter_index))
-	{
-		return;
-	}
-	Game.unpress();
-	fighter[fighter_index].defend = 0;
-	fighter[fighter_index].facing = 0;
-	if (pidx[fighter_index] != CORIN && pidx[fighter_index] != CASANDRA)
-	{
-		fighter[fighter_index].aux = 0;
-	}
-	while (!stop)
-	{
-		Game.do_check_animation();
-		Combat.battle_render(fighter_index + 1, fighter_index + 1, 0);
-		my = 0;
-		strcpy(ca[my], _("Attack"));
-		chi[my] = C_ATTACK;
-		my++;
-		if (hero_skillcheck(fighter_index))
-		{
-			strcpy(ca[my], sk_names[pidx[fighter_index]]);
-			chi[my] = C_SKILL;
-			my++;
-		}
-		if (!fighter[fighter_index].IsMute() && available_spells(fighter_index) > 0)
-		{
-			strcpy(ca[my], _("Spell"));
-			chi[my] = C_SPELL;
-			my++;
-		}
-		if (can_use_item)
-		{
-			strcpy(ca[my], _("Item"));
-			chi[my] = C_ITEM;
-			my++;
-		}
-		tt = 0;
-		for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
-		{
-			if (can_invoke_item(party[pidx[fighter_index]].eqp[equipment_index]))
-			{
-				tt++;
-			}
-		}
-		if (tt > 0)
-		{
-			strcpy(ca[my], _("Invoke"));
-			chi[my] = C_INVOKE;
-			my++;
-		}
-		if (my > 5)
-		{
-			amy = 224 - (my * 8);
-		}
-		else
-		{
-			amy = 184;
-		}
-		Draw.menubox(double_buffer, 120, amy, 8, my, BLUE);
-		for (ca_index = 0; ca_index < my; ca_index++)
-		{
-			Draw.print_font(double_buffer, 136, ca_index * 8 + amy + 8, ca[ca_index], FNORMAL);
-		}
-		if (sptr == 1)
-		{
-			draw_sprite(double_buffer, menuptr, 120, ptr * 8 + amy + 8);
-		}
-		if (sptr == 0)
-		{
-			Draw.menubox(double_buffer, 64, amy, 6, 1, BLUE);
-			Draw.print_font(double_buffer, 72, amy + 8, _("Defend"), FNORMAL);
-		}
-		if (sptr == 2)
-		{
-			Draw.menubox(double_buffer, 192, amy, 3, 1, BLUE);
-			Draw.print_font(double_buffer, 200, amy + 8, _("Run"), FNORMAL);
-		}
-		Draw.blit2screen(0, 0);
+    if (!Combat.GetEtherEffectActive(fighter_index))
+    {
+        return;
+    }
+    Game.unpress();
+    fighter[fighter_index].defend = 0;
+    fighter[fighter_index].facing = 0;
+    if (pidx[fighter_index] != CORIN && pidx[fighter_index] != CASANDRA)
+    {
+        fighter[fighter_index].aux = 0;
+    }
+    while (!stop)
+    {
+        Game.do_check_animation();
+        Combat.battle_render(fighter_index + 1, fighter_index + 1, 0);
+        my = 0;
+        strcpy(ca[my], _("Attack"));
+        chi[my] = C_ATTACK;
+        my++;
+        if (hero_skillcheck(fighter_index))
+        {
+            strcpy(ca[my], sk_names[pidx[fighter_index]]);
+            chi[my] = C_SKILL;
+            my++;
+        }
+        if (!fighter[fighter_index].IsMute() && available_spells(fighter_index) > 0)
+        {
+            strcpy(ca[my], _("Spell"));
+            chi[my] = C_SPELL;
+            my++;
+        }
+        if (can_use_item)
+        {
+            strcpy(ca[my], _("Item"));
+            chi[my] = C_ITEM;
+            my++;
+        }
+        tt = 0;
+        for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
+        {
+            if (can_invoke_item(party[pidx[fighter_index]].eqp[equipment_index]))
+            {
+                tt++;
+            }
+        }
+        if (tt > 0)
+        {
+            strcpy(ca[my], _("Invoke"));
+            chi[my] = C_INVOKE;
+            my++;
+        }
+        if (my > 5)
+        {
+            amy = 224 - (my * 8);
+        }
+        else
+        {
+            amy = 184;
+        }
+        Draw.menubox(double_buffer, 120, amy, 8, my, BLUE);
+        for (ca_index = 0; ca_index < my; ca_index++)
+        {
+            Draw.print_font(double_buffer, 136, ca_index * 8 + amy + 8, ca[ca_index], FNORMAL);
+        }
+        if (sptr == 1)
+        {
+            draw_sprite(double_buffer, menuptr, 120, ptr * 8 + amy + 8);
+        }
+        if (sptr == 0)
+        {
+            Draw.menubox(double_buffer, 64, amy, 6, 1, BLUE);
+            Draw.print_font(double_buffer, 72, amy + 8, _("Defend"), FNORMAL);
+        }
+        if (sptr == 2)
+        {
+            Draw.menubox(double_buffer, 192, amy, 3, 1, BLUE);
+            Draw.print_font(double_buffer, 200, amy + 8, _("Run"), FNORMAL);
+        }
+        Draw.blit2screen(0, 0);
 
-		PlayerInput.readcontrols();
-		if (PlayerInput.up)
-		{
-			Game.unpress();
-			if (ptr > 0)
-			{
-				ptr--;
-			}
-			else
-			{
-				ptr = my - 1;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.down)
-		{
-			Game.unpress();
-			if (ptr < my - 1)
-			{
-				ptr++;
-			}
-			else
-			{
-				ptr = 0;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.left)
-		{
-			Game.unpress();
-			if (sptr > 0)
-			{
-				sptr--;
-			}
-		}
-		if (PlayerInput.right)
-		{
-			Game.unpress();
-			sptr++;
+        PlayerInput.readcontrols();
+        if (PlayerInput.up)
+        {
+            Game.unpress();
+            if (ptr > 0)
+            {
+                ptr--;
+            }
+            else
+            {
+                ptr = my - 1;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.down)
+        {
+            Game.unpress();
+            if (ptr < my - 1)
+            {
+                ptr++;
+            }
+            else
+            {
+                ptr = 0;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.left)
+        {
+            Game.unpress();
+            if (sptr > 0)
+            {
+                sptr--;
+            }
+        }
+        if (PlayerInput.right)
+        {
+            Game.unpress();
+            sptr++;
 #ifdef DEBUGMODE
-			// If we're debugging, we will force the ability to RUN
-			if (debugging >= 3)
-			{
-				sptr = 2;
-			}
-			else // This "else" isn't aligned with the following line,
-				// but the following line needs to be accessed regardless
-				// of whether DEBUGMODE is declared or not.
-				// It also needs to run in case "debugging" is NOT >= 3.
+            // If we're debugging, we will force the ability to RUN
+            if (debugging >= 3)
+            {
+                sptr = 2;
+            }
+            else // This "else" isn't aligned with the following line,
+                 // but the following line needs to be accessed regardless
+                 // of whether DEBUGMODE is declared or not.
+                 // It also needs to run in case "debugging" is NOT >= 3.
 #endif
-				if (sptr - 1 > can_run)
-				{
-					sptr = 1 + can_run;
-				}
-		}
-		if (PlayerInput.balt)
-		{
-			Game.unpress();
-			if (sptr == 0)
-			{
-				fighter[fighter_index].defend = 1;
-				Combat.SetEtherEffectActive(fighter_index, false);
-				stop = 1;
-			}
-			if (sptr == 2)
-			{
-				hero_run();
-				Combat.SetEtherEffectActive(fighter_index, false);
-				stop = 1;
-			}
-			if (sptr == 1)
-			{
-				switch (chi[ptr])
-				{
-				case C_ATTACK:
-					if (hero_attack(fighter_index) == 1)
-					{
-						Combat.SetEtherEffectActive(fighter_index, false);
-						stop = 1;
-					}
-					break;
-				case C_ITEM:
-					if (combat_item_menu(fighter_index) == 1)
-					{
-						Combat.SetEtherEffectActive(fighter_index, false);
-						stop = 1;
-					}
-					break;
-				case C_INVOKE:
-					if (hero_invoke(fighter_index) == 1)
-					{
-						Combat.SetEtherEffectActive(fighter_index, false);
-						stop = 1;
-					}
-					break;
-				case C_SPELL:
-					if (combat_spell_menu(fighter_index) == 1)
-					{
-						Combat.SetEtherEffectActive(fighter_index, false);
-						stop = 1;
-					}
-					break;
-				case C_SKILL:
-					if (skill_use(fighter_index) == 1)
-					{
-						Combat.SetEtherEffectActive(fighter_index, false);
-						stop = 1;
-					}
-					break;
-				}
-			}
-		}
-	}
+                if (sptr - 1 > can_run)
+            {
+                sptr = 1 + can_run;
+            }
+        }
+        if (PlayerInput.balt)
+        {
+            Game.unpress();
+            if (sptr == 0)
+            {
+                fighter[fighter_index].defend = 1;
+                Combat.SetEtherEffectActive(fighter_index, false);
+                stop = 1;
+            }
+            if (sptr == 2)
+            {
+                hero_run();
+                Combat.SetEtherEffectActive(fighter_index, false);
+                stop = 1;
+            }
+            if (sptr == 1)
+            {
+                switch (chi[ptr])
+                {
+                case C_ATTACK:
+                    if (hero_attack(fighter_index) == 1)
+                    {
+                        Combat.SetEtherEffectActive(fighter_index, false);
+                        stop = 1;
+                    }
+                    break;
+                case C_ITEM:
+                    if (combat_item_menu(fighter_index) == 1)
+                    {
+                        Combat.SetEtherEffectActive(fighter_index, false);
+                        stop = 1;
+                    }
+                    break;
+                case C_INVOKE:
+                    if (hero_invoke(fighter_index) == 1)
+                    {
+                        Combat.SetEtherEffectActive(fighter_index, false);
+                        stop = 1;
+                    }
+                    break;
+                case C_SPELL:
+                    if (combat_spell_menu(fighter_index) == 1)
+                    {
+                        Combat.SetEtherEffectActive(fighter_index, false);
+                        stop = 1;
+                    }
+                    break;
+                case C_SKILL:
+                    if (skill_use(fighter_index) == 1)
+                    {
+                        Combat.SetEtherEffectActive(fighter_index, false);
+                        stop = 1;
+                    }
+                    break;
+                }
+            }
+        }
+    }
 }
 
 /*! \brief Set up heroes for combat
@@ -956,94 +956,98 @@ void hero_choose_action(size_t fighter_index)
  */
 void hero_init(void)
 {
-	kmenu.update_equipstats();
-	Raster *eb = get_cached_image("usbat.png");
-	// Load all 8 fighters' stances into the `cframes` array.
-	// cframes[fighter's index][]
-	// cframes[][fighter's stance]
-	for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
-	{
-		for (unsigned int frame_index = 0; frame_index < MAXCFRAMES; frame_index++)
-		{
-			clear_bitmap(cframes[fighter_index][frame_index]);
-		}
-		unsigned int current_fighter_index = pidx[fighter_index];
+    kmenu.update_equipstats();
+    Raster* eb = get_cached_image("usbat.png");
+    // Load all 8 fighters' stances into the `cframes` array.
+    // cframes[fighter's index][]
+    // cframes[][fighter's stance]
+    for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
+    {
+        for (unsigned int frame_index = 0; frame_index < MAXCFRAMES; frame_index++)
+        {
+            clear_bitmap(cframes[fighter_index][frame_index]);
+        }
+        unsigned int current_fighter_index = pidx[fighter_index];
 
-		unsigned int fighter_x = current_fighter_index * 64 + 192;
-		unsigned int fighter_y = current_fighter_index * 32;
+        unsigned int fighter_x = current_fighter_index * 64 + 192;
+        unsigned int fighter_y = current_fighter_index * 32;
 
-		// Facing away from screen (see only the fighter's back)
-		blit(eb, cframes[fighter_index][0], 0, fighter_y, 0, 0, 32, 32);
-		// Facing toward the screen (see only the fighter's front)
-		blit(eb, cframes[fighter_index][1], 32, fighter_y, 0, 0, 32, 32);
-		// Arms out (casting a spell)
-		blit(eb, cframes[fighter_index][2], 64, fighter_y, 0, 0, 32, 32);
-		// Dead
-		blit(eb, cframes[fighter_index][3], 96, fighter_y, 0, 0, 32, 32);
-		// Victory: Facing toward the screen (cheering at end of a battle)
-		blit(eb, cframes[fighter_index][4], 128, fighter_y, 0, 0, 32, 32);
-		// Blocking: Facing away from the screen (pushed back from enemy attack)
-		blit(eb, cframes[fighter_index][5], 160, fighter_y, 0, 0, 32, 32);
+        // Facing away from screen (see only the fighter's back)
+        blit(eb, cframes[fighter_index][0], 0, fighter_y, 0, 0, 32, 32);
+        // Facing toward the screen (see only the fighter's front)
+        blit(eb, cframes[fighter_index][1], 32, fighter_y, 0, 0, 32, 32);
+        // Arms out (casting a spell)
+        blit(eb, cframes[fighter_index][2], 64, fighter_y, 0, 0, 32, 32);
+        // Dead
+        blit(eb, cframes[fighter_index][3], 96, fighter_y, 0, 0, 32, 32);
+        // Victory: Facing toward the screen (cheering at end of a battle)
+        blit(eb, cframes[fighter_index][4], 128, fighter_y, 0, 0, 32, 32);
+        // Blocking: Facing away from the screen (pushed back from enemy attack)
+        blit(eb, cframes[fighter_index][5], 160, fighter_y, 0, 0, 32, 32);
 
-		fighter_y = fighter[fighter_index].current_weapon_type * 32;
+        fighter_y = fighter[fighter_index].current_weapon_type * 32;
 
-		// Attack stances, column 6 (0-based): weapon held up to strike
-		blit(eb, cframes[fighter_index][6], fighter_x, fighter_y, 0, 0, 32, 32);
+        // Attack stances, column 6 (0-based): weapon held up to strike
+        blit(eb, cframes[fighter_index][6], fighter_x, fighter_y, 0, 0, 32, 32);
 
-		// Attack stances, column 7 (0-based): weapon forward, striking
-		blit(eb, cframes[fighter_index][7], fighter_x + 32, fighter_y, 0, 0, 32, 32);
+        // Attack stances, column 7 (0-based): weapon forward, striking
+        blit(eb, cframes[fighter_index][7], fighter_x + 32, fighter_y, 0, 0, 32, 32);
 
-		unsigned int fighter_weapon_index = party[current_fighter_index].eqp[0];
+        unsigned int fighter_weapon_index = party[current_fighter_index].eqp[0];
 
-		// If `kol` is non-zero, loop through all pixels in both of the Attack
-		// stances bitmaps
-		// and find the light-green color in the `pal` color palette.
-		// - Value "168" corresponds to entry value {27, 54, 27, 0}
-		// - Value "175" corresponds to entry value {53, 63, 53, 0}
-		// Swap out those "green" colors and replace them with the `kol` colors that
-		// match the
-		// colors that the weapons should actually be instead.
-		if (fighter[fighter_index].current_weapon_type != W_NO_WEAPON && items[fighter_weapon_index].kol > 0)
-		{
-			for (unsigned int current_line = 0; current_line < cframes[fighter_index][0]->height; current_line++)
-			{
-				for (unsigned int current_pixel = 0; current_pixel < cframes[fighter_index][0]->width; current_pixel++)
-				{
-					if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 168)
-					{
-						cframes[fighter_index][6]->setpixel(current_pixel, current_line, items[fighter_weapon_index].kol);
-					}
-					else
-					{
-						if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 175)
-						{
-							cframes[fighter_index][6]->setpixel(current_pixel, current_line, items[fighter_weapon_index].kol + 4);
-						}
-					}
-					if (cframes[fighter_index][7]->getpixel(current_pixel, current_line) == 168)
-					{
-						cframes[fighter_index][7]->setpixel(current_pixel, current_line, items[fighter_weapon_index].kol);
-					}
-					else
-					{
-						if (cframes[fighter_index][7]->getpixel(current_pixel, current_line) == 175)
-						{
-							cframes[fighter_index][7]->setpixel(current_pixel, current_line, items[fighter_weapon_index].kol + 4);
-						}
-					}
-				}
-			}
-		}
-		for (unsigned int frame_index = 0; frame_index < MAXCFRAMES; frame_index++)
-		{
-			tcframes[fighter_index][frame_index] =
-				Draw.copy_bitmap(tcframes[fighter_index][frame_index], cframes[fighter_index][frame_index]);
-		}
+        // If `kol` is non-zero, loop through all pixels in both of the Attack
+        // stances bitmaps
+        // and find the light-green color in the `pal` color palette.
+        // - Value "168" corresponds to entry value {27, 54, 27, 0}
+        // - Value "175" corresponds to entry value {53, 63, 53, 0}
+        // Swap out those "green" colors and replace them with the `kol` colors that
+        // match the
+        // colors that the weapons should actually be instead.
+        if (fighter[fighter_index].current_weapon_type != W_NO_WEAPON && items[fighter_weapon_index].kol > 0)
+        {
+            for (unsigned int current_line = 0; current_line < cframes[fighter_index][0]->height; current_line++)
+            {
+                for (unsigned int current_pixel = 0; current_pixel < cframes[fighter_index][0]->width; current_pixel++)
+                {
+                    if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 168)
+                    {
+                        cframes[fighter_index][6]->setpixel(current_pixel, current_line,
+                                                            items[fighter_weapon_index].kol);
+                    }
+                    else
+                    {
+                        if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 175)
+                        {
+                            cframes[fighter_index][6]->setpixel(current_pixel, current_line,
+                                                                items[fighter_weapon_index].kol + 4);
+                        }
+                    }
+                    if (cframes[fighter_index][7]->getpixel(current_pixel, current_line) == 168)
+                    {
+                        cframes[fighter_index][7]->setpixel(current_pixel, current_line,
+                                                            items[fighter_weapon_index].kol);
+                    }
+                    else
+                    {
+                        if (cframes[fighter_index][7]->getpixel(current_pixel, current_line) == 175)
+                        {
+                            cframes[fighter_index][7]->setpixel(current_pixel, current_line,
+                                                                items[fighter_weapon_index].kol + 4);
+                        }
+                    }
+                }
+            }
+        }
+        for (unsigned int frame_index = 0; frame_index < MAXCFRAMES; frame_index++)
+        {
+            tcframes[fighter_index][frame_index] =
+                Draw.copy_bitmap(tcframes[fighter_index][frame_index], cframes[fighter_index][frame_index]);
+        }
 
-		fighter[fighter_index].cw = 32;
-		fighter[fighter_index].cl = 32;
-		fighter[fighter_index].aframe = 0;
-	}
+        fighter[fighter_index].cw = 32;
+        fighter[fighter_index].cl = 32;
+        fighter[fighter_index].aframe = 0;
+    }
 }
 
 /*! \brief Display and choose item
@@ -1056,62 +1060,62 @@ void hero_init(void)
  */
 static int hero_invoke(int whom)
 {
-	int stop = 0, ptr = 0;
-	int dud;
+    int stop = 0, ptr = 0;
+    int dud;
 
-	fullblit(double_buffer, back);
-	dud = pidx[whom];
-	while (!stop)
-	{
-		Game.do_check_animation();
-		fullblit(back, double_buffer);
-		draw_invokable(dud);
-		draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 88);
-		Draw.blit2screen(0, 0);
+    fullblit(double_buffer, back);
+    dud = pidx[whom];
+    while (!stop)
+    {
+        Game.do_check_animation();
+        fullblit(back, double_buffer);
+        draw_invokable(dud);
+        draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 88);
+        Draw.blit2screen(0, 0);
 
-		PlayerInput.readcontrols();
-		if (PlayerInput.up)
-		{
-			Game.unpress();
-			ptr--;
-			if (ptr < 0)
-			{
-				ptr = 5;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.down)
-		{
-			Game.unpress();
-			ptr++;
-			if (ptr > 5)
-			{
-				ptr = 0;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.balt)
-		{
-			Game.unpress();
-			if (can_invoke_item(party[dud].eqp[ptr]))
-			{
-				if (hero_invokeitem(whom, party[dud].eqp[ptr]) == 1)
-				{
-					stop = 2;
-				}
-			}
-			else
-			{
-				play_effect(SND_BAD, 128);
-			}
-		}
-		if (PlayerInput.bctrl)
-		{
-			Game.unpress();
-			stop = 1;
-		}
-	}
-	return stop - 1;
+        PlayerInput.readcontrols();
+        if (PlayerInput.up)
+        {
+            Game.unpress();
+            ptr--;
+            if (ptr < 0)
+            {
+                ptr = 5;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.down)
+        {
+            Game.unpress();
+            ptr++;
+            if (ptr > 5)
+            {
+                ptr = 0;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.balt)
+        {
+            Game.unpress();
+            if (can_invoke_item(party[dud].eqp[ptr]))
+            {
+                if (hero_invokeitem(whom, party[dud].eqp[ptr]) == 1)
+                {
+                    stop = 2;
+                }
+            }
+            else
+            {
+                play_effect(SND_BAD, 128);
+            }
+        }
+        if (PlayerInput.bctrl)
+        {
+            Game.unpress();
+            stop = 1;
+        }
+    }
+    return stop - 1;
 }
 
 /*! \brief Invoke hero item
@@ -1128,64 +1132,65 @@ static int hero_invoke(int whom)
  */
 static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 {
-	ePIDX defender_fighter_index;
-	eTarget tgt = (eTarget)items[item_index].tgt;
-	if (tgt <= TGT_ALLY_ALL && tgt >= TGT_ALLY_ONE)
-	{
-		defender_fighter_index = select_hero(attacker_fighter_index, tgt, 0);
-	}
-	else if (tgt >= TGT_ENEMY_ONE && tgt <= TGT_ENEMY_ALL)
-	{
-		defender_fighter_index = select_enemy(attacker_fighter_index, tgt);
-	}
-	else
-	{
-		defender_fighter_index = PIDX_UNDEFINED;
-	}
+    ePIDX defender_fighter_index;
+    eTarget tgt = (eTarget)items[item_index].tgt;
+    if (tgt <= TGT_ALLY_ALL && tgt >= TGT_ALLY_ONE)
+    {
+        defender_fighter_index = select_hero(attacker_fighter_index, tgt, 0);
+    }
+    else if (tgt >= TGT_ENEMY_ONE && tgt <= TGT_ENEMY_ALL)
+    {
+        defender_fighter_index = select_enemy(attacker_fighter_index, tgt);
+    }
+    else
+    {
+        defender_fighter_index = PIDX_UNDEFINED;
+    }
 
-	if (defender_fighter_index == PIDX_UNDEFINED)
-	{
-		return 0;
-	}
+    if (defender_fighter_index == PIDX_UNDEFINED)
+    {
+        return 0;
+    }
 
-	if (items[item_index].imb > 0)
-	{
-		Magic.cast_imbued_spell(attacker_fighter_index, items[item_index].imb, items[item_index].stats[eStat::Attack], defender_fighter_index);
-		return 1;
-	}
+    if (items[item_index].imb > 0)
+    {
+        Magic.cast_imbued_spell(attacker_fighter_index, items[item_index].imb, items[item_index].stats[eStat::Attack],
+                                defender_fighter_index);
+        return 1;
+    }
 
-	/* This will likely become a separate function, but here is
-	 * where we are invoking items.
-	 */
-	if (item_index == I_STAFF1)
-	{
-		strcpy(attack_string, _("Neutralize Poison"));
-		Effects.draw_spellsprite(0, 1, 27, 0);
-		for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
-		{
-			if (fighter[fighter_index].IsAlive())
-			{
-				fighter[fighter_index].SetPoisoned(0);
-			}
-		}
-	}
-	if (item_index == I_ROD1)
-	{
-		unsigned int random_fighter_index = kqrandom->random_range_exclusive(1, 4);
-		strcpy(attack_string, _("Magic Missiles"));
-		display_attack_string = 1;
-		Combat.AdjustHealth(defender_fighter_index, 0);
-		for (unsigned fighter_index = 0; fighter_index < random_fighter_index; fighter_index++)
-		{
-			if (fighter[defender_fighter_index].IsAlive())
-			{
-				Effects.draw_attacksprite(defender_fighter_index, 0, 4, 1);
-				Magic.special_damage_oneall_enemies(attacker_fighter_index, 16, -1, defender_fighter_index, false);
-			}
-		}
-		display_attack_string = 0;
-	}
-	return 1;
+    /* This will likely become a separate function, but here is
+     * where we are invoking items.
+     */
+    if (item_index == I_STAFF1)
+    {
+        strcpy(attack_string, _("Neutralize Poison"));
+        Effects.draw_spellsprite(0, 1, 27, 0);
+        for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
+        {
+            if (fighter[fighter_index].IsAlive())
+            {
+                fighter[fighter_index].SetPoisoned(0);
+            }
+        }
+    }
+    if (item_index == I_ROD1)
+    {
+        unsigned int random_fighter_index = kqrandom->random_range_exclusive(1, 4);
+        strcpy(attack_string, _("Magic Missiles"));
+        display_attack_string = 1;
+        Combat.AdjustHealth(defender_fighter_index, 0);
+        for (unsigned fighter_index = 0; fighter_index < random_fighter_index; fighter_index++)
+        {
+            if (fighter[defender_fighter_index].IsAlive())
+            {
+                Effects.draw_attacksprite(defender_fighter_index, 0, 4, 1);
+                Magic.special_damage_oneall_enemies(attacker_fighter_index, 16, -1, defender_fighter_index, false);
+            }
+        }
+        display_attack_string = 0;
+    }
+    return 1;
 }
 
 /*! \brief Can heroes run?
@@ -1195,128 +1200,130 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
  */
 static void hero_run(void)
 {
-	int num_living_party_members = 0, num_living_enemies = 0;
-	int party_average_speed = 0, enemy_average_speed = 0;
+    int num_living_party_members = 0, num_living_enemies = 0;
+    int party_average_speed = 0, enemy_average_speed = 0;
 
-	for (size_t fighter_index = 0; fighter_index < numchrs; fighter_index++)
-	{
-		if (fighter[fighter_index].IsAlive())
-		{
-			num_living_party_members++;
-			party_average_speed += fighter[fighter_index].stats[eStat::Speed];
-		}
-	}
-	if (num_living_party_members == 0)
-	{
-		Game.program_death(_("Fatal error: How can a dead party run?"));
-	}
-	else
-	{
-		party_average_speed = party_average_speed / num_living_party_members;
-	}
-	for (size_t fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
-	{
-		if (fighter[fighter_index].IsAlive())
-		{
-			num_living_enemies++;
-			enemy_average_speed += fighter[fighter_index].stats[eStat::Speed];
-		}
-	}
-	if (num_living_enemies == 0)
-	{
-		Game.program_death(_("Fatal error: Why are the heroes running from dead enemies?"));
-	}
-	else
-	{
-		enemy_average_speed = enemy_average_speed / num_living_enemies;
-	}
+    for (size_t fighter_index = 0; fighter_index < numchrs; fighter_index++)
+    {
+        if (fighter[fighter_index].IsAlive())
+        {
+            num_living_party_members++;
+            party_average_speed += fighter[fighter_index].stats[eStat::Speed];
+        }
+    }
+    if (num_living_party_members == 0)
+    {
+        Game.program_death(_("Fatal error: How can a dead party run?"));
+    }
+    else
+    {
+        party_average_speed = party_average_speed / num_living_party_members;
+    }
+    for (size_t fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
+    {
+        if (fighter[fighter_index].IsAlive())
+        {
+            num_living_enemies++;
+            enemy_average_speed += fighter[fighter_index].stats[eStat::Speed];
+        }
+    }
+    if (num_living_enemies == 0)
+    {
+        Game.program_death(_("Fatal error: Why are the heroes running from dead enemies?"));
+    }
+    else
+    {
+        enemy_average_speed = enemy_average_speed / num_living_enemies;
+    }
 
-	int chance_of_escape;
-	if (Combat.GetMonsterSurprisesPartyValue() == 1)
-	{
-		// Basically, if players were expecting the monster attack, guarantee that they can run,
-		// even if combined party speeds < combined monster speeds.
-		chance_of_escape = 125;
-	}
-	else
-	{
-		// 75% chance that players can run.
-		chance_of_escape = 74;
-	}
+    int chance_of_escape;
+    if (Combat.GetMonsterSurprisesPartyValue() == 1)
+    {
+        // Basically, if players were expecting the monster attack, guarantee that they can run,
+        // even if combined party speeds < combined monster speeds.
+        chance_of_escape = 125;
+    }
+    else
+    {
+        // 75% chance that players can run.
+        chance_of_escape = 74;
+    }
 
-	if (party_average_speed > enemy_average_speed)
-	{
-		// Combined party speeds > combined monster speeds, so 99% chance players can run.
-		chance_of_escape += 25;
-	}
-	if (party_average_speed < enemy_average_speed)
-	{
-		// Combined monster speeds > combined party speeds, so chance to run drops to 50%
-		// (unless, of course, they were already at 125%; they can still run at 100%).
-		chance_of_escape -= 25;
-	}
+    if (party_average_speed > enemy_average_speed)
+    {
+        // Combined party speeds > combined monster speeds, so 99% chance players can run.
+        chance_of_escape += 25;
+    }
+    if (party_average_speed < enemy_average_speed)
+    {
+        // Combined monster speeds > combined party speeds, so chance to run drops to 50%
+        // (unless, of course, they were already at 125%; they can still run at 100%).
+        chance_of_escape -= 25;
+    }
 
-	int gold_dropped = 0;
-	if (kqrandom->random_range_exclusive(0, 100) < chance_of_escape)
-	{
-		if (kqrandom->random_range_exclusive(0, 100) < (100 - chance_of_escape))
-		{
-			// Player will drop some amount of gold, but not more than they have.
-			// Amount is determined on the 1st enemy's level * num_remaining_enemeies.
-			gold_dropped = num_living_party_members * fighter[PSIZE].lvl * num_living_enemies;
-			if (Game.GetGold() < gold_dropped)
-			{
-				// 'gold_dropped' is used later, so update the amount actually dropped.
-				gold_dropped = Game.GetGold();
-			}
+    int gold_dropped = 0;
+    if (kqrandom->random_range_exclusive(0, 100) < chance_of_escape)
+    {
+        if (kqrandom->random_range_exclusive(0, 100) < (100 - chance_of_escape))
+        {
+            // Player will drop some amount of gold, but not more than they have.
+            // Amount is determined on the 1st enemy's level * num_remaining_enemeies.
+            gold_dropped = num_living_party_members * fighter[PSIZE].lvl * num_living_enemies;
+            if (Game.GetGold() < gold_dropped)
+            {
+                // 'gold_dropped' is used later, so update the amount actually dropped.
+                gold_dropped = Game.GetGold();
+            }
 
-			Game.AddGold(-gold_dropped);
-		}
-	}
-	else
-	{
-		Draw.menubox(double_buffer, 84, 32, 17, 1, BLUE);
-		Draw.print_font(double_buffer, 92, 40, _("Could not escape!"), FNORMAL);
-		Draw.blit2screen(0, 0);
-		Game.wait_enter();
-		return;
-	}
-	if (gold_dropped > 0)
-	{
-		sprintf(strbuf, _("Escaped! Dropped %d gold!"), gold_dropped);
-	}
-	else
-	{
-		sprintf(strbuf, _("Escaped!"));
-	}
+            Game.AddGold(-gold_dropped);
+        }
+    }
+    else
+    {
+        Draw.menubox(double_buffer, 84, 32, 17, 1, BLUE);
+        Draw.print_font(double_buffer, 92, 40, _("Could not escape!"), FNORMAL);
+        Draw.blit2screen(0, 0);
+        Game.wait_enter();
+        return;
+    }
+    if (gold_dropped > 0)
+    {
+        sprintf(strbuf, _("Escaped! Dropped %d gold!"), gold_dropped);
+    }
+    else
+    {
+        sprintf(strbuf, _("Escaped!"));
+    }
 
-	static const int FontWidth = 8;
-	int text_center = strlen(strbuf) * (FontWidth / 2);
+    static const int FontWidth = 8;
+    int text_center = strlen(strbuf) * (FontWidth / 2);
 
-	/* TT: slow_computer addition for speed-ups */
-	int time_to_show_running_animation = (slow_computer ? 4 : 20);
+    /* TT: slow_computer addition for speed-ups */
+    int time_to_show_running_animation = (slow_computer ? 4 : 20);
 
-	// TODO: Figure out why we have this outer loop as 'c' is never used.
-	for (size_t c = 0; c < 5; c++)
-	{
-		for (int running_animation_count = 0; running_animation_count < time_to_show_running_animation; running_animation_count++)
-		{
-			clear_bitmap(double_buffer);
-			Draw.menubox(double_buffer, 152 - text_center, 32, strlen(strbuf), 1, BLUE);
-			Draw.print_font(double_buffer, 160 - text_center, 40, strbuf, FNORMAL);
-			for (size_t fighter_index = 0; fighter_index < numchrs; fighter_index++)
-			{
-				size_t animation_frame = (running_animation_count > time_to_show_running_animation / 2) ? 1 : 0;
+    // TODO: Figure out why we have this outer loop as 'c' is never used.
+    for (size_t c = 0; c < 5; c++)
+    {
+        for (int running_animation_count = 0; running_animation_count < time_to_show_running_animation;
+             running_animation_count++)
+        {
+            clear_bitmap(double_buffer);
+            Draw.menubox(double_buffer, 152 - text_center, 32, strlen(strbuf), 1, BLUE);
+            Draw.print_font(double_buffer, 160 - text_center, 40, strbuf, FNORMAL);
+            for (size_t fighter_index = 0; fighter_index < numchrs; fighter_index++)
+            {
+                size_t animation_frame = (running_animation_count > time_to_show_running_animation / 2) ? 1 : 0;
 
-				if (fighter[fighter_index].IsAlive())
-				{
-					draw_sprite(double_buffer, frames[pidx[fighter_index]][animation_frame], fighter[fighter_index].cx, fighter[fighter_index].cy);
-				}
-			}
-			Draw.blit2screen(0, 0);
-			kq_wait(10);
-		}
-	}
-	kmenu.revert_equipstats();
-	Combat.SetCombatEndResult(eCombatResult::HeroesEscaped);
+                if (fighter[fighter_index].IsAlive())
+                {
+                    draw_sprite(double_buffer, frames[pidx[fighter_index]][animation_frame], fighter[fighter_index].cx,
+                                fighter[fighter_index].cy);
+                }
+            }
+            Draw.blit2screen(0, 0);
+            kq_wait(10);
+        }
+    }
+    kmenu.revert_equipstats();
+    Combat.SetCombatEndResult(eCombatResult::HeroesEscaped);
 }

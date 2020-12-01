@@ -29,21 +29,22 @@
  */
 
 /*! \name Hero identifiers */
-enum ePIDX {
-  PIDX_UNDEFINED = -1,
-  SENSAR = 0,
-  SARINA = 1,
-  CORIN = 2,
-  AJATHAR = 3,
-  CASANDRA = 4,
-  TEMMIN = 5,
-  AYLA = 6,
-  NOSLOM = 7,
+enum ePIDX
+{
+    PIDX_UNDEFINED = -1,
+    SENSAR = 0,
+    SARINA = 1,
+    CORIN = 2,
+    AJATHAR = 3,
+    CASANDRA = 4,
+    TEMMIN = 5,
+    AYLA = 6,
+    NOSLOM = 7,
 
-  MAXCHRS,
+    MAXCHRS,
 
-  SEL_ALL_ALLIES,
-  SEL_ALL_ENEMIES
+    SEL_ALL_ALLIES,
+    SEL_ALL_ENEMIES
 };
 
 extern int can_use_item; /* intrface.c */

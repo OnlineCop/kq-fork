@@ -20,10 +20,10 @@
 */
 
 /*! \file
-* \brief Bounding areas
-* \author TT
-* \date 20060720
-*/
+ * \brief Bounding areas
+ * \author TT
+ * \date 20060720
+ */
 
 #include <cassert>
 #include <cctype>
@@ -36,44 +36,45 @@
 
 bool KBounds::Add(shared_ptr<KBound> bound)
 {
-	m_bounds.push_back(bound);
-	return true;
+    m_bounds.push_back(bound);
+    return true;
 }
 
 shared_ptr<KBound> KBounds::GetBound(size_t index)
 {
-	if (index < m_bounds.size())
-	{
-		return m_bounds[index];
-	}
-	return nullptr;
+    if (index < m_bounds.size())
+    {
+        return m_bounds[index];
+    }
+    return nullptr;
 }
 
-bool KBounds::IsBound(size_t &outIndex, int left, int top, int right, int bottom) const
+bool KBounds::IsBound(size_t& outIndex, int left, int top, int right, int bottom) const
 {
-	if (left > right)
-	{
-		std::swap(left, right);
-	}
+    if (left > right)
+    {
+        std::swap(left, right);
+    }
 
-	if (top > bottom)
-	{
-		std::swap(top, bottom);
-	}
+    if (top > bottom)
+    {
+        std::swap(top, bottom);
+    }
 
-	for (size_t i = 0; i < m_bounds.size(); ++i)
-	{
-		auto current_bound = m_bounds[i];
-		if (left > current_bound->right || right < current_bound->left || top > current_bound->bottom || bottom < current_bound->top)
-		{
-			continue;
-		}
-		else
-		{
-			outIndex = i;
-			return true;
-		}
-	}
+    for (size_t i = 0; i < m_bounds.size(); ++i)
+    {
+        auto current_bound = m_bounds[i];
+        if (left > current_bound->right || right < current_bound->left || top > current_bound->bottom ||
+            bottom < current_bound->top)
+        {
+            continue;
+        }
+        else
+        {
+            outIndex = i;
+            return true;
+        }
+    }
 
-	return false; // not found
+    return false; // not found
 }

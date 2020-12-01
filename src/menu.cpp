@@ -52,7 +52,6 @@ KMenu kmenu;
 
 KMenu::KMenu()
 {
-
 }
 
 /*! \brief Add a new quest into the list
@@ -60,13 +59,13 @@ KMenu::KMenu()
  * \param key The title of the item
  * \param text The text to display to the player regarding this quest
  */
-void KMenu::add_questinfo(const string &key, const string &text)
+void KMenu::add_questinfo(const string& key, const string& text)
 {
-	KQuestItem* newItem = new KQuestItem(key, text);
-	if (newItem)
-	{
-		quest_list.push_back(newItem);
-	}
+    KQuestItem* newItem = new KQuestItem(key, text);
+    if (newItem)
+    {
+        quest_list.push_back(newItem);
+    }
 }
 
 /*! \brief Check for level-ups
@@ -79,34 +78,34 @@ void KMenu::add_questinfo(const string &key, const string &text)
  */
 bool KMenu::check_xp(int pl, int ls)
 {
-	int stp = 0;
-	bool z = false;
+    int stp = 0;
+    bool z = false;
 
-	if (party[pl].lvl >= 50)
-	{
-		return false;
-	}
-	while (!stp)
-	{
-		if (party[pl].xp >= party[pl].next)
-		{
-			level_up(pl);
-			z = true;
-		}
-		else
-		{
-			stp = 1;
-		}
-		if (party[pl].lvl >= 50)
-		{
-			stp = 1;
-		}
-	}
-	if (ls == 1)
-	{
-		learn_new_spells(pl);
-	}
-	return z;
+    if (party[pl].lvl >= 50)
+    {
+        return false;
+    }
+    while (!stp)
+    {
+        if (party[pl].xp >= party[pl].next)
+        {
+            level_up(pl);
+            z = true;
+        }
+        else
+        {
+            stp = 1;
+        }
+        if (party[pl].lvl >= 50)
+        {
+            stp = 1;
+        }
+    }
+    if (ls == 1)
+    {
+        learn_new_spells(pl);
+    }
+    return z;
 }
 
 /*! \brief Draws the main menu
@@ -116,36 +115,37 @@ bool KMenu::check_xp(int pl, int ls)
  */
 void KMenu::draw_mainmenu(int swho)
 {
-	size_t fighter_index;
+    size_t fighter_index;
 
-	timer_count = 0;
-	for (fighter_index = 0; fighter_index < PSIZE; fighter_index++)
-	{
-		Draw.menubox(double_buffer, 44 + xofs, fighter_index * 64 + 64 + yofs, 18, 6,(size_t)swho == fighter_index ? DARKBLUE : BLUE);
-	}
-	Draw.menubox(double_buffer, 204 + xofs, 64 + yofs, 7, 6, BLUE);
-	Draw.menubox(double_buffer, 204 + xofs, 128 + yofs, 7, 6, BLUE);
-	Draw.print_font(double_buffer, 220 + xofs, 72 + yofs, _("Items"), FGOLD);
-	Draw.print_font(double_buffer, 220 + xofs, 80 + yofs, _("Magic"), FGOLD);
-	Draw.print_font(double_buffer, 220 + xofs, 88 + yofs, _("Equip"), FGOLD);
-	Draw.print_font(double_buffer, 220 + xofs, 96 + yofs, _("Spec."), FGOLD);
-	Draw.print_font(double_buffer, 220 + xofs, 104 + yofs, _("Stats"), FGOLD);
-	Draw.print_font(double_buffer, 220 + xofs, 112 + yofs, _("Quest"), FGOLD);
-	Draw.print_font(double_buffer, 212 + xofs, 136 + yofs, _("Time:"), FGOLD);
-	Draw.print_font(double_buffer, 212 + xofs, 164 + yofs, _("Gold:"), FGOLD);
-	/* PH: print time as h:mm */
-	sprintf(strbuf, "%d:%02d", khr, kmin);
-	Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 144 + yofs,strbuf, FNORMAL);
-	sprintf(strbuf, "%d", Game.GetGold());
-	Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 172 + yofs,strbuf, FNORMAL);
-	if (swho != -1)
-	{
-		Draw.menubox(double_buffer, 44 + xofs, swho * 64 + 64 + yofs, 18, 6, DARKBLUE);
-	}
-	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
-	{
-		draw_playerstat(double_buffer, pidx[fighter_index], 52 + xofs, fighter_index * 64 + 76 + yofs);
-	}
+    timer_count = 0;
+    for (fighter_index = 0; fighter_index < PSIZE; fighter_index++)
+    {
+        Draw.menubox(double_buffer, 44 + xofs, fighter_index * 64 + 64 + yofs, 18, 6,
+                     (size_t)swho == fighter_index ? DARKBLUE : BLUE);
+    }
+    Draw.menubox(double_buffer, 204 + xofs, 64 + yofs, 7, 6, BLUE);
+    Draw.menubox(double_buffer, 204 + xofs, 128 + yofs, 7, 6, BLUE);
+    Draw.print_font(double_buffer, 220 + xofs, 72 + yofs, _("Items"), FGOLD);
+    Draw.print_font(double_buffer, 220 + xofs, 80 + yofs, _("Magic"), FGOLD);
+    Draw.print_font(double_buffer, 220 + xofs, 88 + yofs, _("Equip"), FGOLD);
+    Draw.print_font(double_buffer, 220 + xofs, 96 + yofs, _("Spec."), FGOLD);
+    Draw.print_font(double_buffer, 220 + xofs, 104 + yofs, _("Stats"), FGOLD);
+    Draw.print_font(double_buffer, 220 + xofs, 112 + yofs, _("Quest"), FGOLD);
+    Draw.print_font(double_buffer, 212 + xofs, 136 + yofs, _("Time:"), FGOLD);
+    Draw.print_font(double_buffer, 212 + xofs, 164 + yofs, _("Gold:"), FGOLD);
+    /* PH: print time as h:mm */
+    sprintf(strbuf, "%d:%02d", khr, kmin);
+    Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 144 + yofs, strbuf, FNORMAL);
+    sprintf(strbuf, "%d", Game.GetGold());
+    Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 172 + yofs, strbuf, FNORMAL);
+    if (swho != -1)
+    {
+        Draw.menubox(double_buffer, 44 + xofs, swho * 64 + 64 + yofs, 18, 6, DARKBLUE);
+    }
+    for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+    {
+        draw_playerstat(double_buffer, pidx[fighter_index], 52 + xofs, fighter_index * 64 + 76 + yofs);
+    }
 }
 
 /*! \brief Draw player's stats
@@ -156,31 +156,31 @@ void KMenu::draw_mainmenu(int swho)
  * \param   dx left-most x-coord of stats view
  * \param   dy top-most y-coord of stats view
  */
-void KMenu::draw_playerstat(Raster *where, int player_index_in_party, int dx, int dy)
+void KMenu::draw_playerstat(Raster* where, int player_index_in_party, int dx, int dy)
 {
-	int j;
-	players[player_index_in_party].portrait->maskedBlitTo(where, dx, dy);
-	Draw.print_font(where, dx + 48, dy, party[player_index_in_party].name, FNORMAL);
-	Draw.draw_stsicon(where, 0, player_index_in_party, eSpellType::S_MALISON, dx + 48, dy + 8);
-	Draw.print_font(where, dx + 48, dy + 16, _("LV"), FGOLD);
-	sprintf(strbuf, "%d", party[player_index_in_party].lvl);
-	Draw.print_font(where, dx + 104 - (strlen(strbuf) * 8), dy + 16, strbuf, FNORMAL);
-	Draw.print_font(where, dx + 48, dy + 24, _("HP"), FGOLD);
-	Draw.print_font(where, dx + 104, dy + 24, "/", FNORMAL);
-	sprintf(strbuf, "%d", party[player_index_in_party].hp);
-	j = strlen(strbuf) * 8;
-	Draw.print_font(where, dx + 104 - j, dy + 24, strbuf, FNORMAL);
-	sprintf(strbuf, "%d", party[player_index_in_party].mhp);
-	j = strlen(strbuf) * 8;
-	Draw.print_font(where, dx + 144 - j, dy + 24, strbuf, FNORMAL);
-	Draw.print_font(where, dx + 48, dy + 32, _("MP"), FGOLD);
-	Draw.print_font(where, dx + 104, dy + 32, "/", FNORMAL);
-	sprintf(strbuf, "%d", party[player_index_in_party].mp);
-	j = strlen(strbuf) * 8;
-	Draw.print_font(where, dx + 104 - j, dy + 32, strbuf, FNORMAL);
-	sprintf(strbuf, "%d", party[player_index_in_party].mmp);
-	j = strlen(strbuf) * 8;
-	Draw.print_font(where, dx + 144 - j, dy + 32, strbuf, FNORMAL);
+    int j;
+    players[player_index_in_party].portrait->maskedBlitTo(where, dx, dy);
+    Draw.print_font(where, dx + 48, dy, party[player_index_in_party].name, FNORMAL);
+    Draw.draw_stsicon(where, 0, player_index_in_party, eSpellType::S_MALISON, dx + 48, dy + 8);
+    Draw.print_font(where, dx + 48, dy + 16, _("LV"), FGOLD);
+    sprintf(strbuf, "%d", party[player_index_in_party].lvl);
+    Draw.print_font(where, dx + 104 - (strlen(strbuf) * 8), dy + 16, strbuf, FNORMAL);
+    Draw.print_font(where, dx + 48, dy + 24, _("HP"), FGOLD);
+    Draw.print_font(where, dx + 104, dy + 24, "/", FNORMAL);
+    sprintf(strbuf, "%d", party[player_index_in_party].hp);
+    j = strlen(strbuf) * 8;
+    Draw.print_font(where, dx + 104 - j, dy + 24, strbuf, FNORMAL);
+    sprintf(strbuf, "%d", party[player_index_in_party].mhp);
+    j = strlen(strbuf) * 8;
+    Draw.print_font(where, dx + 144 - j, dy + 24, strbuf, FNORMAL);
+    Draw.print_font(where, dx + 48, dy + 32, _("MP"), FGOLD);
+    Draw.print_font(where, dx + 104, dy + 32, "/", FNORMAL);
+    sprintf(strbuf, "%d", party[player_index_in_party].mp);
+    j = strlen(strbuf) * 8;
+    Draw.print_font(where, dx + 104 - j, dy + 32, strbuf, FNORMAL);
+    sprintf(strbuf, "%d", party[player_index_in_party].mmp);
+    j = strlen(strbuf) * 8;
+    Draw.print_font(where, dx + 144 - j, dy + 32, strbuf, FNORMAL);
 }
 
 /*! \brief Add experience to stats
@@ -194,8 +194,8 @@ void KMenu::draw_playerstat(Raster *where, int player_index_in_party, int dx, in
  */
 bool KMenu::give_xp(int pl, int the_xp, int ls)
 {
-	party[pl].xp += the_xp;
-	return check_xp(pl, ls);
+    party[pl].xp += the_xp;
+    return check_xp(pl, ls);
 }
 
 /*! \brief Remove all items
@@ -207,11 +207,11 @@ bool KMenu::give_xp(int pl, int the_xp, int ls)
  */
 void KMenu::clear_quests()
 {
-	for (KQuestItem* item : quest_list)
-	{
-		delete item;
-	}
-	quest_list.clear();
+    for (KQuestItem* item : quest_list)
+    {
+        delete item;
+    }
+    quest_list.clear();
 }
 
 /*! \brief Levels up player
@@ -222,26 +222,27 @@ void KMenu::clear_quests()
  */
 void KMenu::level_up(int pr)
 {
-	int a, b = 0;
-	float z;
-	int bxp, xpi;
-	KFighter tmpf;
+    int a, b = 0;
+    float z;
+    int bxp, xpi;
+    KFighter tmpf;
 
-	tmpf = player2fighter(pr);
-	xpi = party[pr].lup[0];
-	bxp = party[pr].lup[1];
-	party[pr].lvl++;
-	a = party[pr].lvl + 1;
-	z = ((a / 3) + (xpi * (a / 20 + 1) - 1)) * (((a - 2) / 2) * (a - 1));
-	z += (bxp * (a / 20 + 1) * (a - 1));
-	party[pr].next += (int)z;
-	a = (kqrandom->random_range_exclusive(0, party[pr].lup[2] / 2)) + party[pr].lup[2] + (tmpf.stats[eStat::Vitality] / 5);
-	party[pr].hp += a;
-	party[pr].mhp += a;
-	b = (kqrandom->random_range_exclusive(0, party[pr].lup[3] / 2)) + party[pr].lup[3];
-	b += (tmpf.stats[eStat::Intellect] + tmpf.stats[eStat::Sagacity]) / 25;
-	party[pr].mp += b;
-	party[pr].mmp += b;
+    tmpf = player2fighter(pr);
+    xpi = party[pr].lup[0];
+    bxp = party[pr].lup[1];
+    party[pr].lvl++;
+    a = party[pr].lvl + 1;
+    z = ((a / 3) + (xpi * (a / 20 + 1) - 1)) * (((a - 2) / 2) * (a - 1));
+    z += (bxp * (a / 20 + 1) * (a - 1));
+    party[pr].next += (int)z;
+    a = (kqrandom->random_range_exclusive(0, party[pr].lup[2] / 2)) + party[pr].lup[2] +
+        (tmpf.stats[eStat::Vitality] / 5);
+    party[pr].hp += a;
+    party[pr].mhp += a;
+    b = (kqrandom->random_range_exclusive(0, party[pr].lup[3] / 2)) + party[pr].lup[3];
+    b += (tmpf.stats[eStat::Intellect] + tmpf.stats[eStat::Sagacity]) / 25;
+    party[pr].mp += b;
+    party[pr].mmp += b;
 }
 
 /*! \brief Main menu
@@ -250,92 +251,92 @@ void KMenu::level_up(int pr)
  */
 void KMenu::menu(void)
 {
-	int stop = 0, ptr = 0, z = -1;
+    int stop = 0, ptr = 0, z = -1;
 
-	play_effect(SND_MENU, 128);
-	timer_count = 0;
-	while (!stop)
-	{
-		Game.do_check_animation();
-		Draw.drawmap();
-		draw_mainmenu(-1);
-		draw_sprite(double_buffer, menuptr, 204 + xofs, ptr * 8 + 73 + yofs);
-		Draw.blit2screen(xofs, yofs);
-		PlayerInput.readcontrols();
-		if (PlayerInput.up)
-		{
-			Game.unpress();
-			ptr--;
-			if (ptr < 0)
-			{
-				ptr = 5;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.down)
-		{
-			Game.unpress();
-			ptr++;
-			if (ptr > 5)
-			{
-				ptr = 0;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		/* Allow player to rearrange the party at any time by pressing LEFT */
-		if (PlayerInput.left)
-		{
-			z = select_player();
-			if (z > 0)
-			{
-				party_newlead();
-			}
-		}
-		if (PlayerInput.balt)
-		{
-			Game.unpress();
-			switch (ptr)
-			{
-			case 0:
-				camp_item_menu();
-				break;
-			case 3:
-				spec_items();
-				break;
-			case 5:
-				display_quest_window();
-				break;
-			default:
-				z = select_player();
-				if (z >= 0)
-				{
-					switch (ptr)
-					{
-					case 1:
-						camp_spell_menu(z);
-						break;
-					case 2:
-						equip_menu(z);
-						break;
-					case 4:
-						status_screen(z);
-						break;
-					}
-				}
-				break;
-			}
-		}
-		if (PlayerInput.bctrl)
-		{
-			Game.unpress();
-			stop = 1;
-		}
-		if (close_menu == 1)
-		{
-			close_menu = 0;
-			stop = 1;
-		}
-	}
+    play_effect(SND_MENU, 128);
+    timer_count = 0;
+    while (!stop)
+    {
+        Game.do_check_animation();
+        Draw.drawmap();
+        draw_mainmenu(-1);
+        draw_sprite(double_buffer, menuptr, 204 + xofs, ptr * 8 + 73 + yofs);
+        Draw.blit2screen(xofs, yofs);
+        PlayerInput.readcontrols();
+        if (PlayerInput.up)
+        {
+            Game.unpress();
+            ptr--;
+            if (ptr < 0)
+            {
+                ptr = 5;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.down)
+        {
+            Game.unpress();
+            ptr++;
+            if (ptr > 5)
+            {
+                ptr = 0;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        /* Allow player to rearrange the party at any time by pressing LEFT */
+        if (PlayerInput.left)
+        {
+            z = select_player();
+            if (z > 0)
+            {
+                party_newlead();
+            }
+        }
+        if (PlayerInput.balt)
+        {
+            Game.unpress();
+            switch (ptr)
+            {
+            case 0:
+                camp_item_menu();
+                break;
+            case 3:
+                spec_items();
+                break;
+            case 5:
+                display_quest_window();
+                break;
+            default:
+                z = select_player();
+                if (z >= 0)
+                {
+                    switch (ptr)
+                    {
+                    case 1:
+                        camp_spell_menu(z);
+                        break;
+                    case 2:
+                        equip_menu(z);
+                        break;
+                    case 4:
+                        status_screen(z);
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        if (PlayerInput.bctrl)
+        {
+            Game.unpress();
+            stop = 1;
+        }
+        if (close_menu == 1)
+        {
+            close_menu = 0;
+            stop = 1;
+        }
+    }
 }
 
 /*! \brief Do the Quest Info menu
@@ -343,106 +344,103 @@ void KMenu::menu(void)
  */
 void KMenu::display_quest_window(void)
 {
-	// Show up to this number of quest entries in the menu.
-	const size_t VisibleQuestEntries = 10;
+    // Show up to this number of quest entries in the menu.
+    const size_t VisibleQuestEntries = 10;
 
-	/* Call into the script */
-	clear_quests();
-	
-	// Non-async: this does a Lua call, which uses callbacks to populate the quest_list array.
-	// Blocking call
-	do_importquests();
+    /* Call into the script */
+    clear_quests();
 
-	if (quest_list.size() == 0)
-	{
-		/* There was nothing.. */
-		play_effect(SND_BAD, 128);
-		return;
-	}
+    // Non-async: this does a Lua call, which uses callbacks to populate the quest_list array.
+    // Blocking call
+    do_importquests();
 
-	// quest_list.size() will always be > 0 (the method exits before this point if ==0)
-	//   1..10 entries: roundedUpNumEntries == 1,
-	//   2..20 entries: roundedUpNumEntries == 2, etc.
-	const size_t roundedUpNumEntries = ((quest_list.size() - 1) / VisibleQuestEntries + 1) * VisibleQuestEntries;
+    if (quest_list.size() == 0)
+    {
+        /* There was nothing.. */
+        play_effect(SND_BAD, 128);
+        return;
+    }
 
-	const int FontWidthFNORMAL = 8;  //MagicNumber: FNORMAL font width is 8
-	const int FontHeightFNORMAL = 8; //MagicNumber: FNORMAL font height is 8
-	const int MenuboxWidth = 18;
-	const int UpperMenuboxTopOffset = 92; // Top of the upper menubox
-	const int LowerMenuboxTopOffset = UpperMenuboxTopOffset + (VisibleQuestEntries + 2) * FontHeightFNORMAL; // Top of the lower menubox
-	const int MenuboxLeftOffset = 88;
+    // quest_list.size() will always be > 0 (the method exits before this point if ==0)
+    //   1..10 entries: roundedUpNumEntries == 1,
+    //   2..20 entries: roundedUpNumEntries == 2, etc.
+    const size_t roundedUpNumEntries = ((quest_list.size() - 1) / VisibleQuestEntries + 1) * VisibleQuestEntries;
 
-	size_t currentQuestSelected = 0;
-	while (true)
-	{
-		timer_count = 0;
-		/* Redraw the map below the open menu */
-		Draw.drawmap();
+    const int FontWidthFNORMAL = 8;  // MagicNumber: FNORMAL font width is 8
+    const int FontHeightFNORMAL = 8; // MagicNumber: FNORMAL font height is 8
+    const int MenuboxWidth = 18;
+    const int UpperMenuboxTopOffset = 92; // Top of the upper menubox
+    const int LowerMenuboxTopOffset =
+        UpperMenuboxTopOffset + (VisibleQuestEntries + 2) * FontHeightFNORMAL; // Top of the lower menubox
+    const int MenuboxLeftOffset = 88;
 
-		int base = currentQuestSelected - currentQuestSelected % VisibleQuestEntries;
-		Draw.menubox(double_buffer, xofs + MenuboxLeftOffset, yofs + UpperMenuboxTopOffset, MenuboxWidth, (int)VisibleQuestEntries, BLUE);
-		for (size_t someRandomIndex = 0; someRandomIndex < VisibleQuestEntries; ++someRandomIndex)
-		{
-			if (someRandomIndex + base < quest_list.size())
-			{
-				Draw.print_font(double_buffer,
-					xofs + MenuboxLeftOffset + 2 * FontWidthFNORMAL,
-					yofs + UpperMenuboxTopOffset + FontHeightFNORMAL * (someRandomIndex + 1),
-					quest_list[someRandomIndex + base]->key.c_str(),
-					FNORMAL);
-			}
-		}
-		// Show the pointer beside the selected entry
-		draw_sprite(double_buffer, menuptr,
-			xofs + MenuboxLeftOffset,
-			yofs + UpperMenuboxTopOffset + FontHeightFNORMAL * (currentQuestSelected - base + 1));
+    size_t currentQuestSelected = 0;
+    while (true)
+    {
+        timer_count = 0;
+        /* Redraw the map below the open menu */
+        Draw.drawmap();
 
-		Draw.menubox(double_buffer, xofs + MenuboxLeftOffset, yofs + LowerMenuboxTopOffset, MenuboxWidth, 3, BLUE);
-		if (currentQuestSelected < quest_list.size())
-		{
-			Draw.print_font(double_buffer,
-				xofs + MenuboxLeftOffset + 1 * FontWidthFNORMAL,
-				yofs + LowerMenuboxTopOffset + 1 * FontHeightFNORMAL,
-				quest_list[currentQuestSelected]->text.c_str(),
-				FNORMAL);
-		}
-		Draw.blit2screen(xofs, yofs);
-		PlayerInput.readcontrols();
-		// Players can be holding UP and DOWN at the same time: don't give one precedence over another.
-		int newSelectedQuest = currentQuestSelected;
-		if (PlayerInput.up)
-		{
-			newSelectedQuest--;
-		}
-		if (PlayerInput.down)
-		{
-			newSelectedQuest++;
-		}
-		if (PlayerInput.left)
-		{
-			newSelectedQuest -= (int)VisibleQuestEntries;
-		}
-		if (PlayerInput.right)
-		{
-			newSelectedQuest += (int)VisibleQuestEntries;
-		}
+        int base = currentQuestSelected - currentQuestSelected % VisibleQuestEntries;
+        Draw.menubox(double_buffer, xofs + MenuboxLeftOffset, yofs + UpperMenuboxTopOffset, MenuboxWidth,
+                     (int)VisibleQuestEntries, BLUE);
+        for (size_t someRandomIndex = 0; someRandomIndex < VisibleQuestEntries; ++someRandomIndex)
+        {
+            if (someRandomIndex + base < quest_list.size())
+            {
+                Draw.print_font(double_buffer, xofs + MenuboxLeftOffset + 2 * FontWidthFNORMAL,
+                                yofs + UpperMenuboxTopOffset + FontHeightFNORMAL * (someRandomIndex + 1),
+                                quest_list[someRandomIndex + base]->key.c_str(), FNORMAL);
+            }
+        }
+        // Show the pointer beside the selected entry
+        draw_sprite(double_buffer, menuptr, xofs + MenuboxLeftOffset,
+                    yofs + UpperMenuboxTopOffset + FontHeightFNORMAL * (currentQuestSelected - base + 1));
 
-		// If player pressed any of the inputs, newSelectedQuest will have changed.
-		if (newSelectedQuest != (int)currentQuestSelected)
-		{
-			play_effect(SND_CLICK, 128);
-			Game.unpress();
-		}
+        Draw.menubox(double_buffer, xofs + MenuboxLeftOffset, yofs + LowerMenuboxTopOffset, MenuboxWidth, 3, BLUE);
+        if (currentQuestSelected < quest_list.size())
+        {
+            Draw.print_font(double_buffer, xofs + MenuboxLeftOffset + 1 * FontWidthFNORMAL,
+                            yofs + LowerMenuboxTopOffset + 1 * FontHeightFNORMAL,
+                            quest_list[currentQuestSelected]->text.c_str(), FNORMAL);
+        }
+        Draw.blit2screen(xofs, yofs);
+        PlayerInput.readcontrols();
+        // Players can be holding UP and DOWN at the same time: don't give one precedence over another.
+        int newSelectedQuest = currentQuestSelected;
+        if (PlayerInput.up)
+        {
+            newSelectedQuest--;
+        }
+        if (PlayerInput.down)
+        {
+            newSelectedQuest++;
+        }
+        if (PlayerInput.left)
+        {
+            newSelectedQuest -= (int)VisibleQuestEntries;
+        }
+        if (PlayerInput.right)
+        {
+            newSelectedQuest += (int)VisibleQuestEntries;
+        }
 
-		// Positive modulus: Keep the selected quest 
-		currentQuestSelected = (newSelectedQuest % roundedUpNumEntries + roundedUpNumEntries) % roundedUpNumEntries;
+        // If player pressed any of the inputs, newSelectedQuest will have changed.
+        if (newSelectedQuest != (int)currentQuestSelected)
+        {
+            play_effect(SND_CLICK, 128);
+            Game.unpress();
+        }
 
-		if (PlayerInput.balt || PlayerInput.bctrl)
-		{
-			Game.unpress();
-			break;
-		}
-	}
+        // Positive modulus: Keep the selected quest
+        currentQuestSelected = (newSelectedQuest % roundedUpNumEntries + roundedUpNumEntries) % roundedUpNumEntries;
+
+        if (PlayerInput.balt || PlayerInput.bctrl)
+        {
+            Game.unpress();
+            break;
+        }
+    }
 }
 
 /*! \brief Converts fighter-->character
@@ -451,44 +449,44 @@ void KMenu::display_quest_window(void)
  */
 void KMenu::revert_equipstats(void)
 {
-	const size_t end_fighter_index = (numchrs > PSIZE) ? PSIZE : numchrs;
+    const size_t end_fighter_index = (numchrs > PSIZE) ? PSIZE : numchrs;
 
-	for (size_t fighter_index = 0; fighter_index < end_fighter_index && fighter_index < MAXCHRS; ++fighter_index)
-	{
-		size_t pidx_index = pidx[fighter_index];
-		party[pidx_index].hp = fighter[fighter_index].hp;
-		if (party[pidx_index].hp > party[pidx_index].mhp)
-		{
-			party[pidx_index].hp = party[pidx_index].mhp;
-		}
-		party[pidx_index].mp = fighter[fighter_index].mp;
-		if (party[pidx_index].mp > party[pidx_index].mmp)
-		{
-			party[pidx_index].mp = party[pidx_index].mmp;
-		}
+    for (size_t fighter_index = 0; fighter_index < end_fighter_index && fighter_index < MAXCHRS; ++fighter_index)
+    {
+        size_t pidx_index = pidx[fighter_index];
+        party[pidx_index].hp = fighter[fighter_index].hp;
+        if (party[pidx_index].hp > party[pidx_index].mhp)
+        {
+            party[pidx_index].hp = party[pidx_index].mhp;
+        }
+        party[pidx_index].mp = fighter[fighter_index].mp;
+        if (party[pidx_index].mp > party[pidx_index].mmp)
+        {
+            party[pidx_index].mp = party[pidx_index].mmp;
+        }
 
-		party[pidx_index].SetPoisoned(fighter[fighter_index].GetRemainingPoison());
-		party[pidx_index].SetBlind(fighter[fighter_index].IsBlind());
-		party[pidx_index].SetCharmed(0);
-		party[pidx_index].SetStopped(0);
-		party[pidx_index].SetStone(0);
-		party[pidx_index].SetMute(fighter[fighter_index].IsMute());
-		party[pidx_index].SetSleep(0);
-		party[pidx_index].SetDead(fighter[fighter_index].IsDead());
-		party[pidx_index].SetMalison(0);
-		party[pidx_index].SetResist(0);
-		party[pidx_index].SetTime(0);
-		party[pidx_index].SetShield(0);
-		
-		fighter[fighter_index].SetCharmed(0);
-		fighter[fighter_index].SetStopped(0);
-		fighter[fighter_index].SetStone(0);
-		fighter[fighter_index].SetSleep(0);
-		fighter[fighter_index].SetMalison(0);
-		fighter[fighter_index].SetResist(0);
-		fighter[fighter_index].SetTime(0);
-		fighter[fighter_index].SetShield(0);
-	}
+        party[pidx_index].SetPoisoned(fighter[fighter_index].GetRemainingPoison());
+        party[pidx_index].SetBlind(fighter[fighter_index].IsBlind());
+        party[pidx_index].SetCharmed(0);
+        party[pidx_index].SetStopped(0);
+        party[pidx_index].SetStone(0);
+        party[pidx_index].SetMute(fighter[fighter_index].IsMute());
+        party[pidx_index].SetSleep(0);
+        party[pidx_index].SetDead(fighter[fighter_index].IsDead());
+        party[pidx_index].SetMalison(0);
+        party[pidx_index].SetResist(0);
+        party[pidx_index].SetTime(0);
+        party[pidx_index].SetShield(0);
+
+        fighter[fighter_index].SetCharmed(0);
+        fighter[fighter_index].SetStopped(0);
+        fighter[fighter_index].SetStone(0);
+        fighter[fighter_index].SetSleep(0);
+        fighter[fighter_index].SetMalison(0);
+        fighter[fighter_index].SetResist(0);
+        fighter[fighter_index].SetTime(0);
+        fighter[fighter_index].SetShield(0);
+    }
 }
 
 /*! \brief Show special items
@@ -500,69 +498,71 @@ void KMenu::revert_equipstats(void)
  */
 void KMenu::spec_items(void)
 {
-	int a, num_items = 0, stop = 0, ptr = 0;
-	short list_item_which[MAX_PLAYER_SPECIAL_ITEMS];
-	short list_item_quantity[MAX_PLAYER_SPECIAL_ITEMS];
+    int a, num_items = 0, stop = 0, ptr = 0;
+    short list_item_which[MAX_PLAYER_SPECIAL_ITEMS];
+    short list_item_quantity[MAX_PLAYER_SPECIAL_ITEMS];
 
-	/* Set number of items here */
-	for (a = 0; a < MAX_SPECIAL_ITEMS; a++)
-	{
-		if (player_special_items[a])
-		{
-			list_item_which[num_items] = a;
-			list_item_quantity[num_items] = player_special_items[a];
-			num_items++;
-		}
-	}
+    /* Set number of items here */
+    for (a = 0; a < MAX_SPECIAL_ITEMS; a++)
+    {
+        if (player_special_items[a])
+        {
+            list_item_which[num_items] = a;
+            list_item_quantity[num_items] = player_special_items[a];
+            num_items++;
+        }
+    }
 
-	if (num_items == 0)
-	{
-		play_effect(SND_BAD, 128);
-		return;
-	}
-	play_effect(SND_MENU, 128);
-	while (!stop)
-	{
-		Game.do_check_animation();
-		Draw.drawmap();
-		Draw.menubox(double_buffer, 72 + xofs, 12 + yofs, 20, 1, BLUE);
-		Draw.print_font(double_buffer, 108 + xofs, 20 + yofs, _("Special Items"), FGOLD);
-		Draw.menubox(double_buffer, 72 + xofs, 36 + yofs, 20, 19, BLUE);
-		for (a = 0; a < num_items; a++)
-		{
-			Draw.draw_icon(double_buffer, special_items[list_item_which[a]].icon, 88 + xofs, a * 8 + 44 + yofs);
-			Draw.print_font(double_buffer, 96 + xofs, a * 8 + 44 + yofs, special_items[list_item_which[a]].name, FNORMAL);
-			if (list_item_quantity[a] > 1)
-			{
-				sprintf(strbuf, "^%d", list_item_quantity[a]);
-				Draw.print_font(double_buffer, 224 + xofs, a * 8 + 44 + yofs, strbuf, FNORMAL);
-			}
-		}
-		Draw.menubox(double_buffer, 72 + xofs, 204 + yofs, 20, 1, BLUE);
-		a = strlen(special_items[list_item_which[ptr]].description) * 4;
-		Draw.print_font(double_buffer, 160 - a + xofs, 212 + yofs, special_items[list_item_which[ptr]].description, FNORMAL);
-		draw_sprite(double_buffer, menuptr, 72 + xofs, ptr * 8 + 44 + yofs);
-		Draw.blit2screen(xofs, yofs);
-		PlayerInput.readcontrols();
+    if (num_items == 0)
+    {
+        play_effect(SND_BAD, 128);
+        return;
+    }
+    play_effect(SND_MENU, 128);
+    while (!stop)
+    {
+        Game.do_check_animation();
+        Draw.drawmap();
+        Draw.menubox(double_buffer, 72 + xofs, 12 + yofs, 20, 1, BLUE);
+        Draw.print_font(double_buffer, 108 + xofs, 20 + yofs, _("Special Items"), FGOLD);
+        Draw.menubox(double_buffer, 72 + xofs, 36 + yofs, 20, 19, BLUE);
+        for (a = 0; a < num_items; a++)
+        {
+            Draw.draw_icon(double_buffer, special_items[list_item_which[a]].icon, 88 + xofs, a * 8 + 44 + yofs);
+            Draw.print_font(double_buffer, 96 + xofs, a * 8 + 44 + yofs, special_items[list_item_which[a]].name,
+                            FNORMAL);
+            if (list_item_quantity[a] > 1)
+            {
+                sprintf(strbuf, "^%d", list_item_quantity[a]);
+                Draw.print_font(double_buffer, 224 + xofs, a * 8 + 44 + yofs, strbuf, FNORMAL);
+            }
+        }
+        Draw.menubox(double_buffer, 72 + xofs, 204 + yofs, 20, 1, BLUE);
+        a = strlen(special_items[list_item_which[ptr]].description) * 4;
+        Draw.print_font(double_buffer, 160 - a + xofs, 212 + yofs, special_items[list_item_which[ptr]].description,
+                        FNORMAL);
+        draw_sprite(double_buffer, menuptr, 72 + xofs, ptr * 8 + 44 + yofs);
+        Draw.blit2screen(xofs, yofs);
+        PlayerInput.readcontrols();
 
-		if (PlayerInput.down)
-		{
-			Game.unpress();
-			ptr = (ptr + 1) % num_items;
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.up)
-		{
-			Game.unpress();
-			ptr = (ptr - 1 + num_items) % num_items;
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.bctrl)
-		{
-			Game.unpress();
-			stop = 1;
-		}
-	}
+        if (PlayerInput.down)
+        {
+            Game.unpress();
+            ptr = (ptr + 1) % num_items;
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.up)
+        {
+            Game.unpress();
+            ptr = (ptr - 1 + num_items) % num_items;
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.bctrl)
+        {
+            Game.unpress();
+            stop = 1;
+        }
+    }
 }
 
 /*! \brief Draw a player's status screen
@@ -572,144 +572,146 @@ void KMenu::spec_items(void)
  */
 void KMenu::status_screen(size_t fighter_index)
 {
-	int stop = 0;
-	int bc = 0;
-	uint32_t rect_fill_amount = 0, curr_fill, res_index, stats_y, equipment_index;
-	size_t pidx_index, stats_index;
+    int stop = 0;
+    int bc = 0;
+    uint32_t rect_fill_amount = 0, curr_fill, res_index, stats_y, equipment_index;
+    size_t pidx_index, stats_index;
 
-	play_effect(SND_MENU, 128);
-	pidx_index = pidx[fighter_index];
-	update_equipstats();
-	while (!stop)
-	{
-		Game.do_check_animation();
-		// Redraw the map, clearing any menus under this new window
-		Draw.drawmap();
+    play_effect(SND_MENU, 128);
+    pidx_index = pidx[fighter_index];
+    update_equipstats();
+    while (!stop)
+    {
+        Game.do_check_animation();
+        // Redraw the map, clearing any menus under this new window
+        Draw.drawmap();
 
-		// Box around top-left square
-		Draw.menubox(double_buffer, xofs, 16 + yofs, 18, 5, BLUE);
-		draw_playerstat(double_buffer, pidx_index, 8 + xofs, 24 + yofs);
+        // Box around top-left square
+        Draw.menubox(double_buffer, xofs, 16 + yofs, 18, 5, BLUE);
+        draw_playerstat(double_buffer, pidx_index, 8 + xofs, 24 + yofs);
 
-		// Box around bottom-left square
-		Draw.menubox(double_buffer, xofs, 72 + yofs, 18, 17, BLUE);
-		Draw.print_font(double_buffer, 8 + xofs, 80 + yofs, _("Exp:"), FGOLD);
-		sprintf(strbuf, "%d", party[pidx_index].xp);
-		Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs, 80 + yofs, strbuf, FNORMAL);
-		Draw.print_font(double_buffer, 8 + xofs, 88 + yofs, _("Next:"), FGOLD);
-		// TT: Does this mean we can only level up to 50?
-		if (party[pidx_index].lvl < 50)
-		{
-			sprintf(strbuf, "%d", party[pidx_index].next - party[pidx_index].xp);
-		}
-		else
-		{
-			sprintf(strbuf, "%d", 0);
-		}
-		Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs, 88 + yofs, strbuf, FNORMAL);
-		Draw.print_font(double_buffer, 8 + xofs, 104 + yofs, _("Strength"), FGOLD);
-		Draw.print_font(double_buffer, 8 + xofs, 112 + yofs, _("Agility"), FGOLD);
-		Draw.print_font(double_buffer, 8 + xofs, 120 + yofs, _("Vitality"), FGOLD);
-		Draw.print_font(double_buffer, 8 + xofs, 128 + yofs, _("Intellect"), FGOLD);
-		Draw.print_font(double_buffer, 8 + xofs, 136 + yofs, _("Sagacity"), FGOLD);
-		Draw.print_font(double_buffer, 8 + xofs, 144 + yofs, _("Speed"), FGOLD);
-		Draw.print_font(double_buffer, 8 + xofs, 152 + yofs, _("Aura"), FGOLD);
-		Draw.print_font(double_buffer, 8 + xofs, 160 + yofs, _("Spirit"), FGOLD);
-		// Blank space on display of 16 pixels
-		Draw.print_font(double_buffer, 8 + xofs, 176 + yofs, _("Attack"), FGOLD);
-		Draw.print_font(double_buffer, 8 + xofs, 184 + yofs, _("Hit"), FGOLD);
-		Draw.print_font(double_buffer, 8 + xofs, 192 + yofs, _("Defense"), FGOLD);
-		Draw.print_font(double_buffer, 8 + xofs, 200 + yofs, _("Evade"), FGOLD);
-		Draw.print_font(double_buffer, 8 + xofs, 208 + yofs, _("Mag.Def"), FGOLD);
-		for (stats_index = 0; stats_index < eStat::NUM_STATS; stats_index++)
-		{
-			// Coordinates of stats on display
-			stats_y = stats_index * 8 + 104;
-			// Add an extra 8-pixel space to separate these from the others
-			if (stats_index > eStat::Spirit)
-			{
-				stats_y += 8;
-			}
-			Draw.print_font(double_buffer, 96 + xofs, stats_y + yofs, "$", FGOLD);
-			sprintf(strbuf, "%d", fighter[fighter_index].stats[stats_index]);
-			Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs, stats_y + yofs, strbuf, FNORMAL);
-		}
+        // Box around bottom-left square
+        Draw.menubox(double_buffer, xofs, 72 + yofs, 18, 17, BLUE);
+        Draw.print_font(double_buffer, 8 + xofs, 80 + yofs, _("Exp:"), FGOLD);
+        sprintf(strbuf, "%d", party[pidx_index].xp);
+        Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs, 80 + yofs, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, 8 + xofs, 88 + yofs, _("Next:"), FGOLD);
+        // TT: Does this mean we can only level up to 50?
+        if (party[pidx_index].lvl < 50)
+        {
+            sprintf(strbuf, "%d", party[pidx_index].next - party[pidx_index].xp);
+        }
+        else
+        {
+            sprintf(strbuf, "%d", 0);
+        }
+        Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs, 88 + yofs, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, 8 + xofs, 104 + yofs, _("Strength"), FGOLD);
+        Draw.print_font(double_buffer, 8 + xofs, 112 + yofs, _("Agility"), FGOLD);
+        Draw.print_font(double_buffer, 8 + xofs, 120 + yofs, _("Vitality"), FGOLD);
+        Draw.print_font(double_buffer, 8 + xofs, 128 + yofs, _("Intellect"), FGOLD);
+        Draw.print_font(double_buffer, 8 + xofs, 136 + yofs, _("Sagacity"), FGOLD);
+        Draw.print_font(double_buffer, 8 + xofs, 144 + yofs, _("Speed"), FGOLD);
+        Draw.print_font(double_buffer, 8 + xofs, 152 + yofs, _("Aura"), FGOLD);
+        Draw.print_font(double_buffer, 8 + xofs, 160 + yofs, _("Spirit"), FGOLD);
+        // Blank space on display of 16 pixels
+        Draw.print_font(double_buffer, 8 + xofs, 176 + yofs, _("Attack"), FGOLD);
+        Draw.print_font(double_buffer, 8 + xofs, 184 + yofs, _("Hit"), FGOLD);
+        Draw.print_font(double_buffer, 8 + xofs, 192 + yofs, _("Defense"), FGOLD);
+        Draw.print_font(double_buffer, 8 + xofs, 200 + yofs, _("Evade"), FGOLD);
+        Draw.print_font(double_buffer, 8 + xofs, 208 + yofs, _("Mag.Def"), FGOLD);
+        for (stats_index = 0; stats_index < eStat::NUM_STATS; stats_index++)
+        {
+            // Coordinates of stats on display
+            stats_y = stats_index * 8 + 104;
+            // Add an extra 8-pixel space to separate these from the others
+            if (stats_index > eStat::Spirit)
+            {
+                stats_y += 8;
+            }
+            Draw.print_font(double_buffer, 96 + xofs, stats_y + yofs, "$", FGOLD);
+            sprintf(strbuf, "%d", fighter[fighter_index].stats[stats_index]);
+            Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8) + xofs, stats_y + yofs, strbuf, FNORMAL);
+        }
 
-		Draw.menubox(double_buffer, 160 + xofs, 16 + yofs, 18, 16, BLUE);
-		Draw.print_font(double_buffer, 168 + xofs, 24 + yofs, _("Earth"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 32 + yofs, _("Black"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 40 + yofs, _("Fire"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 48 + yofs, _("Thunder"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 56 + yofs, _("Air"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 64 + yofs, _("White"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 72 + yofs, _("Water"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 80 + yofs, _("Ice"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 88 + yofs, _("Poison"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 96 + yofs, _("Blind"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 104 + yofs, _("Charm"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 112 + yofs, _("Paralyze"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 120 + yofs, _("Petrify"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 128 + yofs, _("Silence"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 136 + yofs, _("Sleep"), FNORMAL);
-		Draw.print_font(double_buffer, 168 + xofs, 144 + yofs, _("Time"), FNORMAL);
+        Draw.menubox(double_buffer, 160 + xofs, 16 + yofs, 18, 16, BLUE);
+        Draw.print_font(double_buffer, 168 + xofs, 24 + yofs, _("Earth"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 32 + yofs, _("Black"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 40 + yofs, _("Fire"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 48 + yofs, _("Thunder"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 56 + yofs, _("Air"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 64 + yofs, _("White"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 72 + yofs, _("Water"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 80 + yofs, _("Ice"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 88 + yofs, _("Poison"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 96 + yofs, _("Blind"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 104 + yofs, _("Charm"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 112 + yofs, _("Paralyze"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 120 + yofs, _("Petrify"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 128 + yofs, _("Silence"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 136 + yofs, _("Sleep"), FNORMAL);
+        Draw.print_font(double_buffer, 168 + xofs, 144 + yofs, _("Time"), FNORMAL);
 
-		for (res_index = 0; res_index < R_TOTAL_RES; res_index++)
-		{
-			rectfill(double_buffer, 240 + xofs, res_index * 8 + 25 + yofs, 310 + xofs, res_index * 8 + 31 + yofs, 3);
-			if (fighter[fighter_index].res[res_index] < 0)
-			{
-				bc = 18; // bright red, meaning WEAK defense
-				rect_fill_amount = abs(fighter[fighter_index].res[res_index]);
-			}
-			else if (fighter[fighter_index].res[res_index] >= 0 &&
-				fighter[fighter_index].res[res_index] <= 10)
-			{
-				bc = 34; // bright green, meaning so-so defense
-				rect_fill_amount = fighter[fighter_index].res[res_index];
-			}
-			else if (fighter[fighter_index].res[res_index] > 10)
-			{
-				bc = 50; // bright blue, meaning STRONG defense
-				rect_fill_amount = fighter[fighter_index].res[res_index] - 10;
-			}
+        for (res_index = 0; res_index < R_TOTAL_RES; res_index++)
+        {
+            rectfill(double_buffer, 240 + xofs, res_index * 8 + 25 + yofs, 310 + xofs, res_index * 8 + 31 + yofs, 3);
+            if (fighter[fighter_index].res[res_index] < 0)
+            {
+                bc = 18; // bright red, meaning WEAK defense
+                rect_fill_amount = abs(fighter[fighter_index].res[res_index]);
+            }
+            else if (fighter[fighter_index].res[res_index] >= 0 && fighter[fighter_index].res[res_index] <= 10)
+            {
+                bc = 34; // bright green, meaning so-so defense
+                rect_fill_amount = fighter[fighter_index].res[res_index];
+            }
+            else if (fighter[fighter_index].res[res_index] > 10)
+            {
+                bc = 50; // bright blue, meaning STRONG defense
+                rect_fill_amount = fighter[fighter_index].res[res_index] - 10;
+            }
 
-			if (rect_fill_amount > 0)
-			{
-				for (curr_fill = 0; curr_fill < rect_fill_amount; curr_fill++)
-				{
-					rectfill(double_buffer, curr_fill * 7 + 241 + xofs,res_index * 8 + 26 + yofs, curr_fill * 7 + 246 + xofs,res_index * 8 + 30 + yofs, bc + curr_fill);
-				}
-			}
-		}
-		Draw.menubox(double_buffer, 160 + xofs, 160 + yofs, 18, 6, BLUE);
-		for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
-		{
-			Draw.draw_icon(double_buffer, items[party[pidx_index].eqp[equipment_index]].icon, 168 + xofs, equipment_index * 8 + 168 + yofs);
-			Draw.print_font(double_buffer, 176 + xofs, equipment_index * 8 + 168 + yofs, items[party[pidx_index].eqp[equipment_index]].name, FNORMAL);
-		}
-		Draw.blit2screen(xofs, yofs);
-		PlayerInput.readcontrols();
+            if (rect_fill_amount > 0)
+            {
+                for (curr_fill = 0; curr_fill < rect_fill_amount; curr_fill++)
+                {
+                    rectfill(double_buffer, curr_fill * 7 + 241 + xofs, res_index * 8 + 26 + yofs,
+                             curr_fill * 7 + 246 + xofs, res_index * 8 + 30 + yofs, bc + curr_fill);
+                }
+            }
+        }
+        Draw.menubox(double_buffer, 160 + xofs, 160 + yofs, 18, 6, BLUE);
+        for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
+        {
+            Draw.draw_icon(double_buffer, items[party[pidx_index].eqp[equipment_index]].icon, 168 + xofs,
+                           equipment_index * 8 + 168 + yofs);
+            Draw.print_font(double_buffer, 176 + xofs, equipment_index * 8 + 168 + yofs,
+                            items[party[pidx_index].eqp[equipment_index]].name, FNORMAL);
+        }
+        Draw.blit2screen(xofs, yofs);
+        PlayerInput.readcontrols();
 
-		if (PlayerInput.left && fighter_index > 0)
-		{
-			Game.unpress();
-			fighter_index--;
-			pidx_index = pidx[fighter_index];
-			play_effect(SND_MENU, 128);
-		}
-		if (PlayerInput.right && fighter_index < numchrs - 1)
-		{
-			Game.unpress();
-			fighter_index++;
-			pidx_index = pidx[fighter_index];
-			play_effect(SND_MENU, 128);
-		}
-		if (PlayerInput.bctrl)
-		{
-			Game.unpress();
-			play_effect(SND_MENU, 128);
-			stop = 1;
-		}
-	}
+        if (PlayerInput.left && fighter_index > 0)
+        {
+            Game.unpress();
+            fighter_index--;
+            pidx_index = pidx[fighter_index];
+            play_effect(SND_MENU, 128);
+        }
+        if (PlayerInput.right && fighter_index < numchrs - 1)
+        {
+            Game.unpress();
+            fighter_index++;
+            pidx_index = pidx[fighter_index];
+            play_effect(SND_MENU, 128);
+        }
+        if (PlayerInput.bctrl)
+        {
+            Game.unpress();
+            play_effect(SND_MENU, 128);
+            stop = 1;
+        }
+    }
 }
 
 /*! \brief Copy party-->fighter structure
@@ -719,12 +721,12 @@ void KMenu::status_screen(size_t fighter_index)
  */
 void KMenu::update_equipstats(void)
 {
-	size_t fighter_index;
+    size_t fighter_index;
 
-	for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
-	{
-		fighter[fighter_index] = player2fighter(pidx[fighter_index]);
-	}
+    for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+    {
+        fighter[fighter_index] = player2fighter(pidx[fighter_index]);
+    }
 }
 
 /* \brief Convert character-->fighter structure
@@ -737,206 +739,208 @@ void KMenu::update_equipstats(void)
  */
 KFighter player2fighter(int who)
 {
-	KFighter current_fighter;
-	KPlayer &plr = party[who];
+    KFighter current_fighter;
+    KPlayer& plr = party[who];
 
-	current_fighter.imb_s = 0;
-	current_fighter.imb_a = 0;
-	current_fighter.imb[0] = 0;
-	current_fighter.imb[1] = 0;
+    current_fighter.imb_s = 0;
+    current_fighter.imb_a = 0;
+    current_fighter.imb[0] = 0;
+    current_fighter.imb[1] = 0;
 
-	current_fighter.name = plr.name;
-	current_fighter.xp = plr.xp;
-	current_fighter.lvl = plr.lvl;
-	current_fighter.hp = plr.hp;
-	current_fighter.mhp = plr.mhp;
-	current_fighter.mp = plr.mp;
-	current_fighter.mmp = plr.mmp;
+    current_fighter.name = plr.name;
+    current_fighter.xp = plr.xp;
+    current_fighter.lvl = plr.lvl;
+    current_fighter.hp = plr.hp;
+    current_fighter.mhp = plr.mhp;
+    current_fighter.mp = plr.mp;
+    current_fighter.mmp = plr.mmp;
 
-	current_fighter.SetPoisoned(plr.IsPoisoned());
-	current_fighter.SetBlind(plr.IsBlind());
-	current_fighter.SetCharmed(plr.IsCharmed());
-	current_fighter.SetStopped(plr.IsStopped());
-	current_fighter.SetStone(plr.IsStone());
-	current_fighter.SetMute(plr.IsMute());
-	current_fighter.SetSleep(plr.IsAsleep());
-	current_fighter.SetDead(plr.IsDead());
+    current_fighter.SetPoisoned(plr.IsPoisoned());
+    current_fighter.SetBlind(plr.IsBlind());
+    current_fighter.SetCharmed(plr.IsCharmed());
+    current_fighter.SetStopped(plr.IsStopped());
+    current_fighter.SetStone(plr.IsStone());
+    current_fighter.SetMute(plr.IsMute());
+    current_fighter.SetSleep(plr.IsAsleep());
+    current_fighter.SetDead(plr.IsDead());
 
-	current_fighter.SetMalison(0);
-	current_fighter.SetResist(0);
-	current_fighter.SetTime(0);
-	current_fighter.SetShield(0);
-	current_fighter.SetBless(0);
-	current_fighter.SetStrength(0);
-	current_fighter.SetEther(0);
-	current_fighter.SetTrueshot(0);
-	current_fighter.SetRegen(0);
-	current_fighter.SetInfuse(0);
+    current_fighter.SetMalison(0);
+    current_fighter.SetResist(0);
+    current_fighter.SetTime(0);
+    current_fighter.SetShield(0);
+    current_fighter.SetBless(0);
+    current_fighter.SetStrength(0);
+    current_fighter.SetEther(0);
+    current_fighter.SetTrueshot(0);
+    current_fighter.SetRegen(0);
+    current_fighter.SetInfuse(0);
 
-	for (int j = 0; j < eStat::NUM_STATS; j++)
-	{
-		current_fighter.stats[j] = ((plr.lvl - 1) * plr.lup[j + 4] + plr.stats[j]) / 100;
-	}
-	for (int j = 0; j < R_TOTAL_RES; j++)
-	{
-		current_fighter.res[j] = plr.res[j];
-	}
+    for (int j = 0; j < eStat::NUM_STATS; j++)
+    {
+        current_fighter.stats[j] = ((plr.lvl - 1) * plr.lup[j + 4] + plr.stats[j]) / 100;
+    }
+    for (int j = 0; j < R_TOTAL_RES; j++)
+    {
+        current_fighter.res[j] = plr.res[j];
+    }
 
-	/* set weapon elemental power and imbuements for easy use in combat */
-	int weapon_index = plr.eqp[EQP_WEAPON];
-	current_fighter.welem = items[weapon_index].elem;
-	if (items[weapon_index].use == USE_ATTACK)
-	{
-		current_fighter.imb_s = items[weapon_index].imb;
-		current_fighter.imb_a = items[weapon_index].stats[eStat::Attack];
-	}
+    /* set weapon elemental power and imbuements for easy use in combat */
+    int weapon_index = plr.eqp[EQP_WEAPON];
+    current_fighter.welem = items[weapon_index].elem;
+    if (items[weapon_index].use == USE_ATTACK)
+    {
+        current_fighter.imb_s = items[weapon_index].imb;
+        current_fighter.imb_a = items[weapon_index].stats[eStat::Attack];
+    }
 
-	/* Set instants for equipment... these are imbuements that
-	 * take effect at the start of combat.  Technically, there
-	 * are only two imbue slots but there are five pieces of equipment
-	 * that can be imbued, so some item types get priority over
-	 * others... hence the need to run through each in this loop.
-	 */
-	for (int a = 0; a < 5; a++)
-	{
-		static const int z[5] = { EQP_SPECIAL, EQP_ARMOR, EQP_HELMET, EQP_SHIELD, EQP_HAND };
-		int current_equipment_slot = plr.eqp[z[a]];
-		if (items[current_equipment_slot].use == USE_IMBUED)
-		{
-			for (int b = 0; b < 2; b++)
-			{
-				if (current_fighter.imb[b] == 0)
-				{
-					current_fighter.imb[b] = items[current_equipment_slot].imb;
-					break;
-				}
-			}
-		}
-	}
+    /* Set instants for equipment... these are imbuements that
+     * take effect at the start of combat.  Technically, there
+     * are only two imbue slots but there are five pieces of equipment
+     * that can be imbued, so some item types get priority over
+     * others... hence the need to run through each in this loop.
+     */
+    for (int a = 0; a < 5; a++)
+    {
+        static const int z[5] = { EQP_SPECIAL, EQP_ARMOR, EQP_HELMET, EQP_SHIELD, EQP_HAND };
+        int current_equipment_slot = plr.eqp[z[a]];
+        if (items[current_equipment_slot].use == USE_IMBUED)
+        {
+            for (int b = 0; b < 2; b++)
+            {
+                if (current_fighter.imb[b] == 0)
+                {
+                    current_fighter.imb[b] = items[current_equipment_slot].imb;
+                    break;
+                }
+            }
+        }
+    }
 
-	/*
-	 * Any weapon used by Ajathar gains the power of White if
-	 * it has no other power to begin with (the "welem" property
-	 * is 1-based: value of 0 means "no imbue".
-	 */
-	if (who == AJATHAR && current_fighter.welem == 0)
-	{
-		current_fighter.welem = R_WHITE + 1;
-	}
-	for (int j = 0; j < NUM_EQUIPMENT; j++)
-	{
-		int a = plr.eqp[j];
-		if (j == 0)
-		{
-			if (a == 0)
-			{
-				current_fighter.bonus = 50;
-			}
-			else
-			{
-				current_fighter.bonus = items[a].bon;
-			}
-			if (items[a].icon == 1 || items[a].icon == 3 || items[a].icon == 21)
-			{
-				current_fighter.bstat = 1;
-			}
-			else
-			{
-				current_fighter.bstat = 0;
-			}
-			/* Set current weapon type. When the hero wields a weapon
-			 * in combat, it will look like this.
-			 * The colour comes from s_item::kol
-			 */
-			current_fighter.current_weapon_type = items[a].icon;
-			if (current_fighter.current_weapon_type == W_CHENDIGAL)
-			{
-				current_fighter.current_weapon_type = W_SWORD;
-			}
-		}
-		for (int b = 0; b < eStat::NUM_STATS; b++)
-		{
-			if (b == eStat::Spirit && who == TEMMIN)
-			{
-				if (items[a].stats[eStat::Spirit] > 0)
-				{
-					current_fighter.stats[eStat::Spirit] += items[a].stats[eStat::Spirit];
-				}
-			}
-			else
-			{
-				current_fighter.stats[b] += items[a].stats[b];
-			}
-		}
-		for (int b = 0; b < R_TOTAL_RES; b++)
-		{
-			current_fighter.res[b] += items[a].item_resistance[b];
-		}
-	}
-	if (who == CORIN)
-	{
-		current_fighter.res[R_EARTH] += current_fighter.lvl / 4;
-		current_fighter.res[R_FIRE] += current_fighter.lvl / 4;
-		current_fighter.res[R_AIR] += current_fighter.lvl / 4;
-		current_fighter.res[R_WATER] += current_fighter.lvl / 4;
-	}
-	if (plr.eqp[5] == I_AGRAN)
-	{
-		int a = 0;
-		for (int j = 0; j < R_TOTAL_RES; j++)
-		{
-			a += current_fighter.res[j];
-		}
-		int b = ((a * 10) / 16 + 5) / 10;
-		for (int j = 0; j < R_TOTAL_RES; j++)
-		{
-			current_fighter.res[j] = b;
-		}
-	}
-	for (int j = 0; j < 8; j++)
-	{
-		if (current_fighter.res[j] < -10)
-		{
-			current_fighter.res[j] = -10;
-		}
-		else if (current_fighter.res[j] > 20)
-		{
-			current_fighter.res[j] = 20;
-		}
-	}
-	for (int j = 8; j < R_TOTAL_RES; j++)
-	{
-		if (current_fighter.res[j] < 0)
-		{
-			current_fighter.res[j] = 0;
-		}
-		else if (current_fighter.res[j] > 10)
-		{
-			current_fighter.res[j] = 10;
-		}
-	}
-	if (plr.eqp[5] == I_MANALOCKET)
-	{
-		current_fighter.mrp = plr.mrp / 2;
-	}
-	else
-	{
-		current_fighter.mrp = plr.mrp;
-	}
-	current_fighter.stats[eStat::Hit] += (current_fighter.stats[eStat::Strength] + current_fighter.stats[eStat::Agility]) / 5;
-	current_fighter.stats[eStat::Defense] += current_fighter.stats[eStat::Vitality] / 8;
-	current_fighter.stats[eStat::Evade] += current_fighter.stats[eStat::Agility] / 5;
-	current_fighter.stats[eStat::MagicDefense] += (current_fighter.stats[eStat::Intellect] + current_fighter.stats[eStat::Sagacity]) / 20;
-	for (int j = 0; j < eStat::NUM_STATS; j++)
-	{
-		if (current_fighter.stats[j] < 1)
-		{
-			current_fighter.stats[j] = 1;
-		}
-	}
-	current_fighter.crit = 1;
-	current_fighter.aux = 0;
-	current_fighter.unl = 0;
+    /*
+     * Any weapon used by Ajathar gains the power of White if
+     * it has no other power to begin with (the "welem" property
+     * is 1-based: value of 0 means "no imbue".
+     */
+    if (who == AJATHAR && current_fighter.welem == 0)
+    {
+        current_fighter.welem = R_WHITE + 1;
+    }
+    for (int j = 0; j < NUM_EQUIPMENT; j++)
+    {
+        int a = plr.eqp[j];
+        if (j == 0)
+        {
+            if (a == 0)
+            {
+                current_fighter.bonus = 50;
+            }
+            else
+            {
+                current_fighter.bonus = items[a].bon;
+            }
+            if (items[a].icon == 1 || items[a].icon == 3 || items[a].icon == 21)
+            {
+                current_fighter.bstat = 1;
+            }
+            else
+            {
+                current_fighter.bstat = 0;
+            }
+            /* Set current weapon type. When the hero wields a weapon
+             * in combat, it will look like this.
+             * The colour comes from s_item::kol
+             */
+            current_fighter.current_weapon_type = items[a].icon;
+            if (current_fighter.current_weapon_type == W_CHENDIGAL)
+            {
+                current_fighter.current_weapon_type = W_SWORD;
+            }
+        }
+        for (int b = 0; b < eStat::NUM_STATS; b++)
+        {
+            if (b == eStat::Spirit && who == TEMMIN)
+            {
+                if (items[a].stats[eStat::Spirit] > 0)
+                {
+                    current_fighter.stats[eStat::Spirit] += items[a].stats[eStat::Spirit];
+                }
+            }
+            else
+            {
+                current_fighter.stats[b] += items[a].stats[b];
+            }
+        }
+        for (int b = 0; b < R_TOTAL_RES; b++)
+        {
+            current_fighter.res[b] += items[a].item_resistance[b];
+        }
+    }
+    if (who == CORIN)
+    {
+        current_fighter.res[R_EARTH] += current_fighter.lvl / 4;
+        current_fighter.res[R_FIRE] += current_fighter.lvl / 4;
+        current_fighter.res[R_AIR] += current_fighter.lvl / 4;
+        current_fighter.res[R_WATER] += current_fighter.lvl / 4;
+    }
+    if (plr.eqp[5] == I_AGRAN)
+    {
+        int a = 0;
+        for (int j = 0; j < R_TOTAL_RES; j++)
+        {
+            a += current_fighter.res[j];
+        }
+        int b = ((a * 10) / 16 + 5) / 10;
+        for (int j = 0; j < R_TOTAL_RES; j++)
+        {
+            current_fighter.res[j] = b;
+        }
+    }
+    for (int j = 0; j < 8; j++)
+    {
+        if (current_fighter.res[j] < -10)
+        {
+            current_fighter.res[j] = -10;
+        }
+        else if (current_fighter.res[j] > 20)
+        {
+            current_fighter.res[j] = 20;
+        }
+    }
+    for (int j = 8; j < R_TOTAL_RES; j++)
+    {
+        if (current_fighter.res[j] < 0)
+        {
+            current_fighter.res[j] = 0;
+        }
+        else if (current_fighter.res[j] > 10)
+        {
+            current_fighter.res[j] = 10;
+        }
+    }
+    if (plr.eqp[5] == I_MANALOCKET)
+    {
+        current_fighter.mrp = plr.mrp / 2;
+    }
+    else
+    {
+        current_fighter.mrp = plr.mrp;
+    }
+    current_fighter.stats[eStat::Hit] +=
+        (current_fighter.stats[eStat::Strength] + current_fighter.stats[eStat::Agility]) / 5;
+    current_fighter.stats[eStat::Defense] += current_fighter.stats[eStat::Vitality] / 8;
+    current_fighter.stats[eStat::Evade] += current_fighter.stats[eStat::Agility] / 5;
+    current_fighter.stats[eStat::MagicDefense] +=
+        (current_fighter.stats[eStat::Intellect] + current_fighter.stats[eStat::Sagacity]) / 20;
+    for (int j = 0; j < eStat::NUM_STATS; j++)
+    {
+        if (current_fighter.stats[j] < 1)
+        {
+            current_fighter.stats[j] = 1;
+        }
+    }
+    current_fighter.crit = 1;
+    current_fighter.aux = 0;
+    current_fighter.unl = 0;
 
-	return current_fighter;
+    return current_fighter;
 }

@@ -23,4 +23,4 @@
 
 #include <cstdint>
 #include <cstdlib>
-int find_path(size_t, uint32_t, uint32_t, uint32_t, uint32_t, char *, uint32_t);
+int find_path(size_t, uint32_t, uint32_t, uint32_t, uint32_t, char*, uint32_t);

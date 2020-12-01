@@ -30,13 +30,13 @@ using std::vector;
 class KAnimSequence;
 class KAnimation
 {
-public:
-	void check_animation(int millis, uint16_t *tilex);
-	void add_animation(const KTmxAnimation &);
-	void clear_animations();
+  public:
+    void check_animation(int millis, uint16_t* tilex);
+    void add_animation(const KTmxAnimation&);
+    void clear_animations();
 
-private:
-	vector<KAnimSequence> animations;
+  private:
+    vector<KAnimSequence> animations;
 };
 
 extern KAnimation Animation;

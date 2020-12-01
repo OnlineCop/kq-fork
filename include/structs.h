@@ -41,35 +41,35 @@ class Raster;
  * Contains info on an entity's appearance, position and behaviour */
 struct KQEntity
 {
-	uint8_t chrx;     //!< Entity's identity (what s/he looks like)
-	uint16_t x;       //!< x-coord on map
-	uint16_t y;       //!< y-coord on map
-	uint16_t tilex;   //!< x-coord tile that entity is standing on
-	uint16_t tiley;   //!< y-coord tile that entity is standing on
-	uint8_t eid;      //!< Entity type (fighter, enemy, normal)
-	uint8_t active;   //!< "Alive" or not
-	uint8_t facing;   //!< Direction
-	uint8_t moving;   //!< In the middle of a move
-	uint8_t movcnt;   //!< How far along the move entity is
-	uint8_t framectr; //!< Counter for determining animation frame
-	uint8_t movemode; //!< Stand, wander, script or chasing
-	uint8_t obsmode;  //!< Determine if affected by obstacles or not
-	uint8_t delay;    //!< Movement delay (between steps)
-	uint8_t delayctr; //!< Counter for movement delay
-	uint8_t speed;    //!< How hyperactive the entity is
-	uint8_t scount;
-	uint8_t cmd;  //!< Scripted commands (eCommands in entity.h)
-	uint8_t sidx; //!< Index within script parser
-	uint8_t extra;
-	uint8_t chasing;   //!< Entity is following another
-	signed int cmdnum; //!< Number of times we need to repeat 'cmd'
-	uint8_t atype;
-	uint8_t snapback;  //!< Snaps back to direction previously facing
-	uint8_t facehero;  //!< Look at player when talked to
-	uint8_t transl;    //!< Entity is see-through or not
-	char script[60];   //!< Movement/action script (pacing, etc.)
-	uint16_t target_x; //!< Scripted x-coord the ent is moving to
-	uint16_t target_y; //!< Scripted y-coord the ent is moving to
+    uint8_t chrx;     //!< Entity's identity (what s/he looks like)
+    uint16_t x;       //!< x-coord on map
+    uint16_t y;       //!< y-coord on map
+    uint16_t tilex;   //!< x-coord tile that entity is standing on
+    uint16_t tiley;   //!< y-coord tile that entity is standing on
+    uint8_t eid;      //!< Entity type (fighter, enemy, normal)
+    uint8_t active;   //!< "Alive" or not
+    uint8_t facing;   //!< Direction
+    uint8_t moving;   //!< In the middle of a move
+    uint8_t movcnt;   //!< How far along the move entity is
+    uint8_t framectr; //!< Counter for determining animation frame
+    uint8_t movemode; //!< Stand, wander, script or chasing
+    uint8_t obsmode;  //!< Determine if affected by obstacles or not
+    uint8_t delay;    //!< Movement delay (between steps)
+    uint8_t delayctr; //!< Counter for movement delay
+    uint8_t speed;    //!< How hyperactive the entity is
+    uint8_t scount;
+    uint8_t cmd;  //!< Scripted commands (eCommands in entity.h)
+    uint8_t sidx; //!< Index within script parser
+    uint8_t extra;
+    uint8_t chasing;   //!< Entity is following another
+    signed int cmdnum; //!< Number of times we need to repeat 'cmd'
+    uint8_t atype;
+    uint8_t snapback;  //!< Snaps back to direction previously facing
+    uint8_t facehero;  //!< Look at player when talked to
+    uint8_t transl;    //!< Entity is see-through or not
+    char script[60];   //!< Movement/action script (pacing, etc.)
+    uint16_t target_x; //!< Scripted x-coord the ent is moving to
+    uint16_t target_y; //!< Scripted y-coord the ent is moving to
 };
 
 /*! \brief Animation specifier
@@ -79,9 +79,9 @@ struct KQEntity
  */
 struct s_anim
 {
-	uint16_t start; /*!< First tile in sequence  */
-	uint16_t end;   /*!< Last tile in sequence */
-	uint16_t delay; /*!< Frames to wait between tile changes */
+    uint16_t start; /*!< First tile in sequence  */
+    uint16_t end;   /*!< Last tile in sequence */
+    uint16_t delay; /*!< Frames to wait between tile changes */
 };
 
 /*! \brief Tileset definition
@@ -92,8 +92,8 @@ struct s_anim
  */
 struct s_tileset
 {
-	char icon_set[16];
-	s_anim tanim[MAX_ANIM];
+    char icon_set[16];
+    s_anim tanim[MAX_ANIM];
 };
 
 /*! \brief Progress Dump
@@ -102,8 +102,8 @@ struct s_tileset
  */
 struct s_progress
 {
-	uint32_t num_progress; /*!< Number of current progress */
-	char name[18];         /*!< Name of current progress */
+    uint32_t num_progress; /*!< Number of current progress */
+    char name[18];         /*!< Name of current progress */
 };
 
 /*! \brief Hero information
@@ -113,10 +113,10 @@ struct s_progress
  */
 struct s_heroinfo
 {
-	// s_player plr;                /*!< all other statistics */
-	Raster *portrait;            /*!< The hero's portrait for the stats screen */
-	Raster *frames[MAXFRAMES];   /*!< Frames for movement */
-	Raster *cframes[MAXCFRAMES]; /*!< Frames for combat */
+    // s_player plr;                /*!< all other statistics */
+    Raster* portrait;            /*!< The hero's portrait for the stats screen */
+    Raster* frames[MAXFRAMES];   /*!< Frames for movement */
+    Raster* cframes[MAXCFRAMES]; /*!< Frames for combat */
 };
 
 /*! \brief Special Items
@@ -125,16 +125,16 @@ struct s_heroinfo
  */
 struct s_special_item
 {
-	char name[38];
-	char description[40];
-	short icon;
+    char name[38];
+    char description[40];
+    short icon;
 };
 
 /*! \brief Inventory
-* An item ID and the quantity of that thing in the inventory.
-*/
+ * An item ID and the quantity of that thing in the inventory.
+ */
 struct s_inventory
 {
-	unsigned short item;
-	unsigned short quantity;
+    unsigned short item;
+    unsigned short quantity;
 };

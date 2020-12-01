@@ -43,40 +43,41 @@ KFighter player2fighter(int);
  */
 struct KQuestItem
 {
-	KQuestItem()
-	{}
+    KQuestItem()
+    {
+    }
 
-	KQuestItem(const string &inKey, const string &inText)
-		: key(inKey)
-		, text(inText)
-	{}
+    KQuestItem(const string& inKey, const string& inText)
+        : key(inKey)
+        , text(inText)
+    {
+    }
 
-	string key;  /*!< The identifying title */
-	string text; /*!< The actual info */
+    string key;  /*!< The identifying title */
+    string text; /*!< The actual info */
 };
-
 
 class KMenu
 {
-public:
-	KMenu();
+  public:
+    KMenu();
 
-	void add_questinfo(const string &key, const string &text);
-	void draw_mainmenu(int);
-	void draw_playerstat(Raster *where, int player_index_in_party, int dx, int dy);
-	bool give_xp(int, int, int);
-	void menu(void);
-	void revert_equipstats(void);
-	void spec_items(void);
-	void update_equipstats(void);
+    void add_questinfo(const string& key, const string& text);
+    void draw_mainmenu(int);
+    void draw_playerstat(Raster* where, int player_index_in_party, int dx, int dy);
+    bool give_xp(int, int, int);
+    void menu(void);
+    void revert_equipstats(void);
+    void spec_items(void);
+    void update_equipstats(void);
 
-private:
-	bool check_xp(int, int);
-	void clear_quests();
-	void level_up(int);
-	void display_quest_window(void);
-	void status_screen(size_t);
-	vector<KQuestItem*> quest_list;
+  private:
+    bool check_xp(int, int);
+    void clear_quests();
+    void level_up(int);
+    void display_quest_window(void);
+    void status_screen(size_t);
+    vector<KQuestItem*> quest_list;
 };
 
 extern KMenu kmenu;
