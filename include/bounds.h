@@ -48,12 +48,12 @@ struct PACKFILE;
  */
 struct KBound
 {
-public:
-	int left;   /*!< Left edge of the bounding box */
-	int top;    /*!< Top edge of the bounding box */
-	int right;  /*!< Right edge of the bounding box */
-	int bottom; /*!< Bottom edge of the bounding box */
-	short btile;  /*!< Index of the tile to draw everywhere BUT here */
+  public:
+    int left;    /*!< Left edge of the bounding box */
+    int top;     /*!< Top edge of the bounding box */
+    int right;   /*!< Right edge of the bounding box */
+    int bottom;  /*!< Bottom edge of the bounding box */
+    short btile; /*!< Index of the tile to draw everywhere BUT here */
 };
 
 /*! \brief Container holding array of bounds
@@ -66,38 +66,38 @@ public:
  */
 class KBounds
 {
-public:
-	KBounds()
-	{
-	}
-	~KBounds()
-	{
-	}
+  public:
+    KBounds()
+    {
+    }
+    ~KBounds()
+    {
+    }
 
-	// Add a new bound to the map. Returns true on success, or false on failure.
-	bool Add(shared_ptr<KBound> bound);
+    // Add a new bound to the map. Returns true on success, or false on failure.
+    bool Add(shared_ptr<KBound> bound);
 
-	// Return a pointer to the bound at the given @param index. If index is
-	// invalid, returns null.
-	shared_ptr<KBound> GetBound(size_t index);
+    // Return a pointer to the bound at the given @param index. If index is
+    // invalid, returns null.
+    shared_ptr<KBound> GetBound(size_t index);
 
-	size_t Size()
-	{
-		return m_bounds.size();
-	}
+    size_t Size()
+    {
+        return m_bounds.size();
+    }
 
-	/*! \brief Determine whether given coordinates are within any bounding boxes
-	 *
-	 * \param   outIndex - Index of found bounding area
-	 * \param   left - Left edge of current bounding area
-	 * \param   top - Top edge of current bounding area
-	 * \param   right - Right edge of current bounding area
-	 * \param   bottom - Bottom edge of current bounding area
-	 *
-	 * \returns true if the specified coordinate was found within a bounding area, else false.
-	 */
-	bool IsBound(size_t &outIndex, int left, int top, int right, int bottom) const;
+    /*! \brief Determine whether given coordinates are within any bounding boxes
+     *
+     * \param   outIndex - Index of found bounding area
+     * \param   left - Left edge of current bounding area
+     * \param   top - Top edge of current bounding area
+     * \param   right - Right edge of current bounding area
+     * \param   bottom - Bottom edge of current bounding area
+     *
+     * \returns true if the specified coordinate was found within a bounding area, else false.
+     */
+    bool IsBound(size_t& outIndex, int left, int top, int right, int bottom) const;
 
-protected:
-	vector<shared_ptr<KBound>> m_bounds;
+  protected:
+    vector<shared_ptr<KBound>> m_bounds;
 };

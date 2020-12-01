@@ -44,96 +44,96 @@ class Raster;
 
 enum eCombatResult
 {
-	StillFighting,
-	HeroesWon,
-	HeroesEscaped
+    StillFighting,
+    HeroesWon,
+    HeroesEscaped
 };
 
 enum eAttackResult
 {
-	ATTACK_MISS,
-	ATTACK_SUCCESS,
-	ATTACK_CRITICAL
+    ATTACK_MISS,
+    ATTACK_SUCCESS,
+    ATTACK_CRITICAL
 };
 
 class KCombat
 {
-public:
-	KCombat();
+  public:
+    KCombat();
 
-	int combat(int);
-	void battle_render(signed int plyr, size_t hl, int SelectAll);
-	void draw_fighter(size_t, size_t);
-	int fight(size_t, size_t, int);
-	void multi_fight(size_t);
-	void fkill(size_t);
+    int combat(int);
+    void battle_render(signed int plyr, size_t hl, int SelectAll);
+    void draw_fighter(size_t, size_t);
+    int fight(size_t, size_t, int);
+    void multi_fight(size_t);
+    void fkill(size_t);
 
-	void AdjustHealth(size_t fighterIndex, int amount);
-	int GetHealthAdjust(size_t fighterIndex) const;
-	void SetAttackMissed(size_t fighterIndex);
+    void AdjustHealth(size_t fighterIndex, int amount);
+    int GetHealthAdjust(size_t fighterIndex) const;
+    void SetAttackMissed(size_t fighterIndex);
 
-	uint32_t GetNumEnemies() const;
-	void SetNumEnemies(uint32_t numEnemies);
+    uint32_t GetNumEnemies() const;
+    void SetNumEnemies(uint32_t numEnemies);
 
-	bool IsVisionSpellActive() const;
-	void SetVisionSpellActive(bool bIsActive);
+    bool IsVisionSpellActive() const;
+    void SetVisionSpellActive(bool bIsActive);
 
-	int GetRemainingBattleCounter() const;
-	void SetRemainingBattleCounter(int amount);
+    int GetRemainingBattleCounter() const;
+    void SetRemainingBattleCounter(int amount);
 
-	eCombatResult GetCombatEndResult() const;
-	void SetCombatEndResult(eCombatResult combatEndResult);
+    eCombatResult GetCombatEndResult() const;
+    void SetCombatEndResult(eCombatResult combatEndResult);
 
-	void UnsetDatafileImageCoords();
+    void UnsetDatafileImageCoords();
 
-	bool GetEtherEffectActive(size_t fighterIndex) const;
-	void SetEtherEffectActive(size_t fighterIndex, bool bIsEtherEffectActive);
+    bool GetEtherEffectActive(size_t fighterIndex) const;
+    void SetEtherEffectActive(size_t fighterIndex, bool bIsEtherEffectActive);
 
-	bool ShowDeathEffectAnimation(size_t fighterIndex) const;
-	void SetShowDeathEffectAnimation(size_t fighterIndex, bool bShowDeathEffect);
+    bool ShowDeathEffectAnimation(size_t fighterIndex) const;
+    void SetShowDeathEffectAnimation(size_t fighterIndex, bool bShowDeathEffect);
 
-	uint8_t GetMonsterSurprisesPartyValue() const;
+    uint8_t GetMonsterSurprisesPartyValue() const;
 
-public:
-	Raster *backart;
+  public:
+    Raster* backart;
 
-protected:
-	eAttackResult attack_result(int ar, int dr);
-	int check_end(void);
-	void do_action(size_t);
-	int do_combat(const std::string& bg, const std::string& mus, int is_rnd);
-	void do_round(void);
-	void enemies_win(void);
-	void heroes_win(void);
-	void init_fighters(void);
-	void roll_initiative(void);
-	void snap_togrid(void);
+  protected:
+    eAttackResult attack_result(int ar, int dr);
+    int check_end(void);
+    void do_action(size_t);
+    int do_combat(const std::string& bg, const std::string& mus, int is_rnd);
+    void do_round(void);
+    void enemies_win(void);
+    void heroes_win(void);
+    void init_fighters(void);
+    void roll_initiative(void);
+    void snap_togrid(void);
 
-protected:
-	eCombatResult combatend;
-	bool bHasEtherEffectActive[NUM_FIGHTERS];
-	int x_coord_image_in_datafile;
-	int y_coord_image_in_datafile;
-	uint32_t num_enemies;
-	int health_adjust[NUM_FIGHTERS];
-	bool bShowDeathEffectAnimation[NUM_FIGHTERS];
-	int RemainingBattleCounter;
-	bool bIsVisionActive;
+  protected:
+    eCombatResult combatend;
+    bool bHasEtherEffectActive[NUM_FIGHTERS];
+    int x_coord_image_in_datafile;
+    int y_coord_image_in_datafile;
+    uint32_t num_enemies;
+    int health_adjust[NUM_FIGHTERS];
+    bool bShowDeathEffectAnimation[NUM_FIGHTERS];
+    int RemainingBattleCounter;
+    bool bIsVisionActive;
 
-	int nspeed[NUM_FIGHTERS];
-	int bspeed[NUM_FIGHTERS];
-	/* The higher this value, the more likely the monsters attack first. The lower this
-	 * is, the better chance player can RUN from battle.
-	 * A value of '1' means the player can run from battle 100% of the time at no penalty.
-	 */
-	uint8_t monsters_surprise_heroes;
-	
-	/* The higher this value, the more likely the players attack first. Does not affect
-	 * the chance to run from a battle.
-	 * A value of '1' essentially means the enemies were expecting them, and will likely
-	 * ambush the party (attack first).
-	 */
-	uint8_t heroes_surprise_monsters;
+    int nspeed[NUM_FIGHTERS];
+    int bspeed[NUM_FIGHTERS];
+    /* The higher this value, the more likely the monsters attack first. The lower this
+     * is, the better chance player can RUN from battle.
+     * A value of '1' means the player can run from battle 100% of the time at no penalty.
+     */
+    uint8_t monsters_surprise_heroes;
+
+    /* The higher this value, the more likely the players attack first. Does not affect
+     * the chance to run from a battle.
+     * A value of '1' essentially means the enemies were expecting them, and will likely
+     * ambush the party (attack first).
+     */
+    uint8_t heroes_surprise_monsters;
 };
 
 extern KCombat Combat;

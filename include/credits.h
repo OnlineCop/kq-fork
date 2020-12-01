@@ -30,4 +30,4 @@ void allocate_credits(void);
 void deallocate_credits(void);
 
 /*! Display credits (call in a loop) */
-void display_credits(Raster *);
+void display_credits(Raster*);

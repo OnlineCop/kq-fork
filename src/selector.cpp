@@ -43,14 +43,14 @@
 
 enum eMiniMenu
 {
-	MM_NONE = 0,
-	MM_JOIN = 1 << 0,
-	MM_LEAVE = 1 << 1,
-	MM_LEAD = 1 << 2,
+    MM_NONE = 0,
+    MM_JOIN = 1 << 0,
+    MM_LEAVE = 1 << 1,
+    MM_LEAD = 1 << 2,
 
-	MM_OPTIONS_JOIN = 0,
-	MM_OPTIONS_LEAVE = 1,
-	MM_OPTIONS_LEAD = 2
+    MM_OPTIONS_JOIN = 0,
+    MM_OPTIONS_LEAVE = 1,
+    MM_OPTIONS_LEAD = 2
 };
 
 /*  Internal functions  */
@@ -78,114 +78,114 @@ static void party_remove(ePIDX id);
  */
 int auto_select_enemy(int whom, int csts)
 {
-	unsigned int i, number_enemies = 0;
-	int tmpd[NUM_FIGHTERS];
-	for (i = PSIZE; i < PSIZE + Combat.GetNumEnemies(); i++)
-	{
-		if (fighter[i].IsAlive())
-		{
-			if (csts == NO_STS_CHECK)
-			{
-				tmpd[number_enemies] = i;
-				number_enemies++;
-			}
-			else
-			{
-				if (csts == CURE_CHECK)
-				{
-					if (fighter[i].hp < fighter[i].mhp * 75 / 100)
-					{
-						tmpd[number_enemies] = i;
-						number_enemies++;
-					}
-				}
-				else
-				{
-					bool isBless = (csts == S_BLESS && fighter[i].GetRemainingBless() < 3);
-					bool isStrength = (csts == S_STRENGTH && fighter[i].GetRemainingStrength() < 2);
-					bool isOther = false;
-					switch (csts)
-					{
-					case S_POISON:
-						isOther = !fighter[i].IsPoisoned();
-						break;
-					case S_BLIND:
-						isOther = !fighter[i].IsBlind();
-						break;
-					case S_CHARM:
-						isOther = !fighter[i].IsCharmed();
-						break;
-					case S_STOP:
-						isOther = !fighter[i].IsStopped();
-						break;
-					case S_STONE:
-						isOther = !fighter[i].IsStone();
-						break;
-					case S_MUTE:
-						isOther = !fighter[i].IsMute();
-						break;
-					case S_SLEEP:
-						isOther = !fighter[i].IsAsleep();
-						break;
-					case S_DEAD:
-						isOther = !fighter[i].IsDead();
-						break;
-					case S_MALISON:
-						isOther = !fighter[i].IsMalison();
-						break;
-					case S_RESIST:
-						isOther = !fighter[i].IsResist();
-						break;
-					case S_TIME:
-						isOther = !fighter[i].IsTime();
-						break;
-					case S_SHIELD:
-						isOther = !fighter[i].IsShield();
-						break;
-					case S_ETHER:
-						isOther = !fighter[i].IsEther();
-						break;
-					case S_TRUESHOT:
-						isOther = !fighter[i].IsTrueshot();
-						break;
-					case S_REGEN:
-						isOther = !fighter[i].IsRegen();
-						break;
-					case S_INFUSE:
-						isOther = !fighter[i].IsInfuse();
-						break;
-					default:
-						break;
-					}
+    unsigned int i, number_enemies = 0;
+    int tmpd[NUM_FIGHTERS];
+    for (i = PSIZE; i < PSIZE + Combat.GetNumEnemies(); i++)
+    {
+        if (fighter[i].IsAlive())
+        {
+            if (csts == NO_STS_CHECK)
+            {
+                tmpd[number_enemies] = i;
+                number_enemies++;
+            }
+            else
+            {
+                if (csts == CURE_CHECK)
+                {
+                    if (fighter[i].hp < fighter[i].mhp * 75 / 100)
+                    {
+                        tmpd[number_enemies] = i;
+                        number_enemies++;
+                    }
+                }
+                else
+                {
+                    bool isBless = (csts == S_BLESS && fighter[i].GetRemainingBless() < 3);
+                    bool isStrength = (csts == S_STRENGTH && fighter[i].GetRemainingStrength() < 2);
+                    bool isOther = false;
+                    switch (csts)
+                    {
+                    case S_POISON:
+                        isOther = !fighter[i].IsPoisoned();
+                        break;
+                    case S_BLIND:
+                        isOther = !fighter[i].IsBlind();
+                        break;
+                    case S_CHARM:
+                        isOther = !fighter[i].IsCharmed();
+                        break;
+                    case S_STOP:
+                        isOther = !fighter[i].IsStopped();
+                        break;
+                    case S_STONE:
+                        isOther = !fighter[i].IsStone();
+                        break;
+                    case S_MUTE:
+                        isOther = !fighter[i].IsMute();
+                        break;
+                    case S_SLEEP:
+                        isOther = !fighter[i].IsAsleep();
+                        break;
+                    case S_DEAD:
+                        isOther = !fighter[i].IsDead();
+                        break;
+                    case S_MALISON:
+                        isOther = !fighter[i].IsMalison();
+                        break;
+                    case S_RESIST:
+                        isOther = !fighter[i].IsResist();
+                        break;
+                    case S_TIME:
+                        isOther = !fighter[i].IsTime();
+                        break;
+                    case S_SHIELD:
+                        isOther = !fighter[i].IsShield();
+                        break;
+                    case S_ETHER:
+                        isOther = !fighter[i].IsEther();
+                        break;
+                    case S_TRUESHOT:
+                        isOther = !fighter[i].IsTrueshot();
+                        break;
+                    case S_REGEN:
+                        isOther = !fighter[i].IsRegen();
+                        break;
+                    case S_INFUSE:
+                        isOther = !fighter[i].IsInfuse();
+                        break;
+                    default:
+                        break;
+                    }
 
-					if (isBless || isStrength || isOther)
-					{
-						tmpd[number_enemies] = i;
-						number_enemies++;
-					}
-				}
-			}
-		}
-	}
-	if (number_enemies == 0)
-	{
-		return PIDX_UNDEFINED;
-	}
-	if (csts != NO_STS_CHECK)
-	{
-		for (i = 0; i < number_enemies; i++)
-		{
-			if (tmpd[i] == whom && kqrandom->random_range_exclusive(0, 4) != 3)
-			{
-				return whom;
-			}
-		}
-	}
-	if (number_enemies < 2)
-	{
-		return tmpd[0];
-	}
-	return tmpd[kqrandom->random_range_exclusive(0, number_enemies)];
+                    if (isBless || isStrength || isOther)
+                    {
+                        tmpd[number_enemies] = i;
+                        number_enemies++;
+                    }
+                }
+            }
+        }
+    }
+    if (number_enemies == 0)
+    {
+        return PIDX_UNDEFINED;
+    }
+    if (csts != NO_STS_CHECK)
+    {
+        for (i = 0; i < number_enemies; i++)
+        {
+            if (tmpd[i] == whom && kqrandom->random_range_exclusive(0, 4) != 3)
+            {
+                return whom;
+            }
+        }
+    }
+    if (number_enemies < 2)
+    {
+        return tmpd[0];
+    }
+    return tmpd[kqrandom->random_range_exclusive(0, number_enemies)];
 }
 
 /*! \brief  Select a party member automatically
@@ -201,81 +201,81 @@ int auto_select_enemy(int whom, int csts)
  */
 int auto_select_hero(int whom, int csts)
 {
-	unsigned int cntr = 0;
-	int tmpd[NUM_FIGHTERS];
-	/*  RB TODO  */
-	(void)whom;
+    unsigned int cntr = 0;
+    int tmpd[NUM_FIGHTERS];
+    /*  RB TODO  */
+    (void)whom;
 
-	for (unsigned int a = 0; a < numchrs; a++)
-	{
-		bool isAffected = false;
-		switch (csts)
-		{
-		case S_POISON:
-			isAffected = !fighter[a].IsPoisoned();
-			break;
-		case S_BLIND:
-			isAffected = !fighter[a].IsBlind();
-			break;
-		case S_CHARM:
-			isAffected = !fighter[a].IsCharmed();
-			break;
-		case S_STOP:
-			isAffected = !fighter[a].IsStopped();
-			break;
-		case S_STONE:
-			isAffected = !fighter[a].IsStone();
-			break;
-		case S_MUTE:
-			isAffected = !fighter[a].IsMute();
-			break;
-		case S_SLEEP:
-			isAffected = !fighter[a].IsAsleep();
-			break;
-		case S_DEAD:
-			isAffected = !fighter[a].IsDead();
-			break;
-		case S_MALISON:
-			isAffected = !fighter[a].IsMalison();
-			break;
-		case S_RESIST:
-			isAffected = !fighter[a].IsResist();
-			break;
-		case S_TIME:
-			isAffected = !fighter[a].IsTime();
-			break;
-		case S_SHIELD:
-			isAffected = !fighter[a].IsShield();
-			break;
-		case S_BLESS:
-			isAffected = !fighter[a].IsBless();
-			break;
-		case S_STRENGTH:
-			isAffected = !fighter[a].IsStrength();
-			break;
-		case S_ETHER:
-			isAffected = !fighter[a].IsEther();
-			break;
-		case S_TRUESHOT:
-			isAffected = !fighter[a].IsTrueshot();
-			break;
-		case S_REGEN:
-			isAffected = !fighter[a].IsRegen();
-			break;
-		case S_INFUSE:
-			isAffected = !fighter[a].IsInfuse();
-			break;
-		default:
-			break;
-		}
-		if ((csts == NO_STS_CHECK || isAffected) && can_attack(a))
-		{
-			tmpd[cntr] = a;
-			cntr++;
-		}
-	}
+    for (unsigned int a = 0; a < numchrs; a++)
+    {
+        bool isAffected = false;
+        switch (csts)
+        {
+        case S_POISON:
+            isAffected = !fighter[a].IsPoisoned();
+            break;
+        case S_BLIND:
+            isAffected = !fighter[a].IsBlind();
+            break;
+        case S_CHARM:
+            isAffected = !fighter[a].IsCharmed();
+            break;
+        case S_STOP:
+            isAffected = !fighter[a].IsStopped();
+            break;
+        case S_STONE:
+            isAffected = !fighter[a].IsStone();
+            break;
+        case S_MUTE:
+            isAffected = !fighter[a].IsMute();
+            break;
+        case S_SLEEP:
+            isAffected = !fighter[a].IsAsleep();
+            break;
+        case S_DEAD:
+            isAffected = !fighter[a].IsDead();
+            break;
+        case S_MALISON:
+            isAffected = !fighter[a].IsMalison();
+            break;
+        case S_RESIST:
+            isAffected = !fighter[a].IsResist();
+            break;
+        case S_TIME:
+            isAffected = !fighter[a].IsTime();
+            break;
+        case S_SHIELD:
+            isAffected = !fighter[a].IsShield();
+            break;
+        case S_BLESS:
+            isAffected = !fighter[a].IsBless();
+            break;
+        case S_STRENGTH:
+            isAffected = !fighter[a].IsStrength();
+            break;
+        case S_ETHER:
+            isAffected = !fighter[a].IsEther();
+            break;
+        case S_TRUESHOT:
+            isAffected = !fighter[a].IsTrueshot();
+            break;
+        case S_REGEN:
+            isAffected = !fighter[a].IsRegen();
+            break;
+        case S_INFUSE:
+            isAffected = !fighter[a].IsInfuse();
+            break;
+        default:
+            break;
+        }
+        if ((csts == NO_STS_CHECK || isAffected) && can_attack(a))
+        {
+            tmpd[cntr] = a;
+            cntr++;
+        }
+    }
 
-	return cntr == 0 ? PIDX_UNDEFINED : tmpd[kqrandom->random_range_exclusive(0, cntr)];
+    return cntr == 0 ? PIDX_UNDEFINED : tmpd[kqrandom->random_range_exclusive(0, cntr)];
 }
 
 /*! \brief  Check if attacker is able to attack
@@ -288,12 +288,11 @@ int auto_select_hero(int whom, int csts)
  */
 static int can_attack(int tgt)
 {
-	if (fighter[tgt].mhp < 1 || fighter[tgt].hp < 1 ||
-		fighter[tgt].IsDead())
-	{
-		return 0;
-	}
-	return 1;
+    if (fighter[tgt].mhp < 1 || fighter[tgt].hp < 1 || fighter[tgt].IsDead())
+    {
+        return 0;
+    }
+    return 1;
 }
 
 /*! \brief  Select the action of a new member wanting to join your party
@@ -306,102 +305,99 @@ static int can_attack(int tgt)
  */
 static eMiniMenu mini_menu(int omask)
 {
-	static uint32_t mini_menu_x = 162;
-	static uint32_t mini_menu_y = 180;
+    static uint32_t mini_menu_x = 162;
+    static uint32_t mini_menu_y = 180;
 
-	eMiniMenu cp = MM_OPTIONS_JOIN;
+    eMiniMenu cp = MM_OPTIONS_JOIN;
 
-	/* If no actions were allowed, or just one, skip the menu */
-	if (omask == MM_JOIN)
-	{
-		Draw.message(_("Join"), 255, 1000, xofs, yofs);
-		return MM_JOIN;
-	}
-	if (omask == MM_LEAVE)
-	{
-		Draw.message(_("Leave"), 255, 1000, xofs, yofs);
-		return MM_LEAVE;
-	}
-	if (omask == MM_LEAD)
-	{
-		Draw.message(_("Lead"), 255, 1000, xofs, yofs);
-		return MM_LEAD;
-	}
-	if (omask == MM_NONE)
-	{
-		Draw.message(_("No options"), 255, 1000, xofs, yofs);
-		return MM_NONE;
-	}
+    /* If no actions were allowed, or just one, skip the menu */
+    if (omask == MM_JOIN)
+    {
+        Draw.message(_("Join"), 255, 1000, xofs, yofs);
+        return MM_JOIN;
+    }
+    if (omask == MM_LEAVE)
+    {
+        Draw.message(_("Leave"), 255, 1000, xofs, yofs);
+        return MM_LEAVE;
+    }
+    if (omask == MM_LEAD)
+    {
+        Draw.message(_("Lead"), 255, 1000, xofs, yofs);
+        return MM_LEAD;
+    }
+    if (omask == MM_NONE)
+    {
+        Draw.message(_("No options"), 255, 1000, xofs, yofs);
+        return MM_NONE;
+    }
 
-	while (1)
-	{
-		Game.do_check_animation();
-		Draw.menubox(double_buffer, mini_menu_x - 13, mini_menu_y - 8, 6, 3, DARKBLUE);
-		Draw.print_font(double_buffer, mini_menu_x, mini_menu_y, _("Join"),
-			(omask & MM_JOIN) ? FNORMAL : FDARK);
-		Draw.print_font(double_buffer, mini_menu_x, mini_menu_y + 8, _("Leave"),
-			(omask & MM_LEAVE) ? FNORMAL : FDARK);
-		Draw.print_font(double_buffer, mini_menu_x, mini_menu_y + 16, _("Lead"),
-			(omask & MM_LEAD) ? FNORMAL : FDARK);
-		draw_sprite(double_buffer, menuptr, mini_menu_x - 13, mini_menu_y + 8 * cp);
-		Draw.blit2screen(xofs, yofs);
+    while (1)
+    {
+        Game.do_check_animation();
+        Draw.menubox(double_buffer, mini_menu_x - 13, mini_menu_y - 8, 6, 3, DARKBLUE);
+        Draw.print_font(double_buffer, mini_menu_x, mini_menu_y, _("Join"), (omask & MM_JOIN) ? FNORMAL : FDARK);
+        Draw.print_font(double_buffer, mini_menu_x, mini_menu_y + 8, _("Leave"), (omask & MM_LEAVE) ? FNORMAL : FDARK);
+        Draw.print_font(double_buffer, mini_menu_x, mini_menu_y + 16, _("Lead"), (omask & MM_LEAD) ? FNORMAL : FDARK);
+        draw_sprite(double_buffer, menuptr, mini_menu_x - 13, mini_menu_y + 8 * cp);
+        Draw.blit2screen(xofs, yofs);
 
-		PlayerInput.readcontrols();
-		if (PlayerInput.up)
-		{
-			Game.unpress();
-			if (cp == MM_OPTIONS_LEAVE)
-			{
-				cp = MM_OPTIONS_JOIN;
-				play_effect(SND_CLICK, 128);
-			}
-			else if (cp == MM_OPTIONS_LEAD)
-			{
-				cp = MM_OPTIONS_LEAVE;
-				play_effect(SND_CLICK, 128);
-			}
-			else
-			{
-				cp = MM_OPTIONS_LEAD;
-			}
-		}
+        PlayerInput.readcontrols();
+        if (PlayerInput.up)
+        {
+            Game.unpress();
+            if (cp == MM_OPTIONS_LEAVE)
+            {
+                cp = MM_OPTIONS_JOIN;
+                play_effect(SND_CLICK, 128);
+            }
+            else if (cp == MM_OPTIONS_LEAD)
+            {
+                cp = MM_OPTIONS_LEAVE;
+                play_effect(SND_CLICK, 128);
+            }
+            else
+            {
+                cp = MM_OPTIONS_LEAD;
+            }
+        }
 
-		if (PlayerInput.down)
-		{
-			Game.unpress();
-			if (cp == MM_OPTIONS_JOIN)
-			{
-				play_effect(SND_CLICK, 128);
-				cp = MM_OPTIONS_LEAVE;
-			}
-			else if (cp == MM_OPTIONS_LEAVE)
-			{
-				play_effect(SND_CLICK, 128);
-				cp = MM_OPTIONS_LEAD;
-			}
-			else
-			{
-				cp = MM_OPTIONS_JOIN;
-			}
-		}
-		if (PlayerInput.bctrl)
-		{
-			Game.unpress();
-			return MM_NONE;
-		}
-		if (PlayerInput.balt)
-		{
-			Game.unpress();
-			if (omask & (1 << cp))
-			{
-				return (eMiniMenu)(1 << cp);
-			}
-			else
-			{
-				play_effect(SND_BAD, 128);
-			}
-		}
-	}
+        if (PlayerInput.down)
+        {
+            Game.unpress();
+            if (cp == MM_OPTIONS_JOIN)
+            {
+                play_effect(SND_CLICK, 128);
+                cp = MM_OPTIONS_LEAVE;
+            }
+            else if (cp == MM_OPTIONS_LEAVE)
+            {
+                play_effect(SND_CLICK, 128);
+                cp = MM_OPTIONS_LEAD;
+            }
+            else
+            {
+                cp = MM_OPTIONS_JOIN;
+            }
+        }
+        if (PlayerInput.bctrl)
+        {
+            Game.unpress();
+            return MM_NONE;
+        }
+        if (PlayerInput.balt)
+        {
+            Game.unpress();
+            if (omask & (1 << cp))
+            {
+                return (eMiniMenu)(1 << cp);
+            }
+            else
+            {
+                play_effect(SND_BAD, 128);
+            }
+        }
+    }
 }
 
 /*! \brief Player chose the new person to join the party
@@ -411,55 +407,55 @@ static eMiniMenu mini_menu(int omask)
  */
 static void party_add(ePIDX id, int lead)
 {
-	KQEntity *t;
+    KQEntity* t;
 
-	if (numchrs < MAXCHRS)
-	{
-		if (numchrs > 0)
-		{
-			memcpy(&g_ent[numchrs], &g_ent[numchrs - 1], sizeof(*g_ent));
-		}
-		if (lead)
-		{
-			t = &g_ent[0];
-			memmove(&pidx[1], &pidx[0], sizeof(*pidx) * numchrs);
-			memmove(&g_ent[1], &g_ent[0], sizeof(*g_ent) * numchrs);
-			pidx[0] = id;
-		}
-		else
-		{
-			t = &g_ent[numchrs];
-			pidx[numchrs] = id;
-		}
-		++numchrs;
-		t->eid = (uint8_t)id;
-		t->active = 1;
-		t->chrx = 0;
-	}
+    if (numchrs < MAXCHRS)
+    {
+        if (numchrs > 0)
+        {
+            memcpy(&g_ent[numchrs], &g_ent[numchrs - 1], sizeof(*g_ent));
+        }
+        if (lead)
+        {
+            t = &g_ent[0];
+            memmove(&pidx[1], &pidx[0], sizeof(*pidx) * numchrs);
+            memmove(&g_ent[1], &g_ent[0], sizeof(*g_ent) * numchrs);
+            pidx[0] = id;
+        }
+        else
+        {
+            t = &g_ent[numchrs];
+            pidx[numchrs] = id;
+        }
+        ++numchrs;
+        t->eid = (uint8_t)id;
+        t->active = 1;
+        t->chrx = 0;
+    }
 }
 
 /*! \brief Select the second party member to lead the group
  */
 void party_newlead(void)
 {
-	uint32_t i;
-	uint8_t j;
-	ePIDX t;
+    uint32_t i;
+    uint8_t j;
+    ePIDX t;
 
-	for (i = 1; i < numchrs; ++i)
-	{
-		t = pidx[0];
-		pidx[0] = pidx[i];
-		pidx[i] = t;
+    for (i = 1; i < numchrs; ++i)
+    {
+        t = pidx[0];
+        pidx[0] = pidx[i];
+        pidx[i] = t;
 
-		j = g_ent[0].eid;
-		g_ent[0].eid = g_ent[i].eid;
-		g_ent[i].eid = j;
+        j = g_ent[0].eid;
+        g_ent[0].eid = g_ent[i].eid;
+        g_ent[i].eid = j;
 
-		j = g_ent[0].chrx;
-		g_ent[0].chrx = g_ent[i].chrx;
-		g_ent[i].chrx = j;
-	}
+        j = g_ent[0].chrx;
+        g_ent[0].chrx = g_ent[i].chrx;
+        g_ent[i].chrx = j;
+    }
 }
 
 /*! \brief Player chose the person to remove from the party
@@ -468,22 +464,20 @@ void party_newlead(void)
  */
 static void party_remove(ePIDX id)
 {
-	size_t pidx_index;
+    size_t pidx_index;
 
-	for (pidx_index = 0; pidx_index < numchrs; ++pidx_index)
-	{
-		if (pidx[pidx_index] == id)
-		{
-			--numchrs;
-			memmove(&pidx[pidx_index], &pidx[pidx_index + 1],
-				sizeof(*pidx) * (numchrs - pidx_index));
-			memmove(&g_ent[pidx_index], &g_ent[pidx_index + 1],
-				sizeof(*g_ent) * (numchrs - pidx_index));
-			pidx[numchrs] = PIDX_UNDEFINED;
-			g_ent[numchrs].active = 0;
-			return;
-		}
-	}
+    for (pidx_index = 0; pidx_index < numchrs; ++pidx_index)
+    {
+        if (pidx[pidx_index] == id)
+        {
+            --numchrs;
+            memmove(&pidx[pidx_index], &pidx[pidx_index + 1], sizeof(*pidx) * (numchrs - pidx_index));
+            memmove(&g_ent[pidx_index], &g_ent[pidx_index + 1], sizeof(*g_ent) * (numchrs - pidx_index));
+            pidx[numchrs] = PIDX_UNDEFINED;
+            g_ent[numchrs].active = 0;
+            return;
+        }
+    }
 }
 
 /*! \brief Select player or players
@@ -503,97 +497,92 @@ static void party_remove(ePIDX id)
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled or
  *          SEL_ALL_ALLIES if 'all' was selected (by pressing L or R)
  */
-ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
+ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
 {
-	uint32_t ptr = 0;
-	int shy = 120 - (numchrs * 28);
-	bool select_all = (csa == TGT_ALLY_ALL);
-	bool stop = false;
+    uint32_t ptr = 0;
+    int shy = 120 - (numchrs * 28);
+    bool select_all = (csa == TGT_ALLY_ALL);
+    bool stop = false;
 
-	while (!stop)
-	{
-		Game.do_check_animation();
-		Draw.drawmap();
-		if (csa != TGT_NONE)
-		{
-			Draw.menubox(double_buffer, 152 - ((strlen(msg) + 1) * 4) + xofs, 8 + yofs,
-				strlen(msg) + 1, 1, BLUE);
-			Draw.draw_icon(double_buffer, icn, 160 - ((strlen(msg) + 1) * 4) + xofs,
-				16 + yofs);
-			Draw.print_font(double_buffer, 168 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs,
-				msg, FNORMAL);
-		}
-		for (unsigned int k = 0; k < numchrs; k++)
-		{
-			Draw.menubox(double_buffer, 80 + xofs, k * 56 + shy + yofs, 18, 5, BLUE);
-			kmenu.draw_playerstat(double_buffer, pidx[k], 88 + xofs, k * 56 + shy + 8 + yofs);
-			// Draw the pointer
-			if (select_all || k == ptr)
-			{
-				draw_sprite(double_buffer, menuptr, 72 + xofs,
-					k * 56 + shy + 24 + yofs);
-			}
-		}
-		Draw.blit2screen(xofs, yofs);
+    while (!stop)
+    {
+        Game.do_check_animation();
+        Draw.drawmap();
+        if (csa != TGT_NONE)
+        {
+            Draw.menubox(double_buffer, 152 - ((strlen(msg) + 1) * 4) + xofs, 8 + yofs, strlen(msg) + 1, 1, BLUE);
+            Draw.draw_icon(double_buffer, icn, 160 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs);
+            Draw.print_font(double_buffer, 168 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs, msg, FNORMAL);
+        }
+        for (unsigned int k = 0; k < numchrs; k++)
+        {
+            Draw.menubox(double_buffer, 80 + xofs, k * 56 + shy + yofs, 18, 5, BLUE);
+            kmenu.draw_playerstat(double_buffer, pidx[k], 88 + xofs, k * 56 + shy + 8 + yofs);
+            // Draw the pointer
+            if (select_all || k == ptr)
+            {
+                draw_sprite(double_buffer, menuptr, 72 + xofs, k * 56 + shy + 24 + yofs);
+            }
+        }
+        Draw.blit2screen(xofs, yofs);
 
-		PlayerInput.readcontrols();
-		if (csa == TGT_NONE)
-		{
-			if (PlayerInput.balt | PlayerInput.bctrl)
-			{
-				Game.unpress();
-				return PIDX_UNDEFINED;
-			}
-			if (PlayerInput.left || PlayerInput.right || PlayerInput.down ||
-				PlayerInput.up)
-			{
-				Game.unpress();
-			}
-		}
-		else
-		{
-			if (PlayerInput.left || PlayerInput.right)
-			{
-				Game.unpress();
-				if (csa == TGT_ALLY_ONEALL)
-				{
-					select_all = !select_all;
-				}
-			}
+        PlayerInput.readcontrols();
+        if (csa == TGT_NONE)
+        {
+            if (PlayerInput.balt | PlayerInput.bctrl)
+            {
+                Game.unpress();
+                return PIDX_UNDEFINED;
+            }
+            if (PlayerInput.left || PlayerInput.right || PlayerInput.down || PlayerInput.up)
+            {
+                Game.unpress();
+            }
+        }
+        else
+        {
+            if (PlayerInput.left || PlayerInput.right)
+            {
+                Game.unpress();
+                if (csa == TGT_ALLY_ONEALL)
+                {
+                    select_all = !select_all;
+                }
+            }
 
-			if (PlayerInput.up)
-			{
-				Game.unpress();
-				if (ptr > 0)
-				{
-					ptr--;
-				}
-				play_effect(SND_CLICK, 128);
-			}
-			if (PlayerInput.down)
-			{
-				Game.unpress();
-				if (ptr < numchrs - 1)
-				{
-					ptr++;
-				}
-				play_effect(SND_CLICK, 128);
-			}
+            if (PlayerInput.up)
+            {
+                Game.unpress();
+                if (ptr > 0)
+                {
+                    ptr--;
+                }
+                play_effect(SND_CLICK, 128);
+            }
+            if (PlayerInput.down)
+            {
+                Game.unpress();
+                if (ptr < numchrs - 1)
+                {
+                    ptr++;
+                }
+                play_effect(SND_CLICK, 128);
+            }
 
-			if (PlayerInput.balt)
-			{
-				Game.unpress();
-				stop = true;
-			}
-			if (PlayerInput.bctrl)
-			{
-				Game.unpress();
-				return PIDX_UNDEFINED;
-			}
-		}
-	}
+            if (PlayerInput.balt)
+            {
+                Game.unpress();
+                stop = true;
+            }
+            if (PlayerInput.bctrl)
+            {
+                Game.unpress();
+                return PIDX_UNDEFINED;
+            }
+        }
+    }
 
-	return (select_all ? SEL_ALL_ALLIES : (ePIDX)ptr);
+    return (select_all ? SEL_ALL_ALLIES : (ePIDX)ptr);
 }
 
 /*! \brief  Choose a target
@@ -616,98 +605,97 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char *msg)
  */
 ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 {
-	if (!(multi_target == TGT_ENEMY_ONE || multi_target == TGT_ENEMY_ONEALL ||
-		multi_target == TGT_ENEMY_ALL))
-	{
-		Game.program_death("Invalid enemy target mode");
-		return PIDX_UNDEFINED;
-	}
-	unsigned int cntr = 0;
-	size_t ptr;
-	int tmpd[NUM_FIGHTERS];
-	for (unsigned int fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
-	{
-		if (can_attack(fighter_index) == 1)
-		{
-			tmpd[cntr++] = fighter_index;
-		}
-	}
-	// If there are no enemies (shouldn't happen) then return early
-	if (cntr == 0)
-	{
-		return PIDX_UNDEFINED;
-	}
-	bool select_all = (multi_target == TGT_ENEMY_ALL);
+    if (!(multi_target == TGT_ENEMY_ONE || multi_target == TGT_ENEMY_ONEALL || multi_target == TGT_ENEMY_ALL))
+    {
+        Game.program_death("Invalid enemy target mode");
+        return PIDX_UNDEFINED;
+    }
+    unsigned int cntr = 0;
+    size_t ptr;
+    int tmpd[NUM_FIGHTERS];
+    for (unsigned int fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
+    {
+        if (can_attack(fighter_index) == 1)
+        {
+            tmpd[cntr++] = fighter_index;
+        }
+    }
+    // If there are no enemies (shouldn't happen) then return early
+    if (cntr == 0)
+    {
+        return PIDX_UNDEFINED;
+    }
+    bool select_all = (multi_target == TGT_ENEMY_ALL);
 
-	ptr = 0;
-	bool stop = false;
+    ptr = 0;
+    bool stop = false;
 
-	while (!stop)
-	{
-		Game.do_check_animation();
-		if (select_all)
-		{
-			Combat.battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 2);
-		}
-		else
-		{
-			Combat.battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 0);
-		}
+    while (!stop)
+    {
+        Game.do_check_animation();
+        if (select_all)
+        {
+            Combat.battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 2);
+        }
+        else
+        {
+            Combat.battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 0);
+        }
 
-		Draw.blit2screen(0, 0);
-		PlayerInput.readcontrols();
+        Draw.blit2screen(0, 0);
+        PlayerInput.readcontrols();
 
-		if (PlayerInput.balt)
-		{
-			Game.unpress();
-			stop = true;
-		}
-		if (PlayerInput.bctrl)
-		{
-			Game.unpress();
-			return PIDX_UNDEFINED;
-		}
-		if (PlayerInput.left)
-		{
-			Game.unpress();
-			if (ptr > 0)
-			{
-				ptr--;
-			}
-			else
-			{
-				ptr = cntr - 1;
-			}
-		}
-		if (PlayerInput.right)
-		{
-			Game.unpress();
-			if (ptr < cntr - 1)
-			{
-				ptr++;
-			}
-			else
-			{
-				ptr = 0;
-			}
-		}
-		if (PlayerInput.up || PlayerInput.down)
-		{
-			Game.unpress();
-			if (multi_target == TGT_ENEMY_ONEALL && cntr > 1)
-			{
-				select_all = !select_all;
-			}
-		}
-	}
-	if (select_all)
-	{
-		return SEL_ALL_ENEMIES;
-	}
-	else
-	{
-		return (ePIDX)tmpd[ptr];
-	}
+        if (PlayerInput.balt)
+        {
+            Game.unpress();
+            stop = true;
+        }
+        if (PlayerInput.bctrl)
+        {
+            Game.unpress();
+            return PIDX_UNDEFINED;
+        }
+        if (PlayerInput.left)
+        {
+            Game.unpress();
+            if (ptr > 0)
+            {
+                ptr--;
+            }
+            else
+            {
+                ptr = cntr - 1;
+            }
+        }
+        if (PlayerInput.right)
+        {
+            Game.unpress();
+            if (ptr < cntr - 1)
+            {
+                ptr++;
+            }
+            else
+            {
+                ptr = 0;
+            }
+        }
+        if (PlayerInput.up || PlayerInput.down)
+        {
+            Game.unpress();
+            if (multi_target == TGT_ENEMY_ONEALL && cntr > 1)
+            {
+                select_all = !select_all;
+            }
+        }
+    }
+    if (select_all)
+    {
+        return SEL_ALL_ENEMIES;
+    }
+    else
+    {
+        return (ePIDX)tmpd[ptr];
+    }
 }
 
 /* \brief Select a hero or heroes
@@ -722,102 +710,100 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled
  *          or SEL_ALL_ALLIES if 'all' was selected (by pressing U or D)
  */
-ePIDX select_hero(size_t target_fighter_index, eTarget multi_target,
-	bool can_select_dead)
+ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_select_dead)
 {
-	if (!(multi_target == TGT_ALLY_ALL || multi_target == TGT_ALLY_ONE ||
-		multi_target == TGT_ALLY_ONEALL))
-	{
-		Game.program_death("Invalid hero target mode");
-		return PIDX_UNDEFINED;
-	}
-	unsigned int cntr = 0, ptr = 0;
-	int tmpd[NUM_FIGHTERS];
-	bool select_all = (multi_target == TGT_ALLY_ALL);
-	for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
-	{
-		if (can_select_dead || fighter[fighter_index].IsAlive())
-		{
-			tmpd[cntr] = fighter_index;
-			if (fighter[cntr].IsDead())
-			{
-				ptr = cntr; /* default: select a dead char if there is one */
-			}
-			cntr++;
-		}
-	}
-	// Early exit if there are no heroes (again, shouldn't happen)
-	if (cntr == 0)
-	{
-		return PIDX_UNDEFINED;
-	}
-	bool stop = false;
-	while (!stop)
-	{
-		Game.do_check_animation();
-		if (select_all)
-		{
-			Combat.battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 1);
-		}
-		else
-		{
-			Combat.battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 0);
-		}
-		Draw.blit2screen(0, 0);
+    if (!(multi_target == TGT_ALLY_ALL || multi_target == TGT_ALLY_ONE || multi_target == TGT_ALLY_ONEALL))
+    {
+        Game.program_death("Invalid hero target mode");
+        return PIDX_UNDEFINED;
+    }
+    unsigned int cntr = 0, ptr = 0;
+    int tmpd[NUM_FIGHTERS];
+    bool select_all = (multi_target == TGT_ALLY_ALL);
+    for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
+    {
+        if (can_select_dead || fighter[fighter_index].IsAlive())
+        {
+            tmpd[cntr] = fighter_index;
+            if (fighter[cntr].IsDead())
+            {
+                ptr = cntr; /* default: select a dead char if there is one */
+            }
+            cntr++;
+        }
+    }
+    // Early exit if there are no heroes (again, shouldn't happen)
+    if (cntr == 0)
+    {
+        return PIDX_UNDEFINED;
+    }
+    bool stop = false;
+    while (!stop)
+    {
+        Game.do_check_animation();
+        if (select_all)
+        {
+            Combat.battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 1);
+        }
+        else
+        {
+            Combat.battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 0);
+        }
+        Draw.blit2screen(0, 0);
 
-		PlayerInput.readcontrols();
+        PlayerInput.readcontrols();
 
-		if (PlayerInput.balt)
-		{
-			Game.unpress();
-			stop = true;
-		}
-		if (PlayerInput.bctrl)
-		{
-			Game.unpress();
-			return PIDX_UNDEFINED;
-		}
-		if (PlayerInput.left)
-		{
-			Game.unpress();
-			if (ptr > 0)
-			{
-				ptr--;
-			}
-			else
-			{
-				ptr = cntr - 1;
-			}
-		}
-		if (PlayerInput.right)
-		{
-			Game.unpress();
-			if (ptr < cntr - 1)
-			{
-				ptr++;
-			}
-			else
-			{
-				ptr = 0;
-			}
-		}
-		if (multi_target == TGT_ALLY_ONEALL && cntr > 1)
-		{
-			if (PlayerInput.up || PlayerInput.down)
-			{
-				Game.unpress();
-				select_all = !select_all;
-			}
-		}
-	}
-	if (select_all)
-	{
-		return SEL_ALL_ALLIES;
-	}
-	else
-	{
-		return (ePIDX)tmpd[ptr];
-	}
+        if (PlayerInput.balt)
+        {
+            Game.unpress();
+            stop = true;
+        }
+        if (PlayerInput.bctrl)
+        {
+            Game.unpress();
+            return PIDX_UNDEFINED;
+        }
+        if (PlayerInput.left)
+        {
+            Game.unpress();
+            if (ptr > 0)
+            {
+                ptr--;
+            }
+            else
+            {
+                ptr = cntr - 1;
+            }
+        }
+        if (PlayerInput.right)
+        {
+            Game.unpress();
+            if (ptr < cntr - 1)
+            {
+                ptr++;
+            }
+            else
+            {
+                ptr = 0;
+            }
+        }
+        if (multi_target == TGT_ALLY_ONEALL && cntr > 1)
+        {
+            if (PlayerInput.up || PlayerInput.down)
+            {
+                Game.unpress();
+                select_all = !select_all;
+            }
+        }
+    }
+    if (select_all)
+    {
+        return SEL_ALL_ALLIES;
+    }
+    else
+    {
+        return (ePIDX)tmpd[ptr];
+    }
 }
 
 /*! \brief Select your party
@@ -833,225 +819,220 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target,
  * \param   numchrs_max The maximum number of heroes allowed in the party
  * \returns 1 if the party changed, 0 if cancelled
  */
-int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
+int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
 {
-	static const uint32_t BTN_EXIT = (MAXCHRS + PSIZE);
+    static const uint32_t BTN_EXIT = (MAXCHRS + PSIZE);
 
-	ePIDX hero = PIDX_UNDEFINED;
-	eMiniMenu mini_menu_mask;
-	size_t pidx_index;
-	size_t fighter_index;
-	size_t cur, oldcur; /* cursor */
-	signed int x, y;
-	uint32_t mask;
-	uint32_t running = 1;
+    ePIDX hero = PIDX_UNDEFINED;
+    eMiniMenu mini_menu_mask;
+    size_t pidx_index;
+    size_t fighter_index;
+    size_t cur, oldcur; /* cursor */
+    signed int x, y;
+    uint32_t mask;
+    uint32_t running = 1;
 
-	cur = 0;
-	if (avail == NULL)
-	{
-		/* check input parameters */
-		return 0;
-	}
-	/* Be sure to remove any available characters that are already in the party */
-	for (fighter_index = 0; fighter_index < n_avail; ++fighter_index)
-	{
-		for (pidx_index = 0; pidx_index < numchrs; ++pidx_index)
-		{
-			if (avail[fighter_index] == (ePIDX)pidx[pidx_index])
-			{
-				avail[fighter_index] = PIDX_UNDEFINED;
-			}
-		}
-	}
+    cur = 0;
+    if (avail == NULL)
+    {
+        /* check input parameters */
+        return 0;
+    }
+    /* Be sure to remove any available characters that are already in the party */
+    for (fighter_index = 0; fighter_index < n_avail; ++fighter_index)
+    {
+        for (pidx_index = 0; pidx_index < numchrs; ++pidx_index)
+        {
+            if (avail[fighter_index] == (ePIDX)pidx[pidx_index])
+            {
+                avail[fighter_index] = PIDX_UNDEFINED;
+            }
+        }
+    }
 
-	Draw.menubox(double_buffer, 16 + xofs, 24 + yofs, 34, 12, BLUE);
-	Draw.print_font(double_buffer, 24 + xofs, 32 + yofs, _("Available:"), FGOLD);
-	Draw.print_font(double_buffer, 24 + xofs, 80 + yofs, _("In party:"), FGOLD);
-	while (running)
-	{
-		Game.do_check_animation();
-		/* Draw everything */
-		/* draw the row of available heroes */
-		y = yofs + 40;
-		for (fighter_index = 0; fighter_index < n_avail; ++fighter_index)
-		{
-			x = xofs + (KQ_SCREEN_W - 32 * n_avail) / 2 + 32 * fighter_index;
-			Draw.menubox(double_buffer, x, y, 2, 2,
-				(fighter_index == cur ? DARKRED : DARKBLUE));
-			if (avail[fighter_index] != PIDX_UNDEFINED)
-			{
-				draw_sprite(double_buffer, frames[avail[fighter_index]][0], x + 8,
-					y + 8);
-			}
-		}
-		/* draw the party */
-		x = xofs + (KQ_SCREEN_W - 40 * PSIZE) / 2;
-		y = yofs + 88;
-		for (fighter_index = 0; fighter_index < PSIZE; ++fighter_index)
-		{
-			Draw.menubox(double_buffer, x, y, 2, 2,
-				(cur == MAXCHRS + fighter_index ? DARKRED : DARKBLUE));
-			if (fighter_index < numchrs && pidx[fighter_index] != PIDX_UNDEFINED)
-			{
-				draw_sprite(double_buffer, frames[pidx[fighter_index]][0], x + 8,
-					y + 8);
-			}
-			x += 40;
-		}
-		/* Draw the 'Exit' button */
-		Draw.menubox(double_buffer, x, y, 4, 1,
-			(cur == PSIZE + MAXCHRS ? DARKRED : DARKBLUE));
-		Draw.print_font(double_buffer, x + 8, y + 8, _("Exit"), FNORMAL);
-		/* See which hero is selected and draw his/her stats */
-		if (cur < n_avail)
-		{
-			hero = avail[cur];
-		}
-		else if (cur < numchrs + MAXCHRS)
-		{
-			hero = pidx[cur - MAXCHRS];
-		}
-		else
-		{
-			hero = PIDX_UNDEFINED;
-		}
-		Draw.menubox(double_buffer, 92, 152, 18, 5, DARKBLUE);
-		if (hero != PIDX_UNDEFINED)
-		{
-			kmenu.draw_playerstat(double_buffer, hero, 100, 160);
-		}
-		/* Show on the screen */
-		Draw.blit2screen(xofs, yofs);
+    Draw.menubox(double_buffer, 16 + xofs, 24 + yofs, 34, 12, BLUE);
+    Draw.print_font(double_buffer, 24 + xofs, 32 + yofs, _("Available:"), FGOLD);
+    Draw.print_font(double_buffer, 24 + xofs, 80 + yofs, _("In party:"), FGOLD);
+    while (running)
+    {
+        Game.do_check_animation();
+        /* Draw everything */
+        /* draw the row of available heroes */
+        y = yofs + 40;
+        for (fighter_index = 0; fighter_index < n_avail; ++fighter_index)
+        {
+            x = xofs + (KQ_SCREEN_W - 32 * n_avail) / 2 + 32 * fighter_index;
+            Draw.menubox(double_buffer, x, y, 2, 2, (fighter_index == cur ? DARKRED : DARKBLUE));
+            if (avail[fighter_index] != PIDX_UNDEFINED)
+            {
+                draw_sprite(double_buffer, frames[avail[fighter_index]][0], x + 8, y + 8);
+            }
+        }
+        /* draw the party */
+        x = xofs + (KQ_SCREEN_W - 40 * PSIZE) / 2;
+        y = yofs + 88;
+        for (fighter_index = 0; fighter_index < PSIZE; ++fighter_index)
+        {
+            Draw.menubox(double_buffer, x, y, 2, 2, (cur == MAXCHRS + fighter_index ? DARKRED : DARKBLUE));
+            if (fighter_index < numchrs && pidx[fighter_index] != PIDX_UNDEFINED)
+            {
+                draw_sprite(double_buffer, frames[pidx[fighter_index]][0], x + 8, y + 8);
+            }
+            x += 40;
+        }
+        /* Draw the 'Exit' button */
+        Draw.menubox(double_buffer, x, y, 4, 1, (cur == PSIZE + MAXCHRS ? DARKRED : DARKBLUE));
+        Draw.print_font(double_buffer, x + 8, y + 8, _("Exit"), FNORMAL);
+        /* See which hero is selected and draw his/her stats */
+        if (cur < n_avail)
+        {
+            hero = avail[cur];
+        }
+        else if (cur < numchrs + MAXCHRS)
+        {
+            hero = pidx[cur - MAXCHRS];
+        }
+        else
+        {
+            hero = PIDX_UNDEFINED;
+        }
+        Draw.menubox(double_buffer, 92, 152, 18, 5, DARKBLUE);
+        if (hero != PIDX_UNDEFINED)
+        {
+            kmenu.draw_playerstat(double_buffer, hero, 100, 160);
+        }
+        /* Show on the screen */
+        Draw.blit2screen(xofs, yofs);
 
-		oldcur = cur;
-		PlayerInput.readcontrols();
-		if (PlayerInput.up)
-		{
-			/* move between the available row and the party row */
-			Game.unpress();
-			if (cur >= MAXCHRS)
-			{
-				cur = 0;
-			}
-		}
-		if (PlayerInput.down)
-		{
-			/* move between the available row and the party row */
-			Game.unpress();
-			if (cur < MAXCHRS)
-			{
-				cur = MAXCHRS;
-			}
-		}
-		if (PlayerInput.left)
-		{
-			/* move between heroes on a row */
-			Game.unpress();
-			if (cur > MAXCHRS)
-			{
-				--cur;
-			}
-			else if (cur > 0)
-			{
-				--cur;
-			}
-		}
-		if (PlayerInput.right)
-		{
-			/* move between heroes on a row */
-			Game.unpress();
-			if (cur < (n_avail - 1))
-			{
-				cur++;
-			}
-			else if (cur >= MAXCHRS && cur <= (numchrs + MAXCHRS))
-			{
-				++cur;
-			}
-		}
-		if (PlayerInput.bctrl)
-		{
-			Game.unpress();
-			running = 0;
-		}
-		if (PlayerInput.balt)
-		{
-			Game.unpress();
-			if (cur == BTN_EXIT)
-			{
-				/* selected the exit button */
-				return 1;
-			}
-			if (hero == PIDX_UNDEFINED)
-			{
-				/* Selected a space with no hero in it! */
-				play_effect(SND_BAD, 128);
-			}
-			else
-			{
-				mask = 0;
-				/* pick context-sensitive mini-menu */
-				if (cur < n_avail)
-				{
-					/* it's from the available heroes: options are join and lead */
-					if (numchrs < numchrs_max)
-					{
-						mask |= MM_JOIN;
-						if (numchrs > 0)
-						{
-							mask |= MM_LEAD;
-						}
-					}
-					mini_menu_mask = mini_menu(mask);
-					if (mini_menu_mask == MM_JOIN)
-					{
-						party_add(hero, 0);
-						avail[cur] = PIDX_UNDEFINED;
-					}
-					else if (mini_menu_mask == MM_LEAD)
-					{
-						party_add(hero, 1);
-						avail[cur] = PIDX_UNDEFINED;
-					}
-				}
-				else
-				{
-					/* it's from the party: options are lead and leave */
-					if (numchrs > 1)
-					{
-						mask |= MM_LEAVE;
-						if (cur > MAXCHRS)
-						{
-							mask |= MM_LEAD;
-						}
-					}
-					mini_menu_mask = mini_menu(mask);
-					if (mini_menu_mask == MM_LEAVE)
-					{
-						party_remove(hero);
-						/* and put back on the top row */
-						for (pidx_index = 0; pidx_index < n_avail; ++pidx_index)
-						{
-							if (avail[pidx_index] == PIDX_UNDEFINED)
-							{
-								avail[pidx_index] = hero;
-								break;
-							}
-						}
-					}
-					else if (mini_menu_mask == MM_LEAD)
-					{
-						party_newlead();
-					}
-				}
-			}
-		}
-		if (oldcur != cur)
-		{
-			play_effect(SND_CLICK, 128);
-		}
-	}
-	return 0;
+        oldcur = cur;
+        PlayerInput.readcontrols();
+        if (PlayerInput.up)
+        {
+            /* move between the available row and the party row */
+            Game.unpress();
+            if (cur >= MAXCHRS)
+            {
+                cur = 0;
+            }
+        }
+        if (PlayerInput.down)
+        {
+            /* move between the available row and the party row */
+            Game.unpress();
+            if (cur < MAXCHRS)
+            {
+                cur = MAXCHRS;
+            }
+        }
+        if (PlayerInput.left)
+        {
+            /* move between heroes on a row */
+            Game.unpress();
+            if (cur > MAXCHRS)
+            {
+                --cur;
+            }
+            else if (cur > 0)
+            {
+                --cur;
+            }
+        }
+        if (PlayerInput.right)
+        {
+            /* move between heroes on a row */
+            Game.unpress();
+            if (cur < (n_avail - 1))
+            {
+                cur++;
+            }
+            else if (cur >= MAXCHRS && cur <= (numchrs + MAXCHRS))
+            {
+                ++cur;
+            }
+        }
+        if (PlayerInput.bctrl)
+        {
+            Game.unpress();
+            running = 0;
+        }
+        if (PlayerInput.balt)
+        {
+            Game.unpress();
+            if (cur == BTN_EXIT)
+            {
+                /* selected the exit button */
+                return 1;
+            }
+            if (hero == PIDX_UNDEFINED)
+            {
+                /* Selected a space with no hero in it! */
+                play_effect(SND_BAD, 128);
+            }
+            else
+            {
+                mask = 0;
+                /* pick context-sensitive mini-menu */
+                if (cur < n_avail)
+                {
+                    /* it's from the available heroes: options are join and lead */
+                    if (numchrs < numchrs_max)
+                    {
+                        mask |= MM_JOIN;
+                        if (numchrs > 0)
+                        {
+                            mask |= MM_LEAD;
+                        }
+                    }
+                    mini_menu_mask = mini_menu(mask);
+                    if (mini_menu_mask == MM_JOIN)
+                    {
+                        party_add(hero, 0);
+                        avail[cur] = PIDX_UNDEFINED;
+                    }
+                    else if (mini_menu_mask == MM_LEAD)
+                    {
+                        party_add(hero, 1);
+                        avail[cur] = PIDX_UNDEFINED;
+                    }
+                }
+                else
+                {
+                    /* it's from the party: options are lead and leave */
+                    if (numchrs > 1)
+                    {
+                        mask |= MM_LEAVE;
+                        if (cur > MAXCHRS)
+                        {
+                            mask |= MM_LEAD;
+                        }
+                    }
+                    mini_menu_mask = mini_menu(mask);
+                    if (mini_menu_mask == MM_LEAVE)
+                    {
+                        party_remove(hero);
+                        /* and put back on the top row */
+                        for (pidx_index = 0; pidx_index < n_avail; ++pidx_index)
+                        {
+                            if (avail[pidx_index] == PIDX_UNDEFINED)
+                            {
+                                avail[pidx_index] = hero;
+                                break;
+                            }
+                        }
+                    }
+                    else if (mini_menu_mask == MM_LEAD)
+                    {
+                        party_newlead();
+                    }
+                }
+            }
+        }
+        if (oldcur != cur)
+        {
+            play_effect(SND_CLICK, 128);
+        }
+    }
+    return 0;
 }
 
 /*! \brief Select player from main menu
@@ -1063,57 +1044,57 @@ int select_party(ePIDX *avail, size_t n_avail, size_t numchrs_max)
  */
 int select_player(void)
 {
-	uint32_t stop = 0, ptr;
+    uint32_t stop = 0, ptr;
 
-	if (numchrs == 1)
-	{
-		return 0;
-	}
-	ptr = 0;
-	while (!stop)
-	{
-		Game.do_check_animation();
-		Draw.drawmap();
-		kmenu.draw_mainmenu(ptr);
-		Draw.blit2screen(xofs, yofs);
+    if (numchrs == 1)
+    {
+        return 0;
+    }
+    ptr = 0;
+    while (!stop)
+    {
+        Game.do_check_animation();
+        Draw.drawmap();
+        kmenu.draw_mainmenu(ptr);
+        Draw.blit2screen(xofs, yofs);
 
-		PlayerInput.readcontrols();
-		if (PlayerInput.up)
-		{
-			Game.unpress();
-			if (ptr > 0)
-			{
-				ptr--;
-			}
-			else
-			{
-				ptr = numchrs - 1;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.down)
-		{
-			Game.unpress();
-			if (ptr < numchrs - 1)
-			{
-				ptr++;
-			}
-			else
-			{
-				ptr = 0;
-			}
-			play_effect(SND_CLICK, 128);
-		}
-		if (PlayerInput.balt)
-		{
-			Game.unpress();
-			stop = 1;
-		}
-		if (PlayerInput.bctrl)
-		{
-			Game.unpress();
-			return PIDX_UNDEFINED;
-		}
-	}
-	return ptr;
+        PlayerInput.readcontrols();
+        if (PlayerInput.up)
+        {
+            Game.unpress();
+            if (ptr > 0)
+            {
+                ptr--;
+            }
+            else
+            {
+                ptr = numchrs - 1;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.down)
+        {
+            Game.unpress();
+            if (ptr < numchrs - 1)
+            {
+                ptr++;
+            }
+            else
+            {
+                ptr = 0;
+            }
+            play_effect(SND_CLICK, 128);
+        }
+        if (PlayerInput.balt)
+        {
+            Game.unpress();
+            stop = 1;
+        }
+        if (PlayerInput.bctrl)
+        {
+            Game.unpress();
+            return PIDX_UNDEFINED;
+        }
+    }
+    return ptr;
 }

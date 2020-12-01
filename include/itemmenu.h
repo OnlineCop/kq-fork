@@ -25,10 +25,11 @@
 
 #define MAX_ITEMS 9
 
-enum eItemEffectResult {
-  ITEM_EFFECT_INEFFECTIVE = 0,
-  ITEM_EFFECT_SUCCESS_SINGLE = 1,
-  ITEM_EFFECT_SUCCESS_MULTIPLE = 2
+enum eItemEffectResult
+{
+    ITEM_EFFECT_INEFFECTIVE = 0,
+    ITEM_EFFECT_SUCCESS_SINGLE = 1,
+    ITEM_EFFECT_SUCCESS_MULTIPLE = 2
 };
 
 void camp_item_menu(void);
