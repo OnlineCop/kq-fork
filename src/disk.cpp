@@ -27,6 +27,7 @@
  * \date 20030629
  */
 
+#include <sys/stat.h>
 #include "disk.h"
 #include "bounds.h"
 #include "heroc.h"
@@ -1143,3 +1144,11 @@ int KDisk::load_stats_only(const char* filename, s_sgstats& stats)
     }
     return 1;
 }
+
+bool KDisk::exists(const char* filename) {
+  struct stat st;
+  return stat(filename, &st) == 0;
+}
+
+  
+  

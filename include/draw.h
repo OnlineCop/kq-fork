@@ -22,13 +22,16 @@
 #pragma once
 
 #include "enums.h"
-
 #include <cstdint>
 #include <cstdlib>
 #include <string>
+
 using std::string;
 
 class Raster;
+struct SDL_Window;
+struct SDL_Renderer;
+struct SDL_Texture;
 enum eSpellType;
 
 // TODO: Find out whether these values paired to any color defined within
@@ -93,6 +96,15 @@ enum eBubbleStemStyle
 class KDraw
 {
   public:
+  KDraw();
+  /*! \brief set up drawing system.
+   * This will store the window, and set up a renderer and texture
+   * to go with it
+   * @param _window KQ's window
+   */
+  void set_window(SDL_Window* _window);
+  /// Get the current window
+  SDL_Window* get_window() const { return window; }
     /*! \brief Copies from the double buffer to the screen.
      *  Handles frame-rate display, stretching and vsync waiting.
      *
@@ -539,6 +551,9 @@ class KDraw
         M_NONSPACE,
         M_END
     };
+  SDL_Window* window; /// The target window.
+  SDL_Renderer* renderer; /// The window's renderer
+  SDL_Texture* texture; /// The target texture
 };
 
 /*  global variables  */

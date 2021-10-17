@@ -58,7 +58,7 @@ extern char slow_computer;
 #else
 
 /*! Look up table of names for keys */
-static char* keynames[] = {
+static const char* keynames[] = {
     "",          "A",          "B",         "C",          "D",       "E",         "F",        "G",         "H",
     "I",         "J",          "K",         "L",          "M",       "N",         "O",        "P",         "Q",
     "R",         "S",          "T",         "U",          "V",       "W",         "X",        "Y",         "Z",

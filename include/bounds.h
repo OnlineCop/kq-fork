@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include <allegro.h>
 #include <cstdint>
 #include <memory>
 #include <vector>

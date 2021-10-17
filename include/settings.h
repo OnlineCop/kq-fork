@@ -1,3 +1,4 @@
+#pragma once
 /*! \page License
    KQ is Copyright (C) 2002 by Josh Bolduc
 
@@ -19,31 +20,21 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#pragma once
-
+#include <stack>
 #include <string>
-using std::string;
+#include <map>
 
-/* ML: include aldumb.h here, because other modules really don't know that
-   we are using dumb, and it doesn't make sense to have to include aldumb
-   individually */
-
-class KMusic
-{
-  public:
-    void init_music(void);
-    void shutdown_music(void);
-    void poll_music(void);
-
-    void set_music_volume(float volume);
-  void set_volume(float vol, int);
-
-    void play_music(const string& music_name, long position);
-    void pause_music(void);
-    void resume_music(void);
-    void stop_music(void);
-  void play_effect(int, int);
-  void play_sample(void*, int, int, int, int);
+class KConfig {
+ public:
+  KConfig();
+  void set_config_file(const char*);
+  void set_config_int(const char* section, const char* key, int value);
+  int get_config_int(const char* section, const char* key, int defl);
+  void push_config_state();
+  void pop_config_state();
+private:
+  std::stack<std::map<std::string, int>> data;
+  
 };
 
-extern KMusic Music;
+extern KConfig Config;

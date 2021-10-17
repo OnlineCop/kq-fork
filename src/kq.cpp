@@ -46,6 +46,7 @@
 #include <string>
 #include <time.h>
 #include <vector>
+#include <SDL.h>
 
 #include "animation.h"
 #include "console.h"
@@ -73,12 +74,13 @@
 #include "shopmenu.h"
 #include "structs.h"
 #include "tiledmap.h"
+#include "timing.h"
 
 #include "gfx.h"
 #include "random.h"
 
-static void my_counter(void);
-static void time_counter(void);
+static Uint32 my_counter(Uint32, void*);
+static Uint32 time_counter(Uint32, void*);
 
 KGame Game;
 
@@ -421,21 +423,23 @@ int KGame::add_timer_event(const char* n, int delta)
 
 #ifdef DEBUGMODE
 
-Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name)
+Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name, bool truecolor)
 {
-    Raster* tmp = new Raster(bitmap_width, bitmap_height);
+  Raster* tmp = new Raster(bitmap_width, bitmap_height);
 
     if (!tmp)
     {
         sprintf(strbuf, _("Could not allocate %s!."), bitmap_name);
         program_death(strbuf);
+    } else {
+      printf("Allocating %d x %d --> %s\n", bitmap_width, bitmap_height, bitmap_name);
     }
     return tmp;
 }
 #else
-Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char*)
+Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char*, bool )
 {
-    return new Raster(bitmap_width, bitmap_height);
+  return new Raster(bitmap_width, bitmap_height);
 }
 #endif
 
@@ -860,7 +864,9 @@ void KGame::klog(const char* msg)
 
 void KGame::kq_yield(void)
 {
+  /* TODO 
     rest(cpu_usage);
+  */
 }
 
 void KGame::kwait(int dtime)
@@ -887,7 +893,7 @@ void KGame::kwait(int dtime)
 #ifdef DEBUGMODE
         if (debugging > 0)
         {
-            if (key[KEY_W] && key[KEY_ALT])
+            if (key[SDL_SCANCODE_W] && key[SDL_SCANCODE_LALT])
             {
                 Game.klog(_("Alt+W Pressed:"));
                 sprintf(strbuf, "\tkwait(); cnt=%d, dtime=%d, timer_count=%d", cnt, dtime, timer_count);
@@ -896,7 +902,7 @@ void KGame::kwait(int dtime)
             }
         }
 #endif
-        if (key[KEY_X] && key[KEY_ALT])
+        if (key[SDL_SCANCODE_X] && key[SDL_SCANCODE_LALT])
         {
             if (debugging > 0)
             {
@@ -1020,32 +1026,35 @@ int main(int argc, const char* argv[])
                     /* TODO: In-game help system. */
                 }
 #ifdef DEBUGMODE
-                if (key[KEY_BACKSLASH])
+                if (key[SDL_SCANCODE_BACKSLASH])
                 {
                     run_console();
                 }
 #endif
                 if (alldead)
-                {
+                {/* TODO
                     clear(screen);
+		 */
                     do_transition(TRANS_FADE_IN, 16);
                     stop = 1;
                 }
             }
         }
     }
-    remove_int(my_counter);
+    /*
+remove_int(my_counter);
     remove_int(time_counter);
+    */
     Game.deallocate_stuff();
     return EXIT_SUCCESS;
 }
-END_OF_MAIN()
+
 
 /*! \brief Allegro timer callback
  *
  * New interrupt handler set to keep game time.
  */
-void my_counter(void)
+Uint32 my_counter(Uint32 interval, void*)
 {
     timer++;
 
@@ -1057,8 +1066,10 @@ void my_counter(void)
 
     animation_count++;
     timer_count++;
+    retrace_count += 1000/interval;
+    return interval;
 }
-END_OF_FUNCTION(my_counter)
+
 
 void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 {
@@ -1145,11 +1156,11 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     pcxb = g_map.map_tiles;
-    for (o = 0; o < (size_t)pcxb->height / 16; o++)
+    for (o = 0; o < (size_t)pcxb->get_height() / 16; o++)
     {
-        for (i = 0; i < (size_t)pcxb->width / 16; i++)
+        for (i = 0; i < (size_t)pcxb->get_width() / 16; i++)
         {
-            pcxb->blitTo(map_icons[o * (pcxb->width / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
+            pcxb->blitTo(map_icons[o * (pcxb->get_width() / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
         }
     }
 
@@ -1223,23 +1234,22 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     timer_count = 0;
 }
 
-void KGame::program_death(const char* message)
+void KGame::program_death(const char* message, const char* extra)
 {
+  if (extra){
+    TRACE("%s: %s\n", message, extra);
+    printf("%s: %s\n", message, extra);
+  } else {
     TRACE("%s\n", message);
-    char tmp[1024];
-    memset(tmp, 0, sizeof(tmp));
-    strncpy(tmp, message, sizeof(tmp) - 1);
-    deallocate_stuff();
-    set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-    allegro_message("%s\n", tmp);
-    exit(EXIT_FAILURE);
+    printf("%s\n", message);
+  }
+  deallocate_stuff();
+  exit(EXIT_FAILURE);
 }
 
 void KGame::reset_timer_events(void)
 {
-    int i;
-
-    for (i = 0; i < 5; ++i)
+    for (int i = 0; i < 5; ++i)
     {
         *timer_events[i].name = '\0';
     }
@@ -1248,8 +1258,6 @@ void KGame::reset_timer_events(void)
 
 void KGame::reset_world(void)
 {
-    int i, j;
-
     /* Reset timer */
     timer = 0;
     khr = 0;
@@ -1257,7 +1265,7 @@ void KGame::reset_world(void)
     ksec = 0;
 
     /* Initialize special_items array */
-    for (i = 0; i < MAX_SPECIAL_ITEMS; i++)
+    for (int i = 0; i < MAX_SPECIAL_ITEMS; i++)
     {
         special_items[i].name[0] = 0;
         special_items[i].description[0] = 0;
@@ -1266,10 +1274,10 @@ void KGame::reset_world(void)
     }
 
     /* Initialize shops */
-    for (i = 0; i < NUMSHOPS; i++)
+    for (int i = 0; i < NUMSHOPS; i++)
     {
         shops[i].name[0] = 0;
-        for (j = 0; j < SHOPITEMS; j++)
+        for (int j = 0; j < SHOPITEMS; j++)
         {
             shops[i].items[j] = 0;
             shops[i].items_current[j] = 0;
@@ -1286,7 +1294,7 @@ void KGame::startup(void)
     int p, i, q;
     time_t t;
 
-    allegro_init();
+    SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS|SDL_INIT_TIMER);
 
     /* Buffers to allocate */
     strbuf = (char*)malloc(4096);
@@ -1295,15 +1303,15 @@ void KGame::startup(void)
     s_seg = z_seg = o_seg = NULL;
 
     allocate_stuff();
-    //install_keyboard();
-    install_timer();
+
+    start_timer(30);
 
     /* KQ uses digi sound but it doesn't use MIDI */
     //   reserve_voices (8, 0);
-    sound_avail = (install_sound(DIGI_AUTODETECT, MIDI_NONE, NULL) < 0 ? 0 : 1);
+    sound_avail = false; // TODO (install_sound(DIGI_AUTODETECT, MIDI_NONE, NULL) < 0 ? 0 : 1);
     if (!sound_avail)
     {
-        TRACE(_("Error with sound: %s\n"), allegro_error);
+      printf(_("Error with sound: %s\n"), "NOT IMPLEMENTED" /* TODO allegro_error*/);
     }
     parse_setup();
     sound_init();
@@ -1311,10 +1319,10 @@ void KGame::startup(void)
 
     if (use_joy == 1)
     {
-        install_joystick(JOY_TYPE_AUTODETECT);
+
     }
 
-    if (num_joysticks == 0)
+    if (SDL_NumJoysticks() == 0)
     {
         use_joy = 0;
     }
@@ -1322,23 +1330,20 @@ void KGame::startup(void)
     {
         use_joy = 0;
 
-        if (poll_joystick() == 0)
-        {
             // Use first compatible joystick attached to computer
-            for (i = 0; i < num_joysticks; ++i)
+            for (i = 0; i < SDL_NumJoysticks(); ++i)
             {
-                if (joy[i].num_buttons >= 4)
+	      if (SDL_IsGameController(i))
                 {
                     use_joy = i + 1;
                     break;
                 }
             }
-        }
 
         if (use_joy == 0)
         {
             Game.klog(_("Only joysticks/gamepads with at least 4 buttons can be used."));
-            remove_joystick();
+            
         }
     }
 
@@ -1429,20 +1434,10 @@ void KGame::startup(void)
         }
     }
 
-    LOCK_VARIABLE(timer);
-    LOCK_VARIABLE(timer_count);
-    LOCK_VARIABLE(animation_count);
-    LOCK_VARIABLE(ksec);
-    LOCK_VARIABLE(kmin);
-    LOCK_VARIABLE(khr);
-    LOCK_FUNCTION(my_counter);
-    LOCK_FUNCTION(time_counter);
-
-    install_int_ex(my_counter, BPS_TO_TIMER(KQ_TICKS));
+    SDL_AddTimer(1000/KQ_TICKS, my_counter, nullptr);
     /* tick every minute */
-    install_int_ex(time_counter, BPM_TO_TIMER(1));
-    create_trans_table(&cmap, pal, 128, 128, 128, NULL);
-    color_map = &cmap;
+    SDL_AddTimer(1000 * 60, time_counter, nullptr);
+
     SaveGame.load_sgstats();
 
 #ifdef DEBUGMODE
@@ -1467,7 +1462,7 @@ void KGame::startup(void)
 
 /*! \brief Keep track of the time the game has been in play
  */
-void time_counter(void)
+Uint32 time_counter(Uint32 interval, void*)
 {
     if (kmin < 60)
     {
@@ -1478,8 +1473,9 @@ void time_counter(void)
         kmin -= 60;
         ++khr;
     }
+    return interval;
 }
-END_OF_FUNCTION(time_counter)
+
 
 void KGame::unpress(void)
 {
@@ -1543,12 +1539,12 @@ void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
         Draw.drawmap();
         Draw.blit2screen(xofs, yofs);
 
-        if (key[KEY_W] && key[KEY_ALT])
+        if (key[SDL_SCANCODE_W] && key[SDL_SCANCODE_LALT])
         {
             break;
         }
 
-        if (key[KEY_X] && key[KEY_ALT])
+        if (key[SDL_SCANCODE_X] && key[SDL_SCANCODE_LALT])
         {
             program_death(_("X-Alt pressed - exiting"));
         }
@@ -1729,3 +1725,14 @@ int KGame::SetGold(int amount)
  *
  * The names given are the base names of the maps/lua scripts
  */
+
+void TRACE(const char* message, ...) {
+  va_list args;
+  va_start( args, message);
+  SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG, message, args);
+  va_end(args);
+}
+
+int key[KEY_MAX];
+PALETTE black_palette;
+FONT* font = nullptr;

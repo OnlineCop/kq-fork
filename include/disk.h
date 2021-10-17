@@ -63,7 +63,7 @@ class KDisk
      * \returns 0 if OK, otherwise 1
      */
     int load_stats_only(const char* filename, s_sgstats& stats);
-
+  bool exists(const char*);
   private:
     /** Convert a comma-separated list of ints into a vector.
      * Supplied string can be null or empty (giving an empty list)

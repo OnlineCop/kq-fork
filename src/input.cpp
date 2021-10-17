@@ -1,8 +1,8 @@
 #include "input.h"
-#include "allegro.h"
 #include "kq.h"
 #include "music.h"
 #include "platform.h"
+#include <SDL.h>
 
 KPlayerInput::KPlayerInput()
     : right { 0 }
@@ -40,22 +40,15 @@ KPlayerInput::KPlayerInput()
  */
 void KPlayerInput::readcontrols()
 {
-    JOYSTICK_INFO* stk;
 
     Music.poll_music();
-
-    /* PH 2002.09.21 in case this is needed (not sure on which platforms it is) */
-    if (keyboard_needs_poll())
-    {
-        poll_keyboard();
-    }
 
     PlayerInput.balt = key[PlayerInput.kalt];
     PlayerInput.besc = key[PlayerInput.kesc];
     PlayerInput.bctrl = key[PlayerInput.kctrl];
     PlayerInput.benter = key[PlayerInput.kenter];
-    PlayerInput.bhelp = key[KEY_F1];
-    PlayerInput.bcheat = key[KEY_F10];
+    PlayerInput.bhelp = key[SDL_SCANCODE_F1];
+    PlayerInput.bcheat = key[SDL_SCANCODE_F10];
 
     PlayerInput.up = key[PlayerInput.kup];
     PlayerInput.down = key[PlayerInput.kdown];
@@ -64,17 +57,17 @@ void KPlayerInput::readcontrols()
 
     /* Emergency kill-game set. */
     /* PH modified - need to hold down for 0.50 sec */
-    if (key[KEY_ALT] && key[KEY_X])
+    if (key[SDL_SCANCODE_LALT] && key[SDL_SCANCODE_X])
     {
         int kill_time = timer_count + Game.KQ_TICKS / 2;
 
-        while (key[KEY_ALT] && key[KEY_X])
+        while (key[SDL_SCANCODE_LALT] && key[SDL_SCANCODE_X])
         {
             if (timer_count >= kill_time)
             {
                 /* Pressed, now wait for release */
-                clear_bitmap(screen);
-                while (key[KEY_ALT] && key[KEY_X])
+                
+                while (key[SDL_SCANCODE_LALT] && key[SDL_SCANCODE_X])
                 {
                 }
                 Game.program_death(_("X-ALT pressed... exiting."));
@@ -85,19 +78,20 @@ void KPlayerInput::readcontrols()
     extern char debugging;
     if (debugging > 0)
     {
-        if (key[KEY_F11])
+        if (key[SDL_SCANCODE_F11])
         {
             Game.data_dump();
         }
 
         /* Back to menu - by pretending all the heroes died.. hehe */
-        if (key[KEY_ALT] && key[KEY_M])
+        if (key[SDL_SCANCODE_LALT] && key[SDL_SCANCODE_M])
         {
             alldead = 1;
         }
     }
 #endif
 
+    /* TODO JOYSTICK
     if (use_joy > 0 && maybe_poll_joystick() == 0)
     {
         stk = &joy[use_joy - 1];
@@ -111,6 +105,7 @@ void KPlayerInput::readcontrols()
         PlayerInput.benter |= stk->button[2].b;
         PlayerInput.besc |= stk->button[3].b;
     }
+    */
 }
 
 KPlayerInput PlayerInput;

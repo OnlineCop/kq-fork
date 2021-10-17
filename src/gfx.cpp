@@ -1,36 +1,42 @@
 #include "gfx.h"
+#include "compat.h"
+#include "kq.h"
 #include <algorithm>
-#include <allegro.h>
+#include <SDL.h>
 
-Raster::Raster(uint16_t w, uint16_t h)
-    : width(w)
-    , height(h)
-    , stride(w)
-    , data(new uint8_t[w * h])
+COLOR_MAP* color_map;
+extern PALETTE pal;
+static RGB current_palette[256];
+void set_palette(RGB* clrs) {
+  memcpy(current_palette, clrs, sizeof(current_palette));
+}
+void get_palette(RGB* clrs) {
+  memcpy(clrs, current_palette, sizeof(current_palette));
+}
+Raster::Raster(uint16_t ww, uint16_t hh) : w(ww), h(hh)
 {
+  data = new uint8_t[w*h];
 }
 
 Raster::Raster(Raster&& other)
-    : width(other.width)
-    , height(other.height)
-    , stride(other.stride)
-    , data(other.data)
+  :  data(nullptr), w(other.w), h(other.h)
 {
-    other.data = nullptr;
+  std::swap(data, other.data);
 }
 
 Raster::~Raster()
 {
-    delete[] data;
+  if (data) delete[] data;
+  
 }
 
 void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w, uint16_t src_h, int16_t dest_x,
                     int16_t dest_y, uint16_t dest_w, uint16_t dest_h, bool masked)
 {
-    auto x0 = std::max(0, int(dest_x));
-    auto x1 = std::min(int(target->width), dest_x + dest_w);
+  auto x0 = std::max(0, int(dest_x));
+    auto x1 = std::min(int(target->w), dest_x + dest_w);
     auto y0 = std::max(0, int(dest_y));
-    auto y1 = std::min(int(target->height), dest_y + dest_h);
+    auto y1 = std::min(int(target->h), dest_y + dest_h);
     for (auto i = x0; i < x1; ++i)
     {
         for (auto j = y0; j < y1; ++j)
@@ -60,35 +66,35 @@ void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, int16_t dest_x
 
 void Raster::blitTo(Raster* target, int16_t dest_x, int16_t dest_y)
 {
-    blitTo(target, 0, 0, width, height, dest_x, dest_y, width, height, false);
+  blitTo(target, 0, 0, get_width(), get_height(),
+	 dest_x, dest_y, get_width(), get_height(), false);
 }
 
 void Raster::blitTo(Raster* target)
 {
-    blitTo(target, 0, 0, width, height, 0, 0, width, height, false);
+  blitTo(target, 0, 0, get_width(), get_height(), 0, 0, get_width(), get_height(), false);
 }
 
 void Raster::maskedBlitTo(Raster* target, int16_t dest_x, int16_t dest_y)
 {
-    blitTo(target, 0, 0, width, height, dest_x, dest_y, width, height, true);
+  blitTo(target, 0, 0, get_width(), get_height(), dest_x, dest_y, get_width(), get_height(), true);
 }
 
 void Raster::setpixel(int16_t x, int16_t y, uint8_t color)
 {
-    if (x < width && y < height && x >= 0 && y >= 0)
+  if (x < get_width() && y < get_height() && x >= 0 && y >= 0)
     {
-        ptr(x, y) = color;
+      data[x + y * w] = color;
     }
 }
 
 uint8_t Raster::getpixel(int16_t x, int16_t y)
 {
-    if (x < width && y < height && x >= 0 && y >= 0)
+  if (x < get_width() && y < get_height() && x >= 0 && y >= 0)
     {
-        return ptr(x, y);
+      return data[x + y * w];
     }
-    else
-    {
+  else {
         return 0;
     }
 }
@@ -124,7 +130,7 @@ void Raster::fill(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t color)
 
 void Raster::fill(uint8_t color)
 {
-    fill(0, 0, width, height, color);
+  fill(0, 0, get_width(), get_height(), color);
 }
 
 void ellipsefill_slow(Raster* r, int x, int y, int rx, int ry, int color)
@@ -183,9 +189,9 @@ void ellipsefill_fast(Raster* r, int center_x, int center_y, int radius_x, int r
 
 void draw_trans_sprite(Raster* dest, Raster* src, int x, int y)
 {
-    for (int i = 0; i < src->width; ++i)
+  for (int i = 0; i < src->get_width(); ++i)
     {
-        for (int j = 0; j < src->height; ++j)
+      for (int j = 0; j < src->get_height(); ++j)
         {
             auto srcpix = src->getpixel(i, j);
             auto destpix = dest->getpixel(i + x, j + y);
@@ -195,15 +201,41 @@ void draw_trans_sprite(Raster* dest, Raster* src, int x, int y)
     // todo
 }
 
-Raster* raster_from_bitmap(BITMAP* bmp)
+void Raster::to_rgba32(SDL_PixelFormat* format, void* pixels, int stride)
 {
-    Raster* ans = new Raster(bmp->w, bmp->h);
-    for (int i = 0; i < ans->width; ++i)
-    {
-        for (int j = 0; j < ans->height; ++j)
-        {
-            ans->ptr(i, j) = getpixel(bmp, i, j);
-        }
+  Uint32 rgbas[256];
+  for (int i=0; i<256; ++i) {
+    Uint8 r = 4 * current_palette[i].r;
+    Uint8 g = 4 * current_palette[i].g;
+    Uint8 b = 4 * current_palette[i].b;
+
+    rgbas[i] = SDL_MapRGB(format, r, g, b);
+  }
+ 
+  for (int y=0; y<240; ++y) {
+    Uint32* line = reinterpret_cast<Uint32*>(reinterpret_cast<Uint8*>(pixels) + stride * y);
+    for (int x = 0; x<320; ++x) {
+      line[x] = rgbas[data[x + y * w]];
     }
-    return ans;
+  }   
+}
+
+Raster* raster_from_bitmap(SDL_Surface* )
+{
+  Game.program_death("NOT IMPL");
+  return nullptr;
+  /*
+  Raster* r = new Raster(bmp->w, bmp->h);
+  SDL_BlitSurface(bmp, nullptr, r->get_surface(), nullptr);
+  return r;
+  */
+}
+int retrace_count;
+
+void textprintf(Raster*, void*, int, int, int, const char* fmt, ...) {
+  char buffer[1024];
+  va_list args;
+  va_start(args, fmt);
+  vsprintf(buffer, fmt, args);
+  va_end(args);
 }

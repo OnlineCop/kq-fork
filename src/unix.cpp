@@ -29,12 +29,12 @@
  * e.g. Linux
  */
 
-#include <allegro.h>
 #include <cstdio>
 #include <cstring>
+#include <unistd.h>
 #include <pwd.h>
 #include <sys/stat.h>
-
+#include "disk.h"
 #include "platform.h"
 
 static bool init_path = false;
@@ -60,7 +60,7 @@ const string get_resource_file_path(const string str1, const string str2, const 
     string tail = str2.empty() ? slash + file : slash + str2 + slash + file;
     string ans = user_dir + tail;
 
-    if (!exists(ans.c_str()))
+    if (!Disk.exists(ans.c_str()))
     {
         ans = str1 + tail;
     }
@@ -89,19 +89,19 @@ const string get_lua_file_path(const string str1, const string file)
     string lob(".lob");
     string lua(".lua");
     ans = user_dir + scripts + file + lob;
-    if (!exists(ans.c_str()))
+    if (!Disk.exists(ans.c_str()))
     {
         ans = user_dir + scripts + file + lua;
 
-        if (!exists(ans.c_str()))
+        if (!Disk.exists(ans.c_str()))
         {
             ans = str1 + scripts + file + lob;
 
-            if (!exists(ans.c_str()))
+            if (!Disk.exists(ans.c_str()))
             {
                 ans = str1 + scripts + file + lua;
 
-                if (!exists(ans.c_str()))
+                if (!Disk.exists(ans.c_str()))
                 {
                     return string();
                 }
@@ -153,7 +153,6 @@ const string kqres(enum eDirectories dir, const string file)
             user_dir = string(".");
         }
         /* Now the data directory */
-        get_executable_name(exe, sizeof(exe));
         /* Not installed, development version */
         data_dir = lib_dir = string(".");
         init_path = true;

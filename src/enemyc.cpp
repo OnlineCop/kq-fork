@@ -351,9 +351,9 @@ void KEnemy::Init()
                 delete (cframes[fighter_index + PSIZE][frame_index]);
             }
             /* and create a new one */
-            cframes[fighter_index + PSIZE][frame_index] = new Raster(enumeeFyturr.img->width, enumeeFyturr.img->height);
+            cframes[fighter_index + PSIZE][frame_index] = new Raster(enumeeFyturr.img->get_width(), enumeeFyturr.img->get_height());
             blit(enumeeFyturr.img.get(), cframes[fighter_index + PSIZE][frame_index], 0, 0, 0, 0,
-                 enumeeFyturr.img->width, enumeeFyturr.img->height);
+                 enumeeFyturr.img->get_width(), enumeeFyturr.img->get_height());
             tcframes[fighter_index + PSIZE][frame_index] =
                 Draw.copy_bitmap(tcframes[fighter_index + PSIZE][frame_index], enumeeFyturr.img.get());
         }

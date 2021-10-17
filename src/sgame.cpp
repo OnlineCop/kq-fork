@@ -35,6 +35,7 @@
 #include <cctype>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 
 #include "combat.h"
 #include "constants.h"
@@ -199,7 +200,7 @@ int KSaveGame::load_game(void)
     hold_fade = 0;
     Game.change_map(Game.GetCurmap(), g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
     /* Set music and sound volume */
-    set_volume(gsvol, -1);
+    Music.set_volume(gsvol, -1);
     Music.set_music_volume(((float)gmvol) / 250.0);
     return 1;
 }
@@ -218,7 +219,7 @@ void KSaveGame::load_sgstats(void)
         sprintf(buf, "sg%u.xml", sg);
         string path = kqres(SAVE_DIR, string(buf));
         s_sgstats& stats = savegame[sg];
-        if (exists(path.c_str()) && (Disk.load_stats_only(path.c_str(), stats) != 0))
+        if (Disk.exists(path.c_str()) && (Disk.load_stats_only(path.c_str(), stats) != 0))
         {
             // Not found (which is OK), so zero out the struct
             stats.num_characters = 0;
@@ -491,6 +492,80 @@ void KSaveGame::show_sgstats(int saving)
     }
 }
 
+/*! \brief Splash screen state machine
+ * Call step() repeatedly until it returns true
+ */
+class KSplash {
+public:
+  KSplash(Raster*);
+  bool step();
+private:
+  int state = 0;
+  Raster* dest;
+  std::unique_ptr<Raster> staff;
+  std::unique_ptr<Raster> dudes;
+  std::unique_ptr<Raster> tdudes;
+  Raster* title;
+  Raster* splash;
+  Uint32 ticks;
+};
+
+KSplash::KSplash(Raster* _dest) : dest(_dest) {
+  title = get_cached_image("title.png");
+  splash = get_cached_image("kqt.png");
+    staff= std::make_unique<Raster>(72, 226);
+  dudes = std::make_unique<Raster>(112, 112);
+  tdudes = std::make_unique<Raster>(112, 112);
+  blit(splash, staff.get(), 0, 7, 0, 0, 72, 226);
+  blit(splash, dudes.get(), 80, 0, 0, 0, 112, 112);
+}
+  
+bool KSplash::step() {
+  int a;
+  Uint32 now = SDL_GetTicks();
+  switch (state) {
+  case 0: // Draw small staff
+    ticks = now;
+    dest->fill(0x000000);
+    blit(staff.get(), dest, 0, 0, 124, 22, 72, 226);
+    state = 1;
+    break;
+  case 1: // Wait one second
+    if (SDL_TICKS_PASSED(now, 1000 + ticks)) {
+      state = 2;
+      ticks = now;
+    }
+    break;
+  case 2: // Zoom in the staff
+    a = (now - ticks) / 200;
+    stretch_blit(staff.get(), dest, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64),
+		   226 + (a * 192));
+      if (a >= 42) { state = 3; ticks = now;} 
+      
+    break;
+  case 3: // Fade in the dudes
+
+       a = (now - ticks) / 1000;
+       Draw.color_scale(dudes.get(), tdudes.get(), 53 - a, 53 + a);
+       draw_sprite(dest, tdudes.get(), 106, 64);
+		if (a >= 5) {
+		  ticks = now;
+		  state = 4;
+		}
+		break;
+  case 4: // Draw dudes and wait one second
+    draw_sprite(dest, dudes.get(), 106, 64);
+    if (SDL_TICKS_PASSED(now, ticks + 1000)) {
+      state = 5;
+    }
+    break;
+  default: // DONE
+    state = 0;
+    return true;
+    break;
+  }
+  return false;
+}
 /*! \brief Main menu screen
  *
  * This is the main menu... just display the opening and then the menu and
@@ -502,9 +577,8 @@ void KSaveGame::show_sgstats(int saving)
  */
 int KSaveGame::start_menu(int skip_splash)
 {
-    int stop = 0, ptr = 0, redraw = 1, a;
+    int stop = 0, ptr = 0, redraw = 1;
     unsigned int fade_color;
-    Raster *staff, *dudes, *tdudes;
     Raster* title = get_cached_image("title.png");
 #ifdef DEBUGMODE
     if (debugging == 0)
@@ -514,43 +588,16 @@ int KSaveGame::start_menu(int skip_splash)
         /* Play splash (with the staff and the heroes in circle */
         if (skip_splash == 0)
         {
-            Raster* splash = get_cached_image("kqt.png");
-            staff = new Raster(72, 226);
-            dudes = new Raster(112, 112);
-            tdudes = new Raster(112, 112);
-            blit(splash, staff, 0, 7, 0, 0, 72, 226);
-            blit(splash, dudes, 80, 0, 0, 0, 112, 112);
-            double_buffer->fill(0);
-            blit(staff, double_buffer, 0, 0, 124, 22, 72, 226);
-            Draw.blit2screen(0, 0);
-
-            kq_wait(1000);
-            for (a = 0; a < 42; a++)
-            {
-                stretch_blit(staff, double_buffer, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64),
-                             226 + (a * 192));
-                Draw.blit2screen(0, 0);
-                kq_wait(100);
-            }
-            for (a = 0; a < 5; a++)
-            {
-                Draw.color_scale(dudes, tdudes, 53 - a, 53 + a);
-                draw_sprite(double_buffer, tdudes, 106, 64);
-                Draw.blit2screen(0, 0);
-                kq_wait(100);
-            }
-            draw_sprite(double_buffer, dudes, 106, 64);
-            Draw.blit2screen(0, 0);
-            kq_wait(1000);
-            delete (staff);
-            delete (dudes);
-            delete (tdudes);
+	  KSplash splash(double_buffer);
+	  while (!splash.step()) {
+	    Draw.blit2screen(0,0);
             /*
                 TODO: this fade should actually be to white
                 if (_color_depth == 8)
                 fade_from (pal, whp, 1);
                 else
              */
+	  }
             do_transition(TRANS_FADE_WHITE, 1);
         }
         clear_to_color(double_buffer, 15);

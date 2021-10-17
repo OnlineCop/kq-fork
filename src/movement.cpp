@@ -34,9 +34,9 @@
 #include <cstdio>
 #include <cstring>
 
-static int compose_path(AL_CONST int*, uint32_t, uint32_t, char*, size_t);
+static int compose_path(const int*, uint32_t, uint32_t, char*, size_t);
 static void copy_map(int*);
-static int minimize_path(AL_CONST char*, char*, size_t);
+static int minimize_path(const char*, char*, size_t);
 static int search_paths(uint32_t, int*, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
                         uint32_t);
 
@@ -58,7 +58,7 @@ static int search_paths(uint32_t, int*, uint32_t, uint32_t, uint32_t, uint32_t, 
  *
  * \sa search_paths copy_map find_path minimize_path
  */
-static int compose_path(AL_CONST int* map, uint32_t target_x, uint32_t target_y, char* buffer, size_t size)
+static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, char* buffer, size_t size)
 {
     char temp[1024];
     int index = 0;
@@ -220,7 +220,7 @@ int find_path(size_t entity_id, uint32_t source_x, uint32_t source_y, uint32_t t
  *
  * \sa search_paths copy_map find_path compose_path
  */
-static int minimize_path(AL_CONST char* source, char* target, size_t size)
+static int minimize_path(const char* source, char* target, size_t size)
 {
     size_t source_index = 0;
     uint32_t repetition = 0;

@@ -2,7 +2,6 @@
 
 #include "enums.h"
 #include "structs.h"
-#include <allegro.h>
 #include <cstdint>
 class Raster;
 

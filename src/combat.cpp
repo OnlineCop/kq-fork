@@ -984,24 +984,24 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
         {
             // Your party
             Raster* shad =
-                new Raster(cframes[fighter_index][ff]->width * 2 / 3, cframes[fighter_index][ff]->height / 4);
+	      new Raster(cframes[fighter_index][ff]->get_width() * 2 / 3, cframes[fighter_index][ff]->get_height() / 4);
 
             clear_bitmap(shad);
-            ellipsefill_fast(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2,
+            ellipsefill_fast(shad, shad->get_width() / 2, shad->get_height() / 2, shad->get_width() / 2, shad->get_height() / 2,
                              makecol(128, 128, 128));
-            draw_trans_sprite(double_buffer, shad, xx + (shad->width / 3) - 2,
-                              yy + cframes[fighter_index][ff]->height - shad->height / 2);
+            draw_trans_sprite(double_buffer, shad, xx + (shad->get_width() / 3) - 2,
+                              yy + cframes[fighter_index][ff]->get_height() - shad->get_height() / 2);
             delete shad;
         }
         else
         {
             // Enemy
-            Raster* shad = new Raster(cframes[fighter_index][ff]->width, cframes[fighter_index][ff]->height / 4);
+	  Raster* shad = new Raster(cframes[fighter_index][ff]->get_width(), cframes[fighter_index][ff]->get_height() / 4);
 
             clear_bitmap(shad);
-            ellipsefill_fast(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2,
+            ellipsefill_fast(shad, shad->get_width() / 2, shad->get_height() / 2, shad->get_width() / 2, shad->get_height() / 2,
                              makecol(128, 128, 128));
-            draw_trans_sprite(double_buffer, shad, xx, yy + cframes[fighter_index][ff]->height - shad->height / 2);
+            draw_trans_sprite(double_buffer, shad, xx, yy + cframes[fighter_index][ff]->get_height() - shad->get_height() / 2);
             delete (shad);
         }
 

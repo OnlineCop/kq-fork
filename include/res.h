@@ -21,9 +21,8 @@
 
 #pragma once
 
-#include <allegro.h>
 #include <cstdint>
-
+#include "compat.h"
 #include "enums.h"
 #include "heroc.h"
 

@@ -1005,9 +1005,9 @@ void hero_init(void)
         // colors that the weapons should actually be instead.
         if (fighter[fighter_index].current_weapon_type != W_NO_WEAPON && items[fighter_weapon_index].kol > 0)
         {
-            for (unsigned int current_line = 0; current_line < cframes[fighter_index][0]->height; current_line++)
+            for ( int current_line = 0; current_line < cframes[fighter_index][0]->get_height(); current_line++)
             {
-                for (unsigned int current_pixel = 0; current_pixel < cframes[fighter_index][0]->width; current_pixel++)
+                for ( int current_pixel = 0; current_pixel < cframes[fighter_index][0]->get_width(); current_pixel++)
                 {
                     if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 168)
                     {

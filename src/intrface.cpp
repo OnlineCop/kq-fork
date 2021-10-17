@@ -4060,13 +4060,13 @@ int lua_dofile(lua_State* L, const char* filename)
     fclose(r->in);
     if (ret != 0)
     {
-        TRACE("Could not parse script %s!\n", get_filename(filename));
+        TRACE("Could not parse script %s!\n", filename);
         Game.program_death("Script error");
     }
 
     if (lua_pcall(L, 0, LUA_MULTRET, 0) != 0)
     {
-        TRACE("lua_pcall failed while calling script %s!\n", get_filename(filename));
+        TRACE("lua_pcall failed while calling script %s!\n", filename);
         KQ_traceback(L);
         Game.program_death("Script error");
     }
@@ -4283,8 +4283,8 @@ static int KQ_make_sprite(lua_State* L)
             // Push x, y, w, h
             lua_pushnumber(L, 0);
             lua_pushnumber(L, 0);
-            lua_pushnumber(L, bm ? bm->width : 0);
-            lua_pushnumber(L, bm ? bm->height : 0);
+            lua_pushnumber(L, bm ? bm->get_width() : 0);
+            lua_pushnumber(L, bm ? bm->get_height() : 0);
         }
         else if (nel == 5)
         {

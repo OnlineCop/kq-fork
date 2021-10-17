@@ -312,9 +312,9 @@ void KEffects::draw_castersprite(size_t caster_fighter_index, int new_pal_color)
 
     // Re-colorize the two-tone image by replacing its value in the palette
     // with another palette color entry.
-    for (pixel_row = 0; pixel_row < (unsigned int)cs->height; pixel_row++)
+    for (pixel_row = 0; pixel_row < (unsigned int)cs->get_height(); pixel_row++)
     {
-        for (pixel_col = 0; pixel_col < (unsigned int)cs->width; pixel_col++)
+        for (pixel_col = 0; pixel_col < (unsigned int)cs->get_width(); pixel_col++)
         {
             // Pixel color 5 in PALETTE 'pal' equals {20, 20, 20, 0}
             if (cs->getpixel(pixel_col, pixel_row) == 5)

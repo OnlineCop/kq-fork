@@ -183,8 +183,9 @@ class KGame
      * Kill the program and spit out a message.
      *
      * \param   message Text to put into log
+     * \param   extra Addition text for convenience
      */
-    NORETURN void program_death(const char* message);
+  NORETURN void program_death(const char* message, const char* extra = nullptr);
 
     /*! \brief Is this character in the party?
      *
@@ -265,7 +266,7 @@ class KGame
      * \param   bitmap_name Name of bitmap
      * \returns the pointer to the created bitmap
      */
-    Raster* alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name);
+  Raster* alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name, bool truecolor = false);
 
     /*! \brief Application start-up code
      *

@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include <allegro.h>
 #include <cstdint>
 
 void display_console(uint32_t, uint32_t);

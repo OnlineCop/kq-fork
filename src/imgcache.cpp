@@ -64,7 +64,7 @@ static int palindex(uint8_t* ptr)
     for (int i = 1; i < 256; ++i)
     {
         RGB& rgb = pal[i];
-        int dist = ABS(r - rgb.r) + ABS(g - rgb.g) + ABS(b - rgb.b);
+        int dist = abs(r - rgb.r) + abs(g - rgb.g) + abs(b - rgb.b);
         if (dist == 0)
         {
             // Exact match, early return
@@ -179,6 +179,7 @@ Raster* image_cache::get(const std::string& name)
     auto entry = cache.find(name);
     if (entry == cache.end())
     {
+        printf("Get your %s\n", name.c_str());
         // Not found, try to load
         Raster* bmp = bmp_from_png(kqres(DATA_DIR, name));
         if (!bmp)

@@ -32,7 +32,7 @@
 #include <cctype>
 #include <cstdio>
 #include <cstring>
-
+#include <SDL.h>
 #include "bounds.h"
 #include "combat.h"
 #include "console.h"
@@ -85,6 +85,24 @@ static uint32_t glyph_lookup[][2] = {
     { 0, 0 },
 };
 
+KDraw::KDraw() : window(nullptr), renderer(nullptr), texture(nullptr) {
+}
+
+void KDraw::set_window(SDL_Window* _window) {
+  if (renderer) {
+    SDL_DestroyRenderer(renderer);
+  }
+  if (texture) {
+    SDL_DestroyTexture(texture);
+  }
+  window = _window;
+  // Take the first renderer we can get
+  renderer = SDL_CreateRenderer(window, -1, 0);
+  texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32,
+			      SDL_TEXTUREACCESS_STREAMING,
+			      eSize::KQ_SCREEN_W, eSize::KQ_SCREEN_H);
+}
+
 void KDraw::blit2screen(int xw, int yw)
 {
     static int frate = 0;
@@ -105,35 +123,30 @@ void KDraw::blit2screen(int xw, int yw)
 #ifdef DEBUGMODE
     display_console(xw, yw);
 #endif
-    acquire_screen();
-    if (should_stretch_view)
-    {
-        for (int j = 0; j < eSize::KQ_SCALED_SCREEN_H; ++j)
-        {
-            uint8_t* lptr = reinterpret_cast<uint8_t*>(bmp_write_line(screen, j));
-            for (int i = 0; i < eSize::KQ_SCALED_SCREEN_W; i += 2)
-            {
-                lptr[i] = lptr[i + 1] =
-                    double_buffer->ptr(xw + i / eSize::KQ_SCALE_FACTOR, yw + j / eSize::KQ_SCALE_FACTOR);
-            }
-            bmp_unwrite_line(screen);
-        }
+    int pitch;
+    void* pixels;
+    /* DEBUG stuff */
+    static int q = 0;
+    show_frate = true;
+    double_buffer->setpixel(q % double_buffer->get_width(), 100, 0); 
+    double_buffer->setpixel(++q % double_buffer->get_width(), 100, 255);
+    /* END DEBUG stuff */
+    int rc = SDL_LockTexture(texture, nullptr, &pixels, &pitch);
+    if (rc < 0) {
+      Game.program_death("Could not lock screen texture");
     }
-    else
-    {
-        for (int j = 0; j < 240; ++j)
-        {
-            uint8_t* lptr = reinterpret_cast<uint8_t*>(bmp_write_line(screen, j));
-            for (int i = 0; i < 320; ++i)
-            {
-                lptr[i] = double_buffer->ptr(xw + i, yw + j);
-            }
-            bmp_unwrite_line(screen);
-        }
+    SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
+    double_buffer->to_rgba32(format, pixels, pitch);
+    SDL_FreeFormat(format);
+    SDL_UnlockTexture(texture);
+    rc = SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+    if (rc < 0) {
+      Game.program_death("Could not render");
     }
-    release_screen();
+    SDL_RenderPresent(renderer);
     // frate = limit_frame_rate(25);
     frate = limit_frame_rate(30);
+    
 }
 
 void KDraw::border(Raster* where, int left, int top, int right, int bottom)
@@ -179,9 +192,9 @@ void KDraw::color_scale(Raster* src, Raster* dest, int output_range_start, int o
     }
 
     clear_bitmap(dest);
-    for (iy = 0; iy < dest->height; iy++)
+    for (iy = 0; iy < dest->get_height(); iy++)
     {
-        for (ix = 0; ix < dest->width; ix++)
+        for (ix = 0; ix < dest->get_width(); ix++)
         {
             current_pixel_color = src->getpixel(ix, iy);
             if (current_pixel_color > 0)
@@ -236,17 +249,17 @@ Raster* KDraw::copy_bitmap(Raster* target, Raster* source)
 {
     if (target)
     {
-        if (target->width < source->width || target->height < source->height)
+        if (target->get_width() < source->get_width() || target->get_height() < source->get_height())
         {
             /* too small */
             delete (target);
-            target = new Raster(source->width, source->height);
+            target = new Raster(source->get_width(), source->get_height());
         }
     }
     else
     {
         /* create new */
-        target = new Raster(source->width, source->height);
+        target = new Raster(source->get_width(), source->get_height());
     }
     /* ...and copy */
     source->blitTo(target);
@@ -1445,7 +1458,7 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                 {
                     print_font(double_buffer, winx + 8, winy + i * 12, opt[i + topopt], FBIG);
                 }
-                draw_sprite(double_buffer, menuptr, winx + 8 - menuptr->width, (curopt - topopt) * 12 + winy + 4);
+                draw_sprite(double_buffer, menuptr, winx + 8 - menuptr->get_width(), (curopt - topopt) * 12 + winy + 4);
                 /* Draw the 'up' and 'down' markers if there are more options than will
                  * fit in the window */
                 if (topopt > 0)
