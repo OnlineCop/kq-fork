@@ -211,7 +211,7 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
                 }
             }
             Draw.blit2screen(0, 0);
-            kq_wait(30);
+            kq_wait(15);
         }
     }
     Combat.battle_render(0, 0, 0);
@@ -346,7 +346,7 @@ void KEffects::draw_castersprite(size_t caster_fighter_index, int new_pal_color)
             masked_blit(cs, double_buffer, 0, frame_index * 32, dx - 16, dy - 16, 32, 32);
         }
         Draw.blit2screen(0, 0);
-        kq_wait(120);
+        kq_wait(60);
         fullblit(back, double_buffer);
     }
     fighter[caster_fighter_index].aframe = 0;

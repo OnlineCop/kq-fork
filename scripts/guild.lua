@@ -219,6 +219,18 @@ function zone_handler(zn)
 end
 
 
+function level_partner(chr)
+  local xp
+  xp = get_party_xp(get_pidx(0))
+  for i = 0,progress.players - 1,1 do
+    xp = xp + get_party_xp(get_pidx(i))
+  end
+  xp = xp / progress.players
+  xp = math.floor(xp * 0.9)
+  give_xp(chr, xp, 1)
+end
+
+
 function LOC_ayla_join(en)
   if (progress.ayla_quest == 0) then
     -- This code creates an unsolvable catch-22. Probably to prevent trapping the player in an unfinished quest.
@@ -241,6 +253,7 @@ function LOC_ayla_join(en)
     bubble(HERO1, _"Well, alright then.")
     set_ent_active(en, 0)
     set_all_equip(AYLA, I_SWORD4, I_SHIELD3, I_CAP3, I_SUIT3, I_BAND2, 0)
+    level_partner(AYLA)
     id = select_team{AYLA}
     --  Add the characters that were deselected to the manor
     add_to_manor(id)

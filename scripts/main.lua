@@ -117,7 +117,11 @@ function zone_handler(zn)
         progress.toweropen = 1
         bubble(HERO1, _"The doors open with a shower of rust.")
       else
-        bubble(HERO1, _"The tower appears to be sealed. Maybe we need something to get in here?")
+        if (get_numchrs() == 1) then
+          bubble(HERO1, _"The tower appears to be sealed. Maybe I need something to get in here?")
+        else
+          bubble(HERO1, _"The tower appears to be sealed. Maybe we need something to get in here?")
+        end
       end
     end
 
@@ -397,6 +401,11 @@ function zone_handler(zn)
   elseif (zn == 85) then
     change_map("sunarin", "entrance")
 
+  elseif (zn == 241) then
+    warp("cave4", 8)
+
+  elseif (zn == 242) then
+    warp("manor", 8)
   end
 end
 

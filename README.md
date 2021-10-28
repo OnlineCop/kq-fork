@@ -19,6 +19,38 @@ Now the game is being forked once again in the hope to modernize it and finish t
 
 You can get in touch with us on IRC at **#kqfork** on ***irc.freenode.net***
 
+
+Credits
+-------
+
+Josh Bolduc
+(C) 2001 DoubleEdge Software
+(C) 2002-2021 KQ Lives Team
+http://kqlives.sourceforge.net/
+Peter Hull
+TeamTerradactyl
+Chris Barry
+Eduardo Dudaskank
+Troy D Patterson
+Master Goodbytes
+Rey Brujo
+Matthew Leverton
+Sam Hocevar
+Günther Brammer
+WinterKnight
+Edgar Alberto Molina
+Steven Fullmer (OnlineCop)
+Z9484
+
+Graphics, Music and Sfx come from various sources including the following:
+
+Josh Bolduc
+
+Modified "Dungeon Crawl 32x32 tiles supplemental"
+Copyright/Attribution Notice:
+You can use these tilesets in your program freely. No attribution is required. As a courtesy, include a link to the OGA page: http://opengameart.org/content/dungeon-crawl-32x32-tiles-supplemental, or the crawl-tiles page: https://github.com/crawl/tiles
+
+
 How to install KQ
 -----------------
 
@@ -49,6 +81,7 @@ Roadmap
 -------
 
 This fork aims to modernize KQ by doing the following:
+* Lets hit 1.0 Before the 20th anniversary of kqlives (2022-09-11)!
 * ~~Port Lua v5.1 code to Lua v5.2.~~ ***DONE!***
 * Get rid of all the old DOS and BeOS dependencies.
 * Port Allegro v4 code to SDL v2.

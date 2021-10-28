@@ -334,6 +334,42 @@ void combat_skill(size_t fighter_index)
         Effects.draw_spellsprite(0, 1, 49, 1);
         Magic.special_damage_oneall_enemies(fighter_index, 75, R_BLACK, SEL_ALL_ENEMIES, true);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
+    case 18:
+        strcpy(attack_string, _("Poison Spores"));
+        Effects.draw_spellsprite(0, 1, 47, 1);
+        Magic.special_damage_oneall_enemies(fighter_index, 40, R_POISON, SEL_ALL_ENEMIES, true);
+        fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
+        break;
+    case 19:
+        strcpy(attack_string, _("Soporific Spores"));
+        Effects.draw_spellsprite(0, 1, 39, 1);
+        Magic.special_damage_oneall_enemies(fighter_index, 35, R_SLEEP, SEL_ALL_ENEMIES, true);
+        fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
+        break;
+    case 20:
+        affected_targets = 0;
+        strcpy(attack_string, _("Entangle"));
+        Effects.draw_spellsprite(0, 1, 24, 0);
+        for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
+        {
+            if (Magic.res_throw(target_fighter_index, S_STOP) == 0 &&
+                Magic.non_dmg_save(target_fighter_index, 65) == 0 && !fighter[target_fighter_index].IsStone())
+            {
+                fighter[target_fighter_index].SetStopped(kqrandom->random_range_exclusive(2, 4));
+                Combat.AdjustHealth(target_fighter_index, NODISPLAY);
+            }
+            else
+            {
+                Combat.AdjustHealth(target_fighter_index, MISS);
+                affected_targets++;
+            }
+        }
+        if (affected_targets > 0)
+        {
+            Effects.display_amount(0, FONT_WHITE, 1);
+        }
+        fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
+        break;
     default:
         break;
     }

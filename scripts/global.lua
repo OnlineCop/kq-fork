@@ -144,7 +144,7 @@ end
 progress = {}
 
 --Returns the C index of quest.
-local function quest_index(quest)
+function quest_index(quest)
   local index = tonumber(quest_list[quest])
   if index then
     return index
@@ -190,6 +190,7 @@ SI_CAVEKEY = 14
 SI_NOTE_TSORIN = 15
 SI_NOTE_DERIG = 16
 SI_RUSTYKEY = 17
+SI_STRANGEPENDANT = 18
 
 -- These values correspond to the values found in include/itemdefs.h
 

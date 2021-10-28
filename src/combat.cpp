@@ -1615,6 +1615,7 @@ void KCombat::multi_fight(size_t attack_fighter_index)
         if ((fighter[fighter_index].IsAlive()) && (fighter[fighter_index].mhp > 0))
         {
             // ares[fighter_index] = attack_result(attack_fighter_index, fighter_index);
+            attack_result(attack_fighter_index, fighter_index); // This actually does the damage so it cannot be removed.
             fighter[fighter_index].SetPoisoned(tempd.IsPoisoned());
             fighter[fighter_index].SetBlind(tempd.IsBlind());
             fighter[fighter_index].SetCharmed(tempd.IsCharmed());

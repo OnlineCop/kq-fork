@@ -377,22 +377,22 @@ function refresh()
   LOC_draw_dragon()
 
   -- Floor switches (2: Floor switches)
-  LOC_set_floor("floor1", progress.floor1, "floor1a", "floor1b")
-  LOC_set_floor("floor2", progress.floor2, "floor2a", "floor2b")
-  LOC_set_floor("floor3", progress.floor3, "floor3a", "floor3b")
-  LOC_set_floor("floor4", progress.floor4, "floor4a", "floor4b")
+  LOC_set_floor("floor1", "floor1a", "floor1b")
+  LOC_set_floor("floor2", "floor2a", "floor2b")
+  LOC_set_floor("floor3", "floor3a", "floor3b")
+  LOC_set_floor("floor4", "floor4a", "floor4b")
 
   -- Wall holes (3: Treasure room, top left)
-  LOC_set_wall("wall1", progress.wall1)
-  LOC_set_wall("wall2", progress.wall2)
-  LOC_set_wall("wall3", progress.wall3)
-  LOC_set_wall("wall4", progress.wall4)
+  LOC_set_wall("wall1")
+  LOC_set_wall("wall2")
+  LOC_set_wall("wall3")
+  LOC_set_wall("wall4")
 
   -- Door (3: Treasure room, top)
-  LOC_set_door("door3_1", progress.treasureroom, 40)
+  LOC_set_door("door3_1", "treasureroom", 40)
 
   -- Door (3: Treasure room, bottom)
-  LOC_set_door("door3_2", progress.dooropen2, 10)
+  LOC_set_door("door3_2", "dooropen2", 10)
 
   -- Door (4: Single treasure, left floor switch)
   if (progress.dooropen == 1) then
@@ -404,7 +404,7 @@ function refresh()
     set_btile(x, y, 189)
     set_btile(x + 1, y, 190)
   end
-  LOC_set_door("door4", progress.dooropen, 10)
+  LOC_set_door("door4", "dooropen", 10)
 
   -- Black stone (1: Main entrance, right)
 --  LOC_get_stone("stone1", progress.stone1, 20, 222)
@@ -487,35 +487,35 @@ function zone_handler(zn)
 
   -- Floor switch (2: Floor switches, top left)
   elseif (zn == 12) then
-    LOC_floor_switch(progress.floor1)
+    LOC_floor_switch("floor1")
 
   -- Floor switch (2: Floor switches, top right)
   elseif (zn == 13) then
-    LOC_floor_switch(progress.floor3)
+    LOC_floor_switch("floor3")
 
   -- Floor switch (2: Floor switches, bottom left)
   elseif (zn == 14) then
-    LOC_floor_switch(progress.floor2)
+    LOC_floor_switch("floor2")
 
   -- Floor switch (2: Floor switches, bottom right)
   elseif (zn == 15) then
-    LOC_floor_switch(progress.floor4)
+    LOC_floor_switch("floor4")
 
   -- Wall switch (3: Treasure room, top left)
   elseif (zn == 16) then
-    LOC_stoner("wall1", progress.wall1)
+    LOC_stoner("wall1")
 
   -- Wall switch (3: Treasure room, top right)
   elseif (zn == 17) then
-    LOC_stoner("wall2", progress.wall2)
+    LOC_stoner("wall2")
 
   -- Wall switch (3: Treasure room, bottom left)
   elseif (zn == 18) then
-    LOC_stoner("wall3", progress.wall3)
+    LOC_stoner("wall3")
 
   -- Wall switch (3: Treasure room, bottom right)
   elseif (zn == 19) then
-    LOC_stoner("wall4", progress.wall4)
+    LOC_stoner("wall4")
 
   -- Black stone (1: Main entrance, right)
   elseif (zn == 20) then
@@ -524,7 +524,7 @@ function zone_handler(zn)
       add_special_item(SI_BLACKSTONE)
       sfx(5)
       msg(_"Black Stone procured!", 15, 0)
-      LOC_get_stone("stone1", progress.stone1, 20, 222)
+      LOC_get_stone("stone1", 20, 222)
     end
 
   -- White stone (2: Floor switches, bottom left)
@@ -534,7 +534,7 @@ function zone_handler(zn)
       add_special_item(SI_WHITESTONE)
       sfx(5)
       msg(_"White Stone procured!", 15, 0)
-      LOC_get_stone("stone2", progress.stone2, 21, 221)
+      LOC_get_stone("stone2", 21, 221)
     end
 
   -- White stone (3: Treasure room)
@@ -544,7 +544,7 @@ function zone_handler(zn)
       add_special_item(SI_WHITESTONE)
       sfx(5)
       msg(_"White Stone procured!", 15, 0)
-      LOC_get_stone("stone3", progress.stone3, 22, 221)
+      LOC_get_stone("stone3", 22, 221)
     end
 
   -- Treasure chest (4: Single treasure)
@@ -561,7 +561,7 @@ function zone_handler(zn)
   elseif (zn == 24) then
     if (progress.dooropen == 0) then
       progress.dooropen = 1
-      LOC_set_door("door4", progress.dooropen, 10)
+      LOC_set_door("door4", "dooropen", 10)
       refresh()
     end
 
@@ -578,7 +578,7 @@ function zone_handler(zn)
     if (progress.dooropen2 == 0) then
       bubble(HERO1, _"Oh! I think I stepped on a switch!")
       progress.dooropen2 = 1
-      LOC_set_door("door3_2", progress.dooropen2, 10)
+      LOC_set_door("door3_2", "dooropen2", 10)
       refresh()
     end
 
@@ -650,8 +650,10 @@ function zone_handler(zn)
   elseif (zn == 40) then
     if (progress.wall1 == 1 and progress.wall2 == 2 and progress.wall3 == 2 and progress.wall4 == 1) then
       progress.treasureroom = 1
-      LOC_set_door("door3_1", progress.treasureroom, 40)
+      LOC_set_door("door3_1", "treasureroom", 40)
       refresh()
+    else
+      bubble(HERO1, _"Locked.")
     end
 
   -- zn == 41: no enemies attack (3: Treasure room, 5: Oracle room)
@@ -722,28 +724,29 @@ function LOC_draw_dragon()
 end
 
 
-function LOC_floor_switch(p_floor)
-  if (get_progress(p_floor) == 0) then
+function LOC_floor_switch(floor)
+  -- msg(255, p_floor)
+  if (get_progress(quest_index(floor)) == 0) then
     if (progress.ftotal < 2) then
-      set_progress(p_floor, 1)
+      set_progress(quest_index(floor), 1)
       progress.ftotal = progress.ftotal + 1
     end
   else
-    set_progress(p_floor, 0)
+    set_progress(quest_index(floor), 0)
     progress.ftotal = progress.ftotal - 1
   end
   refresh()
 end
 
 
-function LOC_get_stone(stone, p_stone, zone, color)
+function LOC_get_stone(stone, zone, color)
   local x, y = marker(stone)
-  if (get_progress(p_stone) == 0) then
+  if (get_progress(quest_index(stone)) == 0) then
     set_ftile(x, y, color)
     set_zone(x, y, zone)
     set_obs(x, y, 1)
     return
-  elseif (get_progress(p_stone) == 1) then
+  elseif (get_progress(quest_index(stone)) == 1) then
     set_ftile(x, y, 0)
     set_zone(x, y, 0)
     set_obs(x, y, 0)
@@ -783,7 +786,7 @@ end
 
 function LOC_set_door(door, p_door, zone)
   local x, y = marker(door)
-  if (get_progress(p_door) == 0) then
+  if (get_progress(quest_index(p_door)) == 0) then
     set_ftile(x, y - 1, 169)
     set_btile(x, y - 1, 178)
     set_btile(x, y, 170)
@@ -799,11 +802,11 @@ function LOC_set_door(door, p_door, zone)
 end
 
 
-function LOC_set_floor(floor, p_floor, floor_a, floor_b)
+function LOC_set_floor(floor, floor_a, floor_b)
   local x, y = marker(floor)
   local x1, y1 = marker(floor_a)
   local x2, y2 = marker(floor_b)
-  if (get_progress(p_floor) == 0) then
+  if (get_progress(quest_index(floor)) == 0) then
     set_btile(x, y, 189)
     set_btile(x1, y1, 0)
     set_obs(x1, y1, 1)
@@ -820,20 +823,20 @@ function LOC_set_floor(floor, p_floor, floor_a, floor_b)
 end
 
 
-function LOC_set_wall(wall, p_wall)
+function LOC_set_wall(wall)
   local x, y = marker(wall)
-  if (get_progress(p_wall) == 0) then
+  if (get_progress(quest_index(wall)) == 0) then
     set_ftile(x, y, 220)  -- No stone
-  elseif (get_progress(p_wall) == 1) then
+  elseif (get_progress(quest_index(wall)) == 1) then
     set_ftile(x, y, 222)  -- White stone
-  elseif (get_progress(p_wall) == 2) then
+  elseif (get_progress(quest_index(wall)) == 2) then
     set_ftile(x, y, 221)  -- Black stone
   end
 end
 
 
-function LOC_stoner(wall, p_wall)
-  if (get_progress(p_wall) == 0) then
+function LOC_stoner(wall)
+  if (get_progress(quest_index(wall)) == 0) then
 
     -- No stones picked up
     if (not has_special_item(SI_BLACKSTONE) and not has_special_item(SI_WHITESTONE)) then
@@ -842,19 +845,19 @@ function LOC_stoner(wall, p_wall)
 
     -- Black stones picked up but no White stones
     if (has_special_item(SI_BLACKSTONE) and not has_special_item(SI_WHITESTONE)) then
-      set_progress(p_wall, 1)
+      set_progress(quest_index(wall), 1)
       add_special_item(SI_BLACKSTONE, -1)
       sfx(5)
-      LOC_set_wall(wall, p_wall)
+      LOC_set_wall(wall)
       return
     end
 
     -- White stones picked up but no Black stones
     if (not has_special_item(SI_BLACKSTONE) and has_special_item(SI_WHITESTONE)) then
-      set_progress(p_wall, 2)
+      set_progress(quest_index(wall), 2)
       add_special_item(SI_WHITESTONE, -1) -- remove 1 white stone
       sfx(5)
-      LOC_set_wall(wall, p_wall)
+      LOC_set_wall(wall)
       return
     end
 
@@ -862,33 +865,33 @@ function LOC_stoner(wall, p_wall)
     if (prompt(255, 2, 0, _"What stone will you place?",
                           _"  black",
                           _"  white") == 0) then
-      set_progress(p_wall, 1)
+      set_progress(quest_index(wall), 1)
       add_special_item(SI_BLACKSTONE, -1)
       sfx(5)
-      LOC_set_wall(wall, p_wall)
+      LOC_set_wall(wall)
       return
     else
-      set_progress(p_wall, 2)
+      set_progress(quest_index(wall), 2)
       add_special_item(SI_WHITESTONE, -1)
       sfx(5)
-      LOC_set_wall(wall, p_wall)
+      LOC_set_wall(wall)
       return
     end
 
   else
     -- Actually, this is already implicitly true
-    if ((get_progress(p_wall) ~= 0) and (progress.treasureroom == 0)) then
-      if (get_progress(p_wall) == 1) then
+    if ((get_progress(quest_index(wall)) ~= 0) and (progress.treasureroom == 0)) then
+      if (get_progress(quest_index(wall)) == 1) then
         -- Remove a White stone
-        set_progress(p_wall, 0)
+        set_progress(quest_index(wall), 0)
         add_special_item(SI_BLACKSTONE)
         sfx(4)
-        LOC_set_wall(wall, p_wall)
-      elseif (get_progress(p_wall) == 2) then
+        LOC_set_wall(wall)
+      elseif (get_progress(quest_index(wall)) == 2) then
       -- Remove a Black stone
-        set_progress(p_wall, 0)
+        set_progress(quest_index(wall), 0)
         add_special_item(SI_WHITESTONE)
-        LOC_set_wall(wall, p_wall)
+        LOC_set_wall(wall)
         return
       end
     end

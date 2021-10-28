@@ -22,6 +22,18 @@ function autoexec()
 end
 
 
+function level_partner(chr)
+  local xp
+  xp = get_party_xp(get_pidx(0))
+  for i = 0,progress.players - 1,1 do
+    xp = xp + get_party_xp(get_pidx(i))
+  end
+  xp = xp / progress.players
+  xp = math.floor(xp * 0.9)
+  give_xp(chr, xp, 1)
+end
+
+
 function entity_handler(en)
   local returning
   if (en == 0) then -- Sensar
@@ -29,6 +41,7 @@ function entity_handler(en)
     bubble(en, _"I was attacked, but I couldn't use my RAGE against those ghosts.")
     bubble(en, _"Then I felt everthing fade away...")
     bubble(HERO1, _"If you're feeling better you can join up, or go back to the Manor to rest.")
+    level_partner(SENSAR)
     returning = select_team({SENSAR})
     add_to_manor(returning)
     progress.sidequest7 = 2

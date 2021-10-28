@@ -38,8 +38,8 @@
 #define NUM_ITEMS 191
 #define NUM_SPELLS 61
 #define NUM_EFFECTS 52
-#define NUM_ETROWS 111
-#define NUM_BATTLES 60
+#define NUM_ETROWS 116
+#define NUM_BATTLES 62
 #define NUM_LUP 20
 /*\}*/
 

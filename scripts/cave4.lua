@@ -204,7 +204,10 @@ function zone_handler(zn)
       bubble(HERO1, _"The Denorians were right. There really WAS a troll. Looks like it's already dead, though.")
       msg(_"The troll suddenly lunges at you... it was only asleep!", 0, 0)
       set_run(0)
-      msg("TODO: There needs to be a combat here...", 0, 0)
+      combat(60)
+      if (get_alldead() == 1) then
+        return
+      end
       set_run(1)
 
       bubble(HERO1, _"If this troll really DID steal the statue from the Denorians, it was probably being directed by that scumbag Demnas.")
@@ -257,8 +260,22 @@ function LOC_doors_out(which_marker)
 end
 
 
+function level_partner(chr)
+  local xp
+  xp = get_party_xp(get_pidx(0))
+  for i = 0,progress.players - 1,1 do
+    xp = xp + get_party_xp(get_pidx(i))
+  end
+  xp = xp / progress.players
+  xp = math.floor(xp * 0.85)
+  give_xp(chr, xp, 1)
+end
+
+
 function LOC_join_corin(en)
   local id
+  -- // Level up Corin
+  level_partner(CORIN)
 
   -- // Give Corin him default equipment
   set_all_equip(CORIN, I_MACE2, I_SHIELD1, I_HELM1, I_ROBE2, I_BAND1, 0)

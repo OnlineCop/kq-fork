@@ -641,6 +641,10 @@ void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
 
         // Index number (ignored; automatically generated)
         iss >> tmp;
+        if (tmp == 61)
+        {
+            printf("");
+        }
 
         // x-coord of image in datafile
         iss >> imagefile_x_coord;
@@ -736,24 +740,33 @@ void KEnemy::LoadEnemyStats(const string& fullFilename)
 
         // Some index: ignored
         iss >> tmp;
+        if (tmp == 60)
+        {
+            printf("");
+        }
 
         // Each of the 16 RES (resistances)
-        for (size_t somethingToLoopWith = 0; somethingToLoopWith < R_TOTAL_RES; somethingToLoopWith++)
+        for (size_t i = 0; i < R_TOTAL_RES; i++)
         {
-            char tempval;
+            int tempval;
             iss >> tempval;
-            fighter_loaded_from_disk.res[somethingToLoopWith] = tempval - '0';
+            fighter_loaded_from_disk.res[i] = tempval;
         }
         // Each of the 8 AI
-        for (size_t somethingToLoopWith = 0; somethingToLoopWith < 8; somethingToLoopWith++)
+        for (size_t i = 0; i < 8; i++)
         {
-            iss >> fighter_loaded_from_disk.ai[somethingToLoopWith];
+            int tempval;
+            iss >> tempval;
+            fighter_loaded_from_disk.ai[i] = tempval;
         }
         // Each of the 8 AIP
-        for (size_t somethingToLoopWith = 0; somethingToLoopWith < 8; somethingToLoopWith++)
+        for (size_t i = 0; i < 8; i++)
         {
-            iss >> fighter_loaded_from_disk.aip[somethingToLoopWith];
-            fighter_loaded_from_disk.atrack[somethingToLoopWith] = 0;
+            int tempval;
+            iss >> tempval;
+            fighter_loaded_from_disk.aip[i] = tempval;
+            //iss >> fighter_loaded_from_disk.aip[i];
+            fighter_loaded_from_disk.atrack[i] = 0;
         }
         fighter_loaded_from_disk.hp = fighter_loaded_from_disk.mhp;
         fighter_loaded_from_disk.mp = fighter_loaded_from_disk.mmp;

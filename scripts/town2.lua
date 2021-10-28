@@ -616,6 +616,17 @@ function LOC_join_ajathar(en)
 end
 
 
+function level_partner(chr)
+  local xp
+  xp = get_party_xp(get_pidx(0))
+  for i = 0,progress.players - 1,1 do
+    xp = xp + get_party_xp(get_pidx(i))
+  end
+  xp = xp / progress.players
+  xp = math.floor(xp * 0.85)
+  give_xp(chr, xp, 1)
+end
+
 function LOC_join_casandra(en)
   local id
   local hero = 8
@@ -626,6 +637,9 @@ function LOC_join_casandra(en)
   bubble(en, _"That's when we were caught by the orcs. The Mayor ate the note when we were under attack. I have no idea what it was about.")
   bubble(HERO1, _"Hmm, still sounds a bit fishy.")
   bubble(en, _"I'd gladly join you to find out what this is all about!")
+
+  -- level up Casandra
+  level_partner(CASANDRA)
 
   -- Give Casandra her default equipment
   set_all_equip(CASANDRA, I_MACE2, I_SHIELD1, I_HELM1, I_ROBE2, I_BAND1, 0)
