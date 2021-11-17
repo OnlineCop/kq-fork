@@ -127,7 +127,7 @@ void KMusic::play_music(const std::string& music_name, long position)
         {
             if (strstr(filename, ".mod"))
             {
-                mod_song[current_music_player] = dumb_load_mod(filename);
+                mod_song[current_music_player] = dumb_load_mod(filename, 0);
             }
 
             else if (strstr(filename, ".xm"))

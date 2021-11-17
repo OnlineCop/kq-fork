@@ -121,7 +121,7 @@ static int compose_path(AL_CONST int* map, uint32_t target_x, uint32_t target_y,
  */
 static void copy_map(int* map)
 {
-    register size_t x, y;
+    size_t x, y;
     size_t index, entity_index;
 
     for (y = 0; y < g_map.ysize; y++)
