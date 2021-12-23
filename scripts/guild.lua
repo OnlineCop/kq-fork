@@ -11,6 +11,9 @@
 -- progress.opalhelmet - Did you obtain it?
 --   (0) No
 --   (1) Yes
+-- progress.sidequest6 - Have we found the Embers Mark?
+--   (0) Haven't started
+--   (1) Found the note
 -- */
 function autoexec()
   refresh()
@@ -191,17 +194,23 @@ function zone_handler(zn)
       else
         hereo = HERO2
       end
-      bubble(hero, _"I can't seem to pick this lock.")
+
+      if (progress.sidequest6 > 1) then
+        msg(_"$0 inserts the Ember coin into the slot in the door.")
+        local x, y = marker("dstairs3")
+        warp(x, y + 1, 8)
+      else
+        bubble(hero, _"I can't seem to pick this lock.")
+      end
     else
       bubble(en, _"The lock on this door looks very strange.")
     end
 
   elseif (zn == 23) then
-    -- This will lead to a room with a TravelPoint which leads to cave1
-    warp("dstairs3", 8)
+    warp("ustairs3", 8)
 
   elseif (zn == 24) then
-    warp("dstairs4", 8)
+    warp("dstairs3", 8)
 
   elseif (zn == 25) then
     bubble(HERO1, _"This note says that there is a portal behind the fireplace.")
@@ -215,6 +224,18 @@ function zone_handler(zn)
   elseif (zn == 28) then
     change_map("cave1", "dstairs1")
 
+  elseif (zn == 29) then
+    bubble(HERO1, _"It reads", _"To Reginald who would forget his nose if it wasn't attached to his face.")
+    bubble(HERO1, _"If you ever lose track of the bird you can find one in the fountain.")
+    if (progress.sidequest6 == 0) then
+      if (party[0] == Ayla) then
+        bubble(HERO1, _"Haha could you be more obvious?")
+      end
+      progress.sidequest6 = 1
+    end
+  elseif (zn == 30) then
+    local x, y = marker("dstairs3")
+    warp(x, y + 4, 8)
   end
 end
 
@@ -222,10 +243,10 @@ end
 function level_partner(chr)
   local xp
   xp = get_party_xp(get_pidx(0))
-  for i = 0,progress.players - 1,1 do
+  for i = 1,get_numchrs()-1,1 do
     xp = xp + get_party_xp(get_pidx(i))
   end
-  xp = xp / progress.players
+  xp = xp / get_numchrs()
   xp = math.floor(xp * 0.9)
   give_xp(chr, xp, 1)
 end
@@ -233,37 +254,78 @@ end
 
 function LOC_ayla_join(en)
   if (progress.ayla_quest == 0) then
-    -- This code creates an unsolvable catch-22. Probably to prevent trapping the player in an unfinished quest.
     bubble(en, _"Wha...? Oh, it's you!")
     bubble(HERO1, _"Hello... I recognise you from Nostik's manor, don't I?")
     bubble(en, _"Yes, I broke into the house, but I couldn't find the secret passage.")
     bubble(HERO1, _"You must be pretty good at... uh...")
-    bubble(en, _"Thievery? Yea, I am.")
-    bubble(HERO1, _"Well, nice meeting you.")
-    bubble(en, _"I would join you, but my quest isn't written yet.")
-    bubble(HERO1, _"Oh. Ok. Perhaps when this game is finished?")
-    bubble(en, _"Yeah, probably then.")
-    bubble(HERO1, _"OK.")
-  else
+    bubble(en, _"Thievery? Yeah, I am.")
+    -- bubble(HERO1, _"Well, nice meeting you.")
+    -- bubble(en, _"I would join you, but my quest isn't written yet.")
+    -- bubble(HERO1, _"Oh. Ok. Perhaps when this game is finished?")
+    -- bubble(en, _"Yeah, probably then.")
+    -- bubble(HERO1, _"OK.")
+  -- else
     bubble(en, _"Hey, $0. Rumor has it that the guild has a bunch of treasure hoarded somewhere.")
     bubble(HERO1, _"That's possible. Why?")
     bubble(en, _"Let's just suppose that you help me find it. I wouldn't mind joining your little party and helping you out.")
     bubble(HERO1, _"Well, I can always use a little extra help. What do we have to do?")
     bubble(en, _"Let's have a talk around town. I'm sure someone's bound to spill something about the guild's whereabouts.")
-    bubble(HERO1, _"Well, alright then.")
     set_ent_active(en, 0)
+    -- bubble(HERO1, _"Well, alright then.")
     set_all_equip(AYLA, I_SWORD4, I_SHIELD3, I_CAP3, I_SUIT3, I_BAND2, 0)
     level_partner(AYLA)
     id = select_team{AYLA}
     --  Add the characters that were deselected to the manor
-    add_to_manor(id)
-
-    if (id[1]) then
-      -- Need the whole "okay, meet you back at the manor" dialog here
+    while (LOC_get_ayla() ~= HERO1) do
+      bubble(HERO1, _"Stop wasting my time. You either let me lead or I leave.")
+      id = select_team{AYLA}
     end
+
+    add_to_manor(id)
+    if (id[1]) then
+      set_ent_id(en, id[1])
+      set_ent_speed(en, 4)
+
+      if (id[2]) then
+        -- // Two heroes were de-selected
+        -- set_ent_obsmode(2, 0)
+        set_ent_id(2, id[2])
+        set_ent_active(2, 1)
+        set_ent_tilex(2, get_ent_tilex(en))
+        set_ent_tiley(2, get_ent_tiley(en) + 1)
+        bubble(en, _"If you need us, we'll be back at the manor.")
+        -- set_ent_script(en, "D9K")
+        -- set_ent_script(2, "D9K")
+        move_entity(en, 8, 25, 1)
+        move_entity(2, 8, 25, 1)
+        wait_for_entity(en, 2)
+        wait_for_entity(en, en)
+        -- set_ent_active(en, 0)
+        -- set_ent_active(42, 0)
+      else
+        -- // One hero was de-selected
+        bubble(en, _"If you need me, I'll be back at the manor.")
+        move_entity(en, 8, 25, 1)
+        wait_for_entity(en, en)
+      end
+    end
+    progress.players = progress.players + 1
   end
 end
 
+function LOC_get_ayla()
+  local hero
+
+  if (party[0] == Ayla) then
+    hero = HERO1
+  elseif (party[1] == Ayla) then
+    hero = HERO2
+  else
+    hero = 0
+  end
+
+  return hero
+end
 
 function LOC_fight()
   local a, b

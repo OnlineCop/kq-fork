@@ -498,6 +498,8 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
         Game.do_check_animation();
         Draw.drawmap();
 
+        Draw.menubox(double_buffer, 152 - (strlen(iname) * 4) + xofs, yofs, strlen(iname), 1, BLUE);
+        Draw.print_font(double_buffer, 160 - (strlen(iname) * 4) + xofs, 8 + yofs, iname, FGOLD);
         sprintf(strbuf, _("The cost is %u gp for the night."), total_gold_cost);
         Draw.menubox(double_buffer, 152 - (strlen(strbuf) * 4) + xofs, 48 + yofs, strlen(strbuf), 1, BLUE);
         Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4) + xofs, 56 + yofs, strbuf, FNORMAL);

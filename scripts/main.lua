@@ -208,14 +208,14 @@ function zone_handler(zn)
     end
 
   elseif (zn == 28) then
-    if progress.seecoliseum < 2 then
-      bubble(HERO1, _"The Coliseum is closed.")
-      if progress.seecoliseum == 0 then
-        progress.seecoliseum = 1
-      end
-    else
-      change_map("coliseum", "entrance")
+    if (progress.seecoliseum == 0) then
+    --   bubble(HERO1, _"The Coliseum is closed.")
+    --   if progress.seecoliseum == 0 then
+      progress.seecoliseum = 1
     end
+    -- else
+    change_map("coliseum", "entrance")
+    -- end
 
   elseif (zn == 29) then
     if progress.denorian == 1 then
@@ -394,18 +394,36 @@ function zone_handler(zn)
 
   elseif (zn == 83) then
     msg(_"This is where a new cave goes.", 255, 0)
+    change_map("main", "town5")
 
   elseif (zn == 84) then
     msg(_"This is Binderak's cave.", 255, 0)
 
   elseif (zn == 85) then
-    change_map("sunarin", "entrance")
+    if (progress.sidequest6 < 2) then
+      bubble(HERO1, _"Hmm the entrance is too guarded for me to enter.")
+      bubble(HERO1, _"Wait there's a secret door that looks like that one in the guild.")
+      bubble(HERO1, _"Too bad I have no idea how to open it.")
+    elseif (progress.sidequest6 == 2) then
+      progress.sidequest6 = 3
+      bubble(HERO1, _"Hmm the entrance is too guarded for me to enter.")
+      bubble(HERO1, _"Wait there's a secret door that looks like that one in the guild.")
+      if (get_numchrs() > 1) then
+        bubble(HERO1, _"Coin goes in, and were golden.")
+      else
+        bubble(HERO1, _"Coin goes in, and I'm golden.")
+      end
+      change_map("cave7", "entrance")
+    else
+      change_map("cave7", "entrance")
+    end
 
   elseif (zn == 241) then
     warp("cave4", 8)
 
   elseif (zn == 242) then
-    warp("manor", 8)
+    -- warp("manor", 8)
+    warp("town5", 8)
   end
 end
 

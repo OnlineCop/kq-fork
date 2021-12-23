@@ -510,7 +510,7 @@ int KSaveGame::start_menu(int skip_splash)
     if (debugging == 0)
     {
 #endif
-        Music.play_music("oxford.s3m", 0);
+        Music.play_music(music_title, 0);
         /* Play splash (with the staff and the heroes in circle */
         if (skip_splash == 0)
         {

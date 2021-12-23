@@ -2,18 +2,24 @@
 
 -- /*
 -- {
--- Get the 6th PM after the battle
--- Of course, we shouldn't let him/her join except if we do a side-quest.
--- }
--- */
-
-
-function autoexec()
-  set_ent_active(12, 0)
-  if (progress.roundnum > 0) then
-    x, y = marker("after_battle")
-    place_ent(6, x + 1, y + 1)
-  end
+  -- Get the 6th PM after the battle
+  -- Of course, we shouldn't let him/her join except if we do a side-quest.
+  -- }
+  -- */
+  
+  
+  function autoexec()
+    set_ent_active(12, 0)
+    if (progress.roundnum > 0) then
+      x, y = marker("after_battle")
+      place_ent(6, x + 1, y + 1)
+    end
+    if (progress.opalshield == 1 and progress.finalpartner > 0) then
+      -- msg(progress.finalpartner)
+      -- set_ent_chrx(12, get_pidx(progress.finalpartner))
+      set_ent_id(12, progress.finalpartner - 1)
+      set_ent_active(12, 1)
+    end
 end
 
 
@@ -23,7 +29,7 @@ function entity_handler(en)
 
   elseif (en == 1) then
     bubble(en, _"I'm out of practice.")
-
+    
   elseif (en == 2) then
     bubble(en, _"I can't stand waiting like this!")
 
@@ -54,7 +60,7 @@ function entity_handler(en)
         bubble(en, _"The first three battles are more or less just preliminary fights to make sure you have what it takes.")
         bubble(en, _"If you win the first three rounds, you qualify for more advanced matches.")
         bubble(en, _"The more advanced matches are against more skilled opponents and will determine whether or not your skills are balanced enough.")
-        bubble(en, _"If you manage to defeat the advanced warriors, you will be given a chance to fight Trayor for the grand prize.")
+        bubble(en, _"If you manage to defeat the advanced warriors, you will be given a chance to fight Trayor for the grand prize, an opal shield!")
         a = prompt(en, 2, 0, _"So, are you willing to pay the",
                              _"2000 gp entrance fee?",
                              _"  no  ",
@@ -75,7 +81,8 @@ function entity_handler(en)
           bubble(en, _"Consider yourself registered. After each battle, come back and talk to me.")
           set_ent_script(en, "U2R1F2")
           wait_for_entity(en, en)
-          progress.roundnum = 1
+          progress.roundnum = 7
+          -- progress.roundnum = 1
           progress.battlestatus = 0
         else
           bubble(en, _"Umm... you don't seem to have enough. I would suggest selling some junk. In any case, you can't register at this point.")
@@ -87,7 +94,7 @@ function entity_handler(en)
         if (progress.roundnum == 7) then
           bubble(en, _"Wow! This is it... your next battle is with Trayor. Good luck... you'll need it!")
         else
-          bubble(en, _"Battle number "..progress.roundnum.._". Just head on through that door when you are ready.")
+          bubble(en, _"Battle number "..string.format("%d", progress.roundnum).._". Just head on through that door when you are ready.")
         end
       elseif (a == 1) then
         if (progress.roundnum == 7) then
@@ -118,6 +125,7 @@ function entity_handler(en)
           wait_for_entity(en, en)
           bubble(en, _"Good luck in your endeavours.")
 
+          -- Commented this out because it can cause you to meet someone you haven't actually recruited yet, so there would be 2 Temmin's at the same time. -Z
           if (get_numchrs() > 1) then -- Skip this partnering up bit.
             return
           end
@@ -142,8 +150,8 @@ function entity_handler(en)
               end
             end
           end
-          set_ent_id(en, progress.finalpartner - 1)
-          set_ent_active(en, 1)
+          set_ent_id(12, progress.finalpartner - 1)
+          set_ent_active(12, 1)
         else
           bubble(en, _"Congratulations! You should have a rest or heal up. Come back and talk to me again after you've prepared.")
           progress.battlestatus = 0
@@ -190,23 +198,35 @@ function entity_handler(en)
       bubble(en, _"He also figured that if you didn't have a partner by now, that I should make my services available to you.")
       bubble(en, _"And let me just say that after travelling all this way to find you... I won't take no for an answer!")
       bubble(HERO1, _"Well, in that case, welcome to the team.")
-      bubble(HERO1, _"Now, I already found the Opal Helmet and the Opal Shield.")
-      bubble(en, _"So what about the other stuff? Do you already know where the Band and Armor are?")
-      bubble(HERO1, _"No... no, I don't know where the other pieces are.")
-      bubble(en, _"Alrighty then, down to business. The Band belongs to a merchant in Ajantara south of here.")
+
+      if (progress.opalhelmet == 0) then
+        bubble(HERO1, _"I just got the shield. I haven't got the helmet yet I got sidetracked.")
+        bubble(en, _"I see well then, down to business. The Band belongs to a merchant in Ajantara south of here.")
+      else
+        bubble(HERO1, _"Now, I already found the Opal Helmet and the Opal Shield.")
+        bubble(en, _"So what about the other stuff? Do you already know where the Band and Armor are?")
+        bubble(HERO1, _"No... no, I don't know where the other pieces are.")
+        bubble(en, _"Alrighty then, down to business. The Band belongs to a merchant in Ajantara south of here.")
+      end
       bubble(en, _"The Armor, however, is hidden deep in a cavern east of here.")
-      bubble(HERO1, _"Well, where should we go first?")
-      bubble(en, _"Derig said to get the Armor last and since all that leaves is the Band, then we should go for that.")
-      bubble(HERO1, _"Fair enough... let's roll.")
-      add_chr(progress.finalpartner - 1)
-      LOC_partner_up()
-      progress.finalpartner = 0
-      copy_ent(en, HERO2)
-      set_ent_active(en, 0)
-      orient_heroes()
-      drawmap()
-      screen_dump()
-      msg(_"$1 joined!", 255, 0)
+
+      if (get_numchrs() > 1) then
+        bubble(en, _"Since there are already two of you. I'm going to head back to the manor.")
+        move_entity(en, 30, 29, 1)
+        wait_for_entity(0, en)
+      else
+        bubble(HERO1, _"Well, where should we go first?")
+        bubble(en, _"Derig said to get the Armor last and since all that leaves is the Band, then we should go for that.")
+        bubble(HERO1, _"Fair enough... let's roll.")
+        add_chr(progress.finalpartner - 1)
+        LOC_partner_up()
+        copy_ent(en, HERO2)
+        set_ent_active(en, 0)
+        orient_heroes()
+        drawmap()
+        screen_dump()
+        msg(_"$1 joined!", 255, 0)
+      end
     else
       bubble(en, _"Hey... long time no see. I saw you fighting. You were amazing!")
       bubble(en, _"Oh yeah! I'm here because I ran into some guy named Derig. Well, he actually came looking for me.")
@@ -216,21 +236,34 @@ function entity_handler(en)
       bubble(en, _"I was on the way back to the teleporter when I ran into Derig... and now I'm here.")
       bubble(HERO1, _"So, what did Derig tell you?")
       bubble(en, _"He told me where all the Opal stuff is... the Shield, the Band, the Armor, and the Helmet.")
-      bubble(HERO1, _"I already snagged the Helmet and the Shield... where are the other parts?")
-      bubble(en, _"You already found the Helmet and Shield! Wow! Well, the Band is in a town called Ajantara to the south.")
-      bubble(en, _"The Armor is deep in a cavern to the east. And Derig said to get the Armor last, so we should go to Ajantara first. Okay?")
-      bubble(HERO1, _"No problem... let's go.")
-      add_chr(progress.finalpartner - 1)
-      LOC_partner_up()
-      progress.finalpartner = 0
-      copy_ent(en, HERO2)
-      set_ent_active(en, 0)
-      orient_heroes()
-      drawmap()
-      screen_dump()
-      msg(_"$1 joined!", 255, 0)
-    end
+      if (progress.opalhelmet == 0) then
+        bubble(HERO1, _"I just got the shield. I haven't got the helmet yet I got sidetracked.")
+        bubble(en, _"I see well then, down to business. The Band belongs to a merchant in Ajantara south of here.")
+        bubble(en, _"The Armor, however, is hidden deep in a cavern east of here, so we should listen to Derig and leave that for last.")
+      else
+        bubble(HERO1, _"I already snagged the Helmet and the Shield... where are the other parts?")
+        bubble(en, _"You already found the Helmet and Shield! Wow! Well, the Band is in a town called Ajantara to the south.")
+        bubble(en, _"The Armor is deep in a cavern to the east. And Derig said to get the Armor last, so we should go to Ajantara first. Okay?")
+      end
 
+      if (get_numchrs() > 1) then
+        bubble(en, _"When I say we, I mean you, because there are already two of you. I'm going to head back to the manor.")
+        move_entity(en, 30, 29, 1)
+        wait_for_entity(0, en)
+      else
+        bubble(HERO1, _"No problem... let's go.")
+        add_chr(progress.finalpartner - 1)
+        LOC_partner_up()
+        copy_ent(en, HERO2)
+        set_ent_active(en, 0)
+        orient_heroes()
+        drawmap()
+        screen_dump()
+        msg(_"$1 joined!", 255, 0)
+      end
+    end
+    add_to_manor(progress.finalpartner - 1)
+    progress.finalpartner = 0
   end
 end
 
@@ -312,29 +345,32 @@ end
 
 function LOC_partner_up()
   local a
-
-  a = get_party_xp(party[0]) - get_party_xp(get_pidx(1))
-  if (a > 5000) then
-    a = a - 5000
+  a = get_party_xp(get_pidx(0)) - get_party_xp(get_pidx(1))
+  a = a - krnd(750)
+  if (a > 0) then
+    give_xp(get_pidx(1), a, 1)
   end
-  a = a + krnd(500)
-  give_xp(get_pidx(1), a, 1)
+
   a = progress.finalpartner - 1
-  if (a == SENSAR) then
-    set_all_equip(0, I_HAMMER2, I_SHIELD3, I_CAP3, I_ARMOR5, I_BAND2, 0)
-  elseif (a == SARINA) then
-    set_all_equip(1, I_SPEAR2, 0, I_CAP3, I_SUIT3, I_BAND2, 0)
-  elseif (a == CORIN) then
-    set_all_equip(2, I_ROD3, I_SHIELD3, I_CAP2, I_ROBE3, I_BAND2, 0)
-  elseif (a == AJATHAR) then
-    set_all_equip(3, I_HAMMER2, I_SHIELD3, I_CAP2, I_ROBE3, I_BAND2, 0)
-  elseif (a == CASANDRA) then
-    set_all_equip(4, I_STAFF2, 0, I_CAP2, I_ROBE3, I_BAND2, 0)
-  elseif (a == TEMMIN) then
-    set_all_equip(5, I_SWORD4, I_SHIELD3, I_HELM2, I_ARMOR5, I_BAND2, 0)
-  elseif (a == AYLA) then
-    set_all_equip(6, I_SWORD4, I_SHIELD3, I_CAP3, I_SUIT3, I_BAND2, 0)
-  elseif (a == NOSLOM) then
-    set_all_equip(7, I_ROD3, I_SHIELD3, I_CAP2, I_ROBE3, I_BAND2, 0)
+
+  -- Only set up equipment if you haven't already met them
+  if (LOC_manor_or_party(SENSAR) == false) then
+    if (a == SENSAR) then
+      set_all_equip(0, I_HAMMER2, I_SHIELD3, I_CAP3, I_ARMOR5, I_BAND2, 0)
+    elseif (a == SARINA) then
+      set_all_equip(1, I_SPEAR2, 0, I_CAP3, I_SUIT3, I_BAND2, 0)
+    elseif (a == CORIN) then
+      set_all_equip(2, I_ROD3, I_SHIELD3, I_CAP2, I_ROBE3, I_BAND2, 0)
+    elseif (a == AJATHAR) then
+      set_all_equip(3, I_HAMMER2, I_SHIELD3, I_CAP2, I_ROBE3, I_BAND2, 0)
+    elseif (a == CASANDRA) then
+      set_all_equip(4, I_STAFF2, 0, I_CAP2, I_ROBE3, I_BAND2, 0)
+    elseif (a == TEMMIN) then
+      set_all_equip(5, I_SWORD4, I_SHIELD3, I_HELM2, I_ARMOR5, I_BAND2, 0)
+    elseif (a == AYLA) then
+      set_all_equip(6, I_SWORD4, I_SHIELD3, I_CAP3, I_SUIT3, I_BAND2, 0)
+    elseif (a == NOSLOM) then
+      set_all_equip(7, I_ROD3, I_SHIELD3, I_CAP2, I_ROBE3, I_BAND2, 0)
+    end
   end
 end

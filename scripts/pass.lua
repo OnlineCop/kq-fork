@@ -155,7 +155,7 @@ function LOC_miner(en)
     end
   end
 
-  if (progress.talkrufus<2) then
+  if (progress.talkrufus < 2 and progress.cavekey > 0) then
     bubble(HERO1, _"But, I really need to get in there.")
     progress.talkrufus = 2
     bubble(en, _"We-e-ell...")

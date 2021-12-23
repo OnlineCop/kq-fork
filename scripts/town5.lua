@@ -15,7 +15,14 @@
 --   (5) Got the disguise and ready to go
 --   (6) Allowed into inner city
 --   (7) Used to dress Ayla on entering the town (should not be used elsewhere)
+--   (8) Done with the dress up
 --*/
+
+-- progress.sidequest6
+--   (0) Haven't started
+--   (1) Found the note
+--   (2) Got the Embers Coin
+--   (3) Exited the city (allows skipping past the guards from now until sidequest is over)
 
 --/*
 -- Entity table:
@@ -48,9 +55,9 @@ function autoexec()
     end
   end
 
-  if (progress.sidequest6 == 1) then
-    LOC_remove_gate()
-  end
+  -- if (progress.sidequest6 > 2) then
+  --   LOC_remove_gate()
+  -- end
 
   set_ent_active(8, 0) -- Guard inside city gates
   refresh()
@@ -82,11 +89,11 @@ function entity_handler(en)
     if (party[0] == Ayla) then
       LOC_ayla_girl(en)
     else
-      if (progress.sidequest6 == 1) then
-        bubble(en, _"The, uh, gates to the inner city are open now. It's very unusual...")
-      else
-        bubble(en, _"Those gates to the inner city never open. Strangers are not allowed in.")
-      end
+      -- if (progress.sidequest6 > 2) then
+      --   bubble(en, _"The, uh, gates to the inner city are open now. It's very unusual...")
+      -- else
+      bubble(en, _"Those gates to the inner city never open. Strangers are not allowed in.")
+      -- end
     end
 
   elseif (en == 6) then
@@ -134,15 +141,16 @@ function postexec()
 --  If we remove the Ember's Key, we can't get Ayla later. So, we don't remove
 --  the Ember's Key if we don't have Ayla yet.
 -- */
-  if (progress.foughtguild == 2 and progress.ayla_quest > 0) then
-    progress.foughtguild = 3
-    progress.emberskey = 0
-    remove_special_item(SI_EMBERSKEY)
-    bubble(HERO1, _"Oh no!")
-    bubble(HERO1, _"I must have dropped that key inside!")
-    bubble(HERO1, _"Oh well, I got what I came for.")
-  end
-
+  -- if (progress.foughtguild == 2 and progress.ayla_quest > 0) then
+  --   progress.foughtguild = 3
+  --   progress.emberskey = 0
+  --   remove_special_item(SI_EMBERSKEY)
+  --   bubble(HERO1, _"Oh no!")
+  --   bubble(HERO1, _"I must have dropped that key inside!")
+  --   bubble(HERO1, _"Oh well, I got what I came for.")
+  -- end
+  
+  -- bubble(HERO1, progress.ayla_quest)
   if (progress.ayla_quest == 6) then
     local hero = LOC_get_ayla()
 
@@ -187,9 +195,14 @@ function zone_handler(zn)
 
   if (zn == 1) then
     if (party[0] == Ayla or party[1] == Ayla) then
+      -- msg(progress.ayla_quest.." "..progress.sidequest6)
       if (progress.ayla_quest == 5) then
         LOC_check_costume()
-        progress.ayla_quest = 6
+        -- Since we got the treasure we don't need to change clothes anymore
+        if (progress.sidequest6 == 7) then
+          progress.ayla_quest = 8
+          progress.sidequest6 = 8
+        end
       end
     end
     change_map("main", "town5", -1, 0)
@@ -235,14 +248,26 @@ function zone_handler(zn)
 
   elseif (zn == 15) then
     bubble(HERO1, _"What language is this?")
-
+    
   elseif (zn == 16) then
     chest(32, I_PRIESTESS, 1)
     refresh()
-
+    
   elseif (zn == 17) then -- Palace gates
     if (party[0] == Ayla) then
-      LOC_ayla_gates()
+      -- msg(progress.ayla_quest)
+      if (progress.sidequest6 > 7) then
+        bubble(HERO1, _"The gates are closed and locked.")
+      elseif (progress.ayla_quest > 4 and progress.sidequest6 > 2) then
+        bubble(HERO1, _"Since no one's looking I will just slip through.")
+        if (get_ent_facing(HERO1) == FACE_RIGHT) then
+          warp("gate", 8)
+        else
+          warp("gate_o", 8)
+        end
+      else
+        LOC_ayla_gates()
+      end
     else
       bubble(HERO1, _"The gates are closed and locked.")
     end
@@ -253,6 +278,7 @@ function zone_handler(zn)
     else
       -- LOC_change_costume()
       bubble(HERO1, _"Key goes in...")
+      LOC_check_costume()
       change_map("guild", "entrance")
     end
 
@@ -296,7 +322,9 @@ function zone_handler(zn)
     x, y = marker("wall")
     set_obs(x, y, 0)
     set_zone(x, y, 0)
-    progress.ayla_quest = 4
+    if (progress.ayla_quest < 4) then
+      progress.ayla_quest = 4
+    end
 
   elseif (zn == 25) then
     bubble(HERO1, _"Nothing in here but old clothes.")
@@ -323,6 +351,13 @@ function zone_handler(zn)
   elseif (zn == 32) then
     bubble(HERO1, _"Nothing of interest here.")
 
+  elseif (zn == 33) then
+    if (progress.sidequest6 == 1 and party[0] == Ayla) then
+      bubble(HERO1, _"Finally here it is, the Embers Mark coin.")
+      bubble(HERO1, _"But why did they use the signature of a bird? It better not be just so they could use that bad bird pun.")
+      add_special_item(SI_EMBERCOIN)
+      progress.oddwall = 2
+    end
   end
 end
 
@@ -345,7 +380,7 @@ function LOC_ayla_bar(woman)
     bubble(woman, _"I know, it's just unfair!")
   elseif (pp == 1) then
     bubble(HERO1, _"I don't suppose you work in the palace?")
-    bubble(woman, _"I wish. That woman over there is a maid. Only a maid and she lives in a lovely cottage opposite Vezdin's shop.")
+    bubble(woman, _"I wish. That woman over there is a maid. Only a maid, and she lives in a lovely cottage opposite Vezdin's shop.")
     bubble(HERO1, _"Do  you know anything about the wealth that's supposed to be in there?")
     bubble(woman, _"Keep your voice down! I bet you've been talking to that little miss near the palace gates, haven't you?")
     bubble(HERO1, _"Yes, but I much prefer the company in here.")
@@ -376,6 +411,10 @@ function LOC_ayla_gates()
       set_ent_active(guard, 1)
       move_entity(guard, x, y)
       wait_for_entity(guard, guard)
+      if (get_numchrs() > 1) then
+        bubble(guard, _"Wait a minute. If you're a servant who's that with you?")
+        bubble(HERO1, _"Oh they carry my stuff.")
+      end
       bubble(guard, _"Come through.")
       sfx(25)
       warp(x, y - 1, 8)
@@ -384,18 +423,23 @@ function LOC_ayla_gates()
       bubble(guard, _"Well, you are a cute little thing, aren't you?")
       bubble(HERO1, _"Cute??")
       bubble(guard, _"I'm sorry, miss, I didn't mean to offend. Follow me.")
-      ----
-      bubble(255, "CUT!")
-      bubble(255, "That's a wrap for today.",
-                  "PH hasn't written the rest of this script yet!")
+      spd = get_ent_speed(HERO1)
       set_vfollow(0)
-      set_ent_script(guard, "R12")
-      bubble(255, _"Ayla, great work. Sir Alec, you were fabulous, sweetie.")
-      bubble(guard, _"I'm still not sure of my motivation in this scene...")
-      wait_for_entity(guard, guard)
+      set_autoparty(1)
+      set_ent_speed(HERO1, 3)
+      set_ent_speed(HERO2, 3)
+      set_ent_script(guard, "R13")
+      set_ent_script(HERO1, "D1R12")
+      set_ent_script(HERO2, "W15D1R11")
+      wait_for_entity(guard, HERO1)
+      wait_for_entity(HERO1, HERO2)
+      -- wait_for_entity(HERO1, HERO1)
       LOC_check_costume()
       progress.ayla_quest = 7
       change_map("main", "town5", 1, 0)
+      set_ent_speed(HERO1, spd)
+      set_ent_speed(HERO2, spd)
+      set_autoparty(0)
       set_vfollow(1)
     else
       bubble(255, _"Gates are closed. Come back later.")

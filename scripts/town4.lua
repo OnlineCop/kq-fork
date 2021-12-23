@@ -390,12 +390,12 @@ function LOC_talk_gelik(en)
         bubble(HERO1, _"Coliseum?")
       end
       bubble(en, _"The coliseum is west of Sunarin. You can't miss it.")
-      if (progress.seecoliseum == 1) then
-        bubble(HERO1, _"But the Coliseum was closed when I went there.")
-        bubble(en, _"Yes... well I'm sure it's open by now.")
-        bubble(HERO1, _"Isn't that convenient?")
-        bubble(en, _"Quite.")
-      end
+      -- if (progress.seecoliseum == 1) then
+      --   bubble(HERO1, _"But the Coliseum was closed when I went there.")
+      --   bubble(en, _"Yes... well I'm sure it's open by now.")
+      --   bubble(HERO1, _"Isn't that convenient?")
+      --   bubble(en, _"Quite.")
+      -- end
       bubble(HERO1, _"So, I have to go there and ask Trayor for the shield?")
       bubble(en, _"No, you have to fight him for it.")
       bubble(HERO1, _"Fight, fight, fight. That's all I ever do.")

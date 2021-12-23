@@ -30,6 +30,7 @@ function init_special_items()
   create_special_item(_"Derig's Note",     _"Encrypted message",   18, SI_NOTE_DERIG)
   create_special_item(_"Rusty Key",        _"Unlock grotto ruins", 64, SI_RUSTYKEY)
   create_special_item(_"Strange Pendant",  _"A mysterious Pedant", 52, SI_STRANGEPENDANT)
+  create_special_item(_"Embers Coin",      _"A coin with a bird",  50, SI_EMBERCOIN)
 end
 
 

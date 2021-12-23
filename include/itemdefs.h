@@ -109,6 +109,7 @@
 #define I_BAND4 77           /* Unadium Band */
 #define I_GLOVES1 78         /* Gloves */
 #define I_GLOVES2 79         /* Ninja Gloves */
+#define I_GLOVES3 191        /* Satin Gloves */
 #define I_GAUNTLET1 80       /* Battle Gauntlets */
 #define I_GAUNTLET2 81       /* Titan Gaunlets */
 #define I_GAUNTLET3 82       /* Force Gauntlets */

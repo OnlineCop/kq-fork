@@ -3572,6 +3572,24 @@ s_item items[NUM_ITEMS] = {
       { 1, 1, 1, 1, 1, 1, 1, 1 },
       { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
       { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
+    { "Satin Gloves",
+      16,
+      0,
+      "Increase Steal Rate",  // Great for a ball or pickpocketing
+      0,
+      4,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      6000,
+      { 1, 1, 1, 1, 1, 1, 1, 1 },
+      { 0, 0, 0, 0, 0, 1, 0, -2, 2, 4, 7, 5, 2 },
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
 };
 
 /* Format: { "Name", Icon, "Description", Stat, Mpc, Use, Tgt, Dmg, Bon, Hit, Elem, Dlvl, Eff, Clvl { Sensar, Sarina,
@@ -3765,6 +3783,8 @@ s_erow erows[NUM_ETROWS] = {
     { 23, 15, 100, { 58, 58, 58, 58, 0 } }, { 24, 0, 0, { 61, 0, 0, 0, 0 } },
     { 25, 12, 30, { 5, 5, 5, 5, 5 } },      { 25, 12, 60, { 62, 62, 62, 0, 0 } },
     { 25, 12, 90, { 5, 62, 62, 0, 0 } },    { 25, 12, 100, { 63, 0, 0, 0, 0 } },
+    { 26, 16, 30, { 25, 64, 0, 0, 0 } },    { 26, 16, 60, { 25, 25, 0, 0, 0 } },
+    { 26, 16, 100, { 64, 64, 64, 0, 0 } },
 };
 
 /* Format: {Map, Zone, Enc, Etnum, Eidx, "BMusic", "BackImg"}
@@ -3839,4 +3859,9 @@ s_encounter battles[NUM_BATTLES] = {
     { 0, 255, 1, 23, 1, "hm.s3m", "back2.png" },    // 89
     { 0, 255, 1, 24, 0, "walk.s3m", "back8.png" },  // 60    
     { 0, 255, 1, 25, 99, "hm.s3m", "back2.png" },    // 61
+    { 0, 255, 25, 26, 99, "hm.s3m", "back2.png" },  // 62
 };
+
+char music_victory[10] = "rend5.s3m";
+char music_defeat[9] = "rain.s3m";
+char music_title[11] = "oxford.s3m";

@@ -596,6 +596,9 @@
     <None Include="maps\village.tsx">
       <Filter>Resource Files\Maps\Tilesets</Filter>
     </None>
+    <None Include="scripts\cave7.lua">
+      <Filter>Resource Files\Lua Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="data\back1.png">

@@ -46,6 +46,7 @@
 #include "selector.h"
 #include "setup.h"
 #include "timing.h"
+#include <itemdefs.h>
 
 /* Internal function */
 static void infusion(int, int);
@@ -512,6 +513,7 @@ int skill_use(size_t attack_fighter_index)
     int tgt, found_item, a, b, c, p, cts, tx, ty, next_target = 0, nn[NUM_FIGHTERS];
     size_t enemy_index;
     size_t fighter_index;
+    int rare_chance = 5;
     std::unique_ptr<Raster> temp;
     tempa = Magic.status_adjust(attack_fighter_index);
     switch (pidx[attack_fighter_index])
@@ -830,9 +832,17 @@ int skill_use(size_t attack_fighter_index)
         {
             cts = 95;
         }
+
+        if (party[pidx[attack_fighter_index]].eqp[EQP_SPECIAL] == I_GLOVES3)
+        {
+            //cts -= 10;
+            cts -= 25;
+            rare_chance = 15;
+        }
+
         if (kqrandom->random_range_exclusive(0, 100) < cts)
         {
-            if (fighter[enemy_index].steal_item_rare > 0 && (kqrandom->random_range_exclusive(0, 100) < 5))
+            if (fighter[enemy_index].steal_item_rare > 0 && (kqrandom->random_range_exclusive(0, 100) < rare_chance))
             {
                 /* This steals a rare item from monster, if there is one */
                 found_item = fighter[enemy_index].steal_item_rare;

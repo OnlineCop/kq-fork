@@ -1032,7 +1032,7 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
  */
 void KCombat::enemies_win(void)
 {
-    Music.play_music("rain.s3m", 0);
+    Music.play_music(music_defeat, 0);
     Combat.battle_render(0, 0, 0);
     /*  RB FIXME: rest()?  */
     Draw.blit2screen(0, 0);
@@ -1381,7 +1381,7 @@ void KCombat::heroes_win(void)
     KFighter t1;
     KFighter t2;
 
-    Music.play_music("rend5.s3m", 0);
+    Music.play_music(music_victory, 0);
     kq_wait(500);
     kmenu.revert_equipstats();
     for (fighter_index = 0; fighter_index < numchrs; fighter_index++)

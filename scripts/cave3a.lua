@@ -1,6 +1,15 @@
 -- cave3a - "First part of cave on way to Oracle's tower"
-
--- // progress.travelpoint: Whether we've just come through the TravelPoint
+-- /*
+-- progress.travelpoint: Whether we've just come through the TravelPoint
+-- progress.sidequest5 - Have we discovered the secret passage into the Embers' base?
+--   (0) Not talked to Sarina.
+--   (1) Talked to Sarina and got the Strange Pedant.
+--   (2-3) Talked to Sarina but refused to help her close the portal.
+--   (4) Sarina can no longer be recruited. Shows up later as a captive of Malkaron?
+--   (10) Portal has been shut. Sarina joins the party or returns to the Manor.
+-- progress.oraclemonsters - Have we discovered the secret passage into the Embers' base?
+--   (5) Disabled the portal
+-- */
 
 function autoexec()
   chests_tried = {}
@@ -324,7 +333,7 @@ function check_chest(num)
         end
       end
       
-      valid = true
+      -- valid = true
       if (valid == true) then
         sfx(26)
         msg(_"I think that one finally did the trick!")

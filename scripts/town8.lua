@@ -40,7 +40,6 @@ function entity_handler(en)
 
   elseif (en == 7) then
     inn(_"Long Journey Inn", 65, 1)
-
   end
 end
 

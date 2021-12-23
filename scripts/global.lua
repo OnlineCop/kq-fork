@@ -128,7 +128,9 @@ local quest_list = {
   'sidequest4',
   'sidequest5',
   'sidequest6',
-  'sidequest7'
+  'sidequest7',
+
+  'goblin_monk'
 }
 
 
@@ -191,6 +193,7 @@ SI_NOTE_TSORIN = 15
 SI_NOTE_DERIG = 16
 SI_RUSTYKEY = 17
 SI_STRANGEPENDANT = 18
+SI_EMBERCOIN = 19
 
 -- These values correspond to the values found in include/itemdefs.h
 
@@ -274,6 +277,7 @@ I_BAND3             = 76   -- /* Opal Band */
 I_BAND4             = 77   -- /* Unadium Band */
 I_GLOVES1           = 78   -- /* Gloves */
 I_GLOVES2           = 79   -- /* Ninja Gloves */
+I_GLOVES3           = 191  -- /* Satin Gloves */
 I_GAUNTLET1         = 80   -- /* Battle Gauntlets */
 I_GAUNTLET2         = 81   -- /* Titan Gaunlets */
 I_GAUNTLET3         = 82   -- /* Force Gauntlets */
