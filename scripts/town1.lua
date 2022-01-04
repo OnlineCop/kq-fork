@@ -448,9 +448,12 @@ function LOC_talk_jen (en)
         end
         bubble(en, _"That is Derig, my grandfather. Go back and look for him.")
       else
+        bubble(en, _"Do you like rushing around? I thought you were the hero type.")
+        bubble(en, _"Maybe someone else will save us from those monsters.")
         -- This should never occur
-        bubble(en, _"Scripting Error:",
-	       "progress.ucoin == 0, but progress.talkderig != 0..2")
+        -- bubble(en, _"Scripting Error:",
+	      --  "progress.ucoin == 0, but progress.talkderig != 0..2")
+        --  msg(progress.talkderig)
       end
       -- Now you have spoken to Jen
       progress.ucoin = 1

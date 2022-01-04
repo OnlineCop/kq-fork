@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="81" height="51" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="194">
+ <properties>
+  <property name="can_save" value="0"/>
+  <property name="can_warp" value="1"/>
+  <property name="description" value="TravelPoint"/>
+  <property name="map_mode" value="0"/>
+  <property name="map_no" value="10"/>
+  <property name="pdiv" value="1"/>
+  <property name="pmult" value="1"/>
+  <property name="song_file" value="dag_4.xm"/>
+  <property name="stx" value="16"/>
+  <property name="sty" value="18"/>
+  <property name="tileset" value="3"/>
+  <property name="use_sstone" value="0"/>
+  <property name="warpx" value="264"/>
+  <property name="warpy" value="60"/>
+  <property name="zero_zone" value="1"/>
+ </properties>
+ <tileset firstgid="1" source="cave.tsx"/>
+ <tileset firstgid="501" source="entities.tsx"/>
+ <tileset firstgid="1473" source="misc.tsx"/>
+ <tileset firstgid="1773" source="obstacles.tsx"/>
+ <layer id="1" name="map" width="81" height="51">
+  <data encoding="base64" compression="zlib">
+   eJztmk1vwjAMhnNBYyA+LmPSOG+n/f/ft0bD6itjO04TChS/Ui4kap0niR27pBQKhUKhUCg06nNop0v7cIzTxpT6l6o8783Q3i9tnUaeyBXHrdM1c6n/VVj+DG03tMOlbdPIE7luYNw2XTOX+r9nnMc9lRkeh3a+tH0aeSLXHYzbp2vm1P8F/ZnvK+zFt/Q/b6tlJkej76D0Z76vwDGfwRLDqS3zXTpH8mG3Yrh0jsRPO6PB0dac/CSOzy66y5T4kUq/TeG4hDuPxK9V/Hln4Tfi+KwMed7Rkx/Ksx9Xnd85hzCXo9wiqzc/0jMw5PnsyRiLORjmFtp5kp7N97BHFsN7xGecA99TVq0gS4of+yTHR+3Z/D2e+Vv5T497DtaaSuLz4nuqVCtIxjxoL/KagdW8cdVi2Hpf5LUmS7ymouWlZJc0X41jHo/7GmsKVvPG1VIejhxrfATxQy6WeE1Fuy+U7KQ9iX3IzlqblphQa1+JI/JDey15aioeO2lPkj/HdaQ1qnlmTVytsU/iiH5Py68s9WCItpIftPIUD4MpdxPvnuSxEf2eZnfru615abZ6+WVJ64jyxkbPXPBsSzG0xm7r3ZwV/U7rV2Ozxw5eX1yxvto7T8kuHhs9ftoj3AucIfWhb66xucSP1xd5X+2dx2tT69pzIUPOiPq4b5ZsrpFU36H1k3x7Sy3hluxIeJ44I+6vetWX6F6Fz8aYLp2xHnnwLfjRftAYST6/R31Jeq4U039TX4aapvLLkvYDZ9Rjrbi0tbF8/KMK52Ktee+51N5NH133slnjpZ3ZmlrK3LoXQ20vSnFf+t/OUr7htUpiqOVkLffFpUuKLVJO1uu+uERpMbqUkz3Cd5NHkeYXS3XNYDhqag0uNIrXbiQFP128dmOdz+B3Lam+ED7OL+2/TcHQL6nWEee0TqXvKKGyOMM4w/UKhu0Khu16JoZ/Ow1dMA==
+  </data>
+ </layer>
+ <layer id="2" name="bmap" width="81" height="51">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T+1pCaAAAAAAAAAAAAAAAAAAAAAAbkCMAAE=
+  </data>
+ </layer>
+ <objectgroup color="#ff00ff" id="3" name="entities">
+  <object id="1" name="Entity 0" type="entity" gid="717" x="656" y="736" width="16" height="16">
+   <properties>
+    <property name="active" value="1"/>
+    <property name="atype" value="0"/>
+    <property name="chasing" value="0"/>
+    <property name="chrx" value="18"/>
+    <property name="cmd" value="0"/>
+    <property name="cmdnum" value="0"/>
+    <property name="delay" value="50"/>
+    <property name="delayctr" value="0"/>
+    <property name="eid" value="255"/>
+    <property name="facehero" value="0"/>
+    <property name="facing" value="3"/>
+    <property name="framectr" value="0"/>
+    <property name="movcnt" value="0"/>
+    <property name="movemode" value="0"/>
+    <property name="moving" value="0"/>
+    <property name="obsmode" value="1"/>
+    <property name="scount" value="0"/>
+    <property name="script" value=""/>
+    <property name="sidx" value="0"/>
+    <property name="snapback" value="0"/>
+    <property name="speed" value="2"/>
+    <property name="transl" value="0"/>
+   </properties>
+  </object>
+  <object id="4" name="Entity 3" type="entity" gid="921" x="640" y="752" width="16" height="16">
+   <properties>
+    <property name="active" value="1"/>
+    <property name="atype" value="0"/>
+    <property name="chasing" value="0"/>
+    <property name="chrx" value="35"/>
+    <property name="cmd" value="0"/>
+    <property name="cmdnum" value="0"/>
+    <property name="delay" value="50"/>
+    <property name="delayctr" value="0"/>
+    <property name="eid" value="255"/>
+    <property name="facehero" value="0"/>
+    <property name="facing" value="3"/>
+    <property name="framectr" value="0"/>
+    <property name="movcnt" value="0"/>
+    <property name="movemode" value="0"/>
+    <property name="moving" value="0"/>
+    <property name="obsmode" value="1"/>
+    <property name="scount" value="0"/>
+    <property name="script" value=""/>
+    <property name="sidx" value="0"/>
+    <property name="snapback" value="0"/>
+    <property name="speed" value="2"/>
+    <property name="transl" value="0"/>
+   </properties>
+  </object>
+  <object id="5" name="Entity 4" type="entity" gid="933" x="304" y="512" width="16" height="16">
+   <properties>
+    <property name="active" value="1"/>
+    <property name="atype" value="0"/>
+    <property name="chasing" value="0"/>
+    <property name="chrx" value="36"/>
+    <property name="cmd" value="0"/>
+    <property name="cmdnum" value="0"/>
+    <property name="delay" value="50"/>
+    <property name="delayctr" value="0"/>
+    <property name="eid" value="255"/>
+    <property name="facehero" value="0"/>
+    <property name="facing" value="1"/>
+    <property name="framectr" value="0"/>
+    <property name="movcnt" value="0"/>
+    <property name="movemode" value="0"/>
+    <property name="moving" value="0"/>
+    <property name="obsmode" value="1"/>
+    <property name="scount" value="0"/>
+    <property name="script" value=""/>
+    <property name="sidx" value="0"/>
+    <property name="snapback" value="0"/>
+    <property name="speed" value="2"/>
+    <property name="transl" value="0"/>
+   </properties>
+  </object>
+  <object id="185" name="Entity 4" type="entity" gid="933" x="832" y="640" width="16" height="16">
+   <properties>
+    <property name="active" value="1"/>
+    <property name="atype" value="0"/>
+    <property name="chasing" value="0"/>
+    <property name="chrx" value="36"/>
+    <property name="cmd" value="0"/>
+    <property name="cmdnum" value="0"/>
+    <property name="delay" value="50"/>
+    <property name="delayctr" value="0"/>
+    <property name="eid" value="255"/>
+    <property name="facehero" value="0"/>
+    <property name="facing" value="1"/>
+    <property name="framectr" value="0"/>
+    <property name="movcnt" value="0"/>
+    <property name="movemode" value="0"/>
+    <property name="moving" value="0"/>
+    <property name="obsmode" value="1"/>
+    <property name="scount" value="0"/>
+    <property name="script" value=""/>
+    <property name="sidx" value="0"/>
+    <property name="snapback" value="0"/>
+    <property name="speed" value="2"/>
+    <property name="transl" value="0"/>
+   </properties>
+  </object>
+  <object id="189" name="Entity 1" type="entity" gid="753" x="432" y="352" width="16" height="16">
+   <properties>
+    <property name="active" value="1"/>
+    <property name="atype" value="0"/>
+    <property name="chasing" value="0"/>
+    <property name="chrx" value="21"/>
+    <property name="cmd" value="0"/>
+    <property name="cmdnum" value="0"/>
+    <property name="delay" value="50"/>
+    <property name="delayctr" value="0"/>
+    <property name="eid" value="255"/>
+    <property name="facehero" value="0"/>
+    <property name="facing" value="3"/>
+    <property name="framectr" value="0"/>
+    <property name="movcnt" value="0"/>
+    <property name="movemode" value="0"/>
+    <property name="moving" value="0"/>
+    <property name="obsmode" value="1"/>
+    <property name="scount" value="0"/>
+    <property name="script" value=""/>
+    <property name="sidx" value="0"/>
+    <property name="snapback" value="0"/>
+    <property name="speed" value="2"/>
+    <property name="transl" value="0"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer id="4" name="fmap" width="81" height="51">
+  <data encoding="base64" compression="zlib">
+   eJzt2GsOgyAQRlFjTboU3f8KrUlN6AQq4sDwuCfxj7EWPgcFpgkAAAAA4HpbNwAAKjZ/jtf3WMS5JfQj/OS2OedXcW51rpM5j0T2+chv810Y6cx1pCyPPrtj9El+ofuOQI5RzfuOlGMuveXYU1+s9FYTVnw5zhYN6UiJ/Gqpf4s9Fd8aJVVr80a376ntlnNFrVqyrMnQeywmp7vtjp1rp87JLWvyKguNHDXXKle0a7L0u12Od98ewz9aWbv7Fql5nn0p+exL/t8dKXmWHDet8e2ryWzJL42bbY78Qt/u0s+q9fqQYyB3X3zfpprzs6qzWtZqWkrXGfT0VotWyBHoV8w+W+vzxZx82ch3Jvmlyb0eA6CH99wz5AcA9dsBQcwLNg==
+  </data>
+ </layer>
+ <layer id="5" name="shadows" width="81" height="51" opacity="0.5">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T+1pCaAAAAAAAAAAAAAAAAAAAAAAbkCMAAE=
+  </data>
+ </layer>
+ <layer id="6" name="obstacles" width="81" height="51" opacity="0.5">
+  <data encoding="base64" compression="zlib">
+   eJztl0tSxDAMRGfF/S/KHViwIBNsqS21FBv6VU0VQxzJ7tHPr5cQQgghhBB78fnx/vHWZWzswH2vrA9qf7Tm+r/78514ck9o/I2e7cJqrERjsHrf3Vi5xvZTyVM6duVG1/k6dfRqfIWvLjr8jXxU+URnGHavra7Bo9irYlYn0Bqc6UkdGnbVJ+v7qq1VPf+ChlX+UB1P1bBjTkLtnqZhZ69Cfeyg4cpdw7qjobYj/QPp+2wsDZFzzM7rzeveutl72XUVc9Jsrs76udqb7YEZY6trIufz4oKNNStnzsBaF5mLkDrBiMGobXTNql9kHcvWqt27fVQj1B8rZ6IaMWIKtZk9K1pjGH0AWcPORcsuI++8+oLuDYVdo1bXzeIC0XH0WyAazf4e9SoURn5Gfzcvt65nyvj0bDNni0hvjti3vnvvRLDsMvr17H0vV6L9zIq9yvMge2H69PYTjQ1EI2bvRPwy87gDNM4qZgHrWcX8UUlFnEX8dvtn88TvHtHwpNjsAq193vzw3/HmnBP7TDdRfaThD5n7h/jGmqOUxxir9yLp987KfVW9+DfeXV3YqM7lkX55lMN5pGEeaZjnJA2/AN4PwQs=
+  </data>
+ </layer>
+ <objectgroup color="#008000" id="7" name="zones">
+  <object id="32" name="1" type="zone" x="1280" y="368" width="16" height="80"/>
+  <object id="186" name="3" type="zone" x="672" y="608" width="64" height="16"/>
+  <object id="187" name="2" type="zone" x="480" y="288" width="16" height="16"/>
+  <object id="188" name="2" type="zone" x="464" y="272" width="16" height="16"/>
+  <object id="190" name="4" type="zone" x="160" y="448" width="32" height="16"/>
+  <object id="191" name="5" type="zone" x="272" y="448" width="16" height="16"/>
+  <object id="192" name="6" type="zone" x="432" y="400" width="16" height="16"/>
+  <object id="193" name="7" type="zone" x="704" y="528" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup color="#ffff00" id="8" name="markers" visible="0">
+  <object id="161" name="portal" type="marker" x="608" y="400" width="16" height="16"/>
+  <object id="162" name="mrdoor1" type="marker" x="608" y="512" width="16" height="16"/>
+  <object id="168" name="dsportal1" type="marker" x="144" y="480" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup color="#0000ff" id="9" name="bounds" visible="0">
+  <object id="171" name="bounds" type="bounds" x="112" y="96" width="192" height="192">
+   <properties>
+    <property name="btile" value="0"/>
+   </properties>
+  </object>
+  <object id="172" name="bounds" type="bounds" x="320" y="96" width="176" height="160">
+   <properties>
+    <property name="btile" value="0"/>
+   </properties>
+  </object>
+  <object id="173" name="bounds" type="bounds" x="512" y="96" width="128" height="160">
+   <properties>
+    <property name="btile" value="0"/>
+   </properties>
+  </object>
+  <object id="174" name="bounds" type="bounds" x="656" y="96" width="96" height="144">
+   <properties>
+    <property name="btile" value="0"/>
+   </properties>
+  </object>
+  <object id="175" name="bounds" type="bounds" x="112" y="304" width="624" height="240">
+   <properties>
+    <property name="btile" value="0"/>
+   </properties>
+  </object>
+  <object id="176" name="bounds" type="bounds" x="112" y="560" width="640" height="352">
+   <properties>
+    <property name="btile" value="0"/>
+   </properties>
+  </object>
+  <object id="177" name="bounds" type="bounds" x="768" y="80" width="192" height="800">
+   <properties>
+    <property name="btile" value="0"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

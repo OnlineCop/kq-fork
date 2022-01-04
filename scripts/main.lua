@@ -362,12 +362,17 @@ function zone_handler(zn)
     change_map("cave6b", "exit")
 
   elseif (zn == 75) then
-    bubble(HERO1, _"The underwater tunnel should go here.")
-    warp("underwater_w", 16)
+    if progress.trident == 0 then
+      add_special_item(SI_TRIDENT)
+      progress.trident = 1
+    end
+    -- bubble(HERO1, _"The underwater tunnel should go here.")
+    -- warp("underwater_w", 16)
 
   elseif (zn == 76) then
     bubble(HERO1, _"The second part of the underwater tunnel should go here.")
-    warp("underwater_e", 16)
+    -- warp("underwater_e", 16)
+    change_map("grotto2", "ruins")
 
   elseif (zn == 77) then
     bubble(HERO1, _"This is where the castle town of Xenar goes.")
@@ -409,7 +414,7 @@ function zone_handler(zn)
       bubble(HERO1, _"Hmm the entrance is too guarded for me to enter.")
       bubble(HERO1, _"Wait there's a secret door that looks like that one in the guild.")
       if (get_numchrs() > 1) then
-        bubble(HERO1, _"Coin goes in, and were golden.")
+        bubble(HERO1, _"Coin goes in, and we're golden.")
       else
         bubble(HERO1, _"Coin goes in, and I'm golden.")
       end

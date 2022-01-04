@@ -219,7 +219,7 @@ function LOC_talk_oldman(en)
       wait_for_entity(en, en)
       set_ent_facing(en, FACE_DOWN)
     end
-    bubble(en, _"Wow! You have all the Opal items! Quick, come up here to my study and let me see them!")
+    bubble(en, _"Wow! You have a full set of Opal equipment! Quick, come up here to my study and let me see them!")
     -- Unlock doors that lead behind his counters
     set_obs("hdoor1", 0)
     set_obs("hdoor2", 0)
@@ -233,24 +233,60 @@ function LOC_talk_oldman(en)
     progress.talkoldman = 2
     refresh()
   elseif (progress.talkoldman == 2) then
-    bubble(en, _"I see you have everything! Here, take this key.")
-    sfx(5)
-    msg(_"Rusty key procured", 63, 0)
-    bubble(en, _"This key will open the temple found in the Grotto around Ekla.")
-    if (get_numchrs() == 1) then
-      bubble(HERO1, _"The Grotto by Ekla? What will I find there?")
+    bubble(en, _"Hmm the Opal items are in decent shape. But it looks like they will need some modification before you can use them.")
+    if (prompt(en, 2, 0, _"Would you like me to repair them for you",
+                         _"for a mere 12000 GP. Sound good?",
+                         _"  no",
+                         _"  yes") == 0) then
+      bubble(en, _"You know where I am if you change your mind.")
     else
-      bubble(HERO1, _"The Grotto by Ekla? What will we find there?")
+      set_gp(get_gp() + 12000)
+      if (get_gp() >= 12000) then
+        set_gp(get_gp() - 12000)
+        remove_special_item(SI_OPALARMOUR)
+        remove_special_item(SI_OPALSHIELD)
+        remove_special_item(SI_OPALHELMET)
+        remove_special_item(SI_OPALBAND)
+        bubble(en, _"Alright I will get started right away.")
+        do_inn_effects(1)
+        bubble(en, _"...")
+        bubble(en, _"This is harder than it looks.")
+        do_inn_effects(1)
+        bubble(en, _"Ahh look at that. Fit for a hero. Here you go.")
+        chest(162, I_HELM4, 1)
+        chest(163, I_ARMOR7, 1)
+        chest(165, I_SHIELD6, 1)
+        chest(164, I_BAND3, 1)
+        progress.talkoldman = 3
+        bubble(en, _"Now all that's left is to save the world.")
+        bubble(HERO1, _"So will they make me invincible?")
+        bubble(en, _"No, why would it do that?")
+        bubble(HERO1, _"I heard some rumors.")
+        bubble(en, _"Well I don't know anything about that.")
+      else
+        bubble(en, _"You know where I am if you can scrounge up the gold.")
+      end
     end
-    bubble(en, _"It's an underwater tunnel that leads from the grotto to the island Malkaron is staying.")
-    bubble(HERO1, _"Oh. Thanks!")
-    progress.talkoldman = 3
-    add_special_item(SI_RUSTYKEY)
-  elseif (progress.talkoldman == 3) then
-    bubble(en, _"I hope the key still fits in the temple down in the Grotto by Ekla. It's a bit rusty.")
-  elseif (progress.talkoldman == 4) then
-    bubble(en, _"I see the key worked. Excellent.")
-    progress.talkoldman = 5
+
+    -- bubble(en, _"I see you have everything! Here, take this key.")
+    -- sfx(5)
+    -- msg(_"Rusty key procured", 63, 0)
+    -- bubble(en, _"This key will open the temple found in the Grotto around Ekla.")
+    -- if (get_numchrs() == 1) then
+    --   bubble(HERO1, _"The Grotto by Ekla? What will I find there?")
+    -- else
+    --   bubble(HERO1, _"The Grotto by Ekla? What will we find there?")
+    -- end
+    -- bubble(en, _"It's an underwater tunnel that leads from the grotto to the island Malkaron is staying.")
+    -- bubble(HERO1, _"Oh. Thanks!")
+    -- progress.talkoldman = 3
+    -- add_special_item(SI_RUSTYKEY)
+
+  -- elseif (progress.talkoldman == 3) then
+  --   bubble(en, _"I hope the key still fits in the temple down in the Grotto by Ekla. It's a bit rusty.")
+  -- elseif (progress.talkoldman == 4) then
+  --   bubble(en, _"I see the key worked. Excellent.")
+  --   progress.talkoldman = 5
   else
     bubble(en, _"Good luck on your journey.")
   end

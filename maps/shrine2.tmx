@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="55">
+ <properties>
+  <property name="can_save" value="1"/>
+  <property name="can_warp" value="1"/>
+  <property name="description" value="Sunarin Tower"/>
+  <property name="map_mode" value="0"/>
+  <property name="map_no" value="36"/>
+  <property name="pdiv" value="1"/>
+  <property name="pmult" value="1"/>
+  <property name="song_file" value="grseed.s3m"/>
+  <property name="stx" value="24"/>
+  <property name="sty" value="45"/>
+  <property name="tileset" value="7"/>
+  <property name="use_sstone" value="0"/>
+  <property name="warpx" value="268"/>
+  <property name="warpy" value="12"/>
+  <property name="zero_zone" value="0"/>
+ </properties>
+ <tileset firstgid="1" source="fortress.tsx"/>
+ <tileset firstgid="321" source="entities.tsx"/>
+ <tileset firstgid="1293" source="misc.tsx"/>
+ <tileset firstgid="1593" source="obstacles.tsx"/>
+ <layer id="1" name="map" width="60" height="60">
+  <data encoding="base64" compression="zlib">
+   eJztmGEOgjAMhXcBE6NyUC/tOUwTlizPTXCArH3vS/oHEfnoulJTEkIIIYTwyzQHC1PicZ4q8ZwjyjOoOS6FZ64Q2emVPj3LYx7pya3nPLP5GpGdsVbLem3VbCs81PLWXHrLcdlTGZyPyi+j74jO8m3vuT3njsYdwmj51HoX9q/RfZE1ecT5yLOvEbl+azC5GvKN8wzWzgu1z/EY9qPatc/myFyOmOOyxxzlh9c+E9b8ypfTd+u8MJIvzgpL80JPtH5jFCKt3R56/Rh8Lyfd455E972l/r0rvx/n7z/+dtf7EX1/Qph8rR5/9fVYw5nsu+a9KZ/jGdu7mNZzj6/HPbmEKb8Gk6/Wc+z8GthvvvWiSL5s+WXxFSIS5fyP/y/i8X/23jf2sFLd
+  </data>
+ </layer>
+ <layer id="2" name="bmap" width="60" height="60">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAAAAAA8GY4QAAB
+  </data>
+ </layer>
+ <objectgroup color="#ff00ff" id="3" name="entities"/>
+ <layer id="4" name="fmap" width="60" height="60">
+  <data encoding="base64" compression="zlib">
+   eJztmFEKwyAMhj3A1rfRswx2//fuREOoELJfGzs7E80HvpS09QNNoiE4juM4juPYZO09gYtZwRiZ6HdnI7GBePTMEiXfN4hHzywx+vqlzLBfKXz9Rmr2p7W9jHxr9qf1vew4jm6O+sdNGEdjNUP7qCV8e6ScW+q7eKxmjnwTEl+LlHxbfUsT7ot5NPzWv0A5t7WvpvsDlIOk5wXky2PRt7X75moM8uWxGn1n+GfPf7vv2P/u7Ss9L0jgsdrqEc+dpfOCBB6L8v9yaqZtkPj+gjZfRGtf7czoeza3aMpNUm7hfO+X3tG6VxGz+VJGPePnmNVX0mPRe1urpLlLeix6b2uVWdfz1e9oobZnsNJj5Ii1uNbXWs2lzOYbkdSkEWpRQlKTRqhFidr1bB33bROrldwdo7a7x1bQ8/DRsF6LIsj3uY8RfRGvffTkA91cKYc=
+  </data>
+ </layer>
+ <layer id="5" name="shadows" width="60" height="60" opacity="0.5">
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAAAAAA8GY4QAAB
+  </data>
+ </layer>
+ <layer id="6" name="obstacles" width="60" height="60" opacity="0.5">
+  <data encoding="base64" compression="zlib">
+   eJztmUsKwzAMBbPqnXr/i3VRAsL4Hyl+kt5AoKRWrMGNFaXXRQghhJBIfD//IwPSM4N36Xc7yyMSNR/p6d17d/28Ovdybq21/OzN+Wm+GX1RnWv3qkauqM4zOa3kXd7LaFjmhO5rkR+as3U+2XzfmmMW7f3KIl6TmXpUe05uxYyevxBp5bf6nDmKQWEm9/J3EN1XIwYF+vbP78acYKVfqH2/EoPwHsSyX9C4njYn5kbxfatXQvGNPOfJuemLNXe0/dmyPqLV3xravujQF+NaVmT03d1b0PemETv5enOU0NcmBoXee9YnY1HJur7WMSis1hSPNUhCX93xiGj3v+jM1JkItegm6/pqj0WFvjpjUSkdev8VRPFt9fAn+/sfziM1pw==
+  </data>
+ </layer>
+ <objectgroup color="#008000" id="7" name="zones">
+  <object id="12" name="1" type="zone" x="432" y="928" width="32" height="16"/>
+ </objectgroup>
+ <objectgroup color="#ffff00" id="8" name="markers">
+  <object id="17" name="entrance" type="marker" x="432" y="912" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup color="#0000ff" id="9" name="bounds" visible="0">
+  <object id="20" name="bounds" type="bounds" x="112" y="208" width="720" height="640">
+   <properties>
+    <property name="btile" value="0"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

@@ -42,7 +42,6 @@ end
 function entity_handler(en)
   if (en == 0) then
     if (progress.talkgelik == 0) then
-      bubble(en, _"Opal armor? I have no idea where you would find something like that.")
       bubble(en, _"You should go talk to Gelik. He's old... he knows all kinds of stuff. He lives up in the north end of town.")
     else
       bubble(en, _"So how do you like our little town?")
@@ -370,8 +369,23 @@ end
 function LOC_talk_gelik(en)
   if (progress.opalhelmet == 0) then
     if (progress.talkgelik == 0) then
-      bubble(en, _"So, you're looking for Opal armor eh? Well, I know of one piece.")
-      bubble(en, _"The Opal Helmet belongs to a wealthy man named Dungar who lives in his own private estate east of town.")
+      if (get_numchrs() > 1) then
+        bubble(en, _"You look like the hero type. Are you on some sort of epic quest?")
+      else
+        bubble(en, _"You look like hero types. Are you on some sort of epic quest?")
+      end
+      bubble(HERO1, _"Well...")
+      bubble(en, _"A secret? I see well... How about a story? I'm something of a historian myself.")
+      bubble(en, _"Malkaron's forces swept over the world as an unstoppabble force.")
+      bubble(HERO1, _"That's not exactly ancient history.")
+      bubble(en, _"... Did you ever wonder how they became so powerful?")
+      bubble(HERO1, _"Yeah!")
+      bubble(en, _"Well I don't exactly know either.")
+      bubble(HERO1, _"Thanks.")
+      bubble(en, _"Malkaron's elite guard wore Opal armor. I'm not sure if it's just because its rare or there was something magical going on.")
+      bubble(HERO1, _"Interesting. Do you happen to know where someone might find some of this Opal armor?")
+      bubble(en, _"I do know of one piece.")
+      bubble(en, _"A wealthy man named Dungar who lives on his own private estate east of town has an Opal Helmet.")
       bubble(en, _"You should go and talk to him.")
       bubble(en, _"If you get the Helmet, come back here and hopefully by then I can find out a little bit more about the other pieces.")
       progress.talkgelik = 1

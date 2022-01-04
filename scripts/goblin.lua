@@ -46,6 +46,8 @@ function entity_handler(en)
       move_entity(en, 84, 34, 1)
       progress.goblin_monk = 3
     end
+  elseif (en == 9) then
+    shop(25)
   else
     bubble(en, _"Booga-booga! I'm a goblin! Rowr!")
   end
@@ -107,10 +109,12 @@ function zone_handler(zn)
   elseif (zn == 16) then
     if (progress.goblin_monk > 2) then
       if (prompt(255, 2, 0, _"Take a nap?",
-                            _"  yes",
-                            _"  no") == 0) then
+      _"  yes",
+      _"  no") == 0) then
         do_inn_effects(1)
       end
     end
+  elseif (zn == 17) then
+    shop(25)
   end
 end

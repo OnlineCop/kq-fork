@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="97" height="57" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="47">
+<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="97" height="57" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="49">
  <properties>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="0"/>
@@ -27,7 +27,7 @@
  </layer>
  <layer id="2" name="bmap" width="97" height="57">
   <data encoding="base64" compression="zlib">
-   eJzt2jEOgCAMQNHehcX7X4Go18LdwQkbyntJN4afjg0RAAAAAAAA/KFlBxR0PnNNeMu3nh0AAADFHNkBAAW4/wAAAADAWnq8/yHdGSHF2SkAAAAA7GMACSAIxA==
+   eJzt2jEKgDAMBdCcRrz/FYqKt9JZKdjFYHwPMjXDJ91CIgAAAAAAAHjDnh2goOWstfM2DfQyrj3ouf4BAADQN2cHACjA/gcAAAAAvqXF/Q5pywhSnJkCAAAAwH8c3mgJtg==
   </data>
  </layer>
  <objectgroup color="#ff00ff" id="3" name="entities">
@@ -213,7 +213,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="43" name="Entity 7" type="entity" gid="553" x="1360" y="256" width="16" height="16">
+  <object id="43" name="Entity 7" type="entity" gid="553" x="1168" y="448" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -240,6 +240,32 @@
    </properties>
   </object>
   <object id="44" name="Entity 8" type="entity" gid="553" x="1344" y="464" width="16" height="16">
+   <properties>
+    <property name="active" value="1"/>
+    <property name="atype" value="0"/>
+    <property name="chasing" value="0"/>
+    <property name="chrx" value="21"/>
+    <property name="cmd" value="0"/>
+    <property name="cmdnum" value="0"/>
+    <property name="delay" value="50"/>
+    <property name="delayctr" value="0"/>
+    <property name="eid" value="255"/>
+    <property name="facehero" value="0"/>
+    <property name="facing" value="0"/>
+    <property name="framectr" value="0"/>
+    <property name="movcnt" value="0"/>
+    <property name="movemode" value="0"/>
+    <property name="moving" value="0"/>
+    <property name="obsmode" value="1"/>
+    <property name="scount" value="0"/>
+    <property name="script" value=""/>
+    <property name="sidx" value="0"/>
+    <property name="snapback" value="0"/>
+    <property name="speed" value="3"/>
+    <property name="transl" value="0"/>
+   </properties>
+  </object>
+  <object id="48" name="Entity 9" type="entity" gid="553" x="1360" y="256" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -299,6 +325,7 @@
   <object id="41" name="15" type="zone" x="1184" y="688" width="16" height="16"/>
   <object id="45" name="16" type="zone" x="1392" y="480" width="16" height="16"/>
   <object id="46" name="16" type="zone" x="1296" y="480" width="16" height="16"/>
+  <object id="47" name="17" type="zone" x="1360" y="272" width="16" height="16"/>
  </objectgroup>
  <objectgroup color="#ffff00" id="8" name="markers">
   <object id="21" name="entrance" type="marker" x="448" y="144" width="16" height="16"/>

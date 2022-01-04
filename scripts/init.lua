@@ -31,6 +31,8 @@ function init_special_items()
   create_special_item(_"Rusty Key",        _"Unlock grotto ruins", 64, SI_RUSTYKEY)
   create_special_item(_"Strange Pendant",  _"A mysterious Pedant", 52, SI_STRANGEPENDANT)
   create_special_item(_"Embers Coin",      _"A coin with a bird",  50, SI_EMBERCOIN)
+  create_special_item(_"Magic Trident",    _"A magical trident",   50, SI_TRIDENT)
+  create_special_item(_"Unadium Coin",     _"Use to reach ruins",  50, SI_UCOIN2)
 end
 
 
@@ -202,19 +204,18 @@ function init_shops()
 
   index = index + 1
   shop_create(_"Ezbaran's Items", index)
-  shop_add_item(index, I_WATERRING, 1, 0)
+  shop_add_item(index, I_WATERRING, 1, 8)
   shop_add_item(index, I_SSTONE, 20, 10)
-  shop_add_item(index, I_RUNECLOAK, 1, 0)
-  shop_add_item(index, I_SPIRITCAPE, 1, 0)
-  shop_add_item(index, I_TP100S, 90, 0)
-
+  shop_add_item(index, I_RUNECLOAK, 1, 8)
+  shop_add_item(index, I_SPIRITCAPE, 1, 8)
+  
   index = index + 1
   shop_create(_"Agrasian's Armor", index)
   shop_add_item(index, I_SHIELD4, 1, 20)
   shop_add_item(index, I_HELM3, 4, 30)
   shop_add_item(index, I_ARMOR5, 5, 10)
   shop_add_item(index, I_GAUNTLET3, 1, 30)
-
+  
   index = index + 1
   shop_create(_"The Colosseum Shop", index)
   shop_add_item(index, I_EDROPS, 20, 20)
@@ -226,16 +227,26 @@ function init_shops()
   shop_add_item(index, I_B_RECOVERY, 3, 10)
   shop_add_item(index, I_B_REGENERATE, 2, 20)
   shop_add_item(index, I_B_NAUSEA, 1, 20)
-
+  
   index = index + 1
   shop_create(_"Rufus's Cabin", index)
   shop_add_item(index, I_DYNAMITE, 20, 20)
-
+  
   index = index + 1
-  shop_create(_"Bentley's Armour", index)
+  shop_create(_"Bentley's Arms", index)
   shop_add_item(index, I_HAMMER3, 5, 12)
   shop_add_item(index, I_ROD5, 5, 7)
   shop_add_item(index, I_SPEAR3, 5, 13)
   shop_add_item(index, I_STAFF4, 5, 4)
+  
+  index = index + 1
+  shop_create(_"Droog's Items", index)
+  shop_add_item(index, I_SSTONE, 20, 10)
+  shop_add_item(index, I_SALVE, 5, 15)
+  shop_add_item(index, I_EDROPS, 5, 20)
+  shop_add_item(index, I_PCURING, 5, 40, 1)
+  shop_add_item(index, I_B_FLAMEWALL, 5, 10)
+  shop_add_item(index, I_B_DEATH, 5, 10)
+  -- shop_add_item(index, I_B_THUNDERSTORM, 5, 10)
 
 end

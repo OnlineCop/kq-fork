@@ -18,6 +18,7 @@ function autoexec()
     chests_tried[a] = 0
   end
 
+  -- if LOC_manor_or_party(SARINA) then TODO
   if (progress.sidequest5 < 4) then
     set_ent_id(5, SARINA)
   else

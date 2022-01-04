@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="90" height="52" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="21">
+ <properties>
+  <property name="can_save" value="0"/>
+  <property name="can_warp" value="0"/>
+  <property name="map_mode" value="0"/>
+  <property name="map_no" value="0"/>
+  <property name="pdiv" value="1"/>
+  <property name="pmult" value="1"/>
+  <property name="song_file" value="Rena7.it"/>
+  <property name="stx" value="66"/>
+  <property name="sty" value="62"/>
+  <property name="tileset" value="3"/>
+  <property name="use_sstone" value="0"/>
+  <property name="warpx" value="6"/>
+  <property name="warpy" value="88"/>
+  <property name="zero_zone" value="1"/>
+ </properties>
+ <tileset firstgid="1" source="cave.tsx"/>
+ <tileset firstgid="501" source="entities.tsx"/>
+ <tileset firstgid="1473" source="misc.tsx"/>
+ <tileset firstgid="1773" source="obstacles.tsx"/>
+ <layer id="1" name="map" width="90" height="52">
+  <data encoding="base64" compression="zlib">
+   eJzt2UsOwjAMRdEyYRGI/e+LAYxYBLIQKpQE7PjTxHlX8hTKIbSJWBbU2lEwqD04xwTnmOD82aky2uC8VjO2sIbzGpxjgnNMcI4JznFhvxGXtTEF53KWxhScy1kaUxLn++E5M9SD83Yy1qNzRvtRnGluA3uP4kzG1s/sqDyu28P53Xgka8/r9XC+FJw9rt36PTzXQ6SztYn162Z1brHx/P5mcP7lZPEanGZztpiWRnO+Hvif2dJRa23x3KjltX9+rWlJ2rVqsbZHc25Ney+Ac1wa61Gce0n7e7BO4jxarfcfOMtrfZ5GlcWZ4u5fLPfi3DI5U3ucezhlc97Wi3V2Z6oH6xmcqZpllPUszpw8reH8nYc3nMtpz/TbgXM5zRmzNnCuJz1f/hs419OefWrW6Ds4x6S1PS9w5ob1vE9wjk9qDGdd3L0znHVl/9+ql+Ack8T5AQSA044=
+  </data>
+ </layer>
+ <layer id="2" name="bmap" width="90" height="52">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20ND6AAAAAAAAAAAAAAAAAAAAAAAAC+DEkgAAE=
+  </data>
+ </layer>
+ <objectgroup color="#ff00ff" id="3" name="entities"/>
+ <layer id="4" name="fmap" width="90" height="52">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20ND6AAAAAAAAAAAAAAAAAAAAAAAAC+DEkgAAE=
+  </data>
+ </layer>
+ <layer id="5" name="shadows" width="90" height="52" opacity="0.5">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20ND6AAAAAAAAAAAAAAAAAAAAAAAAC+DEkgAAE=
+  </data>
+ </layer>
+ <layer id="6" name="obstacles" width="90" height="52" opacity="0.5">
+  <data encoding="base64" compression="zlib">
+   eJztmVEKxCAMBfdr73/RvcOyH2WLWJvEZ6o4A4UWqpVBY2JfLwAAKPm86xfoaPnEtQaLR1z3g+cc8JwDnnPAcx7kG3nUfOJ4DGevOB7H4RbHY8FzDit5XvkMBs85rOa5dj8z5byYfdxZOajyrLhsN/tavKupVPHkqn2073OsmNnvgWeMXufW93s9r0DPuq05jKyByJzcxXPZhzreWt/fybOCHTzfrX3FXmjpyxtravcz4xlzxLk3b/S6XsXzj569KNpnK9fzfH8lz1F6Y0yP6508K4jWMCvG6Kex1KWtdni2443352fV+cAOWD1F91f4o5qTuLbxRC0PuM4kmmvj2s9VPXQXY8hF9FjybU8/5IxtFDV9pO1uRHNs4r0fS8xWnn/tzggvuK6j9oLnOnjOQ+kGz22U/5bBjurfMtjhbDuXntwaYGW+wZTpgw==
+  </data>
+ </layer>
+ <objectgroup color="#008000" id="7" name="zones">
+  <object id="2" name="1" type="zone" x="1360" y="704" width="16" height="16"/>
+  <object id="5" name="2" type="zone" x="144" y="320" width="16" height="80"/>
+  <object id="11" name="2" type="zone" x="160" y="400" width="16" height="32"/>
+  <object id="17" name="2" type="zone" x="160" y="304" width="16" height="16"/>
+  <object id="18" name="2" type="zone" x="176" y="288" width="16" height="16"/>
+  <object id="19" name="2" type="zone" x="192" y="272" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup color="#ffff00" id="8" name="markers">
+  <object id="3" name="entrance_w" type="marker" x="160" y="352" width="16" height="16"/>
+  <object id="20" name="entrance_w" type="marker" x="1360" y="704" width="16" height="16"/>
+ </objectgroup>
+ <objectgroup color="#0000ff" id="9" name="bounds" visible="0"/>
+</map>

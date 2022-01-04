@@ -21,7 +21,7 @@ function entity_handler(en)
     bubble(en, _"This is a warm fire.")
 
   elseif (en == 1) then
-    bubble(en, _"I am an NPC. Do you know what that means? It means I have no will of my own, and must obey my programmer.")
+    bubble(en, _"Why won't the elders let us play in the ruined houses? They have nice places to hide or make forts.")
 
   elseif (en == 2) then
     bubble(en, _"I get teased a lot because I'm the only one with blonde hair. Neither of my parents have blonde hair...")
@@ -34,12 +34,24 @@ function entity_handler(en)
 
   elseif (en == 5) then
     bubble(en, _"I am a silhouette of the Oracle. I can't figure out how you're talking to me, as I'm floating above the water like this. Hmm... must be a bug in this game.")
-
+    
   elseif (en == 6) then
     shop(24)
-
+    
   elseif (en == 7) then
     inn(_"Long Journey Inn", 65, 1)
+
+  elseif (en == 8) then
+    bubble(en, _"I am the village elder.")
+    bubble(HERO1, _"Have you heard of what happened to Binderak?")
+    bubble(en, _"...")
+    bubble(HERO1, _"Do you know where he is?")
+    bubble(en, _"...")
+    bubble(HERO1, _"Well?")
+    bubble(en, _"...")
+    bubble(en, _"Not far.")
+    bubble(HERO1, _"Well thanks.")
+    bubble(en, _"Don't bring us into this. Our town has suffered enough.")
   end
 end
 

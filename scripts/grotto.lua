@@ -183,7 +183,9 @@ function zone_handler(zn)
 
   -- Rune
   elseif (zn == 5) then
-    if progress.ucoin == 0 then
+    if progress.tunnel > 0 then
+      change_map("grotto2", "entrance")
+    elseif progress.ucoin == 0 then
       bubble(HERO1, _"Hmm... this seems like it should do something. But what?")
     elseif progress.ucoin == 1 then
       bubble(HERO1, _"Wow. The rune hummed for a second but now it's quiet.")

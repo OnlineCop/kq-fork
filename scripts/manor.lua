@@ -66,10 +66,16 @@ function autoexec()
   elseif progress.manor == 3 then
     -- You have recruited at least 1 other party member
     LOC_at_table()
-
-    -- Put Nostik to bed (he is old and feeble)
-    place_ent(8, "bed")
-    set_ent_facing(8, FACE_DOWN)
+    
+    if progress.talkoldman < 3 then
+      -- Put Nostik to bed (he is old and feeble)
+      place_ent(8, "bed")
+      set_ent_facing(8, FACE_DOWN)
+    end
+  else
+    for a = 0, 9, 1 do
+      set_ent_active(a, 0)
+    end
   end
 end
 
@@ -305,9 +311,45 @@ function LOC_explain_mission3(en)
   elseif progress.manor == 2 then
     bubble(en, _"Good luck, $0.")
   elseif progress.manor == 3 then
-    bubble(en, _"Zzz... zzz... zzz...")
+    if progress.talkoldman < 3 then
+      bubble(en, _"Zzz... zzz... zzz...")
+    elseif progress.tunnel == 0 then
+      bubble(en, _"Ahh so you have aquired a set of opal armor. I never asked you to do that. You were supposed to find the staff!")
+      bubble(en, _"But no matter. It could prove useful as a disguise to get past Malkaron's forces. For that's where we are off to next.")
+      bubble(en, _"I fear your activities have gathered the attention of Malkaron. He could be at our heels at this very moment.")
+      bubble(en, _"I have received news that the one who stole the staff was a man named Binderak. I haven't been able to find out much of anything about him except he was recently spotted not far from Malkaron's fortress.")
+      bubble(en, _"There is an underwater tunnel that leads toward that area.")
+      bubble(en, _"But we will need a way to survive the tunnel. I've heard of an ancient relic kept in a tower in the mountains Northeast of Ajantara.")
+      if progress.trident == 0 then
+        bubble(en, _"Come back when you've found it.")
+      else
+        bubble(HERO1, _"Here it is.")
+        bubble(en, _"Excellent.")
+        bubble(en, _"Take this Unadium Coin, it allows entry to a nearby grotto that contains a shrine.")
+        add_special_item(SI_UCOIN2)
+        msg(_"Unadium coin procured", 255, 0)
+        bubble(en, _"That shrine contains an entrance to the underwater tunnel that will take us closer to Malkaron's fortress.")
+        bubble(HERO1, _"You hid from Malkaron on an island that contains a tunnel that leads directly to Malkaron's fortress?")
+        bubble(en, _"I did not say it went directly there. It leads to an island nearby. You still need a boat to get there.")
+        bubble(en, _"And since Malkaron has a small fleet he could come here whenever he desires, tunnel or not.")
+        if get_numchrs() > 1 then
+          bubble(en, _"Prepare yourselves and meet us at the shrine in the grotto Northeast from here.")
+        else
+          bubble(en, _"Prepare yourself and meet us at the shrine in the grotto Northeast from here.")
+        end
+        progress.tunnel = 1
+        progress.manor = 4
+        bubble(HERO1, _"Your coming this time?")
+        bubble(en, _"Yes, I can feel it. The quest is reaching its culmination.")
+        bubble(HERO1, _"Won't it be dangerous for you?")
+        bubble(en, _"Are you concerned I won't be around to give you your reward? Worry about yourself.")
+      end
+    else
+      bubble(en, _"We will meet you in the grotto.")
+    end
   else
-    bubble(en, _"Mine aren't the only books on the Staff of Xenarum and other treasures.")
+    bubble(en, _"We will meet you in the grotto.")
+    -- bubble(en, _"Mine aren't the only books on the Staff of Xenarum and other treasures.")
   end
 end
 

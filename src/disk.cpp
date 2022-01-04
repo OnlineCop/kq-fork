@@ -822,7 +822,9 @@ int KDisk::load_shop_info_xml(XMLElement* node)
     for (auto& shop : shops)
     {
         shop.time = 0;
-        std::fill(std::begin(shop.items_current), std::end(shop.items_current), 0);
+
+        // Initialize this to a number so if an item gets added in later you can still buy it
+        std::fill(std::begin(shop.items_current), std::end(shop.items_current), 10);
     }
     XMLElement* shops_elem = node->FirstChildElement(TAG_SHOPS);
     if (shops_elem)
