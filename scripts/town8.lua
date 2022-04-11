@@ -31,6 +31,9 @@ function entity_handler(en)
 
   elseif (en == 4) then
     bubble(en, _"I wish I could find some opal armour. I hear there's some sort of magic that can make it very strong.")
+    bubble(3, _"I heard death spells still get past it though.")
+    bubble(en, _"You're a downer you know that?")
+    bubble(3, _"Yeah.")
 
   elseif (en == 5) then
     bubble(en, _"I am a silhouette of the Oracle. I can't figure out how you're talking to me, as I'm floating above the water like this. Hmm... must be a bug in this game.")
@@ -109,7 +112,7 @@ function zone_handler(zn)
     refresh()
 
   elseif (zn == 7) then
-    bubble(HERO1, _"This appears to be a hologram of the Oracle!")
+    bubble(HERO1, _"This appears to be a mirage of the Oracle!")
 
   elseif (zn == 8) then
     warp("dstairs1", 16)

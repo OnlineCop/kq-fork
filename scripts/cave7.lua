@@ -95,7 +95,7 @@ function zone_handler(zn)
     if (progress.sidequest6 == 3) then
       if (get_numchrs() > 1) then
         if (get_pidx(1) == NOSLOM or get_pidx(1) == Ajathar) then
-          bubble(HERO2, _"You know it doesnt make sense for lava to be here, and if it was it would hurt worse than this.")
+          bubble(HERO2, _"You know it doesn't make sense for lava to be here, and if it was it would hurt worse than this.")
           bubble(HERO1, _"How comforting.")
         end
       end

@@ -307,14 +307,14 @@
    eJztmV1qBSEMhfvYLXT/Gy3zIIjMaH5PEvVAodhrkq9Gjbk/P7n198sb30WXmza+iy43bXwnPYyNs//9BPXcJ+lE7pbb/c/uOvVcm/FVYufkq/bvUaLsy9V6zvI8IzcnJukezsj9SMt+Anf7/FibWdpHSROXxbkXIauYKOdaJn5ELNnYUTFk4kb6731FcqN9Z+Cm+JW8p6j1WjT32Bd5Y/U466O5KXHsxN18I+uNLNxUecS4Gzf1rbYDN7eXlpWZwqHpTWSU1XpJ3ufRslqv6ue3tA++A7fWTkXurzGOnarcs3GKncudV5ebNk6xcyq3ZD5aJ3Jb1tZV8ty6/1CB2/r9WCXHLbkrvcWscjz725uz9yzXOVMf1eO93fvR2LTU+F3B6nNcuyvbO3Fb7H9vWcdYgXn0r13vSszjeabZh5X65UjuLMyP3ngl943kO4VoreoJDXMlcbh3YX70xd3nbMZaRKMZs2R+FVHrasrcSuKu7zhP6i+DuPeOljkbu+XnZvOqcFvUItW4rWLMyI24l6twW8eWjRvVA0Nwa/uBXvK8xzi20X1eBPfKvpSZ+lZ5m8P1xZEV9xvfqtdA8bOKSypN31Cbh9Qc8ub+8kGpzTT+VzYQ3G9j0fcnkpt7FnkKxZ1N1debc+avYrSIZTYm6atw+TT3nlQW3JZ54XFfUvxQ7zHPM+8rJjR3G0ee7ye+dZu864gK3FG1aoQQ65FxzTNwz+7lymtBeV9z5rcxzf/K4/768jGOceO0qj9R+y5qT1NyAZXjnPgQ+z2KW+LX8n+Buru91k5y9nnvbWTdjfR3dXV1dVVX/0o4RgA=
   </data>
  </layer>
- <objectgroup color="#008000" id="7" name="zones" visible="0">
+ <objectgroup color="#008000" id="7" name="zones">
   <object id="15" name="1" type="zone" x="160" y="1120" width="16" height="16"/>
   <object id="16" name="4" type="zone" x="272" y="832" width="16" height="16"/>
   <object id="17" name="5" type="zone" x="288" y="752" width="16" height="16"/>
   <object id="18" name="3" type="zone" x="320" y="368" width="16" height="16"/>
   <object id="19" name="2" type="zone" x="688" y="128" width="16" height="16"/>
  </objectgroup>
- <objectgroup color="#ffff00" id="8" name="markers" visible="0">
+ <objectgroup color="#ffff00" id="8" name="markers">
   <object id="20" name="entrance" type="marker" x="160" y="1120" width="16" height="16"/>
   <object id="21" name="ruins" type="marker" x="688" y="144" width="16" height="16"/>
   <object id="22" name="cancel" type="marker" x="320" y="368" width="16" height="16"/>

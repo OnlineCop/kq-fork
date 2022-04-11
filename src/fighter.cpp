@@ -35,6 +35,7 @@ KFighter::KFighter()
     , mrp { 0 }
     , imb_s { 0 }
     , imb_a { 0 }
+    , opal_power { 0 }
 {
     for (int& stat : stats)
     {
@@ -100,6 +101,7 @@ KFighter::KFighter(const KFighter& rhs)
     , mrp { rhs.mrp }
     , imb_s { rhs.imb_s }
     , imb_a { rhs.imb_a }
+    , opal_power { rhs.opal_power }
 {
     for (size_t i = 0; i < eStat::NUM_STATS; i++)
     {
@@ -152,6 +154,7 @@ KFighter::KFighter(KFighter&& rhs)
     defeat_item_rare = rhs.defeat_item_rare;
     steal_item_common = rhs.steal_item_common;
     steal_item_rare = rhs.steal_item_rare;
+    opal_power = rhs.opal_power;
     for (size_t i = 0; i < eStat::NUM_STATS; i++)
     {
         stats[i] = rhs.stats[i];
@@ -221,6 +224,7 @@ KFighter& KFighter::operator=(const KFighter& rhs)
         defeat_item_rare = rhs.defeat_item_rare;
         steal_item_common = rhs.steal_item_common;
         steal_item_rare = rhs.steal_item_rare;
+        opal_power = rhs.opal_power;
         for (size_t i = 0; i < eStat::NUM_STATS; i++)
         {
             stats[i] = rhs.stats[i];
@@ -291,6 +295,7 @@ KFighter& KFighter::operator=(KFighter&& rhs)
         defeat_item_rare = rhs.defeat_item_rare;
         steal_item_common = rhs.steal_item_common;
         steal_item_rare = rhs.steal_item_rare;
+        opal_power = rhs.opal_power;
         for (size_t i = 0; i < eStat::NUM_STATS; i++)
         {
             stats[i] = rhs.stats[i];
@@ -360,6 +365,7 @@ void KFighter::EmptyOtherFighter(KFighter& outFighter)
     outFighter.defeat_item_rare = 0;
     outFighter.steal_item_common = 0;
     outFighter.steal_item_rare = 0;
+    outFighter.opal_power = 0;
     for (size_t i = 0; i < eStat::NUM_STATS; i++)
     {
         outFighter.stats[i] = 0;

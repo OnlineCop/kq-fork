@@ -85,7 +85,7 @@ enum eShadow
 
 /* Maximum number of special items allowed in the world */
 #define MAX_SPECIAL_ITEMS 50
-#define MAX_PLAYER_SPECIAL_ITEMS 20
+#define MAX_PLAYER_SPECIAL_ITEMS 50
 #define STEPS_NEEDED 15
 #define SIZE_PROGRESS 1750
 #define SIZE_SAVE_RESERVE1 150

@@ -18,8 +18,7 @@ function autoexec()
     chests_tried[a] = 0
   end
 
-  -- if LOC_manor_or_party(SARINA) then TODO
-  if (progress.sidequest5 < 4) then
+  if not LOC_manor_or_party(CASANDRA) and (progress.sidequest5 < 4) then
     set_ent_id(5, SARINA)
   else
     set_ent_active(5, 0)
@@ -299,6 +298,8 @@ function zone_handler(zn)
     check_chest(zn)
   elseif (zn == 39) then
     chest(150, I_MANALOCKET, 1)
+  elseif (zn == 40) then
+    
   end
 end
 

@@ -38,7 +38,8 @@
 static int ease(int);
 
 /*! Array of strings */
-static const char* credits[] = { "(C) 2001 DoubleEdge Software",
+static const char* credits[] = { "Josh Bolduc",
+                                 "(C) 2001 DoubleEdge Software",
                                  "(C) 2002-2021 KQ Lives Team",
                                  "http://kqlives.sourceforge.net/",
                                  "Peter Hull",

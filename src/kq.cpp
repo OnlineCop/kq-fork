@@ -206,6 +206,9 @@ COLOR_MAP cmap;
 /*! Party can run away from combat? */
 uint8_t can_run = 1;
 
+/*! Is the Staff of Xenarum active, i.e. is opal armor OP? */
+uint8_t do_staff_effect = 0;
+
 /*! Is the map description is displayed on screen? */
 uint8_t display_desc = 0;
 

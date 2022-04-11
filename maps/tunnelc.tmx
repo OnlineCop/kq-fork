@@ -22,7 +22,7 @@
  <tileset firstgid="1773" source="obstacles.tsx"/>
  <layer id="1" name="map" width="140" height="61">
   <data encoding="base64" compression="zlib">
-   eJzt2lGKwjAYhVFnG+5/O7OnwQdBwdTcNMmk7TnQJyEV/o8mUm83AFZ2/+8vwGHcX67SZ/D06OH3572brYa4tlIneuETrZDQCymtkNILKb2Q0AsJvZBwhiGlFxJ6IaEXajm/UEsr1PI+gIReqKUVEnohoRcS/itFSi+kNENKMyT0QsLZl5ReSOiFhF5I6IWEXkhphoReSNX0MrMjza6r9vky89njObeuml5m7lf2xnXVvhMYNcNP6zpPrevbbEo99Zrh1vp7zlQaG6c0lz1zbLlvcr+azhmjdW57mulxz1Ed893MGc1oRS/jzZqTXs7pCL1srcl8vXtpaaC0BsfQ0ov949rS+evl2pK9SSv07IXz6/37hvPTCymtkNIKKY3QQiuktAKc3R9GnD/H
+   eJztnNtu2zAMQNWHomuGbukd6Hv3/x8wYP2B/lMtNEQIjpRlW04c+xyALzYCC9CJJVkUU4KpvHbxcohn5/qz9yPYJNmJXRe3h/iRju7s1LW/V+dqISyJP13cdfH7ED/T0Z07de39XA2ERZF92Xfxdohf6ejOXl3DF8jcpG8nPq+OznhxfbYWwpIQX/oCXyBT6wtAps8XAM2/wryFMQg8ImfwBSI8Z/AFSti5zH3iuy7EWF8eE9/pIMb6wnddKOGtrZnDQAS+QC05r+Eh4Qv0IzkwT+l/Xz5YH4FCXMm5LjqvgXcLeEi+lHUFX8DD5kvhC5Qo7U8zdwFL5AvvFvCIfMl7R5wjAUvkS9474hwJWKLcl7x3xDkS8Cg5gy/gETlDDgxEeHMZcmAgwvOFMQkiyPuGoZADA0PAFxiC5wtrJIhgjQRD8Oa8rJGgRO0cJufmnXJPknp6y6TmbKzkceY9yVP0n66zd6pnQj32rID2Ref85j1JqZE4Vx/q50k9PZxZBtFZgWtzX3J+ZR+71f9e13bVdTp1jrE8E2fOT5T/ndfUXt9J/7X439varrpOp22P54x1zbbjdWS7ICbK/85r6qjvSn1Yix1zdNQ8T9cL9moJy31oSykXptR3U5wpnYHqCz0eWtd0LWG5D+0p1Sgb0oclZ/TYMdaVPpd1LWG5D/MwpzN2njLFlaEB89HSGW+90zc/wZfLo5UzfesdfFknY/zx5hFzOiHnMr22wumZ+s4Z2//ybHtOV9rD+d3Lobau/BRXYD3M4QuurJfWvuDKumnpC/nC66flHJh3yzZo4QyubIspzuDKNhnjDK5smxpncAQ8PHdwBUpoZ3AFLoUv+lpyGg==
   </data>
  </layer>
  <layer id="2" name="bmap" width="140" height="61">
@@ -33,7 +33,7 @@
  <objectgroup color="#ff00ff" id="3" name="entities"/>
  <layer id="4" name="fmap" width="140" height="61">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20LL6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+BoVwAAE=
+   eJzt3EEOgyAUQEErvf+ZerTaBQlhYfi1FpGZhIVdkfCCxFSXBQAAAM63biNt4/XoPROu7tOKTqg9e0+A4WiGKM0AAADAcWvvCQAABDi7AABX5n8MRGmGKM0AcBXuSQAA3J0zL3AmewwAAHflrEuUZojSDFGaISoVY4R+8jeDR5jrDP69Dnn9cwPlddlF/r2UqkEf9Tqc1VDre7lawDvctNIKrbQC1H5x5rW3zOVIM1qZ0zfNaGVuLc2Uz91g71me/YQ9ZTNaoYV7D6N5A16NAlk=
   </data>
  </layer>
  <layer id="5" name="shadows" width="140" height="61" opacity="0.5">
@@ -43,15 +43,15 @@
  </layer>
  <layer id="6" name="obstacles" width="140" height="61" opacity="0.5">
   <data encoding="base64" compression="zlib">
-   eJzt3EtuwyAARdGMuv+Ndg9VBpYqCwyPGMefc2ZtUzcKt8TgyK8XcLTfn28/A65iaaXUzPt7WmKxbmHpY92JZnjr6UArLPRCotWCVvhPL6RqTWiFmtpaGmpKa2uo0QsJvZBwDkPKHENCLyT0Qi/nL/TSCr1cDyChF3pttaIX1swtJPRCYqsLzVBijiGlGVKaIaEXEs59SZljSOiFhF5I6IWEXkhphkTSy1EN+XzFufW0sXUfs1nPRzPn0zu/HHW/MvdGO7eeXma9N63vn1d7H9LMObSuCcwew+S46WdJNba/1tj03I9qdFxGfrc2F5W+Zo7a/2bymo+Mzydj2ppr9DLPXq9tMk7G89r2HL+e9zCu76hm9HIfrTVRcpyRn43+LQ1+36drn9KxkvOb9f5P6Rhbj9HQd4yMw+j6ttZJ63GcWzr+1k3PNmNvRiv3tXcvWrm3I/druIc994V5hk/HWivPs9ceDc8xa33NfbU60Agl9mNJuY7DFf0BdjDWhw==
+   eJzt3NFOwyAYgNFd+cI+t+9gdtHYEKD8o6VIz0m8cI2RjE/KutnXCxjt5+vuEfBfvFvZvkrH4C3tYd/O9rhm2LR2oBfe9EJESwdaYXPUglbY2/fwXTkGm1IXeqGkdO0FStI+9EKNXojI9aIZSuxhiNALEXohQi+0yu1ttUJO7bNSkPJ+AK1qTeiFlLWFCL0QUetFM6T0QpRmiLKPIcr/NxKhFyKck4jyPhIReiFCL0TohQivkYiyxhChFyJm/izvLOPgT0svufvcjRhXbizcp9RA2kfpHolXjqv2Pfc4uq9qrYvebnJNHv0+7tXbQk8zn/zcDOfJp+t9nqNzdea6VHpcP9ca2Yy5XMMZzdSO+btfzxXrjEbW1rsWjN5HWLfmMnoeaq+zj1p03pvDqDXDHK/pinnVyrrOnlutrO3M+dXK+vRCxFl7Xq08R28zWnmenmt6PFNrM66jsTm6lqcTcnLN6IQWM6wpv0xg6uk=
   </data>
  </layer>
  <objectgroup color="#008000" id="7" name="zones">
-  <object id="2" name="1" type="zone" x="2224" y="704" width="16" height="48"/>
+  <object id="2" name="1" type="zone" x="2224" y="704" width="16" height="64"/>
   <object id="13" name="2" type="zone" x="1312" y="64" width="16" height="16"/>
  </objectgroup>
  <objectgroup color="#ffff00" id="8" name="markers">
-  <object id="3" name="entrance_e" type="marker" x="2224" y="704" width="16" height="16"/>
+  <object id="3" name="entrance_e" type="marker" x="2224" y="720" width="16" height="16"/>
   <object id="18" name="entrance_n" type="marker" x="1312" y="64" width="16" height="16"/>
  </objectgroup>
  <objectgroup color="#0000ff" id="9" name="bounds" visible="0"/>

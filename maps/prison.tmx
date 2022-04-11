@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="81" height="51" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="194">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="81" height="51" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="194">
  <properties>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="1"/>
-  <property name="description" value="TravelPoint"/>
+  <property name="description" value="Malkaron's Prison"/>
   <property name="map_mode" value="0"/>
   <property name="map_no" value="10"/>
   <property name="pdiv" value="1"/>
@@ -13,9 +13,9 @@
   <property name="sty" value="18"/>
   <property name="tileset" value="3"/>
   <property name="use_sstone" value="0"/>
-  <property name="warpx" value="264"/>
-  <property name="warpy" value="60"/>
-  <property name="zero_zone" value="1"/>
+  <property name="warpx" value="79"/>
+  <property name="warpy" value="25"/>
+  <property name="zero_zone" value="0"/>
  </properties>
  <tileset firstgid="1" source="cave.tsx"/>
  <tileset firstgid="501" source="entities.tsx"/>
@@ -84,7 +84,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="5" name="Entity 4" type="entity" gid="933" x="304" y="512" width="16" height="16">
+  <object id="5" name="Entity 5" type="entity" gid="933" x="304" y="512" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -136,7 +136,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="189" name="Entity 1" type="entity" gid="753" x="432" y="352" width="16" height="16">
+  <object id="189" name="Entity 2" type="entity" gid="753" x="432" y="352" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -165,7 +165,7 @@
  </objectgroup>
  <layer id="4" name="fmap" width="81" height="51">
   <data encoding="base64" compression="zlib">
-   eJzt2GsOgyAQRlFjTboU3f8KrUlN6AQq4sDwuCfxj7EWPgcFpgkAAAAA4HpbNwAAKjZ/jtf3WMS5JfQj/OS2OedXcW51rpM5j0T2+chv810Y6cx1pCyPPrtj9El+ofuOQI5RzfuOlGMuveXYU1+s9FYTVnw5zhYN6UiJ/Gqpf4s9Fd8aJVVr80a376ntlnNFrVqyrMnQeywmp7vtjp1rp87JLWvyKguNHDXXKle0a7L0u12Od98ewz9aWbv7Fql5nn0p+exL/t8dKXmWHDet8e2ryWzJL42bbY78Qt/u0s+q9fqQYyB3X3zfpprzs6qzWtZqWkrXGfT0VotWyBHoV8w+W+vzxZx82ch3Jvmlyb0eA6CH99wz5AcA9dsBQcwLNg==
+   eJzt2FEOgyAQRVFrTboU3VD3v5XWpCZ0Aoo4MAj3JP4Ya+E5KDAMAAAAAADXy7oBAFCx8Xs8f8ckzk2hH+Evt8U5P4tzs3OdzLknss9rfovvwkhbrj1lufbZHaNX8gvdtwdyjGret6ccc2ktx5b6YqW1mrDiy3G0aEhDSuRXS/1b7Kn41iip7jZvdPseavf7cXwPuUbR6L9lTYbeYzF1crbdsXPt1Dm5ZU3uZXGUU2yOmmuVI9o1WfrdLse7b49hj1bW7r5Fap5bX0o++5L/d0ZKniXHzd349tVktuSXxs02R36hb3fpZ3X3+pBjIHdffN+mmvOzqrNa1mpaStcZ9LRWi1bIEWhXzD7b3eeLOfmyke9M8kuTez0GQA/vuWvIDwDq9wHD0Auz
   </data>
  </layer>
  <layer id="5" name="shadows" width="81" height="51" opacity="0.5">
@@ -173,12 +173,12 @@
    eJztwTEBAAAAwqD1T+1pCaAAAAAAAAAAAAAAAAAAAAAAbkCMAAE=
   </data>
  </layer>
- <layer id="6" name="obstacles" width="81" height="51" opacity="0.5">
+ <layer id="6" name="obstacles" width="81" height="51" visible="0" opacity="0.5">
   <data encoding="base64" compression="zlib">
-   eJztl0tSxDAMRGfF/S/KHViwIBNsqS21FBv6VU0VQxzJ7tHPr5cQQgghhBB78fnx/vHWZWzswH2vrA9qf7Tm+r/78514ck9o/I2e7cJqrERjsHrf3Vi5xvZTyVM6duVG1/k6dfRqfIWvLjr8jXxU+URnGHavra7Bo9irYlYn0Bqc6UkdGnbVJ+v7qq1VPf+ChlX+UB1P1bBjTkLtnqZhZ69Cfeyg4cpdw7qjobYj/QPp+2wsDZFzzM7rzeveutl72XUVc9Jsrs76udqb7YEZY6trIufz4oKNNStnzsBaF5mLkDrBiMGobXTNql9kHcvWqt27fVQj1B8rZ6IaMWIKtZk9K1pjGH0AWcPORcsuI++8+oLuDYVdo1bXzeIC0XH0WyAazf4e9SoURn5Gfzcvt65nyvj0bDNni0hvjti3vnvvRLDsMvr17H0vV6L9zIq9yvMge2H69PYTjQ1EI2bvRPwy87gDNM4qZgHrWcX8UUlFnEX8dvtn88TvHtHwpNjsAq193vzw3/HmnBP7TDdRfaThD5n7h/jGmqOUxxir9yLp987KfVW9+DfeXV3YqM7lkX55lMN5pGEeaZjnJA2/AN4PwQs=
+   eJztl81ywzAIhHPK+79o36GHHOq4FiywEKvdbyYzTSODtOZPj4cQQgghhBD34uv5/vHWVWzcgfNeWR/U/tWa4//Ov9+Jrj0hNtH4y9ieIhor2Rjs3vc0Vq6x/XTyKR2ncmPqfJM6ejW+w9cUE/6ufHT5RGcYdq/trsFXsdfFqk6gNbjSkyY0nKpP1veoraief0HDLn+ojrtqODEnoXZ303CyV6E+7qBh5K5h3dFQ25n+gfR9NpaGyDlW5/XmdW/d6rnquo45aTVXV/0c7a32wIyx6JrM+by4YGPNypUzsNZl5iKkTjBiMGsbXRP1i6xj2YraPdtHNUL9sXImqxEjplCb1bOiNYbRB5A17Fy07DLyzqsv6N5Q2DUqum4VF4iOV+8C0Wj191WvQmHkZ/a9ebl1PFPFp2ebOVtkenPGvvXdeyaDZZfRr1fPe7mS7WdW7HWeB9kL06e3n2xsIBoxeyfil5nHE6Bx1jELWL91zB+ddMRZxu+0fzafeO8ZDXeKzSnQ2ufND/8db87Zsc9Mk9VHGv5QuX+IF9YcpTzGiN6LpN87kfuqevFvvLu6sFGdqyP96iiH60jDOtKwzk4afgOo1MH+
   </data>
  </layer>
- <objectgroup color="#008000" id="7" name="zones">
+ <objectgroup color="#008000" id="7" name="zones" visible="0">
   <object id="32" name="1" type="zone" x="1280" y="368" width="16" height="80"/>
   <object id="186" name="3" type="zone" x="672" y="608" width="64" height="16"/>
   <object id="187" name="2" type="zone" x="480" y="288" width="16" height="16"/>
@@ -188,46 +188,8 @@
   <object id="192" name="6" type="zone" x="432" y="400" width="16" height="16"/>
   <object id="193" name="7" type="zone" x="704" y="528" width="16" height="16"/>
  </objectgroup>
- <objectgroup color="#ffff00" id="8" name="markers" visible="0">
-  <object id="161" name="portal" type="marker" x="608" y="400" width="16" height="16"/>
-  <object id="162" name="mrdoor1" type="marker" x="608" y="512" width="16" height="16"/>
-  <object id="168" name="dsportal1" type="marker" x="144" y="480" width="16" height="16"/>
+ <objectgroup color="#ffff00" id="8" name="markers">
+  <object id="162" name="entrance" type="marker" x="1264" y="401" width="16" height="16"/>
  </objectgroup>
- <objectgroup color="#0000ff" id="9" name="bounds" visible="0">
-  <object id="171" name="bounds" type="bounds" x="112" y="96" width="192" height="192">
-   <properties>
-    <property name="btile" value="0"/>
-   </properties>
-  </object>
-  <object id="172" name="bounds" type="bounds" x="320" y="96" width="176" height="160">
-   <properties>
-    <property name="btile" value="0"/>
-   </properties>
-  </object>
-  <object id="173" name="bounds" type="bounds" x="512" y="96" width="128" height="160">
-   <properties>
-    <property name="btile" value="0"/>
-   </properties>
-  </object>
-  <object id="174" name="bounds" type="bounds" x="656" y="96" width="96" height="144">
-   <properties>
-    <property name="btile" value="0"/>
-   </properties>
-  </object>
-  <object id="175" name="bounds" type="bounds" x="112" y="304" width="624" height="240">
-   <properties>
-    <property name="btile" value="0"/>
-   </properties>
-  </object>
-  <object id="176" name="bounds" type="bounds" x="112" y="560" width="640" height="352">
-   <properties>
-    <property name="btile" value="0"/>
-   </properties>
-  </object>
-  <object id="177" name="bounds" type="bounds" x="768" y="80" width="192" height="800">
-   <properties>
-    <property name="btile" value="0"/>
-   </properties>
-  </object>
- </objectgroup>
+ <objectgroup color="#0000ff" id="9" name="bounds"/>
 </map>

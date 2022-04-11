@@ -1,9 +1,15 @@
 -- grotto2 - "Second, larger part of grotto north of Ekla"
+-- tunnel:
+--   (0) 
+--   (1) tunnel unlocked
+--   (2) shrine unlocked
+--   (3) monster defeated
+--   (4) tunnel cleared
 
 function autoexec()
   refresh()
   all_found = true
-  if progress.tunnel == 1 then
+  if progress.tunnel ~= 0 then
     LOC_at_table()
     set_ent_active(8, 1)
     set_ent_active(9, 1)
@@ -42,23 +48,31 @@ function entity_handler(en)
     -- bubble(en, _"I have a very keen eye. Not even enemies can hide their weaknesses from me!")
 
   elseif (en == 8) then
-    if (prompt(en, 2, 0, "Ready?",
-    "  yes",
-    "  no") == 0) then
-      if all_found == false then
-        bubble(HERO1, _"But what about the others?")
-        bubble(en, _"What about 'em? More reward for you.")
-      end
-      bubble(en, _"Ahh let me take a look at this seal...")
-      move_entity(8, "ruins")
-      wait_for_entity(en, en)
-      bubble(en, _"That should do it.")
-      sfx(5)
-      
-      bubble(en, _"Now it's time for you to go in there and do your hero duty and make sure there aren't any nasty surprises in there.")
-      progress.tunnel = 2
-      change_map("main", "underwater_w")
-    end
+    if progress.tunnel < 2 then
+      if (prompt(en, 2, 0, "Ready?",
+      "  yes",
+      "  no") == 0) then
+        if all_found == false then
+          bubble(HERO1, _"But what about the others?")
+          bubble(en, _"What about 'em? More reward for you.")
+        end
+        bubble(en, _"Ahh let me take a look at this seal...")
+        bubble(en, _"...")
+        move_entity(8, "ruins")
+        wait_for_entity(en, en)
+        bubble(en, _"That should do it.")
+          sfx(5)
+          
+          bubble(en, _"Now it's time for you to go in there and do your hero duty and make sure there aren't any nasty surprises in there.")
+            progress.tunnel = 2
+            change_map("shrine", "entrance")
+            -- change_map("main", "underwater_w")
+          end
+        else
+          bubble(en, _"Have you cleared the tunnel yet?")
+          bubble(HERO1, _"Well, no.")
+          bubble(en, _"I see.")
+        end
   elseif (en == 9) then
     bubble(en, _"I'm just here to carry Nostik's bags.")
   end
@@ -97,7 +111,7 @@ function zone_handler(zn)
 
   elseif (zn == 2) then
     if progress.tunnel > 1 then
-      change_map("main", "underwater_w")
+      change_map("shrine", "entrance")
     else
       bubble(HERO1, _"This door is stuck tight.")
     end

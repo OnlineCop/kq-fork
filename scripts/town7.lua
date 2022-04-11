@@ -240,7 +240,7 @@ function LOC_talk_oldman(en)
                          _"  yes") == 0) then
       bubble(en, _"You know where I am if you change your mind.")
     else
-      set_gp(get_gp() + 12000)
+      -- set_gp(get_gp() + 12000)
       if (get_gp() >= 12000) then
         set_gp(get_gp() - 12000)
         remove_special_item(SI_OPALARMOUR)

@@ -100,7 +100,7 @@ eAttackResult KCombat::attack_result(int ar, int dr)
     attacker_weapon_element = tempa.welem;
     defender_defense = tempd.stats[eStat::Defense];
     defender_evade = tempd.stats[eStat::Evade];
-
+    
     /*  JB: check to see if the attacker is in critical status...  */
     /*      increases chance for a critical hit                    */
     if (tempa.mhp > 250)
@@ -284,15 +284,33 @@ eAttackResult KCombat::attack_result(int ar, int dr)
      * For some reason, this isn't properly being reported.
      */
 
+    if (do_staff_effect)
+    {
+        if (tempd.opal_power == 4)
+        {
+            return eAttackResult::ATTACK_MISS;
+        }
+    }
+
 #ifdef KQ_CHEATS
     if (cheat && every_hit_999)
     {
         health_adjust[dr] = -999;
+        if (do_staff_effect)
+        {
+            health_adjust[dr] *= ((4 - tempd.opal_power) / 4.);
+        }
         return eAttackResult::ATTACK_SUCCESS;
     }
 #endif
 
     dmg = mult * base;
+    
+    if (do_staff_effect && tempd.opal_power > 0)
+    {
+        dmg *= ((4 - tempd.opal_power) / 4.);
+    }
+
     if (dmg == 0)
     {
         dmg = MISS;

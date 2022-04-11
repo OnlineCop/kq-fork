@@ -24,11 +24,12 @@ end
 
 
 function zone_handler(zn)
-  if (zn == 1) then
+  if (zn == 0) then
+    -- combat(6)
+  elseif (zn == 1) then
     change_map("main", "cave6a")
 
   elseif (zn == 2) then
     change_map("cave6b", "entrance")
-
   end
 end

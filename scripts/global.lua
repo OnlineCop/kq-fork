@@ -132,7 +132,8 @@ local quest_list = {
 
   'goblin_monk',
   'trident',
-  'tunnel'
+  'tunnel',
+  'crystal'
 }
 
 
@@ -197,6 +198,8 @@ SI_RUSTYKEY = 17
 SI_STRANGEPENDANT = 18
 SI_EMBERCOIN = 19
 SI_TRIDENT = 20
+SI_UCOIN2 = 21
+SI_CRYSTAL = 22
 
 -- These values correspond to the values found in include/itemdefs.h
 

@@ -816,6 +816,39 @@ KFighter player2fighter(int who)
         }
     }
 
+
+    // Count the number of opal items you have
+    if (plr.eqp[EQP_HELMET] == I_HELM4)
+    {
+        ++current_fighter.opal_power;
+    }
+    if (plr.eqp[EQP_SHIELD] == I_SHIELD7)
+    {
+        ++current_fighter.opal_power;
+    }
+    if (plr.eqp[EQP_ARMOR] == I_ARMOR7)
+    {
+        ++current_fighter.opal_power;
+    }
+    if (plr.eqp[EQP_SPECIAL] == I_BAND3)
+    {
+        ++current_fighter.opal_power;
+    }
+    if (plr.eqp[EQP_HAND] == I_BAND3)
+    {
+        ++current_fighter.opal_power;
+    }
+
+    //for (int a = 0; a < 4; a++)
+    //{
+    //    static const int z[5] = { EQP_SPECIAL, EQP_ARMOR, EQP_HELMET, EQP_SHIELD };
+    //    int current_equipment_slot = plr.eqp[z[a]];
+    //    if (items[current_equipment_slot].use == USE_IMBUED)
+    //    {
+    //        ++current_fighter.opal_power;
+    //    }
+    //}
+
     /*
      * Any weapon used by Ajathar gains the power of White if
      * it has no other power to begin with (the "welem" property

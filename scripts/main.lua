@@ -262,7 +262,8 @@ function zone_handler(zn)
 
   elseif (zn == 42) then
     -- Will be fortress for Malkaron
-    msg(_"This will be fortress for Malkaron", 255, 0)
+    -- msg(_"This will be fortress for Malkaron", 255, 0)
+    bubble(HERO1, _"It would be suicide to go through the main gates.")
 
   elseif (zn == 43) then
     change_map("town8", "entrance")
@@ -352,8 +353,8 @@ function zone_handler(zn)
     set_ent_facing(HERO1, FACE_LEFT)
     change_map("bridge2", "exit")
 
-  elseif (zn == 72) then
-    LOC_cave6()
+  -- elseif (zn == 72) then
+    -- LOC_cave6()
 
   elseif (zn == 73) then
     change_map("cave6a", "entrance")
@@ -362,47 +363,69 @@ function zone_handler(zn)
     change_map("cave6b", "exit")
 
   elseif (zn == 75) then
-    if progress.trident == 0 then
-      add_special_item(SI_TRIDENT)
-      progress.trident = 1
-    end
+    -- if progress.trident == 0 then
+    --   add_special_item(SI_TRIDENT)
+    --   progress.trident = 1
+    -- end
     -- bubble(HERO1, _"The underwater tunnel should go here.")
     -- warp("underwater_w", 16)
 
   elseif (zn == 76) then
-    bubble(HERO1, _"The second part of the underwater tunnel should go here.")
-    -- warp("underwater_e", 16)
-    change_map("grotto2", "ruins")
+    change_map("shrine2", "entrance")
 
   elseif (zn == 77) then
-    bubble(HERO1, _"This is where the castle town of Xenar goes.")
-    bubble(HERO1, _"It's not finished yet.")
-
+    msg(_"You pick your way through the ruins of the castle town of Xenar.", 255, 0)
+    
   elseif (zn == 78) then
-    bubble(HERO1, _"This is the cave behind the Xenar Castle. Sorry, you can't go in there yet.")
-
+    if (progress.crystal < 1) then
+      bubble(HERO1, _"This cave seems to be sealed by some sort of magical force.")
+    else
+      bubble(HERO1, _"The magical seal seems to be reacting with this crystal.")
+      change_map("cave8", "entrance")
+    end
+    
   elseif (zn == 79) then
-    bubble(HERO1, _"This is as far as the dock goes.")
-    warp("dock_n", 16)
-
+    bubble(255, _"Hey you're not supposed to be here.")
+    if (prompt(255, 2, 0, _"We could be persuaded to take you",
+                         _"for a mere 1000 GP. Sound good?",
+                         _"  no",
+                         _"  yes") == 0) then
+      bubble(255, _"Your loss.")
+    else
+      -- set_gp(get_gp() + 12000)
+      if (get_gp() >= 1000) then
+        set_gp(get_gp() - 1000)
+        warp("dock_n", 16)
+      end
+    end
+    
   elseif (zn == 80) then
-    bubble(HERO1, _"This is as far as the dock goes.")
-    warp("dock_s", 16)
+    bubble(255, _"Hey you're not supposed to be here.")
+    if (prompt(255, 2, 0, _"We could be persuaded to take you",
+                         _"for a mere 1000 GP. Sound good?",
+                         _"  no",
+                         _"  yes") == 0) then
+      bubble(255, _"Your loss.")
+    else
+      -- set_gp(get_gp() + 12000)
+      if (get_gp() >= 1000) then
+        set_gp(get_gp() - 1000)
+        warp("dock_s", 16)
+      end
+    end
 
   elseif (zn == 81) then
-    msg(_"This is where a short pass or cave goes.", 255, 0)
-    warp("malk_pass_w", 8)
+    change_map("pass2", "exit")
 
   elseif (zn == 82) then
-    msg(_"This is where a short pass or cave goes.", 255, 0)
-    warp("malk_pass_e", 8)
+    change_map("pass2", "entrance")
 
   elseif (zn == 83) then
     msg(_"This is where a new cave goes.", 255, 0)
     change_map("main", "town5")
-
+    
   elseif (zn == 84) then
-    msg(_"This is Binderak's cave.", 255, 0)
+    change_map("cave9", "entrance")
 
   elseif (zn == 85) then
     if (progress.sidequest6 < 2) then
@@ -422,6 +445,23 @@ function zone_handler(zn)
     else
       change_map("cave7", "entrance")
     end
+
+  elseif (zn == 86) then
+    --combat shrine island
+
+  elseif (zn == 87) then
+    --combat shrine island xenar pass
+
+  elseif (zn == 88) then
+    --combat shrine island forest
+
+  elseif (zn == 89) then
+    --combat malks island
+  elseif (zn == 90) then
+    --combat malks island forest
+
+  elseif (zn == 91) then
+    change_map("prison", "entrance")
 
   elseif (zn == 241) then
     warp("cave4", 8)
@@ -450,19 +490,19 @@ function LOC_cave4()
 end
 
 
-function LOC_cave6()
-  local x, y = marker("cave6a")
-  if progress.opalarmour == 1 and progress.opalhelmet == 1 and
-    progress.opalshield == 1 and progress.opalband == 1 then
-    set_btile(x, y - 1, 54)
-    set_zone(x, y - 1, 73)
-    set_obs(x, y - 1, 0)
-    sfx(26)
-    bubble(HERO1, _"Ah, there we go.")
-  else
-    bubble(HERO1, _"I think this entrance will open once I have all the opal stuff.")
-  end
-end
+-- function LOC_cave6()
+--   local x, y = marker("cave6a")
+--   if progress.opalarmour == 1 and progress.opalhelmet == 1 and
+--     progress.opalshield == 1 and progress.opalband == 1 then
+--     set_btile(x, y - 1, 54)
+--     set_zone(x, y - 1, 73)
+--     set_obs(x, y - 1, 0)
+--     sfx(26)
+--     bubble(HERO1, _"Ah, there we go.")
+--   else
+--     bubble(HERO1, _"I think this entrance will open once I have all the opal stuff.")
+--   end
+-- end
 
 
 function LOC_giant()

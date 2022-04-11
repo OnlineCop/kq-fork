@@ -208,6 +208,7 @@ class KFighter
     int imb_a;
     int imb[2];
     std::shared_ptr<Raster> img;
+    int opal_power;
 
   protected:
     uint8_t sts[NUM_SPELL_TYPES]; /*!< eSpellType, how long a specific status effect remains on this fighter (such as

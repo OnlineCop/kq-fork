@@ -242,6 +242,7 @@ static int KQ_set_run(lua_State*);
 static int KQ_set_save(lua_State*);
 static int KQ_set_shadow(lua_State*);
 static int KQ_set_sstone(lua_State*);
+static int KQ_set_staff(lua_State*);
 static int KQ_set_tile_all(lua_State*);
 static int KQ_set_treasure(lua_State*);
 static int KQ_set_vfollow(lua_State*);
@@ -436,6 +437,7 @@ static const struct luaL_Reg lrs[] = {
     { "set_save", KQ_set_save },
     { "set_shadow", KQ_set_shadow },
     { "set_sstone", KQ_set_sstone },
+    { "set_staff", KQ_set_staff },
     { "set_tile_all", KQ_set_tile_all },
     { "set_treasure", KQ_set_treasure },
     { "set_vfollow", KQ_set_vfollow },
@@ -3605,6 +3607,17 @@ static int KQ_set_run(lua_State* L)
     if (a == 0 || a == 1)
     {
         can_run = a;
+    }
+    return 0;
+}
+
+static int KQ_set_staff(lua_State* L)
+{
+    auto a = lua_tointeger(L, 1);
+
+    if (a == 0 || a == 1)
+    {
+        do_staff_effect = a;
     }
     return 0;
 }

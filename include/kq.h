@@ -417,7 +417,7 @@ extern string shop_name;
 extern char attack_string[39];
 extern volatile int timer, ksec, kmin, khr, animation_count, timer_count;
 extern COLOR_MAP cmap;
-extern uint8_t can_run, display_desc;
+extern uint8_t can_run, do_staff_effect, display_desc;
 extern uint8_t draw_background, draw_middle, draw_foreground, draw_shadow;
 extern s_inventory g_inv[MAX_INV];
 extern s_special_item special_items[MAX_SPECIAL_ITEMS];

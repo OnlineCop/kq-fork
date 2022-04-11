@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="55">
+<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="58">
  <properties>
-  <property name="can_save" value="1"/>
+  <property name="can_save" value="0"/>
   <property name="can_warp" value="1"/>
-  <property name="description" value="Sunarin Tower"/>
+  <property name="description" value="Shrine"/>
   <property name="map_mode" value="0"/>
-  <property name="map_no" value="36"/>
+  <property name="map_no" value="37"/>
   <property name="pdiv" value="1"/>
   <property name="pmult" value="1"/>
   <property name="song_file" value="grseed.s3m"/>
-  <property name="stx" value="24"/>
-  <property name="sty" value="45"/>
+  <property name="stx" value="27"/>
+  <property name="sty" value="57"/>
   <property name="tileset" value="7"/>
   <property name="use_sstone" value="0"/>
-  <property name="warpx" value="268"/>
-  <property name="warpy" value="12"/>
+  <property name="warpx" value="27"/>
+  <property name="warpy" value="57"/>
   <property name="zero_zone" value="0"/>
  </properties>
  <tileset firstgid="1" source="fortress.tsx"/>
@@ -23,18 +23,18 @@
  <tileset firstgid="1593" source="obstacles.tsx"/>
  <layer id="1" name="map" width="60" height="60">
   <data encoding="base64" compression="zlib">
-   eJztmIsOwiAMRfkBE1/7UH/a7zAkI7KmbICbo/f2JI3JHrpjKYWF4DiOs2RqCASuDYEAW37dl8f3PX++5siPIfqmyH2R87vla9W7pWYR6ln2VVm/Wk1Pyn0W2Cu3VvLL5htB9tXWwaX63Iraa89kz/FrIe/pGdb66a8hv/tMWPPrvpy+SPPzQ4lI6TlL73HW3Eq/MQo1+dnaH42QyxZQarUWJteI++L8B7X7Be28PCb70Yjv5I/M5Yg5znvMUX6+XzgP9+X2Zd4v9ATCfsHK2O2h18+q70WJ5KKdsw667z0s5xW5/r2Fr29pfZzuf/7tqfcDfX6SMPnmtVobFms4kXxr1k3pGsvEuYtpPPf4WpyTc5jyG2Hy9fGMnd+I7DdrvQjJly2/LL6Og0S+/5fvF+Xxf/beD7TKYLQ=
+   eJztmFsSgyAMRdlAp++Fuukuol+dfDBiSmykPkhuzkx+0KqnAQKkFARBMOW5IDxwWRAeoLyh+SL1Z2TfV/p2LNs8gJzfHG+h3ar3kpx68OZ1Rjt+LdantXJrJb9ovoRn39q68FfNlYLfexaefSRr9l8Lec/fMKTt/PizjwQ1v+GL6fvP/Nyb770ShPSd0rnGnJv0jl7Q5GdI+vncAl7GqhYkVyJ8/fwH2v1C7Tpv4/WoxzPqLXPZY47LGrOVX+wXjiN8sX2R9wst4WG/YKXvttDqZ9X3VInsUrtmHe++tzSdV/j695pGX2l9nH//2O2r18P7/MRB8i3HqjYsjuFM9tWsm/I9lqG5C6k/t/hanJNLkPJLIPlGf/adX4LXm7la5MkXLb8ovkHgiXL/z88XefuetfcDa7NfJQ==
   </data>
  </layer>
  <layer id="2" name="bmap" width="60" height="60">
   <data encoding="base64" compression="zlib">
-   eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAAAAAA8GY4QAAB
+   eJztzzENAAAIBLG3jP+FhRUD0CYn4BIAgDtq+sIvAAAAAAAAAAAAAACbBkFhAqc=
   </data>
  </layer>
  <objectgroup color="#ff00ff" id="3" name="entities"/>
  <layer id="4" name="fmap" width="60" height="60">
   <data encoding="base64" compression="zlib">
-   eJztmEsKxCAMhj1Ap7vSswzM/fedEw1ChVSiJh2LScwHbjSp/UHzMATHcZwrO3NoJ2p4EYfr1QfUcCDrcM6a3i+yDues6e1pK4V/Yq7GeI3Fp0Tr/mqMXzW9rfurVa/Eb/Xg6RpJWg1WqiUg2J0tkdtKq0koerE7WyK3lah3hj1H7u16be89Wm8rXxwNW+iTx2dp+SiPnSvyPynm1vrgPbMNFZ+1qwIeFL0Jil6Kz0i9GLV/7+kjBdeLz283fEbDiZ9wfTsHx0dCfOb0C3A96c19LPULFL3eL8jYc+Tertf23qP1UvsFCpb6BQqW+oU7SNOLYfn9GWNGvZS3DK6tVJZwrf1q929B1veCrVRm0wu5cx41nOESs+ql1Fjw3VYrpXdWDPhuq5VZz/PTPlLg1gxaaowSMb9y9WrLuZDZ9EYoOclCLkpQcpKFXJTgnmftuN4+tlKh9PSa+vsWWI9bGtpzUQTT+z6HRb0Yn3OM5AfM3Tks
+   eJztmEsKxCAMhnuATrc9y8Dcf9850SBUSCXRpGMxifnAjSa1P2geLksQBMGVXTiskzS8mMOL3idstQI1HMg6nPOm94uswzlvenvaauGfmGsxXmPxONO6vxbjdU1v6/5a1avxWz14ukbSVoNRtRMEu7MUpa22GoyjF7uzFKWtRr0z7Dly79Dre+/Relv54mjYQp8yPmvLR2Xs3JD/yTG31vfvhe1S8dm6KpDB0Zvh6OX4jNSLUfv3nj5aCL31+bs+I5DET2xd4qMhPkv6BWy9nPPUL3D0Rr+gY8+Re4de33uP1svtFzh46hc4eOoX7qBNL4bn92eMGfVy3jKktlpZl2vtV7t/K7K+E7ZamU0v5M55tHCGKWbVy6mx4LutVah3Vgz4bmuVWc/z0z5akNYMVmoMipRfpXqt5VzIbHoTnJzkIRdlODnJQy7KSM+zdUJvH1utcHp6S/19C6zHpYb1XJTA9L7P4VEvxuccI/kBKvc4Fw==
   </data>
  </layer>
  <layer id="5" name="shadows" width="60" height="60" opacity="0.5">
@@ -44,15 +44,17 @@
  </layer>
  <layer id="6" name="obstacles" width="60" height="60" opacity="0.5">
   <data encoding="base64" compression="zlib">
-   eJztmUsOwzAIBbPqnXr/i2UVKYrwBwfCA7+RumhrDCO3pnaPgxBC9ub/0z2yo3Ggbz7o2/6u0jcf1X3f9JiM/alXo3ZNs/tGzuWFtS/SZzyinmhfizFe81kTkRvF17OOr/Jo6qicMzI3uq91fdG+o350PZ+515BikfqvRKueld+NaG4SM7U/16m6r0UMCvTtv74aE4Fm/5Te18Qg7M88L9TMKeXmeaFOzsjc9MXKXW1/9uyPaP1XgvfPGHN5QV+MubwY3du0zgsZ9qYRK/Vmc7xDX58YFFr3rG/HorLr+nrHoKDtKRl70B362o5HxPr8i85Mn6nQiy52XV/rsajQ12YsKk+H3n8FVXw15/2vOAGf3j3G
+   eJztmcEOwzAIQ3vaP+3/f2ynSlVFstBCYhw/aYdtUGNFCwk7DiGE2Jvvx/eqjseD/NZDftu/VfmtB7vfNz2mYn/q1ehd0+p+Vz4rC2a/2WdCtDPniHb0eQPdL4OmpZ1ZxywdTx3Mmiu15Xeu9r9+cb4fmWtYuUj9yKJVz5NzI5o3i5Ha7+vE7jciBwX57X/+NGcFnv3T+t6Tg7A/677AqWlp677Ao7lSW36xtNn2553mdRbM81gL+cV4VhY7+h2Z3XhjK/Ck3moer8hvTg4KrTnr21hUdl3f7BwUvD2lYg+6Ir+x8YhE33/RGekzDL3oZNf1jY5FRX5jYlG5e+j9V8Di13Pfn8UPzjI9hw==
   </data>
  </layer>
  <objectgroup color="#008000" id="7" name="zones">
   <object id="12" name="1" type="zone" x="432" y="928" width="32" height="16"/>
   <object id="16" name="2" type="zone" x="256" y="512" width="16" height="16"/>
-  <object id="46" name="2" type="zone" x="256" y="304" width="16" height="16"/>
-  <object id="47" name="2" type="zone" x="624" y="304" width="16" height="16"/>
-  <object id="48" name="2" type="zone" x="624" y="512" width="16" height="16"/>
+  <object id="46" name="4" type="zone" x="256" y="304" width="16" height="16"/>
+  <object id="47" name="5" type="zone" x="624" y="304" width="16" height="16"/>
+  <object id="48" name="3" type="zone" x="624" y="512" width="16" height="16"/>
+  <object id="55" name="7" type="zone" x="432" y="400" width="32" height="16"/>
+  <object id="56" name="6" type="zone" x="432" y="144" width="32" height="48"/>
  </objectgroup>
  <objectgroup color="#ffff00" id="8" name="markers">
   <object id="17" name="entrance" type="marker" x="432" y="912" width="16" height="16"/>
@@ -62,9 +64,10 @@
   <object id="52" name="statue_4" type="marker" x="624" y="512" width="16" height="16"/>
   <object id="53" name="statue_5a" type="marker" x="432" y="400" width="16" height="16"/>
   <object id="54" name="statue_5b" type="marker" x="448" y="400" width="16" height="16"/>
+  <object id="57" name="statue_6" type="marker" x="432" y="176" width="16" height="16"/>
  </objectgroup>
  <objectgroup color="#0000ff" id="9" name="bounds" visible="0">
-  <object id="20" name="bounds" type="bounds" x="112" y="208" width="720" height="640">
+  <object id="20" name="bounds" type="bounds" x="112" y="64" width="720" height="896">
    <properties>
     <property name="btile" value="0"/>
    </properties>

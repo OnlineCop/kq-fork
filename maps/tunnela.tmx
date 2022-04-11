@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="90" height="52" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="21">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="90" height="52" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="23">
  <properties>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="0"/>
@@ -22,18 +22,18 @@
  <tileset firstgid="1773" source="obstacles.tsx"/>
  <layer id="1" name="map" width="90" height="52">
   <data encoding="base64" compression="zlib">
-   eJzt2UsOwjAMRdEyYRGI/e+LAYxYBLIQKpQE7PjTxHlX8hTKIbSJWBbU2lEwqD04xwTnmOD82aky2uC8VjO2sIbzGpxjgnNMcI4JznFhvxGXtTEF53KWxhScy1kaUxLn++E5M9SD83Yy1qNzRvtRnGluA3uP4kzG1s/sqDyu28P53Xgka8/r9XC+FJw9rt36PTzXQ6SztYn162Z1brHx/P5mcP7lZPEanGZztpiWRnO+Hvif2dJRa23x3KjltX9+rWlJ2rVqsbZHc25Ney+Ac1wa61Gce0n7e7BO4jxarfcfOMtrfZ5GlcWZ4u5fLPfi3DI5U3ucezhlc97Wi3V2Z6oH6xmcqZpllPUszpw8reH8nYc3nMtpz/TbgXM5zRmzNnCuJz1f/hs419OefWrW6Ds4x6S1PS9w5ob1vE9wjk9qDGdd3L0znHVl/9+ql+Ack8T5AQSA044=
+   eJzt2UtqxDAMBuBkU/qgD0of0Pb+pyi9SxftqodoRDD2aOREsiXHk9EP2gxOYL4xHtkeBk9pLgTlKY87t4k7H+Z1qhdUzwrvdecYML6e6grV5VBv7c5zvsbZ+Haqe1Q3w2z9OZa/351jwPhhqjdUd8NsXRN3jqGMU+uauHNMzjhUTdw5phdn3O9QpdEDbZVenHG/Q5VGD7RVrIwhEue/cb1CD7Qna41oO+/B2iIWzm59HCtntz6MpbNbx1g6/45xzwrWGj0gdZ52Cn2llTMY4/MBqgeUGOXO006hr7RwTo1Ta+ocjGMU5nDuPI06W+vN2sL5m3CGekeF7XPrS5jD4TwNvwe/s0frls5L9kvrS5jDS+dp1DlmT9ZbO3PWF65vz9a9OVPrS81vJrGGZ6x6lh6dNUtiDeOtehYL5x/kvPbdSkryHq41jE3/jzVj1T+HOS1JqTHnea417lm09j9WzqUpNeY8z7HGY7X2PxbOW6fGGo/V2v9oO/cSqTXsOR+Fz0iyV2cI1zrsOZ8Ez0ittZx7Dcct3dNr9omcSJx7z5pbbs+Z2yNpWlPOp5zSPt16Xu/NGacX6707Q1pb47sgGH8OzhDKLvd5jTV1FxTGn4MzJ7XWwRjfBaXj3TlGYo3vg6i7IPzbuHMM1xrfB+V689TanWO4a4jkPihYu/Nx1qyl90Fg7c50NPrCtNw5H3duk1rbj8GdufH5vE3cuX2kxu5cF46vO9dHcm/lKY87t4nE+R/jkCNJ
   </data>
  </layer>
  <layer id="2" name="bmap" width="90" height="52">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20ND6AAAAAAAAAAAAAAAAAAAAAAAAC+DEkgAAE=
+   eJzt0LEJACAQBMFvx1a0/35MDIRPjF7EGbj82AgAAICsrQG8YByMGv32gY9oXUfrOloDAAAAAAAAAAAAAACwm8tgBB4=
   </data>
  </layer>
  <objectgroup color="#ff00ff" id="3" name="entities"/>
  <layer id="4" name="fmap" width="90" height="52">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20ND6AAAAAAAAAAAAAAAAAAAAAAAAC+DEkgAAE=
+   eJzt2lsKwyAQheHQC11CV9DLHrL/fTWhFYJNzCTqdMb+H/jUIHIQTQ/pOgAAAOx1Fzxzq76K9pGzjovgmXP1VbSPnHU8hnFK/H4YxlNpLa1bypqMy4uzJuN6xqz7zyBjAAAAAGjf9dcL+BOSrt+qsYfpEyPVRW6Zc888Ma85S7quaWcjyWppzrX+WELS9VsS9tvWriu3a8/N2lPOuX3tdH/HQzJvTtZecrbSiZc4Q6yyknHQYtbWMg68Zn1cGBYzDrycud6Fe9XjvvYofo8hdx1ez26PUu/q7Htd3KM6tvYvyMfe1lE7Z75jf6t9hpDztxrvhXzHPq/0OULO88hZx9z/nJyzhJzl9t6VVrtlD6RdIRmXsdajkDGAXC9XEBSH
   </data>
  </layer>
  <layer id="5" name="shadows" width="90" height="52" opacity="0.5">
@@ -41,9 +41,9 @@
    eJztwTEBAAAAwqD1T20ND6AAAAAAAAAAAAAAAAAAAAAAAAC+DEkgAAE=
   </data>
  </layer>
- <layer id="6" name="obstacles" width="90" height="52" opacity="0.5">
+ <layer id="6" name="obstacles" width="90" height="52" visible="0" opacity="0.5">
   <data encoding="base64" compression="zlib">
-   eJztmVEKxCAMBfdr73/RvcOyH2WLWJvEZ6o4A4UWqpVBY2JfLwAAKPm86xfoaPnEtQaLR1z3g+cc8JwDnnPAcx7kG3nUfOJ4DGevOB7H4RbHY8FzDit5XvkMBs85rOa5dj8z5byYfdxZOajyrLhsN/tavKupVPHkqn2073OsmNnvgWeMXufW93s9r0DPuq05jKyByJzcxXPZhzreWt/fybOCHTzfrX3FXmjpyxtravcz4xlzxLk3b/S6XsXzj569KNpnK9fzfH8lz1F6Y0yP6508K4jWMCvG6Kex1KWtdni2443352fV+cAOWD1F91f4o5qTuLbxRC0PuM4kmmvj2s9VPXQXY8hF9FjybU8/5IxtFDV9pO1uRHNs4r0fS8xWnn/tzggvuK6j9oLnOnjOQ+kGz22U/5bBjurfMtjhbDuXntwaYGW+wZTpgw==
+   eJztmUsOgzAMBVn1/hftHbqoqgbI78UOxGJGqsoigDuhiW22DQAA4D7er/0H/Dk6xrU/Jae49qPlEtc+HB3mvOLZTo9DPNvB83W01mfwo5RvgD8/r+QYc0k9wzwieY5cs0b1HCHelGie0+MoMR/jXplaL8b6nJeuY/3v9NTdK6HEpjrq/e2j86fc424sMbb6kuocqvceOe8urHF6ry/K+PR7dVaKU3GNZxu9637ueGVW3Ed63pWk41aLv0Qud/bMw0auUxtzXDOiuFbXOsW5pUdcy2d6x66GV72gXtPiulSrRHGuYl1fPJ/r1jlPZ8S1Vz36NBRvyv6A6z1KHjLSl4E/s3zg+swsJ7jOMyNPw3UbXF+HV19A3XOZmz+eeUit3oQvav9F8YnrMyN9MWsv8YnMdIHrPTP3MDzn8faC5zx4vgY8X4dn7YFnjRnvgKBOb/4MPlj7JwBR+QAQxRRJ
   </data>
  </layer>
  <objectgroup color="#008000" id="7" name="zones">
@@ -53,10 +53,12 @@
   <object id="17" name="2" type="zone" x="160" y="304" width="16" height="16"/>
   <object id="18" name="2" type="zone" x="176" y="288" width="16" height="16"/>
   <object id="19" name="2" type="zone" x="192" y="272" width="16" height="16"/>
+  <object id="21" name="3" type="zone" x="944" y="128" width="16" height="16"/>
+  <object id="22" name="4" type="zone" x="960" y="128" width="16" height="16"/>
  </objectgroup>
  <objectgroup color="#ffff00" id="8" name="markers">
   <object id="3" name="entrance_w" type="marker" x="160" y="352" width="16" height="16"/>
-  <object id="20" name="entrance_w" type="marker" x="1360" y="704" width="16" height="16"/>
+  <object id="20" name="entrance_e" type="marker" x="1360" y="704" width="16" height="16"/>
  </objectgroup>
  <objectgroup color="#0000ff" id="9" name="bounds" visible="0"/>
 </map>

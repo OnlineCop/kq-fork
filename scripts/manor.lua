@@ -8,6 +8,7 @@
 --   (1) Nostik further explained your mission; you haven't spoken to butler
 --   (2) Butler has spoken to you, or you have no new recruits yet
 --   (3) You've recruited others and they're waiting around the table
+--   (4) Nostik and co go to the shrine
 --
 -- players: Number of recruits in your party
 --   (0) You haven't recruited anyone yet
@@ -49,7 +50,7 @@
 
 
 function autoexec()
-  if progress.players > 0 then
+  if progress.players > 0 and progress.manor < 3 then
     progress.manor = 3
   end
 

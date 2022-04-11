@@ -31,8 +31,9 @@ function init_special_items()
   create_special_item(_"Rusty Key",        _"Unlock grotto ruins", 64, SI_RUSTYKEY)
   create_special_item(_"Strange Pendant",  _"A mysterious Pedant", 52, SI_STRANGEPENDANT)
   create_special_item(_"Embers Coin",      _"A coin with a bird",  50, SI_EMBERCOIN)
-  create_special_item(_"Magic Trident",    _"A magical trident",   50, SI_TRIDENT)
+  create_special_item(_"Magic Trident",    _"A magical trident",    1, SI_TRIDENT)
   create_special_item(_"Unadium Coin",     _"Use to reach ruins",  50, SI_UCOIN2)
+  create_special_item(_"Strange Crystal",  _"Use to break seals",  54, SI_CRYSTAL)
 end
 
 
