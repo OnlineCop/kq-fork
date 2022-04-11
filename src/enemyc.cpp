@@ -715,8 +715,8 @@ void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
         iss >> fighter_loaded_from_disk.imb[0];
         iss >> fighter_loaded_from_disk.imb[1];
 
-        // If the staff is under effect we assume the enemy has a full set of opal armor
-        if (do_staff_effect)
+        // If the staff is under effect we assume Malkaron has a full set of opal armor
+        if (do_staff_effect && tmp == 65)
         {
             fighter_loaded_from_disk.opal_power = 4;
         }
