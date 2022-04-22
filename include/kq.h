@@ -249,12 +249,6 @@ class KGame
      */
     void reset_world(void);
 
-    /*! \brief Yield processor for other tasks
-     *
-     * This function calls rest() with the value of 'cpu_usage' as its parameter
-     */
-    void kq_yield(void);
-
     /*! \brief Creates a bitmap, giving an error message with the specified name if it fails.
      *
      * This function terminates the program with an error message if it fails to
@@ -266,7 +260,7 @@ class KGame
      * \param   bitmap_name Name of bitmap
      * \returns the pointer to the created bitmap
      */
-  Raster* alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name, bool truecolor = false);
+  Raster* alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name);
 
     /*! \brief Application start-up code
      *
@@ -348,7 +342,12 @@ class KGame
      * \returns the amount of gold in team's coffer.
      */
     int SetGold(int amount);
-
+  /*! Process the SDL events
+   * Will update various things, e.g. key pressed, window state changes
+   * Call this regularly.
+   * @return true if ready for next frame
+   */
+  bool ProcessEvents();
   public:
     const string WORLD_MAP;
     /*! The number of frames per second */

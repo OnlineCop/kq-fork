@@ -276,11 +276,7 @@ KMarkers KTiledMap::load_tmx_markers(XMLElement const* el)
         {
             if (obj->Attribute("type", "marker"))
             {
-                auto marker = make_shared<KMarker>();
-                marker->x = obj->IntAttribute("x") / TILE_W;
-                marker->y = obj->IntAttribute("y") / TILE_H;
-                marker->name = obj->Attribute("name");
-                markers.Add(marker);
+                markers.Add({obj->Attribute("name"), obj->IntAttribute("x") / TILE_W, obj->IntAttribute("y") / TILE_H});
             }
         }
     }

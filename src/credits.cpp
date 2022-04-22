@@ -109,7 +109,7 @@ void display_credits(Raster* double_buffer)
     if (ticks > max_ticks)
     {
         clear_bitmap(wk);
-        Draw.print_font(wk, (wk->get_width() - 8 * strlen(*cc)) / 2, 42, *cc, FNORMAL);
+        Draw.print_font(wk, (wk->width - 8 * strlen(*cc)) / 2, 42, *cc, FNORMAL);
 
         /* After each 'max_ticks' number of ticks, increment the current line of
          * credits displayed, looping back to the beginning as needed.
@@ -118,7 +118,7 @@ void display_credits(Raster* double_buffer)
         {
             cc = credits;
         }
-        Draw.print_font(wk, (wk->get_width() - 8 * strlen(*cc)) / 2, 10, *cc, FNORMAL);
+        Draw.print_font(wk, (wk->width - 8 * strlen(*cc)) / 2, 10, *cc, FNORMAL);
         ticks = 0;
     }
     else
@@ -127,8 +127,8 @@ void display_credits(Raster* double_buffer)
     }
 
     int ease_amount = (max_ticks / 2) - ticks;
-    int x0 = (320 - wk->get_width()) / 2;
-    for (int i = 0; i < wk->get_width(); ++i)
+    int x0 = (320 - wk->width) / 2;
+    for (int i = 0; i < wk->width; ++i)
     {
         blit(wk, double_buffer, i, ease(i + ease_amount), i + x0, KQ_SCREEN_H - 55, 1, 32);
     }

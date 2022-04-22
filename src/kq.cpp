@@ -328,7 +328,7 @@ void KGame::activate(void)
 
     uint32_t p;
 
-    Game.unpress();
+    unpress();
 
     /* Determine which direction the player's character is facing.  For
      * 'looking_at_y', a negative value means "toward north" or "facing up",
@@ -423,7 +423,7 @@ int KGame::add_timer_event(const char* n, int delta)
 
 #ifdef DEBUGMODE
 
-Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name, bool truecolor)
+Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name)
 {
   Raster* tmp = new Raster(bitmap_width, bitmap_height);
 
@@ -862,13 +862,6 @@ void KGame::klog(const char* msg)
     TRACE("%s\n", msg);
 }
 
-void KGame::kq_yield(void)
-{
-  /* TODO 
-    rest(cpu_usage);
-  */
-}
-
 void KGame::kwait(int dtime)
 {
     int cnt = 0;
@@ -887,9 +880,10 @@ void KGame::kwait(int dtime)
             process_entities();
         }
         Game.do_check_animation();
-
+	if (Game.ProcessEvents()) {
         Draw.drawmap();
         Draw.blit2screen(xofs, yofs);
+	}
 #ifdef DEBUGMODE
         if (debugging > 0)
         {
@@ -1007,6 +1001,7 @@ int main(int argc, const char* argv[])
             /* While the actual game is playing */
             while (!stop)
             {
+	      Game.ProcessEvents();
                 while (timer_count > 0)
                 {
                     timer_count--;
@@ -1050,7 +1045,7 @@ remove_int(my_counter);
 }
 
 
-/*! \brief Allegro timer callback
+/*! \brief SDL timer callback
  *
  * New interrupt handler set to keep game time.
  */
@@ -1156,11 +1151,11 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     pcxb = g_map.map_tiles;
-    for (o = 0; o < (size_t)pcxb->get_height() / 16; o++)
+    for (o = 0; o < (size_t)pcxb->height / 16; o++)
     {
-        for (i = 0; i < (size_t)pcxb->get_width() / 16; i++)
+        for (i = 0; i < (size_t)pcxb->width / 16; i++)
         {
-            pcxb->blitTo(map_icons[o * (pcxb->get_width() / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
+            pcxb->blitTo(map_icons[o * (pcxb->width / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
         }
     }
 
@@ -1288,7 +1283,32 @@ void KGame::reset_world(void)
 
     lua_user_init();
 }
-
+static int rgb_index(RGB& c) {
+  int bestindex = 255, bestdist = INT_MAX;
+    // Start at 1 because 0 is the transparent colour and we don't want to match
+    // it
+    for (int i = 1; i < 256; ++i)
+    {
+        RGB& rgb = pal[i];
+        int dist = (c.r - rgb.r) * (c.r-rgb.r)
+	  + (c.g - rgb.g) *(c.g-rgb.g)
+	  + (c.b - rgb.b)*(c.b-rgb.b);
+        if (dist == 0)
+        {
+            // Exact match, early return
+            return i;
+        }
+        else
+        {
+            if (dist < bestdist)
+            {
+                bestdist = dist;
+                bestindex = i;
+            }
+        }
+    }
+    return bestindex;
+}
 void KGame::startup(void)
 {
     int p, i, q;
@@ -1316,7 +1336,23 @@ void KGame::startup(void)
     parse_setup();
     sound_init();
     set_graphics_mode();
-
+    // Set up transparency table - note special cases for a or b == 0
+    for (int colour_b=0; colour_b< 256; ++colour_b) {
+      cmap.data[0][colour_b] = colour_b;
+    }
+    for (int colour_a=1; colour_a < 256; ++ colour_a) {
+      cmap.data[colour_a][0] = colour_a;
+      for (int colour_b=1; colour_b< 256; ++colour_b) {
+	RGB& a = pal[colour_a];
+	RGB& b = pal[colour_b];
+	RGB blend{static_cast<unsigned char>((a.r + b.r)/2),
+	  static_cast<unsigned char>((a.g+b.g)/2),
+	  static_cast<unsigned char>((a.b+b.b)/2),
+	  0xFF};
+	cmap.data[colour_a][colour_b] = rgb_index(blend);
+      }
+    }
+    
     if (use_joy == 1)
     {
 
@@ -1481,7 +1517,8 @@ void KGame::unpress(void)
 {
     timer_count = 0;
     while (timer_count < 20)
-    {
+      {
+	ProcessEvents();
         PlayerInput.readcontrols();
         if (!(PlayerInput.balt || PlayerInput.bctrl || PlayerInput.benter || PlayerInput.besc || PlayerInput.up ||
               PlayerInput.down || PlayerInput.right || PlayerInput.left || PlayerInput.bcheat))
@@ -1500,13 +1537,13 @@ void KGame::wait_enter(void)
 
     while (!stop)
     {
+      Game.ProcessEvents();
         PlayerInput.readcontrols();
         if (PlayerInput.balt)
         {
             Game.unpress();
             stop = 1;
         }
-        kq_yield();
     }
 
     timer_count = 0;
@@ -1520,15 +1557,13 @@ void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
 
     if (first_entity_index > last_entity_index)
     {
-        int temp = first_entity_index;
-
-        first_entity_index = last_entity_index;
-        last_entity_index = temp;
+      std::swap(first_entity_index, last_entity_index);
     }
 
     autoparty = 1;
     do
     {
+      Game.ProcessEvents();
         while (timer_count > 0)
         {
             timer_count--;
@@ -1671,6 +1706,28 @@ int KGame::SetGold(int amount)
     return gp;
 }
 
+bool KGame::ProcessEvents() {
+  bool wait_timer = true;
+    while (wait_timer) {
+    SDL_Event event;
+    int rc = SDL_WaitEvent(&event);
+    if (rc == 0) {
+      Game.program_death("Error waiting for events", SDL_GetError());
+    }
+    do {
+      switch(event.type) {
+      case SDL_USEREVENT: // this is our frame timer
+	wait_timer = false;
+	break;
+      default: // TODO all other events
+	break;
+      }
+    } while(SDL_PollEvent(&event));
+  }
+
+  key = SDL_GetKeyboardState(&key_count);
+  return true;
+}
 /*! \mainpage KQ - The Classic Computer Role-Playing Game
  *
  * Take the part of one of eight mighty heroes as you search for the
@@ -1733,6 +1790,7 @@ void TRACE(const char* message, ...) {
   va_end(args);
 }
 
-int key[KEY_MAX];
+const unsigned char* key = nullptr;
+int key_count = 0;
 PALETTE black_palette;
 FONT* font = nullptr;

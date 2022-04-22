@@ -42,7 +42,7 @@ class KSaveGame
 {
   public:
     void load_sgstats(void);
-    int start_menu(int);
+    int start_menu(bool);
     int system_menu(void);
 
   protected:

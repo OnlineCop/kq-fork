@@ -32,6 +32,7 @@ class Raster;
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
+struct SDL_PixelFormat;
 enum eSpellType;
 
 // TODO: Find out whether these values paired to any color defined within
@@ -554,6 +555,7 @@ class KDraw
   SDL_Window* window; /// The target window.
   SDL_Renderer* renderer; /// The window's renderer
   SDL_Texture* texture; /// The target texture
+  SDL_PixelFormat* format; /// The format of the texture
 };
 
 /*  global variables  */

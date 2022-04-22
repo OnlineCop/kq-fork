@@ -517,21 +517,18 @@ unload_datafile_object(sfx[index]);
  * This grabs whatever key is being pressed and returns it to the caller.
  * PH 20030527 Removed call to keypressed() and added poll_music()
  *
- * \returns the key being pressed, 0 if error (or cancel?)
+ * \returns the scancode of the key being pressed, 0 if error (or cancel?)
  */
 static int getakey(void)
 {
-    int a;
-
-    //clear_keybuf();
     Draw.menubox(double_buffer, 108 + xofs, 108 + yofs, 11, 1, DARKBLUE);
     Draw.print_font(double_buffer, 116 + xofs, 116 + yofs, _("Press a key"), FNORMAL);
     Draw.blit2screen(xofs, yofs);
 
-    while (1)
+    while (true)
     {
         Music.poll_music();
-        for (a = 0; a < KEY_MAX; a++)
+        for (int a = 0; a < key_count; a++)
         {
             if (key[a] != 0)
             {

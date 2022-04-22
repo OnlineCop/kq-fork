@@ -26,21 +26,10 @@
  *
  * Looks after keeping the music playing whilst the game is 'paused'
  */
-#ifdef _WIN32
-#include <allegro.h>
-#include <cstdarg>
-#include <winalleg.h>
-#endif
-
 #include "kq.h"
 #include "music.h"
 #include "timing.h"
 #include <SDL.h>
-
-static int mfrate;
-static int frate;
-static int frame_count = 0;
-static Uint32 frame_count_start;
 
 static SDL_TimerID timer_id = 0;
 static Uint32 timer_cb(Uint32 interval, void*) {
@@ -69,73 +58,12 @@ void stop_timer() {
   SDL_RemoveTimer(timer_id);
   timer_id = 0;
 }
-/*! \brief Sleep to limit the frame rate
- *
- * Calculates the time since the last call and
- * waits the remaining time for the next scheduled
- * screen update.
- *
- * \param   fps The targeted frames per second
- * \returns The actual frames per second
- */
-int limit_frame_rate(int) {
-  bool wait_timer = true;
-  while (wait_timer) {
-    SDL_Event event;
-    int rc = SDL_WaitEvent(&event);
-    if (rc == 0) {
-      Game.program_death("Error waiting for events", SDL_GetError());
-    }
-    do {
-      switch(event.type) {
-      case SDL_USEREVENT: // this is our frame timer
-	if (frame_count == 0) {
-	  frame_count_start = SDL_GetTicks64();
-	}
-	if (++frame_count >= 100) {
-	  frate = (int) ((SDL_GetTicks64() - frame_count_start)/frame_count);
-	  frame_count = 0;
-	} 
-	wait_timer = false;
-	break;
-      default: // TODO all other events
-	break;
-      }
-    } while(SDL_PollEvent(&event));
+void kq_wait(long dt) {
+  auto finish_time = SDL_GetTicks64() + dt;
+  while (SDL_GetTicks64() < finish_time) {
+    Game.ProcessEvents();
   }
-  return frate;
 }
 
-/*! \brief Pause the game for a period of time
- *
- * Calls poll_music() continuously to ensure music keeps playing.
- * PH renamed from wait to kq_wait as the former was causing conflicts on OSX
- *
- * \param   ms Time to pause in milliseconds
- */
-void kq_wait(long ms)
-{
-    /* dumb's doc says to call poll_music each bufsize / freq seconds */
 
-  /* TODO 
-    static const int delay = 1000 * 4096 * 2 / 44100;
-    struct timeval timeout = { 0, 0 };
-    while (ms > 0)
-    {
-        if (ms > delay)
-        {
-            timeout.tv_usec = delay * 1000;
-            ms -= delay;
-        }
-        else
-        {
-            timeout.tv_usec = ms * 1000;
-            ms = 0;
-        }
-        select(0, NULL, NULL, NULL, &timeout);
-
-        poll_music();
-    }
-  */
-}
 

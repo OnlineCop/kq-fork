@@ -59,27 +59,25 @@ struct KMarker
 class KMarkers
 {
   public:
-    KMarkers();
-    ~KMarkers();
 
     // Add a new marker to the map. Returns true on success, or false on failure.
-    bool Add(shared_ptr<KMarker> marker);
+    bool Add(KMarker&& marker);
 
-    // Remove the specified marker from the map. Returns true if the marker was
+    // Remove the named marker from the map. Returns true if the marker was
     // removed, or false if the marker was not found.
-    bool Remove(shared_ptr<KMarker> marker);
+    bool Remove(const string& name);
 
     // Return a pointer to the marker at the given @param index. If index is
     // invalid, returns null.
-    shared_ptr<KMarker> GetMarker(size_t index);
+    const KMarker* GetMarker(size_t index);
 
     // Return a pointer to the marker that has the given @param name. If no
     // markers by that name are found, returns null.
-    shared_ptr<KMarker> GetMarker(string name);
+    const KMarker* GetMarker(const string& name);
 
     // Return a pointer to the marker whose @param x and @param y coordinates
     // match. If no marker is at those coordinates, returns null.
-    shared_ptr<KMarker> GetMarker(int32_t x, int32_t y);
+    const KMarker* GetMarker(int32_t x, int32_t y);
 
     // Return the number of markers in the array.
     inline size_t Size() const
@@ -88,7 +86,7 @@ class KMarkers
     }
 
   protected:
-    vector<shared_ptr<KMarker>> m_markers;
+    vector<KMarker> m_markers;
 };
 
 extern KMarker Marker;

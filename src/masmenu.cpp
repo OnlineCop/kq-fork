@@ -334,7 +334,6 @@ static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_numbe
             play_effect(SND_TWINKLE, 128); /* this should be a failure sound */
         }
         kmenu.revert_equipstats();
-        Game.kq_yield();
     }
 }
 

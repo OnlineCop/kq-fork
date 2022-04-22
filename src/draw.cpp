@@ -95,30 +95,36 @@ void KDraw::set_window(SDL_Window* _window) {
   if (texture) {
     SDL_DestroyTexture(texture);
   }
+  if (format) {
+    SDL_FreeFormat(format);
+  }
   window = _window;
+  Uint32 pix = SDL_GetWindowPixelFormat(window);
   // Take the first renderer we can get
   renderer = SDL_CreateRenderer(window, -1, 0);
-  texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32,
+  texture = SDL_CreateTexture(renderer, pix,
 			      SDL_TEXTUREACCESS_STREAMING,
 			      eSize::KQ_SCREEN_W, eSize::KQ_SCREEN_H);
+  format = SDL_AllocFormat(pix);
 }
 
 void KDraw::blit2screen(int xw, int yw)
 {
-    static int frate = 0;
-    static int frate_old = -1;
-    static char fbuf[16] = "0";
-
+    static int frame_count = 0;
+    static char fbuf[16] = "---";
+    static Uint64 start_time = 0;
     if (show_frate)
     {
-        // Only update the framerate string if the value changed between the last call and now.
-        if (frate != frate_old)
-        {
-            frate_old = frate;
-            sprintf(fbuf, "%3d", frate);
-        }
-        double_buffer->fill(xw, yw, xw + 24, yw + 8, 0);
-        print_font(double_buffer, xw, yw, fbuf, FNORMAL);
+      ++frame_count;
+      Uint64 now = SDL_GetTicks64();
+      if (now - start_time >= 2000) {
+	int frate = (1000 * frame_count + 500) / (now - start_time);
+	start_time = now;
+	frame_count = 0;
+	sprintf(fbuf, "%3d", frate);
+      }
+      double_buffer->fill(xw, yw, 24, 8, 0);
+      print_font(double_buffer, xw, yw, fbuf, FNORMAL);
     }
 #ifdef DEBUGMODE
     display_console(xw, yw);
@@ -128,25 +134,21 @@ void KDraw::blit2screen(int xw, int yw)
     /* DEBUG stuff */
     static int q = 0;
     show_frate = true;
-    double_buffer->setpixel(q % double_buffer->get_width(), 100, 0); 
-    double_buffer->setpixel(++q % double_buffer->get_width(), 100, 255);
+    double_buffer->setpixel(q % double_buffer->width, 100, 0); 
+    double_buffer->setpixel(++q % double_buffer->width, 100, 255);
     /* END DEBUG stuff */
     int rc = SDL_LockTexture(texture, nullptr, &pixels, &pitch);
     if (rc < 0) {
       Game.program_death("Could not lock screen texture");
     }
-    SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
     double_buffer->to_rgba32(format, pixels, pitch);
-    SDL_FreeFormat(format);
     SDL_UnlockTexture(texture);
-    rc = SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+    SDL_Rect src{xw, yw, eSize::KQ_SCREEN_W, eSize::KQ_SCREEN_H};
+    rc = SDL_RenderCopy(renderer, texture, &src, nullptr);
     if (rc < 0) {
       Game.program_death("Could not render");
     }
     SDL_RenderPresent(renderer);
-    // frate = limit_frame_rate(25);
-    frate = limit_frame_rate(30);
-    
 }
 
 void KDraw::border(Raster* where, int left, int top, int right, int bottom)
@@ -192,9 +194,9 @@ void KDraw::color_scale(Raster* src, Raster* dest, int output_range_start, int o
     }
 
     clear_bitmap(dest);
-    for (iy = 0; iy < dest->get_height(); iy++)
+    for (iy = 0; iy < dest->height; iy++)
     {
-        for (ix = 0; ix < dest->get_width(); ix++)
+        for (ix = 0; ix < dest->width; ix++)
         {
             current_pixel_color = src->getpixel(ix, iy);
             if (current_pixel_color > 0)
@@ -249,17 +251,17 @@ Raster* KDraw::copy_bitmap(Raster* target, Raster* source)
 {
     if (target)
     {
-        if (target->get_width() < source->get_width() || target->get_height() < source->get_height())
+        if (target->width < source->width || target->height < source->height)
         {
             /* too small */
             delete (target);
-            target = new Raster(source->get_width(), source->get_height());
+            target = new Raster(source->width, source->height);
         }
     }
     else
     {
         /* create new */
-        target = new Raster(source->get_width(), source->get_height());
+        target = new Raster(source->width, source->height);
     }
     /* ...and copy */
     source->blitTo(target);
@@ -564,47 +566,17 @@ void KDraw::draw_forelayer(void)
                         }
 
                         // Zones
-#if (ALLEGRO_VERSION >= 4 && ALLEGRO_SUB_VERSION >= 1)
                         if (z_seg[here] == 0)
-                        {
-                            // Do nothing
-                        }
+			  {
+			    // Do nothing
+			  }
                         else
-                        {
+			  {
                             char buf[8];
                             sprintf(buf, "%d", z_seg[here]);
                             size_t l = strlen(buf) * 8;
                             print_num(double_buffer, dx * 16 + 8 + xofs - l / 2, dy * 16 + 4 + yofs, buf, FONT_WHITE);
-                        }
-#else
-                        if (z_seg[here] == 0)
-                        {
-                            // Do nothing
-                        }
-                        else if (z_seg[here] < 10)
-                        {
-                            /* The zone's number is single-digit, center vert+horiz */
-                            textprintf(double_buffer, font, dx * 16 + 4 + xofs, dy * 16 + 4 + yofs,
-                                       makecol(255, 255, 255), "%d", z_seg[here]);
-                        }
-                        else if (z_seg[here] < 100)
-                        {
-                            /* The zone's number is double-digit, center only vert */
-                            textprintf(double_buffer, font, dx * 16 + xofs, dy * 16 + 4 + yofs, makecol(255, 255, 255),
-                                       "%d", z_seg[here]);
-                        }
-                        else if (z_seg[here] < 10)
-                        {
-                            /* The zone's number is triple-digit.  Print the 100's
-                             * digit in top-center of the square; the 10's and 1's
-                             * digits on bottom of the square
-                             */
-                            textprintf(double_buffer, font, dx * 16 + 4 + xofs, dy * 16 + yofs, makecol(255, 255, 255),
-                                       "%d", (int)(z_seg[here] / 100));
-                            textprintf(double_buffer, font, dx * 16 + xofs, dy * 16 + 8 + yofs, makecol(255, 255, 255),
-                                       "%02d", (int)(z_seg[here] % 100));
-                        }
-#endif /* (ALLEGRO_VERSION) */
+			  }
                     }
 #endif /* DEBUGMODE */
                 }
@@ -980,6 +952,7 @@ void KDraw::generic_text(int who, eBubbleStyle box_style, int isPort)
     while (!stop)
     {
         Game.do_check_animation();
+	Game.ProcessEvents();
         drawmap();
         if (isPort == 0)
         {
@@ -1262,23 +1235,19 @@ int KDraw::get_glyph_index(uint32_t cp)
 void KDraw::print_font(Raster* where, int sx, int sy, const string& msg, eFontColor font_index)
 {
     int z = 0;
-    int hgt = 8; // MagicNumber: font height for NORMAL text
-    uint32_t cc = 0;
 
     if (font_index < 0 || font_index >= NUM_FONT_COLORS)
     {
         sprintf(strbuf, _("print_font: Bad font index, %d"), (int)font_index);
-        Game.klog(strbuf);
-        return;
+        Game.program_death(strbuf);
     }
-    if (font_index == FBIG)
-    {
-        hgt = 12; // MagicNumber: font height for BIG text
-    }
+    // MagicNumber: font heights for BIG/NORMAL text
+    const int hgt = (font_index == FBIG) ? 12 : 8;
     string chopped_message(msg);
     while (1)
     {
-        chopped_message = decode_utf8(chopped_message.c_str(), &cc);
+      uint32_t cc;
+      chopped_message = decode_utf8(chopped_message.c_str(), &cc);
         if (cc == 0)
         {
             break;
@@ -1296,8 +1265,7 @@ void KDraw::print_num(Raster* where, int sx, int sy, const string msg, eFont fon
     if (font_index >= NUM_FONTS)
     {
         sprintf(strbuf, _("print_num: Bad font index, %d"), (int)font_index);
-        Game.klog(strbuf);
-        return;
+         Game.program_death(strbuf);
     }
     for (size_t z = 0; z < msg.length(); z++)
     {
@@ -1458,7 +1426,7 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                 {
                     print_font(double_buffer, winx + 8, winy + i * 12, opt[i + topopt], FBIG);
                 }
-                draw_sprite(double_buffer, menuptr, winx + 8 - menuptr->get_width(), (curopt - topopt) * 12 + winy + 4);
+                draw_sprite(double_buffer, menuptr, winx + 8 - menuptr->width, (curopt - topopt) * 12 + winy + 4);
                 /* Draw the 'up' and 'down' markers if there are more options than will
                  * fit in the window */
                 if (topopt > 0)
@@ -1469,8 +1437,9 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                 {
                     draw_sprite(double_buffer, dnptr, winx, winy + 12 * winheight);
                 }
-
+		if (Game.ProcessEvents()) {
                 blit2screen(xofs, yofs);
+		}
 
                 PlayerInput.readcontrols();
                 if (PlayerInput.up && curopt > 0)

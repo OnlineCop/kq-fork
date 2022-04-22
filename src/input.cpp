@@ -69,9 +69,12 @@ void KPlayerInput::readcontrols()
                 
                 while (key[SDL_SCANCODE_LALT] && key[SDL_SCANCODE_X])
                 {
+		  Game.ProcessEvents();
                 }
                 Game.program_death(_("X-ALT pressed... exiting."));
-            }
+            } else {
+	      Game.ProcessEvents();
+	    }
         }
     }
 #ifdef DEBUGMODE

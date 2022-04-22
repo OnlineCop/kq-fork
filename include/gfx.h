@@ -2,13 +2,12 @@
 
 #include <cstdint>
 #include <SDL.h>
-
+#include <memory>
 class Raster
 {
   public:
-  Raster(uint16_t w, uint16_t h);
-    Raster(Raster&&);
-    ~Raster();
+    Raster(uint16_t w, uint16_t h);
+    Raster(Raster&&) = default;
     void blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w, uint16_t src_h, int16_t dest_x,
                 int16_t dest_y, uint16_t dest_w, uint16_t dest_h, bool masked);
     void blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t dest_x, uint16_t dest_y, uint16_t src_w,
@@ -24,13 +23,17 @@ class Raster
     void vline(int16_t x, int16_t y0, int16_t y1, uint8_t color);
     void fill(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t color);
     void fill(uint8_t colour);
-  uint8_t& ptr(int16_t x, int16_t y);
-  int get_width() const { return w; }
-  int get_height() const { return h; }
-  void to_rgba32(SDL_PixelFormat*, void* ptr, int stride);
+    uint8_t& ptr(int16_t x, int16_t y)
+    {
+        return data[x + y * stride];
+    }
+    const uint16_t width, height;
+    const uint16_t stride;
+  void to_rgba32(SDL_PixelFormat* format, void* pixels, int stride);
   private:
-    uint8_t* data;
-  int w, h;
+    std::unique_ptr<uint8_t[]> data;
+    std::unique_ptr<int[]> xt;
+    std::unique_ptr<int[]> yt;
 };
 
 // Compatibility stuff

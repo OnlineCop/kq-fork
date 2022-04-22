@@ -506,6 +506,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
 
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         if (csa != TGT_NONE)

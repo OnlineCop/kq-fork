@@ -860,13 +860,11 @@ static const char* filereader(lua_State*, void* data, size_t* size)
  * \param f a pointer to a pointer to the string
  * \param size [out] the number of bytes in the string
  */
-static const char* stringreader(lua_State* L, void* data, size_t* size)
+static const char* stringreader(lua_State*, void* data, size_t* size)
 {
-    char** f = (char**)data;
+  char** f = reinterpret_cast<char**>(data);
     char* ans = *f;
 
-    /* Avoid 'unused' warning */
-    (void)L;
     if (ans == NULL)
     {
         *size = 0;
@@ -888,11 +886,11 @@ static const char* stringreader(lua_State* L, void* data, size_t* size)
  * \date    20060502 PH added check for name == NULL
  *
  * \param   name - the name of the marker to search for
- * \param   required - if non-zero throw an error if the marker isn't found
+ * \param   required - if true throw an error if the marker isn't found
  *
  * \returns pointer to marker or nullptr if name not found
  */
-static shared_ptr<KMarker> KQ_find_marker(string name, int required)
+static const KMarker* KQ_find_marker(string name, bool required)
 {
     auto found_marker = g_map.markers.GetMarker(name);
     if (found_marker != nullptr)
@@ -1686,7 +1684,7 @@ static int KQ_door_in(lua_State* L)
     if (lua_type(L, 1) == LUA_TSTRING)
     {
         /* It's in "marker" form */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             x = m->x + lua_tointeger(L, 2);
@@ -1725,7 +1723,7 @@ static int KQ_door_out(lua_State* L)
     if (lua_type(L, 1) == LUA_TSTRING)
     {
         /* It's in "marker" form */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             x = m->x + lua_tointeger(L, 2);
@@ -2001,7 +1999,7 @@ static int KQ_get_gp(lua_State* L)
 static int KQ_get_marker_tilex(lua_State* L)
 {
     const char* marker_name = lua_tostring(L, 1);
-    shared_ptr<KMarker> m = KQ_find_marker(marker_name, 1);
+    auto m = KQ_find_marker(marker_name, 1);
     if (m != nullptr)
     {
         lua_pushnumber(L, m->x);
@@ -2021,7 +2019,7 @@ static int KQ_get_marker_tilex(lua_State* L)
 static int KQ_get_marker_tiley(lua_State* L)
 {
     const char* marker_name = lua_tostring(L, 1);
-    shared_ptr<KMarker> m = KQ_find_marker(marker_name, 1);
+    auto m = KQ_find_marker(marker_name, 1);
     if (m != nullptr)
     {
         lua_pushnumber(L, m->y);
@@ -2441,7 +2439,7 @@ static int KQ_log(lua_State* L)
  */
 static int KQ_marker(lua_State* L)
 {
-    shared_ptr<KMarker> s = KQ_find_marker(lua_tostring(L, 1), 0);
+    auto s = KQ_find_marker(lua_tostring(L, 1), 0);
 
     if (s != nullptr)
     {
@@ -2500,24 +2498,26 @@ static int KQ_move_camera(lua_State* L)
     timer_count = 0;
     while (ytot > 0 || xtot > 0)
     {
-        if (timer_count >= dtime)
+      if (Game.ProcessEvents()) {
+        while (timer_count >= dtime)
         {
-            timer_count -= dtime;
-            if (xtot > 0)
+	  timer_count -= dtime;
+	  if (xtot > 0)
             {
-                viewport_x_coord += xinc;
-                xtot--;
+	      viewport_x_coord += xinc;
+	      xtot--;
             }
-            if (ytot > 0)
+	  if (ytot > 0)
             {
-                viewport_y_coord += yinc;
-                ytot--;
+	      viewport_y_coord += yinc;
+	      ytot--;
             }
         }
         Game.do_check_animation();
         Draw.drawmap();
         Draw.blit2screen(xofs, yofs);
-        Music.poll_music();
+      }
+      Music.poll_music();
     }
 
     timer_count = 0;
@@ -2548,7 +2548,7 @@ static int KQ_move_entity(lua_State* L)
 
     if (lua_type(L, 2) == LUA_TSTRING)
     {
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 2), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 2), 1);
         if (m != nullptr)
         {
             target_x = m->x;
@@ -2653,7 +2653,7 @@ static int KQ_place_ent(lua_State* L)
     if (lua_type(L, 2) == LUA_TSTRING)
     {
         /* It's in "marker" form */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 2), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 2), 1);
         if (m != nullptr)
         {
             x = m->x;
@@ -2983,7 +2983,7 @@ static int KQ_set_btile(lua_State* L)
         /* Format:
          *    set_btile("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_btile(m->x, m->y, lua_tointeger(L, 2));
@@ -3201,7 +3201,7 @@ static int KQ_set_ftile(lua_State* L)
         /* Format:
          *    set_ftile("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_ftile(m->x, m->y, lua_tointeger(L, 2));
@@ -3252,19 +3252,7 @@ static int KQ_set_marker(lua_State* L)
     const int x_coord = lua_tonumber(L, 2);
     const int y_coord = lua_tonumber(L, 3);
 
-    shared_ptr<KMarker> m = KQ_find_marker(marker_name, 0);
-    if (m == nullptr)
-    {
-        /* Need to add a new marker */
-        auto new_marker = make_shared<KMarker>();
-        new_marker->name = marker_name;
-        new_marker->x = x_coord;
-        new_marker->y = y_coord;
-        g_map.markers.Add(new_marker);
-    }
-    m->x = x_coord;
-    m->y = y_coord;
-
+    g_map.markers.Add({marker_name, x_coord, y_coord});
     return 0;
 }
 
@@ -3293,7 +3281,7 @@ static int KQ_set_mtile(lua_State* L)
         /* Format:
          *    set_mtile("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+      auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_mtile(m->x, m->y, lua_tointeger(L, 2));
@@ -3338,7 +3326,7 @@ static int KQ_set_obs(lua_State* L)
         /* Format:
          *    set_obs("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_obs(m->x, m->y, lua_tointeger(L, 2));
@@ -3651,7 +3639,7 @@ static int KQ_set_shadow(lua_State* L)
         /* Format:
          *    set_shadow("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_shadow(m->x, m->y, lua_tointeger(L, 2));
@@ -3783,7 +3771,7 @@ static int KQ_set_zone(lua_State* L)
         /* Format:
          *    set_zone("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_zone(m->x, m->y, lua_tointeger(L, 2));
@@ -4007,7 +3995,7 @@ static int KQ_warp(lua_State* L)
     if (lua_type(L, 1) == LUA_TSTRING)
     {
         /* Format is warp("marker", [speed]) */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             x = m->x;
@@ -4283,8 +4271,8 @@ static int KQ_make_sprite(lua_State* L)
             // Push x, y, w, h
             lua_pushnumber(L, 0);
             lua_pushnumber(L, 0);
-            lua_pushnumber(L, bm ? bm->get_width() : 0);
-            lua_pushnumber(L, bm ? bm->get_height() : 0);
+            lua_pushnumber(L, bm ? bm->width : 0);
+            lua_pushnumber(L, bm ? bm->height : 0);
         }
         else if (nel == 5)
         {

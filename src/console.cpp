@@ -165,10 +165,10 @@ void run_console(void)
         /* Get a key */
         while (!keypressed())
         {
-            Game.do_check_animation();
+	  Game.ProcessEvents();
+	  Game.do_check_animation();
             Draw.blit2screen(xofs, yofs);
             Music.poll_music();
-            Game.kq_yield();
         }
 
         switch ((c = readkey()) & 0xff)

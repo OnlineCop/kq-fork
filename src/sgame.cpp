@@ -117,7 +117,7 @@ int KSaveGame::confirm_action(void)
             Game.unpress();
             return 0;
         }
-        Game.kq_yield();
+        Game.ProcessEvents();
     }
     return 0;
 }
@@ -180,7 +180,6 @@ void KSaveGame::delete_game(void)
             Game.unpress();
             stop = 1;
         }
-        Game.kq_yield();
     }
 }
 
@@ -507,7 +506,7 @@ private:
   std::unique_ptr<Raster> tdudes;
   Raster* title;
   Raster* splash;
-  Uint32 ticks;
+  Uint64 ticks;
 };
 
 KSplash::KSplash(Raster* _dest) : dest(_dest) {
@@ -522,7 +521,7 @@ KSplash::KSplash(Raster* _dest) : dest(_dest) {
   
 bool KSplash::step() {
   int a;
-  Uint32 now = SDL_GetTicks();
+  auto now = SDL_GetTicks64();
   switch (state) {
   case 0: // Draw small staff
     ticks = now;
@@ -531,7 +530,7 @@ bool KSplash::step() {
     state = 1;
     break;
   case 1: // Wait one second
-    if (SDL_TICKS_PASSED(now, 1000 + ticks)) {
+    if (now > 1000 + ticks) {
       state = 2;
       ticks = now;
     }
@@ -544,19 +543,18 @@ bool KSplash::step() {
       
     break;
   case 3: // Fade in the dudes
-
-       a = (now - ticks) / 1000;
-       Draw.color_scale(dudes.get(), tdudes.get(), 53 - a, 53 + a);
-       draw_sprite(dest, tdudes.get(), 106, 64);
-		if (a >= 5) {
-		  ticks = now;
-		  state = 4;
-		}
-		break;
+    a = (now - ticks) / 500;
+    Draw.color_scale(dudes.get(), tdudes.get(), 53 - a, 53 + a);
+    draw_sprite(dest, tdudes.get(), 106, 64);
+    if (a >= 5) {
+      ticks = now;
+      state = 4;
+    }
+    break;
   case 4: // Draw dudes and wait one second
     draw_sprite(dest, dudes.get(), 106, 64);
-    if (SDL_TICKS_PASSED(now, ticks + 1000)) {
-      state = 5;
+    if (now > ticks + 1000) {
+    state = 5;
     }
     break;
   default: // DONE
@@ -571,50 +569,49 @@ bool KSplash::step() {
  * This is the main menu... just display the opening and then the menu and
  * then wait for input.  Also handles loading a saved game, and the config menu.
  *
- * \param   c zero if the splash (the bit with the staff and the eight heroes)
+ * \param   c false if the splash (the bit with the staff and the eight heroes)
  *            should be displayed.
  * \returns 1 if new game, 0 if continuing, 2 if exit
  */
-int KSaveGame::start_menu(int skip_splash)
+int KSaveGame::start_menu(bool skip_splash)
 {
     int stop = 0, ptr = 0, redraw = 1;
-    unsigned int fade_color;
     Raster* title = get_cached_image("title.png");
+    Game.ProcessEvents(); // do this first off to make sure everything is ready
 #ifdef DEBUGMODE
     if (debugging == 0)
     {
 #endif
         Music.play_music(music_title, 0);
         /* Play splash (with the staff and the heroes in circle */
-        if (skip_splash == 0)
+        if (!skip_splash)
         {
 	  KSplash splash(double_buffer);
 	  while (!splash.step()) {
+	    if (Game.ProcessEvents()) {
 	    Draw.blit2screen(0,0);
-            /*
-                TODO: this fade should actually be to white
-                if (_color_depth == 8)
-                fade_from (pal, whp, 1);
-                else
-             */
+	    }
 	  }
-            do_transition(TRANS_FADE_WHITE, 1);
+	  do_transition(TRANS_FADE_WHITE, 1);
         }
         clear_to_color(double_buffer, 15);
         Draw.blit2screen(0, 0);
         set_palette(pal);
-
-        for (fade_color = 0; fade_color < 16; fade_color++)
-        {
+	int fade_color = 0;
+	auto start_time = SDL_GetTicks64();
+	while (fade_color < 16) {
+	  auto now = SDL_GetTicks64();
+	  if (Game.ProcessEvents()) {
             clear_to_color(double_buffer, 15 - fade_color);
             masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), KQ_SCREEN_W, 124);
             Draw.blit2screen(0, 0);
-            kq_wait(fade_color == 0 ? 500 : 100);
+	  }
+	  if (now - start_time > 100) {
+	    start_time = now;
+	    ++fade_color;
+	  }
         }
-        if (skip_splash == 0)
-        {
-            kq_wait(500);
-        }
+	kq_wait(1000);
 #ifdef DEBUGMODE
     }
     else
@@ -627,6 +624,7 @@ int KSaveGame::start_menu(int skip_splash)
     /* Draw menu and handle menu selection */
     while (!stop)
     {
+      Game.ProcessEvents();
         if (redraw)
         {
             clear_bitmap(double_buffer);
@@ -759,6 +757,7 @@ int KSaveGame::system_menu(void)
 
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         Draw.menubox(double_buffer, xofs, yofs, 8, 4, BLUE);

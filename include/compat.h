@@ -19,9 +19,8 @@ inline int text_length(FONT*, const char*) { return 0; }
 
 inline int readkey() { return 0; }
 inline int keypressed() { return 0; }
-#define KEY_MAX 255
-extern int key[KEY_MAX];
-
+extern const unsigned char*  key;
+extern int key_count;
 typedef void SCREEN;
 extern SCREEN* screen;
 inline void* bmp_write_line(SCREEN*, int) { return nullptr; }

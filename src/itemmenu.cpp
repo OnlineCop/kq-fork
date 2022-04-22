@@ -267,7 +267,6 @@ static void camp_item_targetting(int pp)
         {
             return;
         }
-        Game.kq_yield();
     }
 }
 
