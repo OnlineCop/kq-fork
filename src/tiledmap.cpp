@@ -87,7 +87,7 @@ void KTiledMap::load_tmx(const string& name)
     Game.reset_timer_events();
     if (hold_fade == 0)
     {
-        do_transition(TRANS_FADE_OUT, 4);
+        do_transition(eTransitionFade::OUT, 4);
     }
 
     auto loaded_map = load_tmx_map(tmx.RootElement());
@@ -219,10 +219,10 @@ KBounds KTiledMap::load_tmx_bounds(XMLElement const* el)
             if (i->Attribute("type", "bounds"))
             {
                 auto new_bound = make_shared<KBound>();
-                new_bound->left = i->IntAttribute("x") / TILE_W;
-                new_bound->top = i->IntAttribute("y") / TILE_H;
-                new_bound->right = i->IntAttribute("width") / TILE_W + new_bound->left - 1;
-                new_bound->bottom = i->IntAttribute("height") / TILE_H + new_bound->top - 1;
+                new_bound->left = i->IntAttribute("x") / eSize::TILE_W;
+                new_bound->top = i->IntAttribute("y") / eSize::TILE_H;
+                new_bound->right = i->IntAttribute("width") / eSize::TILE_W + new_bound->left - 1;
+                new_bound->bottom = i->IntAttribute("height") / eSize::TILE_H + new_bound->top - 1;
                 new_bound->btile = 0;
                 auto props = i->FirstChildElement("properties");
                 if (props)
@@ -276,7 +276,7 @@ KMarkers KTiledMap::load_tmx_markers(XMLElement const* el)
         {
             if (obj->Attribute("type", "marker"))
             {
-                markers.Add({obj->Attribute("name"), obj->IntAttribute("x") / TILE_W, obj->IntAttribute("y") / TILE_H});
+	      markers.Add({obj->Attribute("name"), obj->IntAttribute("x") / eSize::TILE_W, obj->IntAttribute("y") / eSize::TILE_H});
             }
         }
     }
@@ -357,10 +357,10 @@ vector<KZone> KTiledMap::load_tmx_zones(XMLElement const* el)
             if (i->Attribute("type", "zone"))
             {
                 KZone zone;
-                zone.x = i->IntAttribute("x") / TILE_W;
-                zone.y = i->IntAttribute("y") / TILE_H;
-                zone.w = i->IntAttribute("width") / TILE_W;
-                zone.h = i->IntAttribute("height") / TILE_H;
+                zone.x = i->IntAttribute("x") / eSize::TILE_W;
+                zone.y = i->IntAttribute("y") / eSize::TILE_H;
+                zone.w = i->IntAttribute("width") / eSize::TILE_W;
+                zone.h = i->IntAttribute("height") / eSize::TILE_H;
                 // TODO name might not always be an integer in future.
                 zone.n = i->IntAttribute("name");
                 zones.push_back(zone);
@@ -383,8 +383,8 @@ vector<KQEntity> KTiledMap::load_tmx_entities(XMLElement const* el)
         memset(&entity, 0, sizeof(entity));
         entity.x = i->IntAttribute("x");
         entity.y = i->IntAttribute("y");
-        entity.tilex = entity.x / TILE_W;
-        entity.tiley = entity.y / TILE_H;
+        entity.tilex = entity.x / eSize::TILE_W;
+        entity.tiley = entity.y / eSize::TILE_H;
         if (properties)
         {
             for (auto xprop = properties->FirstChildElement("property"); xprop;

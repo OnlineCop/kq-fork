@@ -6,6 +6,7 @@ typedef RGB PALETTE[PAL_SIZE];
 extern PALETTE black_palette;
 void get_palette(RGB*);
 void set_palette(RGB*);
+void set_palette_range(RGB*, int, int);
 struct  COLOR_MAP { char data[PAL_SIZE][PAL_SIZE]; };
 inline int makecol(int r, int g, int b) {
   return ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
@@ -21,15 +22,7 @@ inline int readkey() { return 0; }
 inline int keypressed() { return 0; }
 extern const unsigned char*  key;
 extern int key_count;
-typedef void SCREEN;
-extern SCREEN* screen;
-inline void* bmp_write_line(SCREEN*, int) { return nullptr; }
-inline void bmp_unwrite_line(SCREEN*) {}
-inline void release_screen() {}
-inline void acquire_screen() {}
-extern int retrace_count;
-inline void fade_interpolate(RGB*, RGB*, RGB*, int, int, int) {}
-inline void set_palette_range(RGB*, int, int, bool) {}
+void fade_interpolate(RGB*, RGB*, RGB*, int, int, int);
 
 #define DRAW_MODE_SOLID 0
 #define DRAW_MODE_TRANS 1

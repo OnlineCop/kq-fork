@@ -32,8 +32,13 @@
 #include <SDL.h>
 
 static SDL_TimerID timer_id = 0;
+static int watchdog;
+void reset_watchdog() {
+  watchdog = 100;
+}
 static Uint32 timer_cb(Uint32 interval, void*) {
   SDL_Event event = {0};
+  assert(--watchdog > 0);
     event.type = SDL_USEREVENT;
     SDL_PushEvent(&event);
   return interval;
@@ -45,6 +50,7 @@ void start_timer(int fps) {
   if (timer_id != 0) {
     Game.program_death("Trying to start timer that is already started");
   }
+  reset_watchdog();
   Uint32 interval = 1000 / fps;
   timer_id = SDL_AddTimer(interval, timer_cb, nullptr);
   if (timer_id == 0) {

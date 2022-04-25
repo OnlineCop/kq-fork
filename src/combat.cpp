@@ -346,7 +346,7 @@ void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
     }
 
     clear_bitmap(double_buffer);
-    blit(backart, double_buffer, 0, 0, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H);
+    blit(backart, double_buffer, 0, 0, 0, 0, eSize::SCREEN_W, eSize::SCREEN_H);
 
     if ((SelectAll == 0) && (x_coord_image_in_datafile > -1) && (y_coord_image_in_datafile > -1))
     {
@@ -727,9 +727,9 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
     for (zoom_step = 0; zoom_step < 9; zoom_step++)
     {
         Music.poll_music();
-        stretch_blit(temp.get(), double_buffer, zoom_step * (KQ_SCREEN_W / 20) + xofs,
-                     zoom_step * (KQ_SCREEN_H / 20) + yofs, KQ_SCREEN_W - (zoom_step * (KQ_SCREEN_W / 10)),
-                     KQ_SCREEN_H - (zoom_step * (KQ_SCREEN_H / 10)), 0, 0, KQ_SCREEN_W, KQ_SCREEN_H);
+        stretch_blit(temp.get(), double_buffer, zoom_step * (eSize::SCREEN_W / 20) + xofs,
+                     zoom_step * (eSize::SCREEN_H / 20) + yofs, eSize::SCREEN_W - (zoom_step * (eSize::SCREEN_W / 10)),
+                     eSize::SCREEN_H - (zoom_step * (eSize::SCREEN_H / 10)), 0, 0, eSize::SCREEN_W, eSize::SCREEN_H);
         Draw.blit2screen(xofs, yofs);
     }
 
@@ -1059,7 +1059,7 @@ void KCombat::enemies_win(void)
     Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 56, strbuf, FNORMAL);
     Draw.blit2screen(0, 0);
     Game.wait_enter();
-    do_transition(TRANS_FADE_OUT, 4);
+    do_transition(eTransitionFade::OUT, 4);
     alldead = 1;
 }
 
@@ -1130,7 +1130,7 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
             Combat.battle_render(defend_fighter_index + 1, 0, 0);
             Draw.blit2screen(0, 0);
             kq_wait(20);
-            rectfill(double_buffer, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H, 15);
+            rectfill(double_buffer, 0, 0, eSize::SCREEN_W, eSize::SCREEN_H, 15);
             Draw.blit2screen(0, 0);
             kq_wait(20);
         }

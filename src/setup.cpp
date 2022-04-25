@@ -89,7 +89,7 @@ static void music_feedback(int val)
 static void citem(int y, const char* caption, const char* value, eFontColor color)
 {
     Draw.print_font(double_buffer, 48 + xofs, y + yofs, caption, color);
-    Draw.print_font(double_buffer, SCREEN_H2 - 8 * strlen(value) + xofs, y + yofs, value, color);
+    Draw.print_font(double_buffer, eSize::SCREEN_H2 - 8 * strlen(value) + xofs, y + yofs, value, color);
 }
 
 /*! \brief Display configuration menu
@@ -980,7 +980,7 @@ void play_effect(int efc, int panning)
 	 */
         }
         clear_bitmap(double_buffer);
-        blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, KQ_SCREEN_W, KQ_SCREEN_H);
+        blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, eSize::SCREEN_W, eSize::SCREEN_H);
 
         if (in_combat == 0)
         {
@@ -1004,7 +1004,7 @@ void play_effect(int efc, int panning)
             s = (old[a].r + old[a].g + old[a].b) > 40 ? 0 : 63;
             whiteout[a].r = whiteout[a].g = whiteout[a].b = s;
         }
-        blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, KQ_SCREEN_W, KQ_SCREEN_H);
+        blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, eSize::SCREEN_W, eSize::SCREEN_H);
         if (samp)
         {
             Music.play_sample(samp, gsvol, panning, 1000, 0);
@@ -1045,12 +1045,12 @@ void set_graphics_mode(void)
       card = 1;//GFX_AUTODETECT;
     }
     (void) card;
-    int w = KQ_SCALED_SCREEN_W;
-    int h = KQ_SCALED_SCREEN_H;
+    int w = eSize::SCALED_SCREEN_W;
+    int h = eSize::SCALED_SCREEN_H;
     if (!should_stretch_view)
     {
-        w = KQ_SCREEN_W;
-        h = KQ_SCREEN_H;
+      w = eSize::SCREEN_W;
+      h = eSize::SCREEN_H;
     }
     Draw.set_window( SDL_CreateWindow("KQ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 				      w, h, SDL_WINDOW_SHOWN));

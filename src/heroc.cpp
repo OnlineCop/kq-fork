@@ -754,7 +754,8 @@ void hero_choose_action(size_t fighter_index)
         fighter[fighter_index].aux = 0;
     }
     while (!stop)
-    {
+      {
+	Game.ProcessEvents();
         Game.do_check_animation();
         Combat.battle_render(fighter_index + 1, fighter_index + 1, 0);
         my = 0;

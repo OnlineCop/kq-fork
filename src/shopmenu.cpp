@@ -91,8 +91,9 @@ static void buy_item(int how_many, int item_no)
     }
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
-        blit(back, double_buffer, 0, 0, xofs, 192 + yofs, KQ_SCREEN_W, 48);
+        blit(back, double_buffer, 0, 0, xofs, 192 + yofs, eSize::SCREEN_W, 48);
         Draw.menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, DARKBLUE);
         Draw.print_font(double_buffer, 104 + xofs, 176 + yofs, _("Confirm/Cancel"), FNORMAL);
         draw_sideshot(shops[shop_no].items[item_no]);
@@ -153,6 +154,7 @@ static void buy_menu(void)
     }
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         Draw.menubox(double_buffer, 152 - (shop_name.length() * 4) + xofs, yofs, shop_name.length(), 1, BLUE);
@@ -287,11 +289,11 @@ void do_inn_effects(int do_delay)
     play_effect(36, 128);
     if (do_delay != 0)
     {
-        do_transition(TRANS_FADE_OUT, 2);
+        do_transition(eTransitionFade::OUT, 2);
         Draw.drawmap();
         Draw.blit2screen(xofs, yofs);
         kq_wait(1500);
-        do_transition(TRANS_FADE_IN, 2);
+        do_transition(eTransitionFade::IN, 2);
     }
     save_spells[P_REPULSE] = 0;
     Music.resume_music();
@@ -495,6 +497,7 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
     }
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
 
@@ -603,6 +606,7 @@ static void sell_howmany(int item_no, size_t inv_page)
     }
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         Draw.menubox(double_buffer, 32 + xofs, 168 + yofs, 30, 1, DARKBLUE);
@@ -677,6 +681,7 @@ static void sell_item(int itno, int qty_being_sold)
     Draw.blit2screen(xofs, yofs);
     while (!stop)
     {
+      Game.ProcessEvents();
         PlayerInput.readcontrols();
         if (PlayerInput.balt)
         {
@@ -719,6 +724,7 @@ static void sell_menu(void)
 
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         Draw.menubox(double_buffer, 152 - (shop_name.length() * 4) + xofs, yofs, shop_name.length(), 1, BLUE);
@@ -865,7 +871,7 @@ int shop(int shop_num)
     shop_name = shop.name;
 
     /* If enough time has passed, fully replenish this shop's stock of an item */
-    int replenish_time = (khr * 60) + kmin - shop.time;
+    int replenish_time = Game.GetGameTime().total_seconds()/60 - shop.time;
     bool first_visit = (shop.time == 0);
     for (int a = 0; a < SHOPITEMS; a++)
     {
@@ -896,6 +902,7 @@ int shop(int shop_num)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         Draw.menubox(double_buffer, 152 - (shop_name.length() * 4) + xofs, yofs, shop_name.length(), 1, BLUE);
@@ -945,6 +952,6 @@ int shop(int shop_num)
             stop = true;
         }
     }
-    shop.time = khr * 60 + kmin;
+    shop.time = Game.GetGameTime().total_seconds()/60;
     return 0;
 }

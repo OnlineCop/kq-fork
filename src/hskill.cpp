@@ -443,7 +443,7 @@ void reveal(int tgt)
     int draw_x, draw_y;
     char resistance;
 
-    do_transition(TRANS_FADE_OUT, 4);
+    do_transition(eTransitionFade::OUT, 4);
     Draw.menubox(double_buffer, 84, 56, 17, 13, BLUE);
     sprintf(strbuf, _("Name: %s"), fighter[tgt].name.c_str());
     Draw.print_font(double_buffer, 92, 64, strbuf, FNORMAL);
@@ -496,7 +496,7 @@ void reveal(int tgt)
         }
     }
     Draw.blit2screen(0, 0);
-    do_transition(TRANS_FADE_IN, 4);
+    do_transition(eTransitionFade::IN, 4);
     Game.wait_enter();
 }
 

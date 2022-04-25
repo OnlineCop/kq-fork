@@ -51,6 +51,8 @@
 
 KDraw Draw;
 
+using namespace eSize;
+
 /* Globals */
 #define MSG_ROWS 4
 #define MSG_COLS 36
@@ -104,7 +106,7 @@ void KDraw::set_window(SDL_Window* _window) {
   renderer = SDL_CreateRenderer(window, -1, 0);
   texture = SDL_CreateTexture(renderer, pix,
 			      SDL_TEXTUREACCESS_STREAMING,
-			      eSize::KQ_SCREEN_W, eSize::KQ_SCREEN_H);
+			      SCREEN_W, SCREEN_H);
   format = SDL_AllocFormat(pix);
 }
 
@@ -131,20 +133,14 @@ void KDraw::blit2screen(int xw, int yw)
 #endif
     int pitch;
     void* pixels;
-    /* DEBUG stuff */
-    static int q = 0;
-    show_frate = true;
-    double_buffer->setpixel(q % double_buffer->width, 100, 0); 
-    double_buffer->setpixel(++q % double_buffer->width, 100, 255);
-    /* END DEBUG stuff */
     int rc = SDL_LockTexture(texture, nullptr, &pixels, &pitch);
     if (rc < 0) {
       Game.program_death("Could not lock screen texture");
     }
-    double_buffer->to_rgba32(format, pixels, pitch);
+    SDL_Rect src{xw, yw, SCREEN_W, SCREEN_H};
+    double_buffer->to_rgba32(&src, format, pixels, pitch);
     SDL_UnlockTexture(texture);
-    SDL_Rect src{xw, yw, eSize::KQ_SCREEN_W, eSize::KQ_SCREEN_H};
-    rc = SDL_RenderCopy(renderer, texture, &src, nullptr);
+    rc = SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     if (rc < 0) {
       Game.program_death("Could not render");
     }
@@ -1409,8 +1405,8 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                 }
             }
             winheight = n_opt > 4 ? 4 : n_opt;
-            winx = xofs + (KQ_SCREEN_W - winwidth * 8) / 2;
-            winy = yofs + (KQ_SCREEN_H - 10) - winheight * 12;
+            winx = xofs + (SCREEN_W - winwidth * 8) / 2;
+            winy = yofs + (SCREEN_H - 10) - winheight * 12;
             running = 1;
             while (running)
             {
@@ -1645,11 +1641,11 @@ void KDraw::set_textpos(uint32_t entity_index)
         {
             gbbx = 296 - (gbbw * 8);
         }
-        if (gby > -16 && gby < KQ_SCREEN_H)
+        if (gby > -16 && gby < SCREEN_H)
         {
             if (g_ent[entity_index].facing == 1 || g_ent[entity_index].facing == 2)
             {
-                if (gbbh * 12 + gby + 40 <= KQ_SCREEN_H - 8)
+                if (gbbh * 12 + gby + 40 <= SCREEN_H - 8)
                 {
                     gbby = gby + 24;
                 }

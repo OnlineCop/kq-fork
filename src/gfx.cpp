@@ -6,10 +6,14 @@
 
 COLOR_MAP* color_map = &cmap;
 extern PALETTE pal;
-static RGB current_palette[256];
+static RGB current_palette[PAL_SIZE];
 void set_palette(RGB* clrs) {
-  memcpy(current_palette, clrs, sizeof(current_palette));
+  std::copy(clrs, clrs+PAL_SIZE, current_palette);
 }
+void set_palette_range(PALETTE src, int from, int to) {
+  std::copy(src+from, src+to, current_palette+from);
+}
+
 void get_palette(RGB* clrs) {
   memcpy(clrs, current_palette, sizeof(current_palette));
 }
@@ -230,9 +234,14 @@ void draw_trans_sprite(Raster* dest, Raster* src, int x, int y)
     // todo
 }
 
-void Raster::to_rgba32(SDL_PixelFormat* format, void* pixels, int stride)
+void Raster::to_rgba32(SDL_Rect* src, SDL_PixelFormat* format, void* pixels, int stride)
 {
   Uint32 rgbas[256];
+  static SDL_Rect defl;
+  if (!src) {
+    defl = {0, 0, width, height};
+    src = &defl;
+  }
   for (int i=0; i<256; ++i) {
     Uint8 r = 4 * current_palette[i].r;
     Uint8 g = 4 * current_palette[i].g;
@@ -241,15 +250,15 @@ void Raster::to_rgba32(SDL_PixelFormat* format, void* pixels, int stride)
     rgbas[i] = SDL_MapRGB(format, r, g, b);
   }
  
-  for (int y=0; y<240; ++y) {
+  for (int y=0; y<src->h; ++y) {
     Uint32* line = reinterpret_cast<Uint32*>(reinterpret_cast<Uint8*>(pixels) + stride * y);
-    for (int x = 0; x<320; ++x) {
-      line[x] = rgbas[data[x + y * this->stride]];
+    int sy = y + src->y;
+    for (int x = 0; x<src->w; ++x) {
+      int sx = x + src->x;
+      line[x] = rgbas[data[sx + sy * this->stride]];
     }
   }   
 }
-
-int retrace_count;
 
 void textprintf(Raster*, void*, int, int, int, const char* fmt, ...) {
   char buffer[1024];

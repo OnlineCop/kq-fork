@@ -27,14 +27,7 @@
  * \date ??????
  */
 
-/* Have to undef some stuff because Allegro defines it - thanks guys
- */
 #ifdef HAVE_CONFIG_H
-#undef PACKAGE_TARNAME
-#undef PACKAGE_VERSION
-#undef PACKAGE_NAME
-#undef PACKAGE_STRING
-#undef PACKAGE_BUGREPORT
 #include "config.h"
 #endif
 
@@ -50,11 +43,8 @@
 
 #include <cstdint>
 #include <string>
-using std::string;
-
+#include <SDL.h>
 #include "gettext.h"
-#define _(s) gettext(s)
-
 #include "constants.h"
 #include "entity.h"
 #include "enums.h"
@@ -64,7 +54,23 @@ using std::string;
 #include "player.h"
 #include "structs.h"
 
+#define _(s) gettext(s)
+
+using std::string;
+
 class Raster;
+
+class KTime {
+public:
+  KTime(int seconds) : value(seconds) {}
+  int hours() const { return value / 3600;}
+  int minutes() const { return (value / 60) % 60;}
+  int seconds() const { return value % 60;}
+  int total_seconds() const { return value;}
+private:
+  int value;
+};
+
 
 class KGame
 {
@@ -348,11 +354,24 @@ class KGame
    * @return true if ready for next frame
    */
   bool ProcessEvents();
+  /** Get current game time.
+   * this is the elapsed time in the game;
+   * \return the time
+   */
+  KTime GetGameTime() const;
+  /*! Set the current game time
+   * This resets the clock, e.g. when a save-game is loaded
+   * \param time the new time
+   */
+  void SetGameTime(const KTime&);
   public:
     const string WORLD_MAP;
     /*! The number of frames per second */
     const int32_t KQ_TICKS;
-
+  // Game time in seconds
+  int game_time;
+  // Instant the game started
+  Uint64 game_start_ticks;
   protected:
     /*! Name of the current map */
     string m_curmap;
@@ -415,7 +434,7 @@ extern KFighter tempa, tempd;
 extern int shin[12], display_attack_string;
 extern string shop_name;
 extern char attack_string[39];
-extern volatile int timer, ksec, kmin, khr, animation_count, timer_count;
+extern volatile int timer, /*ksec, kmin, khr,*/ animation_count, timer_count;
 extern COLOR_MAP cmap;
 extern uint8_t can_run, do_staff_effect, display_desc;
 extern uint8_t draw_background, draw_middle, draw_foreground, draw_shadow;

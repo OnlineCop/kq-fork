@@ -467,8 +467,8 @@ static int move(t_entity target_entity, int dx, int dy)
         return 0;
     }
 
-    tile_x = ent->x / TILE_W;
-    tile_y = ent->y / TILE_H;
+    tile_x = ent->x / eSize::TILE_W;
+    tile_y = ent->y / eSize::TILE_H;
     oldfacing = ent->facing;
     if (dx < 0)
     {
@@ -718,8 +718,8 @@ void place_ent(t_entity en, int ex, int ey)
 {
     g_ent[en].tilex = ex;
     g_ent[en].tiley = ey;
-    g_ent[en].x = g_ent[en].tilex * TILE_W;
-    g_ent[en].y = g_ent[en].tiley * TILE_H;
+    g_ent[en].x = g_ent[en].tilex * eSize::TILE_W;
+    g_ent[en].y = g_ent[en].tiley * eSize::TILE_H;
 }
 
 /*! \brief Process movement for player
@@ -836,19 +836,19 @@ static void process_entity(t_entity target_entity)
     }
     else /* if (.moving==0) */
     {
-        if (ent->tilex * TILE_W > ent->x)
+        if (ent->tilex * eSize::TILE_W > ent->x)
         {
             ++ent->x;
         }
-        if (ent->tilex * TILE_W < ent->x)
+        if (ent->tilex * eSize::TILE_W < ent->x)
         {
             --ent->x;
         }
-        if (ent->tiley * TILE_H > ent->y)
+        if (ent->tiley * eSize::TILE_H > ent->y)
         {
             ++ent->y;
         }
-        if (ent->tiley * TILE_H < ent->y)
+        if (ent->tiley * eSize::TILE_H < ent->y)
         {
             --ent->y;
         }

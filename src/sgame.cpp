@@ -67,7 +67,7 @@ s_sgstats s_sgstats::get_current()
 {
     s_sgstats stats;
     stats.gold = Game.GetGold();
-    stats.time = khr * 60 + kmin;
+    stats.time = Game.GetGameTime().total_seconds()/60;
     stats.num_characters = numchrs;
     for (auto i = 0U; i < numchrs; ++i)
     {
@@ -106,6 +106,7 @@ int KSaveGame::confirm_action(void)
     fullblit(back, double_buffer);
     while (!stop)
     {
+        Game.ProcessEvents();
         PlayerInput.readcontrols();
         if (PlayerInput.balt)
         {
@@ -117,7 +118,6 @@ int KSaveGame::confirm_action(void)
             Game.unpress();
             return 0;
         }
-        Game.ProcessEvents();
     }
     return 0;
 }
@@ -195,7 +195,6 @@ int KSaveGame::load_game(void)
     sprintf(strbuf, "sg%d.xml", save_ptr);
     Disk.load_game_from_file(kqres(SAVE_DIR, strbuf).c_str());
     timer_count = 0;
-    ksec = 0;
     hold_fade = 0;
     Game.change_map(Game.GetCurmap(), g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
     /* Set music and sound volume */
@@ -256,15 +255,12 @@ int KSaveGame::saveload(int am_saving)
     int stop = 0;
 
     // Have no more than 5 savestate boxes onscreen, but fewer if NUMSG < 5
-    max_onscreen = 5;
-    if (max_onscreen > NUMSG)
-    {
-        max_onscreen = NUMSG;
-    }
+    max_onscreen = std::min(5, NUMSG);
 
     play_effect(SND_MENU, 128);
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         double_buffer->fill(0);
         show_sgstats(am_saving);
@@ -435,7 +431,7 @@ void KSaveGame::show_sgstats(int saving)
     }
     if (top_pointer < NUMSG - max_onscreen)
     {
-        draw_sprite(double_buffer, dnptr, 32, KQ_SCREEN_H - 8);
+      draw_sprite(double_buffer, dnptr, 32, eSize::SCREEN_H - 8);
     }
 
     for (sg = top_pointer; sg < top_pointer + max_onscreen; sg++)
@@ -592,7 +588,7 @@ int KSaveGame::start_menu(bool skip_splash)
 	    Draw.blit2screen(0,0);
 	    }
 	  }
-	  do_transition(TRANS_FADE_WHITE, 1);
+	  do_transition(eTransitionFade::TO_WHITE, 1);
         }
         clear_to_color(double_buffer, 15);
         Draw.blit2screen(0, 0);
@@ -603,7 +599,7 @@ int KSaveGame::start_menu(bool skip_splash)
 	  auto now = SDL_GetTicks64();
 	  if (Game.ProcessEvents()) {
             clear_to_color(double_buffer, 15 - fade_color);
-            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), KQ_SCREEN_W, 124);
+            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), eSize::SCREEN_W, 124);
             Draw.blit2screen(0, 0);
 	  }
 	  if (now - start_time > 100) {
@@ -628,7 +624,7 @@ int KSaveGame::start_menu(bool skip_splash)
         if (redraw)
         {
             clear_bitmap(double_buffer);
-            masked_blit(title, double_buffer, 0, 0, 0, 0, KQ_SCREEN_W, 124);
+            masked_blit(title, double_buffer, 0, 0, 0, 0, eSize::SCREEN_W, 124);
             Draw.menubox(double_buffer, 112, 116, 10, 4, BLUE);
             Draw.print_font(double_buffer, 128, 124, _("Continue"), FNORMAL);
             Draw.print_font(double_buffer, 128, 132, _("New Game"), FNORMAL);
@@ -771,18 +767,17 @@ int KSaveGame::system_menu(void)
         Draw.blit2screen(xofs, yofs);
         PlayerInput.readcontrols();
 
-        // TT:
-        // When pressed, 'up' or 'down' == 1.  Otherwise, they equal 0.  So:
-        //    ptr = ptr - up + down;
-        // will correctly modify the pointer, but with less code.
-        if (PlayerInput.up || PlayerInput.down)
+        if (PlayerInput.up)
         {
-            ptr = ptr + PlayerInput.up - PlayerInput.down;
-            if (ptr < 0)
+            if (--ptr < 0)
             {
                 ptr = 3;
             }
-            else if (ptr > 3)
+	    play_effect(SND_CLICK, 128);
+            Game.unpress();
+	} else 
+	if (PlayerInput.down) {
+            if (++ptr > 3)
             {
                 ptr = 0;
             }

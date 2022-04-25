@@ -1632,13 +1632,13 @@ static int KQ_dark_mbox(lua_State* L)
 
 static int KQ_do_fadein(lua_State* L)
 {
-    do_transition(TRANS_FADE_IN, (int)lua_tonumber(L, 1));
+    do_transition(eTransitionFade::IN, (int)lua_tonumber(L, 1));
     return 0;
 }
 
 static int KQ_do_fadeout(lua_State* L)
 {
-    do_transition(TRANS_FADE_OUT, (int)lua_tonumber(L, 1));
+    do_transition(eTransitionFade::OUT, (int)lua_tonumber(L, 1));
     return 0;
 }
 

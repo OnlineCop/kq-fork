@@ -134,7 +134,8 @@ void KMenu::draw_mainmenu(int swho)
     Draw.print_font(double_buffer, 212 + xofs, 136 + yofs, _("Time:"), FGOLD);
     Draw.print_font(double_buffer, 212 + xofs, 164 + yofs, _("Gold:"), FGOLD);
     /* PH: print time as h:mm */
-    sprintf(strbuf, "%d:%02d", khr, kmin);
+    auto gt = Game.GetGameTime();
+    sprintf(strbuf, "%d:%02d", gt.hours(), gt.minutes());
     Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 144 + yofs, strbuf, FNORMAL);
     sprintf(strbuf, "%d", Game.GetGold());
     Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8) + xofs, 172 + yofs, strbuf, FNORMAL);
@@ -257,6 +258,7 @@ void KMenu::menu(void)
     timer_count = 0;
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         draw_mainmenu(-1);

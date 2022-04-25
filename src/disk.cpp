@@ -898,8 +898,7 @@ int KDisk::load_general_props_xml(XMLElement* node)
             else if (property->Attribute("name", "time"))
             {
                 int tt = property->IntAttribute("value");
-                kmin = tt % 60;
-                khr = (tt - kmin) / 60;
+		Game.SetGameTime(KTime(tt * 60));
             }
             else if (property->Attribute("name", "mapname"))
             {

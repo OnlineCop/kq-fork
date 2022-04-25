@@ -318,6 +318,8 @@ s_progress progresses[SIZE_PROGRESS] = {
 KGame::KGame()
     : WORLD_MAP("main")
     , KQ_TICKS(100)
+    , game_time(0)
+    , game_start_ticks(0)
     , gp(0)
 {
 }
@@ -359,8 +361,8 @@ void KGame::activate(void)
         break;
     }
 
-    zx = g_ent[0].x / TILE_W;
-    zy = g_ent[0].y / TILE_H;
+    zx = g_ent[0].x / eSize::TILE_W;
+    zy = g_ent[0].y / eSize::TILE_H;
 
     looking_at_x += zx;
     looking_at_y += zy;
@@ -502,13 +504,13 @@ void KGame::allocate_stuff(void)
         }
     }
 
-    double_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "double_buffer");
-    back = alloc_bmp(SCREEN_W2, SCREEN_H2, "back");
-    fx_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "fx_buffer");
+    double_buffer = alloc_bmp(eSize::SCREEN_W2, eSize::SCREEN_H2, "double_buffer");
+    back = alloc_bmp(eSize::SCREEN_W2, eSize::SCREEN_H2, "back");
+    fx_buffer = alloc_bmp(eSize::SCREEN_W2, eSize::SCREEN_H2, "fx_buffer");
 
     for (p = 0; p < MAX_SHADOWS; p++)
     {
-        shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
+        shadow[p] = alloc_bmp(eSize::TILE_W, eSize::TILE_H, "shadow[x]");
     }
 
     for (p = 0; p < 8; p++)
@@ -534,7 +536,7 @@ void KGame::allocate_stuff(void)
 
     for (p = 0; p < MAX_TILES; p++)
     {
-        map_icons[p] = alloc_bmp(TILE_W, TILE_H, "map_icons[x]");
+        map_icons[p] = alloc_bmp(eSize::TILE_W, eSize::TILE_H, "map_icons[x]");
     }
     allocate_credits();
 }
@@ -871,7 +873,8 @@ void KGame::kwait(int dtime)
 
     while (cnt < dtime)
     {
-        Music.poll_music();
+      Game.ProcessEvents();
+      Music.poll_music();
         while (timer_count > 0)
         {
             Music.poll_music();
@@ -880,10 +883,8 @@ void KGame::kwait(int dtime)
             process_entities();
         }
         Game.do_check_animation();
-	if (Game.ProcessEvents()) {
         Draw.drawmap();
         Draw.blit2screen(xofs, yofs);
-	}
 #ifdef DEBUGMODE
         if (debugging > 0)
         {
@@ -979,6 +980,7 @@ int main(int argc, const char* argv[])
         case 0: /* Continue */
             break;
         case 1: /* New game */
+	  Game.SetGameTime(0);
             Game.change_map("starting", 0, 0, 0, 0);
             if (kqrandom)
             {
@@ -1027,19 +1029,13 @@ int main(int argc, const char* argv[])
                 }
 #endif
                 if (alldead)
-                {/* TODO
-                    clear(screen);
-		 */
-                    do_transition(TRANS_FADE_IN, 16);
+                {
+                    do_transition(eTransitionFade::IN, 16);
                     stop = 1;
                 }
             }
         }
     }
-    /*
-remove_int(my_counter);
-    remove_int(time_counter);
-    */
     Game.deallocate_stuff();
     return EXIT_SUCCESS;
 }
@@ -1048,6 +1044,7 @@ remove_int(my_counter);
 /*! \brief SDL timer callback
  *
  * New interrupt handler set to keep game time.
+ * Called at 1000/KQ_TICKS aka 10 fps
  */
 Uint32 my_counter(Uint32 interval, void*)
 {
@@ -1061,7 +1058,6 @@ Uint32 my_counter(Uint32 interval, void*)
 
     animation_count++;
     timer_count++;
-    retrace_count += 1000/interval;
     return interval;
 }
 
@@ -1165,19 +1161,19 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     Music.play_music(g_map.song_file, 0);
-    mx = g_map.xsize * TILE_W - (19 * TILE_W);
+    mx = g_map.xsize * eSize::TILE_W - (19 * eSize::TILE_W);
     /*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
-    my = g_map.ysize * TILE_H - (16 * TILE_H);
+    my = g_map.ysize * eSize::TILE_H - (16 * eSize::TILE_H);
 
     if (mvx == 0 && mvy == 0)
     {
-        viewport_x_coord = g_map.stx * TILE_W;
-        viewport_y_coord = g_map.sty * TILE_H;
+        viewport_x_coord = g_map.stx * eSize::TILE_W;
+        viewport_y_coord = g_map.sty * eSize::TILE_H;
     }
     else
     {
-        viewport_x_coord = mvx * TILE_W;
-        viewport_y_coord = mvy * TILE_H;
+        viewport_x_coord = mvx * eSize::TILE_W;
+        viewport_y_coord = mvy * eSize::TILE_H;
     }
 
     calc_viewport();
@@ -1219,7 +1215,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     {
         Draw.drawmap();
         Draw.blit2screen(xofs, yofs);
-        do_transition(TRANS_FADE_IN, 4);
+        do_transition(eTransitionFade::IN, 4);
     }
 
     use_sstone = g_map.use_sstone;
@@ -1482,11 +1478,11 @@ void KGame::startup(void)
     clear_bitmap(obj_mesh);
     for (q = 0; q < 16; q += 2)
     {
-        for (p = 0; p < TILE_W; p += 2)
+        for (p = 0; p < eSize::TILE_W; p += 2)
         {
             putpixel(obj_mesh, p, q, 255);
         }
-        for (p = 1; p < TILE_W; p += 2)
+        for (p = 1; p < eSize::TILE_W; p += 2)
         {
             putpixel(obj_mesh, p, q + 1, 255);
         }
@@ -1604,7 +1600,7 @@ void KGame::warp(int wtx, int wty, int fspeed)
 
     if (hold_fade == 0)
     {
-        do_transition(TRANS_FADE_OUT, fspeed);
+        do_transition(eTransitionFade::OUT, fspeed);
     }
 
     if (numchrs == 0)
@@ -1624,8 +1620,8 @@ void KGame::warp(int wtx, int wty, int fspeed)
         g_ent[entity_index].framectr = 0;
     }
 
-    viewport_x_coord = wtx * TILE_W;
-    viewport_y_coord = wty * TILE_H;
+    viewport_x_coord = wtx * eSize::TILE_W;
+    viewport_y_coord = wty * eSize::TILE_H;
 
     calc_viewport();
     Draw.drawmap();
@@ -1633,7 +1629,7 @@ void KGame::warp(int wtx, int wty, int fspeed)
 
     if (hold_fade == 0)
     {
-        do_transition(TRANS_FADE_IN, fspeed);
+        do_transition(eTransitionFade::IN, fspeed);
     }
 
     timer_count = 0;
@@ -1643,8 +1639,8 @@ void KGame::zone_check(void)
 {
     uint16_t stc, zx, zy;
 
-    zx = g_ent[0].x / TILE_W;
-    zy = g_ent[0].y / TILE_H;
+    zx = g_ent[0].x / eSize::TILE_W;
+    zy = g_ent[0].y / eSize::TILE_H;
 
     if (save_spells[P_REPULSE] > 0)
     {
@@ -1708,6 +1704,8 @@ int KGame::SetGold(int amount)
 
 bool KGame::ProcessEvents() {
   bool wait_timer = true;
+  extern void reset_watchdog();
+  reset_watchdog();
     while (wait_timer) {
     SDL_Event event;
     int rc = SDL_WaitEvent(&event);
@@ -1727,6 +1725,16 @@ bool KGame::ProcessEvents() {
 
   key = SDL_GetKeyboardState(&key_count);
   return true;
+}
+
+void KGame::SetGameTime(const KTime& t) {
+  game_time = t.total_seconds();
+  game_start_ticks = SDL_GetTicks64();
+  
+}
+KTime KGame::GetGameTime() const {
+  int elapsed = (SDL_GetTicks64() - game_start_ticks)/1000;
+  return {game_time+elapsed};
 }
 /*! \mainpage KQ - The Classic Computer Role-Playing Game
  *

@@ -38,6 +38,9 @@ struct s_sgstats
     static s_sgstats get_current(void);
 };
 
+/* Number of save game slots */
+#define NUMSG 20
+
 class KSaveGame
 {
   public:
@@ -54,8 +57,6 @@ class KSaveGame
     int confirm_action(void);
 
   protected:
-    /* Number of save game slots */
-    const static int NUMSG = 20;
 
     /* These describe the save slots. Number of characters, gp, etc */
     /* They are used to make the save menu prettier. */
