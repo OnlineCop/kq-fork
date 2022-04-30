@@ -230,7 +230,7 @@ class KGame
      *
      * \returns name of the next event or NULL if none is ready
      */
-    char* get_timer_event(void);
+    const char* get_timer_event(void);
 
     /* \brief Add a new timer event to the list
      *

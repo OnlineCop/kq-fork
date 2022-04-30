@@ -126,6 +126,7 @@ static void choose_equipment(int c, int slot)
 
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         draw_equipmenu(c, 0);
@@ -545,6 +546,7 @@ void equip_menu(uint32_t c)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         draw_equipmenu(c, sl);

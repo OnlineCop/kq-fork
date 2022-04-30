@@ -15,7 +15,7 @@ void set_palette_range(PALETTE src, int from, int to) {
 }
 
 void get_palette(RGB* clrs) {
-  memcpy(clrs, current_palette, sizeof(current_palette));
+  std::copy(current_palette, current_palette+PAL_SIZE, clrs);
 }
 Raster::Raster(uint16_t w, uint16_t h)
     : width(w)

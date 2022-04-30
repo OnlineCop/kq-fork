@@ -67,6 +67,7 @@ void camp_item_menu(void)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         draw_itemmenu(ptr, pptr, sel);
@@ -929,7 +930,7 @@ static void sort_inventory(void)
 static void sort_items(void)
 {
     s_inventory t_inv[MAX_INV];
-    static int type_order[7] = { 6, 0, 1, 2, 3, 4, 5 };
+    static const int type_order[7] = { 6, 0, 1, 2, 3, 4, 5 };
     int inventory_index = 0;
 
     join_items();

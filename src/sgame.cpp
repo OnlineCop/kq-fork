@@ -486,80 +486,40 @@ void KSaveGame::show_sgstats(int saving)
         }
     }
 }
-
-/*! \brief Splash screen state machine
- * Call step() repeatedly until it returns true
- */
-class KSplash {
-public:
-  KSplash(Raster*);
-  bool step();
-private:
-  int state = 0;
-  Raster* dest;
-  std::unique_ptr<Raster> staff;
-  std::unique_ptr<Raster> dudes;
-  std::unique_ptr<Raster> tdudes;
-  Raster* title;
-  Raster* splash;
+static void show_splash_screen() {
   Uint64 ticks;
-};
-
-KSplash::KSplash(Raster* _dest) : dest(_dest) {
-  title = get_cached_image("title.png");
-  splash = get_cached_image("kqt.png");
-    staff= std::make_unique<Raster>(72, 226);
-  dudes = std::make_unique<Raster>(112, 112);
-  tdudes = std::make_unique<Raster>(112, 112);
+  Raster* splash = get_cached_image("kqt.png");
+  auto  staff= std::make_unique<Raster>(72, 226);
+  auto dudes = std::make_unique<Raster>(112, 112);
+  auto tdudes = std::make_unique<Raster>(112, 112);
   blit(splash, staff.get(), 0, 7, 0, 0, 72, 226);
   blit(splash, dudes.get(), 80, 0, 0, 0, 112, 112);
-}
-  
-bool KSplash::step() {
-  int a;
   auto now = SDL_GetTicks64();
-  switch (state) {
-  case 0: // Draw small staff
     ticks = now;
-    dest->fill(0x000000);
-    blit(staff.get(), dest, 0, 0, 124, 22, 72, 226);
-    state = 1;
-    break;
-  case 1: // Wait one second
-    if (now > 1000 + ticks) {
-      state = 2;
-      ticks = now;
-    }
-    break;
-  case 2: // Zoom in the staff
-    a = (now - ticks) / 200;
-    stretch_blit(staff.get(), dest, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64),
+    double_buffer->fill(0x000000);
+    blit(staff.get(), double_buffer, 0, 0, 124, 22, 72, 226);
+    Draw.blit2screen(0,0);
+    kq_wait(1000);
+    for (int a = 0; a<42; ++a) {
+      kq_wait(100);
+    stretch_blit(staff.get(), double_buffer, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64),
 		   226 + (a * 192));
-      if (a >= 42) { state = 3; ticks = now;} 
-      
-    break;
-  case 3: // Fade in the dudes
-    a = (now - ticks) / 500;
+    Draw.blit2screen(0,0);
+    }
+
+    for (int a=0; a<5; ++a) {
     Draw.color_scale(dudes.get(), tdudes.get(), 53 - a, 53 + a);
-    draw_sprite(dest, tdudes.get(), 106, 64);
-    if (a >= 5) {
-      ticks = now;
-      state = 4;
+    draw_sprite(double_buffer, tdudes.get(), 106, 64);
+    Draw.blit2screen(0,0);
+    kq_wait(300);
     }
-    break;
-  case 4: // Draw dudes and wait one second
-    draw_sprite(dest, dudes.get(), 106, 64);
-    if (now > ticks + 1000) {
-    state = 5;
-    }
-    break;
-  default: // DONE
-    state = 0;
-    return true;
-    break;
-  }
-  return false;
+    draw_sprite(double_buffer, dudes.get(), 106, 64);
+    Draw.blit2screen(0,0);
+    kq_wait(1000);
+    do_transition(eTransitionFade::TO_WHITE, 1);
+
 }
+
 /*! \brief Main menu screen
  *
  * This is the main menu... just display the opening and then the menu and
@@ -582,13 +542,7 @@ int KSaveGame::start_menu(bool skip_splash)
         /* Play splash (with the staff and the heroes in circle */
         if (!skip_splash)
         {
-	  KSplash splash(double_buffer);
-	  while (!splash.step()) {
-	    if (Game.ProcessEvents()) {
-	    Draw.blit2screen(0,0);
-	    }
-	  }
-	  do_transition(eTransitionFade::TO_WHITE, 1);
+	  show_splash_screen();
         }
         clear_to_color(double_buffer, 15);
         Draw.blit2screen(0, 0);

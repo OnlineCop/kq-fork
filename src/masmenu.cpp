@@ -144,6 +144,7 @@ void camp_spell_menu(int c)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         camp_draw_spell_menu(c, pg[smove], ptr[smove]);

@@ -179,7 +179,6 @@ Raster* image_cache::get(const std::string& name)
     auto entry = cache.find(name);
     if (entry == cache.end())
     {
-        printf("Get your %s\n", name.c_str());
         // Not found, try to load
         Raster* bmp = bmp_from_png(kqres(DATA_DIR, name));
         if (!bmp)

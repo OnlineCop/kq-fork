@@ -128,6 +128,7 @@ void KDraw::blit2screen(int xw, int yw)
       double_buffer->fill(xw, yw, 24, 8, 0);
       print_font(double_buffer, xw, yw, fbuf, FNORMAL);
     }
+    ++animation_count;
 #ifdef DEBUGMODE
     display_console(xw, yw);
 #endif
@@ -355,6 +356,9 @@ void KDraw::draw_char(int xw, int yw)
             fighter_frame_add = g_ent[fighter_index].framectr > 10 ? 1 : 0;
             fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + fighter_frame_add;
         }
+	//	extern int _cycle;
+	//	if (fighter_index == 0) {printf("%d %zu\n", _cycle, fighter_frame);}
+
         if (fighter_index < PSIZE && fighter_index < numchrs)
         {
             /* It's a hero */

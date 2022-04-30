@@ -61,11 +61,7 @@ KMenu::KMenu()
  */
 void KMenu::add_questinfo(const string& key, const string& text)
 {
-    KQuestItem* newItem = new KQuestItem(key, text);
-    if (newItem)
-    {
-        quest_list.push_back(newItem);
-    }
+  quest_list.push_back({key, text});
 }
 
 /*! \brief Check for level-ups
@@ -208,10 +204,6 @@ bool KMenu::give_xp(int pl, int the_xp, int ls)
  */
 void KMenu::clear_quests()
 {
-    for (KQuestItem* item : quest_list)
-    {
-        delete item;
-    }
     quest_list.clear();
 }
 
@@ -379,6 +371,8 @@ void KMenu::display_quest_window(void)
     size_t currentQuestSelected = 0;
     while (true)
     {
+      Game.ProcessEvents();
+      Game.do_check_animation();
         timer_count = 0;
         /* Redraw the map below the open menu */
         Draw.drawmap();
@@ -392,7 +386,7 @@ void KMenu::display_quest_window(void)
             {
                 Draw.print_font(double_buffer, xofs + MenuboxLeftOffset + 2 * FontWidthFNORMAL,
                                 yofs + UpperMenuboxTopOffset + FontHeightFNORMAL * (someRandomIndex + 1),
-                                quest_list[someRandomIndex + base]->key.c_str(), FNORMAL);
+                                quest_list[someRandomIndex + base].key.c_str(), FNORMAL);
             }
         }
         // Show the pointer beside the selected entry
@@ -404,7 +398,7 @@ void KMenu::display_quest_window(void)
         {
             Draw.print_font(double_buffer, xofs + MenuboxLeftOffset + 1 * FontWidthFNORMAL,
                             yofs + LowerMenuboxTopOffset + 1 * FontHeightFNORMAL,
-                            quest_list[currentQuestSelected]->text.c_str(), FNORMAL);
+                            quest_list[currentQuestSelected].text.c_str(), FNORMAL);
         }
         Draw.blit2screen(xofs, yofs);
         PlayerInput.readcontrols();
@@ -523,6 +517,7 @@ void KMenu::spec_items(void)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         Draw.menubox(double_buffer, 72 + xofs, 12 + yofs, 20, 1, BLUE);

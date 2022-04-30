@@ -742,6 +742,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
     bool stop = false;
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         if (select_all)
         {
@@ -857,6 +858,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
     Draw.print_font(double_buffer, 24 + xofs, 80 + yofs, _("In party:"), FGOLD);
     while (running)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         /* Draw everything */
         /* draw the row of available heroes */
@@ -1055,6 +1057,7 @@ int select_player(void)
     ptr = 0;
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         kmenu.draw_mainmenu(ptr);

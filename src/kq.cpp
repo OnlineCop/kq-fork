@@ -80,7 +80,6 @@
 #include "random.h"
 
 static Uint32 my_counter(Uint32, void*);
-static Uint32 time_counter(Uint32, void*);
 
 KGame Game;
 
@@ -200,7 +199,7 @@ char attack_string[39];
  * hours, minutes and seconds. They're all used in the my_counter() timer
  * function just below
  */
-volatile int timer = 0, ksec = 0, kmin = 0, khr = 0, timer_count = 0, animation_count = 0;
+volatile int timer = 0, timer_count = 0, animation_count = 0;
 
 /*! Current colour map */
 COLOR_MAP cmap;
@@ -258,8 +257,8 @@ int every_hit_999 = 0;
  */
 static struct timer_event
 {
-    char name[32]; /*!< Name of the event */
-    int when;      /*!< Time when it will trigger */
+    string name; /*!< Name of the event */
+    int when;      /*!< Absolute time when it will trigger */
 } timer_events[5];
 
 static int next_event_time; /*!< The time the next event will trigger */
@@ -317,7 +316,7 @@ s_progress progresses[SIZE_PROGRESS] = {
 
 KGame::KGame()
     : WORLD_MAP("main")
-    , KQ_TICKS(100)
+    , KQ_TICKS(30)
     , game_time(0)
     , game_start_ticks(0)
     , gp(0)
@@ -404,19 +403,18 @@ void KGame::activate(void)
 
 int KGame::add_timer_event(const char* n, int delta)
 {
-    int w = delta + ksec;
+  int w = delta + game_time;
     int i;
 
     for (i = 0; i < 5; ++i)
     {
-        if (*timer_events[i].name == '\0')
+      if (timer_events[i].name.empty())
         {
-            memcpy(timer_events[i].name, n, sizeof(timer_events[i].name));
+	  timer_events[i] = {n, w};
             if (w < next_event_time)
             {
                 next_event_time = w;
             }
-            timer_events[i].when = w;
             return i;
         }
     }
@@ -807,41 +805,36 @@ void KGame::deallocate_stuff(void)
 #endif
 }
 
-char* KGame::get_timer_event(void)
+const char* KGame::get_timer_event(void)
 {
-    static char buf[32];
-    int now = ksec;
-    int i;
+    static string buf;
     int next = INT_MAX;
-    struct timer_event* t;
 
-    if (now < next_event_time)
+    if (game_time < next_event_time)
     {
-        return NULL;
+      return nullptr;
     }
 
-    *buf = '\0';
-    for (i = 0; i < 5; ++i)
+    for (auto& t : timer_events)
     {
-        t = &timer_events[i];
-        if (*t->name)
+      if (!t.name.empty())
         {
-            if (t->when <= now)
+            if (t.when <= game_time)
             {
-                memcpy(buf, t->name, sizeof(buf));
-                *t->name = '\0';
+	      std::swap(buf, t.name);
+	      t.name = string{};
             }
             else
             {
-                if (t->when < next)
+                if (t.when < next)
                 {
-                    next = t->when;
+                    next = t.when;
                 }
             }
         }
     }
     next_event_time = next;
-    return *buf ? buf : NULL;
+    return buf.empty() ? nullptr : buf.c_str();
 }
 
 size_t KGame::in_party(ePIDX pn)
@@ -873,7 +866,7 @@ void KGame::kwait(int dtime)
 
     while (cnt < dtime)
     {
-      Game.ProcessEvents();
+      ProcessEvents();
       Music.poll_music();
         while (timer_count > 0)
         {
@@ -942,7 +935,7 @@ void KGame::load_heroes(void)
         faces->blitTo(players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
     }
 }
-
+int _cycle = 0;
 /*! \brief Main function
  *
  * Well, this one is pretty obvious.
@@ -1003,12 +996,9 @@ int main(int argc, const char* argv[])
             /* While the actual game is playing */
             while (!stop)
             {
+	      ++_cycle;
 	      Game.ProcessEvents();
-                while (timer_count > 0)
-                {
-                    timer_count--;
-                    process_entities();
-                }
+		process_entities();
                 Game.do_check_animation();
                 Draw.drawmap();
                 Draw.blit2screen(xofs, yofs);
@@ -1044,7 +1034,7 @@ int main(int argc, const char* argv[])
 /*! \brief SDL timer callback
  *
  * New interrupt handler set to keep game time.
- * Called at 1000/KQ_TICKS aka 10 fps
+ * Called at 1000/KQ_TICKS aka 10 milliseconds
  */
 Uint32 my_counter(Uint32 interval, void*)
 {
@@ -1053,11 +1043,11 @@ Uint32 my_counter(Uint32 interval, void*)
     if (timer >= Game.KQ_TICKS)
     {
         timer = 0;
-        ksec++;
+        //ksec++;
     }
 
-    animation_count++;
-    timer_count++;
+    //animation_count++;
+    //timer_count++;
     return interval;
 }
 
@@ -1240,9 +1230,9 @@ void KGame::program_death(const char* message, const char* extra)
 
 void KGame::reset_timer_events(void)
 {
-    for (int i = 0; i < 5; ++i)
+  for (auto& t : timer_events)
     {
-        *timer_events[i].name = '\0';
+      t.name = string{};
     }
     next_event_time = INT_MAX;
 }
@@ -1251,10 +1241,7 @@ void KGame::reset_world(void)
 {
     /* Reset timer */
     timer = 0;
-    khr = 0;
-    kmin = 0;
-    ksec = 0;
-
+    SetGameTime({0});
     /* Initialize special_items array */
     for (int i = 0; i < MAX_SPECIAL_ITEMS; i++)
     {
@@ -1467,8 +1454,6 @@ void KGame::startup(void)
     }
 
     SDL_AddTimer(1000/KQ_TICKS, my_counter, nullptr);
-    /* tick every minute */
-    SDL_AddTimer(1000 * 60, time_counter, nullptr);
 
     SaveGame.load_sgstats();
 
@@ -1491,23 +1476,6 @@ void KGame::startup(void)
 
     init_console();
 }
-
-/*! \brief Keep track of the time the game has been in play
- */
-Uint32 time_counter(Uint32 interval, void*)
-{
-    if (kmin < 60)
-    {
-        ++kmin;
-    }
-    else
-    {
-        kmin -= 60;
-        ++khr;
-    }
-    return interval;
-}
-
 
 void KGame::unpress(void)
 {
@@ -1533,7 +1501,7 @@ void KGame::wait_enter(void)
 
     while (!stop)
     {
-      Game.ProcessEvents();
+      ProcessEvents();
         PlayerInput.readcontrols();
         if (PlayerInput.balt)
         {
@@ -1559,7 +1527,7 @@ void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
     autoparty = 1;
     do
     {
-      Game.ProcessEvents();
+      ProcessEvents();
         while (timer_count > 0)
         {
             timer_count--;
@@ -1716,6 +1684,7 @@ bool KGame::ProcessEvents() {
       switch(event.type) {
       case SDL_USEREVENT: // this is our frame timer
 	wait_timer = false;
+	timer_count+=3;
 	break;
       default: // TODO all other events
 	break;

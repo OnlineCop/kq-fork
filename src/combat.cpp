@@ -59,6 +59,8 @@
 #include "structs.h"
 #include "timing.h"
 
+using namespace eSize;
+
 KCombat Combat;
 
 KCombat::KCombat()
@@ -346,7 +348,7 @@ void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
     }
 
     clear_bitmap(double_buffer);
-    blit(backart, double_buffer, 0, 0, 0, 0, eSize::SCREEN_W, eSize::SCREEN_H);
+    blit(backart, double_buffer, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
     if ((SelectAll == 0) && (x_coord_image_in_datafile > -1) && (y_coord_image_in_datafile > -1))
     {
@@ -727,9 +729,9 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
     for (zoom_step = 0; zoom_step < 9; zoom_step++)
     {
         Music.poll_music();
-        stretch_blit(temp.get(), double_buffer, zoom_step * (eSize::SCREEN_W / 20) + xofs,
-                     zoom_step * (eSize::SCREEN_H / 20) + yofs, eSize::SCREEN_W - (zoom_step * (eSize::SCREEN_W / 10)),
-                     eSize::SCREEN_H - (zoom_step * (eSize::SCREEN_H / 10)), 0, 0, eSize::SCREEN_W, eSize::SCREEN_H);
+        stretch_blit(temp.get(), double_buffer, zoom_step * (SCREEN_W / 20) + xofs,
+                     zoom_step * (SCREEN_H / 20) + yofs, SCREEN_W - (zoom_step * (SCREEN_W / 10)),
+                     SCREEN_H - (zoom_step * (SCREEN_H / 10)), 0, 0, SCREEN_W, SCREEN_H);
         Draw.blit2screen(xofs, yofs);
     }
 
@@ -772,6 +774,7 @@ void KCombat::do_round(void)
     timer_count = 0;
     while (combatend == eCombatResult::StillFighting)
     {
+      Game.ProcessEvents();
         if (timer_count >= 10)
         {
             RemainingBattleCounter += BATTLE_INC;
@@ -957,16 +960,14 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
     static const int AUGMENT_STRONG = 10;
     static const int AUGMENT_NORMAL = 0;
 
-    int xx;
-    int yy;
-    int ff;
     KFighter* fr = &fighter[fighter_index];
 
-    xx = fr->cx;
-    yy = fr->cy;
+    int xx = fr->cx;
+    int yy = fr->cy;
 
-    ff = (!fr->aframe) ? fr->facing : fr->aframe;
-
+    int ff = (!fr->aframe) ? fr->facing : fr->aframe;
+    auto cf = cframes[fighter_index][ff];
+    
     if (fr->IsStone())
     {
         // Green, for sickness
@@ -975,36 +976,33 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
 
     if (fr->IsEther())
     {
-        draw_trans_sprite(double_buffer, cframes[fighter_index][ff], xx, yy);
+        draw_trans_sprite(double_buffer, cf, xx, yy);
     }
     else
     {
         if (fighter_index < PSIZE)
         {
             // Your party
-            Raster* shad =
-	      new Raster(cframes[fighter_index][ff]->width * 2 / 3, cframes[fighter_index][ff]->height / 4);
+            Raster shad(cf->width * 2 / 3, cf->height / 4);
 
-            clear_bitmap(shad);
-            ellipsefill_fast(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2,
+            clear_bitmap(&shad);
+            ellipsefill_fast(&shad, shad.width / 2, shad.height / 2, shad.width / 2, shad.height / 2,
                              makecol(128, 128, 128));
-            draw_trans_sprite(double_buffer, shad, xx + (shad->width / 3) - 2,
-                              yy + cframes[fighter_index][ff]->height - shad->height / 2);
-            delete shad;
+            draw_trans_sprite(double_buffer, &shad, xx + (shad.width / 3) - 2,
+                              yy + cf->height - shad.height / 2);
         }
         else
         {
             // Enemy
-	  Raster* shad = new Raster(cframes[fighter_index][ff]->width, cframes[fighter_index][ff]->height / 4);
+	  Raster shad(cf->width, cf->height / 4);
 
-            clear_bitmap(shad);
-            ellipsefill_fast(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2,
+            clear_bitmap(&shad);
+            ellipsefill_fast(&shad, shad.width / 2, shad.height / 2, shad.width / 2, shad.height / 2,
                              makecol(128, 128, 128));
-            draw_trans_sprite(double_buffer, shad, xx, yy + cframes[fighter_index][ff]->height - shad->height / 2);
-            delete (shad);
+            draw_trans_sprite(double_buffer, &shad, xx, yy + cf->height - shad.height / 2);
         }
 
-        draw_sprite(double_buffer, cframes[fighter_index][ff], xx, yy);
+        draw_sprite(double_buffer, cf, xx, yy);
     }
 
     if (dcur == 1)
@@ -1027,12 +1025,12 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
             rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1, yy + fr->cl + 4, 40);
         }
 
-        else if ((ff <= AUGMENT_STRONGEST) && (ff > AUGMENT_STRONG))
+        else if (ff > AUGMENT_STRONG)
         {
             rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1, yy + fr->cl + 4, 104);
         }
 
-        else if ((ff <= AUGMENT_STRONG) && (ff > AUGMENT_NORMAL))
+        else if (ff > AUGMENT_NORMAL)
         {
             rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1, yy + fr->cl + 4, 24);
         }
@@ -1130,7 +1128,7 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
             Combat.battle_render(defend_fighter_index + 1, 0, 0);
             Draw.blit2screen(0, 0);
             kq_wait(20);
-            rectfill(double_buffer, 0, 0, eSize::SCREEN_W, eSize::SCREEN_H, 15);
+            rectfill(double_buffer, 0, 0, SCREEN_W, SCREEN_H, 15);
             Draw.blit2screen(0, 0);
             kq_wait(20);
         }
