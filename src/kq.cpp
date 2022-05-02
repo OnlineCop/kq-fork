@@ -79,7 +79,7 @@
 #include "gfx.h"
 #include "random.h"
 
-static Uint32 my_counter(Uint32, void*);
+using namespace eSize;
 
 KGame Game;
 
@@ -358,8 +358,8 @@ void KGame::activate(void)
         break;
     }
 
-    zx = g_ent[0].x / eSize::TILE_W;
-    zy = g_ent[0].y / eSize::TILE_H;
+    zx = g_ent[0].x / TILE_W;
+    zy = g_ent[0].y / TILE_H;
 
     looking_at_x += zx;
     looking_at_y += zy;
@@ -502,13 +502,13 @@ void KGame::allocate_stuff(void)
         }
     }
 
-    double_buffer = alloc_bmp(eSize::SCREEN_W2, eSize::SCREEN_H2, "double_buffer");
-    back = alloc_bmp(eSize::SCREEN_W2, eSize::SCREEN_H2, "back");
-    fx_buffer = alloc_bmp(eSize::SCREEN_W2, eSize::SCREEN_H2, "fx_buffer");
+    double_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "double_buffer");
+    back = alloc_bmp(SCREEN_W2, SCREEN_H2, "back");
+    fx_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "fx_buffer");
 
     for (p = 0; p < MAX_SHADOWS; p++)
     {
-        shadow[p] = alloc_bmp(eSize::TILE_W, eSize::TILE_H, "shadow[x]");
+        shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
     }
 
     for (p = 0; p < 8; p++)
@@ -534,7 +534,7 @@ void KGame::allocate_stuff(void)
 
     for (p = 0; p < MAX_TILES; p++)
     {
-        map_icons[p] = alloc_bmp(eSize::TILE_W, eSize::TILE_H, "map_icons[x]");
+        map_icons[p] = alloc_bmp(TILE_W, TILE_H, "map_icons[x]");
     }
     allocate_credits();
 }
@@ -1030,26 +1030,6 @@ int main(int argc, const char* argv[])
     return EXIT_SUCCESS;
 }
 
-/*! \brief SDL timer callback
- *
- * New interrupt handler set to keep game time.
- * Called at 1000/KQ_TICKS aka 10 milliseconds
- */
-Uint32 my_counter(Uint32 interval, void*)
-{
-    timer++;
-
-    if (timer >= Game.KQ_TICKS)
-    {
-        timer = 0;
-        // ksec++;
-    }
-
-    // animation_count++;
-    // timer_count++;
-    return interval;
-}
-
 void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 {
     Raster* pcxb;
@@ -1149,19 +1129,19 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     Music.play_music(g_map.song_file, 0);
-    mx = g_map.xsize * eSize::TILE_W - (19 * eSize::TILE_W);
+    mx = g_map.xsize * TILE_W - (19 * TILE_W);
     /*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
-    my = g_map.ysize * eSize::TILE_H - (16 * eSize::TILE_H);
+    my = g_map.ysize * TILE_H - (16 * TILE_H);
 
     if (mvx == 0 && mvy == 0)
     {
-        viewport_x_coord = g_map.stx * eSize::TILE_W;
-        viewport_y_coord = g_map.sty * eSize::TILE_H;
+        viewport_x_coord = g_map.stx * TILE_W;
+        viewport_y_coord = g_map.sty * TILE_H;
     }
     else
     {
-        viewport_x_coord = mvx * eSize::TILE_W;
-        viewport_y_coord = mvy * eSize::TILE_H;
+        viewport_x_coord = mvx * TILE_W;
+        viewport_y_coord = mvy * TILE_H;
     }
 
     calc_viewport();
@@ -1241,7 +1221,6 @@ void KGame::reset_timer_events(void)
 void KGame::reset_world(void)
 {
     /* Reset timer */
-    timer = 0;
     SetGameTime({ 0 });
     /* Initialize special_items array */
     for (int i = 0; i < MAX_SPECIAL_ITEMS; i++)
@@ -1452,8 +1431,6 @@ void KGame::startup(void)
         }
     }
 
-    SDL_AddTimer(1000 / KQ_TICKS, my_counter, nullptr);
-
     SaveGame.load_sgstats();
 
 #ifdef DEBUGMODE
@@ -1462,11 +1439,11 @@ void KGame::startup(void)
     clear_bitmap(obj_mesh);
     for (q = 0; q < 16; q += 2)
     {
-        for (p = 0; p < eSize::TILE_W; p += 2)
+        for (p = 0; p < TILE_W; p += 2)
         {
             putpixel(obj_mesh, p, q, 255);
         }
-        for (p = 1; p < eSize::TILE_W; p += 2)
+        for (p = 1; p < TILE_W; p += 2)
         {
             putpixel(obj_mesh, p, q + 1, 255);
         }
@@ -1583,8 +1560,8 @@ void KGame::warp(int wtx, int wty, int fspeed)
         g_ent[entity_index].framectr = 0;
     }
 
-    viewport_x_coord = wtx * eSize::TILE_W;
-    viewport_y_coord = wty * eSize::TILE_H;
+    viewport_x_coord = wtx * TILE_W;
+    viewport_y_coord = wty * TILE_H;
 
     calc_viewport();
     Draw.drawmap();
@@ -1602,8 +1579,8 @@ void KGame::zone_check(void)
 {
     uint16_t stc, zx, zy;
 
-    zx = g_ent[0].x / eSize::TILE_W;
-    zy = g_ent[0].y / eSize::TILE_H;
+    zx = g_ent[0].x / TILE_W;
+    zy = g_ent[0].y / TILE_H;
 
     if (save_spells[P_REPULSE] > 0)
     {

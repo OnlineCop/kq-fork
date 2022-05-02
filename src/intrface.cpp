@@ -2490,7 +2490,6 @@ static int KQ_move_camera(lua_State* L)
     }
     viewport_x_coord = mcx;
     viewport_y_coord = mcy;
-    timer_count = 0;
     autoparty = 0;
     return 0;
 }

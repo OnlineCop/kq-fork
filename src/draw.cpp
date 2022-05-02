@@ -811,7 +811,6 @@ void KDraw::generic_text(int who, eBubbleStyle box_style, int isPort)
         return;
     }
     Game.unpress();
-    timer_count = 0;
     while (!stop)
     {
         Game.ProcessEvents();
@@ -833,7 +832,6 @@ void KDraw::generic_text(int who, eBubbleStyle box_style, int isPort)
             stop = 1;
         }
     }
-    timer_count = 0;
 }
 
 int KDraw::is_forestsquare(int fx, int fy)

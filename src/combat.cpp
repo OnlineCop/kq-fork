@@ -753,7 +753,6 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
 
     steps = 0;
     in_combat = 0;
-    timer_count = 0;
     return (1);
 }
 
@@ -770,13 +769,15 @@ void KCombat::do_round(void)
 {
     size_t a;
     size_t fighter_index;
+    Uint64 start = SDL_GetTicks64();
 
-    timer_count = 0;
     while (combatend == eCombatResult::StillFighting)
     {
+        Uint64 now = SDL_GetTicks64();
         Game.ProcessEvents();
-        if (timer_count >= 10)
+        if (now >= start + 100)
         {
+            start = now;
             RemainingBattleCounter += BATTLE_INC;
 
             if (RemainingBattleCounter >= ROUND_MAX)
@@ -936,8 +937,6 @@ void KCombat::do_round(void)
                     return;
                 }
             }
-
-            timer_count = 0;
         }
     }
 }

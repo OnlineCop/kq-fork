@@ -194,7 +194,6 @@ int KSaveGame::load_game(void)
 {
     sprintf(strbuf, "sg%d.xml", save_ptr);
     Disk.load_game_from_file(kqres(SAVE_DIR, strbuf).c_str());
-    timer_count = 0;
     hold_fade = 0;
     Game.change_map(Game.GetCurmap(), g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
     /* Set music and sound volume */

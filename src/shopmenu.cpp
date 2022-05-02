@@ -569,7 +569,6 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
             }
         }
     }
-    timer_count = 0;
 }
 
 /*! \brief Ask player the quantity to sell

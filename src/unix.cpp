@@ -124,8 +124,6 @@ const string get_lua_file_path(const string str1, const string file)
  */
 const string kqres(enum eDirectories dir, const string file)
 {
-    char exe[2048];
-
     if (!init_path)
     {
         /* Get home directory; this bit originally written by SH */

@@ -113,7 +113,6 @@ void KMenu::draw_mainmenu(int swho)
 {
     size_t fighter_index;
 
-    timer_count = 0;
     for (fighter_index = 0; fighter_index < PSIZE; fighter_index++)
     {
         Draw.menubox(double_buffer, 44, fighter_index * 64 + 64, 18, 6,
@@ -247,7 +246,6 @@ void KMenu::menu(void)
     int stop = 0, ptr = 0, z = -1;
 
     play_effect(SND_MENU, 128);
-    timer_count = 0;
     while (!stop)
     {
         Game.ProcessEvents();
@@ -373,7 +371,6 @@ void KMenu::display_quest_window(void)
     {
         Game.ProcessEvents();
         Game.do_check_animation();
-        timer_count = 0;
         /* Redraw the map below the open menu */
         Draw.drawmap();
 
