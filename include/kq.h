@@ -416,7 +416,6 @@ extern KQEntity g_ent[MAX_ENTITIES];
 extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
 extern s_anim adata[MAX_ANIM];
 extern uint32_t numchrs;
-extern int xofs, yofs;
 extern int gsvol, gmvol;
 /*! Number of entities (or enemies?) */
 extern uint32_t number_of_entities;
@@ -441,7 +440,8 @@ extern uint8_t draw_background, draw_middle, draw_foreground, draw_shadow;
 extern s_inventory g_inv[MAX_INV];
 extern s_special_item special_items[MAX_SPECIAL_ITEMS];
 extern short player_special_items[MAX_SPECIAL_ITEMS];
-extern int view_x1, view_y1, view_x2, view_y2, view_on, in_combat;
+extern int view_x1, view_y1, view_x2, view_y2, in_combat;
+extern bool view_on;
 extern int use_joy;
 extern bool show_frate;
 

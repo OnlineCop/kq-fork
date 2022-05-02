@@ -57,7 +57,7 @@ void combat_skill(size_t fighter_index)
 
     tempa = Magic.status_adjust(fighter_index);
     Combat.battle_render(0, 0, 0);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     switch (sk)
     {
     case 1:

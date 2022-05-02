@@ -112,7 +112,7 @@ class KDraw
      * \param   xw x-coord in double_buffer of the top-left of the screen
      * \param   yw y-coord in double_buffer of the top-left of the screen
      */
-    void blit2screen(int xw, int yw);
+    void blit2screen();
 
     /*! \brief Takes a bitmap and scales it to fit in the color range specified. Output goes to a new bitmap.
      * This is used to make a monochrome version of a bitmap, for example to
@@ -328,10 +328,8 @@ class KDraw
      * \param   m Message text
      * \param   icn Icon to display or 255 for none
      * \param   delay Time to wait (milliseconds?)
-     * \param   x_m X-coord of top-left (like xofs)
-     * \param   y_m Y-coord of top-left
      */
-    void message(const char* m, int icn, int delay, int x_m, int y_m);
+    void message(const char* m, int icn, int delay);
 
     /*! \brief Adjust view
      *
@@ -389,6 +387,24 @@ class KDraw
      */
     const char* decode_utf8(const char* InString, uint32_t* cp);
 
+  /*! Boundary adjusted for parallax */
+  struct PBound {
+    int left;
+    int top;
+    int right;
+    int bottom;
+    int x_offset;
+    int y_offset;
+  };
+
+  /*! \brief Calculate bounds
+   * 
+   * Calculate bounds based on current view if any and taking into account parallax
+   * \param is_parallax true if parallax applies to the layer under consideration
+   * \returns a bounding box
+   */
+  PBound calculate_box(bool is_parallax);
+  
     /*! \brief Draw background
      *
      * Draw the background layer.  Accounts for parallaxing.
@@ -403,11 +419,8 @@ class KDraw
      * Does not seem to do any parallaxing. (?)
      * PH modified 20030309 Simplified this a bit, removed one blit() that wasn't
      * neeeded.
-     *
-     * \param   xw x-offset - always ==16
-     * \param   yw y-offset - always ==16
      */
-    void draw_char(int xw, int yw);
+    void draw_char();
 
     /*! \brief Draw foreground
      *
@@ -537,13 +550,6 @@ class KDraw
      */
     string parse_string(const string& the_string);
 
-    /*! \brief Parallax calculations for xofs and yofs.
-     *
-     * \param dx - X offset
-     * \param dy - Y offset
-     */
-    void recalculate_offsets(int dx, int dy);
-
     // The internal processing modes during text reformatting; used in \sa relay()
     enum m_mode
     {
@@ -556,6 +562,7 @@ class KDraw
   SDL_Renderer* renderer; /// The window's renderer
   SDL_Texture* texture; /// The target texture
   SDL_PixelFormat* format; /// The format of the texture
+  int btile;
 };
 
 /*  global variables  */

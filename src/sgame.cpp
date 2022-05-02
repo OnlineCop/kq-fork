@@ -102,7 +102,7 @@ int KSaveGame::confirm_action(void)
     fullblit(double_buffer, back);
     Draw.menubox(double_buffer, 128, pointer_offset + 12, 14, 1, DARKBLUE);
     Draw.print_font(double_buffer, 136, pointer_offset + 20, _("Confirm/Cancel"), FNORMAL);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     fullblit(back, double_buffer);
     while (!stop)
     {
@@ -169,7 +169,7 @@ void KSaveGame::delete_game(void)
         Draw.menubox(double_buffer, 128, pointer_offset + 12, 16, 1, DARKBLUE);
         Draw.print_font(double_buffer, 136, pointer_offset + 20, _("File Not Deleted"), FNORMAL);
     }
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     fullblit(back, double_buffer);
 
     while (!stop)
@@ -264,7 +264,7 @@ int KSaveGame::saveload(int am_saving)
         Game.do_check_animation();
         double_buffer->fill(0);
         show_sgstats(am_saving);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
 
         PlayerInput.readcontrols();
         if (PlayerInput.up)
@@ -498,23 +498,23 @@ static void show_splash_screen() {
     ticks = now;
     double_buffer->fill(0x000000);
     blit(staff.get(), double_buffer, 0, 0, 124, 22, 72, 226);
-    Draw.blit2screen(0,0);
+    Draw.blit2screen();
     kq_wait(1000);
     for (int a = 0; a<42; ++a) {
       kq_wait(100);
     stretch_blit(staff.get(), double_buffer, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64),
 		   226 + (a * 192));
-    Draw.blit2screen(0,0);
+    Draw.blit2screen();
     }
 
     for (int a=0; a<5; ++a) {
     Draw.color_scale(dudes.get(), tdudes.get(), 53 - a, 53 + a);
     draw_sprite(double_buffer, tdudes.get(), 106, 64);
-    Draw.blit2screen(0,0);
+    Draw.blit2screen();
     kq_wait(300);
     }
     draw_sprite(double_buffer, dudes.get(), 106, 64);
-    Draw.blit2screen(0,0);
+    Draw.blit2screen();
     kq_wait(1000);
     do_transition(eTransitionFade::TO_WHITE, 1);
 
@@ -545,7 +545,7 @@ int KSaveGame::start_menu(bool skip_splash)
 	  show_splash_screen();
         }
         clear_to_color(double_buffer, 15);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         set_palette(pal);
 	int fade_color = 0;
 	auto start_time = SDL_GetTicks64();
@@ -554,7 +554,7 @@ int KSaveGame::start_menu(bool skip_splash)
 	  if (Game.ProcessEvents()) {
             clear_to_color(double_buffer, 15 - fade_color);
             masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), eSize::SCREEN_W, 124);
-            Draw.blit2screen(0, 0);
+            Draw.blit2screen();
 	  }
 	  if (now - start_time > 100) {
 	    start_time = now;
@@ -588,7 +588,7 @@ int KSaveGame::start_menu(bool skip_splash)
             redraw = 0;
         }
         display_credits(double_buffer);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         PlayerInput.readcontrols();
         if (PlayerInput.bhelp)
         {
@@ -710,15 +710,15 @@ int KSaveGame::system_menu(void)
       Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, xofs, yofs, 8, 4, BLUE);
+        Draw.menubox(double_buffer, 0, 0, 8, 4, BLUE);
 
-        Draw.print_font(double_buffer, 16 + xofs, 8 + yofs, save_str, text_color);
-        Draw.print_font(double_buffer, 16 + xofs, 16 + yofs, _("Load"), FNORMAL);
-        Draw.print_font(double_buffer, 16 + xofs, 24 + yofs, _("Config"), FNORMAL);
-        Draw.print_font(double_buffer, 16 + xofs, 32 + yofs, _("Exit"), FNORMAL);
+        Draw.print_font(double_buffer, 16 , 8 , save_str, text_color);
+        Draw.print_font(double_buffer, 16 , 16 , _("Load"), FNORMAL);
+        Draw.print_font(double_buffer, 16 , 24 , _("Config"), FNORMAL);
+        Draw.print_font(double_buffer, 16 , 32 , _("Exit"), FNORMAL);
 
-        draw_sprite(double_buffer, menuptr, 0 + xofs, ptr * 8 + 8 + yofs);
-        Draw.blit2screen(xofs, yofs);
+        draw_sprite(double_buffer, menuptr, 0 , ptr * 8 + 8 );
+        Draw.blit2screen();
         PlayerInput.readcontrols();
 
         if (PlayerInput.up)

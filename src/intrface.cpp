@@ -625,7 +625,7 @@ void do_luacheat(void)
 #endif
     lua_settop(theL, oldtop);
     KQ_check_map_change();
-    Draw.message(_("Cheating complete."), 255, 50, xofs, yofs);
+    Draw.message(_("Cheating complete."), 255, 50);
 }
 #endif
 
@@ -1490,7 +1490,7 @@ static int KQ_chest(lua_State* L)
         Game.AddGold(item_quantity);
         sprintf(strbuf, _("Found %d gp!"), item_quantity);
         play_effect(SND_MONEY, 128);
-        Draw.message(strbuf, 255, 0, xofs, yofs);
+        Draw.message(strbuf, 255, 0);
         if (treasure_index > -1)
         {
             treasure[treasure_index] = 1;
@@ -1538,7 +1538,7 @@ static int KQ_chest(lua_State* L)
             sprintf(strbuf, _("%s ^%d procured!"), items[inventory_index].name, (int)item_quantity);
         }
         play_effect(SND_UNEQUIP, 128);
-        Draw.message(strbuf, items[inventory_index].icon, 0, xofs, yofs);
+        Draw.message(strbuf, items[inventory_index].icon, 0);
         if (treasure_index > -1)
         {
             treasure[treasure_index] = 1;
@@ -1553,7 +1553,7 @@ static int KQ_chest(lua_State* L)
     {
         sprintf(strbuf, _("%s ^%d not taken!"), items[inventory_index].name, (int)item_quantity);
     }
-    Draw.message(strbuf, items[inventory_index].icon, 0, xofs, yofs);
+    Draw.message(strbuf, items[inventory_index].icon, 0);
     return 0;
 }
 
@@ -1625,7 +1625,7 @@ static int KQ_copy_tile_all(lua_State* L)
 
 static int KQ_dark_mbox(lua_State* L)
 {
-    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1) + xofs, (int)lua_tonumber(L, 2) + yofs, (int)lua_tonumber(L, 3),
+    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1) , (int)lua_tonumber(L, 2) , (int)lua_tonumber(L, 3),
                  (int)lua_tonumber(L, 4), DARKBLUE);
     return 0;
 }
@@ -1678,7 +1678,7 @@ static int KQ_door_in(lua_State* L)
     }
     play_effect(25, 128);
     Draw.drawmap();
-    Draw.blit2screen(xofs, yofs);
+    Draw.blit2screen();
     kq_wait(50);
 
     if (lua_type(L, 1) == LUA_TSTRING)
@@ -1752,7 +1752,7 @@ static int KQ_draw_pstat(lua_State* L)
 
     if (a >= 0 && a < MAXCHRS)
     {
-        kmenu.draw_playerstat(double_buffer, a, (int)lua_tonumber(L, 2) + xofs, (int)lua_tonumber(L, 3) + yofs);
+        kmenu.draw_playerstat(double_buffer, a, (int)lua_tonumber(L, 2) , (int)lua_tonumber(L, 3) );
     }
     return 0;
 }
@@ -1762,7 +1762,7 @@ static int KQ_drawframe(lua_State* L)
     auto a = lua_tointeger(L, 1);
     auto b = lua_tointeger(L, 2);
 
-    draw_sprite(double_buffer, frames[a][b], (int)lua_tonumber(L, 3) + xofs, (int)lua_tonumber(L, 4) + yofs);
+    draw_sprite(double_buffer, frames[a][b], (int)lua_tonumber(L, 3) , (int)lua_tonumber(L, 4) );
     return 0;
 }
 
@@ -2417,7 +2417,7 @@ static int KQ_krnd(lua_State* L)
 
 static int KQ_light_mbox(lua_State* L)
 {
-    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1) + xofs, (int)lua_tonumber(L, 2) + yofs, (int)lua_tonumber(L, 3),
+    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1) , (int)lua_tonumber(L, 2) , (int)lua_tonumber(L, 3),
                  (int)lua_tonumber(L, 4), DARKRED);
     return 0;
 }
@@ -2456,7 +2456,7 @@ static int KQ_marker(lua_State* L)
 
 static int KQ_mbox(lua_State* L)
 {
-    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1) + xofs, (int)lua_tonumber(L, 2) + yofs, (int)lua_tonumber(L, 3),
+    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1) , (int)lua_tonumber(L, 2) , (int)lua_tonumber(L, 3),
                  (int)lua_tonumber(L, 4), BLUE);
     return 0;
 }
@@ -2465,61 +2465,29 @@ static int KQ_mbox(lua_State* L)
  *
  * \param   L::1 x-coord to move the camera
  * \param   L::2 y-coord to move the camera
- * \param   L::3 time it should take to move the camera (speed)
+ * \param   L::3 time between each camera step
  */
 static int KQ_move_camera(lua_State* L)
 {
-    int xinc = 0, yinc = 0, xtot = 0, ytot = 0;
-    auto mcx = lua_tointeger(L, 1);
-    auto mcy = lua_tointeger(L, 2);
-    auto dtime = lua_tointeger(L, 3);
-
-    if (mcx > viewport_x_coord)
-    {
-        xinc = 1;
-        xtot = mcx - viewport_x_coord;
-    }
-    if (mcx < viewport_x_coord)
-    {
-        xinc = -1;
-        xtot = viewport_x_coord - mcx;
-    }
-    if (mcy > viewport_y_coord)
-    {
-        yinc = 1;
-        ytot = mcy - viewport_y_coord;
-    }
-    if (mcy < viewport_y_coord)
-    {
-        yinc = -1;
-        ytot = viewport_y_coord - mcy;
-    }
-    autoparty = 1;
-    timer_count = 0;
-    while (ytot > 0 || xtot > 0)
-    {
-      if (Game.ProcessEvents()) {
-        while (timer_count >= dtime)
-        {
-	  timer_count -= dtime;
-	  if (xtot > 0)
-            {
-	      viewport_x_coord += xinc;
-	      xtot--;
-            }
-	  if (ytot > 0)
-            {
-	      viewport_y_coord += yinc;
-	      ytot--;
-            }
-        }
-        Game.do_check_animation();
-        Draw.drawmap();
-        Draw.blit2screen(xofs, yofs);
-      }
+    int mcx = lua_tointeger(L, 1);
+    int mcy = lua_tointeger(L, 2);
+    int dtime = lua_tointeger(L, 3);
+    int dx =  viewport_x_coord - mcx;
+    int dy =  viewport_y_coord - mcy;
+    int steps = std::max(std::abs(dx), std::abs(dy)) * dtime *Game.KQ_TICKS/ 50;
+    if (steps > 0) {
+    for (int i =steps; i>=0; --i) {
+      viewport_x_coord = mcx + (dx * i) / steps;
+      viewport_y_coord = mcy + (dy * i) / steps;
+      Game.ProcessEvents();
+      Game.do_check_animation();
+      Draw.drawmap();
+      Draw.blit2screen();
       Music.poll_music();
     }
-
+    }
+    viewport_x_coord = mcx;
+    viewport_y_coord=mcy;
     timer_count = 0;
     autoparty = 0;
     return 0;
@@ -2593,7 +2561,7 @@ static int KQ_msg(lua_State* L)
 {
     int icn = (lua_isnumber(L, 2) ? (int)lua_tonumber(L, 2) : 255);
 
-    Draw.message(lua_tostring(L, 1), icn, (int)lua_tonumber(L, 3), xofs, yofs);
+    Draw.message(lua_tostring(L, 1), icn, (int)lua_tonumber(L, 3));
     return 0;
 }
 
@@ -2689,7 +2657,7 @@ static int KQ_pnum(lua_State* L)
     auto a = (int)lua_tointeger(L, 3);
 
     sprintf(strbuf, "%d", a);
-    Draw.print_font(double_buffer, lua_tointeger(L, 1) + xofs, lua_tointeger(L, 2) + yofs, strbuf,
+    Draw.print_font(double_buffer, lua_tointeger(L, 1) , lua_tointeger(L, 2) , strbuf,
                     (eFontColor)lua_tointeger(L, 4));
     return 0;
 }
@@ -2757,7 +2725,7 @@ static int KQ_prompt(lua_State* L)
 
 static int KQ_ptext(lua_State* L)
 {
-    Draw.print_font(double_buffer, (int)lua_tonumber(L, 1) + xofs, (int)lua_tonumber(L, 2) + yofs, lua_tostring(L, 3),
+    Draw.print_font(double_buffer, (int)lua_tonumber(L, 1) , (int)lua_tonumber(L, 2) , lua_tostring(L, 3),
                     (eFontColor)lua_tointeger(L, 4));
     return 0;
 }
@@ -2869,7 +2837,7 @@ static int KQ_rest(lua_State* L)
 static int KQ_screen_dump(lua_State* L)
 {
     (void)L;
-    Draw.blit2screen(xofs, yofs);
+    Draw.blit2screen();
     return 0;
 }
 
@@ -3920,7 +3888,7 @@ static int KQ_traceback(lua_State* theL)
         printf(_("#%d Line %d in (%s %s) %s\n"), level, ar.currentline, ar.what, ar.namewhat, ar.name);
         ++level;
     }
-    Draw.message(_("Script error. If KQ was compiled with DEBUGMODE, see allegro.log"), 255, 0, xofs, yofs);
+    Draw.message(_("Script error. If KQ was compiled with DEBUGMODE, see allegro.log"), 255, 0);
     return 1;
 }
 
@@ -4339,7 +4307,7 @@ static int KQ_drawsprite(lua_State* L)
         int height = static_cast<int>(lua_tonumber(L, -1));
         lua_pop(L, 1);
 
-        masked_blit(bm, double_buffer, sx, sy, dx + xofs, dy + yofs, width, height);
+        masked_blit(bm, double_buffer, sx, sy, dx , dy , width, height);
     }
     return 0;
 }

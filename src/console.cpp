@@ -82,31 +82,31 @@ void init_console(void)
  * \param xofs x-offset display position
  * \param yofs y-offset display position
  */
-void display_console(uint32_t xofs, uint32_t yofs)
+void display_console()
 {
     uint32_t i, y;
-    uint32_t max_y = yofs + 120;
+    uint32_t max_y =  120;
 
     if (g_console.on != 1)
     {
         return;
     }
-    rectfill(double_buffer, xofs, max_y, xofs + 320, yofs + 240, makecol(0, 0, 0));
-    hline(double_buffer, xofs, max_y, xofs + 320, makecol(255, 255, 255));
-    y = yofs + 240 - 2 * text_height(font);
+    rectfill(double_buffer, 0, max_y,  320,  240, makecol(0, 0, 0));
+    hline(double_buffer, 0, max_y,  320, makecol(255, 255, 255));
+    y =  240 - 2 * text_height(font);
     i = CONSOLE_LINES - 1;
     while (y > max_y)
     {
         if (g_console.lines[i])
         {
-            Draw.print_font(double_buffer, xofs, y, g_console.lines[i], FGREEN);
+            Draw.print_font(double_buffer, 0, y, g_console.lines[i], FGREEN);
         }
         y -= text_height(font);
         --i;
     }
-    Draw.print_font(double_buffer, xofs, yofs + 240 - 8, g_console.inputline, FNORMAL);
-    rectfill(double_buffer, xofs + text_length(font, g_console.inputline), yofs + 238,
-             xofs + text_length(font, g_console.inputline) + text_length(font, "_"), yofs + 240,
+    Draw.print_font(double_buffer, 0,  240 - 8, g_console.inputline, FNORMAL);
+    rectfill(double_buffer,  text_length(font, g_console.inputline),  238,
+              text_length(font, g_console.inputline) + text_length(font, "_"),  240,
              makecol(192, 192, 192));
 }
 
@@ -167,7 +167,7 @@ void run_console(void)
         {
 	  Game.ProcessEvents();
 	  Game.do_check_animation();
-            Draw.blit2screen(xofs, yofs);
+            Draw.blit2screen();
             Music.poll_music();
         }
 

@@ -390,6 +390,7 @@ static int combat_item_menu(int whom)
     fullblit(double_buffer, back);
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         fullblit(back, double_buffer);
         combat_draw_items(pptr);
@@ -397,7 +398,7 @@ static int combat_item_menu(int whom)
         /* put description of selected item */
         Draw.menubox(double_buffer, 72, 152, 20, 1, BLUE);
         Draw.print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16].item].desc, FNORMAL);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
 
         PlayerInput.readcontrols();
         if (PlayerInput.up)
@@ -517,10 +518,11 @@ int combat_spell_menu(int c)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         fullblit(back, double_buffer);
         combat_draw_spell_menu(c, ptr, pgno);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
 
         PlayerInput.readcontrols();
 
@@ -709,7 +711,7 @@ static int hero_attack(int whom)
     fighter[whom].aframe = 6;
     Combat.UnsetDatafileImageCoords();
     Combat.battle_render(0, 0, 0);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     kq_wait(150);
     Combat.fight(whom, tgt, 0);
     return 1;
@@ -821,7 +823,7 @@ void hero_choose_action(size_t fighter_index)
             Draw.menubox(double_buffer, 192, amy, 3, 1, BLUE);
             Draw.print_font(double_buffer, 200, amy + 8, _("Run"), FNORMAL);
         }
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
 
         PlayerInput.readcontrols();
         if (PlayerInput.up)
@@ -1068,11 +1070,12 @@ static int hero_invoke(int whom)
     dud = pidx[whom];
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         fullblit(back, double_buffer);
         draw_invokable(dud);
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 88);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
 
         PlayerInput.readcontrols();
         if (PlayerInput.up)
@@ -1283,7 +1286,7 @@ static void hero_run(void)
     {
         Draw.menubox(double_buffer, 84, 32, 17, 1, BLUE);
         Draw.print_font(double_buffer, 92, 40, _("Could not escape!"), FNORMAL);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         Game.wait_enter();
         return;
     }
@@ -1321,7 +1324,7 @@ static void hero_run(void)
                                 fighter[fighter_index].cy);
                 }
             }
-            Draw.blit2screen(0, 0);
+            Draw.blit2screen();
             kq_wait(10);
         }
     }

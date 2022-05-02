@@ -729,10 +729,10 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
     for (zoom_step = 0; zoom_step < 9; zoom_step++)
     {
         Music.poll_music();
-        stretch_blit(temp.get(), double_buffer, zoom_step * (SCREEN_W / 20) + xofs,
-                     zoom_step * (SCREEN_H / 20) + yofs, SCREEN_W - (zoom_step * (SCREEN_W / 10)),
+        stretch_blit(temp.get(), double_buffer, zoom_step * (SCREEN_W / 20) ,
+                     zoom_step * (SCREEN_H / 20) , SCREEN_W - (zoom_step * (SCREEN_W / 10)),
                      SCREEN_H - (zoom_step * (SCREEN_H / 10)), 0, 0, SCREEN_W, SCREEN_H);
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
     }
 
     snap_togrid();
@@ -918,7 +918,7 @@ void KCombat::do_round(void)
 
             PlayerInput.readcontrols();
             Combat.battle_render(0, 0, 0);
-            Draw.blit2screen(0, 0);
+            Draw.blit2screen();
 
             for (fighter_index = 0; fighter_index < (PSIZE + num_enemies); fighter_index++)
             {
@@ -1050,12 +1050,12 @@ void KCombat::enemies_win(void)
     Music.play_music(music_defeat, 0);
     Combat.battle_render(0, 0, 0);
     /*  RB FIXME: rest()?  */
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     kq_wait(1000);
     sprintf(strbuf, _("%s was defeated!"), party[pidx[0]].name.c_str());
     Draw.menubox(double_buffer, 152 - (strlen(strbuf) * 4), 48, strlen(strbuf), 1, BLUE);
     Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 56, strbuf, FNORMAL);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     Game.wait_enter();
     do_transition(eTransitionFade::OUT, 4);
     alldead = 1;
@@ -1126,10 +1126,10 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
         for (f = 0; f < 3; f++)
         {
             Combat.battle_render(defend_fighter_index + 1, 0, 0);
-            Draw.blit2screen(0, 0);
+            Draw.blit2screen();
             kq_wait(20);
             rectfill(double_buffer, 0, 0, SCREEN_W, SCREEN_H, 15);
-            Draw.blit2screen(0, 0);
+            Draw.blit2screen();
             kq_wait(20);
         }
     }
@@ -1405,7 +1405,7 @@ void KCombat::heroes_win(void)
     }
 
     Combat.battle_render(0, 0, 0);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     kq_wait(250);
     for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
     {
@@ -1441,7 +1441,7 @@ void KCombat::heroes_win(void)
 
     Draw.menubox(double_buffer, 152 - (strlen(strbuf) * 4), 8, strlen(strbuf), 1, BLUE);
     Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 16, strbuf, FNORMAL);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     fullblit(double_buffer, back);
     for (fighter_index = 0; fighter_index < num_enemies; fighter_index++)
     {
@@ -1479,7 +1479,7 @@ void KCombat::heroes_win(void)
 
     if (nr > 0)
     {
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         Game.wait_enter();
         fullblit(back, double_buffer);
     }
@@ -1539,7 +1539,7 @@ void KCombat::heroes_win(void)
         }
     }
 
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
     {
         if (!party[pidx[pidx_index]].IsStone() && party[pidx[pidx_index]].IsAlive())
@@ -1795,15 +1795,15 @@ void KCombat::roll_initiative(void)
     }
 
     Combat.battle_render(-1, -1, 0);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     if ((heroes_surprise_monsters == 1) && (monsters_surprise_heroes > 1))
     {
-        Draw.message(_("You have been ambushed!"), 255, 1500, 0, 0);
+        Draw.message(_("You have been ambushed!"), 255, 1500);
     }
 
     if ((heroes_surprise_monsters > 1) && (monsters_surprise_heroes == 1))
     {
-        Draw.message(_("You've surprised the enemy!"), 255, 1500, 0, 0);
+        Draw.message(_("You've surprised the enemy!"), 255, 1500);
     }
 }
 

@@ -62,7 +62,7 @@ static void _fade_from_range( PALETTE source,  PALETTE dest, uint32_t speed, int
         Music.poll_music();
 	fade_interpolate(source, dest, temp, c, from, to);
 	set_palette_range(temp, from, to);
-	Draw.blit2screen(xofs, yofs);
+	Draw.blit2screen();
     }
     set_palette_range(dest, from, to);
 }

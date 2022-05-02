@@ -313,34 +313,35 @@ static eMiniMenu mini_menu(int omask)
     /* If no actions were allowed, or just one, skip the menu */
     if (omask == MM_JOIN)
     {
-        Draw.message(_("Join"), 255, 1000, xofs, yofs);
+        Draw.message(_("Join"), 255, 1000);
         return MM_JOIN;
     }
     if (omask == MM_LEAVE)
     {
-        Draw.message(_("Leave"), 255, 1000, xofs, yofs);
+        Draw.message(_("Leave"), 255, 1000);
         return MM_LEAVE;
     }
     if (omask == MM_LEAD)
     {
-        Draw.message(_("Lead"), 255, 1000, xofs, yofs);
+        Draw.message(_("Lead"), 255, 1000);
         return MM_LEAD;
     }
     if (omask == MM_NONE)
     {
-        Draw.message(_("No options"), 255, 1000, xofs, yofs);
+        Draw.message(_("No options"), 255, 1000);
         return MM_NONE;
     }
 
-    while (1)
+    while (true)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         Draw.menubox(double_buffer, mini_menu_x - 13, mini_menu_y - 8, 6, 3, DARKBLUE);
         Draw.print_font(double_buffer, mini_menu_x, mini_menu_y, _("Join"), (omask & MM_JOIN) ? FNORMAL : FDARK);
         Draw.print_font(double_buffer, mini_menu_x, mini_menu_y + 8, _("Leave"), (omask & MM_LEAVE) ? FNORMAL : FDARK);
         Draw.print_font(double_buffer, mini_menu_x, mini_menu_y + 16, _("Lead"), (omask & MM_LEAD) ? FNORMAL : FDARK);
         draw_sprite(double_buffer, menuptr, mini_menu_x - 13, mini_menu_y + 8 * cp);
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
 
         PlayerInput.readcontrols();
         if (PlayerInput.up)
@@ -511,21 +512,21 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
         Draw.drawmap();
         if (csa != TGT_NONE)
         {
-            Draw.menubox(double_buffer, 152 - ((strlen(msg) + 1) * 4) + xofs, 8 + yofs, strlen(msg) + 1, 1, BLUE);
-            Draw.draw_icon(double_buffer, icn, 160 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs);
-            Draw.print_font(double_buffer, 168 - ((strlen(msg) + 1) * 4) + xofs, 16 + yofs, msg, FNORMAL);
+            Draw.menubox(double_buffer, 152 - ((strlen(msg) + 1) * 4) , 8 , strlen(msg) + 1, 1, BLUE);
+            Draw.draw_icon(double_buffer, icn, 160 - ((strlen(msg) + 1) * 4) , 16 );
+            Draw.print_font(double_buffer, 168 - ((strlen(msg) + 1) * 4) , 16 , msg, FNORMAL);
         }
         for (unsigned int k = 0; k < numchrs; k++)
         {
-            Draw.menubox(double_buffer, 80 + xofs, k * 56 + shy + yofs, 18, 5, BLUE);
-            kmenu.draw_playerstat(double_buffer, pidx[k], 88 + xofs, k * 56 + shy + 8 + yofs);
+            Draw.menubox(double_buffer, 80 , k * 56 + shy , 18, 5, BLUE);
+            kmenu.draw_playerstat(double_buffer, pidx[k], 88 , k * 56 + shy + 8 );
             // Draw the pointer
             if (select_all || k == ptr)
             {
-                draw_sprite(double_buffer, menuptr, 72 + xofs, k * 56 + shy + 24 + yofs);
+                draw_sprite(double_buffer, menuptr, 72 , k * 56 + shy + 24 );
             }
         }
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
 
         PlayerInput.readcontrols();
         if (csa == TGT_NONE)
@@ -644,7 +645,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
             Combat.battle_render(tmpd[ptr] + 1, attack_fighter_index + 1, 0);
         }
 
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         PlayerInput.readcontrols();
 
         if (PlayerInput.balt)
@@ -752,7 +753,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
         {
             Combat.battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 0);
         }
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
 
         PlayerInput.readcontrols();
 
@@ -853,19 +854,19 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
         }
     }
 
-    Draw.menubox(double_buffer, 16 + xofs, 24 + yofs, 34, 12, BLUE);
-    Draw.print_font(double_buffer, 24 + xofs, 32 + yofs, _("Available:"), FGOLD);
-    Draw.print_font(double_buffer, 24 + xofs, 80 + yofs, _("In party:"), FGOLD);
+    Draw.menubox(double_buffer, 16 , 24 , 34, 12, BLUE);
+    Draw.print_font(double_buffer, 24 , 32 , _("Available:"), FGOLD);
+    Draw.print_font(double_buffer, 24 , 80 , _("In party:"), FGOLD);
     while (running)
     {
       Game.ProcessEvents();
         Game.do_check_animation();
         /* Draw everything */
         /* draw the row of available heroes */
-        y = yofs + 40;
+        y =  40;
         for (fighter_index = 0; fighter_index < n_avail; ++fighter_index)
         {
-            x = xofs + (eSize::SCREEN_W - 32 * n_avail) / 2 + 32 * fighter_index;
+            x =  (eSize::SCREEN_W - 32 * n_avail) / 2 + 32 * fighter_index;
             Draw.menubox(double_buffer, x, y, 2, 2, (fighter_index == cur ? DARKRED : DARKBLUE));
             if (avail[fighter_index] != PIDX_UNDEFINED)
             {
@@ -873,8 +874,8 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
             }
         }
         /* draw the party */
-        x = xofs + (eSize::SCREEN_W - 40 * PSIZE) / 2;
-        y = yofs + 88;
+        x =  (eSize::SCREEN_W - 40 * PSIZE) / 2;
+        y =  88;
         for (fighter_index = 0; fighter_index < PSIZE; ++fighter_index)
         {
             Draw.menubox(double_buffer, x, y, 2, 2, (cur == MAXCHRS + fighter_index ? DARKRED : DARKBLUE));
@@ -906,7 +907,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
             kmenu.draw_playerstat(double_buffer, hero, 100, 160);
         }
         /* Show on the screen */
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
 
         oldcur = cur;
         PlayerInput.readcontrols();
@@ -1061,7 +1062,7 @@ int select_player(void)
         Game.do_check_animation();
         Draw.drawmap();
         kmenu.draw_mainmenu(ptr);
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
 
         PlayerInput.readcontrols();
         if (PlayerInput.up)

@@ -495,7 +495,7 @@ void reveal(int tgt)
             }
         }
     }
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     do_transition(eTransitionFade::IN, 4);
     Game.wait_enter();
 }
@@ -576,7 +576,7 @@ int skill_use(size_t attack_fighter_index)
         fighter[attack_fighter_index].aframe = 6;
         Combat.UnsetDatafileImageCoords();
         Combat.battle_render(0, 0, 0);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         kq_wait(150);
         Combat.multi_fight(attack_fighter_index);
         display_attack_string = 0;
@@ -611,14 +611,14 @@ int skill_use(size_t attack_fighter_index)
                                    eff[magic[fighter[attack_fighter_index].csmem].eff].kolor);
                         Combat.draw_fighter(attack_fighter_index, 0);
                     }
-                    Draw.blit2screen(0, 0);
+                    Draw.blit2screen();
                     kq_wait(50);
                     fullblit(back, double_buffer);
                 }
             }
             Draw.revert_cframes(attack_fighter_index, 0);
             Combat.battle_render(0, 0, 0);
-            Draw.blit2screen(0, 0);
+            Draw.blit2screen();
             infusion(attack_fighter_index, fighter[attack_fighter_index].csmem);
             c = Magic.mp_needed(attack_fighter_index, fighter[attack_fighter_index].csmem);
             if (c < 1)
@@ -655,7 +655,7 @@ int skill_use(size_t attack_fighter_index)
                         Combat.draw_fighter(fighter_index, 0);
                     }
                 }
-                Draw.blit2screen(0, 0);
+                Draw.blit2screen();
                 kq_wait(50);
                 fullblit(back, double_buffer);
             }
@@ -784,7 +784,7 @@ int skill_use(size_t attack_fighter_index)
         strcpy(attack_string, _("Steal"));
         display_attack_string = 1;
         Combat.battle_render(0, attack_fighter_index + 1, 0);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         kq_wait(100);
         play_effect(SND_MENU, 128);
         kq_wait(500);
@@ -811,18 +811,18 @@ int skill_use(size_t attack_fighter_index)
                 if (check_inventory(found_item, 1) != 0)
                 {
                     sprintf(strbuf, _("%s taken!"), items[found_item].name);
-                    Draw.message(strbuf, items[found_item].icon, 0, 0, 0);
+                    Draw.message(strbuf, items[found_item].icon, 0);
                 }
             }
             else
             {
                 if (fighter[enemy_index].steal_item_common == 0 && fighter[enemy_index].steal_item_rare == 0)
                 {
-                    Draw.message(_("Nothing to steal!"), 255, 0, 0, 0);
+                    Draw.message(_("Nothing to steal!"), 255, 0);
                 }
                 else
                 {
-                    Draw.message(_("Couldn't steal!"), 255, 0, 0, 0);
+                    Draw.message(_("Couldn't steal!"), 255, 0);
                 }
             }
         }
@@ -884,7 +884,7 @@ int skill_use(size_t attack_fighter_index)
         display_attack_string = 0;
         fighter[attack_fighter_index].facing = 0;
         Combat.battle_render(attack_fighter_index, attack_fighter_index, 0);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         break;
 
     case NOSLOM:

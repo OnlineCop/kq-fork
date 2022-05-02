@@ -151,7 +151,7 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
         Combat.SetVisionSpellActive(true);
         do_transition(eTransitionFade::OUT, 2);
         Combat.battle_render(0, 0, 0);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         do_transition(eTransitionFade::IN, 2);
         break;
     case M_MALISON:
@@ -1555,7 +1555,7 @@ void KMagic::special_spells(size_t caster_fighter_index, size_t spell_number)
         do_transition(eTransitionFade::OUT, 2);
         Combat.SetVisionSpellActive(true);
         Combat.battle_render(0, 0, 0);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         do_transition(eTransitionFade::IN, 2);
         break;
     case M_WARP:
@@ -1564,7 +1564,7 @@ void KMagic::special_spells(size_t caster_fighter_index, size_t spell_number)
             do_transition(eTransitionFade::OUT, 2);
             kmenu.revert_equipstats();
             Draw.drawmap();
-            Draw.blit2screen(xofs, yofs);
+            Draw.blit2screen();
             do_transition(eTransitionFade::IN, 2);
             Combat.SetCombatEndResult(eCombatResult::HeroesEscaped);
         }

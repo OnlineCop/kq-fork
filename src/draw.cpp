@@ -49,6 +49,7 @@
 #include "setup.h"
 #include "timing.h"
 
+
 KDraw Draw;
 
 using namespace eSize;
@@ -110,7 +111,7 @@ void KDraw::set_window(SDL_Window* _window) {
   format = SDL_AllocFormat(pix);
 }
 
-void KDraw::blit2screen(int xw, int yw)
+void KDraw::blit2screen()
 {
     static int frame_count = 0;
     static char fbuf[16] = "---";
@@ -125,12 +126,12 @@ void KDraw::blit2screen(int xw, int yw)
 	frame_count = 0;
 	sprintf(fbuf, "%3d", frate);
       }
-      double_buffer->fill(xw, yw, 24, 8, 0);
-      print_font(double_buffer, xw, yw, fbuf, FNORMAL);
+      double_buffer->fill(0, 0, 24, 8, 0);
+      print_font(double_buffer, 0, 0, fbuf, FNORMAL);
     }
     ++animation_count;
 #ifdef DEBUGMODE
-    display_console(xw, yw);
+    display_console();
 #endif
     int pitch;
     void* pixels;
@@ -138,7 +139,7 @@ void KDraw::blit2screen(int xw, int yw)
     if (rc < 0) {
       Game.program_death("Could not lock screen texture");
     }
-    SDL_Rect src{xw, yw, SCREEN_W, SCREEN_H};
+    SDL_Rect src{0, 0, SCREEN_W, SCREEN_H};
     double_buffer->to_rgba32(&src, format, pixels, pitch);
     SDL_UnlockTexture(texture);
     rc = SDL_RenderCopy(renderer, texture, nullptr, nullptr);
@@ -265,69 +266,62 @@ Raster* KDraw::copy_bitmap(Raster* target, Raster* source)
     return target;
 }
 
-void KDraw::recalculate_offsets(int dx, int dy)
-{
-    xofs = 16 - (dx & 15);
-    yofs = 16 - (dy & 15);
-}
-
 void KDraw::draw_backlayer(void)
 {
-    int dx, dy, pix, xtc, ytc;
-    int here;
-    KBound box;
+  auto box = calculate_box(g_map.map_mode ==2 || g_map.map_mode==3);
+  int tile_x1 = box.x_offset / 16;
+  int tile_x2 = (box.x_offset + SCREEN_W - 1)/16;
+  int tile_y1 = box.y_offset  / 16;
+  int tile_y2 = (box.y_offset + SCREEN_H - 1)/16;
+  auto tx = map_icons[tilex[btile]];
+  for (int y = tile_y1; y<box.top; ++y) {
+     for (int x = tile_x1; x <= tile_x2 ; x++)
+	{
+	  blit(tx, double_buffer, 0, 0, x * 16 - box.x_offset , y * 16 -box.y_offset, 16, 16);
+	}
+  }
+  for (int y = box.top; y <= box.bottom; y++)
+    {
+     for (int x = tile_x1; x < box.left ; x++)
+	{
+	  blit(tx, double_buffer, 0, 0, x * 16 - box.x_offset , y * 16 -box.y_offset, 16, 16);
+	}
 
-    if (view_on == 0)
-    {
-        view_y1 = 0;
-        view_y2 = g_map.ysize - 1;
-        view_x1 = 0;
-        view_x2 = g_map.xsize - 1;
+      for (int x = box.left; x <= box.right; x++)
+	{
+	  int here = y * g_map.xsize + x;
+	  int pix = map_seg[here];
+	  blit(map_icons[tilex[pix]], double_buffer, 0, 0, x * 16 - box.x_offset , y * 16 -box.y_offset, 16, 16);
+	}
+    for (int x = box.right+1; x <= tile_x2 ; x++)
+	{
+	  blit(tx, double_buffer, 0, 0, x * 16 - box.x_offset , y * 16 -box.y_offset, 16, 16);
+	}
     }
-    if (g_map.map_mode < 2 || g_map.map_mode > 3)
-    {
-        xtc = viewport_x_coord >> 4;
-        ytc = viewport_y_coord >> 4;
-        dx = viewport_x_coord;
-        dy = viewport_y_coord;
-        box.left = view_x1;
-        box.top = view_y1;
-        box.right = view_x2;
-        box.bottom = view_y2;
-    }
-    else
-    {
-        dx = viewport_x_coord * g_map.pmult / g_map.pdiv;
-        dy = viewport_y_coord * g_map.pmult / g_map.pdiv;
-        xtc = dx >> 4;
-        ytc = dy >> 4;
-        box.left = view_x1 * g_map.pmult / g_map.pdiv;
-        box.top = view_y1 * g_map.pmult / g_map.pdiv;
-        box.right = view_x2 * g_map.pmult / g_map.pdiv;
-        box.bottom = view_y2 * g_map.pmult / g_map.pdiv;
-    }
-    recalculate_offsets(dx, dy);
-
-    for (dy = 0; dy < 16; dy++)
-    {
-        /* TT Parallax problem here #1 */
-        if (ytc + dy >= box.top && ytc + dy <= box.bottom)
-        {
-            for (dx = 0; dx < 21; dx++)
-            {
-                /* TT Parallax problem here #2 */
-                if (xtc + dx >= box.left && xtc + dx <= box.right)
-                {
-                    here = ((ytc + dy) * g_map.xsize) + xtc + dx;
-                    pix = map_seg[here];
-                    blit(map_icons[tilex[pix]], double_buffer, 0, 0, dx * 16 + xofs, dy * 16 + yofs, 16, 16);
-                }
-            }
-        }
-    }
+  for (int y = box.bottom+1; y<=tile_y2; ++y) {
+     for (int x = tile_x1; x <= tile_x2 ; x++)
+	{blit(tx, double_buffer, 0, 0, x * 16 - box.x_offset , y * 16 -box.y_offset, 16, 16);
+	}
+  }
 }
 
-void KDraw::draw_char(int xw, int yw)
+KDraw::PBound KDraw::calculate_box(bool is_parallax) {
+  int x, y;
+  if (is_parallax) {
+    x = viewport_x_coord * g_map.pmult / g_map.pdiv;
+    y =  viewport_y_coord* g_map.pmult / g_map.pdiv;
+  } else {
+    x= viewport_x_coord;
+    y = viewport_y_coord;
+  }
+  int tile_x1 = std::max(view_x1, x / 16);
+  int tile_x2 = std::min(view_x2, (x + SCREEN_W - 1)/16);
+  int tile_y1 = std::max(view_y1, y / 16);
+  int tile_y2 = std::min(view_y2, (y + SCREEN_H - 1)/16);
+  return {tile_x1, tile_y1, tile_x2, tile_y2, x, y};
+}
+
+void KDraw::draw_char()
 {
     signed int dx, dy;
     int f;
@@ -345,8 +339,8 @@ void KDraw::draw_char(int xw, int yw)
     {
         fighter_index = follower_fighter_index - 1;
         fighter_type_id = g_ent[fighter_index].eid;
-        dx = g_ent[fighter_index].x - viewport_x_coord + xw;
-        dy = g_ent[fighter_index].y - viewport_y_coord + yw;
+        dx = g_ent[fighter_index].x - viewport_x_coord;
+        dy = g_ent[fighter_index].y - viewport_y_coord;
         if (!g_ent[fighter_index].moving)
         {
             fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + 2;
@@ -356,8 +350,6 @@ void KDraw::draw_char(int xw, int yw)
             fighter_frame_add = g_ent[fighter_index].framectr > 10 ? 1 : 0;
             fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + fighter_frame_add;
         }
-	//	extern int _cycle;
-	//	if (fighter_index == 0) {printf("%d %zu\n", _cycle, fighter_frame);}
 
         if (fighter_index < PSIZE && fighter_index < numchrs)
         {
@@ -447,9 +439,9 @@ void KDraw::draw_char(int xw, int yw)
                         /* Moving diag down */
 
                         // Final x-coord is one left/right of starting x-coord
-                        x = (g_ent[fighter_index].tilex - horiz) * TILE_W - viewport_x_coord + xw;
+                        x = (g_ent[fighter_index].tilex - horiz) * TILE_W - viewport_x_coord;
                         // Final y-coord is same as starting y-coord
-                        y = g_ent[fighter_index].tiley * TILE_H - viewport_y_coord + yw;
+                        y = g_ent[fighter_index].tiley * TILE_H - viewport_y_coord;
                         // Where the tile is on the map that we will draw over
                         there = (g_ent[fighter_index].tiley) * g_map.xsize + g_ent[fighter_index].tilex - horiz;
                         // Original position, before you started moving
@@ -460,9 +452,9 @@ void KDraw::draw_char(int xw, int yw)
                         /* Moving diag up */
 
                         // Final x-coord is same as starting x-coord
-                        x = g_ent[fighter_index].tilex * TILE_W - viewport_x_coord + xw;
+                        x = g_ent[fighter_index].tilex * TILE_W - viewport_x_coord;
                         // Final y-coord is above starting y-coord
-                        y = (g_ent[fighter_index].tiley - vert) * TILE_H - viewport_y_coord + yw;
+                        y = (g_ent[fighter_index].tiley - vert) * TILE_H - viewport_y_coord;
                         // Where the tile is on the map that we will draw over
                         there = (g_ent[fighter_index].tiley - vert) * g_map.xsize + g_ent[fighter_index].tilex;
                         // Target position
@@ -509,81 +501,43 @@ void KDraw::draw_char(int xw, int yw)
 
 void KDraw::draw_forelayer(void)
 {
-    int dx, dy, pix, xtc, ytc;
-    int here;
-    KBound box;
-
-    if (view_on == 0)
+  auto box = calculate_box(g_map.map_mode ==3 || g_map.map_mode==4);
+  for (int y = box.top; y <= box.bottom; y++)
     {
-        view_y1 = 0;
-        view_y2 = g_map.ysize - 1;
-        view_x1 = 0;
-        view_x2 = g_map.xsize - 1;
-    }
-    if (g_map.map_mode < 4 || g_map.pdiv == 0)
-    {
-        dx = viewport_x_coord;
-        dy = viewport_y_coord;
-        box.left = view_x1;
-        box.top = view_y1;
-        box.right = view_x2;
-        box.bottom = view_y2;
-    }
-    else
-    {
-        dx = viewport_x_coord * g_map.pmult / g_map.pdiv;
-        dy = viewport_y_coord * g_map.pmult / g_map.pdiv;
-        box.left = view_x1 * g_map.pmult / g_map.pdiv;
-        box.top = view_y1 * g_map.pmult / g_map.pdiv;
-        box.right = view_x2 * g_map.pmult / g_map.pdiv;
-        box.bottom = view_y2 * g_map.pmult / g_map.pdiv;
-    }
-    xtc = dx >> 4;
-    ytc = dy >> 4;
-
-    recalculate_offsets(dx, dy);
-
-    for (dy = 0; dy < 16; dy++)
-    {
-        if (ytc + dy >= box.top && ytc + dy <= box.bottom)
-        {
-            for (dx = 0; dx < 21; dx++)
-            {
-                if (xtc + dx >= box.left && xtc + dx <= box.right)
-                {
-                    // Used in several places in this loop, so shortened the name
-                    here = ((ytc + dy) * g_map.xsize) + xtc + dx;
-                    pix = f_seg[here];
-                    draw_sprite(double_buffer, map_icons[tilex[pix]], dx * 16 + xofs, dy * 16 + yofs);
+      for (int x = box.left; x <= box.right; x++)
+	{
+	  // Used in several places in this loop, so shortened the name
+	  int here =  y * g_map.xsize + x;
+	  int pix = f_seg[here];
+	  draw_sprite(double_buffer, map_icons[tilex[pix]], +x* 16  - box.x_offset, y* 16-box.y_offset );
 
 #ifdef DEBUGMODE
-                    if (debugging > 3)
-                    {
-                        // Obstacles
-                        if (o_seg[here] == 1)
-                        {
-                            draw_sprite(double_buffer, obj_mesh, dx * 16 + xofs, dy * 16 + yofs);
-                        }
+	  if (debugging > 3)
+	    {
+	      // Obstacles
+	      if (o_seg[here] == 1)
+		{
+		  draw_sprite(double_buffer, obj_mesh, x * 16 - box.x_offset , y * 16-box.y_offset );
+		}
 
-                        // Zones
-                        if (z_seg[here] == 0)
-			  {
-			    // Do nothing
-			  }
-                        else
-			  {
-                            char buf[8];
-                            sprintf(buf, "%d", z_seg[here]);
-                            size_t l = strlen(buf) * 8;
-                            print_num(double_buffer, dx * 16 + 8 + xofs - l / 2, dy * 16 + 4 + yofs, buf, FONT_WHITE);
-			  }
-                    }
+	      // Zones
+	      if (z_seg[here] == 0)
+		{
+		  // Do nothing
+		}
+	      else
+		{
+		  char buf[8];
+		  sprintf(buf, "%d", z_seg[here]);
+		  size_t l = strlen(buf) * 8;
+		  print_num(double_buffer, x* 16 + 8  - l / 2 - box.x_offset, y* 16 + 4-box.y_offset  , buf, FONT_WHITE);
+		}
+	    }
 #endif /* DEBUGMODE */
-                }
-            }
-        }
+	}
     }
 }
+
 
 void KDraw::draw_icon(Raster* where, int ino, int icx, int icy)
 {
@@ -640,156 +594,36 @@ void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, e
 
 void KDraw::draw_midlayer(void)
 {
-    int dx, dy, pix, xtc, ytc;
-    int here;
-    KBound box;
-
-    if (view_on == 0)
+  auto box = calculate_box(g_map.map_mode == 3 || g_map.map_mode == 4);
+  for (int y = box.top; y <= box.bottom; y++)
     {
-        view_y1 = 0;
-        view_y2 = g_map.ysize - 1;
-        view_x1 = 0;
-        view_x2 = g_map.xsize - 1;
-    }
-    if (g_map.map_mode < 3 || g_map.map_mode == 5)
-    {
-        xtc = viewport_x_coord >> 4;
-        ytc = viewport_y_coord >> 4;
-        dx = viewport_x_coord;
-        dy = viewport_y_coord;
-        box.left = view_x1;
-        box.top = view_y1;
-        box.right = view_x2;
-        box.bottom = view_y2;
-    }
-    else
-    {
-        dx = viewport_x_coord * g_map.pmult / g_map.pdiv;
-        dy = viewport_y_coord * g_map.pmult / g_map.pdiv;
-        xtc = dx >> 4;
-        ytc = dy >> 4;
-        box.left = view_x1 * g_map.pmult / g_map.pdiv;
-        box.top = view_y1 * g_map.pmult / g_map.pdiv;
-        box.right = view_x2 * g_map.pmult / g_map.pdiv;
-        box.bottom = view_y2 * g_map.pmult / g_map.pdiv;
-    }
-    recalculate_offsets(dx, dy);
-
-    for (dy = 0; dy < 16; dy++)
-    {
-        if (ytc + dy >= box.top && ytc + dy <= box.bottom)
-        {
-            for (dx = 0; dx < 21; dx++)
-            {
-                if (xtc + dx >= box.left && xtc + dx <= box.right)
-                {
-                    here = ((ytc + dy) * g_map.xsize) + xtc + dx;
-                    pix = b_seg[here];
-                    draw_sprite(double_buffer, map_icons[tilex[pix]], dx * 16 + xofs, dy * 16 + yofs);
-                }
-            }
-        }
-    }
-}
-
-void KDraw::draw_playerbound(void)
-{
-    int dx, dy, xtc, ytc;
-    shared_ptr<KBound> found = nullptr;
-    uint16_t ent_x = g_ent[0].tilex;
-    uint16_t ent_y = g_ent[0].tiley;
-
-    /* Is the player standing inside a bounding area? */
-    size_t found_index;
-    if (!g_map.bounds.IsBound(found_index, ent_x, ent_y, ent_x, ent_y))
-    {
-        return;
-    }
-    found = g_map.bounds.GetBound(found_index);
-
-    xtc = viewport_x_coord >> 4;
-    ytc = viewport_y_coord >> 4;
-
-    recalculate_offsets(viewport_x_coord, viewport_y_coord);
-
-    /* If the player is inside the bounded area, draw everything OUTSIDE the
-     * bounded area with the tile specified by that area.
-     * found->btile is most often 0, but could also be made to be water, etc.
-     */
-
-    // Top
-    for (dy = 0; dy < found->top - ytc; dy++)
-    {
-        for (dx = 0; dx <= ONSCREEN_TILES_W; dx++)
-        {
-            blit(map_icons[tilex[found->btile]], double_buffer, 0, 0, dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W,
-                 TILE_H);
-        }
-    }
-
-    // Sides
-    for (dy = found->top - ytc; dy < found->bottom - ytc + 1; dy++)
-    {
-        // Left side
-        for (dx = 0; dx < found->left - xtc; dx++)
-        {
-            blit(map_icons[tilex[found->btile]], double_buffer, 0, 0, dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W,
-                 TILE_H);
-        }
-
-        // Right side
-        for (dx = found->right - xtc + 1; dx <= ONSCREEN_TILES_W; dx++)
-        {
-            blit(map_icons[tilex[found->btile]], double_buffer, 0, 0, dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W,
-                 TILE_H);
-        }
-    }
-
-    // Bottom
-    for (dy = found->bottom - ytc + 1; dy <= ONSCREEN_TILES_H; dy++)
-    {
-        for (dx = 0; dx <= ONSCREEN_TILES_W; dx++)
-        {
-            blit(map_icons[tilex[found->btile]], double_buffer, 0, 0, dx * TILE_W + xofs, dy * TILE_H + yofs, TILE_W,
-                 TILE_H);
-        }
+      for (int x = box.left; x <= box.right; x++)
+	{
+	  int here = y * g_map.xsize + x;
+	  int pix = b_seg[here];
+	  draw_sprite(double_buffer, map_icons[tilex[pix]], x * 16  - box.x_offset , y * 16-box.y_offset);
+	}
     }
 }
 
 void KDraw::draw_shadows(void)
 {
-    int dx, dy, pix, xtc, ytc;
-    int here;
-
     if (draw_shadow == 0)
     {
         return;
     }
-    if (!view_on)
-    {
-        view_y1 = 0;
-        view_y2 = g_map.ysize - 1;
-        view_x1 = 0;
-        view_x2 = g_map.xsize - 1;
-    }
-    xtc = viewport_x_coord >> 4;
-    ytc = viewport_y_coord >> 4;
-    recalculate_offsets(viewport_x_coord, viewport_y_coord);
-
-    for (dy = 0; dy < 16; dy++)
-    {
-        for (dx = 0; dx < 21; dx++)
-        {
-            if (ytc + dy >= view_y1 && xtc + dx >= view_x1 && ytc + dy <= view_y2 && xtc + dx <= view_x2)
-            {
-                here = ((ytc + dy) * g_map.xsize) + xtc + dx;
-                pix = s_seg[here];
-                if (pix > 0)
-                {
-                    draw_trans_sprite(double_buffer, shadow[pix], dx * 16 + xofs, dy * 16 + yofs);
-                }
+    auto box = calculate_box(false);
+    for (int y = box.top; y <= box.bottom; y++)
+      {
+        for (int x = box.left; x <= box.right; x++)
+	  {
+	  int here =  y * g_map.xsize + x;
+	  int pix = s_seg[here];
+	  if (pix > 0)
+	    {
+	      draw_trans_sprite(double_buffer, shadow[pix], x* 16 - box.x_offset, y* 16 -box.y_offset);
+	    }
             }
-        }
     }
 }
 
@@ -827,18 +661,18 @@ void KDraw::draw_textbox(eBubbleStyle bstyle)
     wid = gbbw * 8 + 16;
     hgt = gbbh * 12 + 16;
 
-    draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid, gbby + yofs + hgt, BLUE, bstyle);
+    draw_kq_box(double_buffer, gbbx, gbby, gbbx + wid, gbby  + hgt, BLUE, bstyle);
     if (bubble_stem_style != STEM_UNDEFINED)
     {
         /* select the correct stem-thingy that comes out of the speech bubble */
         stem = bub[bubble_stem_style + (bstyle == B_THOUGHT ? NUM_BUBBLE_STEMS : 0)];
         /* and draw it */
-        draw_sprite(double_buffer, stem, gbx + xofs, gby + yofs);
+        draw_sprite(double_buffer, stem, gbx , gby );
     }
 
     for (a = 0; a < gbbh; a++)
     {
-        print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs, msgbuf[a], FBIG);
+        print_font(double_buffer, gbbx + 8 , a * 12 + gbby + 8 , msgbuf[a], FBIG);
     }
 }
 
@@ -851,11 +685,11 @@ void KDraw::draw_porttextbox(eBubbleStyle bstyle, int chr)
     hgt = gbbh * 12 + 16;
     chr = chr - PSIZE;
 
-    draw_kq_box(double_buffer, gbbx + xofs, gbby + yofs, gbbx + xofs + wid, gbby + yofs + hgt, BLUE, bstyle);
+    draw_kq_box(double_buffer, gbbx , gbby , gbbx  + wid, gbby  + hgt, BLUE, bstyle);
 
     for (a = 0; a < gbbh; a++)
     {
-        print_font(double_buffer, gbbx + 8 + xofs, a * 12 + gbby + 8 + yofs, msgbuf[a], FBIG);
+        print_font(double_buffer, gbbx + 8, a * 12 + gbby + 8 , msgbuf[a], FBIG);
     }
 
     a--;
@@ -875,6 +709,28 @@ void KDraw::drawmap(void)
         clear_to_color(double_buffer, 1);
         return;
     }
+      auto ent_x = g_ent[0].tilex;
+      auto ent_y = g_ent[0].tiley;
+
+    /* Is the player standing inside a bounding area? */
+    const KBound* found;
+    if ((found = g_map.bounds.IsBound(ent_x, ent_y, ent_x, ent_y))!=nullptr)
+    {
+      view_on = 1;
+      view_y1 = found->top;
+      view_y2 = found->bottom;
+      view_x1 = found->left;
+      view_x2 = found->right;
+      btile = found->btile;
+      
+    } else {
+      view_on = 0;
+      view_y1 = 0;
+      view_y2 = g_map.ysize - 1;
+      view_x1 = 0;
+      view_x2 = g_map.xsize - 1;
+    }
+
     clear_bitmap(double_buffer);
     if (draw_background)
     {
@@ -882,7 +738,7 @@ void KDraw::drawmap(void)
     }
     if (g_map.map_mode == 1 || g_map.map_mode == 3 || g_map.map_mode == 5)
     {
-        draw_char(16, 16);
+        draw_char();
     }
     if (draw_middle)
     {
@@ -890,33 +746,25 @@ void KDraw::drawmap(void)
     }
     if (g_map.map_mode == 0 || g_map.map_mode == 2 || g_map.map_mode == 4)
     {
-        draw_char(16, 16);
+        draw_char();
     }
     if (draw_foreground)
     {
         draw_forelayer();
     }
     draw_shadows();
-    draw_playerbound();
+    //draw_playerbound();
 
-    /*  This is an obvious hack here.  When I first started, xofs and yofs could
-     *  have values of anywhere between 0 and 15.  Therefore, I had to use these
-     *  offsets any time I drew to the double_buffer.  However, when I put in the
-     *  parallaxing code, that was no longer true.  So, instead of changing all
-     *  my code, I just put this hack in place.  It's actually kind of handy in
-     *  case I ever have to adjust stuff again.
-     */
-    recalculate_offsets(0, 0);
     if (save_spells[P_REPULSE] > 0)
     {
         rectfill(b_repulse, 0, 16, 15, 165, 0);
         rectfill(b_repulse, 5, 16, 10, 16 + save_spells[P_REPULSE], 15);
-        draw_trans_sprite(double_buffer, b_repulse, 2 + xofs, 2 + yofs);
+        draw_trans_sprite(double_buffer, b_repulse, 2 , 2 );
     }
     if (display_desc == 1)
     {
-        menubox(double_buffer, 152 - (g_map.map_desc.length() * 4) + xofs, 8 + yofs, g_map.map_desc.length(), 1, BLUE);
-        print_font(double_buffer, 160 - (g_map.map_desc.length() * 4) + xofs, 16 + yofs, g_map.map_desc.c_str(),
+        menubox(double_buffer, 152 - (g_map.map_desc.length() * 4) , 8, g_map.map_desc.length(), 1, BLUE);
+        print_font(double_buffer, 160 - (g_map.map_desc.length() * 4) , 16, g_map.map_desc.c_str(),
                    FNORMAL);
     }
 }
@@ -951,8 +799,8 @@ void KDraw::generic_text(int who, eBubbleStyle box_style, int isPort)
     timer_count = 0;
     while (!stop)
     {
-        Game.do_check_animation();
 	Game.ProcessEvents();
+        Game.do_check_animation();
         drawmap();
         if (isPort == 0)
         {
@@ -962,7 +810,7 @@ void KDraw::generic_text(int who, eBubbleStyle box_style, int isPort)
         {
             draw_porttextbox(box_style, who);
         }
-        blit2screen(xofs, yofs);
+        blit2screen();
         PlayerInput.readcontrols();
         if (PlayerInput.balt)
         {
@@ -1004,7 +852,7 @@ void KDraw::menubox(Raster* where, int x, int y, int width, int height, int colo
     draw_kq_box(where, x, y, x + width * FontWidth + TILE_W, y + height * FontHeight + TILE_H, color, B_TEXT);
 }
 
-void KDraw::message(const char* inMessage, int icn, int delay, int x_m, int y_m)
+void KDraw::message(const char* inMessage, int icn, int delay)
 {
     int num_lines, max_len, len;
     int idx;
@@ -1019,7 +867,7 @@ void KDraw::message(const char* inMessage, int icn, int delay, int x_m, int y_m)
     const char* s = unsplit_string;
 
     /* Save a copy of the screen */
-    blit(double_buffer, back, x_m, y_m, 0, 0, SCREEN_W2, SCREEN_H2);
+    fullblit(double_buffer, back);
 
     /* Loop for each box full of text... */
     while (s != NULL)
@@ -1043,22 +891,22 @@ void KDraw::message(const char* inMessage, int icn, int delay, int x_m, int y_m)
         if (icn == 255)
         {
             /* No icon */
-            menubox(double_buffer, 152 - (max_len * 4) + x_m, 108 + y_m, max_len, num_lines, DARKBLUE);
+            menubox(double_buffer, 152 - (max_len * 4) , 108 , max_len, num_lines, DARKBLUE);
         }
         else
         {
             /* There is an icon; make the box a little bit bigger to the left */
-            menubox(double_buffer, 144 - (max_len * 4) + x_m, 108 + y_m, max_len + 1, num_lines, DARKBLUE);
-            draw_icon(double_buffer, icn, 152 - (max_len * 4) + x_m, 116 + y_m);
+            menubox(double_buffer, 144 - (max_len * 4) , 108 , max_len + 1, num_lines, DARKBLUE);
+            draw_icon(double_buffer, icn, 152 - (max_len * 4) , 116 );
         }
 
         /* Draw the text */
         for (idx = 0; idx < num_lines; ++idx)
         {
-            print_font(double_buffer, 160 - (max_len * 4) + x_m, 116 + 8 * idx + y_m, msgbuf[idx], FNORMAL);
+            print_font(double_buffer, 160 - (max_len * 4) , 116 + 8 * idx , msgbuf[idx], FNORMAL);
         }
         /* Show it */
-        blit2screen(x_m, y_m);
+        blit2screen();
         /* Wait for delay time or key press */
         if (delay == 0)
         {
@@ -1068,7 +916,7 @@ void KDraw::message(const char* inMessage, int icn, int delay, int x_m, int y_m)
         {
             kq_wait(delay);
         }
-        blit(back, double_buffer, 0, 0, x_m, y_m, SCREEN_W2, SCREEN_H2);
+        fullblit(back, double_buffer);
     }
     delete[] unsplit_string;
 }
@@ -1316,12 +1164,13 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
     ly = (gbbh - numopt) * 12 + gbby + 10;
     while (!stop)
     {
+      Game.ProcessEvents();
         Game.do_check_animation();
         drawmap();
         draw_textbox(bstyle);
 
-        draw_sprite(double_buffer, menuptr, gbbx + xofs + 8, ptr * 12 + ly + yofs);
-        blit2screen(xofs, yofs);
+        draw_sprite(double_buffer, menuptr, gbbx  + 8, ptr * 12 + ly );
+        blit2screen();
 
         PlayerInput.readcontrols();
         if (PlayerInput.up)
@@ -1409,11 +1258,12 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                 }
             }
             winheight = n_opt > 4 ? 4 : n_opt;
-            winx = xofs + (SCREEN_W - winwidth * 8) / 2;
-            winy = yofs + (SCREEN_H - 10) - winheight * 12;
+            winx =  (SCREEN_W - winwidth * 8) / 2;
+            winy =  (SCREEN_H - 10) - winheight * 12;
             running = 1;
             while (running)
             {
+	      Game.ProcessEvents();
                 Game.do_check_animation();
                 drawmap();
                 /* Draw the prompt text */
@@ -1437,9 +1287,9 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                 {
                     draw_sprite(double_buffer, dnptr, winx, winy + 12 * winheight);
                 }
-		if (Game.ProcessEvents()) {
-                blit2screen(xofs, yofs);
-		}
+		
+                blit2screen();
+		
 
                 PlayerInput.readcontrols();
                 if (PlayerInput.up && curopt > 0)

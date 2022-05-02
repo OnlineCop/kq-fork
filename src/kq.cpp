@@ -116,9 +116,6 @@ ePIDX pidx[MAXCHRS];
 /*! Number of characters in the party */
 uint32_t numchrs = 0;
 
-/*! pixel offset in the current map view */
-int xofs, yofs;
-
 /*! Sound and music volume, 250 = as loud as possible */
 int gsvol = 250, gmvol = 250;
 
@@ -231,7 +228,8 @@ short num_special_items = 0;
 
 /*! View coordinates; the view is a way of selecting a subset of the map to
  * show. */
-int view_x1, view_y1, view_x2, view_y2, view_on = 0;
+int view_x1, view_y1, view_x2, view_y2;
+bool view_on = false;
 
 /*! Are we in combat mode? */
 int in_combat = 0;
@@ -385,7 +383,7 @@ void KGame::activate(void)
         }
 
         Draw.drawmap();
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
 
         zx = abs(g_ent[p - 1].x - g_ent[0].x);
         zy = abs(g_ent[p - 1].y - g_ent[0].y);
@@ -877,7 +875,7 @@ void KGame::kwait(int dtime)
         }
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
 #ifdef DEBUGMODE
         if (debugging > 0)
         {
@@ -1001,7 +999,7 @@ int main(int argc, const char* argv[])
 		process_entities();
                 Game.do_check_animation();
                 Draw.drawmap();
-                Draw.blit2screen(xofs, yofs);
+                Draw.blit2screen();
                 Music.poll_music();
 
                 if (key[PlayerInput.kesc])
@@ -1204,7 +1202,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     if (hold_fade == 0 && numchrs > 0)
     {
         Draw.drawmap();
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
         do_transition(eTransitionFade::IN, 4);
     }
 
@@ -1307,7 +1305,7 @@ void KGame::startup(void)
 
     allocate_stuff();
 
-    start_timer(30);
+    start_timer(KQ_TICKS);
 
     /* KQ uses digi sound but it doesn't use MIDI */
     //   reserve_voices (8, 0);
@@ -1528,15 +1526,11 @@ void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
     do
     {
       ProcessEvents();
-        while (timer_count > 0)
-        {
-            timer_count--;
-            process_entities();
-        }
+      process_entities();
         Music.poll_music();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
 
         if (key[SDL_SCANCODE_W] && key[SDL_SCANCODE_LALT])
         {
@@ -1593,7 +1587,7 @@ void KGame::warp(int wtx, int wty, int fspeed)
 
     calc_viewport();
     Draw.drawmap();
-    Draw.blit2screen(xofs, yofs);
+    Draw.blit2screen();
 
     if (hold_fade == 0)
     {
@@ -1630,7 +1624,7 @@ void KGame::zone_check(void)
 
         if (save_spells[P_REPULSE] < 1)
         {
-            Draw.message(_("Repulse has worn off!"), 255, 0, xofs, yofs);
+            Draw.message(_("Repulse has worn off!"), 255, 0);
         }
     }
 

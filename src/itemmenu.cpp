@@ -71,7 +71,7 @@ void camp_item_menu(void)
         Game.do_check_animation();
         Draw.drawmap();
         draw_itemmenu(ptr, pptr, sel);
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
         PlayerInput.readcontrols();
 
         if (sel == 0)
@@ -176,13 +176,13 @@ void camp_item_menu(void)
                             /* Make sure the player really wants to drop the item specified.
                              */
                             while (!stop2)
-                            {
+			      {Game.ProcessEvents();
                                 Game.do_check_animation();
                                 Draw.drawmap();
                                 draw_itemmenu(ptr, pptr, sel);
-                                Draw.menubox(double_buffer, 72 + xofs, 204 + yofs, 20, 1, DARKBLUE);
-                                Draw.print_font(double_buffer, 104 + xofs, 212 + yofs, _("Confirm/Cancel"), FNORMAL);
-                                Draw.blit2screen(xofs, yofs);
+                                Draw.menubox(double_buffer, 72 + 0, 204 , 20, 1, DARKBLUE);
+                                Draw.print_font(double_buffer, 104 , 212 , _("Confirm/Cancel"), FNORMAL);
+                                Draw.blit2screen();
                                 PlayerInput.readcontrols();
 
                                 if (PlayerInput.balt)
@@ -329,33 +329,33 @@ static void draw_itemmenu(int ptr, int pg, int sl)
     size_t k;
     size_t item_quantity;
 
-    Draw.menubox(double_buffer, 72 + xofs, 12 + yofs, 20, 1, BLUE);
-    Draw.print_font(double_buffer, 140 + xofs, 20 + yofs, _("Items"), FGOLD);
-    Draw.menubox(double_buffer, 72 + xofs, 36 + yofs, 20, 1, BLUE);
+    Draw.menubox(double_buffer, 72 , 12 , 20, 1, BLUE);
+    Draw.print_font(double_buffer, 140 , 20 , _("Items"), FGOLD);
+    Draw.menubox(double_buffer, 72 , 36 , 20, 1, BLUE);
     if (sl == 1)
     {
-        Draw.menubox(double_buffer, item_act * 56 + 72 + xofs, 36 + yofs, 6, 1, DARKBLUE);
-        Draw.print_font(double_buffer, 92 + xofs, 44 + yofs, _("Use"), FGOLD);
-        Draw.print_font(double_buffer, 144 + xofs, 44 + yofs, _("Sort   Drop"), FGOLD);
+        Draw.menubox(double_buffer, item_act * 56 + 72 , 36 , 6, 1, DARKBLUE);
+        Draw.print_font(double_buffer, 92 , 44 , _("Use"), FGOLD);
+        Draw.print_font(double_buffer, 144 , 44 , _("Sort   Drop"), FGOLD);
     }
     else
     {
         if (item_act == 0)
         {
-            Draw.print_font(double_buffer, 148 + xofs, 44 + yofs, _("Use"), FGOLD);
+            Draw.print_font(double_buffer, 148 , 44 , _("Use"), FGOLD);
         }
         else
         {
-            Draw.print_font(double_buffer, 144 + xofs, 44 + yofs, _("Drop"), FGOLD);
+            Draw.print_font(double_buffer, 144 , 44 , _("Drop"), FGOLD);
         }
     }
-    Draw.menubox(double_buffer, 72 + xofs, 60 + yofs, 20, 16, BLUE);
+    Draw.menubox(double_buffer, 72 , 60 , 20, 16, BLUE);
     for (k = 0; k < 16; k++)
     {
         // item_index == item index #
         item_index = g_inv[pg * 16 + k].item;
         item_quantity = g_inv[pg * 16 + k].quantity;
-        Draw.draw_icon(double_buffer, items[item_index].icon, 88 + xofs, k * 8 + 68 + yofs);
+        Draw.draw_icon(double_buffer, items[item_index].icon, 88 , k * 8 + 68 );
         if (items[item_index].use >= USE_ANY_ONCE && items[item_index].use <= USE_CAMP_INF)
         {
             palette_color = FNORMAL;
@@ -368,22 +368,22 @@ static void draw_itemmenu(int ptr, int pg, int sl)
         {
             palette_color = FDARK;
         }
-        Draw.print_font(double_buffer, 96 + xofs, k * 8 + 68 + yofs, items[item_index].name, palette_color);
+        Draw.print_font(double_buffer, 96 , k * 8 + 68 , items[item_index].name, palette_color);
         if (item_quantity > 1)
         {
             sprintf(strbuf, "^%u", (uint32_t)item_quantity);
-            Draw.print_font(double_buffer, 224 + xofs, k * 8 + 68 + yofs, strbuf, palette_color);
+            Draw.print_font(double_buffer, 224 , k * 8 + 68 , strbuf, palette_color);
         }
     }
-    Draw.menubox(double_buffer, 72 + xofs, 204 + yofs, 20, 1, BLUE);
+    Draw.menubox(double_buffer, 72 , 204 , 20, 1, BLUE);
     if (sl == 0)
     {
         item_name_length = strlen(items[g_inv[pg * 16 + ptr].item].desc) * 4;
-        Draw.print_font(double_buffer, 160 - item_name_length + xofs, 212 + yofs, items[g_inv[pg * 16 + ptr].item].desc,
+        Draw.print_font(double_buffer, 160 - item_name_length , 212 , items[g_inv[pg * 16 + ptr].item].desc,
                         FNORMAL);
-        draw_sprite(double_buffer, menuptr, 72 + xofs, ptr * 8 + 68 + yofs);
+        draw_sprite(double_buffer, menuptr, 72 , ptr * 8 + 68 );
     }
-    draw_sprite(double_buffer, pgb[pg], 238 + xofs, 194 + yofs);
+    draw_sprite(double_buffer, pgb[pg], 238 , 194 );
 }
 
 /*! \brief Perform item effects
@@ -705,19 +705,19 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         switch (z)
         {
         case 0:
-            Draw.message(_("Strength up!"), 255, 0, xofs, yofs);
+            Draw.message(_("Strength up!"), 255, 0);
             break;
         case 1:
-            Draw.message(_("Agility up!"), 255, 0, xofs, yofs);
+            Draw.message(_("Agility up!"), 255, 0);
             break;
         case 2:
-            Draw.message(_("Vitality up!"), 255, 0, xofs, yofs);
+            Draw.message(_("Vitality up!"), 255, 0);
             break;
         case 3:
-            Draw.message(_("Intellect up!"), 255, 0, xofs, yofs);
+            Draw.message(_("Intellect up!"), 255, 0);
             break;
         case 4:
-            Draw.message(_("Wisdom up!"), 255, 0, xofs, yofs);
+            Draw.message(_("Wisdom up!"), 255, 0);
             break;
         }
         return ITEM_EFFECT_SUCCESS_MULTIPLE;
@@ -760,7 +760,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         }
         sprintf(strbuf, _("%s learned!"), magic[tmp].name);
         play_effect(SND_TWINKLE, 128);
-        Draw.message(strbuf, magic[tmp].icon, 0, xofs, yofs);
+        Draw.message(strbuf, magic[tmp].icon, 0);
         return ITEM_EFFECT_SUCCESS_MULTIPLE;
     }
     if (ti == I_HPUP)
