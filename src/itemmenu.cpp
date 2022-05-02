@@ -67,7 +67,7 @@ void camp_item_menu(void)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         draw_itemmenu(ptr, pptr, sel);
@@ -176,12 +176,13 @@ void camp_item_menu(void)
                             /* Make sure the player really wants to drop the item specified.
                              */
                             while (!stop2)
-			      {Game.ProcessEvents();
+                            {
+                                Game.ProcessEvents();
                                 Game.do_check_animation();
                                 Draw.drawmap();
                                 draw_itemmenu(ptr, pptr, sel);
-                                Draw.menubox(double_buffer, 72 + 0, 204 , 20, 1, DARKBLUE);
-                                Draw.print_font(double_buffer, 104 , 212 , _("Confirm/Cancel"), FNORMAL);
+                                Draw.menubox(double_buffer, 72 + 0, 204, 20, 1, DARKBLUE);
+                                Draw.print_font(double_buffer, 104, 212, _("Confirm/Cancel"), FNORMAL);
                                 Draw.blit2screen();
                                 PlayerInput.readcontrols();
 
@@ -329,33 +330,33 @@ static void draw_itemmenu(int ptr, int pg, int sl)
     size_t k;
     size_t item_quantity;
 
-    Draw.menubox(double_buffer, 72 , 12 , 20, 1, BLUE);
-    Draw.print_font(double_buffer, 140 , 20 , _("Items"), FGOLD);
-    Draw.menubox(double_buffer, 72 , 36 , 20, 1, BLUE);
+    Draw.menubox(double_buffer, 72, 12, 20, 1, BLUE);
+    Draw.print_font(double_buffer, 140, 20, _("Items"), FGOLD);
+    Draw.menubox(double_buffer, 72, 36, 20, 1, BLUE);
     if (sl == 1)
     {
-        Draw.menubox(double_buffer, item_act * 56 + 72 , 36 , 6, 1, DARKBLUE);
-        Draw.print_font(double_buffer, 92 , 44 , _("Use"), FGOLD);
-        Draw.print_font(double_buffer, 144 , 44 , _("Sort   Drop"), FGOLD);
+        Draw.menubox(double_buffer, item_act * 56 + 72, 36, 6, 1, DARKBLUE);
+        Draw.print_font(double_buffer, 92, 44, _("Use"), FGOLD);
+        Draw.print_font(double_buffer, 144, 44, _("Sort   Drop"), FGOLD);
     }
     else
     {
         if (item_act == 0)
         {
-            Draw.print_font(double_buffer, 148 , 44 , _("Use"), FGOLD);
+            Draw.print_font(double_buffer, 148, 44, _("Use"), FGOLD);
         }
         else
         {
-            Draw.print_font(double_buffer, 144 , 44 , _("Drop"), FGOLD);
+            Draw.print_font(double_buffer, 144, 44, _("Drop"), FGOLD);
         }
     }
-    Draw.menubox(double_buffer, 72 , 60 , 20, 16, BLUE);
+    Draw.menubox(double_buffer, 72, 60, 20, 16, BLUE);
     for (k = 0; k < 16; k++)
     {
         // item_index == item index #
         item_index = g_inv[pg * 16 + k].item;
         item_quantity = g_inv[pg * 16 + k].quantity;
-        Draw.draw_icon(double_buffer, items[item_index].icon, 88 , k * 8 + 68 );
+        Draw.draw_icon(double_buffer, items[item_index].icon, 88, k * 8 + 68);
         if (items[item_index].use >= USE_ANY_ONCE && items[item_index].use <= USE_CAMP_INF)
         {
             palette_color = FNORMAL;
@@ -368,22 +369,21 @@ static void draw_itemmenu(int ptr, int pg, int sl)
         {
             palette_color = FDARK;
         }
-        Draw.print_font(double_buffer, 96 , k * 8 + 68 , items[item_index].name, palette_color);
+        Draw.print_font(double_buffer, 96, k * 8 + 68, items[item_index].name, palette_color);
         if (item_quantity > 1)
         {
             sprintf(strbuf, "^%u", (uint32_t)item_quantity);
-            Draw.print_font(double_buffer, 224 , k * 8 + 68 , strbuf, palette_color);
+            Draw.print_font(double_buffer, 224, k * 8 + 68, strbuf, palette_color);
         }
     }
-    Draw.menubox(double_buffer, 72 , 204 , 20, 1, BLUE);
+    Draw.menubox(double_buffer, 72, 204, 20, 1, BLUE);
     if (sl == 0)
     {
         item_name_length = strlen(items[g_inv[pg * 16 + ptr].item].desc) * 4;
-        Draw.print_font(double_buffer, 160 - item_name_length , 212 , items[g_inv[pg * 16 + ptr].item].desc,
-                        FNORMAL);
-        draw_sprite(double_buffer, menuptr, 72 , ptr * 8 + 68 );
+        Draw.print_font(double_buffer, 160 - item_name_length, 212, items[g_inv[pg * 16 + ptr].item].desc, FNORMAL);
+        draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 68);
     }
-    draw_sprite(double_buffer, pgb[pg], 238 , 194 );
+    draw_sprite(double_buffer, pgb[pg], 238, 194);
 }
 
 /*! \brief Perform item effects

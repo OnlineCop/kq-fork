@@ -126,7 +126,7 @@ static void choose_equipment(int c, int slot)
 
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         draw_equipmenu(c, 0);
@@ -264,10 +264,10 @@ static void draw_equipmenu(int c, int sel)
     int l, j, k;
 
     l = pidx[c];
-    Draw.menubox(double_buffer, 12 , 4 , 35, 1, BLUE);
+    Draw.menubox(double_buffer, 12, 4, 35, 1, BLUE);
     if (sel == 1)
     {
-        Draw.menubox(double_buffer, eqp_act * 72 + 12, 4 , 8, 1, DARKBLUE);
+        Draw.menubox(double_buffer, eqp_act * 72 + 12, 4, 8, 1, DARKBLUE);
         Draw.print_font(double_buffer, 32, 12, _("Equip"), FGOLD);
         Draw.print_font(double_buffer, 92, 12, _("Optimize"), FGOLD);
         Draw.print_font(double_buffer, 172, 12, _("Remove"), FGOLD);
@@ -277,28 +277,28 @@ static void draw_equipmenu(int c, int sel)
     {
         if (eqp_act == 0)
         {
-            Draw.print_font(double_buffer, 140 , 12, _("Equip"), FGOLD);
+            Draw.print_font(double_buffer, 140, 12, _("Equip"), FGOLD);
         }
         if (eqp_act == 2)
         {
-            Draw.print_font(double_buffer, 136 , 12 , _("Remove"), FGOLD);
+            Draw.print_font(double_buffer, 136, 12, _("Remove"), FGOLD);
         }
     }
-    Draw.menubox(double_buffer, 12 , 28 , 25, 6, BLUE);
-    Draw.menubox(double_buffer, 228 , 28 , 8, 6, BLUE);
-    draw_sprite(double_buffer, players[l].portrait, 248 , 36 );
-    Draw.print_font(double_buffer, 268 - (party[l].name.length() * 4) , 76 , party[l].name, FNORMAL);
-    Draw.print_font(double_buffer, 28 , 36 , _("Hand1:"), FGOLD);
-    Draw.print_font(double_buffer, 28 , 44 , _("Hand2:"), FGOLD);
-    Draw.print_font(double_buffer, 28 , 52 , _("Head:"), FGOLD);
-    Draw.print_font(double_buffer, 28 , 60 , _("Body:"), FGOLD);
-    Draw.print_font(double_buffer, 28 , 68 , _("Arms:"), FGOLD);
-    Draw.print_font(double_buffer, 28 , 76 , _("Other:"), FGOLD);
+    Draw.menubox(double_buffer, 12, 28, 25, 6, BLUE);
+    Draw.menubox(double_buffer, 228, 28, 8, 6, BLUE);
+    draw_sprite(double_buffer, players[l].portrait, 248, 36);
+    Draw.print_font(double_buffer, 268 - (party[l].name.length() * 4), 76, party[l].name, FNORMAL);
+    Draw.print_font(double_buffer, 28, 36, _("Hand1:"), FGOLD);
+    Draw.print_font(double_buffer, 28, 44, _("Hand2:"), FGOLD);
+    Draw.print_font(double_buffer, 28, 52, _("Head:"), FGOLD);
+    Draw.print_font(double_buffer, 28, 60, _("Body:"), FGOLD);
+    Draw.print_font(double_buffer, 28, 68, _("Arms:"), FGOLD);
+    Draw.print_font(double_buffer, 28, 76, _("Other:"), FGOLD);
     for (k = 0; k < NUM_EQUIPMENT; k++)
     {
         j = party[l].eqp[k];
-        Draw.draw_icon(double_buffer, items[j].icon, 84 , k * 8 + 36 );
-        Draw.print_font(double_buffer, 92 , k * 8 + 36 , items[j].name, FNORMAL);
+        Draw.draw_icon(double_buffer, items[j].icon, 84, k * 8 + 36);
+        Draw.print_font(double_buffer, 92, k * 8 + 36, items[j].name, FNORMAL);
     }
 }
 
@@ -332,30 +332,30 @@ static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
     {
         sm = NUM_ITEMS_PER_PAGE;
     }
-    Draw.menubox(double_buffer, 12 , 92 , 20, NUM_ITEMS_PER_PAGE, BLUE);
+    Draw.menubox(double_buffer, 12, 92, 20, NUM_ITEMS_PER_PAGE, BLUE);
     for (k = 0; k < sm; k++)
     {
         // j == item index #
         j = g_inv[t_inv[pptr + k]].item;
         // z == number of items
         z = g_inv[t_inv[pptr + k]].quantity;
-        Draw.draw_icon(double_buffer, items[j].icon, 28 , k * 8 + 100 );
-        Draw.print_font(double_buffer, 36 , k * 8 + 100 , items[j].name, FNORMAL);
+        Draw.draw_icon(double_buffer, items[j].icon, 28, k * 8 + 100);
+        Draw.print_font(double_buffer, 36, k * 8 + 100, items[j].name, FNORMAL);
         if (z > 1)
         {
             sprintf(strbuf, "^%d", z);
-            Draw.print_font(double_buffer, 164 , k * 8 + 100 , strbuf, FNORMAL);
+            Draw.print_font(double_buffer, 164, k * 8 + 100, strbuf, FNORMAL);
         }
     }
     if (pptr > 0)
     {
-        draw_sprite(double_buffer, upptr, 180 , 98 );
+        draw_sprite(double_buffer, upptr, 180, 98);
     }
     if (tot > NUM_ITEMS_PER_PAGE)
     {
         if (pptr < tot - NUM_ITEMS_PER_PAGE)
         {
-            draw_sprite(double_buffer, dnptr, 180 , 206 );
+            draw_sprite(double_buffer, dnptr, 180, 206);
         }
     }
 }
@@ -382,39 +382,39 @@ static void draw_equippreview(int ch, int ptr, int pp)
     {
         kmenu.update_equipstats();
     }
-    Draw.menubox(double_buffer, 188 , 92 , 13, 13, BLUE);
-    Draw.print_font(double_buffer, 196 , 100 , _("Str:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 108 , _("Agi:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 116 , _("Vit:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 124 , _("Int:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 132 , _("Sag:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 140 , _("Spd:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 148 , _("Aur:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 156 , _("Spi:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 164 , _("Att:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 172 , _("Hit:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 180 , _("Def:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 188 , _("Evd:"), FNORMAL);
-    Draw.print_font(double_buffer, 196 , 196 , _("Mdf:"), FNORMAL);
+    Draw.menubox(double_buffer, 188, 92, 13, 13, BLUE);
+    Draw.print_font(double_buffer, 196, 100, _("Str:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 108, _("Agi:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 116, _("Vit:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 124, _("Int:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 132, _("Sag:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 140, _("Spd:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 148, _("Aur:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 156, _("Spi:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 164, _("Att:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 172, _("Hit:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 180, _("Def:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 188, _("Evd:"), FNORMAL);
+    Draw.print_font(double_buffer, 196, 196, _("Mdf:"), FNORMAL);
     for (z = 0; z < 13; z++)
     {
         c1 = fighter[ch].stats[z];
         c2 = tstats[z];
         sprintf(strbuf, "%d", c1);
-        Draw.print_font(double_buffer, 252 - (strlen(strbuf) * 8) , z * 8 + 100 , strbuf, FNORMAL);
-        Draw.print_font(double_buffer, 260 , z * 8 + 100 , ">", FNORMAL);
+        Draw.print_font(double_buffer, 252 - (strlen(strbuf) * 8), z * 8 + 100, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, 260, z * 8 + 100, ">", FNORMAL);
         if (ptr >= 0)
         {
             sprintf(strbuf, "%d", c2);
             if (c1 < c2)
-                Draw.print_font(double_buffer, 300 - (strlen(strbuf) * 8) , z * 8 + 100 , strbuf, FGREEN);
+                Draw.print_font(double_buffer, 300 - (strlen(strbuf) * 8), z * 8 + 100, strbuf, FGREEN);
             if (c2 < c1)
-                Draw.print_font(double_buffer, 300 - (strlen(strbuf) * 8) , z * 8 + 100 , strbuf, FRED);
+                Draw.print_font(double_buffer, 300 - (strlen(strbuf) * 8), z * 8 + 100, strbuf, FRED);
             if (c1 == c2)
-                Draw.print_font(double_buffer, 300 - (strlen(strbuf) * 8) , z * 8 + 100 , strbuf, FNORMAL);
+                Draw.print_font(double_buffer, 300 - (strlen(strbuf) * 8), z * 8 + 100, strbuf, FNORMAL);
         }
     }
-    Draw.menubox(double_buffer, 188 , 212 , 13, 1, BLUE);
+    Draw.menubox(double_buffer, 188, 212, 13, 1, BLUE);
     if (ptr >= 0)
     {
         c1 = 0;
@@ -425,9 +425,9 @@ static void draw_equippreview(int ch, int ptr, int pp)
             c2 += tres[z];
         }
         if (c1 < c2)
-            Draw.print_font(double_buffer, 212 , 220 , _("Resist up"), FNORMAL);
+            Draw.print_font(double_buffer, 212, 220, _("Resist up"), FNORMAL);
         if (c1 > c2)
-            Draw.print_font(double_buffer, 204 , 220 , _("Resist down"), FNORMAL);
+            Draw.print_font(double_buffer, 204, 220, _("Resist down"), FNORMAL);
     }
 }
 
@@ -546,7 +546,7 @@ void equip_menu(uint32_t c)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         draw_equipmenu(c, sl);
@@ -569,7 +569,7 @@ void equip_menu(uint32_t c)
         }
         if (sl == 0)
         {
-            draw_sprite(double_buffer, menuptr, 12 , yptr * 8 + 36 );
+            draw_sprite(double_buffer, menuptr, 12, yptr * 8 + 36);
         }
         Draw.blit2screen();
 

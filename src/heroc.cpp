@@ -390,7 +390,7 @@ static int combat_item_menu(int whom)
     fullblit(double_buffer, back);
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         fullblit(back, double_buffer);
         combat_draw_items(pptr);
@@ -518,7 +518,7 @@ int combat_spell_menu(int c)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         fullblit(back, double_buffer);
         combat_draw_spell_menu(c, ptr, pgno);
@@ -756,8 +756,8 @@ void hero_choose_action(size_t fighter_index)
         fighter[fighter_index].aux = 0;
     }
     while (!stop)
-      {
-	Game.ProcessEvents();
+    {
+        Game.ProcessEvents();
         Game.do_check_animation();
         Combat.battle_render(fighter_index + 1, fighter_index + 1, 0);
         my = 0;
@@ -1008,9 +1008,9 @@ void hero_init(void)
         // colors that the weapons should actually be instead.
         if (fighter[fighter_index].current_weapon_type != W_NO_WEAPON && items[fighter_weapon_index].kol > 0)
         {
-            for ( int current_line = 0; current_line < cframes[fighter_index][0]->height; current_line++)
+            for (int current_line = 0; current_line < cframes[fighter_index][0]->height; current_line++)
             {
-                for ( int current_pixel = 0; current_pixel < cframes[fighter_index][0]->width; current_pixel++)
+                for (int current_pixel = 0; current_pixel < cframes[fighter_index][0]->width; current_pixel++)
                 {
                     if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 168)
                     {
@@ -1070,7 +1070,7 @@ static int hero_invoke(int whom)
     dud = pidx[whom];
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         fullblit(back, double_buffer);
         draw_invokable(dud);

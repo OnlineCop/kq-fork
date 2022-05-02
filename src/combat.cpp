@@ -729,9 +729,9 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
     for (zoom_step = 0; zoom_step < 9; zoom_step++)
     {
         Music.poll_music();
-        stretch_blit(temp.get(), double_buffer, zoom_step * (SCREEN_W / 20) ,
-                     zoom_step * (SCREEN_H / 20) , SCREEN_W - (zoom_step * (SCREEN_W / 10)),
-                     SCREEN_H - (zoom_step * (SCREEN_H / 10)), 0, 0, SCREEN_W, SCREEN_H);
+        stretch_blit(temp.get(), double_buffer, zoom_step * (SCREEN_W / 20), zoom_step * (SCREEN_H / 20),
+                     SCREEN_W - (zoom_step * (SCREEN_W / 10)), SCREEN_H - (zoom_step * (SCREEN_H / 10)), 0, 0, SCREEN_W,
+                     SCREEN_H);
         Draw.blit2screen();
     }
 
@@ -774,7 +774,7 @@ void KCombat::do_round(void)
     timer_count = 0;
     while (combatend == eCombatResult::StillFighting)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         if (timer_count >= 10)
         {
             RemainingBattleCounter += BATTLE_INC;
@@ -939,7 +939,6 @@ void KCombat::do_round(void)
 
             timer_count = 0;
         }
-
     }
 }
 
@@ -967,7 +966,7 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
 
     int ff = (!fr->aframe) ? fr->facing : fr->aframe;
     auto cf = cframes[fighter_index][ff];
-    
+
     if (fr->IsStone())
     {
         // Green, for sickness
@@ -988,13 +987,12 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
             clear_bitmap(&shad);
             ellipsefill_fast(&shad, shad.width / 2, shad.height / 2, shad.width / 2, shad.height / 2,
                              makecol(128, 128, 128));
-            draw_trans_sprite(double_buffer, &shad, xx + (shad.width / 3) - 2,
-                              yy + cf->height - shad.height / 2);
+            draw_trans_sprite(double_buffer, &shad, xx + (shad.width / 3) - 2, yy + cf->height - shad.height / 2);
         }
         else
         {
             // Enemy
-	  Raster shad(cf->width, cf->height / 4);
+            Raster shad(cf->width, cf->height / 4);
 
             clear_bitmap(&shad);
             ellipsefill_fast(&shad, shad.width / 2, shad.height / 2, shad.width / 2, shad.height / 2,

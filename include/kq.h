@@ -41,18 +41,18 @@
 #endif /* MSVC */
 #endif /* GNUC */
 
-#include <cstdint>
-#include <string>
-#include <SDL.h>
-#include "gettext.h"
 #include "constants.h"
 #include "entity.h"
 #include "enums.h"
 #include "fighter.h"
+#include "gettext.h"
 #include "heroc.h"
 #include "maps.h"
 #include "player.h"
 #include "structs.h"
+#include <SDL.h>
+#include <cstdint>
+#include <string>
 
 #define _(s) gettext(s)
 
@@ -60,17 +60,33 @@ using std::string;
 
 class Raster;
 
-class KTime {
-public:
-  KTime(int seconds) : value(seconds) {}
-  int hours() const { return value / 3600;}
-  int minutes() const { return (value / 60) % 60;}
-  int seconds() const { return value % 60;}
-  int total_seconds() const { return value;}
-private:
-  int value;
-};
+class KTime
+{
+  public:
+    KTime(int seconds)
+        : value(seconds)
+    {
+    }
+    int hours() const
+    {
+        return value / 3600;
+    }
+    int minutes() const
+    {
+        return (value / 60) % 60;
+    }
+    int seconds() const
+    {
+        return value % 60;
+    }
+    int total_seconds() const
+    {
+        return value;
+    }
 
+  private:
+    int value;
+};
 
 class KGame
 {
@@ -191,7 +207,7 @@ class KGame
      * \param   message Text to put into log
      * \param   extra Addition text for convenience
      */
-  NORETURN void program_death(const char* message, const char* extra = nullptr);
+    NORETURN void program_death(const char* message, const char* extra = nullptr);
 
     /*! \brief Is this character in the party?
      *
@@ -266,7 +282,7 @@ class KGame
      * \param   bitmap_name Name of bitmap
      * \returns the pointer to the created bitmap
      */
-  Raster* alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name);
+    Raster* alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name);
 
     /*! \brief Application start-up code
      *
@@ -348,30 +364,32 @@ class KGame
      * \returns the amount of gold in team's coffer.
      */
     int SetGold(int amount);
-  /*! Process the SDL events
-   * Will update various things, e.g. key pressed, window state changes
-   * Call this regularly.
-   * @return true if ready for next frame
-   */
-  bool ProcessEvents();
-  /** Get current game time.
-   * this is the elapsed time in the game;
-   * \return the time
-   */
-  KTime GetGameTime() const;
-  /*! Set the current game time
-   * This resets the clock, e.g. when a save-game is loaded
-   * \param time the new time
-   */
-  void SetGameTime(const KTime&);
+    /*! Process the SDL events
+     * Will update various things, e.g. key pressed, window state changes
+     * Call this regularly.
+     * @return true if ready for next frame
+     */
+    bool ProcessEvents();
+    /** Get current game time.
+     * this is the elapsed time in the game;
+     * \return the time
+     */
+    KTime GetGameTime() const;
+    /*! Set the current game time
+     * This resets the clock, e.g. when a save-game is loaded
+     * \param time the new time
+     */
+    void SetGameTime(const KTime&);
+
   public:
     const string WORLD_MAP;
     /*! The number of frames per second */
     const int32_t KQ_TICKS;
-  // Game time in seconds
-  int game_time;
-  // Instant the game started
-  Uint64 game_start_ticks;
+    // Game time in seconds
+    int game_time;
+    // Instant the game started
+    Uint64 game_start_ticks;
+
   protected:
     /*! Name of the current map */
     string m_curmap;

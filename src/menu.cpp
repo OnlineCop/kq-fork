@@ -61,7 +61,7 @@ KMenu::KMenu()
  */
 void KMenu::add_questinfo(const string& key, const string& text)
 {
-  quest_list.push_back({key, text});
+    quest_list.push_back({ key, text });
 }
 
 /*! \brief Check for level-ups
@@ -116,32 +116,32 @@ void KMenu::draw_mainmenu(int swho)
     timer_count = 0;
     for (fighter_index = 0; fighter_index < PSIZE; fighter_index++)
     {
-        Draw.menubox(double_buffer, 44 , fighter_index * 64 + 64 , 18, 6,
+        Draw.menubox(double_buffer, 44, fighter_index * 64 + 64, 18, 6,
                      (size_t)swho == fighter_index ? DARKBLUE : BLUE);
     }
-    Draw.menubox(double_buffer, 204 , 64 , 7, 6, BLUE);
-    Draw.menubox(double_buffer, 204 , 128 , 7, 6, BLUE);
-    Draw.print_font(double_buffer, 220 , 72 , _("Items"), FGOLD);
-    Draw.print_font(double_buffer, 220 , 80 , _("Magic"), FGOLD);
-    Draw.print_font(double_buffer, 220 , 88 , _("Equip"), FGOLD);
-    Draw.print_font(double_buffer, 220 , 96 , _("Spec."), FGOLD);
-    Draw.print_font(double_buffer, 220 , 104 , _("Stats"), FGOLD);
-    Draw.print_font(double_buffer, 220 , 112 , _("Quest"), FGOLD);
-    Draw.print_font(double_buffer, 212 , 136 , _("Time:"), FGOLD);
-    Draw.print_font(double_buffer, 212 , 164 , _("Gold:"), FGOLD);
+    Draw.menubox(double_buffer, 204, 64, 7, 6, BLUE);
+    Draw.menubox(double_buffer, 204, 128, 7, 6, BLUE);
+    Draw.print_font(double_buffer, 220, 72, _("Items"), FGOLD);
+    Draw.print_font(double_buffer, 220, 80, _("Magic"), FGOLD);
+    Draw.print_font(double_buffer, 220, 88, _("Equip"), FGOLD);
+    Draw.print_font(double_buffer, 220, 96, _("Spec."), FGOLD);
+    Draw.print_font(double_buffer, 220, 104, _("Stats"), FGOLD);
+    Draw.print_font(double_buffer, 220, 112, _("Quest"), FGOLD);
+    Draw.print_font(double_buffer, 212, 136, _("Time:"), FGOLD);
+    Draw.print_font(double_buffer, 212, 164, _("Gold:"), FGOLD);
     /* PH: print time as h:mm */
     auto gt = Game.GetGameTime();
     sprintf(strbuf, "%d:%02d", gt.hours(), gt.minutes());
-    Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8) , 144 , strbuf, FNORMAL);
+    Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8), 144, strbuf, FNORMAL);
     sprintf(strbuf, "%d", Game.GetGold());
-    Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8) , 172 , strbuf, FNORMAL);
+    Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8), 172, strbuf, FNORMAL);
     if (swho != -1)
     {
-        Draw.menubox(double_buffer, 44 , swho * 64 + 64 , 18, 6, DARKBLUE);
+        Draw.menubox(double_buffer, 44, swho * 64 + 64, 18, 6, DARKBLUE);
     }
     for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
     {
-        draw_playerstat(double_buffer, pidx[fighter_index], 52 , fighter_index * 64 + 76 );
+        draw_playerstat(double_buffer, pidx[fighter_index], 52, fighter_index * 64 + 76);
     }
 }
 
@@ -250,11 +250,11 @@ void KMenu::menu(void)
     timer_count = 0;
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         draw_mainmenu(-1);
-        draw_sprite(double_buffer, menuptr, 204 , ptr * 8 + 73 );
+        draw_sprite(double_buffer, menuptr, 204, ptr * 8 + 73);
         Draw.blit2screen();
         PlayerInput.readcontrols();
         if (PlayerInput.up)
@@ -371,29 +371,29 @@ void KMenu::display_quest_window(void)
     size_t currentQuestSelected = 0;
     while (true)
     {
-      Game.ProcessEvents();
-      Game.do_check_animation();
+        Game.ProcessEvents();
+        Game.do_check_animation();
         timer_count = 0;
         /* Redraw the map below the open menu */
         Draw.drawmap();
 
         int base = currentQuestSelected - currentQuestSelected % VisibleQuestEntries;
-        Draw.menubox(double_buffer,  MenuboxLeftOffset,  UpperMenuboxTopOffset, MenuboxWidth,
-                     (int)VisibleQuestEntries, BLUE);
+        Draw.menubox(double_buffer, MenuboxLeftOffset, UpperMenuboxTopOffset, MenuboxWidth, (int)VisibleQuestEntries,
+                     BLUE);
         for (size_t someRandomIndex = 0; someRandomIndex < VisibleQuestEntries; ++someRandomIndex)
         {
             if (someRandomIndex + base < quest_list.size())
             {
-                Draw.print_font(double_buffer,  MenuboxLeftOffset + 2 * FontWidthFNORMAL,
-                                 UpperMenuboxTopOffset + FontHeightFNORMAL * (someRandomIndex + 1),
+                Draw.print_font(double_buffer, MenuboxLeftOffset + 2 * FontWidthFNORMAL,
+                                UpperMenuboxTopOffset + FontHeightFNORMAL * (someRandomIndex + 1),
                                 quest_list[someRandomIndex + base].key.c_str(), FNORMAL);
             }
         }
         // Show the pointer beside the selected entry
-        draw_sprite(double_buffer, menuptr,  MenuboxLeftOffset,
-                     UpperMenuboxTopOffset + FontHeightFNORMAL * (currentQuestSelected - base + 1));
+        draw_sprite(double_buffer, menuptr, MenuboxLeftOffset,
+                    UpperMenuboxTopOffset + FontHeightFNORMAL * (currentQuestSelected - base + 1));
 
-        Draw.menubox(double_buffer,  MenuboxLeftOffset,  LowerMenuboxTopOffset, MenuboxWidth, 3, BLUE);
+        Draw.menubox(double_buffer, MenuboxLeftOffset, LowerMenuboxTopOffset, MenuboxWidth, 3, BLUE);
         if (currentQuestSelected < quest_list.size())
         {
             Draw.print_font(double_buffer, MenuboxLeftOffset + 1 * FontWidthFNORMAL,
@@ -517,28 +517,26 @@ void KMenu::spec_items(void)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, 72 , 12 , 20, 1, BLUE);
-        Draw.print_font(double_buffer, 108 , 20 , _("Special Items"), FGOLD);
-        Draw.menubox(double_buffer, 72 , 36 , 20, 19, BLUE);
+        Draw.menubox(double_buffer, 72, 12, 20, 1, BLUE);
+        Draw.print_font(double_buffer, 108, 20, _("Special Items"), FGOLD);
+        Draw.menubox(double_buffer, 72, 36, 20, 19, BLUE);
         for (a = 0; a < num_items; a++)
         {
-            Draw.draw_icon(double_buffer, special_items[list_item_which[a]].icon, 88 , a * 8 + 44 );
-            Draw.print_font(double_buffer, 96 , a * 8 + 44 , special_items[list_item_which[a]].name,
-                            FNORMAL);
+            Draw.draw_icon(double_buffer, special_items[list_item_which[a]].icon, 88, a * 8 + 44);
+            Draw.print_font(double_buffer, 96, a * 8 + 44, special_items[list_item_which[a]].name, FNORMAL);
             if (list_item_quantity[a] > 1)
             {
                 sprintf(strbuf, "^%d", list_item_quantity[a]);
-                Draw.print_font(double_buffer, 224 , a * 8 + 44 , strbuf, FNORMAL);
+                Draw.print_font(double_buffer, 224, a * 8 + 44, strbuf, FNORMAL);
             }
         }
-        Draw.menubox(double_buffer, 72 , 204 , 20, 1, BLUE);
+        Draw.menubox(double_buffer, 72, 204, 20, 1, BLUE);
         a = strlen(special_items[list_item_which[ptr]].description) * 4;
-        Draw.print_font(double_buffer, 160 - a , 212 , special_items[list_item_which[ptr]].description,
-                        FNORMAL);
-        draw_sprite(double_buffer, menuptr, 72 , ptr * 8 + 44 );
+        Draw.print_font(double_buffer, 160 - a, 212, special_items[list_item_which[ptr]].description, FNORMAL);
+        draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 44);
         Draw.blit2screen();
         PlayerInput.readcontrols();
 
@@ -579,21 +577,21 @@ void KMenu::status_screen(size_t fighter_index)
     update_equipstats();
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         // Redraw the map, clearing any menus under this new window
         Draw.drawmap();
 
         // Box around top-left square
-        Draw.menubox(double_buffer, 0, 16 , 18, 5, BLUE);
-        draw_playerstat(double_buffer, pidx_index, 8 , 24 );
+        Draw.menubox(double_buffer, 0, 16, 18, 5, BLUE);
+        draw_playerstat(double_buffer, pidx_index, 8, 24);
 
         // Box around bottom-left square
-        Draw.menubox(double_buffer, 0, 72 , 18, 17, BLUE);
-        Draw.print_font(double_buffer, 8 , 80 , _("Exp:"), FGOLD);
+        Draw.menubox(double_buffer, 0, 72, 18, 17, BLUE);
+        Draw.print_font(double_buffer, 8, 80, _("Exp:"), FGOLD);
         sprintf(strbuf, "%d", party[pidx_index].xp);
-        Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8) , 80 , strbuf, FNORMAL);
-        Draw.print_font(double_buffer, 8 , 88 , _("Next:"), FGOLD);
+        Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8), 80, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, 8, 88, _("Next:"), FGOLD);
         // TT: Does this mean we can only level up to 50?
         if (party[pidx_index].lvl < 50)
         {
@@ -603,21 +601,21 @@ void KMenu::status_screen(size_t fighter_index)
         {
             sprintf(strbuf, "%d", 0);
         }
-        Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8) , 88 , strbuf, FNORMAL);
-        Draw.print_font(double_buffer, 8 , 104 , _("Strength"), FGOLD);
-        Draw.print_font(double_buffer, 8 , 112 , _("Agility"), FGOLD);
-        Draw.print_font(double_buffer, 8 , 120 , _("Vitality"), FGOLD);
-        Draw.print_font(double_buffer, 8 , 128 , _("Intellect"), FGOLD);
-        Draw.print_font(double_buffer, 8 , 136 , _("Sagacity"), FGOLD);
-        Draw.print_font(double_buffer, 8 , 144 , _("Speed"), FGOLD);
-        Draw.print_font(double_buffer, 8 , 152 , _("Aura"), FGOLD);
-        Draw.print_font(double_buffer, 8 , 160 , _("Spirit"), FGOLD);
+        Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8), 88, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, 8, 104, _("Strength"), FGOLD);
+        Draw.print_font(double_buffer, 8, 112, _("Agility"), FGOLD);
+        Draw.print_font(double_buffer, 8, 120, _("Vitality"), FGOLD);
+        Draw.print_font(double_buffer, 8, 128, _("Intellect"), FGOLD);
+        Draw.print_font(double_buffer, 8, 136, _("Sagacity"), FGOLD);
+        Draw.print_font(double_buffer, 8, 144, _("Speed"), FGOLD);
+        Draw.print_font(double_buffer, 8, 152, _("Aura"), FGOLD);
+        Draw.print_font(double_buffer, 8, 160, _("Spirit"), FGOLD);
         // Blank space on display of 16 pixels
-        Draw.print_font(double_buffer, 8 , 176 , _("Attack"), FGOLD);
-        Draw.print_font(double_buffer, 8 , 184 , _("Hit"), FGOLD);
-        Draw.print_font(double_buffer, 8 , 192 , _("Defense"), FGOLD);
-        Draw.print_font(double_buffer, 8 , 200 , _("Evade"), FGOLD);
-        Draw.print_font(double_buffer, 8 , 208 , _("Mag.Def"), FGOLD);
+        Draw.print_font(double_buffer, 8, 176, _("Attack"), FGOLD);
+        Draw.print_font(double_buffer, 8, 184, _("Hit"), FGOLD);
+        Draw.print_font(double_buffer, 8, 192, _("Defense"), FGOLD);
+        Draw.print_font(double_buffer, 8, 200, _("Evade"), FGOLD);
+        Draw.print_font(double_buffer, 8, 208, _("Mag.Def"), FGOLD);
         for (stats_index = 0; stats_index < eStat::NUM_STATS; stats_index++)
         {
             // Coordinates of stats on display
@@ -627,32 +625,32 @@ void KMenu::status_screen(size_t fighter_index)
             {
                 stats_y += 8;
             }
-            Draw.print_font(double_buffer, 96 , stats_y , "$", FGOLD);
+            Draw.print_font(double_buffer, 96, stats_y, "$", FGOLD);
             sprintf(strbuf, "%d", fighter[fighter_index].stats[stats_index]);
-            Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8) , stats_y , strbuf, FNORMAL);
+            Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8), stats_y, strbuf, FNORMAL);
         }
 
-        Draw.menubox(double_buffer, 160 , 16 , 18, 16, BLUE);
-        Draw.print_font(double_buffer, 168 , 24 , _("Earth"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 32 , _("Black"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 40 , _("Fire"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 48 , _("Thunder"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 56 , _("Air"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 64 , _("White"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 72 , _("Water"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 80 , _("Ice"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 88 , _("Poison"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 96 , _("Blind"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 104 , _("Charm"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 112 , _("Paralyze"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 120 , _("Petrify"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 128 , _("Silence"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 136 , _("Sleep"), FNORMAL);
-        Draw.print_font(double_buffer, 168 , 144 , _("Time"), FNORMAL);
+        Draw.menubox(double_buffer, 160, 16, 18, 16, BLUE);
+        Draw.print_font(double_buffer, 168, 24, _("Earth"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 32, _("Black"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 40, _("Fire"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 48, _("Thunder"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 56, _("Air"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 64, _("White"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 72, _("Water"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 80, _("Ice"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 88, _("Poison"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 96, _("Blind"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 104, _("Charm"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 112, _("Paralyze"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 120, _("Petrify"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 128, _("Silence"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 136, _("Sleep"), FNORMAL);
+        Draw.print_font(double_buffer, 168, 144, _("Time"), FNORMAL);
 
         for (res_index = 0; res_index < R_TOTAL_RES; res_index++)
         {
-            rectfill(double_buffer, 240 , res_index * 8 + 25 , 310 , res_index * 8 + 31 , 3);
+            rectfill(double_buffer, 240, res_index * 8 + 25, 310, res_index * 8 + 31, 3);
             if (fighter[fighter_index].res[res_index] < 0)
             {
                 bc = 18; // bright red, meaning WEAK defense
@@ -673,17 +671,17 @@ void KMenu::status_screen(size_t fighter_index)
             {
                 for (curr_fill = 0; curr_fill < rect_fill_amount; curr_fill++)
                 {
-                    rectfill(double_buffer, curr_fill * 7 + 241 , res_index * 8 + 26 ,
-                             curr_fill * 7 + 246 , res_index * 8 + 30 , bc + curr_fill);
+                    rectfill(double_buffer, curr_fill * 7 + 241, res_index * 8 + 26, curr_fill * 7 + 246,
+                             res_index * 8 + 30, bc + curr_fill);
                 }
             }
         }
-        Draw.menubox(double_buffer, 160 , 160 , 18, 6, BLUE);
+        Draw.menubox(double_buffer, 160, 160, 18, 6, BLUE);
         for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
         {
-            Draw.draw_icon(double_buffer, items[party[pidx_index].eqp[equipment_index]].icon, 168 ,
-                           equipment_index * 8 + 168 );
-            Draw.print_font(double_buffer, 176 , equipment_index * 8 + 168 ,
+            Draw.draw_icon(double_buffer, items[party[pidx_index].eqp[equipment_index]].icon, 168,
+                           equipment_index * 8 + 168);
+            Draw.print_font(double_buffer, 176, equipment_index * 8 + 168,
                             items[party[pidx_index].eqp[equipment_index]].name, FNORMAL);
         }
         Draw.blit2screen();

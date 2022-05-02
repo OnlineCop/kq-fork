@@ -80,10 +80,13 @@ bool KBounds::IsBound(size_t& outIndex, int left, int top, int right, int bottom
 }
 const KBound* KBounds::IsBound(int left, int top, int right, int bottom) const
 {
-  size_t index;
-  if (IsBound(index, left, top, right, bottom)) {
-    return &m_bounds.at(index);
-  } else {
-    return nullptr;
-  }
+    size_t index;
+    if (IsBound(index, left, top, right, bottom))
+    {
+        return &m_bounds.at(index);
+    }
+    else
+    {
+        return nullptr;
+    }
 }

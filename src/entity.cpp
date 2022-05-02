@@ -78,8 +78,7 @@ static void chase(t_entity target_entity)
 
     if (ent.chasing == 0)
     {
-        if (entity_near(target_entity, 0, 3) &&
-            kqrandom->random_range_exclusive(0, 100) <= ent.extra)
+        if (entity_near(target_entity, 0, 3) && kqrandom->random_range_exclusive(0, 100) <= ent.extra)
         {
             ent.chasing = 1;
             if (ent.speed < 7)
@@ -168,11 +167,12 @@ static bool entity_near(t_entity eno, t_entity tgt, int rad)
     auto& tnt = g_ent[tgt];
     int ax = tnt.tilex;
     int ay = tnt.tiley;
-    if (ax >=view_x1 && ay >= view_y1 && ax <= view_x2 && ay <= view_y2) {
-    auto& ent = g_ent[eno];
-    int ex = ent.tilex - ax;
-    int ey = ent.tiley - ay;
-    return ex >= -rad && ey >= -rad && ex <= rad && ey <= rad;
+    if (ax >= view_x1 && ay >= view_y1 && ax <= view_x2 && ay <= view_y2)
+    {
+        auto& ent = g_ent[eno];
+        int ex = ent.tilex - ax;
+        int ey = ent.tiley - ay;
+        return ex >= -rad && ey >= -rad && ex <= rad && ey <= rad;
     }
     return false;
 }
@@ -236,7 +236,7 @@ int entityat(int ox, int oy, t_entity who)
  */
 static void entscript(t_entity target_entity)
 {
-  auto& ent = g_ent[target_entity];
+    auto& ent = g_ent[target_entity];
     if (ent.active == 0)
     {
         return;
@@ -363,7 +363,7 @@ static void follow(int tile_x, int tile_y)
 static void getcommand(t_entity target_entity)
 {
     char s;
-  auto& ent = g_ent[target_entity];
+    auto& ent = g_ent[target_entity];
 
     /* PH FIXME: prevented from running off end of string */
     if (ent.sidx < sizeof(ent.script))
@@ -436,8 +436,7 @@ static void getcommand(t_entity target_entity)
 #ifdef DEBUGMODE
         if (debugging > 0)
         {
-            sprintf(strbuf, _("Invalid entity command (%c) at position %d for ent %d"), s, ent.sidx,
-                    target_entity);
+            sprintf(strbuf, _("Invalid entity command (%c) at position %d for ent %d"), s, ent.sidx, target_entity);
             Game.program_death(strbuf);
         }
 #endif
@@ -456,7 +455,7 @@ static void getcommand(t_entity target_entity)
 static int move(t_entity target_entity, int dx, int dy)
 {
     int tile_x, tile_y, source_tile, oldfacing;
-  auto& ent = g_ent[target_entity];
+    auto& ent = g_ent[target_entity];
 
     if (dx == 0 && dy == 0) // Speed optimization.
     {
@@ -685,7 +684,7 @@ static void parsems(t_entity target_entity)
 {
     uint32_t p = 0;
     char tok[10];
-    auto& ent= g_ent[target_entity];
+    auto& ent = g_ent[target_entity];
     char s = ent.script[ent.sidx];
 
     // 48..57 are '0'..'9' ASCII
@@ -726,7 +725,7 @@ void place_ent(t_entity en, int ex, int ey)
  */
 static void player_move(void)
 {
-  auto& plr = g_ent[0];
+    auto& plr = g_ent[0];
     int oldx = plr.tilex;
     int oldy = plr.tiley;
 
@@ -788,9 +787,9 @@ void process_entities(void)
  */
 static void process_entity(t_entity target_entity)
 {
-  auto& ent = g_ent[target_entity];
+    auto& ent = g_ent[target_entity];
 
-  ent.scount = 0;
+    ent.scount = 0;
 
     if (!ent.active)
     {
@@ -816,7 +815,7 @@ static void process_entity(t_entity target_entity)
             --ent.y;
         }
         ent.movcnt--;
-	
+
         if (ent.framectr < 20)
         {
             ent.framectr++;
@@ -868,7 +867,7 @@ static void process_entity(t_entity target_entity)
         if (target_entity == 0 && !autoparty)
         {
             player_move();
-	    /* Get rid of the map description as soon as player starts to move */
+            /* Get rid of the map description as soon as player starts to move */
             if (ent.moving && display_desc == 1)
             {
                 display_desc = 0;
@@ -893,7 +892,6 @@ static void process_entity(t_entity target_entity)
             break;
         }
     }
-
 }
 
 /*! \brief Initialize script
@@ -906,8 +904,8 @@ static void process_entity(t_entity target_entity)
  */
 void set_script(t_entity target_entity, const char* movestring)
 {
-      auto& ent = g_ent[target_entity];
-ent.moving = 0; // Stop entity from moving
+    auto& ent = g_ent[target_entity];
+    ent.moving = 0; // Stop entity from moving
     ent.movcnt = 0; // Reset the move counter to 0
     ent.cmd = COMMAND_NONE;
     ent.sidx = 0;             // Reset script command index
@@ -925,46 +923,46 @@ ent.moving = 0; // Stop entity from moving
  */
 static void speed_adjust(t_entity target_entity)
 {
-  auto& ent = g_ent[target_entity];
+    auto& ent = g_ent[target_entity];
 
-  switch (ent.speed)
+    switch (ent.speed)
     {
     case 1:
-      process_entity(target_entity);
-      break;
+        process_entity(target_entity);
+        break;
     case 2:
-      process_entity(target_entity);
-      break;
+        process_entity(target_entity);
+        break;
     case 3:
-      process_entity(target_entity);
-      process_entity(target_entity);
-      break;
+        process_entity(target_entity);
+        process_entity(target_entity);
+        break;
     case 4:
-      process_entity(target_entity);
-      process_entity(target_entity);
-      process_entity(target_entity);
-      break;
+        process_entity(target_entity);
+        process_entity(target_entity);
+        process_entity(target_entity);
+        break;
     case 5:
-      process_entity(target_entity);
-      process_entity(target_entity);
-      process_entity(target_entity);
-      process_entity(target_entity);
-      break;
+        process_entity(target_entity);
+        process_entity(target_entity);
+        process_entity(target_entity);
+        process_entity(target_entity);
+        break;
     case 6:
-      process_entity(target_entity);
-      process_entity(target_entity);
-      process_entity(target_entity);
-      process_entity(target_entity);
-      process_entity(target_entity);
-      break;
+        process_entity(target_entity);
+        process_entity(target_entity);
+        process_entity(target_entity);
+        process_entity(target_entity);
+        process_entity(target_entity);
+        break;
     case 7:
-      process_entity(target_entity);
-      process_entity(target_entity);
-      process_entity(target_entity);
-      process_entity(target_entity);
-      process_entity(target_entity);
-      process_entity(target_entity);
-      break;
+        process_entity(target_entity);
+        process_entity(target_entity);
+        process_entity(target_entity);
+        process_entity(target_entity);
+        process_entity(target_entity);
+        process_entity(target_entity);
+        break;
     }
     /* TT: This is to see if the player is "running" */
     if (key[PlayerInput.kctrl] && target_entity < PSIZE)
@@ -987,8 +985,8 @@ static void speed_adjust(t_entity target_entity)
 static void target(t_entity target_entity)
 {
     int dx, dy, ax, ay, emoved = 0;
-    
-  auto& ent = g_ent[target_entity];
+
+    auto& ent = g_ent[target_entity];
 
     ax = dx = ent.target_x - ent.tilex;
     ay = dy = ent.target_y - ent.tiley;

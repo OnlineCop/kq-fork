@@ -36,14 +36,14 @@ class KMusic
     void poll_music(void);
 
     void set_music_volume(float volume);
-  void set_volume(float vol, int);
+    void set_volume(float vol, int);
 
     void play_music(const string& music_name, long position);
     void pause_music(void);
     void resume_music(void);
     void stop_music(void);
-  void play_effect(int, int);
-  void play_sample(void*, int, int, int, int);
+    void play_effect(int, int);
+    void play_sample(void*, int, int, int, int);
 };
 
 extern KMusic Music;

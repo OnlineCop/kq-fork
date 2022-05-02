@@ -57,7 +57,6 @@ class KSaveGame
     int confirm_action(void);
 
   protected:
-
     /* These describe the save slots. Number of characters, gp, etc */
     /* They are used to make the save menu prettier. */
     s_sgstats savegame[NUMSG];

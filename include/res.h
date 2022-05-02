@@ -21,10 +21,10 @@
 
 #pragma once
 
-#include <cstdint>
 #include "compat.h"
 #include "enums.h"
 #include "heroc.h"
+#include <cstdint>
 
 /*! \file
  * \brief Definitions of resource types

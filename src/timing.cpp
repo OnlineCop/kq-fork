@@ -26,50 +26,57 @@
  *
  * Looks after keeping the music playing whilst the game is 'paused'
  */
+#include "timing.h"
 #include "kq.h"
 #include "music.h"
-#include "timing.h"
 #include <SDL.h>
 
 static SDL_TimerID timer_id = 0;
 static int watchdog;
-void reset_watchdog() {
-  watchdog = 100;
+void reset_watchdog()
+{
+    watchdog = 100;
 }
-static Uint32 timer_cb(Uint32 interval, void*) {
-  SDL_Event event = {0};
-  assert(--watchdog > 0);
+static Uint32 timer_cb(Uint32 interval, void*)
+{
+    SDL_Event event = { 0 };
+    assert(--watchdog > 0);
     event.type = SDL_USEREVENT;
     SDL_PushEvent(&event);
-  return interval;
+    return interval;
 }
-void start_timer(int fps) {
-  if (fps <= 0 || fps >100) {
-    Game.program_death("Frame rate cannot be supported");
-  }
-  if (timer_id != 0) {
-    Game.program_death("Trying to start timer that is already started");
-  }
-  reset_watchdog();
-  Uint32 interval = 1000 / fps;
-  timer_id = SDL_AddTimer(interval, timer_cb, nullptr);
-  if (timer_id == 0) {
-    Game.program_death("Error setting up timer", SDL_GetError());
-  }
+void start_timer(int fps)
+{
+    if (fps <= 0 || fps > 100)
+    {
+        Game.program_death("Frame rate cannot be supported");
+    }
+    if (timer_id != 0)
+    {
+        Game.program_death("Trying to start timer that is already started");
+    }
+    reset_watchdog();
+    Uint32 interval = 1000 / fps;
+    timer_id = SDL_AddTimer(interval, timer_cb, nullptr);
+    if (timer_id == 0)
+    {
+        Game.program_death("Error setting up timer", SDL_GetError());
+    }
 }
-void stop_timer() {
-  if (timer_id == 0) {
-    Game.program_death("Trying to stop timer that wasn't started");
-  }
-  SDL_RemoveTimer(timer_id);
-  timer_id = 0;
+void stop_timer()
+{
+    if (timer_id == 0)
+    {
+        Game.program_death("Trying to stop timer that wasn't started");
+    }
+    SDL_RemoveTimer(timer_id);
+    timer_id = 0;
 }
-void kq_wait(long dt) {
-  auto finish_time = SDL_GetTicks64() + dt;
-  while (SDL_GetTicks64() < finish_time) {
-    Game.ProcessEvents();
-  }
+void kq_wait(long dt)
+{
+    auto finish_time = SDL_GetTicks64() + dt;
+    while (SDL_GetTicks64() < finish_time)
+    {
+        Game.ProcessEvents();
+    }
 }
-
-
-

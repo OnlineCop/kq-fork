@@ -20,21 +20,22 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <map>
 #include <stack>
 #include <string>
-#include <map>
 
-class KConfig {
- public:
-  KConfig();
-  void set_config_file(const char*);
-  void set_config_int(const char* section, const char* key, int value);
-  int get_config_int(const char* section, const char* key, int defl);
-  void push_config_state();
-  void pop_config_state();
-private:
-  std::stack<std::map<std::string, int>> data;
-  
+class KConfig
+{
+  public:
+    KConfig();
+    void set_config_file(const char*);
+    void set_config_int(const char* section, const char* key, int value);
+    int get_config_int(const char* section, const char* key, int defl);
+    void push_config_state();
+    void pop_config_state();
+
+  private:
+    std::stack<std::map<std::string, int>> data;
 };
 
 extern KConfig Config;

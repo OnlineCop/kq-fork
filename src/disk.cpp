@@ -27,7 +27,6 @@
  * \date 20030629
  */
 
-#include <sys/stat.h>
 #include "disk.h"
 #include "bounds.h"
 #include "heroc.h"
@@ -37,6 +36,7 @@
 #include "random.h"
 #include "sgame.h"
 #include "shopmenu.h"
+#include <sys/stat.h>
 
 KDisk Disk;
 
@@ -898,7 +898,7 @@ int KDisk::load_general_props_xml(XMLElement* node)
             else if (property->Attribute("name", "time"))
             {
                 int tt = property->IntAttribute("value");
-		Game.SetGameTime(KTime(tt * 60));
+                Game.SetGameTime(KTime(tt * 60));
             }
             else if (property->Attribute("name", "mapname"))
             {
@@ -1144,10 +1144,8 @@ int KDisk::load_stats_only(const char* filename, s_sgstats& stats)
     return 1;
 }
 
-bool KDisk::exists(const char* filename) {
-  struct stat st;
-  return stat(filename, &st) == 0;
+bool KDisk::exists(const char* filename)
+{
+    struct stat st;
+    return stat(filename, &st) == 0;
 }
-
-  
-  

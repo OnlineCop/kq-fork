@@ -1,21 +1,24 @@
 #include "gfx.h"
 #include "compat.h"
 #include "kq.h"
-#include <algorithm>
 #include <SDL.h>
+#include <algorithm>
 
 COLOR_MAP* color_map = &cmap;
 extern PALETTE pal;
 static RGB current_palette[PAL_SIZE];
-void set_palette(RGB* clrs) {
-  std::copy(clrs, clrs+PAL_SIZE, current_palette);
+void set_palette(RGB* clrs)
+{
+    std::copy(clrs, clrs + PAL_SIZE, current_palette);
 }
-void set_palette_range(PALETTE src, int from, int to) {
-  std::copy(src+from, src+to, current_palette+from);
+void set_palette_range(PALETTE src, int from, int to)
+{
+    std::copy(src + from, src + to, current_palette + from);
 }
 
-void get_palette(RGB* clrs) {
-  std::copy(current_palette, current_palette+PAL_SIZE, clrs);
+void get_palette(RGB* clrs)
+{
+    std::copy(current_palette, current_palette + PAL_SIZE, clrs);
 }
 Raster::Raster(uint16_t w, uint16_t h)
     : width(w)
@@ -236,34 +239,39 @@ void draw_trans_sprite(Raster* dest, Raster* src, int x, int y)
 
 void Raster::to_rgba32(SDL_Rect* src, SDL_PixelFormat* format, void* pixels, int stride)
 {
-  Uint32 rgbas[256];
-  static SDL_Rect defl;
-  if (!src) {
-    defl = {0, 0, width, height};
-    src = &defl;
-  }
-  for (int i=0; i<256; ++i) {
-    Uint8 r = 4 * current_palette[i].r;
-    Uint8 g = 4 * current_palette[i].g;
-    Uint8 b = 4 * current_palette[i].b;
-
-    rgbas[i] = SDL_MapRGB(format, r, g, b);
-  }
- 
-  for (int y=0; y<src->h; ++y) {
-    Uint32* line = reinterpret_cast<Uint32*>(reinterpret_cast<Uint8*>(pixels) + stride * y);
-    int sy = y + src->y;
-    for (int x = 0; x<src->w; ++x) {
-      int sx = x + src->x;
-      line[x] = rgbas[data[sx + sy * this->stride]];
+    Uint32 rgbas[256];
+    static SDL_Rect defl;
+    if (!src)
+    {
+        defl = { 0, 0, width, height };
+        src = &defl;
     }
-  }   
+    for (int i = 0; i < 256; ++i)
+    {
+        Uint8 r = 4 * current_palette[i].r;
+        Uint8 g = 4 * current_palette[i].g;
+        Uint8 b = 4 * current_palette[i].b;
+
+        rgbas[i] = SDL_MapRGB(format, r, g, b);
+    }
+
+    for (int y = 0; y < src->h; ++y)
+    {
+        Uint32* line = reinterpret_cast<Uint32*>(reinterpret_cast<Uint8*>(pixels) + stride * y);
+        int sy = y + src->y;
+        for (int x = 0; x < src->w; ++x)
+        {
+            int sx = x + src->x;
+            line[x] = rgbas[data[sx + sy * this->stride]];
+        }
+    }
 }
 
-void textprintf(Raster*, void*, int, int, int, const char* fmt, ...) {
-  char buffer[1024];
-  va_list args;
-  va_start(args, fmt);
-  vsprintf(buffer, fmt, args);
-  va_end(args);
+void textprintf(Raster*, void*, int, int, int, const char* fmt, ...)
+{
+    char buffer[1024];
+    va_list args;
+    va_start(args, fmt);
+    vsprintf(buffer, fmt, args);
+    va_end(args);
 }

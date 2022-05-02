@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstdint>
 #include <SDL.h>
+#include <cstdint>
 #include <memory>
 class Raster
 {
@@ -29,7 +29,8 @@ class Raster
     }
     const uint16_t width, height;
     const uint16_t stride;
-  void to_rgba32(SDL_Rect* rc, SDL_PixelFormat* format, void* pixels, int stride);
+    void to_rgba32(SDL_Rect* rc, SDL_PixelFormat* format, void* pixels, int stride);
+
   private:
     std::unique_ptr<uint8_t[]> data;
     std::unique_ptr<int[]> xt;

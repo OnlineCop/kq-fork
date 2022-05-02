@@ -85,15 +85,15 @@ void init_console(void)
 void display_console()
 {
     uint32_t i, y;
-    uint32_t max_y =  120;
+    uint32_t max_y = 120;
 
     if (g_console.on != 1)
     {
         return;
     }
-    rectfill(double_buffer, 0, max_y,  320,  240, makecol(0, 0, 0));
-    hline(double_buffer, 0, max_y,  320, makecol(255, 255, 255));
-    y =  240 - 2 * text_height(font);
+    rectfill(double_buffer, 0, max_y, 320, 240, makecol(0, 0, 0));
+    hline(double_buffer, 0, max_y, 320, makecol(255, 255, 255));
+    y = 240 - 2 * text_height(font);
     i = CONSOLE_LINES - 1;
     while (y > max_y)
     {
@@ -104,10 +104,9 @@ void display_console()
         y -= text_height(font);
         --i;
     }
-    Draw.print_font(double_buffer, 0,  240 - 8, g_console.inputline, FNORMAL);
-    rectfill(double_buffer,  text_length(font, g_console.inputline),  238,
-              text_length(font, g_console.inputline) + text_length(font, "_"),  240,
-             makecol(192, 192, 192));
+    Draw.print_font(double_buffer, 0, 240 - 8, g_console.inputline, FNORMAL);
+    rectfill(double_buffer, text_length(font, g_console.inputline), 238,
+             text_length(font, g_console.inputline) + text_length(font, "_"), 240, makecol(192, 192, 192));
 }
 
 /*! \brief Display a line on the console
@@ -165,8 +164,8 @@ void run_console(void)
         /* Get a key */
         while (!keypressed())
         {
-	  Game.ProcessEvents();
-	  Game.do_check_animation();
+            Game.ProcessEvents();
+            Game.do_check_animation();
             Draw.blit2screen();
             Music.poll_music();
         }

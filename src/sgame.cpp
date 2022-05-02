@@ -67,7 +67,7 @@ s_sgstats s_sgstats::get_current()
 {
     s_sgstats stats;
     stats.gold = Game.GetGold();
-    stats.time = Game.GetGameTime().total_seconds()/60;
+    stats.time = Game.GetGameTime().total_seconds() / 60;
     stats.num_characters = numchrs;
     for (auto i = 0U; i < numchrs; ++i)
     {
@@ -260,7 +260,7 @@ int KSaveGame::saveload(int am_saving)
     play_effect(SND_MENU, 128);
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         double_buffer->fill(0);
         show_sgstats(am_saving);
@@ -431,7 +431,7 @@ void KSaveGame::show_sgstats(int saving)
     }
     if (top_pointer < NUMSG - max_onscreen)
     {
-      draw_sprite(double_buffer, dnptr, 32, eSize::SCREEN_H - 8);
+        draw_sprite(double_buffer, dnptr, 32, eSize::SCREEN_H - 8);
     }
 
     for (sg = top_pointer; sg < top_pointer + max_onscreen; sg++)
@@ -486,38 +486,40 @@ void KSaveGame::show_sgstats(int saving)
         }
     }
 }
-static void show_splash_screen() {
-  Uint64 ticks;
-  Raster* splash = get_cached_image("kqt.png");
-  auto  staff= std::make_unique<Raster>(72, 226);
-  auto dudes = std::make_unique<Raster>(112, 112);
-  auto tdudes = std::make_unique<Raster>(112, 112);
-  blit(splash, staff.get(), 0, 7, 0, 0, 72, 226);
-  blit(splash, dudes.get(), 80, 0, 0, 0, 112, 112);
-  auto now = SDL_GetTicks64();
+static void show_splash_screen()
+{
+    Uint64 ticks;
+    Raster* splash = get_cached_image("kqt.png");
+    auto staff = std::make_unique<Raster>(72, 226);
+    auto dudes = std::make_unique<Raster>(112, 112);
+    auto tdudes = std::make_unique<Raster>(112, 112);
+    blit(splash, staff.get(), 0, 7, 0, 0, 72, 226);
+    blit(splash, dudes.get(), 80, 0, 0, 0, 112, 112);
+    auto now = SDL_GetTicks64();
     ticks = now;
     double_buffer->fill(0x000000);
     blit(staff.get(), double_buffer, 0, 0, 124, 22, 72, 226);
     Draw.blit2screen();
     kq_wait(1000);
-    for (int a = 0; a<42; ++a) {
-      kq_wait(100);
-    stretch_blit(staff.get(), double_buffer, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64),
-		   226 + (a * 192));
-    Draw.blit2screen();
+    for (int a = 0; a < 42; ++a)
+    {
+        kq_wait(100);
+        stretch_blit(staff.get(), double_buffer, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64),
+                     226 + (a * 192));
+        Draw.blit2screen();
     }
 
-    for (int a=0; a<5; ++a) {
-    Draw.color_scale(dudes.get(), tdudes.get(), 53 - a, 53 + a);
-    draw_sprite(double_buffer, tdudes.get(), 106, 64);
-    Draw.blit2screen();
-    kq_wait(300);
+    for (int a = 0; a < 5; ++a)
+    {
+        Draw.color_scale(dudes.get(), tdudes.get(), 53 - a, 53 + a);
+        draw_sprite(double_buffer, tdudes.get(), 106, 64);
+        Draw.blit2screen();
+        kq_wait(300);
     }
     draw_sprite(double_buffer, dudes.get(), 106, 64);
     Draw.blit2screen();
     kq_wait(1000);
     do_transition(eTransitionFade::TO_WHITE, 1);
-
 }
 
 /*! \brief Main menu screen
@@ -542,26 +544,29 @@ int KSaveGame::start_menu(bool skip_splash)
         /* Play splash (with the staff and the heroes in circle */
         if (!skip_splash)
         {
-	  show_splash_screen();
+            show_splash_screen();
         }
         clear_to_color(double_buffer, 15);
         Draw.blit2screen();
         set_palette(pal);
-	int fade_color = 0;
-	auto start_time = SDL_GetTicks64();
-	while (fade_color < 16) {
-	  auto now = SDL_GetTicks64();
-	  if (Game.ProcessEvents()) {
-            clear_to_color(double_buffer, 15 - fade_color);
-            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), eSize::SCREEN_W, 124);
-            Draw.blit2screen();
-	  }
-	  if (now - start_time > 100) {
-	    start_time = now;
-	    ++fade_color;
-	  }
+        int fade_color = 0;
+        auto start_time = SDL_GetTicks64();
+        while (fade_color < 16)
+        {
+            auto now = SDL_GetTicks64();
+            if (Game.ProcessEvents())
+            {
+                clear_to_color(double_buffer, 15 - fade_color);
+                masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), eSize::SCREEN_W, 124);
+                Draw.blit2screen();
+            }
+            if (now - start_time > 100)
+            {
+                start_time = now;
+                ++fade_color;
+            }
         }
-	kq_wait(1000);
+        kq_wait(1000);
 #ifdef DEBUGMODE
     }
     else
@@ -574,7 +579,7 @@ int KSaveGame::start_menu(bool skip_splash)
     /* Draw menu and handle menu selection */
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         if (redraw)
         {
             clear_bitmap(double_buffer);
@@ -707,17 +712,17 @@ int KSaveGame::system_menu(void)
 
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
         Draw.menubox(double_buffer, 0, 0, 8, 4, BLUE);
 
-        Draw.print_font(double_buffer, 16 , 8 , save_str, text_color);
-        Draw.print_font(double_buffer, 16 , 16 , _("Load"), FNORMAL);
-        Draw.print_font(double_buffer, 16 , 24 , _("Config"), FNORMAL);
-        Draw.print_font(double_buffer, 16 , 32 , _("Exit"), FNORMAL);
+        Draw.print_font(double_buffer, 16, 8, save_str, text_color);
+        Draw.print_font(double_buffer, 16, 16, _("Load"), FNORMAL);
+        Draw.print_font(double_buffer, 16, 24, _("Config"), FNORMAL);
+        Draw.print_font(double_buffer, 16, 32, _("Exit"), FNORMAL);
 
-        draw_sprite(double_buffer, menuptr, 0 , ptr * 8 + 8 );
+        draw_sprite(double_buffer, menuptr, 0, ptr * 8 + 8);
         Draw.blit2screen();
         PlayerInput.readcontrols();
 
@@ -727,10 +732,11 @@ int KSaveGame::system_menu(void)
             {
                 ptr = 3;
             }
-	    play_effect(SND_CLICK, 128);
+            play_effect(SND_CLICK, 128);
             Game.unpress();
-	} else 
-	if (PlayerInput.down) {
+        }
+        else if (PlayerInput.down)
+        {
             if (++ptr > 3)
             {
                 ptr = 0;

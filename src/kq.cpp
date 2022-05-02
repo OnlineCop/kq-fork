@@ -39,6 +39,7 @@
  * fixes
  */
 
+#include <SDL.h>
 #include <cassert>
 #include <clocale>
 #include <cstdio>
@@ -46,7 +47,6 @@
 #include <string>
 #include <time.h>
 #include <vector>
-#include <SDL.h>
 
 #include "animation.h"
 #include "console.h"
@@ -256,7 +256,7 @@ int every_hit_999 = 0;
 static struct timer_event
 {
     string name; /*!< Name of the event */
-    int when;      /*!< Absolute time when it will trigger */
+    int when;    /*!< Absolute time when it will trigger */
 } timer_events[5];
 
 static int next_event_time; /*!< The time the next event will trigger */
@@ -401,14 +401,14 @@ void KGame::activate(void)
 
 int KGame::add_timer_event(const char* n, int delta)
 {
-  int w = delta + game_time;
+    int w = delta + game_time;
     int i;
 
     for (i = 0; i < 5; ++i)
     {
-      if (timer_events[i].name.empty())
+        if (timer_events[i].name.empty())
         {
-	  timer_events[i] = {n, w};
+            timer_events[i] = { n, w };
             if (w < next_event_time)
             {
                 next_event_time = w;
@@ -423,21 +423,23 @@ int KGame::add_timer_event(const char* n, int delta)
 
 Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name)
 {
-  Raster* tmp = new Raster(bitmap_width, bitmap_height);
+    Raster* tmp = new Raster(bitmap_width, bitmap_height);
 
     if (!tmp)
     {
         sprintf(strbuf, _("Could not allocate %s!."), bitmap_name);
         program_death(strbuf);
-    } else {
-      printf("Allocating %d x %d --> %s\n", bitmap_width, bitmap_height, bitmap_name);
+    }
+    else
+    {
+        printf("Allocating %d x %d --> %s\n", bitmap_width, bitmap_height, bitmap_name);
     }
     return tmp;
 }
 #else
-Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char*, bool )
+Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char*, bool)
 {
-  return new Raster(bitmap_width, bitmap_height);
+    return new Raster(bitmap_width, bitmap_height);
 }
 #endif
 
@@ -810,17 +812,17 @@ const char* KGame::get_timer_event(void)
 
     if (game_time < next_event_time)
     {
-      return nullptr;
+        return nullptr;
     }
 
     for (auto& t : timer_events)
     {
-      if (!t.name.empty())
+        if (!t.name.empty())
         {
             if (t.when <= game_time)
             {
-	      std::swap(buf, t.name);
-	      t.name = string{};
+                std::swap(buf, t.name);
+                t.name = string {};
             }
             else
             {
@@ -864,8 +866,8 @@ void KGame::kwait(int dtime)
 
     while (cnt < dtime)
     {
-      ProcessEvents();
-      Music.poll_music();
+        ProcessEvents();
+        Music.poll_music();
         while (timer_count > 0)
         {
             Music.poll_music();
@@ -971,7 +973,7 @@ int main(int argc, const char* argv[])
         case 0: /* Continue */
             break;
         case 1: /* New game */
-	  Game.SetGameTime(0);
+            Game.SetGameTime(0);
             Game.change_map("starting", 0, 0, 0, 0);
             if (kqrandom)
             {
@@ -994,9 +996,9 @@ int main(int argc, const char* argv[])
             /* While the actual game is playing */
             while (!stop)
             {
-	      ++_cycle;
-	      Game.ProcessEvents();
-		process_entities();
+                ++_cycle;
+                Game.ProcessEvents();
+                process_entities();
                 Game.do_check_animation();
                 Draw.drawmap();
                 Draw.blit2screen();
@@ -1028,7 +1030,6 @@ int main(int argc, const char* argv[])
     return EXIT_SUCCESS;
 }
 
-
 /*! \brief SDL timer callback
  *
  * New interrupt handler set to keep game time.
@@ -1041,14 +1042,13 @@ Uint32 my_counter(Uint32 interval, void*)
     if (timer >= Game.KQ_TICKS)
     {
         timer = 0;
-        //ksec++;
+        // ksec++;
     }
 
-    //animation_count++;
-    //timer_count++;
+    // animation_count++;
+    // timer_count++;
     return interval;
 }
-
 
 void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 {
@@ -1215,22 +1215,25 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 
 void KGame::program_death(const char* message, const char* extra)
 {
-  if (extra){
-    TRACE("%s: %s\n", message, extra);
-    printf("%s: %s\n", message, extra);
-  } else {
-    TRACE("%s\n", message);
-    printf("%s\n", message);
-  }
-  deallocate_stuff();
-  exit(EXIT_FAILURE);
+    if (extra)
+    {
+        TRACE("%s: %s\n", message, extra);
+        printf("%s: %s\n", message, extra);
+    }
+    else
+    {
+        TRACE("%s\n", message);
+        printf("%s\n", message);
+    }
+    deallocate_stuff();
+    exit(EXIT_FAILURE);
 }
 
 void KGame::reset_timer_events(void)
 {
-  for (auto& t : timer_events)
+    for (auto& t : timer_events)
     {
-      t.name = string{};
+        t.name = string {};
     }
     next_event_time = INT_MAX;
 }
@@ -1239,7 +1242,7 @@ void KGame::reset_world(void)
 {
     /* Reset timer */
     timer = 0;
-    SetGameTime({0});
+    SetGameTime({ 0 });
     /* Initialize special_items array */
     for (int i = 0; i < MAX_SPECIAL_ITEMS; i++)
     {
@@ -1264,16 +1267,15 @@ void KGame::reset_world(void)
 
     lua_user_init();
 }
-static int rgb_index(RGB& c) {
-  int bestindex = 255, bestdist = INT_MAX;
+static int rgb_index(RGB& c)
+{
+    int bestindex = 255, bestdist = INT_MAX;
     // Start at 1 because 0 is the transparent colour and we don't want to match
     // it
     for (int i = 1; i < 256; ++i)
     {
         RGB& rgb = pal[i];
-        int dist = (c.r - rgb.r) * (c.r-rgb.r)
-	  + (c.g - rgb.g) *(c.g-rgb.g)
-	  + (c.b - rgb.b)*(c.b-rgb.b);
+        int dist = (c.r - rgb.r) * (c.r - rgb.r) + (c.g - rgb.g) * (c.g - rgb.g) + (c.b - rgb.b) * (c.b - rgb.b);
         if (dist == 0)
         {
             // Exact match, early return
@@ -1295,7 +1297,7 @@ void KGame::startup(void)
     int p, i, q;
     time_t t;
 
-    SDL_Init(SDL_INIT_VIDEO|SDL_INIT_EVENTS|SDL_INIT_TIMER);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
 
     /* Buffers to allocate */
     strbuf = (char*)malloc(4096);
@@ -1312,31 +1314,31 @@ void KGame::startup(void)
     sound_avail = false; // TODO (install_sound(DIGI_AUTODETECT, MIDI_NONE, NULL) < 0 ? 0 : 1);
     if (!sound_avail)
     {
-      printf(_("Error with sound: %s\n"), "NOT IMPLEMENTED" /* TODO allegro_error*/);
+        printf(_("Error with sound: %s\n"), "NOT IMPLEMENTED" /* TODO allegro_error*/);
     }
     parse_setup();
     sound_init();
     set_graphics_mode();
     // Set up transparency table - note special cases for a or b == 0
-    for (int colour_b=0; colour_b< 256; ++colour_b) {
-      cmap.data[0][colour_b] = colour_b;
+    for (int colour_b = 0; colour_b < 256; ++colour_b)
+    {
+        cmap.data[0][colour_b] = colour_b;
     }
-    for (int colour_a=1; colour_a < 256; ++ colour_a) {
-      cmap.data[colour_a][0] = colour_a;
-      for (int colour_b=1; colour_b< 256; ++colour_b) {
-	RGB& a = pal[colour_a];
-	RGB& b = pal[colour_b];
-	RGB blend{static_cast<unsigned char>((a.r + b.r)/2),
-	  static_cast<unsigned char>((a.g+b.g)/2),
-	  static_cast<unsigned char>((a.b+b.b)/2),
-	  0xFF};
-	cmap.data[colour_a][colour_b] = rgb_index(blend);
-      }
+    for (int colour_a = 1; colour_a < 256; ++colour_a)
+    {
+        cmap.data[colour_a][0] = colour_a;
+        for (int colour_b = 1; colour_b < 256; ++colour_b)
+        {
+            RGB& a = pal[colour_a];
+            RGB& b = pal[colour_b];
+            RGB blend { static_cast<unsigned char>((a.r + b.r) / 2), static_cast<unsigned char>((a.g + b.g) / 2),
+                        static_cast<unsigned char>((a.b + b.b) / 2), 0xFF };
+            cmap.data[colour_a][colour_b] = rgb_index(blend);
+        }
     }
-    
+
     if (use_joy == 1)
     {
-
     }
 
     if (SDL_NumJoysticks() == 0)
@@ -1347,20 +1349,19 @@ void KGame::startup(void)
     {
         use_joy = 0;
 
-            // Use first compatible joystick attached to computer
-            for (i = 0; i < SDL_NumJoysticks(); ++i)
+        // Use first compatible joystick attached to computer
+        for (i = 0; i < SDL_NumJoysticks(); ++i)
+        {
+            if (SDL_IsGameController(i))
             {
-	      if (SDL_IsGameController(i))
-                {
-                    use_joy = i + 1;
-                    break;
-                }
+                use_joy = i + 1;
+                break;
             }
+        }
 
         if (use_joy == 0)
         {
             Game.klog(_("Only joysticks/gamepads with at least 4 buttons can be used."));
-            
         }
     }
 
@@ -1451,7 +1452,7 @@ void KGame::startup(void)
         }
     }
 
-    SDL_AddTimer(1000/KQ_TICKS, my_counter, nullptr);
+    SDL_AddTimer(1000 / KQ_TICKS, my_counter, nullptr);
 
     SaveGame.load_sgstats();
 
@@ -1479,8 +1480,8 @@ void KGame::unpress(void)
 {
     timer_count = 0;
     while (timer_count < 20)
-      {
-	ProcessEvents();
+    {
+        ProcessEvents();
         PlayerInput.readcontrols();
         if (!(PlayerInput.balt || PlayerInput.bctrl || PlayerInput.benter || PlayerInput.besc || PlayerInput.up ||
               PlayerInput.down || PlayerInput.right || PlayerInput.left || PlayerInput.bcheat))
@@ -1499,7 +1500,7 @@ void KGame::wait_enter(void)
 
     while (!stop)
     {
-      ProcessEvents();
+        ProcessEvents();
         PlayerInput.readcontrols();
         if (PlayerInput.balt)
         {
@@ -1519,14 +1520,14 @@ void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
 
     if (first_entity_index > last_entity_index)
     {
-      std::swap(first_entity_index, last_entity_index);
+        std::swap(first_entity_index, last_entity_index);
     }
 
     autoparty = 1;
     do
     {
-      ProcessEvents();
-      process_entities();
+        ProcessEvents();
+        process_entities();
         Music.poll_music();
         Game.do_check_animation();
         Draw.drawmap();
@@ -1664,40 +1665,46 @@ int KGame::SetGold(int amount)
     return gp;
 }
 
-bool KGame::ProcessEvents() {
-  bool wait_timer = true;
-  extern void reset_watchdog();
-  reset_watchdog();
-    while (wait_timer) {
-    SDL_Event event;
-    int rc = SDL_WaitEvent(&event);
-    if (rc == 0) {
-      Game.program_death("Error waiting for events", SDL_GetError());
+bool KGame::ProcessEvents()
+{
+    bool wait_timer = true;
+    extern void reset_watchdog();
+    reset_watchdog();
+    while (wait_timer)
+    {
+        SDL_Event event;
+        int rc = SDL_WaitEvent(&event);
+        if (rc == 0)
+        {
+            Game.program_death("Error waiting for events", SDL_GetError());
+        }
+        do
+        {
+            switch (event.type)
+            {
+            case SDL_USEREVENT: // this is our frame timer
+                wait_timer = false;
+                timer_count += 3;
+                break;
+            default: // TODO all other events
+                break;
+            }
+        } while (SDL_PollEvent(&event));
     }
-    do {
-      switch(event.type) {
-      case SDL_USEREVENT: // this is our frame timer
-	wait_timer = false;
-	timer_count+=3;
-	break;
-      default: // TODO all other events
-	break;
-      }
-    } while(SDL_PollEvent(&event));
-  }
 
-  key = SDL_GetKeyboardState(&key_count);
-  return true;
+    key = SDL_GetKeyboardState(&key_count);
+    return true;
 }
 
-void KGame::SetGameTime(const KTime& t) {
-  game_time = t.total_seconds();
-  game_start_ticks = SDL_GetTicks64();
-  
+void KGame::SetGameTime(const KTime& t)
+{
+    game_time = t.total_seconds();
+    game_start_ticks = SDL_GetTicks64();
 }
-KTime KGame::GetGameTime() const {
-  int elapsed = (SDL_GetTicks64() - game_start_ticks)/1000;
-  return {game_time+elapsed};
+KTime KGame::GetGameTime() const
+{
+    int elapsed = (SDL_GetTicks64() - game_start_ticks) / 1000;
+    return { game_time + elapsed };
 }
 /*! \mainpage KQ - The Classic Computer Role-Playing Game
  *
@@ -1754,11 +1761,12 @@ KTime KGame::GetGameTime() const {
  * The names given are the base names of the maps/lua scripts
  */
 
-void TRACE(const char* message, ...) {
-  va_list args;
-  va_start( args, message);
-  SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG, message, args);
-  va_end(args);
+void TRACE(const char* message, ...)
+{
+    va_list args;
+    va_start(args, message);
+    SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG, message, args);
+    va_end(args);
 }
 
 const unsigned char* key = nullptr;

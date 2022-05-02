@@ -59,7 +59,6 @@ struct KMarker
 class KMarkers
 {
   public:
-
     // Add a new marker to the map. Returns true on success, or false on failure.
     bool Add(KMarker&& marker);
 

@@ -219,11 +219,11 @@ KBounds KTiledMap::load_tmx_bounds(XMLElement const* el)
         {
             if (i->Attribute("type", "bounds"))
             {
-	      auto x= i->IntAttribute("x") / TILE_W;
-	      auto y= i->IntAttribute("y") / TILE_H;
-	      auto w= i->IntAttribute("width") / TILE_W;
-	      auto h=i->IntAttribute("height") / TILE_H;
-		short b = 0;
+                auto x = i->IntAttribute("x") / TILE_W;
+                auto y = i->IntAttribute("y") / TILE_H;
+                auto w = i->IntAttribute("width") / TILE_W;
+                auto h = i->IntAttribute("height") / TILE_H;
+                short b = 0;
                 auto props = i->FirstChildElement("properties");
                 if (props)
                 {
@@ -236,7 +236,7 @@ KBounds KTiledMap::load_tmx_bounds(XMLElement const* el)
                         }
                     }
                 }
-                bounds.Add({x,y,x+w-1,y+h-1, b});
+                bounds.Add({ x, y, x + w - 1, y + h - 1, b });
             }
         }
     }
@@ -276,7 +276,8 @@ KMarkers KTiledMap::load_tmx_markers(XMLElement const* el)
         {
             if (obj->Attribute("type", "marker"))
             {
-	      markers.Add({obj->Attribute("name"), obj->IntAttribute("x") / TILE_W, obj->IntAttribute("y") / TILE_H});
+                markers.Add(
+                    { obj->Attribute("name"), obj->IntAttribute("x") / TILE_W, obj->IntAttribute("y") / TILE_H });
             }
         }
     }

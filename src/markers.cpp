@@ -40,29 +40,35 @@ using std::shared_ptr;
 
 bool KMarkers::Add(KMarker&& marker)
 {
-  for (auto& m : m_markers) {
-    if (m.name == marker.name) {
-      m.x = marker.x;
-      m.y = marker.y;
-      return true;
+    for (auto& m : m_markers)
+    {
+        if (m.name == marker.name)
+        {
+            m.x = marker.x;
+            m.y = marker.y;
+            return true;
+        }
     }
-  }
     m_markers.push_back(marker);
     return true;
 }
 
-bool KMarkers::Remove(const string &name)
+bool KMarkers::Remove(const string& name)
 {
-  auto it = m_markers.begin();
-  while (it != m_markers.end()) {
-    if (it->name == name) {
-      it = m_markers.erase(it);
-      return true;
-    } else {
-      ++it;
+    auto it = m_markers.begin();
+    while (it != m_markers.end())
+    {
+        if (it->name == name)
+        {
+            it = m_markers.erase(it);
+            return true;
+        }
+        else
+        {
+            ++it;
+        }
     }
-  }
-  return false;
+    return false;
 }
 
 const KMarker* KMarkers::GetMarker(size_t index)
@@ -76,20 +82,21 @@ const KMarker* KMarkers::GetMarker(size_t index)
 
 const KMarker* KMarkers::GetMarker(const string& marker_name)
 {
-  for (auto& m: m_markers){
-    if (m.name == marker_name)
+    for (auto& m : m_markers)
+    {
+        if (m.name == marker_name)
         {
             return &m;
         }
-  }
-  return nullptr;
+    }
+    return nullptr;
 }
 
 const KMarker* KMarkers::GetMarker(int32_t x, int32_t y)
 {
-  for (auto& m : m_markers)
+    for (auto& m : m_markers)
     {
-        if (m.x == x && m. y == y)
+        if (m.x == x && m.y == y)
         {
             return &m;
         }

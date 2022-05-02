@@ -97,15 +97,18 @@ enum eBubbleStemStyle
 class KDraw
 {
   public:
-  KDraw();
-  /*! \brief set up drawing system.
-   * This will store the window, and set up a renderer and texture
-   * to go with it
-   * @param _window KQ's window
-   */
-  void set_window(SDL_Window* _window);
-  /// Get the current window
-  SDL_Window* get_window() const { return window; }
+    KDraw();
+    /*! \brief set up drawing system.
+     * This will store the window, and set up a renderer and texture
+     * to go with it
+     * @param _window KQ's window
+     */
+    void set_window(SDL_Window* _window);
+    /// Get the current window
+    SDL_Window* get_window() const
+    {
+        return window;
+    }
     /*! \brief Copies from the double buffer to the screen.
      *  Handles frame-rate display, stretching and vsync waiting.
      *
@@ -387,24 +390,25 @@ class KDraw
      */
     const char* decode_utf8(const char* InString, uint32_t* cp);
 
-  /*! Boundary adjusted for parallax */
-  struct PBound {
-    int left;
-    int top;
-    int right;
-    int bottom;
-    int x_offset;
-    int y_offset;
-  };
+    /*! Boundary adjusted for parallax */
+    struct PBound
+    {
+        int left;
+        int top;
+        int right;
+        int bottom;
+        int x_offset;
+        int y_offset;
+    };
 
-  /*! \brief Calculate bounds
-   * 
-   * Calculate bounds based on current view if any and taking into account parallax
-   * \param is_parallax true if parallax applies to the layer under consideration
-   * \returns a bounding box
-   */
-  PBound calculate_box(bool is_parallax);
-  
+    /*! \brief Calculate bounds
+     *
+     * Calculate bounds based on current view if any and taking into account parallax
+     * \param is_parallax true if parallax applies to the layer under consideration
+     * \returns a bounding box
+     */
+    PBound calculate_box(bool is_parallax);
+
     /*! \brief Draw background
      *
      * Draw the background layer.  Accounts for parallaxing.
@@ -558,11 +562,11 @@ class KDraw
         M_NONSPACE,
         M_END
     };
-  SDL_Window* window; /// The target window.
-  SDL_Renderer* renderer; /// The window's renderer
-  SDL_Texture* texture; /// The target texture
-  SDL_PixelFormat* format; /// The format of the texture
-  int btile;
+    SDL_Window* window;      /// The target window.
+    SDL_Renderer* renderer;  /// The window's renderer
+    SDL_Texture* texture;    /// The target texture
+    SDL_PixelFormat* format; /// The format of the texture
+    int btile;
 };
 
 /*  global variables  */

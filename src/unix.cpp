@@ -29,13 +29,13 @@
  * e.g. Linux
  */
 
-#include <cstdio>
-#include <cstring>
-#include <unistd.h>
-#include <pwd.h>
-#include <sys/stat.h>
 #include "disk.h"
 #include "platform.h"
+#include <cstdio>
+#include <cstring>
+#include <pwd.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 static bool init_path = false;
 static string user_dir;

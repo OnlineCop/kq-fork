@@ -27,10 +27,7 @@
  * \remark Updated  ML Oct-2002
  */
 
-#include <cstdio>
-#include <cstring>
-#include <string>
-#include <SDL.h>
+#include "setup.h"
 #include "combat.h"
 #include "constants.h"
 #include "disk.h"
@@ -41,12 +38,15 @@
 #include "music.h"
 #include "platform.h"
 #include "res.h"
-#include "setup.h"
-#include "timing.h"
 #include "settings.h"
+#include "timing.h"
+#include <SDL.h>
+#include <cstdio>
+#include <cstring>
+#include <string>
 
-using eSize::SCREEN_W;
 using eSize::SCREEN_H;
+using eSize::SCREEN_W;
 
 /*! \name Globals */
 
@@ -91,8 +91,8 @@ static void music_feedback(int val)
  */
 static void citem(int y, const char* caption, const char* value, eFontColor color)
 {
-    Draw.print_font(double_buffer, 48 , y , caption, color);
-    Draw.print_font(double_buffer, SCREEN_H - 8 * strlen(value) , y , value, color);
+    Draw.print_font(double_buffer, 48, y, caption, color);
+    Draw.print_font(double_buffer, SCREEN_H - 8 * strlen(value), y, value, color);
 }
 
 /*! \brief Display configuration menu
@@ -162,12 +162,12 @@ void config_menu(void)
     Config.set_config_file(kqres(SETTINGS_DIR, "kq.cfg").c_str());
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, 88 , 0, 16, 1, BLUE);
-        Draw.print_font(double_buffer, 96 , 8 , _("KQ Configuration"), FGOLD);
-        Draw.menubox(double_buffer, 32 , 24 , 30, MENU_SIZE + 3, BLUE);
+        Draw.menubox(double_buffer, 88, 0, 16, 1, BLUE);
+        Draw.print_font(double_buffer, 96, 8, _("KQ Configuration"), FGOLD);
+        Draw.menubox(double_buffer, 32, 24, 30, MENU_SIZE + 3, BLUE);
 
         citem(row[0], _("Windowed mode:"), windowed == 1 ? _("YES") : _("NO"), FNORMAL);
         citem(row[1], _("Stretch Display:"), should_stretch_view ? _("YES") : _("NO"), FNORMAL);
@@ -230,11 +230,11 @@ void config_menu(void)
         {
             p++;
         }
-        draw_sprite(double_buffer, menuptr, 32 , p * 8 + 32 );
+        draw_sprite(double_buffer, menuptr, 32, p * 8 + 32);
 
         /* This is the bottom window, where the description goes */
-        Draw.menubox(double_buffer, 0, 216 , 38, 1, BLUE);
-        Draw.print_font(double_buffer, 8 , 224 , dc[ptr], FNORMAL);
+        Draw.menubox(double_buffer, 0, 216, 38, 1, BLUE);
+        Draw.print_font(double_buffer, 8, 224, dc[ptr], FNORMAL);
         Draw.blit2screen();
 
         PlayerInput.readcontrols();
@@ -297,7 +297,7 @@ void config_menu(void)
                 {
                     windowed = !windowed;
                     Config.set_config_int(NULL, "windowed", windowed);
-		    set_graphics_mode();
+                    set_graphics_mode();
                 }
                 break;
             case 1:
@@ -411,7 +411,7 @@ void config_menu(void)
                     if (is_sound == 0)
                     {
                         is_sound = 1;
-                        Draw.print_font(double_buffer, 92 + 2 , 204 , _("...please wait..."), FNORMAL);
+                        Draw.print_font(double_buffer, 92 + 2, 204, _("...please wait..."), FNORMAL);
                         Draw.blit2screen();
                         sound_init();
                         Music.play_music(g_map.song_file, 0);
@@ -510,9 +510,9 @@ void free_samples(void)
 
     for (index = 0; index < MAX_SAMPLES; index++)
     {
-      /* TODO
-unload_datafile_object(sfx[index]);
-      */
+        /* TODO
+  unload_datafile_object(sfx[index]);
+        */
     }
 }
 
@@ -525,8 +525,8 @@ unload_datafile_object(sfx[index]);
  */
 static int getakey(void)
 {
-    Draw.menubox(double_buffer, 108 , 108 , 11, 1, DARKBLUE);
-    Draw.print_font(double_buffer, 116 , 116 , _("Press a key"), FNORMAL);
+    Draw.menubox(double_buffer, 108, 108, 11, 1, DARKBLUE);
+    Draw.print_font(double_buffer, 116, 116, _("Press a key"), FNORMAL);
     Draw.blit2screen();
 
     while (true)
@@ -567,17 +567,17 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
     bool stop = false;
     while (!stop)
     {
-      Game.ProcessEvents();
+        Game.ProcessEvents();
         Game.do_check_animation();
-        Draw.menubox(double_buffer, 148 - (maxu * 4) , 100 , maxu + 1, 3, DARKBLUE);
-        Draw.print_font(double_buffer, 160 - (strlen(capt) * 4) , 108 , capt, FGOLD);
-        Draw.print_font(double_buffer, 152 - (maxu * 4) , 116 , "<", FNORMAL);
-        Draw.print_font(double_buffer, 160 + (maxu * 4) , 116 , ">", FNORMAL);
-        int b = 160 - (maxu * 4) ;
+        Draw.menubox(double_buffer, 148 - (maxu * 4), 100, maxu + 1, 3, DARKBLUE);
+        Draw.print_font(double_buffer, 160 - (strlen(capt) * 4), 108, capt, FGOLD);
+        Draw.print_font(double_buffer, 152 - (maxu * 4), 116, "<", FNORMAL);
+        Draw.print_font(double_buffer, 160 + (maxu * 4), 116, ">", FNORMAL);
+        int b = 160 - (maxu * 4);
         for (int a = 0; a < cv; a++)
         {
-            rectfill(double_buffer, a * 8 + b + 1, 117 , a * 8 + b + 7, 123 , 50);
-            rectfill(double_buffer, a * 8 + b, 116 , a * 8 + b + 6, 122 , 21);
+            rectfill(double_buffer, a * 8 + b + 1, 117, a * 8 + b + 7, 123, 50);
+            rectfill(double_buffer, a * 8 + b, 116, a * 8 + b + 6, 122, 21);
         }
         char strbuf[10];
         if (sp)
@@ -588,7 +588,7 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
         {
             sprintf(strbuf, "%d", cv);
         }
-        Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4) , 124 , strbuf, FGOLD);
+        Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 124, strbuf, FGOLD);
         Draw.blit2screen();
 
         PlayerInput.readcontrols();
@@ -664,15 +664,15 @@ const char* kq_keyname(int scancode)
  */
 static int load_samples(void)
 {
-    const char* sndfiles[MAX_SAMPLES] = {
-        "WHOOSH_WAV",   "MENUMOVE_WAV", "BAD_WAV",     "ITEM_WAV",   "EQUIP_WAV",    "DEEQUIP_WAV", "BUYSELL_WAV",
-        "TWINKLE_WAV",  "SCORCH_WAV",   "POISON_WAV",  "CHOP_WAV",   "SLASH_WAV",    "STAB_WAV",    "HIT_WAV",
-        "ICE_WAV",      "WIND_WAV",     "QUAKE_WAV",   "BLACK_WAV",  "WHITE_WAV",    "BOLT1_WAV",   "FLOOD_WAV",
-        "HURT_WAV",     "BMAGIC_WAV",   "SHIELD_WAV",  "KILL_WAV",   "DOOROPEN_WAV", "DOOR2_WAV",   "STAIRS_WAV",
-        "TELEPORT_WAV", "CURE_WAV",     "RECOVER_WAV", "ARROW_WAV",  "BOLT2_WAV",    "BOLT3_WAV",   "FLAME_WAV",
-        "BLIND_WAV",    "INN_WAV",      "CONFUSE_WAV", "DISPEL_WAV", "DOOM_WAV",     "DRAIN_WAV",   "GAS_WAV",
-        "EXPLODE_WAV"
-    };
+    const char* sndfiles[MAX_SAMPLES] = { "WHOOSH_WAV",   "MENUMOVE_WAV", "BAD_WAV",     "ITEM_WAV",     "EQUIP_WAV",
+                                          "DEEQUIP_WAV",  "BUYSELL_WAV",  "TWINKLE_WAV", "SCORCH_WAV",   "POISON_WAV",
+                                          "CHOP_WAV",     "SLASH_WAV",    "STAB_WAV",    "HIT_WAV",      "ICE_WAV",
+                                          "WIND_WAV",     "QUAKE_WAV",    "BLACK_WAV",   "WHITE_WAV",    "BOLT1_WAV",
+                                          "FLOOD_WAV",    "HURT_WAV",     "BMAGIC_WAV",  "SHIELD_WAV",   "KILL_WAV",
+                                          "DOOROPEN_WAV", "DOOR2_WAV",    "STAIRS_WAV",  "TELEPORT_WAV", "CURE_WAV",
+                                          "RECOVER_WAV",  "ARROW_WAV",    "BOLT2_WAV",   "BOLT3_WAV",    "FLAME_WAV",
+                                          "BLIND_WAV",    "INN_WAV",      "CONFUSE_WAV", "DISPEL_WAV",   "DOOM_WAV",
+                                          "DRAIN_WAV",    "GAS_WAV",      "EXPLODE_WAV" };
     size_t index;
 
     if (is_sound == 0)
@@ -682,7 +682,7 @@ static int load_samples(void)
     string sound_datafile(kqres(DATA_DIR, "kqsnd.dat"));
     for (index = 0; index < MAX_SAMPLES; index++)
     {
-      sfx[index] = nullptr; //load_datafile_object(sound_datafile.c_str(), sndfiles[index]);
+        sfx[index] = nullptr; // load_datafile_object(sound_datafile.c_str(), sndfiles[index]);
         if (sfx[index] == NULL)
         {
             sprintf(strbuf, _("Error loading .WAV file: %s.\n"), sndfiles[index]);
@@ -971,21 +971,21 @@ void play_effect(int efc, int panning)
     default:
         if (samp)
         {
-	  Music.play_sample(samp, gsvol, panning, 1000, 0);
+            Music.play_sample(samp, gsvol, panning, 1000, 0);
         }
         break;
     case SND_BAD:
         fullblit(double_buffer, fx_buffer);
 
         if (samp)
-        {/* TODO
-            play_sample(samp, gsvol, panning, 1000, 0);
-	 */
+        { /* TODO
+             play_sample(samp, gsvol, panning, 1000, 0);
+      */
         }
         for (a = 0; a < 8; a++)
         {
-            blit(fx_buffer, double_buffer, 0, 0, bx[a],  by[a], SCREEN_W, SCREEN_H);
-	    Draw.blit2screen();
+            blit(fx_buffer, double_buffer, 0, 0, bx[a], by[a], SCREEN_W, SCREEN_H);
+            Draw.blit2screen();
             kq_wait(10);
         }
         fullblit(fx_buffer, double_buffer);
@@ -1017,8 +1017,8 @@ void play_effect(int efc, int panning)
 
             for (a = 0; a < 8; a++)
             {
-                blit(fx_buffer, double_buffer, 0, 0, bx[a],  by[a], SCREEN_W, SCREEN_H);
-	    Draw.blit2screen();
+                blit(fx_buffer, double_buffer, 0, 0, bx[a], by[a], SCREEN_W, SCREEN_H);
+                Draw.blit2screen();
                 kq_wait(10);
             }
         }
@@ -1034,22 +1034,21 @@ void play_effect(int efc, int panning)
  */
 void set_graphics_mode(void)
 {
-  //set_color_depth(8);
-  int card = 0; //GFX_AUTODETECT_WINDOWED;
+    // set_color_depth(8);
+    int card = 0; // GFX_AUTODETECT_WINDOWED;
     if (windowed != 1)
     {
-      card = 1;//GFX_AUTODETECT;
+        card = 1; // GFX_AUTODETECT;
     }
-    (void) card;
+    (void)card;
     int w = eSize::SCALED_SCREEN_W;
     int h = eSize::SCALED_SCREEN_H;
     if (!should_stretch_view)
     {
-      w = eSize::SCREEN_W;
-      h = eSize::SCREEN_H;
+        w = eSize::SCREEN_W;
+        h = eSize::SCREEN_H;
     }
-    Draw.set_window( SDL_CreateWindow("KQ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-				      w, h, SDL_WINDOW_SHOWN));
+    Draw.set_window(SDL_CreateWindow("KQ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, SDL_WINDOW_SHOWN));
 }
 
 /*! \brief Show keys help
@@ -1059,11 +1058,11 @@ void set_graphics_mode(void)
  */
 void show_help(void)
 {
-    Draw.menubox(double_buffer, 116 , 0, 9, 1, BLUE);
-    Draw.print_font(double_buffer, 132 , 8 , _("KQ Help"), FGOLD);
-    Draw.menubox(double_buffer, 32 , 32 , 30, 20, BLUE);
-    Draw.menubox(double_buffer, 0, 216 , 38, 1, BLUE);
-    Draw.print_font(double_buffer, 16 , 224 , _("Press CONFIRM to exit this screen"), FNORMAL);
+    Draw.menubox(double_buffer, 116, 0, 9, 1, BLUE);
+    Draw.print_font(double_buffer, 132, 8, _("KQ Help"), FGOLD);
+    Draw.menubox(double_buffer, 32, 32, 30, 20, BLUE);
+    Draw.menubox(double_buffer, 0, 216, 38, 1, BLUE);
+    Draw.print_font(double_buffer, 16, 224, _("Press CONFIRM to exit this screen"), FNORMAL);
     citem(72, _("Up Key:"), kq_keyname(PlayerInput.kup), FNORMAL);
     citem(80, _("Down Key:"), kq_keyname(PlayerInput.kdown), FNORMAL);
     citem(88, _("Left Key:"), kq_keyname(PlayerInput.kleft), FNORMAL);

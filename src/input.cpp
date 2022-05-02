@@ -40,7 +40,6 @@ KPlayerInput::KPlayerInput()
  */
 void KPlayerInput::readcontrols()
 {
-
     Music.poll_music();
 
     PlayerInput.balt = key[PlayerInput.kalt];
@@ -66,15 +65,17 @@ void KPlayerInput::readcontrols()
             if (timer_count >= kill_time)
             {
                 /* Pressed, now wait for release */
-                
+
                 while (key[SDL_SCANCODE_LALT] && key[SDL_SCANCODE_X])
                 {
-		  Game.ProcessEvents();
+                    Game.ProcessEvents();
                 }
                 Game.program_death(_("X-ALT pressed... exiting."));
-            } else {
-	      Game.ProcessEvents();
-	    }
+            }
+            else
+            {
+                Game.ProcessEvents();
+            }
         }
     }
 #ifdef DEBUGMODE
