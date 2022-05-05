@@ -220,7 +220,7 @@ int hero_skillcheck(size_t fighter_index)
 static void infusion(int c, int sn)
 {
     size_t j;
-
+    auto& ftr = fighter[c];
     switch (sn)
     {
         /* TT TODO: Sort all of these by element type
@@ -229,210 +229,200 @@ static void infusion(int c, int sn)
 
         /* Increase resistance to Earthquake attacks */
     case M_TREMOR:
-        fighter[c].res[R_EARTH] += 5;
-        fighter[c].stats[eStat::Defense] += 15;
-        fighter[c].stats[eStat::MagicDefense] += 10;
-        fighter[c].welem = 0;
+        ftr.res[R_EARTH] += 5;
+        ftr.stats[eStat::Defense] += 15;
+        ftr.stats[eStat::MagicDefense] += 10;
+        ftr.welem = 0;
         break;
 
     case M_EARTHQUAKE:
-        fighter[c].res[R_EARTH] += 10;
-        fighter[c].stats[eStat::Defense] += 30;
-        fighter[c].stats[eStat::MagicDefense] += 20;
-        fighter[c].welem = 0;
+        ftr.res[R_EARTH] += 10;
+        ftr.stats[eStat::Defense] += 30;
+        ftr.stats[eStat::MagicDefense] += 20;
+        ftr.welem = 0;
         break;
 
         /* Increase resistance to Dark attacks */
         /* Decrease resistance to Light attacks */
     case M_GLOOM:
-        fighter[c].res[R_BLACK] += 8;
-        fighter[c].res[R_WHITE] -= 4;
-        fighter[c].stats[eStat::Aura] += 20;
-        fighter[c].welem = 1;
+        ftr.res[R_BLACK] += 8;
+        ftr.res[R_WHITE] -= 4;
+        ftr.stats[eStat::Aura] += 20;
+        ftr.welem = 1;
         break;
 
     case M_NEGATIS:
-        fighter[c].res[R_BLACK] += 16;
-        fighter[c].res[R_WHITE] -= 8;
-        fighter[c].stats[eStat::Aura] += 40;
-        fighter[c].welem = 1;
+        ftr.res[R_BLACK] += 16;
+        ftr.res[R_WHITE] -= 8;
+        ftr.stats[eStat::Aura] += 40;
+        ftr.welem = 1;
         break;
 
         /* Increase resistance to Fire attacks */
         /* Decrease resistance to Water & Ice attacks */
     case M_SCORCH:
-        fighter[c].res[R_FIRE] += 4;
-        fighter[c].res[R_WATER]--;
-        fighter[c].res[R_ICE]--;
-        fighter[c].stats[eStat::Attack] += 10;
-        fighter[c].stats[eStat::Hit] += 10;
-        fighter[c].welem = 2;
+        ftr.res[R_FIRE] += 4;
+        ftr.res[R_WATER]--;
+        ftr.res[R_ICE]--;
+        ftr.stats[eStat::Attack] += 10;
+        ftr.stats[eStat::Hit] += 10;
+        ftr.welem = 2;
         break;
 
     case M_FIREBLAST:
-        fighter[c].res[R_FIRE] += 8;
-        fighter[c].res[R_WATER] -= 2;
-        fighter[c].res[R_ICE] -= 2;
-        fighter[c].stats[eStat::Attack] += 20;
-        fighter[c].stats[eStat::Hit] += 20;
-        fighter[c].welem = 2;
+        ftr.res[R_FIRE] += 8;
+        ftr.res[R_WATER] -= 2;
+        ftr.res[R_ICE] -= 2;
+        ftr.stats[eStat::Attack] += 20;
+        ftr.stats[eStat::Hit] += 20;
+        ftr.welem = 2;
         break;
 
     case M_FLAMEWALL:
-        fighter[c].res[R_FIRE] += 12;
-        fighter[c].res[R_WATER] -= 4;
-        fighter[c].res[R_ICE] -= 4;
-        fighter[c].stats[eStat::Attack] += 40;
-        fighter[c].stats[eStat::Hit] += 40;
-        fighter[c].welem = 2;
+        ftr.res[R_FIRE] += 12;
+        ftr.res[R_WATER] -= 4;
+        ftr.res[R_ICE] -= 4;
+        ftr.stats[eStat::Attack] += 40;
+        ftr.stats[eStat::Hit] += 40;
+        ftr.welem = 2;
         break;
 
         /* Increase resistance to Thunder attacks */
     case M_SHOCK:
-        fighter[c].res[R_THUNDER] += 3;
-        fighter[c].stats[eStat::Evade] += 10;
-        fighter[c].welem = 3;
+        ftr.res[R_THUNDER] += 3;
+        ftr.stats[eStat::Evade] += 10;
+        ftr.welem = 3;
         break;
 
     case M_LIGHTNING:
-        fighter[c].res[R_THUNDER] += 6;
-        fighter[c].stats[eStat::Evade] += 25;
-        fighter[c].welem = 3;
+        ftr.res[R_THUNDER] += 6;
+        ftr.stats[eStat::Evade] += 25;
+        ftr.welem = 3;
         break;
 
     case M_THUNDERSTORM:
-        fighter[c].res[R_THUNDER] += 12;
-        fighter[c].stats[eStat::Evade] += 50;
-        fighter[c].welem = 3;
+        ftr.res[R_THUNDER] += 12;
+        ftr.stats[eStat::Evade] += 50;
+        ftr.welem = 3;
         break;
 
         /* Increase resistance to Air attacks */
     case M_WHIRLWIND:
-        fighter[c].res[R_AIR] += 5;
-        fighter[c].stats[eStat::Evade] += 15;
-        fighter[c].stats[eStat::Speed] += 10;
-        fighter[c].welem = 4;
+        ftr.res[R_AIR] += 5;
+        ftr.stats[eStat::Evade] += 15;
+        ftr.stats[eStat::Speed] += 10;
+        ftr.welem = 4;
         break;
 
     case M_TORNADO:
-        fighter[c].res[R_AIR] += 10;
-        fighter[c].stats[eStat::Evade] += 30;
-        fighter[c].stats[eStat::Speed] += 20;
-        fighter[c].welem = 4;
+        ftr.res[R_AIR] += 10;
+        ftr.stats[eStat::Evade] += 30;
+        ftr.stats[eStat::Speed] += 20;
+        ftr.welem = 4;
         break;
 
         /* Increase resistance to Light attacks */
         /* Decrease resistance to Dark attacks */
     case M_FADE:
-        fighter[c].res[R_WHITE] += 5;
-        fighter[c].res[R_BLACK] -= 2;
-        fighter[c].stats[eStat::Spirit] += 10;
-        fighter[c].welem = 5;
+        ftr.res[R_WHITE] += 5;
+        ftr.res[R_BLACK] -= 2;
+        ftr.stats[eStat::Spirit] += 10;
+        ftr.welem = 5;
         break;
 
     case M_LUMINE:
-        fighter[c].res[R_WHITE] += 10;
-        fighter[c].res[R_BLACK] -= 5;
-        fighter[c].stats[eStat::Spirit] += 25;
-        fighter[c].welem = 5;
+        ftr.res[R_WHITE] += 10;
+        ftr.res[R_BLACK] -= 5;
+        ftr.stats[eStat::Spirit] += 25;
+        ftr.welem = 5;
         break;
 
         /* Increase resistance to Water attacks */
         /* Decrease resistance to Thunder attacks */
     case M_FLOOD:
-        fighter[c].res[R_WATER] += 5;
-        fighter[c].res[R_THUNDER] -= 5;
+        ftr.res[R_WATER] += 5;
+        ftr.res[R_THUNDER] -= 5;
         for (j = 9; j < R_TOTAL_RES; j++)
         {
-            fighter[c].res[j] += 3;
-            if (fighter[c].res[j] > 10)
+            ftr.res[j] += 3;
+            if (ftr.res[j] > 10)
             {
-                fighter[c].res[j] = 10;
+                ftr.res[j] = 10;
             }
         }
-        fighter[c].welem = 6;
+        ftr.welem = 6;
         break;
 
     case M_TSUNAMI:
-        fighter[c].res[R_WATER] += 10;
-        fighter[c].res[R_THUNDER] -= 10;
+        ftr.res[R_WATER] += 10;
+        ftr.res[R_THUNDER] -= 10;
         for (j = 9; j < R_TOTAL_RES; j++)
         {
-            fighter[c].res[j] += 6;
-            if (fighter[c].res[j] > 10)
+            ftr.res[j] += 6;
+            if (ftr.res[j] > 10)
             {
-                fighter[c].res[j] = 10;
+                ftr.res[j] = 10;
             }
         }
-        fighter[c].welem = 6;
+        ftr.welem = 6;
         break;
 
         /* Increase resistance to Ice & Water attacks */
         /* Decrease resistance to Fire attacks */
     case M_FROST:
-        fighter[c].res[R_ICE] += 7;
-        fighter[c].res[R_WATER] += 4;
-        fighter[c].res[R_FIRE] -= 5;
-        fighter[c].stats[eStat::Defense] += 10;
-        fighter[c].welem = 7;
+        ftr.res[R_ICE] += 7;
+        ftr.res[R_WATER] += 4;
+        ftr.res[R_FIRE] -= 5;
+        ftr.stats[eStat::Defense] += 10;
+        ftr.welem = 7;
         break;
 
     case M_BLIZZARD:
-        fighter[c].res[R_ICE] += 14;
-        fighter[c].res[R_WATER] += 8;
-        fighter[c].res[R_FIRE] -= 10;
-        fighter[c].stats[eStat::Defense] += 25;
-        fighter[c].welem = 7;
+        ftr.res[R_ICE] += 14;
+        ftr.res[R_WATER] += 8;
+        ftr.res[R_FIRE] -= 10;
+        ftr.stats[eStat::Defense] += 25;
+        ftr.welem = 7;
         break;
 
         /* Increase resistance to Poison attacks */
     case M_VENOM:
-        fighter[c].res[R_POISON] += 4;
-        j = fighter[c].mhp / 10;
+        ftr.res[R_POISON] += 4;
+        j = ftr.mhp / 10;
         if (j < 10)
         {
             j = 10;
         }
-        fighter[c].hp += j;
-        fighter[c].mhp += j;
-        fighter[c].welem = 8;
+        ftr.hp += j;
+        ftr.mhp += j;
+        ftr.welem = 8;
         break;
 
     case M_VIRUS:
-        fighter[c].res[R_POISON] += 8;
-        j = fighter[c].mhp * 25 / 100;
+        ftr.res[R_POISON] += 8;
+        j = ftr.mhp * 25 / 100;
         if (j < 40)
         {
             j = 40;
         }
-        fighter[c].hp += j;
-        fighter[c].mhp += j;
-        fighter[c].welem = 8;
+        ftr.hp += j;
+        ftr.mhp += j;
+        ftr.welem = 8;
         break;
 
     case M_PLAGUE:
-        fighter[c].res[R_POISON] += 12;
-        j = fighter[c].mhp * 4 / 10;
-        if (j < 80)
-        {
-            j = 80;
-        }
-        fighter[c].hp += j;
-        fighter[c].mhp += j;
-        fighter[c].welem = 8;
+        ftr.res[R_POISON] += 12;
+        j = std::min(ftr.mhp * 4 / 10, 80);
+        ftr.hp += j;
+        ftr.mhp += j;
+        ftr.welem = 8;
         break;
     }
 
-    for (j = 0; j < 9; j++)
+    for (int j = 0; j < 9; j++)
     {
-        if (fighter[c].res[j] < -10)
-        {
-            fighter[c].res[j] = -10;
-        }
-        if (fighter[c].res[j] > 20)
-        {
-            fighter[c].res[j] = 20;
-        }
+        // Clamp to lie between -10..20
+        ftr.res[j] = std::max((int8_t)-10, std::min(ftr.res[j], (int8_t)20));
     }
 }
 
@@ -513,8 +503,6 @@ int skill_use(size_t attack_fighter_index)
     int tgt, found_item, a, b, c, p, cts, tx, ty, next_target = 0, nn[NUM_FIGHTERS];
     size_t enemy_index;
     size_t fighter_index;
-    int rare_chance = 5;
-    std::unique_ptr<Raster> temp;
     tempa = Magic.status_adjust(attack_fighter_index);
     switch (pidx[attack_fighter_index])
     {
@@ -524,47 +512,50 @@ int skill_use(size_t attack_fighter_index)
         {
             return 0;
         }
-        enemy_index = (unsigned int)tgt;
-        temp = std::unique_ptr<Raster>(new Raster(320, 240));
-        blit(Combat.backart, temp.get(), 0, 0, 0, 0, 320, 240);
-        Draw.color_scale(temp.get(), Combat.backart, 16, 31);
-        b = fighter[attack_fighter_index].mhp / 20;
-        strcpy(attack_string, _("Rage"));
-        display_attack_string = 1;
-        tempa.stats[eStat::Attack] = fighter[attack_fighter_index].stats[eStat::Attack];
-        tempa.stats[eStat::Hit] = fighter[attack_fighter_index].stats[eStat::Hit];
-        if (fighter[enemy_index].crit == 1)
+        else
         {
-            tempa.stats[eStat::Attack] += b;
-            tempa.stats[eStat::Hit] += b;
-        }
-        Combat.fight(attack_fighter_index, enemy_index, 1);
-        if (fighter[enemy_index].IsDead())
-        {
-            for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
+            enemy_index = (unsigned int)tgt;
+            Raster temp(Combat.backart->width, Combat.backart->height);
+            Combat.backart->blitTo(&temp);
+            Draw.color_scale(&temp, Combat.backart, 16, 31);
+            b = fighter[attack_fighter_index].mhp / 20;
+            strcpy(attack_string, _("Rage"));
+            display_attack_string = 1;
+            tempa.stats[eStat::Attack] = fighter[attack_fighter_index].stats[eStat::Attack];
+            tempa.stats[eStat::Hit] = fighter[attack_fighter_index].stats[eStat::Hit];
+            if (fighter[enemy_index].crit == 1)
             {
-                if (fighter[fighter_index].IsAlive())
+                tempa.stats[eStat::Attack] += b;
+                tempa.stats[eStat::Hit] += b;
+            }
+            Combat.fight(attack_fighter_index, enemy_index, 1);
+            if (fighter[enemy_index].IsDead())
+            {
+                for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
                 {
-                    nn[next_target] = fighter_index;
-                    next_target++;
+                    if (fighter[fighter_index].IsAlive())
+                    {
+                        nn[next_target] = fighter_index;
+                        next_target++;
+                    }
+                }
+                if (next_target > 0)
+                {
+                    enemy_index = nn[kqrandom->random_range_exclusive(0, next_target)];
+                    Combat.fight(attack_fighter_index, enemy_index, 1);
                 }
             }
-            if (next_target > 0)
-            {
-                enemy_index = nn[kqrandom->random_range_exclusive(0, next_target)];
-                Combat.fight(attack_fighter_index, enemy_index, 1);
-            }
-        }
 
-        fighter[attack_fighter_index].hp -= (b * 2);
-        Combat.AdjustHealth(attack_fighter_index, b * 2);
-        display_attack_string = 0;
-        blit(temp.get(), Combat.backart, 0, 0, 0, 0, 320, 240);
-        Effects.display_amount(attack_fighter_index, FONT_DECIDE, 0);
-        if (fighter[attack_fighter_index].IsAlive() && fighter[attack_fighter_index].hp <= 0)
-        {
-            Combat.fkill(attack_fighter_index);
-            Effects.death_animation(attack_fighter_index, 0);
+            fighter[attack_fighter_index].hp -= (b * 2);
+            Combat.AdjustHealth(attack_fighter_index, b * 2);
+            display_attack_string = 0;
+            temp.blitTo(Combat.backart);
+            Effects.display_amount(attack_fighter_index, FONT_DECIDE, 0);
+            if (fighter[attack_fighter_index].IsAlive() && fighter[attack_fighter_index].hp <= 0)
+            {
+                Combat.fkill(attack_fighter_index);
+                Effects.death_animation(attack_fighter_index, 0);
+            }
         }
         break;
 
@@ -859,24 +850,24 @@ int skill_use(size_t attack_fighter_index)
                 if (check_inventory(found_item, 1) != 0)
                 {
                     sprintf(strbuf, _("%s taken!"), items[found_item].name);
-                    Draw.message(strbuf, items[found_item].icon, 0, 0, 0);
+                    Draw.message(strbuf, items[found_item].icon, 0);
                 }
             }
             else
             {
                 if (fighter[enemy_index].steal_item_common == 0 && fighter[enemy_index].steal_item_rare == 0)
                 {
-                    Draw.message(_("Nothing to steal!"), 255, 0, 0, 0);
+                    Draw.message(_("Nothing to steal!"), 255, 0);
                 }
                 else
                 {
-                    Draw.message(_("Couldn't steal!"), 255, 0, 0, 0);
+                    Draw.message(_("Couldn't steal!"), 255, 0);
                 }
             }
         }
         else
         {
-            Draw.message(_("Couldn't steal!"), 255, 0, 0, 0);
+            Draw.message(_("Couldn't steal!"), 255, 0);
         }
 #endif
         fighter[attack_fighter_index].cx = tx;

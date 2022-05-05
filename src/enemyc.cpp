@@ -709,7 +709,7 @@ void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
         iss >> fighter_loaded_from_disk.imb_a;
 
         fighter_loaded_from_disk.img =
-            std::make_shared<Raster>(fighter_loaded_from_disk.cw, fighter_loaded_from_disk.cl);
+            std::make_unique<Raster>(fighter_loaded_from_disk.cw, fighter_loaded_from_disk.cl);
         enemy_gfx->blitTo(fighter_loaded_from_disk.img.get(), imagefile_x_coord, imagefile_y_coord, 0, 0,
                           fighter_loaded_from_disk.cw, fighter_loaded_from_disk.cl);
         iss >> fighter_loaded_from_disk.imb[0];

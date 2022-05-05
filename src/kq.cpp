@@ -437,7 +437,7 @@ Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap
     return tmp;
 }
 #else
-Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char*, bool)
+Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char*)
 {
     return new Raster(bitmap_width, bitmap_height);
 }

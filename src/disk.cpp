@@ -222,20 +222,17 @@ int KDisk::load_spells_xml(KPlayer* s, XMLElement* node)
 {
     std::fill(std::begin(s->spells), std::end(s->spells), 0);
     XMLElement* spells = node->FirstChildElement(TAG_SPELLS);
-    if (spells)
+    if (spells && !spells->NoChildren())
     {
         auto values = parse_list(spells->FirstChild()->Value());
-        if (!values.empty())
+        if (values.size() == NUM_SPELLS)
         {
-            if (values.size() == NUM_SPELLS)
-            {
-                copy(values.begin(), values.end(), s->spells);
-            }
-            else
-            {
-                TRACE("Wrong number of spells, expected %d and got %zu", NUM_SPELLS, values.size());
-                Game.program_death("Error loading XML");
-            }
+            copy(values.begin(), values.end(), s->spells);
+        }
+        else
+        {
+            TRACE("Wrong number of spells, expected %d and got %zu", NUM_SPELLS, values.size());
+            Game.program_death("Error loading XML");
         }
     }
     return 0;
@@ -245,20 +242,17 @@ int KDisk::load_equipment_xml(KPlayer* s, XMLElement* node)
 {
     std::fill(std::begin(s->eqp), std::end(s->eqp), 0);
     XMLElement* eqp = node->FirstChildElement(TAG_EQUIPMENT);
-    if (eqp)
+    if (eqp && !eqp->NoChildren())
     {
         auto values = parse_list(eqp->FirstChild()->Value());
-        if (!values.empty())
+        if (values.size() == NUM_EQUIPMENT)
         {
-            if (values.size() == NUM_EQUIPMENT)
-            {
-                copy(values.begin(), values.end(), s->eqp);
-            }
-            else
-            {
-                TRACE("Wrong number of equipment, expected %d and got %zu", NUM_EQUIPMENT, values.size());
-                Game.program_death("Error loading XML");
-            }
+            copy(values.begin(), values.end(), s->eqp);
+        }
+        else
+        {
+            TRACE("Wrong number of equipment, expected %d and got %zu", NUM_EQUIPMENT, values.size());
+            Game.program_death("Error loading XML");
         }
     }
     return 0;
@@ -270,75 +264,17 @@ int KDisk::load_attributes_xml(KPlayer* s, XMLElement* node)
     if (attributes && !attributes->NoChildren())
     {
         auto vals = parse_list(attributes->FirstChild()->Value());
-        copy(vals.begin(), vals.end(), s->stats);
-        return 0;
-    }
-    else
-    {
-        // The attribute list was not formatted correctly
-        return 1;
-    }
-
-    /*XMLElement *attributes = node->FirstChildElement(TAG_ATTRIBUTES);
-    if (attributes)
-    {
-        for (auto property : children(attributes, TAG_PROPERTY))
+        if (vals.size() == eStat::NUM_STATS)
         {
-            if (property->Attribute("name", "str"))
-            {
-                s->stats[eStat::Strength] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "agi"))
-            {
-                s->stats[eStat::Agility] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "vit"))
-            {
-                s->stats[eStat::Vitality] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "int"))
-            {
-                s->stats[eStat::Intellect] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "sag"))
-            {
-                s->stats[eStat::Sagacity] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "spd"))
-            {
-                s->stats[eStat::Speed] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "aur"))
-            {
-                s->stats[eStat::Aura] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "spi"))
-            {
-                s->stats[eStat::Spirit] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "att"))
-            {
-                s->stats[eStat::Attack] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "hit"))
-            {
-                s->stats[eStat::Hit] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "def"))
-            {
-                s->stats[eStat::Defense] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "evd"))
-            {
-                s->stats[eStat::Evade] = property->IntAttribute("value");
-            }
-            else if (property->Attribute("name", "mag"))
-            {
-                s->stats[eStat::MagicDefense] = property->IntAttribute("value");
-            }
+            copy(vals.begin(), vals.end(), s->stats);
+        }
+        else
+        {
+            TRACE("Wrong number of stats, expected %d and got %zu", eStat::NUM_STATS, vals.size());
+            Game.program_death("Error loading XML");
         }
     }
-    return 0;*/
+    return 0;
 }
 
 int KDisk::load_core_properties_xml(KPlayer* s, XMLElement* node)
@@ -510,18 +446,10 @@ int KDisk::store_lup_xml(const KPlayer* s, XMLElement* node)
     return 0;
 }
 
-struct cstring_less
-{
-    bool operator()(const char* const& a, const char* const& b) const
-    {
-        return strcmp(a, b) < 0;
-    }
-};
-
-static const std::map<const char*, ePIDX, cstring_less> id_lookup = { { "sensar", SENSAR },     { "sarina", SARINA },
-                                                                      { "corin", CORIN },       { "ajathar", AJATHAR },
-                                                                      { "casandra", CASANDRA }, { "temmin", TEMMIN },
-                                                                      { "ayla", AYLA },         { "noslom", NOSLOM } };
+static const std::map<std::string, ePIDX> id_lookup = { { "sensar", SENSAR },     { "sarina", SARINA },
+                                                        { "corin", CORIN },       { "ajathar", AJATHAR },
+                                                        { "casandra", CASANDRA }, { "temmin", TEMMIN },
+                                                        { "ayla", AYLA },         { "noslom", NOSLOM } };
 
 /** Store player inside a node that you supply.
  */
@@ -536,7 +464,7 @@ int KDisk::save_player_xml(const KPlayer* s, XMLElement* node)
     {
         if (entry.second == pid)
         {
-            hero->SetAttribute("id", entry.first);
+            hero->SetAttribute("id", entry.first.c_str());
             break;
         }
     }
