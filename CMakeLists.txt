@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
+include(FindPkgConfig)
 
 project(kq-fork)
 
@@ -9,6 +10,7 @@ find_package(Lua REQUIRED)
 find_package(DUMB REQUIRED)
 find_package(PNG REQUIRED)
 find_package(ZLIB REQUIRED)
+pkg_check_modules(SDL2_mixer REQUIRED SDL2_mixer)
 
 find_library(TINYXML2 tinyxml2)
 
@@ -24,7 +26,7 @@ if(DUMB_FOUND)
 	message(STATUS "DUMB found at ${DUMB_INCLUDE_DIR}")
 endif(DUMB_FOUND)
 
-include_directories( ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS})
+include_directories( ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${SDL2_mixer_INCLUDE_DIRS})
 add_definitions(${PNG_DEFINITIONS})
 set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
 set(KQ_CHEATS 1 CACHE BOOL "Features for allowing Lua script cheats in game")
@@ -60,7 +62,7 @@ set(kq-fork_SRCS
 	src/masmenu.cpp
 	src/menu.cpp
 	src/movement.cpp
-	src/music.cpp
+	src/music_mix.cpp
 	src/player.cpp
 	src/random.cpp
 	src/res.cpp
@@ -86,6 +88,7 @@ add_executable(kq-fork ${kq-fork_SRCS})
 target_link_libraries(kq-fork
 	${LUA_LIBRARY}
 	${SDL2_LIBRARIES}
+	${SDL2_mixer_LINK_LIBRARIES}
 	${DUMB_LIBRARIES}
 	${TINYXML2}
 	${M_LIB}

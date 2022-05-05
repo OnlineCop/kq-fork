@@ -31,7 +31,7 @@
  * timing.
  *
  * \note 23: I don't know if we're going to do anything to lessen the number of
- * globals, but I tried to lay them out as attractivly as possible until we
+ * globals, but I tried to lay them out as attractively as possible until we
  * figure out what all of them are for. Plus I tried to keep everything below
  * 80 characters a line, and labels what few variables struck me as obvious
  *
@@ -40,6 +40,7 @@
  */
 
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <cassert>
 #include <clocale>
 #include <cstdio>
@@ -943,12 +944,11 @@ int _cycle = 0;
 int main(int argc, const char* argv[])
 {
     int stop, game_on, skip_splash;
-    size_t i;
 
     setlocale(LC_ALL, "");
 
     skip_splash = 0;
-    for (i = 1; i < (size_t)argc; i++)
+    for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-nosplash") || !strcmp(argv[i], "--nosplash"))
         {
@@ -1276,7 +1276,7 @@ void KGame::startup(void)
     int p, i, q;
     time_t t;
 
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER | SDL_INIT_AUDIO);
 
     /* Buffers to allocate */
     strbuf = (char*)malloc(4096);
@@ -1288,12 +1288,10 @@ void KGame::startup(void)
 
     start_timer(KQ_TICKS);
 
-    /* KQ uses digi sound but it doesn't use MIDI */
-    //   reserve_voices (8, 0);
-    sound_avail = false; // TODO (install_sound(DIGI_AUTODETECT, MIDI_NONE, NULL) < 0 ? 0 : 1);
+    sound_avail = Mix_Init(MIX_INIT_MOD) != 0;
     if (!sound_avail)
     {
-        printf(_("Error with sound: %s\n"), "NOT IMPLEMENTED" /* TODO allegro_error*/);
+        printf(_("Error with sound: %s\n"), Mix_GetError());
     }
     parse_setup();
     sound_init();

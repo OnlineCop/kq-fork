@@ -632,22 +632,11 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
     return cv;
 }
 
-#if (ALLEGRO_VERSION >= 4 && ALLEGRO_SUB_VERSION >= 2)
-// TT: Already defined in setup.h
-// #define kq_keyname scancode_to_name
-#else
 const char* kq_keyname(int scancode)
 {
-    if (scancode >= 0 && scancode < (signed)N_KEYNAMES)
-    {
-        return keynames[scancode];
-    }
-    else
-    {
-        return "???";
-    }
+    auto kc = SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode));
+    return SDL_GetKeyName(kc);
 }
-#endif
 
 /*! \brief Load sample files
  * \author JB
@@ -679,6 +668,8 @@ static int load_samples(void)
     {
         return 1;
     }
+    // TODO HACK
+    return 0;
     string sound_datafile(kqres(DATA_DIR, "kqsnd.dat"));
     for (index = 0; index < MAX_SAMPLES; index++)
     {

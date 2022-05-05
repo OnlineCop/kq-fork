@@ -53,9 +53,6 @@ extern char slow_computer;
  * For previous versions, we must emulate that function
  * with our own table of keynames
  */
-#if (ALLEGRO_VERSION >= 4 && ALLEGRO_SUB_VERSION >= 2)
-#define kq_keyname scancode_to_name
-#else
 
 /*! Look up table of names for keys */
 static const char* keynames[] = {
@@ -76,4 +73,3 @@ static const char* keynames[] = {
 
 #define N_KEYNAMES (sizeof(keynames) / sizeof(*keynames))
 const char* kq_keyname(int);
-#endif
