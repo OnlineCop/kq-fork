@@ -30,6 +30,7 @@
 #include "kq.h"
 #include "music.h"
 #include <SDL.h>
+#include <cassert>
 
 static SDL_TimerID timer_id = 0;
 static int watchdog;
@@ -74,8 +75,8 @@ void stop_timer()
 }
 void kq_wait(long dt)
 {
-    auto finish_time = SDL_GetTicks64() + dt;
-    while (SDL_GetTicks64() < finish_time)
+    auto finish_time = SDL_GetTicks() + dt;
+    while (!SDL_TICKS_PASSED(SDL_GetTicks(), finish_time))
     {
         Game.ProcessEvents();
     }

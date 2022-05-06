@@ -120,12 +120,12 @@ void KDraw::blit2screen()
 {
     static int frame_count = 0;
     static char fbuf[16] = "---";
-    static Uint64 start_time = 0;
+    static Uint32 start_time = 0;
     if (show_frate)
     {
         ++frame_count;
-        Uint64 now = SDL_GetTicks64();
-        if (now - start_time >= 2000)
+        auto now = SDL_GetTicks();
+        if (SDL_TICKS_PASSED(now, start_time + 2000))
         {
             int frate = (1000 * frame_count + 500) / (now - start_time);
             start_time = now;

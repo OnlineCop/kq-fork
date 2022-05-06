@@ -769,15 +769,16 @@ void KCombat::do_round(void)
 {
     size_t a;
     size_t fighter_index;
-    Uint64 start = SDL_GetTicks64();
+    int now = 0;
+    int next = Game.KQ_TICKS / 10;
 
     while (combatend == eCombatResult::StillFighting)
     {
-        Uint64 now = SDL_GetTicks64();
         Game.ProcessEvents();
-        if (now >= start + 100)
+        ++now;
+        if (now >= next)
         {
-            start = now;
+            next = now + Game.KQ_TICKS / 10;
             RemainingBattleCounter += BATTLE_INC;
 
             if (RemainingBattleCounter >= ROUND_MAX)

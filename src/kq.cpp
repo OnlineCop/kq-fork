@@ -1661,6 +1661,9 @@ bool KGame::ProcessEvents()
                 wait_timer = false;
                 timer_count += 3;
                 break;
+            case SDL_QUIT:
+                Game.program_death("SDL quit");
+                break;
             default: // TODO all other events
                 break;
             }
@@ -1674,11 +1677,12 @@ bool KGame::ProcessEvents()
 void KGame::SetGameTime(const KTime& t)
 {
     game_time = t.total_seconds();
-    game_start_ticks = SDL_GetTicks64();
+    game_start_ticks = SDL_GetTicks();
 }
 KTime KGame::GetGameTime() const
 {
-    int elapsed = (SDL_GetTicks64() - game_start_ticks) / 1000;
+    // TODO this will go badly wrong after 49 days!
+    int elapsed = (SDL_GetTicks() - game_start_ticks) / 1000;
     return { game_time + elapsed };
 }
 /*! \mainpage KQ - The Classic Computer Role-Playing Game

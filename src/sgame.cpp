@@ -487,15 +487,12 @@ void KSaveGame::show_sgstats(int saving)
 }
 static void show_splash_screen()
 {
-    Uint64 ticks;
     Raster* splash = get_cached_image("kqt.png");
     auto staff = std::make_unique<Raster>(72, 226);
     auto dudes = std::make_unique<Raster>(112, 112);
     auto tdudes = std::make_unique<Raster>(112, 112);
     blit(splash, staff.get(), 0, 7, 0, 0, 72, 226);
     blit(splash, dudes.get(), 80, 0, 0, 0, 112, 112);
-    auto now = SDL_GetTicks64();
-    ticks = now;
     double_buffer->fill(0x000000);
     blit(staff.get(), double_buffer, 0, 0, 124, 22, 72, 226);
     Draw.blit2screen();
@@ -549,17 +546,17 @@ int KSaveGame::start_menu(bool skip_splash)
         Draw.blit2screen();
         set_palette(pal);
         int fade_color = 0;
-        auto start_time = SDL_GetTicks64();
+        auto start_time = SDL_GetTicks();
         while (fade_color < 16)
         {
-            auto now = SDL_GetTicks64();
+            auto now = SDL_GetTicks();
             if (Game.ProcessEvents())
             {
                 clear_to_color(double_buffer, 15 - fade_color);
                 masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), eSize::SCREEN_W, 124);
                 Draw.blit2screen();
             }
-            if (now - start_time > 100)
+            if (SDL_TICKS_PASSED(now, start_time + 100))
             {
                 start_time = now;
                 ++fade_color;

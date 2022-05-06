@@ -58,11 +58,11 @@ void KPlayerInput::readcontrols()
     /* PH modified - need to hold down for 0.50 sec */
     if (key[SDL_SCANCODE_LALT] && key[SDL_SCANCODE_X])
     {
-        Uint64 kill_time = SDL_GetTicks64() + 500;
+        auto kill_time = SDL_GetTicks() + 500;
 
         while (key[SDL_SCANCODE_LALT] && key[SDL_SCANCODE_X])
         {
-            if (SDL_GetTicks64() >= kill_time)
+            if (SDL_TICKS_PASSED(SDL_GetTicks(), kill_time))
             {
                 /* Pressed, now wait for release */
 
