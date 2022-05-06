@@ -54,7 +54,7 @@ static string lib_dir;
  * \param file The filename
  * \returns the combined path
  */
-const string get_resource_file_path(const string str1, const string str2, const string file)
+const string get_resource_file_path(const string& str1, const string& str2, const string& file)
 {
     string slash("/");
     string tail = str2.empty() ? slash + file : slash + str2 + slash + file;
@@ -82,7 +82,7 @@ const string get_resource_file_path(const string str1, const string str2, const 
  * \param file The filename
  * \returns the combined path
  */
-const string get_lua_file_path(const string str1, const string file)
+const string get_lua_file_path(const string& str1, const string& file)
 {
     string ans;
     string scripts("/scripts/");
@@ -122,7 +122,7 @@ const string get_lua_file_path(const string str1, const string file)
  * \param   file File name below that directory.
  * \returns the combined path
  */
-const string kqres(enum eDirectories dir, const string file)
+const string kqres(enum eDirectories dir, const string& file)
 {
     if (!init_path)
     {
@@ -157,23 +157,18 @@ const string kqres(enum eDirectories dir, const string file)
     }
     switch (dir)
     {
-    case DATA_DIR:
+    case eDirectories::DATA_DIR:
         return get_resource_file_path(data_dir, "data", file);
-        break;
-    case MUSIC_DIR:
+    case eDirectories::MUSIC_DIR:
         return get_resource_file_path(data_dir, "music", file);
-        break;
-    case MAP_DIR:
+    case eDirectories::MAP_DIR:
         return get_resource_file_path(data_dir, "maps", file);
-        break;
-    case SAVE_DIR:
-    case SETTINGS_DIR:
+    case eDirectories::SAVE_DIR:
+    case eDirectories::SETTINGS_DIR:
         return get_resource_file_path(user_dir, "", file);
-        break;
-    case SCRIPT_DIR:
+    case eDirectories::SCRIPT_DIR:
         return get_lua_file_path(lib_dir, file);
-        break;
     default:
-        return NULL;
+        return nullptr;
     }
 }

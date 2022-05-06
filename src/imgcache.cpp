@@ -174,11 +174,11 @@ static Raster* bmp_from_png(const string& path)
 Raster* RasterLoader::operator()(const std::string& name)
 {
     // Not found, try to load
-    Raster* bmp = bmp_from_png(kqres(DATA_DIR, name));
+    Raster* bmp = bmp_from_png(kqres(eDirectories::DATA_DIR, name));
     if (!bmp)
     {
         // Try also in maps because it may be a tileset graphic
-        bmp = bmp_from_png(kqres(MAP_DIR, name));
+        bmp = bmp_from_png(kqres(eDirectories::MAP_DIR, name));
     }
     if (!bmp)
     {

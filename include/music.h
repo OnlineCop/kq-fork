@@ -22,11 +22,6 @@
 #pragma once
 
 #include <string>
-using std::string;
-
-/* ML: include aldumb.h here, because other modules really don't know that
-   we are using dumb, and it doesn't make sense to have to include aldumb
-   individually */
 
 class KMusic
 {
@@ -38,10 +33,11 @@ class KMusic
     void set_music_volume(float volume);
     void set_volume(float vol, int);
 
-    void play_music(const string& music_name, long position);
+    void play_music(const std::string& music_name, long position);
     void pause_music(void);
     void resume_music(void);
     void stop_music(void);
+    void* get_sample(const std::string&);
     void play_effect(int, int);
     void play_sample(void*, int, int, int, int);
 };

@@ -28,9 +28,8 @@
  */
 
 #include <string>
-using std::string;
 
-enum eDirectories
+enum class eDirectories
 {
     DATA_DIR = 0,
     MAP_DIR = 1,
@@ -43,9 +42,7 @@ enum eDirectories
 /* Get the directory for application data (music, gfx, etc.)
    or user data (screenshots, prefs, saved games)
  */
-const string kqres(enum eDirectories, const string);
+const string kqres(enum eDirectories, const std::string&);
 
-const string get_lua_file_path(const string, const string);
-const string get_resource_file_path(const string, const string, const string);
-
-#define maybe_poll_joystick poll_joystick
+const string get_lua_file_path(const std::string&, const std::string&);
+const string get_resource_file_path(const std::string&, const std::string&, const std::string&);

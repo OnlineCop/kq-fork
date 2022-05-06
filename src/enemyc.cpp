@@ -613,8 +613,8 @@ void KEnemy::LoadEnemies()
         return;
     }
 
-    LoadEnemies(kqres(DATA_DIR, "allstat.mon"), enemy_gfx);
-    LoadEnemyStats(kqres(DATA_DIR, "resabil.mon"));
+    LoadEnemies(kqres(eDirectories::DATA_DIR, "allstat.mon"), enemy_gfx);
+    LoadEnemyStats(kqres(eDirectories::DATA_DIR, "resabil.mon"));
 }
 
 void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)

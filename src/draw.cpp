@@ -111,7 +111,7 @@ void KDraw::set_window(SDL_Window* _window)
     window = _window;
     Uint32 pix = SDL_GetWindowPixelFormat(window);
     // Take the first renderer we can get
-    renderer = SDL_CreateRenderer(window, -1, 0);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
     texture = SDL_CreateTexture(renderer, pix, SDL_TEXTUREACCESS_STREAMING, SCREEN_W, SCREEN_H);
     format = SDL_AllocFormat(pix);
 }

@@ -74,7 +74,7 @@ void KTiledMap::load_tmx(const string& name)
 {
     XMLDocument tmx;
     string path = name + string(".tmx");
-    tmx.LoadFile(kqres(MAP_DIR, path).c_str());
+    tmx.LoadFile(kqres(eDirectories::MAP_DIR, path).c_str());
     if (tmx.Error())
     {
 #ifdef WIN32
@@ -498,7 +498,7 @@ KTmxTileset KTiledMap::load_tmx_tileset(XMLElement const* el)
     if (source)
     {
         // Specified 'source' so it's an external tileset. Load it.
-        sourcedoc.LoadFile(kqres(MAP_DIR, source).c_str());
+        sourcedoc.LoadFile(kqres(eDirectories::MAP_DIR, source).c_str());
         if (sourcedoc.Error())
         {
 #ifdef WIN32

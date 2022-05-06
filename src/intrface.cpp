@@ -607,7 +607,7 @@ void do_luacheat(void)
     /* kqres might return null if the cheat file doesn't exist.
      * in that case, just do a no-op.
      */
-    cheatfile = kqres(SCRIPT_DIR, "cheat");
+    cheatfile = kqres(eDirectories::SCRIPT_DIR, "cheat");
     if (cheatfile.empty())
     {
         return;
@@ -666,14 +666,14 @@ void do_luainit(const char* fname, int global)
     oldtop = lua_gettop(theL);
     if (global)
     {
-        if (lua_dofile(theL, kqres(SCRIPT_DIR, "global").c_str()) != 0)
+        if (lua_dofile(theL, kqres(eDirectories::SCRIPT_DIR, "global").c_str()) != 0)
         {
             /* lua_dofile already displayed error message */
             Game.program_death(strbuf);
         }
     }
 
-    if (lua_dofile(theL, kqres(SCRIPT_DIR, fname).c_str()) != 0)
+    if (lua_dofile(theL, kqres(eDirectories::SCRIPT_DIR, fname).c_str()) != 0)
     {
         /* lua_dofile already displayed error message */
         Game.program_death(strbuf);

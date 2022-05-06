@@ -46,7 +46,16 @@ struct Mix_MusicDeleter
         Mix_FreeMusic(m);
     }
 };
-/* private variables */
+struct Mix_ChunkLoader
+{
+    Mix_Chunk* operator()(const std::string&);
+};
+struct Mix_ChunkDeleter
+{
+    void operator()(Mix_Chunk*);
+};
+
+static Cache<Mix_Chunk, Mix_ChunkLoader, Mix_ChunkDeleter> sample_cache;
 
 static Cache<Mix_Music, Mix_MusicLoader, Mix_MusicDeleter> music_cache;
 static Mix_Music* music = nullptr;
@@ -158,8 +167,9 @@ void KMusic::resume_music(void)
 void KMusic::play_effect(int, int)
 {
 }
-void KMusic::play_sample(void*, int, int, int, int)
+void KMusic::play_sample(void* chunk, int, int, int, int)
 {
+    Mix_PlayChannel(-1, reinterpret_cast<Mix_Chunk*>(chunk), 0);
 }
 void KMusic::set_volume(float, int)
 {
@@ -168,6 +178,19 @@ KMusic Music;
 
 Mix_Music* Mix_MusicLoader::operator()(const std::string& music_name)
 {
-    auto mpath = kqres(MUSIC_DIR, music_name);
+    auto mpath = kqres(eDirectories::MUSIC_DIR, music_name);
     return Mix_LoadMUS(mpath.c_str());
+}
+Mix_Chunk* Mix_ChunkLoader::operator()(const std::string& name)
+{
+    auto path = kqres(eDirectories::DATA_DIR, name);
+    return Mix_LoadWAV(name.c_str());
+}
+void Mix_ChunkDeleter::operator()(Mix_Chunk* chunk)
+{
+    Mix_FreeChunk(chunk);
+}
+void* KMusic::get_sample(const string& s)
+{
+    return sample_cache.get(kqres(eDirectories::DATA_DIR, s));
 }

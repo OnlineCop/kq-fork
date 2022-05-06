@@ -153,7 +153,7 @@ void KSaveGame::delete_game(void)
     int pointer_offset = (save_ptr - top_pointer) * 48;
 
     sprintf(strbuf, "sg%d.sav", save_ptr);
-    remove_result = remove(kqres(SAVE_DIR, strbuf).c_str());
+    remove_result = remove(kqres(eDirectories::SAVE_DIR, strbuf).c_str());
     if (remove_result == 0)
     {
         Draw.menubox(double_buffer, 128, pointer_offset + 12, 12, 1, DARKBLUE);
@@ -193,7 +193,7 @@ void KSaveGame::delete_game(void)
 int KSaveGame::load_game(void)
 {
     sprintf(strbuf, "sg%d.xml", save_ptr);
-    Disk.load_game_from_file(kqres(SAVE_DIR, strbuf).c_str());
+    Disk.load_game_from_file(kqres(eDirectories::SAVE_DIR, strbuf).c_str());
     hold_fade = 0;
     Game.change_map(Game.GetCurmap(), g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
     /* Set music and sound volume */
@@ -214,7 +214,7 @@ void KSaveGame::load_sgstats(void)
     {
         char buf[32];
         sprintf(buf, "sg%u.xml", sg);
-        string path = kqres(SAVE_DIR, string(buf));
+        string path = kqres(eDirectories::SAVE_DIR, string(buf));
         s_sgstats& stats = savegame[sg];
         if (Disk.exists(path.c_str()) && (Disk.load_stats_only(path.c_str(), stats) != 0))
         {
@@ -233,7 +233,7 @@ void KSaveGame::load_sgstats(void)
 int KSaveGame::save_game(void)
 {
     sprintf(strbuf, "sg%d.xml", save_ptr);
-    int rc = Disk.save_game_to_file(kqres(SAVE_DIR, strbuf).c_str());
+    int rc = Disk.save_game_to_file(kqres(eDirectories::SAVE_DIR, strbuf).c_str());
     if (rc)
     {
         savegame[save_ptr] = s_sgstats::get_current();

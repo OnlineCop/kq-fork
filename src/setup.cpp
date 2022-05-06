@@ -33,6 +33,7 @@
 #include "disk.h"
 #include "draw.h"
 #include "gfx.h"
+#include "imgcache.h"
 #include "input.h"
 #include "kq.h"
 #include "music.h"
@@ -41,8 +42,7 @@
 #include "settings.h"
 #include "timing.h"
 #include <SDL.h>
-#include <cstdio>
-#include <cstring>
+#include <SDL_mixer.h>
 #include <string>
 
 using eSize::SCREEN_H;
@@ -57,7 +57,6 @@ char debugging = 0;
 char slow_computer = 0;
 
 /*  Internal variables  */
-/* TODO */
 static void* sfx[MAX_SAMPLES];
 
 /*  Internal functions  */
@@ -159,7 +158,7 @@ void config_menu(void)
 
     Game.unpress();
     Config.push_config_state();
-    Config.set_config_file(kqres(SETTINGS_DIR, "kq.cfg").c_str());
+    Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str());
     while (!stop)
     {
         Game.ProcessEvents();
@@ -637,6 +636,16 @@ const char* kq_keyname(int scancode)
     auto kc = SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode));
     return SDL_GetKeyName(kc);
 }
+struct Mix_ChunkLoader
+{
+    Mix_Chunk* operator()(const std::string&);
+};
+struct Mix_ChunkDeleter
+{
+    void operator()(Mix_Chunk*);
+};
+
+static Cache<Mix_Chunk, Mix_ChunkLoader, Mix_ChunkDeleter> sample_cache;
 
 /*! \brief Load sample files
  * \author JB
@@ -653,29 +662,23 @@ const char* kq_keyname(int scancode)
  */
 static int load_samples(void)
 {
-    const char* sndfiles[MAX_SAMPLES] = { "WHOOSH_WAV",   "MENUMOVE_WAV", "BAD_WAV",     "ITEM_WAV",     "EQUIP_WAV",
-                                          "DEEQUIP_WAV",  "BUYSELL_WAV",  "TWINKLE_WAV", "SCORCH_WAV",   "POISON_WAV",
-                                          "CHOP_WAV",     "SLASH_WAV",    "STAB_WAV",    "HIT_WAV",      "ICE_WAV",
-                                          "WIND_WAV",     "QUAKE_WAV",    "BLACK_WAV",   "WHITE_WAV",    "BOLT1_WAV",
-                                          "FLOOD_WAV",    "HURT_WAV",     "BMAGIC_WAV",  "SHIELD_WAV",   "KILL_WAV",
-                                          "DOOROPEN_WAV", "DOOR2_WAV",    "STAIRS_WAV",  "TELEPORT_WAV", "CURE_WAV",
-                                          "RECOVER_WAV",  "ARROW_WAV",    "BOLT2_WAV",   "BOLT3_WAV",    "FLAME_WAV",
-                                          "BLIND_WAV",    "INN_WAV",      "CONFUSE_WAV", "DISPEL_WAV",   "DOOM_WAV",
-                                          "DRAIN_WAV",    "GAS_WAV",      "EXPLODE_WAV" };
-    size_t index;
-
+    static const char* sndfiles[MAX_SAMPLES] = {
+        "whoosh.wav",   "menumove.wav", "bad.wav",     "item.wav",   "equip.wav",    "deequip.wav", "buysell.wav",
+        "twinkle.wav",  "scorch.wav",   "poison.wav",  "chop.wav",   "slash.wav",    "stab.wav",    "hit.wav",
+        "ice.wav",      "wind.wav",     "quake.wav",   "black.wav",  "white.wav",    "bolt1.wav",   "flood.wav",
+        "hurt.wav",     "bmagic.wav",   "shield.wav",  "kill.wav",   "dooropen.wav", "door2.wav",   "stairs.wav",
+        "teleport.wav", "cure.wav",     "recover.wav", "arrow.wav",  "bolt2.wav",    "bolt3.wav",   "flame.wav",
+        "blind.wav",    "inn.wav",      "confuse.wav", "dispel.wav", "doom.wav",     "drain.wav",   "gas.wav",
+        "explode.wav"
+    };
     if (is_sound == 0)
     {
         return 1;
     }
-    // TODO HACK
-    return 0;
-    string sound_datafile(kqres(DATA_DIR, "kqsnd.dat"));
-    for (index = 0; index < MAX_SAMPLES; index++)
+    for (int index = 0; index < MAX_SAMPLES; index++)
     {
-        // TODO
-        sfx[index] = nullptr; // load_datafile_object(sound_datafile.c_str(), sndfiles[index]);
-        if (sfx[index] == NULL)
+        sfx[index] = Music.get_sample(sndfiles[index]);
+        if (!sfx[index])
         {
             sprintf(strbuf, _("Error loading .WAV file: %s.\n"), sndfiles[index]);
             Game.klog(strbuf);
@@ -694,7 +697,7 @@ static int load_samples(void)
  */
 static void parse_allegro_setup(void)
 {
-    const string cfg = kqres(SETTINGS_DIR, "kq.cfg").c_str();
+    const string cfg = kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str();
 
     if (!Disk.exists(cfg.c_str()))
     {
@@ -702,7 +705,7 @@ static void parse_allegro_setup(void)
         /* Transitional code */
         parse_jb_setup();
         Config.push_config_state();
-        Config.set_config_file(kqres(SETTINGS_DIR, "kq.cfg").c_str());
+        Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str());
 
         Config.set_config_int(NULL, "skip_intro", skip_intro);
         Config.set_config_int(NULL, "windowed", windowed);
@@ -793,7 +796,7 @@ static void parse_jb_setup(void)
     PlayerInput.jbenter = 2;
     PlayerInput.jbesc = 3;
     /* PH Why in the world doesn't he use Allegro cfg functions here? */
-    if (!(s = fopen(kqres(SETTINGS_DIR, "setup.cfg").c_str(), "r")))
+    if (!(s = fopen(kqres(eDirectories::SETTINGS_DIR, "setup.cfg").c_str(), "r")))
     {
         Game.klog(_("Could not open saves/setup.cfg - Using defaults."));
         return;
@@ -940,22 +943,17 @@ void parse_setup(void)
  */
 void play_effect(int efc, int panning)
 {
-    int a, s;
     static const int bx[8] = { -1, 0, 1, 0, -1, 0, 1, 0 };
     static const int by[8] = { -1, 0, 1, 0, 1, 0, -1, 0 };
     static const int sc[] = { 1, 2, 3, 5, 3, 3, 3, 2, 1 };
-    void* samp;
+    void* samp = nullptr;
     PALETTE whiteout, old;
 
     /* Patch provided by mattrope: */
     /* sfx array is empty if sound is not initialized */
-    if (is_sound != 0)
+    if (is_sound)
     {
         samp = sfx[efc];
-    }
-    else
-    {
-        samp = NULL; /* PH not strictly needed but I added it */
     }
 
     switch (efc)
@@ -970,11 +968,10 @@ void play_effect(int efc, int panning)
         fullblit(double_buffer, fx_buffer);
 
         if (samp)
-        { /* TODO
-             play_sample(samp, gsvol, panning, 1000, 0);
-      */
+        {
+            Music.play_sample(samp, gsvol, panning, 1000, 0);
         }
-        for (a = 0; a < 8; a++)
+        for (int a = 0; a < 8; a++)
         {
             blit(fx_buffer, double_buffer, 0, 0, bx[a], by[a], SCREEN_W, SCREEN_H);
             Draw.blit2screen();
@@ -986,17 +983,17 @@ void play_effect(int efc, int panning)
         fullblit(double_buffer, fx_buffer);
         clear_bitmap(double_buffer);
         get_palette(old);
-        for (a = 0; a < 256; ++a)
+        for (int a = 0; a < 256; ++a)
         {
-            s = (old[a].r + old[a].g + old[a].b) > 40 ? 0 : 63;
+            int s = (old[a].r + old[a].g + old[a].b) > 40 ? 0 : 63;
             whiteout[a].r = whiteout[a].g = whiteout[a].b = s;
         }
-        blit(fx_buffer, double_buffer, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
+        fullblit(fx_buffer, double_buffer);
         if (samp)
         {
             Music.play_sample(samp, gsvol, panning, 1000, 0);
         }
-        for (s = 0; s < (int)(sizeof(sc) / sizeof(*sc)); ++s)
+        for (int s = 0; s < (int)(sizeof(sc) / sizeof(*sc)); ++s)
         {
             if (s == 1)
             {
@@ -1007,9 +1004,9 @@ void play_effect(int efc, int panning)
                 set_palette(old);
             }
 
-            for (a = 0; a < 8; a++)
+            for (int a = 0; a < 8; a++)
             {
-                blit(fx_buffer, double_buffer, 0, 0, bx[a], by[a], SCREEN_W, SCREEN_H);
+                blit(fx_buffer, double_buffer, 0, 0, bx[a] * sc[s], by[a] * sc[s], SCREEN_W, SCREEN_H);
                 Draw.blit2screen();
                 kq_wait(10);
             }
@@ -1026,13 +1023,6 @@ void play_effect(int efc, int panning)
  */
 void set_graphics_mode(void)
 {
-    // set_color_depth(8);
-    int card = 0; // GFX_AUTODETECT_WINDOWED;
-    if (windowed != 1)
-    {
-        card = 1; // GFX_AUTODETECT;
-    }
-    (void)card;
     int w = eSize::SCALED_SCREEN_W;
     int h = eSize::SCALED_SCREEN_H;
     if (!should_stretch_view)
@@ -1071,7 +1061,7 @@ void show_help(void)
     Game.unpress();
 }
 
-/*! \brief Initialize sound system
+/*! \brief Initialize or shutdown sound system
  * \author JB
  * \date ????????
  * \remark On entry is_sound=1 to initialize,
@@ -1092,7 +1082,6 @@ void sound_init(void)
     switch (is_sound)
     {
     case 1:
-        /* set_volume_per_voice (2); */
         Music.init_music();
         is_sound = load_samples() ? 0 : 2; /* load the wav files */
         break;
