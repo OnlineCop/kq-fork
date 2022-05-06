@@ -27,6 +27,7 @@
  */
 
 #include "disk.h"
+#include "imgcache.h"
 #include "kq.h"
 #include "music.h"
 #include "platform.h"
@@ -34,9 +35,22 @@
 #include <string>
 
 /* SDL version of music */
-
+struct Mix_MusicLoader
+{
+    Mix_Music* operator()(const std::string&);
+};
+struct Mix_MusicDeleter
+{
+    void operator()(Mix_Music* m)
+    {
+        Mix_FreeMusic(m);
+    }
+};
 /* private variables */
+
+static Cache<Mix_Music, Mix_MusicLoader, Mix_MusicDeleter> music_cache;
 static Mix_Music* music = nullptr;
+
 /*! \brief Initiate music player (SDL2_Mixer)
  *
  * Initializes the music players. Must be called before any other
@@ -57,6 +71,7 @@ void KMusic::init_music(void)
  */
 void KMusic::shutdown_music(void)
 {
+    music_cache.clear();
     Mix_CloseAudio();
 }
 
@@ -102,12 +117,9 @@ void KMusic::play_music(const std::string& music_name, long)
         {
             Game.ProcessEvents();
         }
-        Mix_FreeMusic(music);
         music = nullptr;
     }
-    auto mpath = kqres(MUSIC_DIR, music_name);
-    music = Mix_LoadMUS(mpath.c_str());
-    Mix_PlayMusic(music, -1);
+    Mix_PlayMusic(music_cache.get(music_name), -1);
 }
 
 /*! \brief Stop the music  (SDL2_Mixer))
@@ -118,11 +130,8 @@ void KMusic::play_music(const std::string& music_name, long)
  */
 void KMusic::stop_music(void)
 {
-    if (music)
-    {
-        Mix_FreeMusic(music);
-        music = nullptr;
-    }
+    Mix_HaltMusic();
+    music = nullptr;
 }
 
 /*! \brief Pauses the current music file  (SDL2_Mixer))
@@ -156,3 +165,9 @@ void KMusic::set_volume(float, int)
 {
 }
 KMusic Music;
+
+Mix_Music* Mix_MusicLoader::operator()(const std::string& music_name)
+{
+    auto mpath = kqres(MUSIC_DIR, music_name);
+    return Mix_LoadMUS(mpath.c_str());
+}
