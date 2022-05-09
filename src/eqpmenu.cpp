@@ -152,7 +152,7 @@ static void choose_equipment(int c, int slot)
 
         PlayerInput.readcontrols();
 
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             if (yptr == 15)
@@ -172,7 +172,7 @@ static void choose_equipment(int c, int slot)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             if (yptr == 0)
@@ -189,7 +189,7 @@ static void choose_equipment(int c, int slot)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             if (equip(pidx[c], t_inv[pptr + yptr], 0) == 1)
@@ -202,7 +202,7 @@ static void choose_equipment(int c, int slot)
                 play_effect(SND_BAD, 128);
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             stop = 1;
@@ -577,7 +577,7 @@ void equip_menu(uint32_t c)
 
         if (sl == 1)
         {
-            if (PlayerInput.left)
+            if (PlayerInput.left())
             {
                 Game.unpress();
                 eqp_act--;
@@ -587,7 +587,7 @@ void equip_menu(uint32_t c)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (PlayerInput.right)
+            if (PlayerInput.right())
             {
                 Game.unpress();
                 eqp_act++;
@@ -600,7 +600,7 @@ void equip_menu(uint32_t c)
         }
         else
         {
-            if (PlayerInput.down)
+            if (PlayerInput.down())
             {
                 Game.unpress();
                 yptr++;
@@ -610,7 +610,7 @@ void equip_menu(uint32_t c)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (PlayerInput.up)
+            if (PlayerInput.up())
             {
                 Game.unpress();
                 yptr--;
@@ -621,7 +621,7 @@ void equip_menu(uint32_t c)
                 play_effect(SND_CLICK, 128);
             }
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             if (sl == 1)
@@ -679,7 +679,7 @@ void equip_menu(uint32_t c)
                 }
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             if (sl == 0)

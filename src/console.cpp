@@ -40,9 +40,14 @@ static struct console_state
 {
 #define CONSOLE_LINES 25
     char* lines[CONSOLE_LINES];
+    int cur_line;
     char inputline[80];
     int cursor;
-    int on;
+    int blink;
+    bool on;
+    void init();
+    void display();
+    void scroll(const char*);
 } g_console;
 
 enum eRunConsoleKeys
@@ -61,15 +66,14 @@ enum eRunConsoleKeys
  * Set up the global state ready for using the console
  * \author PH
  */
-void init_console(void)
+void console_state::init()
 {
-    size_t console_line;
-
-    g_console.cursor = 0;
-    g_console.on = 0;
-    for (console_line = 0; console_line < CONSOLE_LINES; ++console_line)
+    cursor = 0;
+    on = false;
+    blink = 0;
+    for (int console_line = 0; console_line < CONSOLE_LINES; ++console_line)
     {
-        g_console.lines[console_line] = NULL;
+        lines[console_line] = NULL;
     }
 }
 
@@ -79,34 +83,36 @@ void init_console(void)
  * buffer. This includes a horizontal line. The console takes
  * up 320x120 pixels.
  * \author PH
- * \param xofs x-offset display position
- * \param yofs y-offset display position
  */
-void display_console()
+void console_state::display()
 {
-    uint32_t i, y;
-    uint32_t max_y = 120;
+    static const int max_y = 120;
 
-    if (g_console.on != 1)
+    if (!on)
     {
         return;
     }
     rectfill(double_buffer, 0, max_y, 320, 240, makecol(0, 0, 0));
     hline(double_buffer, 0, max_y, 320, makecol(255, 255, 255));
-    y = 240 - 2 * text_height(font);
-    i = CONSOLE_LINES - 1;
+    int y = 240 - 2 * Draw.font_height(FNORMAL);
+    int i = CONSOLE_LINES - 1;
+    auto fhgt = Draw.font_height(FNORMAL);
     while (y > max_y)
     {
-        if (g_console.lines[i])
+        if (lines[i])
         {
-            Draw.print_font(double_buffer, 0, y, g_console.lines[i], FGREEN);
+            Draw.print_font(double_buffer, 0, y, lines[i], FGREEN);
         }
-        y -= text_height(font);
+        y -= fhgt;
         --i;
     }
-    Draw.print_font(double_buffer, 0, 240 - 8, g_console.inputline, FNORMAL);
-    rectfill(double_buffer, text_length(font, g_console.inputline), 238,
-             text_length(font, g_console.inputline) + text_length(font, "_"), 240, makecol(192, 192, 192));
+    auto w = Draw.text_length(FNORMAL, inputline);
+    Draw.print_font(double_buffer, 0, 240 - 8, inputline, FNORMAL);
+    // Draw a cursor
+    if ((blink % 50) < 25)
+    {
+        rectfill(double_buffer, w, 237, w + Draw.text_length(FNORMAL, "_"), 240, makecol(192, 240, 240));
+    }
 }
 
 /*! \brief Display a line on the console
@@ -115,7 +121,7 @@ void display_console()
  * lines. No wrapping is performed.
  * \param l the text to display
  */
-void scroll_console(const char* l)
+void console_state::scroll(const char* l)
 {
     int i;
 
@@ -123,12 +129,12 @@ void scroll_console(const char* l)
     {
         return;
     }
-    free(g_console.lines[0]);
+    free(lines[0]);
     for (i = 0; i < CONSOLE_LINES - 1; ++i)
     {
-        g_console.lines[i] = g_console.lines[i + 1];
+        lines[i] = lines[i + 1];
     }
-    g_console.lines[CONSOLE_LINES - 1] = strcpy((char*)malloc(strlen(l) + 1), l);
+    lines[CONSOLE_LINES - 1] = strcpy((char*)malloc(strlen(l) + 1), l);
 }
 
 /* \brief Enter console mode
@@ -138,9 +144,8 @@ void scroll_console(const char* l)
  */
 void run_console(void)
 {
-    int c;
     size_t sl;
-    int running;
+    bool running;
     uint32_t string_len;
     uint32_t i;
     static const char get[] = "return progress.";
@@ -149,44 +154,44 @@ void run_console(void)
     string prevCmd = "";
 
     g_console.inputline[0] = '\0';
-    g_console.on = 1;
+    g_console.on = true;
 
     /* Wait for all keys up */
-    while (keypressed())
+    while (Game.peek_key())
     {
-        readkey();
+        Game.ProcessEvents();
+        Game.get_key();
     }
-    running = 1;
-    while (running == 1)
+    running = true;
+    while (running)
     {
         sl = strlen(g_console.inputline);
 
         /* Get a key */
-        while (!keypressed())
+        Game.ProcessEvents();
+        Game.do_check_animation();
+        Draw.blit2screen();
+        Music.poll_music();
+        int c = Game.get_key();
+        switch (c)
         {
-            Game.ProcessEvents();
-            Game.do_check_animation();
-            Draw.blit2screen();
-            Music.poll_music();
-        }
-
-        switch ((c = readkey()) & 0xff)
-        {
+        case 0: /* Nothing */
+            g_console.blink++;
+            break;
         case RUNKEY_RETURN: /* Return */
             if (sl == 0)
             {
                 /* Stop when blank line is entered */
-                running = 0;
-                g_console.on = 0;
+                running = g_console.on = false;
             }
             else
             {
-                g_console.on = 0;
-                scroll_console(g_console.inputline);
+                g_console.on = false;
+                g_console.scroll(g_console.inputline);
                 prevCmd = g_console.inputline;
                 do_console_command(g_console.inputline);
                 g_console.inputline[0] = '\0';
-                g_console.on = 1;
+                g_console.on = true;
             }
             break;
 
@@ -257,6 +262,20 @@ void run_console(void)
     /* Wait for enter key up */
     do
     {
+        Game.ProcessEvents();
         PlayerInput.readcontrols();
-    } while (PlayerInput.benter);
+    } while (PlayerInput.benter());
+}
+
+void init_console()
+{
+    g_console.init();
+}
+void scroll_console(const char* s)
+{
+    g_console.scroll(s);
+}
+void display_console()
+{
+    g_console.display();
 }

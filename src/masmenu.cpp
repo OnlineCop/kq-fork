@@ -160,7 +160,7 @@ void camp_spell_menu(int c)
         }
         Draw.blit2screen();
         PlayerInput.readcontrols();
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             ptr[smove]++;
@@ -170,7 +170,7 @@ void camp_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             ptr[smove]--;
@@ -180,7 +180,7 @@ void camp_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
             Game.unpress();
             pg[smove]++;
@@ -190,7 +190,7 @@ void camp_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             Game.unpress();
             pg[smove]--;
@@ -200,7 +200,7 @@ void camp_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             if (smove == 1)
@@ -240,7 +240,7 @@ void camp_spell_menu(int c)
                 }
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             if (smove == 1)

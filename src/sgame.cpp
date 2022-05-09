@@ -108,12 +108,12 @@ int KSaveGame::confirm_action(void)
     {
         Game.ProcessEvents();
         PlayerInput.readcontrols();
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             return 1;
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             return 0;
@@ -175,7 +175,7 @@ void KSaveGame::delete_game(void)
     while (!stop)
     {
         PlayerInput.readcontrols();
-        if (PlayerInput.balt || PlayerInput.bctrl)
+        if (PlayerInput.balt() || PlayerInput.bctrl())
         {
             Game.unpress();
             stop = 1;
@@ -266,7 +266,7 @@ int KSaveGame::saveload(int am_saving)
         Draw.blit2screen();
 
         PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             save_ptr--;
@@ -287,7 +287,7 @@ int KSaveGame::saveload(int am_saving)
 
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             save_ptr++;
@@ -308,7 +308,7 @@ int KSaveGame::saveload(int am_saving)
 
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
             Game.unpress();
             if (am_saving < 2)
@@ -316,7 +316,7 @@ int KSaveGame::saveload(int am_saving)
                 am_saving = am_saving + 2;
             }
         }
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             Game.unpress();
             if (am_saving >= 2)
@@ -324,7 +324,7 @@ int KSaveGame::saveload(int am_saving)
                 am_saving = am_saving - 2;
             }
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             switch (am_saving)
@@ -367,7 +367,7 @@ int KSaveGame::saveload(int am_saving)
                 break;
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             stop = 1;
@@ -550,12 +550,10 @@ int KSaveGame::start_menu(bool skip_splash)
         while (fade_color < 16)
         {
             auto now = SDL_GetTicks();
-            if (Game.ProcessEvents())
-            {
-                clear_to_color(double_buffer, 15 - fade_color);
-                masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), eSize::SCREEN_W, 124);
-                Draw.blit2screen();
-            }
+            Game.ProcessEvents();
+            clear_to_color(double_buffer, 15 - fade_color);
+            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), eSize::SCREEN_W, 124);
+            Draw.blit2screen();
             if (SDL_TICKS_PASSED(now, start_time + 100))
             {
                 start_time = now;
@@ -591,15 +589,15 @@ int KSaveGame::start_menu(bool skip_splash)
         display_credits(double_buffer);
         Draw.blit2screen();
         PlayerInput.readcontrols();
-        if (PlayerInput.bhelp)
+        if (PlayerInput.bhelp())
         {
             Game.unpress();
             show_help();
             redraw = 1;
         }
-        if (PlayerInput.up)
+        if (PlayerInput.up.getPress())
         {
-            Game.unpress();
+            //            Game.unpress();
             if (ptr > 0)
             {
                 ptr--;
@@ -611,9 +609,9 @@ int KSaveGame::start_menu(bool skip_splash)
             play_effect(SND_CLICK, 128);
             redraw = 1;
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down.getPress())
         {
-            Game.unpress();
+            //            Game.unpress();
             if (ptr < 3)
             {
                 ptr++;
@@ -625,7 +623,7 @@ int KSaveGame::start_menu(bool skip_splash)
             play_effect(SND_CLICK, 128);
             redraw = 1;
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             if (ptr == 0) /* User selected "Continue" */
@@ -722,7 +720,7 @@ int KSaveGame::system_menu(void)
         Draw.blit2screen();
         PlayerInput.readcontrols();
 
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             if (--ptr < 0)
             {
@@ -731,7 +729,7 @@ int KSaveGame::system_menu(void)
             play_effect(SND_CLICK, 128);
             Game.unpress();
         }
-        else if (PlayerInput.down)
+        else if (PlayerInput.down())
         {
             if (++ptr > 3)
             {
@@ -741,7 +739,7 @@ int KSaveGame::system_menu(void)
             Game.unpress();
         }
 
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
 
@@ -782,7 +780,7 @@ int KSaveGame::system_menu(void)
             }
         }
 
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             stop = 1;
             Game.unpress();

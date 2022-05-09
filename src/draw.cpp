@@ -826,7 +826,7 @@ void KDraw::generic_text(int who, eBubbleStyle box_style, int isPort)
         }
         blit2screen();
         PlayerInput.readcontrols();
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             stop = 1;
@@ -1103,7 +1103,7 @@ void KDraw::print_font(Raster* where, int sx, int sy, const string& msg, eFontCo
         Game.program_death(strbuf);
     }
     // MagicNumber: font heights for BIG/NORMAL text
-    const int hgt = (font_index == FBIG) ? 12 : 8;
+    int hgt = font_height(font_index);
     string chopped_message(msg);
     while (1)
     {
@@ -1186,7 +1186,7 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
         blit2screen();
 
         PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             ptr--;
@@ -1196,7 +1196,7 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             ptr++;
@@ -1206,7 +1206,7 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             stop = 1;
@@ -1304,26 +1304,26 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                 blit2screen();
 
                 PlayerInput.readcontrols();
-                if (PlayerInput.up && curopt > 0)
+                if (PlayerInput.up() && curopt > 0)
                 {
                     play_effect(SND_CLICK, 128);
                     Game.unpress();
                     --curopt;
                 }
-                else if (PlayerInput.down && curopt < (n_opt - 1))
+                else if (PlayerInput.down() && curopt < (n_opt - 1))
                 {
                     play_effect(SND_CLICK, 128);
                     Game.unpress();
                     ++curopt;
                 }
-                else if (PlayerInput.balt)
+                else if (PlayerInput.balt())
                 {
                     /* Selected an option */
                     play_effect(SND_CLICK, 128);
                     Game.unpress();
                     running = 0;
                 }
-                else if (PlayerInput.bctrl)
+                else if (PlayerInput.bctrl())
                 {
                     /* Just go "ow!" */
                     Game.unpress();
@@ -1619,4 +1619,9 @@ void KDraw::porttext_ex(eBubbleStyle fmt, int who, const char* s)
         s = relay(s);
         generic_text(who, fmt, 1);
     }
+}
+
+int KDraw::text_length(eFontColor, const char* s)
+{
+    return 8 * strlen(s);
 }

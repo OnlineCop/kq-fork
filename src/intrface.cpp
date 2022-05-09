@@ -2757,42 +2757,42 @@ static int KQ_read_controls(lua_State* L)
     }
 
     PlayerInput.readcontrols();
-    if (PlayerInput.up && a == 1)
+    if (PlayerInput.up() && a == 1)
     {
         Game.unpress();
         g_keys[0] = 1;
     }
-    if (PlayerInput.down && b == 1)
+    if (PlayerInput.down() && b == 1)
     {
         Game.unpress();
         g_keys[1] = 1;
     }
-    if (PlayerInput.left && c == 1)
+    if (PlayerInput.left() && c == 1)
     {
         Game.unpress();
         g_keys[2] = 1;
     }
-    if (PlayerInput.right && d == 1)
+    if (PlayerInput.right() && d == 1)
     {
         Game.unpress();
         g_keys[3] = 1;
     }
-    if (PlayerInput.balt && e == 1)
+    if (PlayerInput.balt() && e == 1)
     {
         Game.unpress();
         g_keys[4] = 1;
     }
-    if (PlayerInput.bctrl && f == 1)
+    if (PlayerInput.bctrl() && f == 1)
     {
         Game.unpress();
         g_keys[5] = 1;
     }
-    if (PlayerInput.benter && g == 1)
+    if (PlayerInput.benter() && g == 1)
     {
         Game.unpress();
         g_keys[6] = 1;
     }
-    if (PlayerInput.besc && h == 1)
+    if (PlayerInput.besc() && h == 1)
     {
         Game.unpress();
         g_keys[7] = 1;

@@ -401,7 +401,7 @@ static int combat_item_menu(int whom)
         Draw.blit2screen();
 
         PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             ptr--;
@@ -411,7 +411,7 @@ static int combat_item_menu(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             ptr++;
@@ -421,7 +421,7 @@ static int combat_item_menu(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             Game.unpress();
             pptr--;
@@ -431,7 +431,7 @@ static int combat_item_menu(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
             Game.unpress();
             pptr++;
@@ -441,7 +441,7 @@ static int combat_item_menu(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             unsigned short inventory = g_inv[pptr * 16 + ptr].item;
             Game.unpress();
@@ -473,7 +473,7 @@ static int combat_item_menu(int whom)
                 }
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             stop = 1;
@@ -526,7 +526,7 @@ int combat_spell_menu(int c)
 
         PlayerInput.readcontrols();
 
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             ptr++;
@@ -536,7 +536,7 @@ int combat_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             ptr--;
@@ -546,7 +546,7 @@ int combat_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
             Game.unpress();
             pgno++;
@@ -556,7 +556,7 @@ int combat_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             Game.unpress();
             pgno--;
@@ -566,7 +566,7 @@ int combat_spell_menu(int c)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             if (combat_castable(c, pgno * NUM_SPELLS_PER_PAGE + ptr) == 1)
@@ -575,7 +575,7 @@ int combat_spell_menu(int c)
                 stop = 2;
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             stop = 1;
@@ -826,7 +826,7 @@ void hero_choose_action(size_t fighter_index)
         Draw.blit2screen();
 
         PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             if (ptr > 0)
@@ -839,7 +839,7 @@ void hero_choose_action(size_t fighter_index)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             if (ptr < my - 1)
@@ -852,7 +852,7 @@ void hero_choose_action(size_t fighter_index)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             Game.unpress();
             if (sptr > 0)
@@ -860,7 +860,7 @@ void hero_choose_action(size_t fighter_index)
                 sptr--;
             }
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
             Game.unpress();
             sptr++;
@@ -880,7 +880,7 @@ void hero_choose_action(size_t fighter_index)
                 sptr = 1 + can_run;
             }
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             if (sptr == 0)
@@ -1078,7 +1078,7 @@ static int hero_invoke(int whom)
         Draw.blit2screen();
 
         PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             ptr--;
@@ -1088,7 +1088,7 @@ static int hero_invoke(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             ptr++;
@@ -1098,7 +1098,7 @@ static int hero_invoke(int whom)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             if (can_invoke_item(party[dud].eqp[ptr]))
@@ -1113,7 +1113,7 @@ static int hero_invoke(int whom)
                 play_effect(SND_BAD, 128);
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             stop = 1;

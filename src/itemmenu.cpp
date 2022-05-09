@@ -76,7 +76,7 @@ void camp_item_menu(void)
 
         if (sel == 0)
         {
-            if (PlayerInput.down)
+            if (PlayerInput.down())
             {
                 Game.unpress();
                 ptr++;
@@ -86,7 +86,7 @@ void camp_item_menu(void)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (PlayerInput.up)
+            if (PlayerInput.up())
             {
                 Game.unpress();
                 ptr--;
@@ -97,7 +97,7 @@ void camp_item_menu(void)
                 play_effect(SND_CLICK, 128);
             }
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
             Game.unpress();
             if (sel == 0)
@@ -120,7 +120,7 @@ void camp_item_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             Game.unpress();
             if (sel == 0)
@@ -143,7 +143,7 @@ void camp_item_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             if (sel == 1)
@@ -186,12 +186,12 @@ void camp_item_menu(void)
                                 Draw.blit2screen();
                                 PlayerInput.readcontrols();
 
-                                if (PlayerInput.balt)
+                                if (PlayerInput.balt())
                                 {
                                     Game.unpress();
                                     stop2 = 2;
                                 }
-                                if (PlayerInput.bctrl)
+                                if (PlayerInput.bctrl())
                                 {
                                     Game.unpress();
                                     stop2 = 1;
@@ -207,7 +207,7 @@ void camp_item_menu(void)
                 }
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             if (sel == 0)

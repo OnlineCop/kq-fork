@@ -876,35 +876,10 @@ void KGame::kwait(int dtime)
             cnt++;
             process_entities();
         }
-        Game.do_check_animation();
+        do_check_animation();
         Draw.drawmap();
         Draw.blit2screen();
-#ifdef DEBUGMODE
-        if (debugging > 0)
-        {
-            if (key[SDL_SCANCODE_W] && key[SDL_SCANCODE_LALT])
-            {
-                Game.klog(_("Alt+W Pressed:"));
-                sprintf(strbuf, "\tkwait(); cnt=%d, dtime=%d, timer_count=%d", cnt, dtime, timer_count);
-                Game.klog(strbuf);
-                break;
-            }
-        }
-#endif
-        if (key[SDL_SCANCODE_X] && key[SDL_SCANCODE_LALT])
-        {
-            if (debugging > 0)
-            {
-                sprintf(strbuf, "kwait(); cnt = %d, dtime = %d, timer_count = %d", cnt, dtime, timer_count);
-            }
-            else
-            {
-                sprintf(strbuf, _("Program terminated: user pressed Alt+X"));
-            }
-            program_death(strbuf);
-        }
     }
-
     timer_count = 0;
     autoparty = 0;
 }
@@ -1004,25 +979,19 @@ int main(int argc, const char* argv[])
                 Draw.blit2screen();
                 Music.poll_music();
 
-                if (key[PlayerInput.kesc])
+                if (PlayerInput.besc())
                 {
                     stop = SaveGame.system_menu();
                 }
-                if (PlayerInput.bhelp)
+                if (PlayerInput.bhelp())
                 {
                     /* TODO: In-game help system. */
                 }
-#ifdef DEBUGMODE
-                if (key[SDL_SCANCODE_BACKSLASH])
-                {
-                    run_console();
-                }
-#endif
-                if (alldead)
-                {
-                    do_transition(eTransitionFade::IN, 16);
-                    stop = 1;
-                }
+            }
+            if (alldead)
+            {
+                do_transition(eTransitionFade::IN, 16);
+                stop = 1;
             }
         }
     }
@@ -1458,15 +1427,43 @@ void KGame::unpress(void)
     {
         ProcessEvents();
         PlayerInput.readcontrols();
-        if (!(PlayerInput.balt || PlayerInput.bctrl || PlayerInput.benter || PlayerInput.besc || PlayerInput.up ||
-              PlayerInput.down || PlayerInput.right || PlayerInput.left || PlayerInput.bcheat))
+        if (!(PlayerInput.balt() || PlayerInput.bctrl() || PlayerInput.benter() || PlayerInput.besc() ||
+              PlayerInput.up() || PlayerInput.down() || PlayerInput.right() || PlayerInput.left() ||
+              PlayerInput.bcheat()))
         {
             break;
         }
     }
     timer_count = 0;
 }
+void KGame::extra_controls()
+{
+    auto key = SDL_GetKeyboardState(nullptr);
+    if (key[SDL_SCANCODE_X] && key[SDL_SCANCODE_LALT])
+    {
+        sprintf(strbuf, _("Program terminated: user pressed Alt+X"));
+        program_death(strbuf);
+    }
+#ifdef DEBUGMODE
+    if (debugging > 0)
+    {
+        if (key[SDL_SCANCODE_F11])
+        {
+            data_dump();
+        }
 
+        /* Back to menu - by pretending all the heroes died.. hehe */
+        if (key[SDL_SCANCODE_LALT] && key[SDL_SCANCODE_M])
+        {
+            alldead = 1;
+        }
+    }
+    if (key[SDL_SCANCODE_BACKSLASH])
+    {
+        run_console();
+    }
+#endif
+}
 void KGame::wait_enter(void)
 {
     int stop = 0;
@@ -1477,7 +1474,7 @@ void KGame::wait_enter(void)
     {
         ProcessEvents();
         PlayerInput.readcontrols();
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             stop = 1;
@@ -1507,16 +1504,6 @@ void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
         Game.do_check_animation();
         Draw.drawmap();
         Draw.blit2screen();
-
-        if (key[SDL_SCANCODE_W] && key[SDL_SCANCODE_LALT])
-        {
-            break;
-        }
-
-        if (key[SDL_SCANCODE_X] && key[SDL_SCANCODE_LALT])
-        {
-            program_death(_("X-Alt pressed - exiting"));
-        }
 
         any_following_entities = 0;
         for (entity_index = first_entity_index; entity_index <= last_entity_index; ++entity_index)
@@ -1645,6 +1632,7 @@ bool KGame::ProcessEvents()
     bool wait_timer = true;
     extern void reset_watchdog();
     reset_watchdog();
+    static int ecount = 0;
     while (wait_timer)
     {
         SDL_Event event;
@@ -1660,17 +1648,44 @@ bool KGame::ProcessEvents()
             case SDL_USEREVENT: // this is our frame timer
                 wait_timer = false;
                 timer_count += 3;
+                ++ecount;
                 break;
             case SDL_QUIT:
+                // TODO don't be so brutal
                 Game.program_death("SDL quit");
+                break;
+            case SDL_KEYDOWN:
+                PlayerInput.ProcessKeyboardEvent(&event.key);
+                // Handle some keys that don't generate TEXTINPUT
+                //
+                switch (event.key.keysym.sym)
+                {
+                case SDLK_RETURN:
+                case SDLK_RETURN2:
+                    keyp = 0x0d;
+                    break;
+                case SDLK_BACKSPACE:
+                    keyp = 0x8;
+                    break;
+                }
+                break;
+            case SDL_KEYUP:
+                PlayerInput.ProcessKeyboardEvent(&event.key);
+                break;
+            case SDL_TEXTINPUT:
+                keyp = event.text.text[0]; // TODO this is poor (only copies ASCII, UTF-8 not handled)
                 break;
             default: // TODO all other events
                 break;
             }
         } while (SDL_PollEvent(&event));
     }
-
-    key = SDL_GetKeyboardState(&key_count);
+    if (ecount > KQ_TICKS)
+    {
+        ecount -= KQ_TICKS;
+        // Just do this once per second
+        extra_controls();
+    }
     return true;
 }
 
@@ -1684,6 +1699,12 @@ KTime KGame::GetGameTime() const
     // TODO this will go badly wrong after 49 days!
     int elapsed = (SDL_GetTicks() - game_start_ticks) / 1000;
     return { game_time + elapsed };
+}
+int KGame::get_key()
+{
+    int k = keyp >= 0 && keyp < 128 ? keyp : 0;
+    keyp = 0;
+    return k;
 }
 /*! \mainpage KQ - The Classic Computer Role-Playing Game
  *
@@ -1748,7 +1769,4 @@ void TRACE(const char* message, ...)
     va_end(args);
 }
 
-const unsigned char* key = nullptr;
-int key_count = 0;
 PALETTE black_palette;
-FONT* font = nullptr;

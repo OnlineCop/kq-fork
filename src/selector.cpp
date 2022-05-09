@@ -344,7 +344,7 @@ static eMiniMenu mini_menu(int omask)
         Draw.blit2screen();
 
         PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             if (cp == MM_OPTIONS_LEAVE)
@@ -363,7 +363,7 @@ static eMiniMenu mini_menu(int omask)
             }
         }
 
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             if (cp == MM_OPTIONS_JOIN)
@@ -381,12 +381,12 @@ static eMiniMenu mini_menu(int omask)
                 cp = MM_OPTIONS_JOIN;
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             return MM_NONE;
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             if (omask & (1 << cp))
@@ -531,19 +531,19 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
         PlayerInput.readcontrols();
         if (csa == TGT_NONE)
         {
-            if (PlayerInput.balt | PlayerInput.bctrl)
+            if (PlayerInput.balt() | PlayerInput.bctrl())
             {
                 Game.unpress();
                 return PIDX_UNDEFINED;
             }
-            if (PlayerInput.left || PlayerInput.right || PlayerInput.down || PlayerInput.up)
+            if (PlayerInput.left() || PlayerInput.right() || PlayerInput.down() || PlayerInput.up())
             {
                 Game.unpress();
             }
         }
         else
         {
-            if (PlayerInput.left || PlayerInput.right)
+            if (PlayerInput.left() || PlayerInput.right())
             {
                 Game.unpress();
                 if (csa == TGT_ALLY_ONEALL)
@@ -552,7 +552,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
                 }
             }
 
-            if (PlayerInput.up)
+            if (PlayerInput.up())
             {
                 Game.unpress();
                 if (ptr > 0)
@@ -561,7 +561,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
                 }
                 play_effect(SND_CLICK, 128);
             }
-            if (PlayerInput.down)
+            if (PlayerInput.down())
             {
                 Game.unpress();
                 if (ptr < numchrs - 1)
@@ -571,12 +571,12 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
                 play_effect(SND_CLICK, 128);
             }
 
-            if (PlayerInput.balt)
+            if (PlayerInput.balt())
             {
                 Game.unpress();
                 stop = true;
             }
-            if (PlayerInput.bctrl)
+            if (PlayerInput.bctrl())
             {
                 Game.unpress();
                 return PIDX_UNDEFINED;
@@ -648,17 +648,17 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
         Draw.blit2screen();
         PlayerInput.readcontrols();
 
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             stop = true;
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             return PIDX_UNDEFINED;
         }
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             Game.unpress();
             if (ptr > 0)
@@ -670,7 +670,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
                 ptr = cntr - 1;
             }
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
             Game.unpress();
             if (ptr < cntr - 1)
@@ -682,7 +682,7 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
                 ptr = 0;
             }
         }
-        if (PlayerInput.up || PlayerInput.down)
+        if (PlayerInput.up() || PlayerInput.down())
         {
             Game.unpress();
             if (multi_target == TGT_ENEMY_ONEALL && cntr > 1)
@@ -757,17 +757,17 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
 
         PlayerInput.readcontrols();
 
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             stop = true;
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             return PIDX_UNDEFINED;
         }
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             Game.unpress();
             if (ptr > 0)
@@ -779,7 +779,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
                 ptr = cntr - 1;
             }
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
             Game.unpress();
             if (ptr < cntr - 1)
@@ -793,7 +793,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
         }
         if (multi_target == TGT_ALLY_ONEALL && cntr > 1)
         {
-            if (PlayerInput.up || PlayerInput.down)
+            if (PlayerInput.up() || PlayerInput.down())
             {
                 Game.unpress();
                 select_all = !select_all;
@@ -911,7 +911,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
 
         oldcur = cur;
         PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             /* move between the available row and the party row */
             Game.unpress();
@@ -920,7 +920,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
                 cur = 0;
             }
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             /* move between the available row and the party row */
             Game.unpress();
@@ -929,7 +929,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
                 cur = MAXCHRS;
             }
         }
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             /* move between heroes on a row */
             Game.unpress();
@@ -942,7 +942,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
                 --cur;
             }
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
             /* move between heroes on a row */
             Game.unpress();
@@ -955,12 +955,12 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
                 ++cur;
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             running = 0;
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             if (cur == BTN_EXIT)
@@ -1065,7 +1065,7 @@ int select_player(void)
         Draw.blit2screen();
 
         PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             if (ptr > 0)
@@ -1078,7 +1078,7 @@ int select_player(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             if (ptr < numchrs - 1)
@@ -1091,12 +1091,12 @@ int select_player(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             stop = 1;
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             return PIDX_UNDEFINED;

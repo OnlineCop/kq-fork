@@ -20,17 +20,6 @@ inline int makecol(int r, int g, int b)
 }
 extern int _color_depth;
 
-typedef void FONT;
-extern FONT* font;
-inline int text_height(FONT*)
-{
-    return 0;
-}
-inline int text_length(FONT*, const char*)
-{
-    return 0;
-}
-
 inline int readkey()
 {
     return 0;
@@ -39,8 +28,6 @@ inline int keypressed()
 {
     return 0;
 }
-extern const unsigned char* key;
-extern int key_count;
 void fade_interpolate(RGB*, RGB*, RGB*, int, int, int);
 
 #define DRAW_MODE_SOLID 0

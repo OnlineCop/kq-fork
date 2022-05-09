@@ -380,6 +380,23 @@ class KGame
      * \param time the new time
      */
     void SetGameTime(const KTime&);
+    /*! \brief Check last key
+     * \returns char of last key pressed or 0 if none
+     */
+    int peek_key() const
+    {
+        return keyp;
+    }
+    /*! \brief Return last key
+     * This resets the key so subsequent calls to this and \sa check_key() will
+     * return 0
+     * \returns char of last key pressed or 0 if none
+     */
+    int get_key();
+    /*! Handle extra controls
+     * This is for things like debugging
+     */
+    void extra_controls();
 
   public:
     const string WORLD_MAP;
@@ -396,6 +413,8 @@ class KGame
 
     /** Gold pieces held by the player */
     int gp;
+    /** Last key */
+    int keyp;
 };
 
 /*! View and character positions */

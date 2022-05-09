@@ -255,7 +255,7 @@ void KMenu::menu(void)
         draw_sprite(double_buffer, menuptr, 204, ptr * 8 + 73);
         Draw.blit2screen();
         PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             ptr--;
@@ -265,7 +265,7 @@ void KMenu::menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             ptr++;
@@ -276,7 +276,7 @@ void KMenu::menu(void)
             play_effect(SND_CLICK, 128);
         }
         /* Allow player to rearrange the party at any time by pressing LEFT */
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             z = select_player();
             if (z > 0)
@@ -284,7 +284,7 @@ void KMenu::menu(void)
                 party_newlead();
             }
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             switch (ptr)
@@ -318,7 +318,7 @@ void KMenu::menu(void)
                 break;
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             stop = 1;
@@ -401,19 +401,19 @@ void KMenu::display_quest_window(void)
         PlayerInput.readcontrols();
         // Players can be holding UP and DOWN at the same time: don't give one precedence over another.
         int newSelectedQuest = currentQuestSelected;
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             newSelectedQuest--;
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             newSelectedQuest++;
         }
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             newSelectedQuest -= (int)VisibleQuestEntries;
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
             newSelectedQuest += (int)VisibleQuestEntries;
         }
@@ -428,7 +428,7 @@ void KMenu::display_quest_window(void)
         // Positive modulus: Keep the selected quest
         currentQuestSelected = (newSelectedQuest % roundedUpNumEntries + roundedUpNumEntries) % roundedUpNumEntries;
 
-        if (PlayerInput.balt || PlayerInput.bctrl)
+        if (PlayerInput.balt() || PlayerInput.bctrl())
         {
             Game.unpress();
             break;
@@ -537,19 +537,19 @@ void KMenu::spec_items(void)
         Draw.blit2screen();
         PlayerInput.readcontrols();
 
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             ptr = (ptr + 1) % num_items;
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             ptr = (ptr - 1 + num_items) % num_items;
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             stop = 1;
@@ -684,21 +684,21 @@ void KMenu::status_screen(size_t fighter_index)
         Draw.blit2screen();
         PlayerInput.readcontrols();
 
-        if (PlayerInput.left && fighter_index > 0)
+        if (PlayerInput.left() && fighter_index > 0)
         {
             Game.unpress();
             fighter_index--;
             pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
-        if (PlayerInput.right && fighter_index < numchrs - 1)
+        if (PlayerInput.right() && fighter_index < numchrs - 1)
         {
             Game.unpress();
             fighter_index++;
             pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             play_effect(SND_MENU, 128);

@@ -731,22 +731,22 @@ static void player_move(void)
 
     PlayerInput.readcontrols();
 
-    if (PlayerInput.balt)
+    if (PlayerInput.balt())
     {
         Game.activate();
     }
-    if (PlayerInput.benter)
+    if (PlayerInput.benter())
     {
         kmenu.menu();
     }
 #ifdef KQ_CHEATS
-    if (PlayerInput.bcheat)
+    if (PlayerInput.bcheat())
     {
         do_luacheat();
     }
 #endif
 
-    move(0, PlayerInput.right ? 1 : PlayerInput.left ? -1 : 0, PlayerInput.down ? 1 : PlayerInput.up ? -1 : 0);
+    move(0, PlayerInput.right() ? 1 : PlayerInput.left() ? -1 : 0, PlayerInput.down() ? 1 : PlayerInput.up() ? -1 : 0);
     if (plr.moving)
     {
         follow(oldx, oldy);
@@ -965,7 +965,7 @@ static void speed_adjust(t_entity target_entity)
         break;
     }
     /* TT: This is to see if the player is "running" */
-    if (key[PlayerInput.kctrl] && target_entity < PSIZE)
+    if (PlayerInput.bctrl() && target_entity < PSIZE)
     {
         process_entity(target_entity);
     }

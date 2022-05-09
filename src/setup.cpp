@@ -172,14 +172,14 @@ void config_menu(void)
         citem(row[1], _("Stretch Display:"), should_stretch_view ? _("YES") : _("NO"), FNORMAL);
         citem(row[2], _("Show Frame Rate:"), show_frate ? _("YES") : _("NO"), FNORMAL);
         citem(row[3], _("Wait for Retrace:"), wait_retrace == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[4], _("Up Key:"), kq_keyname(PlayerInput.kup), FNORMAL);
-        citem(row[5], _("Down Key:"), kq_keyname(PlayerInput.kdown), FNORMAL);
-        citem(row[6], _("Left Key:"), kq_keyname(PlayerInput.kleft), FNORMAL);
-        citem(row[7], _("Right Key:"), kq_keyname(PlayerInput.kright), FNORMAL);
-        citem(row[8], _("Confirm Key:"), kq_keyname(PlayerInput.kalt), FNORMAL);
-        citem(row[9], _("Cancel Key:"), kq_keyname(PlayerInput.kctrl), FNORMAL);
-        citem(row[10], _("Menu Key:"), kq_keyname(PlayerInput.kenter), FNORMAL);
-        citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.kesc), FNORMAL);
+        citem(row[4], _("Up Key:"), kq_keyname(PlayerInput.up.scancode), FNORMAL);
+        citem(row[5], _("Down Key:"), kq_keyname(PlayerInput.down.scancode), FNORMAL);
+        citem(row[6], _("Left Key:"), kq_keyname(PlayerInput.left.scancode), FNORMAL);
+        citem(row[7], _("Right Key:"), kq_keyname(PlayerInput.right.scancode), FNORMAL);
+        citem(row[8], _("Confirm Key:"), kq_keyname(PlayerInput.balt.scancode), FNORMAL);
+        citem(row[9], _("Cancel Key:"), kq_keyname(PlayerInput.bctrl.scancode), FNORMAL);
+        citem(row[10], _("Menu Key:"), kq_keyname(PlayerInput.benter.scancode), FNORMAL);
+        citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
         citem(row[12], _("Sound System:"), is_sound ? _("ON") : _("OFF"), FNORMAL);
 
         fontColor = FNORMAL;
@@ -237,7 +237,7 @@ void config_menu(void)
         Draw.blit2screen();
 
         PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
             Game.unpress();
             // "jump" over unusable options
@@ -255,7 +255,7 @@ void config_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
             Game.unpress();
             // "jump" over unusable options
@@ -273,7 +273,7 @@ void config_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             switch (ptr)
@@ -332,73 +332,73 @@ void config_menu(void)
                 while ((temp_key = getakey()) == 0)
                 {
                 }
-                PlayerInput.kup = temp_key;
+                PlayerInput.up.scancode = temp_key;
                 Game.unpress();
                 temp_key = 0;
-                Config.set_config_int(NULL, "kup", PlayerInput.kup);
+                Config.set_config_int(NULL, "kup", PlayerInput.up.scancode);
                 break;
             case 5:
                 while ((temp_key = getakey()) == 0)
                 {
                 }
-                PlayerInput.kdown = temp_key;
+                PlayerInput.down.scancode = temp_key;
                 Game.unpress();
                 temp_key = 0;
-                Config.set_config_int(NULL, "kdown", PlayerInput.kdown);
+                Config.set_config_int(NULL, "kdown", PlayerInput.down.scancode);
                 break;
             case 6:
                 while ((temp_key = getakey()) == 0)
                 {
                 }
-                PlayerInput.kleft = temp_key;
+                PlayerInput.left.scancode = temp_key;
                 Game.unpress();
                 temp_key = 0;
-                Config.set_config_int(NULL, "kleft", PlayerInput.kleft);
+                Config.set_config_int(NULL, "kleft", PlayerInput.left.scancode);
                 break;
             case 7:
                 while ((temp_key = getakey()) == 0)
                 {
                 }
-                PlayerInput.kright = temp_key;
+                PlayerInput.right.scancode = temp_key;
                 Game.unpress();
                 temp_key = 0;
-                Config.set_config_int(NULL, "kright", PlayerInput.kright);
+                Config.set_config_int(NULL, "kright", PlayerInput.right.scancode);
                 break;
             case 8:
                 while ((temp_key = getakey()) == 0)
                 {
                 }
-                PlayerInput.kalt = temp_key;
+                PlayerInput.balt.scancode = temp_key;
                 Game.unpress();
                 temp_key = 0;
-                Config.set_config_int(NULL, "kalt", PlayerInput.kalt);
+                Config.set_config_int(NULL, "kalt", PlayerInput.balt.scancode);
                 break;
             case 9:
                 while ((temp_key = getakey()) == 0)
                 {
                 }
-                PlayerInput.kctrl = temp_key;
+                PlayerInput.bctrl.scancode = temp_key;
                 Game.unpress();
                 temp_key = 0;
-                Config.set_config_int(NULL, "kctrl", PlayerInput.kctrl);
+                Config.set_config_int(NULL, "kctrl", PlayerInput.bctrl.scancode);
                 break;
             case 10:
                 while ((temp_key = getakey()) == 0)
                 {
                 }
-                PlayerInput.kenter = temp_key;
+                PlayerInput.benter.scancode = temp_key;
                 Game.unpress();
                 temp_key = 0;
-                Config.set_config_int(NULL, "kenter", PlayerInput.kenter);
+                Config.set_config_int(NULL, "kenter", PlayerInput.benter.scancode);
                 break;
             case 11:
                 while ((temp_key = getakey()) == 0)
                 {
                 }
-                PlayerInput.kesc = temp_key;
+                PlayerInput.besc.scancode = temp_key;
                 Game.unpress();
                 temp_key = 0;
-                Config.set_config_int(NULL, "kesc", PlayerInput.kesc);
+                Config.set_config_int(NULL, "kesc", PlayerInput.besc.scancode);
                 break;
             case 12:
                 if (is_sound == 2)
@@ -483,7 +483,7 @@ void config_menu(void)
 #endif
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             stop = 1;
@@ -530,6 +530,8 @@ static int getakey(void)
 
     while (true)
     {
+        int key_count;
+        auto key = SDL_GetKeyboardState(&key_count);
         Music.poll_music();
         for (int a = 0; a < key_count; a++)
         {
@@ -591,7 +593,7 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
         Draw.blit2screen();
 
         PlayerInput.readcontrols();
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
             Game.unpress();
             cv--;
@@ -604,7 +606,7 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
                 fb(cv);
             }
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
             Game.unpress();
             cv++;
@@ -617,12 +619,12 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
                 fb(cv);
             }
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
             Game.unpress();
             stop = true;
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             Game.unpress();
             return -1;
@@ -716,14 +718,14 @@ static void parse_allegro_setup(void)
         Config.set_config_int(NULL, "use_joy", use_joy);
         Config.set_config_int(NULL, "slow_computer", slow_computer);
 
-        Config.set_config_int(NULL, "kup", PlayerInput.kup);
-        Config.set_config_int(NULL, "kdown", PlayerInput.kdown);
-        Config.set_config_int(NULL, "kleft", PlayerInput.kleft);
-        Config.set_config_int(NULL, "kright", PlayerInput.kright);
-        Config.set_config_int(NULL, "kesc", PlayerInput.kesc);
-        Config.set_config_int(NULL, "kalt", PlayerInput.kalt);
-        Config.set_config_int(NULL, "kctrl", PlayerInput.kctrl);
-        Config.set_config_int(NULL, "kenter", PlayerInput.kenter);
+        Config.set_config_int(NULL, "kup", PlayerInput.up.scancode);
+        Config.set_config_int(NULL, "kdown", PlayerInput.down.scancode);
+        Config.set_config_int(NULL, "kleft", PlayerInput.left.scancode);
+        Config.set_config_int(NULL, "kright", PlayerInput.right.scancode);
+        Config.set_config_int(NULL, "kesc", PlayerInput.besc.scancode);
+        Config.set_config_int(NULL, "kalt", PlayerInput.balt.scancode);
+        Config.set_config_int(NULL, "kctrl", PlayerInput.bctrl.scancode);
+        Config.set_config_int(NULL, "kenter", PlayerInput.benter.scancode);
 
 #ifdef DEBUGMODE
         Config.set_config_int(NULL, "debugging", debugging);
@@ -757,14 +759,14 @@ static void parse_allegro_setup(void)
     debugging = Config.get_config_int(NULL, "debugging", 0);
 #endif
 
-    PlayerInput.kup = Config.get_config_int(NULL, "kup", SDL_SCANCODE_UP);
-    PlayerInput.kdown = Config.get_config_int(NULL, "kdown", SDL_SCANCODE_DOWN);
-    PlayerInput.kleft = Config.get_config_int(NULL, "kleft", SDL_SCANCODE_LEFT);
-    PlayerInput.kright = Config.get_config_int(NULL, "kright", SDL_SCANCODE_RIGHT);
-    PlayerInput.kesc = Config.get_config_int(NULL, "kesc", SDL_SCANCODE_ESCAPE);
-    PlayerInput.kalt = Config.get_config_int(NULL, "kalt", SDL_SCANCODE_LALT);
-    PlayerInput.kctrl = Config.get_config_int(NULL, "kctrl", SDL_SCANCODE_LCTRL);
-    PlayerInput.kenter = Config.get_config_int(NULL, "kenter", SDL_SCANCODE_RETURN);
+    PlayerInput.up.scancode = Config.get_config_int(NULL, "kup", SDL_SCANCODE_UP);
+    PlayerInput.down.scancode = Config.get_config_int(NULL, "kdown", SDL_SCANCODE_DOWN);
+    PlayerInput.left.scancode = Config.get_config_int(NULL, "kleft", SDL_SCANCODE_LEFT);
+    PlayerInput.right.scancode = Config.get_config_int(NULL, "kright", SDL_SCANCODE_RIGHT);
+    PlayerInput.besc.scancode = Config.get_config_int(NULL, "kesc", SDL_SCANCODE_ESCAPE);
+    PlayerInput.balt.scancode = Config.get_config_int(NULL, "kalt", SDL_SCANCODE_LALT);
+    PlayerInput.bctrl.scancode = Config.get_config_int(NULL, "kctrl", SDL_SCANCODE_LCTRL);
+    PlayerInput.benter.scancode = Config.get_config_int(NULL, "kenter", SDL_SCANCODE_RETURN);
     Config.pop_config_state();
 }
 
@@ -783,18 +785,14 @@ static void parse_jb_setup(void)
     int dab = 0;
 
     /* Default key assignments */
-    PlayerInput.kup = SDL_SCANCODE_UP;
-    PlayerInput.kdown = SDL_SCANCODE_DOWN;
-    PlayerInput.kright = SDL_SCANCODE_RIGHT;
-    PlayerInput.kleft = SDL_SCANCODE_LEFT;
-    PlayerInput.kalt = SDL_SCANCODE_LALT;
-    PlayerInput.kctrl = SDL_SCANCODE_LCTRL;
-    PlayerInput.kenter = SDL_SCANCODE_RETURN;
-    PlayerInput.kesc = SDL_SCANCODE_ESCAPE;
-    PlayerInput.jbalt = 0;
-    PlayerInput.jbctrl = 1;
-    PlayerInput.jbenter = 2;
-    PlayerInput.jbesc = 3;
+    PlayerInput.up.scancode = SDL_SCANCODE_UP;
+    PlayerInput.down.scancode = SDL_SCANCODE_DOWN;
+    PlayerInput.right.scancode = SDL_SCANCODE_RIGHT;
+    PlayerInput.left.scancode = SDL_SCANCODE_LEFT;
+    PlayerInput.balt.scancode = SDL_SCANCODE_LALT;
+    PlayerInput.bctrl.scancode = SDL_SCANCODE_LCTRL;
+    PlayerInput.benter.scancode = SDL_SCANCODE_RETURN;
+    PlayerInput.besc.scancode = SDL_SCANCODE_ESCAPE;
     /* PH Why in the world doesn't he use Allegro cfg functions here? */
     if (!(s = fopen(kqres(eDirectories::SETTINGS_DIR, "setup.cfg").c_str(), "r")))
     {
@@ -879,42 +877,42 @@ static void parse_jb_setup(void)
         if (!strcmp(strbuf, "rightkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kright = atoi(strbuf);
+            PlayerInput.right.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "leftkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kleft = atoi(strbuf);
+            PlayerInput.left.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "upkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kup = atoi(strbuf);
+            PlayerInput.up.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "downkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kdown = atoi(strbuf);
+            PlayerInput.down.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "sysmenukey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kesc = atoi(strbuf);
+            PlayerInput.besc.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "cancelkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kctrl = atoi(strbuf);
+            PlayerInput.bctrl.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "confirmkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kalt = atoi(strbuf);
+            PlayerInput.balt.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "chrmenukey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kenter = atoi(strbuf);
+            PlayerInput.benter.scancode = atoi(strbuf);
         }
         fscanf(s, "%s", strbuf);
     }
@@ -1045,19 +1043,19 @@ void show_help(void)
     Draw.menubox(double_buffer, 32, 32, 30, 20, BLUE);
     Draw.menubox(double_buffer, 0, 216, 38, 1, BLUE);
     Draw.print_font(double_buffer, 16, 224, _("Press CONFIRM to exit this screen"), FNORMAL);
-    citem(72, _("Up Key:"), kq_keyname(PlayerInput.kup), FNORMAL);
-    citem(80, _("Down Key:"), kq_keyname(PlayerInput.kdown), FNORMAL);
-    citem(88, _("Left Key:"), kq_keyname(PlayerInput.kleft), FNORMAL);
-    citem(96, _("Right Key:"), kq_keyname(PlayerInput.kright), FNORMAL);
-    citem(104, _("Confirm Key:"), kq_keyname(PlayerInput.kalt), FNORMAL);
-    citem(112, _("Cancel Key:"), kq_keyname(PlayerInput.kctrl), FNORMAL);
-    citem(120, _("Menu Key:"), kq_keyname(PlayerInput.kenter), FNORMAL);
-    citem(128, _("System Menu Key:"), kq_keyname(PlayerInput.kesc), FNORMAL);
+    citem(72, _("Up Key:"), kq_keyname(PlayerInput.up.scancode), FNORMAL);
+    citem(80, _("Down Key:"), kq_keyname(PlayerInput.down.scancode), FNORMAL);
+    citem(88, _("Left Key:"), kq_keyname(PlayerInput.left.scancode), FNORMAL);
+    citem(96, _("Right Key:"), kq_keyname(PlayerInput.right.scancode), FNORMAL);
+    citem(104, _("Confirm Key:"), kq_keyname(PlayerInput.balt.scancode), FNORMAL);
+    citem(112, _("Cancel Key:"), kq_keyname(PlayerInput.bctrl.scancode), FNORMAL);
+    citem(120, _("Menu Key:"), kq_keyname(PlayerInput.benter.scancode), FNORMAL);
+    citem(128, _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
     do
     {
         Draw.blit2screen();
         PlayerInput.readcontrols();
-    } while (!PlayerInput.balt && !PlayerInput.bctrl);
+    } while (!PlayerInput.balt() && !PlayerInput.bctrl());
     Game.unpress();
 }
 

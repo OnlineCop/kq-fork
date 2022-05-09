@@ -240,6 +240,21 @@ class KDraw
      */
     void print_font(Raster* where, int sx, int sy, const string& msg, eFontColor font_index);
 
+    /*! \brief Calculate font height
+     * \param index font index
+     * \returns height in pixels
+     */
+    int font_height(eFontColor index)
+    {
+        return index == FBIG ? 12 : 8;
+    }
+    /*! \brief Calculate text width
+     * \param str a string
+     * \param index font index
+     * \returns width in pixels
+     */
+    int text_length(eFontColor index, const char* str);
+
     /*! \brief Display number
      *
      * Display a number using the small font on a bitmap at the specified
