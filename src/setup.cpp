@@ -62,7 +62,7 @@ static void* sfx[MAX_SAMPLES];
 /*  Internal functions  */
 static int load_samples(void);
 static int getavalue(const char*, int, int, int, bool, void (*)(int));
-static int getakey(void);
+static bool getakey(KPlayerInput::button&, const char*);
 static void parse_allegro_setup(void);
 static void parse_jb_setup(void);
 
@@ -105,7 +105,6 @@ void config_menu(void)
     size_t stop = 0, ptr = 0;
     int p;
     eFontColor fontColor;
-    int temp_key = 0;
 
 #ifdef DEBUGMODE
 #define MENU_SIZE 18
@@ -328,68 +327,30 @@ void config_menu(void)
                 Config.set_config_int(NULL, "wait_retrace", wait_retrace);
                 break;
             case 4:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.up.scancode = temp_key;
-                Game.unpress();
-                Config.set_config_int(NULL, "kup", PlayerInput.up.scancode);
+                getakey(PlayerInput.up, "kup");
                 break;
             case 5:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.down.scancode = temp_key;
-                Game.unpress();
-                Config.set_config_int(NULL, "kdown", PlayerInput.down.scancode);
+                getakey(PlayerInput.down, "kdown");
                 break;
             case 6:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.left.scancode = temp_key;
-                Game.unpress();
-                Config.set_config_int(NULL, "kleft", PlayerInput.left.scancode);
+                getakey(PlayerInput.left, "kleft");
                 break;
             case 7:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.right.scancode = temp_key;
-                Game.unpress();
-                Config.set_config_int(NULL, "kright", PlayerInput.right.scancode);
+                getakey(PlayerInput.right, "kright");
                 break;
             case 8:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.balt.scancode = temp_key;
-                Game.unpress();
-                Config.set_config_int(NULL, "kalt", PlayerInput.balt.scancode);
+                getakey(PlayerInput.balt, "kalt");
+
                 break;
             case 9:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.bctrl.scancode = temp_key;
-                Game.unpress();
-                Config.set_config_int(NULL, "kctrl", PlayerInput.bctrl.scancode);
+                getakey(PlayerInput.bctrl, "kctrl");
                 break;
             case 10:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.benter.scancode = temp_key;
-                Game.unpress();
-                Config.set_config_int(NULL, "kenter", PlayerInput.benter.scancode);
+                getakey(PlayerInput.benter, "kenter");
+
                 break;
             case 11:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.besc.scancode = temp_key;
-                Game.unpress();
-                Config.set_config_int(NULL, "kesc", PlayerInput.besc.scancode);
+                getakey(PlayerInput.besc, "kesc");
                 break;
             case 12:
                 if (is_sound == 2)
@@ -485,18 +446,20 @@ void config_menu(void)
 
 /*! \brief Process keypresses when mapping new keys
  *
- * This grabs whatever key is being pressed and returns it to the caller.
- * PH 20030527 Removed call to keypressed() and added poll_music()
- *
- * \returns the scancode of the key being pressed, 0 if error (or cancel?)
+ * This helper function grabs whatever key is being pressed, stores it and saves
+ * it to the config file.
+ * \param b The control to be changed
+ * \param cfg the configuration key name
+ * \returns the true if a new code was received and stored, false otherwise
  */
-static int getakey(void)
+static bool getakey(KPlayerInput::button& b, const char* cfg)
 {
     Draw.menubox(double_buffer, 108, 108, 11, 1, DARKBLUE);
     Draw.print_font(double_buffer, 116, 116, _("Press a key"), FNORMAL);
     Draw.blit2screen();
-
-    while (true)
+    // Wait 5 secs then give up
+    int timeout = Game.KQ_TICKS * 5;
+    while (timeout > 0)
     {
         Game.ProcessEvents();
         int key_count;
@@ -506,10 +469,18 @@ static int getakey(void)
         {
             if (key[a] != 0)
             {
-                return a;
+                if (a != b.scancode)
+                {
+                    b.scancode = a;
+                    Config.set_config_int(NULL, cfg, a);
+                }
+                Game.unpress();
+                return true;
             }
         }
+        --timeout;
     }
+    return false;
 }
 
 /*! \brief Get value for option
