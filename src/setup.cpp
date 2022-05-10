@@ -483,29 +483,6 @@ void config_menu(void)
     Config.pop_config_state();
 }
 
-/*! \brief Release memory used by samples
- * \author  : Josh Bolduc
- * \date ????????
- *
- *  Duh.
- */
-void free_samples(void)
-{
-    size_t index;
-
-    if (is_sound == 0)
-    {
-        return;
-    }
-
-    for (index = 0; index < MAX_SAMPLES; index++)
-    {
-        /* TODO
-  unload_datafile_object(sfx[index]);
-        */
-    }
-}
-
 /*! \brief Process keypresses when mapping new keys
  *
  * This grabs whatever key is being pressed and returns it to the caller.
@@ -1076,7 +1053,7 @@ void sound_init(void)
     case 2:
         /* TT: We forgot to add this line, causing phantom music to loop */
         Music.stop_music();
-        free_samples();
+        Music.free_samples();
         is_sound = 0;
         break;
     }

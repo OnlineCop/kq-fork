@@ -40,6 +40,7 @@ class KMusic
     void* get_sample(const std::string&);
     void play_effect(int, int);
     void play_sample(void*, int, int, int, int);
+    void free_samples();
 };
 
 extern KMusic Music;

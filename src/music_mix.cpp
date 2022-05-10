@@ -194,3 +194,7 @@ void* KMusic::get_sample(const string& s)
 {
     return sample_cache.get(kqres(eDirectories::DATA_DIR, s));
 }
+void KMusic::free_samples()
+{
+    sample_cache.clear();
+}

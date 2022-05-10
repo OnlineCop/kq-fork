@@ -796,7 +796,7 @@ void KGame::deallocate_stuff(void)
     if (is_sound)
     {
         Music.shutdown_music();
-        free_samples();
+        Music.free_samples();
     }
     deallocate_credits();
     clear_image_cache();
