@@ -1426,7 +1426,6 @@ void KGame::unpress(void)
     while (timer_count < 20)
     {
         ProcessEvents();
-        PlayerInput.readcontrols();
         if (!(PlayerInput.balt() || PlayerInput.bctrl() || PlayerInput.benter() || PlayerInput.besc() ||
               PlayerInput.up() || PlayerInput.down() || PlayerInput.right() || PlayerInput.left() ||
               PlayerInput.bcheat()))
@@ -1473,7 +1472,6 @@ void KGame::wait_enter(void)
     while (!stop)
     {
         ProcessEvents();
-        PlayerInput.readcontrols();
         if (PlayerInput.balt())
         {
             Game.unpress();

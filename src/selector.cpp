@@ -343,7 +343,6 @@ static eMiniMenu mini_menu(int omask)
         draw_sprite(double_buffer, menuptr, mini_menu_x - 13, mini_menu_y + 8 * cp);
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.up())
         {
             Game.unpress();
@@ -528,7 +527,6 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
         }
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (csa == TGT_NONE)
         {
             if (PlayerInput.balt() | PlayerInput.bctrl())
@@ -646,7 +644,6 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
         }
 
         Draw.blit2screen();
-        PlayerInput.readcontrols();
 
         if (PlayerInput.balt())
         {
@@ -754,8 +751,6 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
             Combat.battle_render(tmpd[ptr] + 1, target_fighter_index + 1, 0);
         }
         Draw.blit2screen();
-
-        PlayerInput.readcontrols();
 
         if (PlayerInput.balt())
         {
@@ -910,7 +905,6 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
         Draw.blit2screen();
 
         oldcur = cur;
-        PlayerInput.readcontrols();
         if (PlayerInput.up())
         {
             /* move between the available row and the party row */
@@ -1064,7 +1058,6 @@ int select_player(void)
         kmenu.draw_mainmenu(ptr);
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.up())
         {
             Game.unpress();

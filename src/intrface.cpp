@@ -2756,7 +2756,6 @@ static int KQ_read_controls(lua_State* L)
         g_keys[z] = 0;
     }
 
-    PlayerInput.readcontrols();
     if (PlayerInput.up() && a == 1)
     {
         Game.unpress();

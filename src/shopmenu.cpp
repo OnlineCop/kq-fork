@@ -99,7 +99,6 @@ static void buy_item(int how_many, int item_no)
         draw_sideshot(shops[shop_no].items[item_no]);
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.balt())
         {
             Game.unpress();
@@ -201,7 +200,6 @@ static void buy_menu(void)
         draw_sprite(double_buffer, menuptr, 32, yptr * 8 + 32);
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.up())
         {
             Game.unpress();
@@ -527,7 +525,7 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
         Draw.print_font(double_buffer, 236, 112, _("no"), FNORMAL);
         draw_sprite(double_buffer, menuptr, 220, my * 8 + 104);
         Draw.blit2screen();
-        PlayerInput.readcontrols();
+
         if (PlayerInput.down())
         {
             Game.unpress();
@@ -615,7 +613,6 @@ static void sell_howmany(int item_no, size_t inv_page)
         Draw.print_font(double_buffer, 280 - (strlen(strbuf) * 8), item_no * 8 + 32, strbuf, FNORMAL);
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.up() || PlayerInput.right())
         {
             if (my < max_items)
@@ -679,7 +676,6 @@ static void sell_item(int itno, int qty_being_sold)
     while (!stop)
     {
         Game.ProcessEvents();
-        PlayerInput.readcontrols();
         if (PlayerInput.balt())
         {
             Game.unpress();
@@ -779,8 +775,6 @@ static void sell_menu(void)
         draw_sprite(double_buffer, menuptr, 32, yptr * 8 + 32);
         draw_sprite(double_buffer, pgb[inv_page], 278, 158);
         Draw.blit2screen();
-
-        PlayerInput.readcontrols();
 
         if (PlayerInput.down())
         {
@@ -912,8 +906,6 @@ int shop(int shop_num)
         draw_sideshot(-1);
         draw_shopgold();
         Draw.blit2screen();
-
-        PlayerInput.readcontrols();
 
         if (PlayerInput.left() && ptr > 0)
         {

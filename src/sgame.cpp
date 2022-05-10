@@ -107,7 +107,7 @@ int KSaveGame::confirm_action(void)
     while (!stop)
     {
         Game.ProcessEvents();
-        PlayerInput.readcontrols();
+
         if (PlayerInput.balt())
         {
             Game.unpress();
@@ -174,7 +174,6 @@ void KSaveGame::delete_game(void)
 
     while (!stop)
     {
-        PlayerInput.readcontrols();
         if (PlayerInput.balt() || PlayerInput.bctrl())
         {
             Game.unpress();
@@ -265,7 +264,6 @@ int KSaveGame::saveload(int am_saving)
         show_sgstats(am_saving);
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.up())
         {
             Game.unpress();
@@ -588,7 +586,6 @@ int KSaveGame::start_menu(bool skip_splash)
         }
         display_credits(double_buffer);
         Draw.blit2screen();
-        PlayerInput.readcontrols();
         if (PlayerInput.bhelp())
         {
             Game.unpress();
@@ -718,7 +715,6 @@ int KSaveGame::system_menu(void)
 
         draw_sprite(double_buffer, menuptr, 0, ptr * 8 + 8);
         Draw.blit2screen();
-        PlayerInput.readcontrols();
 
         if (PlayerInput.up())
         {

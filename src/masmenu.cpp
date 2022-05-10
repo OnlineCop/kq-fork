@@ -159,7 +159,6 @@ void camp_spell_menu(int c)
             draw_sprite(double_buffer, sptr, 88, ptr[1] * 8 + 100);
         }
         Draw.blit2screen();
-        PlayerInput.readcontrols();
         if (PlayerInput.down())
         {
             Game.unpress();

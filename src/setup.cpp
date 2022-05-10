@@ -236,7 +236,6 @@ void config_menu(void)
         Draw.print_font(double_buffer, 8, 224, dc[ptr], FNORMAL);
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.up())
         {
             Game.unpress();
@@ -592,7 +591,6 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
         Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 124, strbuf, FGOLD);
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.left())
         {
             Game.unpress();
@@ -1053,8 +1051,8 @@ void show_help(void)
     citem(128, _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
     do
     {
+        Game.ProcessEvents();
         Draw.blit2screen();
-        PlayerInput.readcontrols();
     } while (!PlayerInput.balt() && !PlayerInput.bctrl());
     Game.unpress();
 }

@@ -72,7 +72,6 @@ void camp_item_menu(void)
         Draw.drawmap();
         draw_itemmenu(ptr, pptr, sel);
         Draw.blit2screen();
-        PlayerInput.readcontrols();
 
         if (sel == 0)
         {
@@ -184,7 +183,6 @@ void camp_item_menu(void)
                                 Draw.menubox(double_buffer, 72 + 0, 204, 20, 1, DARKBLUE);
                                 Draw.print_font(double_buffer, 104, 212, _("Confirm/Cancel"), FNORMAL);
                                 Draw.blit2screen();
-                                PlayerInput.readcontrols();
 
                                 if (PlayerInput.balt())
                                 {

@@ -6,15 +6,11 @@ class KPlayerInput
 {
   public:
     KPlayerInput();
-    ~KPlayerInput() = default;
-
-    void readcontrols();
     void ProcessKeyboardEvent(SDL_KeyboardEvent* evt);
 
-  public:
     struct button
     {
-        int scancode;
+        int scancode = 0;
         bool down = false;
         bool pressed = false;
         bool getPress()

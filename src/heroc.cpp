@@ -400,7 +400,6 @@ static int combat_item_menu(int whom)
         Draw.print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16].item].desc, FNORMAL);
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.up())
         {
             Game.unpress();
@@ -523,8 +522,6 @@ int combat_spell_menu(int c)
         fullblit(back, double_buffer);
         combat_draw_spell_menu(c, ptr, pgno);
         Draw.blit2screen();
-
-        PlayerInput.readcontrols();
 
         if (PlayerInput.down())
         {
@@ -825,7 +822,6 @@ void hero_choose_action(size_t fighter_index)
         }
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.up())
         {
             Game.unpress();
@@ -1077,7 +1073,6 @@ static int hero_invoke(int whom)
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 88);
         Draw.blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.up())
         {
             Game.unpress();

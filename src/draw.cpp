@@ -825,7 +825,7 @@ void KDraw::generic_text(int who, eBubbleStyle box_style, int isPort)
             draw_porttextbox(box_style, who);
         }
         blit2screen();
-        PlayerInput.readcontrols();
+
         if (PlayerInput.balt())
         {
             Game.unpress();
@@ -1185,7 +1185,6 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
         draw_sprite(double_buffer, menuptr, gbbx + 8, ptr * 12 + ly);
         blit2screen();
 
-        PlayerInput.readcontrols();
         if (PlayerInput.up())
         {
             Game.unpress();
@@ -1303,7 +1302,6 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
 
                 blit2screen();
 
-                PlayerInput.readcontrols();
                 if (PlayerInput.up() && curopt > 0)
                 {
                     play_effect(SND_CLICK, 128);

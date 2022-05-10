@@ -263,7 +263,6 @@ void run_console(void)
     do
     {
         Game.ProcessEvents();
-        PlayerInput.readcontrols();
     } while (PlayerInput.benter());
 }
 

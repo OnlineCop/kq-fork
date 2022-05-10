@@ -729,8 +729,6 @@ static void player_move(void)
     int oldx = plr.tilex;
     int oldy = plr.tiley;
 
-    PlayerInput.readcontrols();
-
     if (PlayerInput.balt())
     {
         Game.activate();

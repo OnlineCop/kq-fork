@@ -150,8 +150,6 @@ static void choose_equipment(int c, int slot)
             sm = tot - NUM_ITEMS_PER_PAGE;
         }
 
-        PlayerInput.readcontrols();
-
         if (PlayerInput.down())
         {
             Game.unpress();
@@ -572,8 +570,6 @@ void equip_menu(uint32_t c)
             draw_sprite(double_buffer, menuptr, 12, yptr * 8 + 36);
         }
         Draw.blit2screen();
-
-        PlayerInput.readcontrols();
 
         if (sl == 1)
         {

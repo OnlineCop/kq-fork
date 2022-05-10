@@ -254,7 +254,7 @@ void KMenu::menu(void)
         draw_mainmenu(-1);
         draw_sprite(double_buffer, menuptr, 204, ptr * 8 + 73);
         Draw.blit2screen();
-        PlayerInput.readcontrols();
+
         if (PlayerInput.up())
         {
             Game.unpress();
@@ -398,7 +398,7 @@ void KMenu::display_quest_window(void)
                             quest_list[currentQuestSelected].text.c_str(), FNORMAL);
         }
         Draw.blit2screen();
-        PlayerInput.readcontrols();
+
         // Players can be holding UP and DOWN at the same time: don't give one precedence over another.
         int newSelectedQuest = currentQuestSelected;
         if (PlayerInput.up())
@@ -535,7 +535,6 @@ void KMenu::spec_items(void)
         Draw.print_font(double_buffer, 160 - a, 212, special_items[list_item_which[ptr]].description, FNORMAL);
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 44);
         Draw.blit2screen();
-        PlayerInput.readcontrols();
 
         if (PlayerInput.down())
         {
@@ -682,7 +681,6 @@ void KMenu::status_screen(size_t fighter_index)
                             items[party[pidx_index].eqp[equipment_index]].name, FNORMAL);
         }
         Draw.blit2screen();
-        PlayerInput.readcontrols();
 
         if (PlayerInput.left() && fighter_index > 0)
         {
