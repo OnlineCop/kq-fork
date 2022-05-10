@@ -333,7 +333,6 @@ void config_menu(void)
                 }
                 PlayerInput.up.scancode = temp_key;
                 Game.unpress();
-                temp_key = 0;
                 Config.set_config_int(NULL, "kup", PlayerInput.up.scancode);
                 break;
             case 5:
@@ -342,7 +341,6 @@ void config_menu(void)
                 }
                 PlayerInput.down.scancode = temp_key;
                 Game.unpress();
-                temp_key = 0;
                 Config.set_config_int(NULL, "kdown", PlayerInput.down.scancode);
                 break;
             case 6:
@@ -351,7 +349,6 @@ void config_menu(void)
                 }
                 PlayerInput.left.scancode = temp_key;
                 Game.unpress();
-                temp_key = 0;
                 Config.set_config_int(NULL, "kleft", PlayerInput.left.scancode);
                 break;
             case 7:
@@ -360,7 +357,6 @@ void config_menu(void)
                 }
                 PlayerInput.right.scancode = temp_key;
                 Game.unpress();
-                temp_key = 0;
                 Config.set_config_int(NULL, "kright", PlayerInput.right.scancode);
                 break;
             case 8:
@@ -369,7 +365,6 @@ void config_menu(void)
                 }
                 PlayerInput.balt.scancode = temp_key;
                 Game.unpress();
-                temp_key = 0;
                 Config.set_config_int(NULL, "kalt", PlayerInput.balt.scancode);
                 break;
             case 9:
@@ -378,7 +373,6 @@ void config_menu(void)
                 }
                 PlayerInput.bctrl.scancode = temp_key;
                 Game.unpress();
-                temp_key = 0;
                 Config.set_config_int(NULL, "kctrl", PlayerInput.bctrl.scancode);
                 break;
             case 10:
@@ -387,7 +381,6 @@ void config_menu(void)
                 }
                 PlayerInput.benter.scancode = temp_key;
                 Game.unpress();
-                temp_key = 0;
                 Config.set_config_int(NULL, "kenter", PlayerInput.benter.scancode);
                 break;
             case 11:
@@ -396,7 +389,6 @@ void config_menu(void)
                 }
                 PlayerInput.besc.scancode = temp_key;
                 Game.unpress();
-                temp_key = 0;
                 Config.set_config_int(NULL, "kesc", PlayerInput.besc.scancode);
                 break;
             case 12:
@@ -529,6 +521,7 @@ static int getakey(void)
 
     while (true)
     {
+        Game.ProcessEvents();
         int key_count;
         auto key = SDL_GetKeyboardState(&key_count);
         Music.poll_music();
@@ -540,7 +533,6 @@ static int getakey(void)
             }
         }
     }
-    return 0;
 }
 
 /*! \brief Get value for option

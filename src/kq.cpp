@@ -987,11 +987,11 @@ int main(int argc, const char* argv[])
                 {
                     /* TODO: In-game help system. */
                 }
-            }
-            if (alldead)
-            {
-                do_transition(eTransitionFade::IN, 16);
-                stop = 1;
+                if (alldead)
+                {
+                    do_transition(eTransitionFade::IN, 16);
+                    stop = 1;
+                }
             }
         }
     }
