@@ -10,18 +10,22 @@ class KPlayerInput
 
     struct button
     {
-        int scancode = 0;
+        button(int sc = 0)
+            : scancode(sc)
+        {
+        }
+        int scancode;
         bool down = false;
         bool pressed = false;
-        bool getPress()
+        bool isDown() const
+        {
+            return down;
+        }
+        bool operator()()
         {
             bool rc = pressed;
             pressed = false;
             return rc;
-        }
-        bool operator()() const
-        {
-            return down;
         }
     };
     // Flags for determining keypresses and player movement.

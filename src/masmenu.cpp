@@ -161,7 +161,6 @@ void camp_spell_menu(int c)
         Draw.blit2screen();
         if (PlayerInput.down())
         {
-            Game.unpress();
             ptr[smove]++;
             if (ptr[smove] > 11)
             {
@@ -171,7 +170,6 @@ void camp_spell_menu(int c)
         }
         if (PlayerInput.up())
         {
-            Game.unpress();
             ptr[smove]--;
             if (ptr[smove] < 0)
             {
@@ -181,7 +179,6 @@ void camp_spell_menu(int c)
         }
         if (PlayerInput.right())
         {
-            Game.unpress();
             pg[smove]++;
             if (pg[smove] > 4)
             {
@@ -191,7 +188,6 @@ void camp_spell_menu(int c)
         }
         if (PlayerInput.left())
         {
-            Game.unpress();
             pg[smove]--;
             if (pg[smove] < 0)
             {
@@ -201,7 +197,6 @@ void camp_spell_menu(int c)
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             if (smove == 1)
             {
                 smove = 0;
@@ -241,7 +236,6 @@ void camp_spell_menu(int c)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             if (smove == 1)
             {
                 smove = 0;

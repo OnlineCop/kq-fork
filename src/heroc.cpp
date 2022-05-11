@@ -402,7 +402,6 @@ static int combat_item_menu(int whom)
 
         if (PlayerInput.up())
         {
-            Game.unpress();
             ptr--;
             if (ptr < 0)
             {
@@ -412,7 +411,6 @@ static int combat_item_menu(int whom)
         }
         if (PlayerInput.down())
         {
-            Game.unpress();
             ptr++;
             if (ptr > 15)
             {
@@ -422,7 +420,6 @@ static int combat_item_menu(int whom)
         }
         if (PlayerInput.left())
         {
-            Game.unpress();
             pptr--;
             if (pptr < 0)
             {
@@ -432,7 +429,6 @@ static int combat_item_menu(int whom)
         }
         if (PlayerInput.right())
         {
-            Game.unpress();
             pptr++;
             if (pptr > 3)
             {
@@ -443,7 +439,6 @@ static int combat_item_menu(int whom)
         if (PlayerInput.balt())
         {
             unsigned short inventory = g_inv[pptr * 16 + ptr].item;
-            Game.unpress();
             if (items[inventory].tgt >= TGT_ENEMY_ONE)
             {
                 z = select_enemy(whom, (eTarget)(items[inventory].tgt));
@@ -474,7 +469,6 @@ static int combat_item_menu(int whom)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
     }
@@ -525,7 +519,6 @@ int combat_spell_menu(int c)
 
         if (PlayerInput.down())
         {
-            Game.unpress();
             ptr++;
             if (ptr > 11)
             {
@@ -535,7 +528,6 @@ int combat_spell_menu(int c)
         }
         if (PlayerInput.up())
         {
-            Game.unpress();
             ptr--;
             if (ptr < 0)
             {
@@ -545,7 +537,6 @@ int combat_spell_menu(int c)
         }
         if (PlayerInput.right())
         {
-            Game.unpress();
             pgno++;
             if (pgno > 4)
             {
@@ -555,7 +546,6 @@ int combat_spell_menu(int c)
         }
         if (PlayerInput.left())
         {
-            Game.unpress();
             pgno--;
             if (pgno < 0)
             {
@@ -565,7 +555,6 @@ int combat_spell_menu(int c)
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             if (combat_castable(c, pgno * NUM_SPELLS_PER_PAGE + ptr) == 1)
             {
                 fighter[c].csmem = party[pidx[c]].spells[pgno * NUM_SPELLS_PER_PAGE + ptr];
@@ -574,7 +563,6 @@ int combat_spell_menu(int c)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
     }
@@ -745,7 +733,6 @@ void hero_choose_action(size_t fighter_index)
     {
         return;
     }
-    Game.unpress();
     fighter[fighter_index].defend = 0;
     fighter[fighter_index].facing = 0;
     if (pidx[fighter_index] != CORIN && pidx[fighter_index] != CASANDRA)
@@ -824,7 +811,6 @@ void hero_choose_action(size_t fighter_index)
 
         if (PlayerInput.up())
         {
-            Game.unpress();
             if (ptr > 0)
             {
                 ptr--;
@@ -837,7 +823,6 @@ void hero_choose_action(size_t fighter_index)
         }
         if (PlayerInput.down())
         {
-            Game.unpress();
             if (ptr < my - 1)
             {
                 ptr++;
@@ -850,7 +835,6 @@ void hero_choose_action(size_t fighter_index)
         }
         if (PlayerInput.left())
         {
-            Game.unpress();
             if (sptr > 0)
             {
                 sptr--;
@@ -858,7 +842,6 @@ void hero_choose_action(size_t fighter_index)
         }
         if (PlayerInput.right())
         {
-            Game.unpress();
             sptr++;
 #ifdef DEBUGMODE
             // If we're debugging, we will force the ability to RUN
@@ -878,7 +861,6 @@ void hero_choose_action(size_t fighter_index)
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             if (sptr == 0)
             {
                 fighter[fighter_index].defend = 1;
@@ -1075,7 +1057,6 @@ static int hero_invoke(int whom)
 
         if (PlayerInput.up())
         {
-            Game.unpress();
             ptr--;
             if (ptr < 0)
             {
@@ -1085,7 +1066,6 @@ static int hero_invoke(int whom)
         }
         if (PlayerInput.down())
         {
-            Game.unpress();
             ptr++;
             if (ptr > 5)
             {
@@ -1095,7 +1075,6 @@ static int hero_invoke(int whom)
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             if (can_invoke_item(party[dud].eqp[ptr]))
             {
                 if (hero_invokeitem(whom, party[dud].eqp[ptr]) == 1)
@@ -1110,7 +1089,6 @@ static int hero_invoke(int whom)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
     }

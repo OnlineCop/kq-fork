@@ -743,8 +743,32 @@ static void player_move(void)
         do_luacheat();
     }
 #endif
-
-    move(0, PlayerInput.right() ? 1 : PlayerInput.left() ? -1 : 0, PlayerInput.down() ? 1 : PlayerInput.up() ? -1 : 0);
+    int dx, dy;
+    if (PlayerInput.right.isDown())
+    {
+        dx = 1;
+    }
+    else if (PlayerInput.left.isDown())
+    {
+        dx = -1;
+    }
+    else
+    {
+        dx = 0;
+    }
+    if (PlayerInput.down.isDown())
+    {
+        dy = 1;
+    }
+    else if (PlayerInput.up.isDown())
+    {
+        dy = -1;
+    }
+    else
+    {
+        dy = 0;
+    }
+    move(0, dx, dy);
     if (plr.moving)
     {
         follow(oldx, oldy);

@@ -152,7 +152,6 @@ static void choose_equipment(int c, int slot)
 
         if (PlayerInput.down())
         {
-            Game.unpress();
             if (yptr == 15)
             {
                 pptr++;
@@ -172,7 +171,6 @@ static void choose_equipment(int c, int slot)
         }
         if (PlayerInput.up())
         {
-            Game.unpress();
             if (yptr == 0)
             {
                 pptr--;
@@ -189,7 +187,6 @@ static void choose_equipment(int c, int slot)
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             if (equip(pidx[c], t_inv[pptr + yptr], 0) == 1)
             {
                 play_effect(SND_EQUIP, 128);
@@ -202,7 +199,6 @@ static void choose_equipment(int c, int slot)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
     }
@@ -575,7 +571,6 @@ void equip_menu(uint32_t c)
         {
             if (PlayerInput.left())
             {
-                Game.unpress();
                 eqp_act--;
                 if (eqp_act < 0)
                 {
@@ -585,7 +580,6 @@ void equip_menu(uint32_t c)
             }
             if (PlayerInput.right())
             {
-                Game.unpress();
                 eqp_act++;
                 if (eqp_act > 3)
                 {
@@ -598,7 +592,6 @@ void equip_menu(uint32_t c)
         {
             if (PlayerInput.down())
             {
-                Game.unpress();
                 yptr++;
                 if (yptr > 5)
                 {
@@ -608,7 +601,6 @@ void equip_menu(uint32_t c)
             }
             if (PlayerInput.up())
             {
-                Game.unpress();
                 yptr--;
                 if (yptr < 0)
                 {
@@ -619,7 +611,6 @@ void equip_menu(uint32_t c)
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             if (sl == 1)
             {
                 // If the selection is over 'Equip' or 'Remove'
@@ -677,7 +668,6 @@ void equip_menu(uint32_t c)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             if (sl == 0)
             {
                 sl = 1;

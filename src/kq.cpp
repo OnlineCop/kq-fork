@@ -328,8 +328,6 @@ void KGame::activate(void)
 
     uint32_t p;
 
-    unpress();
-
     /* Determine which direction the player's character is facing.  For
      * 'looking_at_y', a negative value means "toward north" or "facing up",
      * and a positive means that you are "facing down".  For 'looking_at_x',
@@ -1420,21 +1418,6 @@ void KGame::startup(void)
     init_console();
 }
 
-void KGame::unpress(void)
-{
-    timer_count = 0;
-    while (timer_count < 20)
-    {
-        ProcessEvents();
-        if (!(PlayerInput.balt() || PlayerInput.bctrl() || PlayerInput.benter() || PlayerInput.besc() ||
-              PlayerInput.up() || PlayerInput.down() || PlayerInput.right() || PlayerInput.left() ||
-              PlayerInput.bcheat()))
-        {
-            break;
-        }
-    }
-    timer_count = 0;
-}
 void KGame::extra_controls()
 {
     auto key = SDL_GetKeyboardState(nullptr);
@@ -1465,21 +1448,10 @@ void KGame::extra_controls()
 }
 void KGame::wait_enter(void)
 {
-    int stop = 0;
-
-    Game.unpress();
-
-    while (!stop)
+    while (!PlayerInput.balt())
     {
         ProcessEvents();
-        if (PlayerInput.balt())
-        {
-            Game.unpress();
-            stop = 1;
-        }
     }
-
-    timer_count = 0;
 }
 
 void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)

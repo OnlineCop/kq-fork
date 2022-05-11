@@ -810,7 +810,6 @@ void KDraw::generic_text(int who, eBubbleStyle box_style, int isPort)
     {
         return;
     }
-    Game.unpress();
     while (!stop)
     {
         Game.ProcessEvents();
@@ -828,7 +827,6 @@ void KDraw::generic_text(int who, eBubbleStyle box_style, int isPort)
 
         if (PlayerInput.balt())
         {
-            Game.unpress();
             stop = 1;
         }
     }
@@ -1156,7 +1154,6 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
     strcpy(msgbuf[1], parsed2.c_str());
     strcpy(msgbuf[2], parsed3.c_str());
     strcpy(msgbuf[3], parsed4.c_str());
-    Game.unpress();
     for (a = 0; a < 4; a++)
     {
         str_len = strlen(msgbuf[a]);
@@ -1187,27 +1184,22 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
 
         if (PlayerInput.up())
         {
-            Game.unpress();
-            ptr--;
-            if (ptr < 0)
+            if (ptr > 0)
             {
-                ptr = 0;
+                --ptr;
             }
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.down())
         {
-            Game.unpress();
-            ptr++;
-            if (ptr > numopt - 1)
+            if (ptr < numopt - 1)
             {
-                ptr = numopt - 1;
+                ++ptr;
             }
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             stop = 1;
         }
     }
@@ -1305,26 +1297,22 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                 if (PlayerInput.up() && curopt > 0)
                 {
                     play_effect(SND_CLICK, 128);
-                    Game.unpress();
                     --curopt;
                 }
                 else if (PlayerInput.down() && curopt < (n_opt - 1))
                 {
                     play_effect(SND_CLICK, 128);
-                    Game.unpress();
                     ++curopt;
                 }
                 else if (PlayerInput.balt())
                 {
                     /* Selected an option */
                     play_effect(SND_CLICK, 128);
-                    Game.unpress();
                     running = 0;
                 }
                 else if (PlayerInput.bctrl())
                 {
                     /* Just go "ow!" */
-                    Game.unpress();
                     play_effect(SND_BAD, 128);
                 }
 

@@ -257,7 +257,6 @@ void KMenu::menu(void)
 
         if (PlayerInput.up())
         {
-            Game.unpress();
             ptr--;
             if (ptr < 0)
             {
@@ -267,7 +266,6 @@ void KMenu::menu(void)
         }
         if (PlayerInput.down())
         {
-            Game.unpress();
             ptr++;
             if (ptr > 5)
             {
@@ -286,7 +284,6 @@ void KMenu::menu(void)
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             switch (ptr)
             {
             case 0:
@@ -320,7 +317,6 @@ void KMenu::menu(void)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
         if (close_menu == 1)
@@ -422,7 +418,6 @@ void KMenu::display_quest_window(void)
         if (newSelectedQuest != (int)currentQuestSelected)
         {
             play_effect(SND_CLICK, 128);
-            Game.unpress();
         }
 
         // Positive modulus: Keep the selected quest
@@ -430,7 +425,6 @@ void KMenu::display_quest_window(void)
 
         if (PlayerInput.balt() || PlayerInput.bctrl())
         {
-            Game.unpress();
             break;
         }
     }
@@ -538,19 +532,16 @@ void KMenu::spec_items(void)
 
         if (PlayerInput.down())
         {
-            Game.unpress();
             ptr = (ptr + 1) % num_items;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.up())
         {
-            Game.unpress();
             ptr = (ptr - 1 + num_items) % num_items;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
     }
@@ -684,21 +675,18 @@ void KMenu::status_screen(size_t fighter_index)
 
         if (PlayerInput.left() && fighter_index > 0)
         {
-            Game.unpress();
             fighter_index--;
             pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
         if (PlayerInput.right() && fighter_index < numchrs - 1)
         {
-            Game.unpress();
             fighter_index++;
             pidx_index = pidx[fighter_index];
             play_effect(SND_MENU, 128);
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             play_effect(SND_MENU, 128);
             stop = 1;
         }

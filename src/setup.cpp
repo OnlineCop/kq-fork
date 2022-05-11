@@ -155,7 +155,6 @@ void config_menu(void)
     dc[17] = _("Things you can do only in DebugMode.");
 #endif
 
-    Game.unpress();
     Config.push_config_state();
     Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str());
     while (!stop)
@@ -237,7 +236,6 @@ void config_menu(void)
 
         if (PlayerInput.up())
         {
-            Game.unpress();
             // "jump" over unusable options
             if (ptr == 15 && is_sound == 0)
             {
@@ -255,7 +253,6 @@ void config_menu(void)
         }
         if (PlayerInput.down())
         {
-            Game.unpress();
             // "jump" over unusable options
             if (ptr == 12 && is_sound == 0)
             {
@@ -273,7 +270,6 @@ void config_menu(void)
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             switch (ptr)
             {
             case 0:
@@ -437,7 +433,6 @@ void config_menu(void)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
     }
@@ -474,7 +469,6 @@ static bool getakey(KPlayerInput::button& b, const char* cfg)
                     b.scancode = a;
                     Config.set_config_int(NULL, cfg, a);
                 }
-                Game.unpress();
                 return true;
             }
         }
@@ -533,7 +527,6 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
 
         if (PlayerInput.left())
         {
-            Game.unpress();
             cv--;
             if (cv < minu)
             {
@@ -546,7 +539,6 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
         }
         if (PlayerInput.right())
         {
-            Game.unpress();
             cv++;
             if (cv > maxu)
             {
@@ -559,12 +551,10 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             stop = true;
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             return -1;
         }
     }
@@ -994,7 +984,6 @@ void show_help(void)
         Game.ProcessEvents();
         Draw.blit2screen();
     } while (!PlayerInput.balt() && !PlayerInput.bctrl());
-    Game.unpress();
 }
 
 /*! \brief Initialize or shutdown sound system

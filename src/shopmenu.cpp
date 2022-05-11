@@ -101,12 +101,10 @@ static void buy_item(int how_many, int item_no)
 
         if (PlayerInput.balt())
         {
-            Game.unpress();
             stop = 1;
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             return;
         }
     }
@@ -202,7 +200,6 @@ static void buy_menu(void)
 
         if (PlayerInput.up())
         {
-            Game.unpress();
             if (yptr > 0)
             {
                 yptr--;
@@ -215,7 +212,6 @@ static void buy_menu(void)
         }
         if (PlayerInput.down())
         {
-            Game.unpress();
             if (yptr < num_shop_items - 1)
             {
                 yptr++;
@@ -228,19 +224,16 @@ static void buy_menu(void)
         }
         if (PlayerInput.left() && xptr > 1)
         {
-            Game.unpress();
             xptr--;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.right() && xptr < max_x)
         {
-            Game.unpress();
             xptr++;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             blit(double_buffer, back, 0, 192, 0, 0, 320, 48);
             unsigned short max = shops[shop_no].items_current[yptr];
             if (xptr < max)
@@ -251,7 +244,6 @@ static void buy_menu(void)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = true;
         }
     }
@@ -465,7 +457,6 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
         do_inn_effects(pay);
         return;
     }
-    Game.unpress();
     Draw.drawmap();
     Draw.menubox(double_buffer, 152 - (strlen(iname) * 4), 0, strlen(iname), 1, BLUE);
     Draw.print_font(double_buffer, 160 - (strlen(iname) * 4), 8, iname, FGOLD);
@@ -528,7 +519,6 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
 
         if (PlayerInput.down())
         {
-            Game.unpress();
             if (my == 0)
             {
                 my = 1;
@@ -541,7 +531,6 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
         }
         if (PlayerInput.up())
         {
-            Game.unpress();
             if (my == 0)
             {
                 my = 1;
@@ -554,7 +543,6 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             if (my == 0)
             {
                 Game.AddGold(-(int)total_gold_cost);
@@ -617,12 +605,10 @@ static void sell_howmany(int item_no, size_t inv_page)
         {
             if (my < max_items)
             {
-                Game.unpress();
                 my++;
             }
             else
             {
-                Game.unpress();
                 my = 1;
             }
         }
@@ -630,18 +616,15 @@ static void sell_howmany(int item_no, size_t inv_page)
         {
             if (my > 1)
             {
-                Game.unpress();
                 my--;
             }
             else
             {
-                Game.unpress();
                 my = max_items;
             }
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             Draw.menubox(double_buffer, 32, 168, 30, 1, DARKBLUE);
             sprintf(strbuf, _("Sell for %d gp?"), (prc * 50 / 100) * my);
             Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 176, strbuf, FNORMAL);
@@ -650,7 +633,6 @@ static void sell_howmany(int item_no, size_t inv_page)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
     }
@@ -678,7 +660,6 @@ static void sell_item(int itno, int qty_being_sold)
         Game.ProcessEvents();
         if (PlayerInput.balt())
         {
-            Game.unpress();
             Game.AddGold(sp);
             for (a = 0; a < SHOPITEMS; a++)
             {
@@ -697,7 +678,6 @@ static void sell_item(int itno, int qty_being_sold)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
     }
@@ -778,7 +758,6 @@ static void sell_menu(void)
 
         if (PlayerInput.down())
         {
-            Game.unpress();
             if (yptr < (NUM_ITEMS_PER_PAGE - 1))
             {
                 yptr++;
@@ -791,7 +770,6 @@ static void sell_menu(void)
         }
         if (PlayerInput.up())
         {
-            Game.unpress();
             if (yptr > 0)
             {
                 yptr--;
@@ -804,7 +782,6 @@ static void sell_menu(void)
         }
         if (PlayerInput.left())
         {
-            Game.unpress();
             if (inv_page > 0)
             {
                 inv_page--;
@@ -817,7 +794,6 @@ static void sell_menu(void)
         }
         if (PlayerInput.right())
         {
-            Game.unpress();
             if (inv_page < (MAX_INV / NUM_ITEMS_PER_PAGE - 1))
             {
                 inv_page++;
@@ -830,7 +806,6 @@ static void sell_menu(void)
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr].item > 0 &&
                 items[g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr].item].price > 0)
             {
@@ -839,7 +814,6 @@ static void sell_menu(void)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
     }
@@ -889,7 +863,6 @@ int shop(int shop_num)
         return 1;
     }
 
-    Game.unpress();
     play_effect(SND_MENU, 128);
     while (!stop)
     {
@@ -909,19 +882,16 @@ int shop(int shop_num)
 
         if (PlayerInput.left() && ptr > 0)
         {
-            Game.unpress();
             ptr--;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.right() && ptr < 2)
         {
-            Game.unpress();
             ptr++;
             play_effect(SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             if (ptr == 0)
             {
                 buy_menu();
@@ -937,7 +907,6 @@ int shop(int shop_num)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = true;
         }
     }

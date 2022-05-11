@@ -77,7 +77,6 @@ void camp_item_menu(void)
         {
             if (PlayerInput.down())
             {
-                Game.unpress();
                 ptr++;
                 if (ptr > 15)
                 {
@@ -87,7 +86,6 @@ void camp_item_menu(void)
             }
             if (PlayerInput.up())
             {
-                Game.unpress();
                 ptr--;
                 if (ptr < 0)
                 {
@@ -98,7 +96,6 @@ void camp_item_menu(void)
         }
         if (PlayerInput.right())
         {
-            Game.unpress();
             if (sel == 0)
             {
                 /* One of the 16 items in the list */
@@ -121,7 +118,6 @@ void camp_item_menu(void)
         }
         if (PlayerInput.left())
         {
-            Game.unpress();
             if (sel == 0)
             {
                 /* One of the 16 items in the list */
@@ -144,7 +140,6 @@ void camp_item_menu(void)
         }
         if (PlayerInput.balt())
         {
-            Game.unpress();
             if (sel == 1)
             {
                 if (item_act == 1)
@@ -186,12 +181,10 @@ void camp_item_menu(void)
 
                                 if (PlayerInput.balt())
                                 {
-                                    Game.unpress();
                                     stop2 = 2;
                                 }
                                 if (PlayerInput.bctrl())
                                 {
-                                    Game.unpress();
                                     stop2 = 1;
                                 }
                             }
@@ -207,7 +200,6 @@ void camp_item_menu(void)
         }
         if (PlayerInput.bctrl())
         {
-            Game.unpress();
             if (sel == 0)
             {
                 sel = 1;

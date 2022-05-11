@@ -163,16 +163,6 @@ class KGame
      */
     void activate(void);
 
-    /*! \brief Wait for key release
-     *
-     * This is used to wait and make sure that the user has
-     * released a key before moving on.
-     * 20030728 PH re-implemented in IMHO a neater way
-     *
-     * \note Waits at most 20 'ticks'
-     */
-    void unpress(void);
-
     /*! \brief Wait for ALT
      *
      * Simply wait for the 'alt' key to be pressed.
