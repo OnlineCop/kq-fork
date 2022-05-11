@@ -56,7 +56,8 @@ void start_timer(int fps)
     {
         Game.program_death("Trying to start timer that is already started");
     }
-    reset_watchdog();
+    // Initially give the watchdog a grace period until we've called ProcessEvents once.
+    watchdog = 10000;
     Uint32 interval = 1000 / fps;
     timer_id = SDL_AddTimer(interval, timer_cb, nullptr);
     if (timer_id == 0)
