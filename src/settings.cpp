@@ -1,32 +1,25 @@
 #include "settings.h"
 #include <fstream>
 
+using std::endl;
 using std::ifstream;
 using std::map;
+using std::ofstream;
 using std::string;
 
 KConfig Config;
 
 KConfig::KConfig()
 {
-    data.push({});
 }
-
-static string keyname(const char* section, const char* key)
+KConfig::~KConfig()
 {
-    string k;
-    if (section)
-        k += section;
-    k += "::";
-    if (key)
-        k += key;
-    return k;
 }
 int KConfig::get_config_int(const char* section, const char* key, int defl)
 {
-    auto& top = data.top();
-    auto it = top.find(keyname(section, key));
-    if (it != top.end())
+    auto& data = section ? current.sections[section] : current.unnamed;
+    auto it = data.find(key);
+    if (it != data.end())
     {
         return it->second;
     }
@@ -38,17 +31,37 @@ int KConfig::get_config_int(const char* section, const char* key, int defl)
 
 void KConfig::set_config_int(const char* section, const char* key, int value)
 {
-    data.top().emplace(keyname(section, key), value);
+    auto& data = section ? current.sections[section] : current.unnamed;
+    data.emplace(key, value);
+    current.dirty = true;
 }
 
 void KConfig::push_config_state()
 {
-    data.push({});
+    levels.push(std::move(current));
+    current = ConfigLevel {};
 }
 
 void KConfig::pop_config_state()
 {
-    data.pop();
+    if (current.dirty && !current.filename.empty())
+    {
+        ofstream os(current.filename);
+        for (auto& i : current.unnamed)
+        {
+            os << i.first << "=" << i.second << endl;
+        }
+        for (auto& j : current.sections)
+        {
+            os << '[' << j.first << ']' << endl;
+            for (auto& i : j.second)
+            {
+                os << i.first << "=" << i.second << endl;
+            }
+        }
+    }
+    current = std::move(levels.top());
+    levels.pop();
 }
 static string strip(string s)
 {
@@ -66,6 +79,10 @@ void KConfig::set_config_file(const char* filename)
     ifstream is(filename);
     string line;
     string section;
+    bool unnamed_section = true;
+    current = ConfigLevel {};
+    current.filename = filename;
+    current.dirty = false;
     while (is)
     {
         std::getline(is, line);
@@ -75,6 +92,7 @@ void KConfig::set_config_file(const char* filename)
             if (line.front() == '[' && line.back() == ']')
             {
                 // section
+                unnamed_section = false;
                 section = line.substr(1, line.size() - 1);
             }
             else
@@ -85,7 +103,7 @@ void KConfig::set_config_file(const char* filename)
                     auto key = strip(line.substr(0, pos));
                     auto val = strip(line.substr(pos + 1));
                     int iv = std::stoi(val);
-                    set_config_int(section.c_str(), key.c_str(), iv);
+                    set_config_int(unnamed_section ? nullptr : section.c_str(), key.c_str(), iv);
                 }
             }
         }

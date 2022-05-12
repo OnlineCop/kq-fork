@@ -99,9 +99,10 @@ class KGame
      *
      * \param   map_name Base name of map (xxx -> maps/xxx.map)
      * \param   player_x New x-coord for player. Pass 0 for msx and msy to use the 'default' position stored in the map
-     * file: s_map::stx and s_map::sty \param   player_y New y-coord for player \param   camera_x New x-coord for
-     * camera. Pass 0 for mvx and mvy to use the default: s_map::stx and s_map::sty) \param   camera_y New y-coord for
-     * camera
+     * file: s_map::stx and s_map::sty
+     * \param   player_y New y-coord for player
+     * \param   camera_x New x-coord for camera. Pass 0 for mvx and mvy to use the default: s_map::stx and s_map::sty)
+     * \param   camera_y New y-coord for camera
      */
     void change_map(const string& map_name, int player_x, int player_y, int camera_x, int camera_y);
 
@@ -112,7 +113,7 @@ class KGame
      *
      * \param   map_name Base name of map (xxx -> maps/xxx.map)
      * \param   marker_name Marker containing both x and y coords for player. If the marker's name doesn't exist on the
-     * map, pass 0 for msx and msy to use the 'default' position stored in the map file (s_map::stx and s_map::sty)
+     * map, use the 'default' position stored in the map file (s_map::stx and s_map::sty)
      * \param   offset_x Horizontal offset from the marker's X tile.
      * \param   offset_y Vertical offset from the marker's Y tile.
      */

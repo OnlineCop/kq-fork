@@ -28,6 +28,7 @@ class KConfig
 {
   public:
     KConfig();
+    ~KConfig();
     void set_config_file(const char*);
     void set_config_int(const char* section, const char* key, int value);
     int get_config_int(const char* section, const char* key, int defl);
@@ -35,7 +36,15 @@ class KConfig
     void pop_config_state();
 
   private:
-    std::stack<std::map<std::string, int>> data;
+    struct ConfigLevel
+    {
+        std::map<std::string, std::map<std::string, int>> sections;
+        std::map<std::string, int> unnamed;
+        std::string filename;
+        bool dirty = false;
+    };
+    std::stack<ConfigLevel> levels;
+    ConfigLevel current;
 };
 
 extern KConfig Config;
