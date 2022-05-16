@@ -477,31 +477,31 @@ void KSaveGame::show_sgstats(int saving)
 static void show_splash_screen()
 {
     Raster* splash = get_cached_image("kqt.png");
-    auto staff = std::make_unique<Raster>(72, 226);
-    auto dudes = std::make_unique<Raster>(112, 112);
-    auto tdudes = std::make_unique<Raster>(112, 112);
-    blit(splash, staff.get(), 0, 7, 0, 0, 72, 226);
-    blit(splash, dudes.get(), 80, 0, 0, 0, 112, 112);
+    Raster staff(72, 226);
+    Raster dudes(112, 112);
+    Raster tdudes(112, 112);
+    blit(splash, &staff, 0, 7, 0, 0, 72, 226);
+    blit(splash, &dudes, 80, 0, 0, 0, 112, 112);
     double_buffer->fill(0x000000);
-    blit(staff.get(), double_buffer, 0, 0, 124, 22, 72, 226);
+    blit(&staff, double_buffer, 0, 0, 124, 22, 72, 226);
     Draw.blit2screen();
     kq_wait(1000);
     for (int a = 0; a < 42; ++a)
     {
         kq_wait(100);
-        stretch_blit(staff.get(), double_buffer, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64),
+        stretch_blit(&staff, double_buffer, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64),
                      226 + (a * 192));
         Draw.blit2screen();
     }
 
     for (int a = 0; a < 5; ++a)
     {
-        Draw.color_scale(dudes.get(), tdudes.get(), 53 - a, 53 + a);
-        draw_sprite(double_buffer, tdudes.get(), 106, 64);
+        Draw.color_scale(&dudes, &tdudes, 53 - a, 53 + a);
+        draw_sprite(double_buffer, &tdudes, 106, 64);
         Draw.blit2screen();
         kq_wait(300);
     }
-    draw_sprite(double_buffer, dudes.get(), 106, 64);
+    draw_sprite(double_buffer, &dudes, 106, 64);
     Draw.blit2screen();
     kq_wait(1000);
     do_transition(eTransitionFade::TO_WHITE, 1);
@@ -535,17 +535,16 @@ int KSaveGame::start_menu(bool skip_splash)
         Draw.blit2screen();
         set_palette(pal);
         int fade_color = 0;
-        auto start_time = SDL_GetTicks();
+        int count = 0;
         while (fade_color < 16)
         {
-            auto now = SDL_GetTicks();
             Game.ProcessEvents();
             clear_to_color(double_buffer, 15 - fade_color);
             masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), eSize::SCREEN_W, 124);
             Draw.blit2screen();
-            if (SDL_TICKS_PASSED(now, start_time + 100))
+            if (++count > 3)
             {
-                start_time = now;
+                count -= 3;
                 ++fade_color;
             }
         }

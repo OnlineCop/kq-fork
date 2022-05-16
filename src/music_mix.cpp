@@ -184,7 +184,7 @@ Mix_Music* Mix_MusicLoader::operator()(const std::string& music_name)
 Mix_Chunk* Mix_ChunkLoader::operator()(const std::string& name)
 {
     auto path = kqres(eDirectories::DATA_DIR, name);
-    return Mix_LoadWAV(name.c_str());
+    return Mix_LoadWAV(path.c_str());
 }
 void Mix_ChunkDeleter::operator()(Mix_Chunk* chunk)
 {
@@ -192,7 +192,7 @@ void Mix_ChunkDeleter::operator()(Mix_Chunk* chunk)
 }
 void* KMusic::get_sample(const string& s)
 {
-    return sample_cache.get(kqres(eDirectories::DATA_DIR, s));
+    return sample_cache.get(s);
 }
 void KMusic::free_samples()
 {

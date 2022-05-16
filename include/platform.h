@@ -43,6 +43,3 @@ enum class eDirectories
    or user data (screenshots, prefs, saved games)
  */
 const string kqres(enum eDirectories, const std::string&);
-
-const string get_lua_file_path(const std::string&, const std::string&);
-const string get_resource_file_path(const std::string&, const std::string&, const std::string&);

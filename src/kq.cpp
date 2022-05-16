@@ -183,21 +183,13 @@ KFighter tempa, tempd;
 /*! Name of current shop */
 string shop_name;
 
-/*! Items in a shop */
-/* int shin[SHOPITEMS]; One global variable down; 999,999 to go --WK */
-
 /*! Should we display a box with attack_string in it (used in combat) */
 int display_attack_string = 0;
 
 /*! Name of current spell or special ability */
 char attack_string[39];
 
-/*! \note 23: for keeping time. timer_count is the game timer the main game
- * loop uses for logic (see int main()) and the rest track your playtime in
- * hours, minutes and seconds. They're all used in the my_counter() timer
- * function just below
- */
-volatile int timer = 0, timer_count = 0, animation_count = 0;
+volatile int animation_count = 0;
 
 /*! Current colour map */
 COLOR_MAP cmap;
@@ -317,7 +309,6 @@ KGame::KGame()
     : WORLD_MAP("main")
     , KQ_TICKS(30)
     , game_time(0)
-    , game_start_ticks(0)
     , gp(0)
 {
 }
@@ -858,27 +849,18 @@ void KGame::klog(const char* msg)
 
 void KGame::kwait(int dtime)
 {
-    int cnt = 0;
-
     autoparty = 1;
-    timer_count = 0;
 
-    while (cnt < dtime)
+    while (dtime > 0)
     {
         ProcessEvents();
         Music.poll_music();
-        while (timer_count > 0)
-        {
-            Music.poll_music();
-            timer_count--;
-            cnt++;
-            process_entities();
-        }
+        --dtime;
+        process_entities();
         do_check_animation();
         Draw.drawmap();
         Draw.blit2screen();
     }
-    timer_count = 0;
     autoparty = 0;
 }
 
@@ -963,7 +945,6 @@ int main(int argc, const char* argv[])
         if (game_on)
         {
             stop = 0;
-            timer_count = 0;
             alldead = 0;
 
             /* While the actual game is playing */
@@ -1155,9 +1136,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 
     use_sstone = g_map.use_sstone;
     cansave = g_map.can_save;
-    timer_count = 0;
     do_postexec();
-    timer_count = 0;
 }
 
 void KGame::program_death(const char* message, const char* extra)
@@ -1187,6 +1166,8 @@ void KGame::reset_timer_events(void)
 
 void KGame::reset_world(void)
 {
+    /* Start with no characters in play */
+    numchrs = 0;
     /* Reset timer */
     SetGameTime({ 0 });
     /* Initialize special_items array */
@@ -1526,8 +1507,6 @@ void KGame::warp(int wtx, int wty, int fspeed)
     {
         do_transition(eTransitionFade::IN, fspeed);
     }
-
-    timer_count = 0;
 }
 
 void KGame::zone_check(void)
@@ -1617,7 +1596,7 @@ bool KGame::ProcessEvents()
             {
             case SDL_USEREVENT: // this is our frame timer
                 wait_timer = false;
-                timer_count += 3;
+                ++game_time;
                 ++ecount;
                 break;
             case SDL_QUIT:
@@ -1661,14 +1640,11 @@ bool KGame::ProcessEvents()
 
 void KGame::SetGameTime(const KTime& t)
 {
-    game_time = t.total_seconds();
-    game_start_ticks = SDL_GetTicks();
+    game_time = t.total_seconds() * KQ_TICKS;
 }
 KTime KGame::GetGameTime() const
 {
-    // TODO this will go badly wrong after 49 days!
-    int elapsed = (SDL_GetTicks() - game_start_ticks) / 1000;
-    return { game_time + elapsed };
+    return { game_time / KQ_TICKS };
 }
 int KGame::get_key()
 {

@@ -25,12 +25,13 @@ endif(LUA_FOUND)
 if(DUMB_FOUND)
 	message(STATUS "DUMB found at ${DUMB_INCLUDE_DIR}")
 endif(DUMB_FOUND)
-
+configure_file(config.cmake.h makeconfig.h)
+include_directories(${CMAKE_BINARY_DIR}) # for makeconfig.h
 include_directories( ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${SDL2_mixer_INCLUDE_DIRS})
 add_definitions(${PNG_DEFINITIONS})
 set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
 set(KQ_CHEATS 1 CACHE BOOL "Features for allowing Lua script cheats in game")
-
+set(KQ_DATADIR "." CACHE STRING "Where the data dirs are going to be installed")
 
 set(kq-fork_SRCS
 	src/anim_sequence.cpp

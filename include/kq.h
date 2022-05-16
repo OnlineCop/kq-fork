@@ -393,10 +393,8 @@ class KGame
     const string WORLD_MAP;
     /*! The number of frames per second */
     const int32_t KQ_TICKS;
-    // Game time in seconds
+    // Game time in ticks (should be enough for >2 years real time play)
     int game_time;
-    // Instant the game started
-    Uint64 game_start_ticks;
 
   protected:
     /*! Name of the current map */
