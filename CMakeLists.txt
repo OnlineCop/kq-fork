@@ -3,11 +3,11 @@ include(FindPkgConfig)
 
 project(kq-fork)
 
-set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR};${CMAKE_CURRENT_SOURCE_DIR}/maps")
+set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}"
+  "${CMAKE_CURRENT_SOURCE_DIR}")
 
 find_package(SDL2 REQUIRED)
 find_package(Lua REQUIRED)
-find_package(DUMB REQUIRED)
 find_package(PNG REQUIRED)
 find_package(ZLIB REQUIRED)
 pkg_check_modules(SDL2_mixer REQUIRED SDL2_mixer)
@@ -22,12 +22,9 @@ if(LUA_FOUND)
 	message(STATUS "Lua found at ${LUA_INCLUDE_DIR}")
 endif(LUA_FOUND)
 
-if(DUMB_FOUND)
-	message(STATUS "DUMB found at ${DUMB_INCLUDE_DIR}")
-endif(DUMB_FOUND)
 configure_file(config.cmake.h makeconfig.h)
 include_directories(${CMAKE_BINARY_DIR}) # for makeconfig.h
-include_directories( ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${SDL2_mixer_INCLUDE_DIRS})
+include_directories( ${LUA_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${SDL2_mixer_INCLUDE_DIRS})
 add_definitions(${PNG_DEFINITIONS})
 set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
 set(KQ_CHEATS 1 CACHE BOOL "Features for allowing Lua script cheats in game")
@@ -76,7 +73,7 @@ set(kq-fork_SRCS
 	src/unix.cpp
 )
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/maps")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS_DEBUG  ${CMAKE_CXX_FLAGS} "-g -ggdb3 -O0 -DDEBUGMODE -DKQ_CHEATS" )
@@ -90,7 +87,6 @@ target_link_libraries(kq-fork
 	${LUA_LIBRARY}
 	${SDL2_LIBRARIES}
 	${SDL2_mixer_LINK_LIBRARIES}
-	${DUMB_LIBRARIES}
 	${TINYXML2}
 	${M_LIB}
 	${PNG_LIBRARIES}

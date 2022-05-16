@@ -49,7 +49,7 @@ bool KMarkers::Add(KMarker&& marker)
             return true;
         }
     }
-    m_markers.push_back(marker);
+    m_markers.push_back(std::move(marker));
     return true;
 }
 
