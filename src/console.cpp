@@ -111,7 +111,7 @@ void console_state::display()
     // Draw a cursor
     if ((blink % 50) < 25)
     {
-        rectfill(double_buffer, w, 237, w + Draw.text_length(FNORMAL, "_"), 240, makecol(192, 240, 240));
+        rectfill(double_buffer, w, 237, w + Draw.text_length(FNORMAL, "_"), 240, 13);
     }
 }
 

@@ -413,16 +413,33 @@ int KGame::add_timer_event(const char* n, int delta)
 
 Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name)
 {
-    Raster* tmp = new Raster(bitmap_width, bitmap_height);
-
-    if (!tmp)
+    Raster* tmp = bitmap_name ? new Raster(bitmap_width, bitmap_height) : nullptr;
+    static int count = 0;
+    static const char* last = nullptr;
+    if (!tmp && bitmap_name)
     {
         sprintf(strbuf, _("Could not allocate %s!."), bitmap_name);
         program_death(strbuf);
     }
     else
     {
-        printf("Allocating %d x %d --> %s\n", bitmap_width, bitmap_height, bitmap_name);
+        if (last == bitmap_name)
+        {
+            ++count;
+        }
+        else
+        {
+            last = bitmap_name;
+            if (count > 0)
+            {
+                printf("[last alloc repeats * %d]\n", count);
+                count = 0;
+            }
+            if (bitmap_name)
+            {
+                printf("Allocating %d x %d --> %s\n", bitmap_width, bitmap_height, bitmap_name);
+            }
+        }
     }
     return tmp;
 }
@@ -435,11 +452,9 @@ Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char*)
 
 void KGame::allocate_stuff(void)
 {
-    size_t i, p;
-
     kfonts = alloc_bmp(1024, 60, "kfonts");
 
-    for (i = 0; i < 5; i++)
+    for (int i = 0; i < 5; i++)
     {
         sfonts[i] = alloc_bmp(60, 8, "sfonts[i]");
     }
@@ -455,7 +470,7 @@ void KGame::allocate_stuff(void)
     noway = alloc_bmp(16, 16, "noway");
     missbmp = alloc_bmp(20, 6, "missbmp");
 
-    for (i = 0; i < 9; i++)
+    for (int i = 0; i < 9; i++)
     {
         pgb[i] = alloc_bmp(9, 9, "pgb[x]");
     }
@@ -467,27 +482,34 @@ void KGame::allocate_stuff(void)
     b_repulse = alloc_bmp(16, 166, "b_repulse");
     b_mp = alloc_bmp(10, 8, "b_mp");
 
-    for (p = 0; p < MAXE; p++)
+    for (int p = 0; p < MAXE; p++)
     {
-        for (i = 0; i < MAXEFRAMES; i++)
+        for (int i = 0; i < MAXEFRAMES; i++)
         {
             eframes[p][i] = alloc_bmp(16, 16, "eframes[x][x]");
         }
     }
 
-    for (i = 0; i < MAXCHRS; i++)
+    for (int i = 0; i < MAXCHRS; i++)
     {
-        for (p = 0; p < MAXFRAMES; p++)
+        for (int p = 0; p < MAXFRAMES; p++)
         {
             frames[i][p] = alloc_bmp(16, 16, "frames[x][x]");
         }
     }
 
-    for (p = 0; p < MAXCFRAMES; p++)
+    for (int p = 0; p < MAXCFRAMES; p++)
     {
-        for (i = 0; i < NUM_FIGHTERS; i++)
+        for (int i = 0; i < NUM_FIGHTERS; i++)
         {
             cframes[i][p] = alloc_bmp(32, 32, "cframes[x][x]");
+        }
+    }
+
+    for (int p = 0; p < MAXCFRAMES; p++)
+    {
+        for (int i = 0; i < NUM_FIGHTERS; i++)
+        {
             tcframes[i][p] = alloc_bmp(32, 32, "tcframes[x][x]");
         }
     }
@@ -496,36 +518,39 @@ void KGame::allocate_stuff(void)
     back = alloc_bmp(SCREEN_W2, SCREEN_H2, "back");
     fx_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "fx_buffer");
 
-    for (p = 0; p < MAX_SHADOWS; p++)
+    for (int p = 0; p < MAX_SHADOWS; p++)
     {
         shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
     }
 
-    for (p = 0; p < 8; p++)
+    for (int p = 0; p < 8; p++)
     {
         bub[p] = alloc_bmp(16, 16, "bub[x]");
     }
 
-    for (p = 0; p < 3; p++)
+    for (int p = 0; p < 3; p++)
     {
         bord[p] = alloc_bmp(8, 8, "bord[x]");
         bord[p + 5] = alloc_bmp(8, 8, "bord[x]");
     }
 
-    for (p = 3; p < 5; p++)
+    for (int p = 3; p < 5; p++)
     {
         bord[p] = alloc_bmp(8, 12, "bord[x]");
     }
 
-    for (p = 0; p < 8; p++)
+    for (int p = 0; p < 8; p++)
     {
         players[p].portrait = alloc_bmp(40, 40, "portrait[x]");
     }
 
-    for (p = 0; p < MAX_TILES; p++)
+    for (int p = 0; p < MAX_TILES; p++)
     {
         map_icons[p] = alloc_bmp(TILE_W, TILE_H, "map_icons[x]");
     }
+#ifdef DEBUGMODE
+    alloc_bmp(0, 0, nullptr);
+#endif
     allocate_credits();
 }
 
@@ -891,7 +916,6 @@ void KGame::load_heroes(void)
         faces->blitTo(players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
     }
 }
-int _cycle = 0;
 /*! \brief Main function
  *
  * Well, this one is pretty obvious.
@@ -950,14 +974,17 @@ int main(int argc, const char* argv[])
             /* While the actual game is playing */
             while (!stop)
             {
-                ++_cycle;
                 Game.ProcessEvents();
                 process_entities();
                 Game.do_check_animation();
                 Draw.drawmap();
                 Draw.blit2screen();
                 Music.poll_music();
-
+                if (Game.want_console)
+                {
+                    Game.want_console = false;
+                    run_console();
+                }
                 if (PlayerInput.besc())
                 {
                     stop = SaveGame.system_menu();
@@ -1423,7 +1450,7 @@ void KGame::extra_controls()
     }
     if (key[SDL_SCANCODE_BACKSLASH])
     {
-        run_console();
+        want_console = true;
     }
 #endif
 }
@@ -1437,7 +1464,7 @@ void KGame::wait_enter(void)
 
 void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
 {
-    int any_following_entities;
+    bool any_following_entities;
     uint8_t move_mode;
     size_t entity_index;
 
@@ -1456,13 +1483,13 @@ void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
         Draw.drawmap();
         Draw.blit2screen();
 
-        any_following_entities = 0;
+        any_following_entities = false;
         for (entity_index = first_entity_index; entity_index <= last_entity_index; ++entity_index)
         {
             move_mode = g_ent[entity_index].movemode;
             if (g_ent[entity_index].active == 1 && (move_mode == MM_SCRIPT || move_mode == MM_TARGET))
             {
-                any_following_entities = 1;
+                any_following_entities = true;
                 break; // for()
             }
         }

@@ -395,6 +395,7 @@ class KGame
     const int32_t KQ_TICKS;
     // Game time in ticks (should be enough for >2 years real time play)
     int game_time;
+    bool want_console = false;
 
   protected:
     /*! Name of the current map */
