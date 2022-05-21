@@ -432,12 +432,12 @@ Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap
             last = bitmap_name;
             if (count > 0)
             {
-                printf("[last alloc repeats * %d]\n", count);
+                SDL_Log("[last alloc repeats * %d]\n", count);
                 count = 0;
             }
             if (bitmap_name)
             {
-                printf("Allocating %d x %d --> %s\n", bitmap_width, bitmap_height, bitmap_name);
+                SDL_Log("Allocating %d x %d --> %s\n", bitmap_width, bitmap_height, bitmap_name);
             }
         }
     }
@@ -1171,12 +1171,10 @@ void KGame::program_death(const char* message, const char* extra)
     if (extra)
     {
         TRACE("%s: %s\n", message, extra);
-        printf("%s: %s\n", message, extra);
     }
     else
     {
         TRACE("%s\n", message);
-        printf("%s\n", message);
     }
     deallocate_stuff();
     exit(EXIT_FAILURE);
@@ -1252,6 +1250,9 @@ void KGame::startup(void)
     time_t t;
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER | SDL_INIT_AUDIO);
+#ifdef DEBUGMODE
+    SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
+#endif
 
     /* Buffers to allocate */
     strbuf = (char*)malloc(4096);
@@ -1266,7 +1267,7 @@ void KGame::startup(void)
     sound_avail = Mix_Init(MIX_INIT_MOD) != 0;
     if (!sound_avail)
     {
-        printf(_("Error with sound: %s\n"), Mix_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, _("Error with sound: %s\n"), Mix_GetError());
     }
     parse_setup();
     sound_init();

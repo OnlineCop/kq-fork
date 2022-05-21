@@ -3755,7 +3755,7 @@ static int KQ_sfx(lua_State* L)
     }
     else
     {
-        printf("KQ_sfx L::1 is NaN");
+        SDL_Log("KQ_sfx L::1 is NaN");
     }
     return 0;
 }
@@ -3769,7 +3769,7 @@ static int KQ_shop(lua_State* L)
     }
     else
     {
-        printf("KQ_shop L::1 is NaN");
+        SDL_Log("KQ_shop L::1 is NaN");
     }
     return 0;
 }
@@ -3800,7 +3800,7 @@ static int KQ_shop_add_item(lua_State* L)
     index = (size_t)lua_tonumber(L, 1);
     if (index >= NUMSHOPS)
     {
-        printf(_("Value passed to shop_add_item() L::1 (%u) >= NUMSHOPS\n"), (uint32_t)index);
+        SDL_Log(_("Value passed to shop_add_item() L::1 (%u) >= NUMSHOPS\n"), (uint32_t)index);
         return 0;
     }
 
@@ -3814,7 +3814,7 @@ static int KQ_shop_add_item(lua_State* L)
 
     if (i == SHOPITEMS)
     {
-        printf(_("Tried to add too many different items to a shop. Maximum is %d\n"), SHOPITEMS);
+        SDL_Log(_("Tried to add too many different items to a shop. Maximum is %d\n"), SHOPITEMS);
         return 0;
     }
 
@@ -3872,14 +3872,19 @@ static int KQ_traceback(lua_State* theL)
     /* Function at index 0 is always KQ_traceback; don't show it */
     int level = 1;
 
-    printf(_("%s\nStack trace:\n"), lua_tostring(theL, -1));
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, _("%s\nStack trace:\n"), lua_tostring(theL, -1));
     while (lua_getstack(theL, level, &ar) != 0)
     {
         lua_getinfo(theL, "Sln", &ar);
-        printf(_("#%d Line %d in (%s %s) %s\n"), level, ar.currentline, ar.what, ar.namewhat, ar.name);
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, _("#%d Line %d in (%s %s) %s\n"), level, ar.currentline, ar.what,
+                     ar.namewhat, ar.name);
         ++level;
     }
-    Draw.message(_("Script error. If KQ was compiled with DEBUGMODE, see allegro.log"), 255, 0);
+#ifndef DEBUGMODE
+    Draw.message(_("Script error."), 255, 0);
+#else
+    Draw.message(_("Script error. Check system logs for more info"), 255, 0);
+#endif
     return 1;
 }
 
