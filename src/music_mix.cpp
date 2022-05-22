@@ -119,6 +119,10 @@ void KMusic::poll_music(void)
  */
 void KMusic::play_music(const std::string& music_name, long)
 {
+    if (is_sound == 0)
+    {
+        return;
+    }
     if (music)
     {
         Mix_FadeOutMusic(1000);
@@ -139,6 +143,10 @@ void KMusic::play_music(const std::string& music_name, long)
  */
 void KMusic::stop_music(void)
 {
+    if (is_sound == 0)
+    {
+        return;
+    }
     Mix_HaltMusic();
     music = nullptr;
 }
@@ -151,6 +159,10 @@ void KMusic::stop_music(void)
  */
 void KMusic::pause_music(void)
 {
+    if (is_sound == 0)
+    {
+        return;
+    }
     Mix_PauseMusic();
 }
 
@@ -161,6 +173,10 @@ void KMusic::pause_music(void)
  */
 void KMusic::resume_music(void)
 {
+    if (is_sound == 0)
+    {
+        return;
+    }
     Mix_ResumeMusic();
 }
 
@@ -169,6 +185,10 @@ void KMusic::play_effect(int, int)
 }
 void KMusic::play_sample(void* chunk, int, int, int, int)
 {
+    if (is_sound == 0)
+    {
+        return;
+    }
     Mix_PlayChannel(-1, reinterpret_cast<Mix_Chunk*>(chunk), 0);
 }
 void KMusic::set_volume(float, int)
