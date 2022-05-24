@@ -503,6 +503,8 @@ int skill_use(size_t attack_fighter_index)
     int tgt, found_item, a, b, c, p, cts, tx, ty, next_target = 0, nn[NUM_FIGHTERS];
     size_t enemy_index;
     size_t fighter_index;
+    int rare_chance = 5;
+
     tempa = Magic.status_adjust(attack_fighter_index);
     switch (pidx[attack_fighter_index])
     {
@@ -783,6 +785,7 @@ int skill_use(size_t attack_fighter_index)
         Combat.battle_render(attack_fighter_index, attack_fighter_index, 0);
         found_item = 0;
 #ifdef DEBUGMODE
+	(void) rare_chance;
         if (debugging > 2)
         {
             if (fighter[enemy_index].steal_item_rare > 0)
