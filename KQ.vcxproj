@@ -244,6 +244,7 @@
     <None Include="maps\town8.tmx" />
     <None Include="maps\uschrs.tsx" />
     <None Include="maps\village.tsx" />
+    <None Include="README.md" />
     <None Include="scripts\bridge.lua" />
     <None Include="scripts\bridge2.lua" />
     <None Include="scripts\camp.lua" />

@@ -44,6 +44,9 @@
     <Filter Include="Resource Files\Data">
       <UniqueIdentifier>{6a5e5434-9971-4226-b760-2152096f2f49}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Help">
+      <UniqueIdentifier>{722fd61f-c62a-46d8-8d83-e9901d3741df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\anim_sequence.cpp">
@@ -598,6 +601,9 @@
     </None>
     <None Include="scripts\cave7.lua">
       <Filter>Resource Files\Lua Files</Filter>
+    </None>
+    <None Include="README.md">
+      <Filter>Resource Files\Help</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
