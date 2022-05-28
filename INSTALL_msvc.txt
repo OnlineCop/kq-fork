@@ -1,18 +1,21 @@
 Create a new directory at C:\KQ
 
 Download the MSVC precompiled library files and binaries from:
-- http://cdn.allegro.cc/file/library/allegro/4.4.2/allegro-4.4.2-msvc-10.0.zip
+- https://www.allegro.cc/files/?v=4.4 (I used http://cdn.allegro.cc/file/library/allegro/4.4.2/allegro-4.4.2-msvc-10.0.zip).
 - Extract the files, then rename the parent directory (the one above bin/, include/ and lib/) to `allegro`.
 
 Download DUMB:
-- https://sourceforge.net/projects/dumb/files/dumb/0.9.3/ selecting dumb-0.9.3.zip\
-- Extract the files under C:\KQ\dumb
+- https://github.com/kode54/dumb
+- Install via the instructions found under COMPILING.md, then move the binaries to C:\KQ\dumb.
+  Older instructions:
+  - https://sourceforge.net/projects/dumb/files/dumb/0.9.3/ selecting dumb-0.9.3.zip\
+  - Extract the files under C:\KQ\dumb
 
 Download kq-fork:
-- https://github.com/grrk-bzzt/kq-fork
-- Clone the project under C:\KQ\kq-fork
+- Clone https://github.com/onlinecop/kq-fork under C:\KQ (should give you C:\KQ\kq-fork).
 
 Download Lua:
+- See instructions on https://github.com/OnlineCop/kq-fork/wiki/Compile-Lua-in-VS2019-from-sources or...
 - https://www.lua.org/download.html and/or https://www.lua.org/ftp/lua-5.3.2.tar.gz
 - Extract the files under C:\KQ\lua
 
