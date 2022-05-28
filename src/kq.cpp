@@ -1295,7 +1295,7 @@ void KGame::startup(void)
     s_seg = z_seg = o_seg = NULL;
 
     allocate_stuff();
-    install_keyboard();
+    //install_keyboard();
     install_timer();
 
     /* KQ uses digi sound but it doesn't use MIDI */
