@@ -31,12 +31,12 @@ endif(DUMB_FOUND AND ALLEGRO_FOUND)
 
 include_directories( ${ALLEGRO_INCLUDE_DIR} ${LUA_INCLUDE_DIR} ${DUMB_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 add_definitions(${PNG_DEFINITIONS})
-#set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
-set(KQ_DEBUGGING 0 CACHE BOOL "Features for debugging the game")
+set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
+set(KQ_CHEATS 1 CACHE BOOL "Features for allowing Lua script cheats in game")
 
 
 set(kq-fork_SRCS
-    src/anim_sequence.cpp
+	src/anim_sequence.cpp
 	src/animation.cpp
 	src/bounds.cpp
 	src/combat.cpp
@@ -64,7 +64,6 @@ set(kq-fork_SRCS
 	src/masmenu.cpp
 	src/menu.cpp
 	src/movement.cpp
-	#src/music_dumb.cpp
 	src/music.cpp
 	src/player.cpp
 	src/random.cpp
@@ -73,15 +72,15 @@ set(kq-fork_SRCS
 	src/setup.cpp
 	src/sgame.cpp
 	src/shopmenu.cpp
+	src/tiledmap.cpp
 	src/timing.cpp
 	src/unix.cpp
-	src/tiledmap.cpp
 )
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/maps")
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS_DEBUG  ${CMAKE_CXX_FLAGS} "-O0 -g -DDEBUGMODE -DKQ_CHEATS" )
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS_DEBUG  ${CMAKE_CXX_FLAGS} "-g -ggdb3 -O0 -DDEBUGMODE -DKQ_CHEATS" )
 set(CMAKE_CXX_FLAGS_RELEASE  ${CMAKE_CXX_FLAGS} "-O2" )
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO  ${CMAKE_CXX_FLAGS} "-O2 -g" )
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra")
