@@ -17,7 +17,7 @@ Now the game is being forked once again in the hope to modernize it and finish t
 
 **grrk-bzzt** and **OnlineCop** are the maintainers of this project.
 
-You can get in touch with us on IRC at **#kqfork** on ***irc.freenode.net***
+You can get in touch with us in the [#kqfork](https://web.libera.chat/?nick=kqfork-?&chan=#kqfork) Libera IRC channel.
 
 
 Credits
@@ -54,7 +54,7 @@ You can use these tilesets in your program freely. No attribution is required. A
 How to install KQ
 -----------------
 
-First, download the latest stable version of KQ on the **[Releases](https://github.com/grrk-bzzt/kq-fork/releases)** page.
+First, download the latest stable version of KQ on the **[Releases](https://github.com/onlinecop/kq-fork/releases)** page.
 
 Check that you have these libraries installed:
 * Allegro v4
