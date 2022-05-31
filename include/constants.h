@@ -29,6 +29,3 @@ const int SCREEN_W2 = (SCREEN_W + 2 * TILE_W);
 // 272, or (240 + 16 + 16) == screen dimensions plus 1 tile on top and 1 tile on bottom.
 const int SCREEN_H2 = (SCREEN_H + 2 * TILE_H);
 }; // namespace eSize
-
-// The same blit() function was called all over the place, so this simplifies the call.
-#define fullblit(a, b) blit((a), (b), 0, 0, 0, 0, eSize::SCREEN_W2, eSize::SCREEN_H2)

@@ -102,7 +102,7 @@ eAttackResult KCombat::attack_result(int ar, int dr)
     attacker_weapon_element = tempa.welem;
     defender_defense = tempd.stats[eStat::Defense];
     defender_evade = tempd.stats[eStat::Evade];
-    
+
     /*  JB: check to see if the attacker is in critical status...  */
     /*      increases chance for a critical hit                    */
     if (tempa.mhp > 250)
@@ -307,7 +307,7 @@ eAttackResult KCombat::attack_result(int ar, int dr)
 #endif
 
     dmg = mult * base;
-    
+
     if (do_staff_effect && tempd.opal_power > 0)
     {
         dmg *= ((4 - tempd.opal_power) / 4.);
@@ -1612,7 +1612,8 @@ void KCombat::multi_fight(size_t attack_fighter_index)
         if ((fighter[fighter_index].IsAlive()) && (fighter[fighter_index].mhp > 0))
         {
             // ares[fighter_index] = attack_result(attack_fighter_index, fighter_index);
-            attack_result(attack_fighter_index, fighter_index); // This actually does the damage so it cannot be removed.
+            attack_result(attack_fighter_index,
+                          fighter_index); // This actually does the damage so it cannot be removed.
             fighter[fighter_index].SetPoisoned(tempd.IsPoisoned());
             fighter[fighter_index].SetBlind(tempd.IsBlind());
             fighter[fighter_index].SetCharmed(tempd.IsCharmed());

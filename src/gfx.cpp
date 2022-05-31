@@ -20,14 +20,13 @@ void get_palette(RGB* clrs)
 {
     std::copy(current_palette, current_palette + PAL_SIZE, clrs);
 }
+#define ALIGNED(x) ((x) + alignof(char*) - 1) & ~(alignof(char*) - 1)
 Raster::Raster(uint16_t w, uint16_t h)
     : width(w)
     , height(h)
-    , stride(w)
-    , data(new uint8_t[w * h])
+    , stride(ALIGNED(w))
+    , data(new uint8_t[stride * h])
     , xt(new int[w])
-    , yt(new int[h])
-
 {
 }
 
@@ -39,50 +38,65 @@ void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w
     auto y0 = std::max(0, int(dest_y));
     auto y1 = std::min(int(target->height), dest_y + dest_h);
     bool stretch = (dest_w != src_w) || (dest_h != src_h);
+    // Four cases - stretch + masked, stretch + not masked, not stretch + masked, not stretch + not masked.
     if (stretch)
     {
         for (auto i = x0; i < x1; ++i)
         {
             target->xt[i] = (i - dest_x) * src_w / dest_w;
         }
-        for (auto j = y0; j < y1; ++j)
+        if (masked)
         {
-            target->yt[j] = src_x + stride * (src_y + (j - dest_y) * src_h / dest_h);
-        }
-    }
-    else // Not stretch
-    {
-        for (auto i = x0; i < x1; ++i)
-        {
-            target->xt[i] = i - dest_x;
-        }
-        for (auto j = y0; j < y1; ++j)
-        {
-            target->yt[j] = src_x + stride * (src_y + (j - dest_y));
-        }
-    }
-    if (masked)
-    {
-        for (auto j = y0; j < y1; ++j)
-        {
-            for (auto i = x0; i < x1; ++i)
+            for (auto j = y0; j < y1; ++j)
             {
-                uint8_t c = data[target->xt[i] + target->yt[j]];
-                if (c)
+                auto yt = src_x + stride * (src_y + (j - dest_y) * src_h / dest_h);
+                for (auto i = x0; i < x1; ++i)
                 {
+                    uint8_t c = data[target->xt[i] + yt];
+                    if (c)
+                    {
+                        target->data[i + j * target->stride] = c;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (auto j = y0; j < y1; ++j)
+            {
+                auto yt = src_x + stride * (src_y + (j - dest_y) * src_h / dest_h);
+                for (auto i = x0; i < x1; ++i)
+                {
+                    uint8_t c = data[target->xt[i] + yt];
                     target->data[i + j * target->stride] = c;
                 }
             }
         }
     }
-    else
+    else // Not stretch
     {
-        for (auto j = y0; j < y1; ++j)
+        if (masked)
         {
-            for (auto i = x0; i < x1; ++i)
+            for (auto j = y0; j < y1; ++j)
             {
-                uint8_t c = data[target->xt[i] + target->yt[j]];
-                target->data[i + j * target->stride] = c;
+                auto yt = src_x - dest_x + stride * (src_y - dest_y + j);
+                for (auto i = x0; i < x1; ++i)
+                {
+                    uint8_t c = data[i + yt];
+                    if (c)
+                    {
+                        target->data[i + j * target->stride] = c;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (auto j = y0; j < y1; ++j)
+            {
+                auto src_base = data.get() + src_x - dest_x + stride * (src_y - dest_y + j);
+                auto dest_base = target->data.get() + target->stride * j;
+                std::copy(src_base + x0, src_base + x1, dest_base + x0);
             }
         }
     }

@@ -785,7 +785,7 @@ int skill_use(size_t attack_fighter_index)
         Combat.battle_render(attack_fighter_index, attack_fighter_index, 0);
         found_item = 0;
 #ifdef DEBUGMODE
-	(void) rare_chance;
+        (void)rare_chance;
         if (debugging > 2)
         {
             if (fighter[enemy_index].steal_item_rare > 0)
@@ -829,7 +829,7 @@ int skill_use(size_t attack_fighter_index)
 
         if (party[pidx[attack_fighter_index]].eqp[EQP_SPECIAL] == I_GLOVES3)
         {
-            //cts -= 10;
+            // cts -= 10;
             cts -= 25;
             rare_chance = 15;
         }

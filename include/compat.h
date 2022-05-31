@@ -18,16 +18,7 @@ inline int makecol(int r, int g, int b)
 {
     return ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
 }
-extern int _color_depth;
 
-inline int readkey()
-{
-    return 0;
-}
-inline int keypressed()
-{
-    return 0;
-}
 void fade_interpolate(RGB*, RGB*, RGB*, int, int, int);
 
 #define DRAW_MODE_SOLID 0

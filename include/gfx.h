@@ -34,7 +34,6 @@ class Raster
   private:
     std::unique_ptr<uint8_t[]> data;
     std::unique_ptr<int[]> xt;
-    std::unique_ptr<int[]> yt;
 };
 
 // Compatibility stuff
@@ -111,3 +110,7 @@ inline void rect(Raster* r, int x1, int y1, int x2, int y2, int c)
 void textprintf(Raster*, void*, int, int, int, const char*, ...);
 
 void set_window_palette(SDL_Window* w);
+inline void fullblit(Raster* src, Raster* dest)
+{
+    src->blitTo(dest);
+}
