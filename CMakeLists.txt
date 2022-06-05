@@ -7,14 +7,19 @@ set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}"
   "${CMAKE_CURRENT_SOURCE_DIR}")
 
 find_package(SDL2 CONFIG REQUIRED)
-find_package(sdl2-mixer CONFIG REQUIRED)
 find_package(Lua REQUIRED)
 find_package(PNG REQUIRED)
 find_package(tinyxml2 CONFIG REQUIRED)
-
+if(WIN32)
+find_package(sdl2-mixer CONFIG REQUIRED)
+set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main SDL2::SDL2_mixer)
+else()
+pkg_check_modules(SDL2_MIXER REQUIRED sdl2_mixer)
+set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main ${SDL2_MIXER_LINK_LIBRARIES})
+endif()
 configure_file(config.cmake.h makeconfig.h)
 include_directories(${CMAKE_BINARY_DIR}) # for makeconfig.h
-include_directories( ${LUA_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${SDL2_mixer_INCLUDE_DIRS})
+include_directories( ${LUA_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${SDL2_mixer_INCLUDE_DIRS} ${SDL2_MIXER_INCLUDE_DIRS})
 add_definitions(${PNG_DEFINITIONS})
 set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
 set(KQ_CHEATS 1 CACHE BOOL "Features for allowing Lua script cheats in game")
@@ -60,10 +65,9 @@ set(kq-fork_SRCS
 	src/shopmenu.cpp
 	src/tiledmap.cpp
 	src/timing.cpp
-	$<$<PLATFORM_ID:Unix>:src/unix.cpp>
+	$<$<PLATFORM_ID:Unix,Darwin>:src/unix.cpp>
 	$<$<PLATFORM_ID:Windows>:src/win.cpp>
 )
-set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main SDL2::SDL2_mixer)
 set(TINYXML2_LIBRARIES tinyxml2::tinyxml2)
 set(PNG_LIBRARIES PNG::PNG)
 
