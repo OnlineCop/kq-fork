@@ -6,21 +6,11 @@ project(kq-fork)
 set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}"
   "${CMAKE_CURRENT_SOURCE_DIR}")
 
-find_package(SDL2 REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
+find_package(sdl2-mixer CONFIG REQUIRED)
 find_package(Lua REQUIRED)
 find_package(PNG REQUIRED)
-find_package(ZLIB REQUIRED)
-pkg_check_modules(SDL2_mixer REQUIRED SDL2_mixer)
-
-find_library(TINYXML2 tinyxml2)
-
-if (SDL2_FOUND)
-   message(STATUS "SDL2 found at ${SDL2_INCLUDE_DIRS}")
-endif (SDL2_FOUND)
-
-if(LUA_FOUND)
-	message(STATUS "Lua found at ${LUA_INCLUDE_DIR}")
-endif(LUA_FOUND)
+find_package(tinyxml2 CONFIG REQUIRED)
 
 configure_file(config.cmake.h makeconfig.h)
 include_directories(${CMAKE_BINARY_DIR}) # for makeconfig.h
@@ -70,24 +60,21 @@ set(kq-fork_SRCS
 	src/shopmenu.cpp
 	src/tiledmap.cpp
 	src/timing.cpp
-	src/unix.cpp
+	$<$<PLATFORM_ID:Unix>:src/unix.cpp>
+	$<$<PLATFORM_ID:Windows>:src/win.cpp>
 )
+set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main SDL2::SDL2_mixer)
+set(TINYXML2_LIBRARIES tinyxml2::tinyxml2)
+set(PNG_LIBRARIES PNG::PNG)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS_DEBUG  ${CMAKE_CXX_FLAGS} "-g -ggdb3 -O0 -DDEBUGMODE -DKQ_CHEATS" )
-set(CMAKE_CXX_FLAGS_RELEASE  ${CMAKE_CXX_FLAGS} "-O2" )
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO  ${CMAKE_CXX_FLAGS} "-O2 -g" )
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -Wextra")
+add_compile_definitions("$<$<CONFIG:DEBUG>:DEBUGMODE;KQ_CHEATS>")
 
 add_executable(kq-fork ${kq-fork_SRCS})
-
+target_compile_features(kq-fork PUBLIC cxx_std_17)
 target_link_libraries(kq-fork
-	${LUA_LIBRARY}
+	${LUA_LIBRARIES}
 	${SDL2_LIBRARIES}
-	${SDL2_mixer_LINK_LIBRARIES}
-	${TINYXML2}
+	${TINYXML2_LIBRARIES}
 	${M_LIB}
-	${PNG_LIBRARIES}
-	${ZLIB_LIBRARIES})
+	${PNG_LIBRARIES})

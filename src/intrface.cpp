@@ -924,7 +924,7 @@ static const KMarker* KQ_find_marker(string name, bool required)
 static int get_field(const char* n)
 {
     struct s_field* ans;
-    struct s_field st;
+    struct s_field st = { 0 };
 
     st.name = n;
     ans = (struct s_field*)bsearch(&st, fields, sizeof(fields) / sizeof(*fields), sizeof(struct s_field), fieldcmp);
@@ -1326,7 +1326,7 @@ static int KQ_char_getter(lua_State* L)
 
         case 17:
             lua_pushcfunction(L, KQ_thought_ex);
-
+            break;
         default:
             break;
         }
@@ -2676,8 +2676,8 @@ static int KQ_pnum(lua_State* L)
  */
 static int KQ_prompt(lua_State* L)
 {
-    const char* txt[4];
-    char pbuf[256];
+    const char* txt[4] = { 0 };
+    char pbuf[256] = { 0 };
     int a, b, nopts, nonblank;
 
     /* The B_TEXT or B_THOUGHT is ignored */
@@ -2843,7 +2843,7 @@ static int KQ_screen_dump(lua_State* L)
  */
 static int KQ_select_team(lua_State* L)
 {
-    static ePIDX team[MAXCHRS];
+    static ePIDX team[MAXCHRS] = { ePIDX::PIDX_UNDEFINED };
     size_t i, t;
 
     for (i = 0; i < MAXCHRS; ++i)
@@ -2880,7 +2880,7 @@ static int KQ_set_all_equip(lua_State* L)
     uint32_t b;
     int c;
 
-    if (a > MAXCHRS)
+    if (a >= MAXCHRS)
     {
         return 0;
     }
@@ -3627,7 +3627,7 @@ static int KQ_set_sstone(lua_State* L)
 
 static int KQ_set_tile_all(lua_State* L)
 {
-    int a, tvs[8];
+    int a, tvs[8] = { 0 };
 
     for (a = 0; a < 8; a++)
     {
@@ -3905,7 +3905,7 @@ static int KQ_use_up(lua_State* L)
 
 static int KQ_view_range(lua_State* L)
 {
-    int a, b[5];
+    int a, b[5] = { 0 };
 
     for (a = 0; a < 5; a++)
     {
@@ -4384,6 +4384,5 @@ static void set_obs(int x, int y, int value)
 
 static void set_shadow(int x, int y, int value)
 {
-    size_t index = y * g_map.xsize + x;
-    s_seg[index] = value;
+    s_seg[y * g_map.xsize + x] = value;
 }

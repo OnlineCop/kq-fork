@@ -112,7 +112,7 @@ KQEntity g_ent[MAX_ENTITIES];
 uint32_t number_of_entities = 0;
 
 /*! Identifies characters in the party */
-ePIDX pidx[MAXCHRS];
+ePIDX pidx[MAXCHRS] = { ePIDX::PIDX_UNDEFINED };
 
 /*! Number of characters in the party */
 uint32_t numchrs = 0;
@@ -920,7 +920,7 @@ void KGame::load_heroes(void)
  *
  * Well, this one is pretty obvious.
  */
-int main(int argc, const char* argv[])
+int main(int argc, char* argv[])
 {
     int stop, game_on, skip_splash;
 
@@ -1465,7 +1465,7 @@ void KGame::wait_enter(void)
 
 void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
 {
-    bool any_following_entities;
+    bool any_following_entities = true;
     uint8_t move_mode;
     size_t entity_index;
 

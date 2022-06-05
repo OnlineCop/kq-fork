@@ -79,7 +79,7 @@ static void party_remove(ePIDX id);
 int auto_select_enemy(int whom, int csts)
 {
     unsigned int i, number_enemies = 0;
-    int tmpd[NUM_FIGHTERS];
+    int tmpd[NUM_FIGHTERS] = { 0 };
     for (i = PSIZE; i < PSIZE + Combat.GetNumEnemies(); i++)
     {
         if (fighter[i].IsAlive())
@@ -202,7 +202,7 @@ int auto_select_enemy(int whom, int csts)
 int auto_select_hero(int whom, int csts)
 {
     unsigned int cntr = 0;
-    int tmpd[NUM_FIGHTERS];
+    int tmpd[NUM_FIGHTERS] = {0};
     /*  RB TODO  */
     (void)whom;
 
@@ -525,7 +525,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
 
         if (csa == TGT_NONE)
         {
-            if (PlayerInput.balt() | PlayerInput.bctrl())
+            if (PlayerInput.balt() || PlayerInput.bctrl())
             {
                 return PIDX_UNDEFINED;
             }
@@ -599,9 +599,9 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
         Game.program_death("Invalid enemy target mode");
         return PIDX_UNDEFINED;
     }
-    unsigned int cntr = 0;
-    size_t ptr;
-    int tmpd[NUM_FIGHTERS];
+    int cntr = 0;
+    int ptr;
+    int tmpd[NUM_FIGHTERS] = { 0 };
     for (unsigned int fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
     {
         if (can_attack(fighter_index) == 1)
@@ -702,7 +702,7 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
         return PIDX_UNDEFINED;
     }
     unsigned int cntr = 0, ptr = 0;
-    int tmpd[NUM_FIGHTERS];
+    int tmpd[NUM_FIGHTERS] = { 0 };
     bool select_all = (multi_target == TGT_ALLY_ALL);
     for (unsigned int fighter_index = 0; fighter_index < numchrs; fighter_index++)
     {
@@ -799,13 +799,16 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
  */
 int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
 {
-    static const uint32_t BTN_EXIT = (MAXCHRS + PSIZE);
+    constexpr auto BTN_EXIT = MAXCHRS + PSIZE;
 
     ePIDX hero = PIDX_UNDEFINED;
     eMiniMenu mini_menu_mask;
     size_t pidx_index;
     size_t fighter_index;
-    size_t cur, oldcur; /* cursor */
+    uint32_t cur, oldcur; /* cursor */
+    // cur can be 0..(n_avail-1) when cursor is on an available hero
+    // or MAXCHRS..(MAXCHRS+num_heroes-1) when cursor is on one of the party
+    // or MAXCHRS + PSIZE when it's on the exit button
     signed int x, y;
     uint32_t mask;
     uint32_t running = 1;
@@ -867,7 +870,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
         {
             hero = avail[cur];
         }
-        else if (cur < numchrs + MAXCHRS)
+        else if (cur >= MAXCHRS && cur < numchrs + MAXCHRS)
         {
             hero = pidx[cur - MAXCHRS];
         }

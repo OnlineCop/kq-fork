@@ -610,11 +610,11 @@ static int combat_spell_targeting(int whom)
     {
         if (a == M_LIFE || a == M_FULLLIFE)
         {
-            tg = select_hero(whom, (eTarget)(magic[a].tgt), NO_STS_CHECK);
+            tg = select_hero(whom, (eTarget)(magic[a].tgt), true);
         }
         else
         {
-            tg = select_hero(whom, (eTarget)(magic[a].tgt), 0);
+            tg = select_hero(whom, (eTarget)(magic[a].tgt), false);
         }
         if (tg == -1)
         {
