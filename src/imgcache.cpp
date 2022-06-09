@@ -30,16 +30,12 @@ the Free Software Foundation,
 using std::string;
 
 typedef std::unique_ptr<Raster> BITMAP_PTR;
-
-class image_cache
+struct RasterLoader
 {
-  public:
-    Raster* get(const string& name);
-    void clear();
-
-  private:
-    std::map<string, BITMAP_PTR> cache;
+    Raster* operator()(const string& keyname);
 };
+using image_cache = Cache<Raster, RasterLoader>;
+
 // At the moment there is one global cache;
 // in the future multiple caches could be created
 // and destroyed.
@@ -64,7 +60,7 @@ static int palindex(uint8_t* ptr)
     for (int i = 1; i < 256; ++i)
     {
         RGB& rgb = pal[i];
-        int dist = ABS(r - rgb.r) + ABS(g - rgb.g) + ABS(b - rgb.b);
+        int dist = abs(r - rgb.r) + abs(g - rgb.g) + abs(b - rgb.b);
         if (dist == 0)
         {
             // Exact match, early return
@@ -167,6 +163,7 @@ static Raster* bmp_from_png(const string& path)
     return bitmap;
 }
 #endif
+
 /*! \brief Get or load an image.
  * Return the image from the cache or load it.
  * The returned Raster is owned by the cache so do not delete it.
@@ -174,38 +171,23 @@ static Raster* bmp_from_png(const string& path)
  * \param name the file base name
  * \returns the bitmap
  */
-Raster* image_cache::get(const std::string& name)
+Raster* RasterLoader::operator()(const std::string& name)
 {
-    auto entry = cache.find(name);
-    if (entry == cache.end())
+    // Not found, try to load
+    Raster* bmp = bmp_from_png(kqres(eDirectories::DATA_DIR, name));
+    if (!bmp)
     {
-        // Not found, try to load
-        Raster* bmp = bmp_from_png(kqres(DATA_DIR, name));
-        if (!bmp)
-        {
-            // Try also in maps because it may be a tileset graphic
-            bmp = bmp_from_png(kqres(MAP_DIR, name));
-        }
-        if (!bmp)
-        {
-            TRACE("Cannot load bitmap '%s'\n", name.c_str());
-            Game.program_death("Error loading image.");
-        }
-        cache.insert(std::make_pair(name, BITMAP_PTR(bmp)));
-        return bmp;
+        // Try also in maps because it may be a tileset graphic
+        bmp = bmp_from_png(kqres(eDirectories::MAP_DIR, name));
     }
-    else
+    if (!bmp)
     {
-        return entry->second.get();
+        TRACE("Cannot load bitmap '%s'\n", name.c_str());
+        Game.program_death("Error loading image.");
     }
+    return bmp;
 }
-/*! \brief clear the image cache.
- * Remove all entries, delete the corresponding bitmaps
- */
-void image_cache::clear()
-{
-    cache.clear();
-}
+
 /*! \brief get image from the global cache
  * \param name the name of the image file
  * \returns a bitmap

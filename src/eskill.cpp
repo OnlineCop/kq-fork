@@ -57,7 +57,7 @@ void combat_skill(size_t fighter_index)
 
     tempa = Magic.status_adjust(fighter_index);
     Combat.battle_render(0, 0, 0);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     switch (sk)
     {
     case 1:
@@ -370,15 +370,15 @@ void combat_skill(size_t fighter_index)
         }
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
-    //case 21:
-    // // This move causes corruption for some reason
-    //    strcpy(attack_string, _("Fire Bite")); 
-    //    display_attack_string = 1;
-    //    tempa.welem = R_FIRE + 1;
-    //    Combat.fight(fighter_index, tgt, 1);
-    //    display_attack_string = 0;
-    //    fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
-    //    break;
+    // case 21:
+    //  // This move causes corruption for some reason
+    //     strcpy(attack_string, _("Fire Bite"));
+    //     display_attack_string = 1;
+    //     tempa.welem = R_FIRE + 1;
+    //     Combat.fight(fighter_index, tgt, 1);
+    //     display_attack_string = 0;
+    //     fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
+    //     break;
     default:
         break;
     }

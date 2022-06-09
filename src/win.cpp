@@ -28,22 +28,52 @@
  * This includes any bits which are specific for Windows platforms
  */
 
+#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers (Windows.h must be included before any
+                            // other windows headers)
+#include <windows.h>
+
+#include "disk.h"
 #include "kq.h"
+#include "makeconfig.h"
 #include "platform.h"
-#include <allegro.h>
+#include <PathCch.h>
+#include <SDL.h>
 #include <cstdio>
-// This clashes with a Windows typedef
-#undef PSIZE
-#include <winalleg.h>
+#include <direct.h>
+#include <memory>
+#include <stringapiset.h>
+#include <sys/stat.h>
 
-static int init_path = 0;
-static char user_dir[MAX_PATH];
-static char game_dir[MAX_PATH];
-typedef HRESULT(WINAPI* SHGETFOLDERPATH)(HWND, int, HANDLE, DWORD, LPWSTR);
+#pragma comment(lib, "pathcch")
+static bool init_path = false;
+static string user_dir;
+static string data_dir;
+static string lib_dir;
 
-#define CSIDL_FLAG_CREATE 0x8000
-#define CSIDL_APPDATA 0x1A
-#define SHGFP_TYPE_CURRENT 0
+// Join two paths.
+// Use the Win32 API for this, but that also requires
+// converting to UTF-16 and back again
+static string join(const string& path1, const string& path2)
+{
+    int size1 = MultiByteToWideChar(CP_UTF8, 0, path1.data(), -1, nullptr, 0);
+    std::unique_ptr<wchar_t[]> wpath1(new wchar_t[size1]);
+    MultiByteToWideChar(CP_UTF8, 0, path1.data(), -1, wpath1.get(), size1);
+    int size2 = MultiByteToWideChar(CP_UTF8, 0, path2.data(), -1, nullptr, 0);
+    std::unique_ptr<wchar_t[]> wpath2(new wchar_t[size2]);
+    MultiByteToWideChar(CP_UTF8, 0, path2.data(), -1, wpath2.get(), size2);
+    std::unique_ptr<wchar_t[]> wpatho(new wchar_t[PATHCCH_MAX_CCH]);
+    if (SUCCEEDED(PathCchCombine(wpatho.get(), PATHCCH_MAX_CCH, wpath1.get(), wpath2.get())))
+    {
+        int sizeo = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, wpatho.get(), -1, nullptr, 0, nullptr, nullptr);
+        if (sizeo > 0)
+        {
+            std::unique_ptr<char[]> patho(new char[sizeo]);
+            WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, wpatho.get(), -1, patho.get(), sizeo, nullptr, nullptr);
+            return string(patho.get(), patho.get() + sizeo);
+        }
+    }
+    Game.program_death("Error processing file paths");
+}
 
 /*! \brief Returns the full path for this file
  *
@@ -51,26 +81,20 @@ typedef HRESULT(WINAPI* SHGETFOLDERPATH)(HWND, int, HANDLE, DWORD, LPWSTR);
  * directory. If it can not, it checks the relevant game directory
  * (data, music, lib, etc)
  *
- * \param str1 The first part of the string, assuming the file can't be
- * found in user_dir (eg. "C:\Program Files\KQ\")
- * \param str2 The second part of the string (eg. "scripts")
+ * \param str1 The first part of the path (i.e. the install dir,
+ *             for example "/usr/local/share/kq/")
+ * \param str2 The second part of the string (eg. "maps")
  * \param file The filename
  * \returns the combined path
  */
-const string get_resource_file_path(const string str1, const string str2, const string file)
+static string get_resource_file_path(const string& str1, const string& str2, const string& file)
 {
-    static char ans[MAX_PATH];
-    FILE* fp;
+    string tail = join(str2, file);
+    string ans = join(user_dir, tail);
 
-    sprintf(ans, "%s/%s/%s", user_dir, str2.c_str(), file.c_str());
-    fp = fopen(ans, "r");
-    if (fp == NULL)
+    if (!Disk.exists(ans.c_str()))
     {
-        sprintf(ans, "%s/%s/%s", str1.c_str(), str2.c_str(), file.c_str());
-    }
-    else
-    {
-        fclose(fp);
+        ans = join(str1, tail);
     }
     return ans;
 }
@@ -78,114 +102,93 @@ const string get_resource_file_path(const string str1, const string str2, const 
 /*! \brief Returns the full path for this lua file
  *
  * This function first checks if the lua file can be found in the user's
- * directory. If it can not, it checks the relavent game directory
- * (data, music, lib, etc). For each directory, it first checks for a lob
+ * directory. If it can not, it checks the relevant game directory
+ * (scripts). For each directory, it first checks for a lob
  * file, and then it checks for a lua file. This function is similar to
  * get_resource_file_path, but takes special considerations for lua files.
  * Whereas get_resource_file_path takes the full filename (eg. "main.map"),
  * this function takes the filename without extension (eg "main").
  *
+ * \param str1 The first part of the string
+ *             (the install path, eg. "/usr/local/lib/kq")
  * \param file The filename
  * \returns the combined path
  */
-const string get_lua_file_path(const string file)
+static string get_lua_file_path(const string& str1, const string& file)
 {
-    static char ans[MAX_PATH];
-    FILE* fp;
-
-    sprintf(ans, "%s/scripts/%s.lob", user_dir, file.c_str());
-    fp = fopen(ans, "r");
-    if (fp == NULL)
+    string ans;
+    string scripts { "scripts" };
+    string lob { ".lob" };
+    string lua { ".lua" };
+    string base = join(user_dir, scripts);
+    ans = join(base, file + lob);
+    if (!Disk.exists(ans.c_str()))
     {
-        sprintf(ans, "%s/scripts/%s.lua", user_dir, file.c_str());
-        fp = fopen(ans, "r");
-        if (fp == NULL)
+        ans = join(base, file + lua);
+
+        if (!Disk.exists(ans.c_str()))
         {
-            sprintf(ans, "%s/scripts/%s.lob", game_dir, file.c_str());
-            fp = fopen(ans, "r");
-            if (fp == NULL)
+            string base = join(str1, scripts);
+            ans = join(base, file + lob);
+
+            if (!Disk.exists(ans.c_str()))
             {
-                sprintf(ans, "%s/scripts/%s.lua", game_dir, file.c_str());
-                fp = fopen(ans, "r");
-                if (fp == NULL)
+                ans = join(base, file + lua);
+
+                if (!Disk.exists(ans.c_str()))
                 {
-                    return NULL;
+                    return string();
                 }
             }
         }
     }
 
-    fclose(fp);
     return ans;
 }
 
 /*! \brief Return the name of 'significant' directories.
  *
- * \param   dir Enumerated constant for directory type  \sa DATA_DIR et al.
+ * \param   dir Enumerated constant for directory type \sa DATA_DIR et al.
  * \param   file File name below that directory.
  * \returns the combined path
  */
-const string kqres(eDirectories dir, string file)
+const string kqres(enum eDirectories dir, const string& file)
 {
-    HINSTANCE SHFolder;
-    SHGETFOLDERPATH SHGetFolderPath;
-    char* home;
-
     if (!init_path)
     {
-        WCHAR tmp[MAX_PATH];
-        home = NULL;
-        /* Get home directory; this bit originally written by SH */
-        SHFolder = LoadLibrary("shfolder.dll");
-        if (SHFolder != NULL)
+        user_dir = string(SDL_GetPrefPath("kq-fork", "kq"));
+        /* Always try to make the directory, just to be sure. */
+        if (::_mkdir(user_dir.c_str()) == -1)
         {
-            SHGetFolderPath = (SHGETFOLDERPATH)GetProcAddress(SHFolder, "SHGetFolderPathW");
-            if (SHGetFolderPath != NULL)
+            if (errno != EEXIST)
             {
-                /* Get the "Application Data" folder for the current user */
-                if (SHGetFolderPath(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, SHGFP_TYPE_CURRENT, tmp) == S_OK)
-                {
-                    home = uconvert((const char*)tmp, U_UNICODE, NULL, U_UTF8, 0);
-                }
+                Game.program_death("Could not create user directory");
             }
-            FreeLibrary(SHFolder);
         }
-
-        /* Do not get fooled by a corrupted $HOME */
-        if (home != NULL && strlen(home) < MAX_PATH)
-        {
-            sprintf(user_dir, "%s\\KQ", home);
-            /* Always try to make the directory, just to be sure. */
-            _mkdir(user_dir);
-        }
-        else
-        {
-            strcpy(user_dir, ".");
-        }
-        /* Now the data directory */
-        strcpy(game_dir, ".");
-        init_path = 1;
+/* Now the data directory */
+#ifdef KQ_DATADIR
+        /* We specified where... */
+        data_dir = lib_dir = string { KQ_DATADIR };
+#else
+        /* ...or, use SDL's idea */
+        data_dir = lib_dir = string { SDL_GetBasePath() };
+#endif
+        init_path = true;
     }
-
     switch (dir)
     {
-    case DATA_DIR:
-        return get_resource_file_path(game_dir, "data", file);
-        break;
-    case MUSIC_DIR:
-        return get_resource_file_path(game_dir, "music", file);
-        break;
-    case MAP_DIR:
-        return get_resource_file_path(game_dir, "maps", file);
-        break;
-    case SAVE_DIR:
-    case SETTINGS_DIR:
+    case eDirectories::DATA_DIR:
+        return get_resource_file_path(data_dir, "data", file);
+    case eDirectories::MUSIC_DIR:
+        return get_resource_file_path(data_dir, "music", file);
+    case eDirectories::MAP_DIR:
+        return get_resource_file_path(data_dir, "maps", file);
+    case eDirectories::SAVE_DIR:
+    case eDirectories::SETTINGS_DIR:
         return get_resource_file_path(user_dir, "", file);
-        break;
-    case SCRIPT_DIR:
-        return get_lua_file_path(file);
-        break;
+    case eDirectories::SCRIPT_DIR:
+        return get_lua_file_path(lib_dir, file);
     default:
-        return NULL;
+        abort(); // Can't happen
     }
 }

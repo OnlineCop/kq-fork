@@ -102,7 +102,7 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
                     }
                 }
             }
-            Draw.blit2screen(0, 0);
+            Draw.blit2screen();
             kq_wait(15);
             fullblit(back, double_buffer);
         }
@@ -116,7 +116,7 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
     }
     Draw.revert_cframes(target_fighter_index, target_all_flag);
     Combat.battle_render(0, 0, 0);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
 }
 
 void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int multiple_target)
@@ -210,12 +210,12 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
                     }
                 }
             }
-            Draw.blit2screen(0, 0);
-            kq_wait(15);
+            Draw.blit2screen();
+            kq_wait(30);
         }
     }
     Combat.battle_render(0, 0, 0);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
 }
 
 void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_target, size_t magic_effect_index, int shows)
@@ -290,7 +290,7 @@ void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_targe
                             eff[magic_effect_index].xsize, eff[magic_effect_index].ysize);
             }
         }
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         kq_wait(eff[magic_effect_index].delay);
         fullblit(back, double_buffer);
     }
@@ -345,8 +345,8 @@ void KEffects::draw_castersprite(size_t caster_fighter_index, int new_pal_color)
             Combat.draw_fighter(caster_fighter_index, 0);
             masked_blit(cs, double_buffer, 0, frame_index * 32, dx - 16, dy - 16, 32, 32);
         }
-        Draw.blit2screen(0, 0);
-        kq_wait(60);
+        Draw.blit2screen();
+        kq_wait(120);
         fullblit(back, double_buffer);
     }
     fighter[caster_fighter_index].aframe = 0;
@@ -401,7 +401,7 @@ void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size
             masked_blit(eb, double_buffer, 0, eff[effect_index].ysize * frame_index, hx, hy, eff[effect_index].xsize,
                         eff[effect_index].ysize);
         }
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         kq_wait(eff[effect_index].delay);
         fullblit(back, double_buffer);
     }
@@ -471,7 +471,7 @@ void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target
                             eff[effect_index].ysize);
             }
         }
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         kq_wait(eff[effect_index].delay);
         fullblit(back, double_buffer);
     }

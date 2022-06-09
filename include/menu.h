@@ -77,7 +77,7 @@ class KMenu
     void level_up(int);
     void display_quest_window(void);
     void status_screen(size_t);
-    vector<KQuestItem*> quest_list;
+    vector<KQuestItem> quest_list;
 };
 
 extern KMenu kmenu;

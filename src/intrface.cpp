@@ -607,7 +607,7 @@ void do_luacheat(void)
     /* kqres might return null if the cheat file doesn't exist.
      * in that case, just do a no-op.
      */
-    cheatfile = kqres(SCRIPT_DIR, "cheat");
+    cheatfile = kqres(eDirectories::SCRIPT_DIR, "cheat");
     if (cheatfile.empty())
     {
         return;
@@ -625,7 +625,7 @@ void do_luacheat(void)
 #endif
     lua_settop(theL, oldtop);
     KQ_check_map_change();
-    Draw.message(_("Cheating complete."), 255, 50, xofs, yofs);
+    Draw.message(_("Cheating complete."), 255, 50);
 }
 #endif
 
@@ -666,14 +666,14 @@ void do_luainit(const char* fname, int global)
     oldtop = lua_gettop(theL);
     if (global)
     {
-        if (lua_dofile(theL, kqres(SCRIPT_DIR, "global").c_str()) != 0)
+        if (lua_dofile(theL, kqres(eDirectories::SCRIPT_DIR, "global").c_str()) != 0)
         {
             /* lua_dofile already displayed error message */
             Game.program_death(strbuf);
         }
     }
 
-    if (lua_dofile(theL, kqres(SCRIPT_DIR, fname).c_str()) != 0)
+    if (lua_dofile(theL, kqres(eDirectories::SCRIPT_DIR, fname).c_str()) != 0)
     {
         /* lua_dofile already displayed error message */
         Game.program_death(strbuf);
@@ -860,13 +860,11 @@ static const char* filereader(lua_State*, void* data, size_t* size)
  * \param f a pointer to a pointer to the string
  * \param size [out] the number of bytes in the string
  */
-static const char* stringreader(lua_State* L, void* data, size_t* size)
+static const char* stringreader(lua_State*, void* data, size_t* size)
 {
-    char** f = (char**)data;
+    char** f = reinterpret_cast<char**>(data);
     char* ans = *f;
 
-    /* Avoid 'unused' warning */
-    (void)L;
     if (ans == NULL)
     {
         *size = 0;
@@ -888,11 +886,11 @@ static const char* stringreader(lua_State* L, void* data, size_t* size)
  * \date    20060502 PH added check for name == NULL
  *
  * \param   name - the name of the marker to search for
- * \param   required - if non-zero throw an error if the marker isn't found
+ * \param   required - if true throw an error if the marker isn't found
  *
  * \returns pointer to marker or nullptr if name not found
  */
-static shared_ptr<KMarker> KQ_find_marker(string name, int required)
+static const KMarker* KQ_find_marker(string name, bool required)
 {
     auto found_marker = g_map.markers.GetMarker(name);
     if (found_marker != nullptr)
@@ -926,7 +924,7 @@ static shared_ptr<KMarker> KQ_find_marker(string name, int required)
 static int get_field(const char* n)
 {
     struct s_field* ans;
-    struct s_field st;
+    struct s_field st = { 0 };
 
     st.name = n;
     ans = (struct s_field*)bsearch(&st, fields, sizeof(fields) / sizeof(*fields), sizeof(struct s_field), fieldcmp);
@@ -1328,7 +1326,7 @@ static int KQ_char_getter(lua_State* L)
 
         case 17:
             lua_pushcfunction(L, KQ_thought_ex);
-
+            break;
         default:
             break;
         }
@@ -1492,7 +1490,7 @@ static int KQ_chest(lua_State* L)
         Game.AddGold(item_quantity);
         sprintf(strbuf, _("Found %d gp!"), item_quantity);
         play_effect(SND_MONEY, 128);
-        Draw.message(strbuf, 255, 0, xofs, yofs);
+        Draw.message(strbuf, 255, 0);
         if (treasure_index > -1)
         {
             treasure[treasure_index] = 1;
@@ -1540,7 +1538,7 @@ static int KQ_chest(lua_State* L)
             sprintf(strbuf, _("%s ^%d procured!"), items[inventory_index].name, (int)item_quantity);
         }
         play_effect(SND_UNEQUIP, 128);
-        Draw.message(strbuf, items[inventory_index].icon, 0, xofs, yofs);
+        Draw.message(strbuf, items[inventory_index].icon, 0);
         if (treasure_index > -1)
         {
             treasure[treasure_index] = 1;
@@ -1555,7 +1553,7 @@ static int KQ_chest(lua_State* L)
     {
         sprintf(strbuf, _("%s ^%d not taken!"), items[inventory_index].name, (int)item_quantity);
     }
-    Draw.message(strbuf, items[inventory_index].icon, 0, xofs, yofs);
+    Draw.message(strbuf, items[inventory_index].icon, 0);
     return 0;
 }
 
@@ -1627,20 +1625,20 @@ static int KQ_copy_tile_all(lua_State* L)
 
 static int KQ_dark_mbox(lua_State* L)
 {
-    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1) + xofs, (int)lua_tonumber(L, 2) + yofs, (int)lua_tonumber(L, 3),
+    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1), (int)lua_tonumber(L, 2), (int)lua_tonumber(L, 3),
                  (int)lua_tonumber(L, 4), DARKBLUE);
     return 0;
 }
 
 static int KQ_do_fadein(lua_State* L)
 {
-    do_transition(TRANS_FADE_IN, (int)lua_tonumber(L, 1));
+    do_transition(eTransitionFade::IN, (int)lua_tonumber(L, 1));
     return 0;
 }
 
 static int KQ_do_fadeout(lua_State* L)
 {
-    do_transition(TRANS_FADE_OUT, (int)lua_tonumber(L, 1));
+    do_transition(eTransitionFade::OUT, (int)lua_tonumber(L, 1));
     return 0;
 }
 
@@ -1680,13 +1678,13 @@ static int KQ_door_in(lua_State* L)
     }
     play_effect(25, 128);
     Draw.drawmap();
-    Draw.blit2screen(xofs, yofs);
+    Draw.blit2screen();
     kq_wait(50);
 
     if (lua_type(L, 1) == LUA_TSTRING)
     {
         /* It's in "marker" form */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             x = m->x + lua_tointeger(L, 2);
@@ -1725,7 +1723,7 @@ static int KQ_door_out(lua_State* L)
     if (lua_type(L, 1) == LUA_TSTRING)
     {
         /* It's in "marker" form */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             x = m->x + lua_tointeger(L, 2);
@@ -1754,7 +1752,7 @@ static int KQ_draw_pstat(lua_State* L)
 
     if (a >= 0 && a < MAXCHRS)
     {
-        kmenu.draw_playerstat(double_buffer, a, (int)lua_tonumber(L, 2) + xofs, (int)lua_tonumber(L, 3) + yofs);
+        kmenu.draw_playerstat(double_buffer, a, (int)lua_tonumber(L, 2), (int)lua_tonumber(L, 3));
     }
     return 0;
 }
@@ -1764,7 +1762,7 @@ static int KQ_drawframe(lua_State* L)
     auto a = lua_tointeger(L, 1);
     auto b = lua_tointeger(L, 2);
 
-    draw_sprite(double_buffer, frames[a][b], (int)lua_tonumber(L, 3) + xofs, (int)lua_tonumber(L, 4) + yofs);
+    draw_sprite(double_buffer, frames[a][b], (int)lua_tonumber(L, 3), (int)lua_tonumber(L, 4));
     return 0;
 }
 
@@ -2001,7 +1999,7 @@ static int KQ_get_gp(lua_State* L)
 static int KQ_get_marker_tilex(lua_State* L)
 {
     const char* marker_name = lua_tostring(L, 1);
-    shared_ptr<KMarker> m = KQ_find_marker(marker_name, 1);
+    auto m = KQ_find_marker(marker_name, 1);
     if (m != nullptr)
     {
         lua_pushnumber(L, m->x);
@@ -2021,7 +2019,7 @@ static int KQ_get_marker_tilex(lua_State* L)
 static int KQ_get_marker_tiley(lua_State* L)
 {
     const char* marker_name = lua_tostring(L, 1);
-    shared_ptr<KMarker> m = KQ_find_marker(marker_name, 1);
+    auto m = KQ_find_marker(marker_name, 1);
     if (m != nullptr)
     {
         lua_pushnumber(L, m->y);
@@ -2419,7 +2417,7 @@ static int KQ_krnd(lua_State* L)
 
 static int KQ_light_mbox(lua_State* L)
 {
-    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1) + xofs, (int)lua_tonumber(L, 2) + yofs, (int)lua_tonumber(L, 3),
+    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1), (int)lua_tonumber(L, 2), (int)lua_tonumber(L, 3),
                  (int)lua_tonumber(L, 4), DARKRED);
     return 0;
 }
@@ -2441,7 +2439,7 @@ static int KQ_log(lua_State* L)
  */
 static int KQ_marker(lua_State* L)
 {
-    shared_ptr<KMarker> s = KQ_find_marker(lua_tostring(L, 1), 0);
+    auto s = KQ_find_marker(lua_tostring(L, 1), 0);
 
     if (s != nullptr)
     {
@@ -2458,7 +2456,7 @@ static int KQ_marker(lua_State* L)
 
 static int KQ_mbox(lua_State* L)
 {
-    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1) + xofs, (int)lua_tonumber(L, 2) + yofs, (int)lua_tonumber(L, 3),
+    Draw.menubox(double_buffer, (int)lua_tonumber(L, 1), (int)lua_tonumber(L, 2), (int)lua_tonumber(L, 3),
                  (int)lua_tonumber(L, 4), BLUE);
     return 0;
 }
@@ -2467,60 +2465,31 @@ static int KQ_mbox(lua_State* L)
  *
  * \param   L::1 x-coord to move the camera
  * \param   L::2 y-coord to move the camera
- * \param   L::3 time it should take to move the camera (speed)
+ * \param   L::3 time between each camera step
  */
 static int KQ_move_camera(lua_State* L)
 {
-    int xinc = 0, yinc = 0, xtot = 0, ytot = 0;
-    auto mcx = lua_tointeger(L, 1);
-    auto mcy = lua_tointeger(L, 2);
-    auto dtime = lua_tointeger(L, 3);
-
-    if (mcx > viewport_x_coord)
+    int mcx = lua_tointeger(L, 1);
+    int mcy = lua_tointeger(L, 2);
+    int dtime = lua_tointeger(L, 3);
+    int dx = viewport_x_coord - mcx;
+    int dy = viewport_y_coord - mcy;
+    int steps = std::max(std::abs(dx), std::abs(dy)) * dtime * Game.KQ_TICKS / 50;
+    if (steps > 0)
     {
-        xinc = 1;
-        xtot = mcx - viewport_x_coord;
-    }
-    if (mcx < viewport_x_coord)
-    {
-        xinc = -1;
-        xtot = viewport_x_coord - mcx;
-    }
-    if (mcy > viewport_y_coord)
-    {
-        yinc = 1;
-        ytot = mcy - viewport_y_coord;
-    }
-    if (mcy < viewport_y_coord)
-    {
-        yinc = -1;
-        ytot = viewport_y_coord - mcy;
-    }
-    autoparty = 1;
-    timer_count = 0;
-    while (ytot > 0 || xtot > 0)
-    {
-        if (timer_count >= dtime)
+        for (int i = steps; i >= 0; --i)
         {
-            timer_count -= dtime;
-            if (xtot > 0)
-            {
-                viewport_x_coord += xinc;
-                xtot--;
-            }
-            if (ytot > 0)
-            {
-                viewport_y_coord += yinc;
-                ytot--;
-            }
+            viewport_x_coord = mcx + (dx * i) / steps;
+            viewport_y_coord = mcy + (dy * i) / steps;
+            Game.ProcessEvents();
+            Game.do_check_animation();
+            Draw.drawmap();
+            Draw.blit2screen();
+            Music.poll_music();
         }
-        Game.do_check_animation();
-        Draw.drawmap();
-        Draw.blit2screen(xofs, yofs);
-        Music.poll_music();
     }
-
-    timer_count = 0;
+    viewport_x_coord = mcx;
+    viewport_y_coord = mcy;
     autoparty = 0;
     return 0;
 }
@@ -2548,7 +2517,7 @@ static int KQ_move_entity(lua_State* L)
 
     if (lua_type(L, 2) == LUA_TSTRING)
     {
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 2), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 2), 1);
         if (m != nullptr)
         {
             target_x = m->x;
@@ -2593,7 +2562,7 @@ static int KQ_msg(lua_State* L)
 {
     int icn = (lua_isnumber(L, 2) ? (int)lua_tonumber(L, 2) : 255);
 
-    Draw.message(lua_tostring(L, 1), icn, (int)lua_tonumber(L, 3), xofs, yofs);
+    Draw.message(lua_tostring(L, 1), icn, (int)lua_tonumber(L, 3));
     return 0;
 }
 
@@ -2653,7 +2622,7 @@ static int KQ_place_ent(lua_State* L)
     if (lua_type(L, 2) == LUA_TSTRING)
     {
         /* It's in "marker" form */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 2), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 2), 1);
         if (m != nullptr)
         {
             x = m->x;
@@ -2689,8 +2658,7 @@ static int KQ_pnum(lua_State* L)
     auto a = (int)lua_tointeger(L, 3);
 
     sprintf(strbuf, "%d", a);
-    Draw.print_font(double_buffer, lua_tointeger(L, 1) + xofs, lua_tointeger(L, 2) + yofs, strbuf,
-                    (eFontColor)lua_tointeger(L, 4));
+    Draw.print_font(double_buffer, lua_tointeger(L, 1), lua_tointeger(L, 2), strbuf, (eFontColor)lua_tointeger(L, 4));
     return 0;
 }
 
@@ -2708,8 +2676,8 @@ static int KQ_pnum(lua_State* L)
  */
 static int KQ_prompt(lua_State* L)
 {
-    const char* txt[4];
-    char pbuf[256];
+    const char* txt[4] = { 0 };
+    char pbuf[256] = { 0 };
     int a, b, nopts, nonblank;
 
     /* The B_TEXT or B_THOUGHT is ignored */
@@ -2757,7 +2725,7 @@ static int KQ_prompt(lua_State* L)
 
 static int KQ_ptext(lua_State* L)
 {
-    Draw.print_font(double_buffer, (int)lua_tonumber(L, 1) + xofs, (int)lua_tonumber(L, 2) + yofs, lua_tostring(L, 3),
+    Draw.print_font(double_buffer, (int)lua_tonumber(L, 1), (int)lua_tonumber(L, 2), lua_tostring(L, 3),
                     (eFontColor)lua_tointeger(L, 4));
     return 0;
 }
@@ -2788,45 +2756,36 @@ static int KQ_read_controls(lua_State* L)
         g_keys[z] = 0;
     }
 
-    PlayerInput.readcontrols();
-    if (PlayerInput.up && a == 1)
+    if (PlayerInput.up() && a == 1)
     {
-        Game.unpress();
         g_keys[0] = 1;
     }
-    if (PlayerInput.down && b == 1)
+    if (PlayerInput.down() && b == 1)
     {
-        Game.unpress();
         g_keys[1] = 1;
     }
-    if (PlayerInput.left && c == 1)
+    if (PlayerInput.left() && c == 1)
     {
-        Game.unpress();
         g_keys[2] = 1;
     }
-    if (PlayerInput.right && d == 1)
+    if (PlayerInput.right() && d == 1)
     {
-        Game.unpress();
         g_keys[3] = 1;
     }
-    if (PlayerInput.balt && e == 1)
+    if (PlayerInput.balt() && e == 1)
     {
-        Game.unpress();
         g_keys[4] = 1;
     }
-    if (PlayerInput.bctrl && f == 1)
+    if (PlayerInput.bctrl() && f == 1)
     {
-        Game.unpress();
         g_keys[5] = 1;
     }
-    if (PlayerInput.benter && g == 1)
+    if (PlayerInput.benter() && g == 1)
     {
-        Game.unpress();
         g_keys[6] = 1;
     }
-    if (PlayerInput.besc && h == 1)
+    if (PlayerInput.besc() && h == 1)
     {
-        Game.unpress();
         g_keys[7] = 1;
     }
     return 0;
@@ -2869,7 +2828,7 @@ static int KQ_rest(lua_State* L)
 static int KQ_screen_dump(lua_State* L)
 {
     (void)L;
-    Draw.blit2screen(xofs, yofs);
+    Draw.blit2screen();
     return 0;
 }
 
@@ -2884,7 +2843,7 @@ static int KQ_screen_dump(lua_State* L)
  */
 static int KQ_select_team(lua_State* L)
 {
-    static ePIDX team[MAXCHRS];
+    static ePIDX team[MAXCHRS] = { ePIDX::PIDX_UNDEFINED };
     size_t i, t;
 
     for (i = 0; i < MAXCHRS; ++i)
@@ -2921,7 +2880,7 @@ static int KQ_set_all_equip(lua_State* L)
     uint32_t b;
     int c;
 
-    if (a > MAXCHRS)
+    if (a >= MAXCHRS)
     {
         return 0;
     }
@@ -2983,7 +2942,7 @@ static int KQ_set_btile(lua_State* L)
         /* Format:
          *    set_btile("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_btile(m->x, m->y, lua_tointeger(L, 2));
@@ -3201,7 +3160,7 @@ static int KQ_set_ftile(lua_State* L)
         /* Format:
          *    set_ftile("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_ftile(m->x, m->y, lua_tointeger(L, 2));
@@ -3252,19 +3211,7 @@ static int KQ_set_marker(lua_State* L)
     const int x_coord = lua_tonumber(L, 2);
     const int y_coord = lua_tonumber(L, 3);
 
-    shared_ptr<KMarker> m = KQ_find_marker(marker_name, 0);
-    if (m == nullptr)
-    {
-        /* Need to add a new marker */
-        auto new_marker = make_shared<KMarker>();
-        new_marker->name = marker_name;
-        new_marker->x = x_coord;
-        new_marker->y = y_coord;
-        g_map.markers.Add(new_marker);
-    }
-    m->x = x_coord;
-    m->y = y_coord;
-
+    g_map.markers.Add({ marker_name, x_coord, y_coord });
     return 0;
 }
 
@@ -3293,7 +3240,7 @@ static int KQ_set_mtile(lua_State* L)
         /* Format:
          *    set_mtile("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_mtile(m->x, m->y, lua_tointeger(L, 2));
@@ -3338,7 +3285,7 @@ static int KQ_set_obs(lua_State* L)
         /* Format:
          *    set_obs("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_obs(m->x, m->y, lua_tointeger(L, 2));
@@ -3651,7 +3598,7 @@ static int KQ_set_shadow(lua_State* L)
         /* Format:
          *    set_shadow("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_shadow(m->x, m->y, lua_tointeger(L, 2));
@@ -3680,7 +3627,7 @@ static int KQ_set_sstone(lua_State* L)
 
 static int KQ_set_tile_all(lua_State* L)
 {
-    int a, tvs[8];
+    int a, tvs[8] = { 0 };
 
     for (a = 0; a < 8; a++)
     {
@@ -3783,7 +3730,7 @@ static int KQ_set_zone(lua_State* L)
         /* Format:
          *    set_zone("marker", value)
          */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             set_zone(m->x, m->y, lua_tointeger(L, 2));
@@ -3808,7 +3755,7 @@ static int KQ_sfx(lua_State* L)
     }
     else
     {
-        printf("KQ_sfx L::1 is NaN");
+        SDL_Log("KQ_sfx L::1 is NaN");
     }
     return 0;
 }
@@ -3822,7 +3769,7 @@ static int KQ_shop(lua_State* L)
     }
     else
     {
-        printf("KQ_shop L::1 is NaN");
+        SDL_Log("KQ_shop L::1 is NaN");
     }
     return 0;
 }
@@ -3853,7 +3800,7 @@ static int KQ_shop_add_item(lua_State* L)
     index = (size_t)lua_tonumber(L, 1);
     if (index >= NUMSHOPS)
     {
-        printf(_("Value passed to shop_add_item() L::1 (%u) >= NUMSHOPS\n"), (uint32_t)index);
+        SDL_Log(_("Value passed to shop_add_item() L::1 (%u) >= NUMSHOPS\n"), (uint32_t)index);
         return 0;
     }
 
@@ -3867,7 +3814,7 @@ static int KQ_shop_add_item(lua_State* L)
 
     if (i == SHOPITEMS)
     {
-        printf(_("Tried to add too many different items to a shop. Maximum is %d\n"), SHOPITEMS);
+        SDL_Log(_("Tried to add too many different items to a shop. Maximum is %d\n"), SHOPITEMS);
         return 0;
     }
 
@@ -3925,14 +3872,19 @@ static int KQ_traceback(lua_State* theL)
     /* Function at index 0 is always KQ_traceback; don't show it */
     int level = 1;
 
-    printf(_("%s\nStack trace:\n"), lua_tostring(theL, -1));
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, _("%s\nStack trace:\n"), lua_tostring(theL, -1));
     while (lua_getstack(theL, level, &ar) != 0)
     {
         lua_getinfo(theL, "Sln", &ar);
-        printf(_("#%d Line %d in (%s %s) %s\n"), level, ar.currentline, ar.what, ar.namewhat, ar.name);
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, _("#%d Line %d in (%s %s) %s\n"), level, ar.currentline, ar.what,
+                     ar.namewhat, ar.name);
         ++level;
     }
-    Draw.message(_("Script error. If KQ was compiled with DEBUGMODE, see allegro.log"), 255, 0, xofs, yofs);
+#ifndef DEBUGMODE
+    Draw.message(_("Script error."), 255, 0);
+#else
+    Draw.message(_("Script error. Check system logs for more info"), 255, 0);
+#endif
     return 1;
 }
 
@@ -3953,7 +3905,7 @@ static int KQ_use_up(lua_State* L)
 
 static int KQ_view_range(lua_State* L)
 {
-    int a, b[5];
+    int a, b[5] = { 0 };
 
     for (a = 0; a < 5; a++)
     {
@@ -4007,7 +3959,7 @@ static int KQ_warp(lua_State* L)
     if (lua_type(L, 1) == LUA_TSTRING)
     {
         /* Format is warp("marker", [speed]) */
-        shared_ptr<KMarker> m = KQ_find_marker(lua_tostring(L, 1), 1);
+        auto m = KQ_find_marker(lua_tostring(L, 1), 1);
         if (m != nullptr)
         {
             x = m->x;
@@ -4060,13 +4012,13 @@ int lua_dofile(lua_State* L, const char* filename)
     fclose(r->in);
     if (ret != 0)
     {
-        TRACE("Could not parse script %s!\n", get_filename(filename));
+        TRACE("Could not parse script %s!\n", filename);
         Game.program_death("Script error");
     }
 
     if (lua_pcall(L, 0, LUA_MULTRET, 0) != 0)
     {
-        TRACE("lua_pcall failed while calling script %s!\n", get_filename(filename));
+        TRACE("lua_pcall failed while calling script %s!\n", filename);
         KQ_traceback(L);
         Game.program_death("Script error");
     }
@@ -4351,7 +4303,7 @@ static int KQ_drawsprite(lua_State* L)
         int height = static_cast<int>(lua_tonumber(L, -1));
         lua_pop(L, 1);
 
-        masked_blit(bm, double_buffer, sx, sy, dx + xofs, dy + yofs, width, height);
+        masked_blit(bm, double_buffer, sx, sy, dx, dy, width, height);
     }
     return 0;
 }
@@ -4432,6 +4384,5 @@ static void set_obs(int x, int y, int value)
 
 static void set_shadow(int x, int y, int value)
 {
-    size_t index = y * g_map.xsize + x;
-    s_seg[index] = value;
+    s_seg[y * g_map.xsize + x] = value;
 }

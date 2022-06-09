@@ -21,20 +21,18 @@
 
 #pragma once
 
-enum eTransitionFade
+enum class eTransitionFade
 {
-    TRANS_FADE_IN = 1,
-    TRANS_FADE_OUT = 2,
-    TRANS_FADE_WHITE = 3,
-
-    NUM_TRANSITIONS
+    IN,
+    OUT,
+    TO_WHITE
 };
 
 /*! \brief Perform one of a range of palette transitions
  *
  * Fade to black, white or to the game palette (pal)
  *
- * \param   type Any of TRANS_FADE_IN, TRANS_FADE_OUT, TRANS_FADE_WHITE
- * \param   param Speed of transition
+ * \param   type Any of IN, OUT, TO_WHITE
+ * \param   speed Speed of transition 1..64
  */
-void do_transition(eTransitionFade type, int param);
+void do_transition(eTransitionFade type, int speed);

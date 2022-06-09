@@ -34,17 +34,17 @@
 
 #include "bounds.h"
 
-bool KBounds::Add(shared_ptr<KBound> bound)
+bool KBounds::Add(KBound&& bound)
 {
     m_bounds.push_back(bound);
     return true;
 }
 
-shared_ptr<KBound> KBounds::GetBound(size_t index)
+KBound* KBounds::GetBound(size_t index)
 {
     if (index < m_bounds.size())
     {
-        return m_bounds[index];
+        return &m_bounds[index];
     }
     return nullptr;
 }
@@ -63,9 +63,9 @@ bool KBounds::IsBound(size_t& outIndex, int left, int top, int right, int bottom
 
     for (size_t i = 0; i < m_bounds.size(); ++i)
     {
-        auto current_bound = m_bounds[i];
-        if (left > current_bound->right || right < current_bound->left || top > current_bound->bottom ||
-            bottom < current_bound->top)
+        auto& current_bound = m_bounds[i];
+        if (left > current_bound.right || right < current_bound.left || top > current_bound.bottom ||
+            bottom < current_bound.top)
         {
             continue;
         }
@@ -77,4 +77,16 @@ bool KBounds::IsBound(size_t& outIndex, int left, int top, int right, int bottom
     }
 
     return false; // not found
+}
+const KBound* KBounds::IsBound(int left, int top, int right, int bottom) const
+{
+    size_t index;
+    if (IsBound(index, left, top, right, bottom))
+    {
+        return &m_bounds.at(index);
+    }
+    else
+    {
+        return nullptr;
+    }
 }

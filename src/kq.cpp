@@ -31,7 +31,7 @@
  * timing.
  *
  * \note 23: I don't know if we're going to do anything to lessen the number of
- * globals, but I tried to lay them out as attractivly as possible until we
+ * globals, but I tried to lay them out as attractively as possible until we
  * figure out what all of them are for. Plus I tried to keep everything below
  * 80 characters a line, and labels what few variables struck me as obvious
  *
@@ -39,6 +39,8 @@
  * fixes
  */
 
+#include <SDL.h>
+#include <SDL_mixer.h>
 #include <cassert>
 #include <clocale>
 #include <cstdio>
@@ -73,12 +75,12 @@
 #include "shopmenu.h"
 #include "structs.h"
 #include "tiledmap.h"
+#include "timing.h"
 
 #include "gfx.h"
 #include "random.h"
 
-static void my_counter(void);
-static void time_counter(void);
+using namespace eSize;
 
 KGame Game;
 
@@ -110,13 +112,10 @@ KQEntity g_ent[MAX_ENTITIES];
 uint32_t number_of_entities = 0;
 
 /*! Identifies characters in the party */
-ePIDX pidx[MAXCHRS];
+ePIDX pidx[MAXCHRS] = { ePIDX::PIDX_UNDEFINED };
 
 /*! Number of characters in the party */
 uint32_t numchrs = 0;
-
-/*! pixel offset in the current map view */
-int xofs, yofs;
 
 /*! Sound and music volume, 250 = as loud as possible */
 int gsvol = 250, gmvol = 250;
@@ -184,21 +183,13 @@ KFighter tempa, tempd;
 /*! Name of current shop */
 string shop_name;
 
-/*! Items in a shop */
-/* int shin[SHOPITEMS]; One global variable down; 999,999 to go --WK */
-
 /*! Should we display a box with attack_string in it (used in combat) */
 int display_attack_string = 0;
 
 /*! Name of current spell or special ability */
 char attack_string[39];
 
-/*! \note 23: for keeping time. timer_count is the game timer the main game
- * loop uses for logic (see int main()) and the rest track your playtime in
- * hours, minutes and seconds. They're all used in the my_counter() timer
- * function just below
- */
-volatile int timer = 0, ksec = 0, kmin = 0, khr = 0, timer_count = 0, animation_count = 0;
+volatile int animation_count = 0;
 
 /*! Current colour map */
 COLOR_MAP cmap;
@@ -230,7 +221,8 @@ short num_special_items = 0;
 
 /*! View coordinates; the view is a way of selecting a subset of the map to
  * show. */
-int view_x1, view_y1, view_x2, view_y2, view_on = 0;
+int view_x1, view_y1, view_x2, view_y2;
+bool view_on = false;
 
 /*! Are we in combat mode? */
 int in_combat = 0;
@@ -256,8 +248,8 @@ int every_hit_999 = 0;
  */
 static struct timer_event
 {
-    char name[32]; /*!< Name of the event */
-    int when;      /*!< Time when it will trigger */
+    string name; /*!< Name of the event */
+    int when;    /*!< Absolute time when it will trigger */
 } timer_events[5];
 
 static int next_event_time; /*!< The time the next event will trigger */
@@ -315,7 +307,8 @@ s_progress progresses[SIZE_PROGRESS] = {
 
 KGame::KGame()
     : WORLD_MAP("main")
-    , KQ_TICKS(100)
+    , KQ_TICKS(30)
+    , game_time(0)
     , gp(0)
 {
 }
@@ -325,8 +318,6 @@ void KGame::activate(void)
     int zx, zy, looking_at_x = 0, looking_at_y = 0, q, target_char_facing = 0, tf;
 
     uint32_t p;
-
-    Game.unpress();
 
     /* Determine which direction the player's character is facing.  For
      * 'looking_at_y', a negative value means "toward north" or "facing up",
@@ -382,7 +373,7 @@ void KGame::activate(void)
         }
 
         Draw.drawmap();
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
 
         zx = abs(g_ent[p - 1].x - g_ent[0].x);
         zy = abs(g_ent[p - 1].y - g_ent[0].y);
@@ -400,19 +391,18 @@ void KGame::activate(void)
 
 int KGame::add_timer_event(const char* n, int delta)
 {
-    int w = delta + ksec;
+    int w = delta + game_time;
     int i;
 
     for (i = 0; i < 5; ++i)
     {
-        if (*timer_events[i].name == '\0')
+        if (timer_events[i].name.empty())
         {
-            memcpy(timer_events[i].name, n, sizeof(timer_events[i].name));
+            timer_events[i] = { n, w };
             if (w < next_event_time)
             {
                 next_event_time = w;
             }
-            timer_events[i].when = w;
             return i;
         }
     }
@@ -423,12 +413,33 @@ int KGame::add_timer_event(const char* n, int delta)
 
 Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name)
 {
-    Raster* tmp = new Raster(bitmap_width, bitmap_height);
-
-    if (!tmp)
+    Raster* tmp = bitmap_name ? new Raster(bitmap_width, bitmap_height) : nullptr;
+    static int count = 0;
+    static const char* last = nullptr;
+    if (!tmp && bitmap_name)
     {
         sprintf(strbuf, _("Could not allocate %s!."), bitmap_name);
         program_death(strbuf);
+    }
+    else
+    {
+        if (last == bitmap_name)
+        {
+            ++count;
+        }
+        else
+        {
+            last = bitmap_name;
+            if (count > 0)
+            {
+                SDL_Log("[last alloc repeats * %d]\n", count);
+                count = 0;
+            }
+            if (bitmap_name)
+            {
+                SDL_Log("Allocating %d x %d --> %s\n", bitmap_width, bitmap_height, bitmap_name);
+            }
+        }
     }
     return tmp;
 }
@@ -441,11 +452,9 @@ Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char*)
 
 void KGame::allocate_stuff(void)
 {
-    size_t i, p;
-
     kfonts = alloc_bmp(1024, 60, "kfonts");
 
-    for (i = 0; i < 5; i++)
+    for (int i = 0; i < 5; i++)
     {
         sfonts[i] = alloc_bmp(60, 8, "sfonts[i]");
     }
@@ -461,7 +470,7 @@ void KGame::allocate_stuff(void)
     noway = alloc_bmp(16, 16, "noway");
     missbmp = alloc_bmp(20, 6, "missbmp");
 
-    for (i = 0; i < 9; i++)
+    for (int i = 0; i < 9; i++)
     {
         pgb[i] = alloc_bmp(9, 9, "pgb[x]");
     }
@@ -473,27 +482,34 @@ void KGame::allocate_stuff(void)
     b_repulse = alloc_bmp(16, 166, "b_repulse");
     b_mp = alloc_bmp(10, 8, "b_mp");
 
-    for (p = 0; p < MAXE; p++)
+    for (int p = 0; p < MAXE; p++)
     {
-        for (i = 0; i < MAXEFRAMES; i++)
+        for (int i = 0; i < MAXEFRAMES; i++)
         {
             eframes[p][i] = alloc_bmp(16, 16, "eframes[x][x]");
         }
     }
 
-    for (i = 0; i < MAXCHRS; i++)
+    for (int i = 0; i < MAXCHRS; i++)
     {
-        for (p = 0; p < MAXFRAMES; p++)
+        for (int p = 0; p < MAXFRAMES; p++)
         {
             frames[i][p] = alloc_bmp(16, 16, "frames[x][x]");
         }
     }
 
-    for (p = 0; p < MAXCFRAMES; p++)
+    for (int p = 0; p < MAXCFRAMES; p++)
     {
-        for (i = 0; i < NUM_FIGHTERS; i++)
+        for (int i = 0; i < NUM_FIGHTERS; i++)
         {
             cframes[i][p] = alloc_bmp(32, 32, "cframes[x][x]");
+        }
+    }
+
+    for (int p = 0; p < MAXCFRAMES; p++)
+    {
+        for (int i = 0; i < NUM_FIGHTERS; i++)
+        {
             tcframes[i][p] = alloc_bmp(32, 32, "tcframes[x][x]");
         }
     }
@@ -502,36 +518,39 @@ void KGame::allocate_stuff(void)
     back = alloc_bmp(SCREEN_W2, SCREEN_H2, "back");
     fx_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "fx_buffer");
 
-    for (p = 0; p < MAX_SHADOWS; p++)
+    for (int p = 0; p < MAX_SHADOWS; p++)
     {
         shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
     }
 
-    for (p = 0; p < 8; p++)
+    for (int p = 0; p < 8; p++)
     {
         bub[p] = alloc_bmp(16, 16, "bub[x]");
     }
 
-    for (p = 0; p < 3; p++)
+    for (int p = 0; p < 3; p++)
     {
         bord[p] = alloc_bmp(8, 8, "bord[x]");
         bord[p + 5] = alloc_bmp(8, 8, "bord[x]");
     }
 
-    for (p = 3; p < 5; p++)
+    for (int p = 3; p < 5; p++)
     {
         bord[p] = alloc_bmp(8, 12, "bord[x]");
     }
 
-    for (p = 0; p < 8; p++)
+    for (int p = 0; p < 8; p++)
     {
         players[p].portrait = alloc_bmp(40, 40, "portrait[x]");
     }
 
-    for (p = 0; p < MAX_TILES; p++)
+    for (int p = 0; p < MAX_TILES; p++)
     {
         map_icons[p] = alloc_bmp(TILE_W, TILE_H, "map_icons[x]");
     }
+#ifdef DEBUGMODE
+    alloc_bmp(0, 0, nullptr);
+#endif
     allocate_credits();
 }
 
@@ -791,7 +810,7 @@ void KGame::deallocate_stuff(void)
     if (is_sound)
     {
         Music.shutdown_music();
-        free_samples();
+        Music.free_samples();
     }
     deallocate_credits();
     clear_image_cache();
@@ -801,41 +820,36 @@ void KGame::deallocate_stuff(void)
 #endif
 }
 
-char* KGame::get_timer_event(void)
+const char* KGame::get_timer_event(void)
 {
-    static char buf[32];
-    int now = ksec;
-    int i;
+    static string buf;
     int next = INT_MAX;
-    struct timer_event* t;
 
-    if (now < next_event_time)
+    if (game_time < next_event_time)
     {
-        return NULL;
+        return nullptr;
     }
 
-    *buf = '\0';
-    for (i = 0; i < 5; ++i)
+    for (auto& t : timer_events)
     {
-        t = &timer_events[i];
-        if (*t->name)
+        if (!t.name.empty())
         {
-            if (t->when <= now)
+            if (t.when <= game_time)
             {
-                memcpy(buf, t->name, sizeof(buf));
-                *t->name = '\0';
+                std::swap(buf, t.name);
+                t.name = string {};
             }
             else
             {
-                if (t->when < next)
+                if (t.when < next)
                 {
-                    next = t->when;
+                    next = t.when;
                 }
             }
         }
     }
     next_event_time = next;
-    return *buf ? buf : NULL;
+    return buf.empty() ? nullptr : buf.c_str();
 }
 
 size_t KGame::in_party(ePIDX pn)
@@ -858,59 +872,20 @@ void KGame::klog(const char* msg)
     TRACE("%s\n", msg);
 }
 
-void KGame::kq_yield(void)
-{
-    rest(cpu_usage);
-}
-
 void KGame::kwait(int dtime)
 {
-    int cnt = 0;
-
     autoparty = 1;
-    timer_count = 0;
 
-    while (cnt < dtime)
+    while (dtime > 0)
     {
+        ProcessEvents();
         Music.poll_music();
-        while (timer_count > 0)
-        {
-            Music.poll_music();
-            timer_count--;
-            cnt++;
-            process_entities();
-        }
-        Game.do_check_animation();
-
+        --dtime;
+        process_entities();
+        do_check_animation();
         Draw.drawmap();
-        Draw.blit2screen(xofs, yofs);
-#ifdef DEBUGMODE
-        if (debugging > 0)
-        {
-            if (key[KEY_W] && key[KEY_ALT])
-            {
-                Game.klog(_("Alt+W Pressed:"));
-                sprintf(strbuf, "\tkwait(); cnt=%d, dtime=%d, timer_count=%d", cnt, dtime, timer_count);
-                Game.klog(strbuf);
-                break;
-            }
-        }
-#endif
-        if (key[KEY_X] && key[KEY_ALT])
-        {
-            if (debugging > 0)
-            {
-                sprintf(strbuf, "kwait(); cnt = %d, dtime = %d, timer_count = %d", cnt, dtime, timer_count);
-            }
-            else
-            {
-                sprintf(strbuf, _("Program terminated: user pressed Alt+X"));
-            }
-            program_death(strbuf);
-        }
+        Draw.blit2screen();
     }
-
-    timer_count = 0;
     autoparty = 0;
 }
 
@@ -941,20 +916,18 @@ void KGame::load_heroes(void)
         faces->blitTo(players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
     }
 }
-
 /*! \brief Main function
  *
  * Well, this one is pretty obvious.
  */
-int main(int argc, const char* argv[])
+int main(int argc, char* argv[])
 {
     int stop, game_on, skip_splash;
-    size_t i;
 
     setlocale(LC_ALL, "");
 
     skip_splash = 0;
-    for (i = 1; i < (size_t)argc; i++)
+    for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-nosplash") || !strcmp(argv[i], "--nosplash"))
         {
@@ -979,6 +952,7 @@ int main(int argc, const char* argv[])
         case 0: /* Continue */
             break;
         case 1: /* New game */
+            Game.SetGameTime(0);
             Game.change_map("starting", 0, 0, 0, 0);
             if (kqrandom)
             {
@@ -995,70 +969,41 @@ int main(int argc, const char* argv[])
         if (game_on)
         {
             stop = 0;
-            timer_count = 0;
             alldead = 0;
 
             /* While the actual game is playing */
             while (!stop)
             {
-                while (timer_count > 0)
-                {
-                    timer_count--;
-                    process_entities();
-                }
+                Game.ProcessEvents();
+                process_entities();
                 Game.do_check_animation();
                 Draw.drawmap();
-                Draw.blit2screen(xofs, yofs);
+                Draw.blit2screen();
                 Music.poll_music();
-
-                if (key[PlayerInput.kesc])
+                if (Game.want_console)
+                {
+                    Game.want_console = false;
+                    run_console();
+                }
+                if (PlayerInput.besc())
                 {
                     stop = SaveGame.system_menu();
                 }
-                if (PlayerInput.bhelp)
+                if (PlayerInput.bhelp())
                 {
                     /* TODO: In-game help system. */
                 }
-#ifdef DEBUGMODE
-                if (key[KEY_BACKSLASH])
-                {
-                    run_console();
-                }
-#endif
                 if (alldead)
                 {
-                    clear(screen);
-                    do_transition(TRANS_FADE_IN, 16);
+                    do_transition(eTransitionFade::IN, 16);
                     stop = 1;
                 }
             }
         }
     }
-    remove_int(my_counter);
-    remove_int(time_counter);
     Game.deallocate_stuff();
     return EXIT_SUCCESS;
 }
-END_OF_MAIN()
-
-/*! \brief Allegro timer callback
- *
- * New interrupt handler set to keep game time.
- */
-void my_counter(void)
-{
-    timer++;
-
-    if (timer >= Game.KQ_TICKS)
-    {
-        timer = 0;
-        ksec++;
-    }
-
-    animation_count++;
-    timer_count++;
-}
-END_OF_FUNCTION(my_counter)
 
 void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 {
@@ -1212,52 +1157,46 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     if (hold_fade == 0 && numchrs > 0)
     {
         Draw.drawmap();
-        Draw.blit2screen(xofs, yofs);
-        do_transition(TRANS_FADE_IN, 4);
+        Draw.blit2screen();
+        do_transition(eTransitionFade::IN, 4);
     }
 
     use_sstone = g_map.use_sstone;
     cansave = g_map.can_save;
-    timer_count = 0;
     do_postexec();
-    timer_count = 0;
 }
 
-void KGame::program_death(const char* message)
+void KGame::program_death(const char* message, const char* extra)
 {
-    TRACE("%s\n", message);
-    char tmp[1024];
-    memset(tmp, 0, sizeof(tmp));
-    strncpy(tmp, message, sizeof(tmp) - 1);
+    if (extra)
+    {
+        TRACE("%s: %s\n", message, extra);
+    }
+    else
+    {
+        TRACE("%s\n", message);
+    }
     deallocate_stuff();
-    set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-    allegro_message("%s\n", tmp);
     exit(EXIT_FAILURE);
 }
 
 void KGame::reset_timer_events(void)
 {
-    int i;
-
-    for (i = 0; i < 5; ++i)
+    for (auto& t : timer_events)
     {
-        *timer_events[i].name = '\0';
+        t.name = string {};
     }
     next_event_time = INT_MAX;
 }
 
 void KGame::reset_world(void)
 {
-    int i, j;
-
+    /* Start with no characters in play */
+    numchrs = 0;
     /* Reset timer */
-    timer = 0;
-    khr = 0;
-    kmin = 0;
-    ksec = 0;
-
+    SetGameTime({ 0 });
     /* Initialize special_items array */
-    for (i = 0; i < MAX_SPECIAL_ITEMS; i++)
+    for (int i = 0; i < MAX_SPECIAL_ITEMS; i++)
     {
         special_items[i].name[0] = 0;
         special_items[i].description[0] = 0;
@@ -1266,10 +1205,10 @@ void KGame::reset_world(void)
     }
 
     /* Initialize shops */
-    for (i = 0; i < NUMSHOPS; i++)
+    for (int i = 0; i < NUMSHOPS; i++)
     {
         shops[i].name[0] = 0;
-        for (j = 0; j < SHOPITEMS; j++)
+        for (int j = 0; j < SHOPITEMS; j++)
         {
             shops[i].items[j] = 0;
             shops[i].items_current[j] = 0;
@@ -1280,13 +1219,40 @@ void KGame::reset_world(void)
 
     lua_user_init();
 }
-
+static int rgb_index(RGB& c)
+{
+    int bestindex = 255, bestdist = INT_MAX;
+    // Start at 1 because 0 is the transparent colour and we don't want to match
+    // it
+    for (int i = 1; i < 256; ++i)
+    {
+        RGB& rgb = pal[i];
+        int dist = (c.r - rgb.r) * (c.r - rgb.r) + (c.g - rgb.g) * (c.g - rgb.g) + (c.b - rgb.b) * (c.b - rgb.b);
+        if (dist == 0)
+        {
+            // Exact match, early return
+            return i;
+        }
+        else
+        {
+            if (dist < bestdist)
+            {
+                bestdist = dist;
+                bestindex = i;
+            }
+        }
+    }
+    return bestindex;
+}
 void KGame::startup(void)
 {
     int p, i, q;
     time_t t;
 
-    allegro_init();
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER | SDL_INIT_AUDIO);
+#ifdef DEBUGMODE
+    SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
+#endif
 
     /* Buffers to allocate */
     strbuf = (char*)malloc(4096);
@@ -1295,26 +1261,40 @@ void KGame::startup(void)
     s_seg = z_seg = o_seg = NULL;
 
     allocate_stuff();
-    //install_keyboard();
-    install_timer();
 
-    /* KQ uses digi sound but it doesn't use MIDI */
-    //   reserve_voices (8, 0);
-    sound_avail = (install_sound(DIGI_AUTODETECT, MIDI_NONE, NULL) < 0 ? 0 : 1);
+    start_timer(KQ_TICKS);
+
+    sound_avail = Mix_Init(MIX_INIT_MOD) != 0;
     if (!sound_avail)
     {
-        TRACE(_("Error with sound: %s\n"), allegro_error);
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, _("Error with sound: %s\n"), Mix_GetError());
     }
     parse_setup();
     sound_init();
     set_graphics_mode();
+    // Set up transparency table - note special cases for a or b == 0
+    for (int colour_b = 0; colour_b < 256; ++colour_b)
+    {
+        cmap.data[0][colour_b] = colour_b;
+    }
+    for (int colour_a = 1; colour_a < 256; ++colour_a)
+    {
+        cmap.data[colour_a][0] = colour_a;
+        for (int colour_b = 1; colour_b < 256; ++colour_b)
+        {
+            RGB& a = pal[colour_a];
+            RGB& b = pal[colour_b];
+            RGB blend { static_cast<unsigned char>((a.r + b.r) / 2), static_cast<unsigned char>((a.g + b.g) / 2),
+                        static_cast<unsigned char>((a.b + b.b) / 2), 0xFF };
+            cmap.data[colour_a][colour_b] = rgb_index(blend);
+        }
+    }
 
     if (use_joy == 1)
     {
-        install_joystick(JOY_TYPE_AUTODETECT);
     }
 
-    if (num_joysticks == 0)
+    if (SDL_NumJoysticks() == 0)
     {
         use_joy = 0;
     }
@@ -1322,23 +1302,19 @@ void KGame::startup(void)
     {
         use_joy = 0;
 
-        if (poll_joystick() == 0)
+        // Use first compatible joystick attached to computer
+        for (i = 0; i < SDL_NumJoysticks(); ++i)
         {
-            // Use first compatible joystick attached to computer
-            for (i = 0; i < num_joysticks; ++i)
+            if (SDL_IsGameController(i))
             {
-                if (joy[i].num_buttons >= 4)
-                {
-                    use_joy = i + 1;
-                    break;
-                }
+                use_joy = i + 1;
+                break;
             }
         }
 
         if (use_joy == 0)
         {
             Game.klog(_("Only joysticks/gamepads with at least 4 buttons can be used."));
-            remove_joystick();
         }
     }
 
@@ -1429,20 +1405,6 @@ void KGame::startup(void)
         }
     }
 
-    LOCK_VARIABLE(timer);
-    LOCK_VARIABLE(timer_count);
-    LOCK_VARIABLE(animation_count);
-    LOCK_VARIABLE(ksec);
-    LOCK_VARIABLE(kmin);
-    LOCK_VARIABLE(khr);
-    LOCK_FUNCTION(my_counter);
-    LOCK_FUNCTION(time_counter);
-
-    install_int_ex(my_counter, BPS_TO_TIMER(KQ_TICKS));
-    /* tick every minute */
-    install_int_ex(time_counter, BPM_TO_TIMER(1));
-    create_trans_table(&cmap, pal, 128, 128, 128, NULL);
-    color_map = &cmap;
     SaveGame.load_sgstats();
 
 #ifdef DEBUGMODE
@@ -1465,101 +1427,70 @@ void KGame::startup(void)
     init_console();
 }
 
-/*! \brief Keep track of the time the game has been in play
- */
-void time_counter(void)
+void KGame::extra_controls()
 {
-    if (kmin < 60)
+    auto key = SDL_GetKeyboardState(nullptr);
+    if (key[SDL_SCANCODE_X] && key[SDL_SCANCODE_LALT])
     {
-        ++kmin;
+        sprintf(strbuf, _("Program terminated: user pressed Alt+X"));
+        program_death(strbuf);
     }
-    else
+#ifdef DEBUGMODE
+    if (debugging > 0)
     {
-        kmin -= 60;
-        ++khr;
-    }
-}
-END_OF_FUNCTION(time_counter)
-
-void KGame::unpress(void)
-{
-    timer_count = 0;
-    while (timer_count < 20)
-    {
-        PlayerInput.readcontrols();
-        if (!(PlayerInput.balt || PlayerInput.bctrl || PlayerInput.benter || PlayerInput.besc || PlayerInput.up ||
-              PlayerInput.down || PlayerInput.right || PlayerInput.left || PlayerInput.bcheat))
+        if (key[SDL_SCANCODE_F11])
         {
-            break;
+            data_dump();
+        }
+
+        /* Back to menu - by pretending all the heroes died.. hehe */
+        if (key[SDL_SCANCODE_LALT] && key[SDL_SCANCODE_M])
+        {
+            alldead = 1;
         }
     }
-    timer_count = 0;
+    if (key[SDL_SCANCODE_BACKSLASH])
+    {
+        want_console = true;
+    }
+#endif
 }
-
 void KGame::wait_enter(void)
 {
-    int stop = 0;
-
-    Game.unpress();
-
-    while (!stop)
+    while (!PlayerInput.balt())
     {
-        PlayerInput.readcontrols();
-        if (PlayerInput.balt)
-        {
-            Game.unpress();
-            stop = 1;
-        }
-        kq_yield();
+        ProcessEvents();
     }
-
-    timer_count = 0;
 }
 
 void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
 {
-    int any_following_entities;
+    bool any_following_entities = true;
     uint8_t move_mode;
     size_t entity_index;
 
     if (first_entity_index > last_entity_index)
     {
-        int temp = first_entity_index;
-
-        first_entity_index = last_entity_index;
-        last_entity_index = temp;
+        std::swap(first_entity_index, last_entity_index);
     }
 
     autoparty = 1;
     do
     {
-        while (timer_count > 0)
-        {
-            timer_count--;
-            process_entities();
-        }
+        ProcessEvents();
+        process_entities();
         Music.poll_music();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.blit2screen(xofs, yofs);
+        Draw.blit2screen();
 
-        if (key[KEY_W] && key[KEY_ALT])
-        {
-            break;
-        }
-
-        if (key[KEY_X] && key[KEY_ALT])
-        {
-            program_death(_("X-Alt pressed - exiting"));
-        }
-
-        any_following_entities = 0;
+        any_following_entities = false;
         for (entity_index = first_entity_index; entity_index <= last_entity_index; ++entity_index)
         {
             move_mode = g_ent[entity_index].movemode;
             if (g_ent[entity_index].active == 1 && (move_mode == MM_SCRIPT || move_mode == MM_TARGET))
             {
-                any_following_entities = 1;
+                any_following_entities = true;
                 break; // for()
             }
         }
@@ -1573,7 +1504,7 @@ void KGame::warp(int wtx, int wty, int fspeed)
 
     if (hold_fade == 0)
     {
-        do_transition(TRANS_FADE_OUT, fspeed);
+        do_transition(eTransitionFade::OUT, fspeed);
     }
 
     if (numchrs == 0)
@@ -1598,14 +1529,12 @@ void KGame::warp(int wtx, int wty, int fspeed)
 
     calc_viewport();
     Draw.drawmap();
-    Draw.blit2screen(xofs, yofs);
+    Draw.blit2screen();
 
     if (hold_fade == 0)
     {
-        do_transition(TRANS_FADE_IN, fspeed);
+        do_transition(eTransitionFade::IN, fspeed);
     }
-
-    timer_count = 0;
 }
 
 void KGame::zone_check(void)
@@ -1635,7 +1564,7 @@ void KGame::zone_check(void)
 
         if (save_spells[P_REPULSE] < 1)
         {
-            Draw.message(_("Repulse has worn off!"), 255, 0, xofs, yofs);
+            Draw.message(_("Repulse has worn off!"), 255, 0);
         }
     }
 
@@ -1675,6 +1604,82 @@ int KGame::SetGold(int amount)
     return gp;
 }
 
+bool KGame::ProcessEvents()
+{
+    bool wait_timer = true;
+    extern void reset_watchdog();
+    reset_watchdog();
+    static int ecount = 0;
+    while (wait_timer)
+    {
+        SDL_Event event;
+        int rc = SDL_WaitEvent(&event);
+        if (rc == 0)
+        {
+            Game.program_death("Error waiting for events", SDL_GetError());
+        }
+        do
+        {
+            switch (event.type)
+            {
+            case SDL_USEREVENT: // this is our frame timer
+                wait_timer = false;
+                ++game_time;
+                ++ecount;
+                break;
+            case SDL_QUIT:
+                // TODO don't be so brutal
+                Game.program_death("SDL quit");
+                break;
+            case SDL_KEYDOWN:
+                PlayerInput.ProcessKeyboardEvent(&event.key);
+                // Handle some keys that don't generate TEXTINPUT
+                //
+                switch (event.key.keysym.sym)
+                {
+                case SDLK_RETURN:
+                case SDLK_RETURN2:
+                    keyp = 0x0d;
+                    break;
+                case SDLK_BACKSPACE:
+                    keyp = 0x8;
+                    break;
+                }
+                break;
+            case SDL_KEYUP:
+                PlayerInput.ProcessKeyboardEvent(&event.key);
+                break;
+            case SDL_TEXTINPUT:
+                keyp = event.text.text[0]; // TODO this is poor (only copies ASCII, UTF-8 not handled)
+                break;
+            default: // TODO all other events
+                break;
+            }
+        } while (SDL_PollEvent(&event));
+    }
+    if (ecount > KQ_TICKS)
+    {
+        ecount -= KQ_TICKS;
+        // Just do this once per second
+        extra_controls();
+    }
+    return true;
+}
+
+void KGame::SetGameTime(const KTime& t)
+{
+    game_time = t.total_seconds() * KQ_TICKS;
+}
+KTime KGame::GetGameTime() const
+{
+    return { game_time / KQ_TICKS };
+}
+int KGame::get_key()
+{
+    int k = keyp >= 0 && keyp < 128 ? keyp : 0;
+    keyp = 0;
+    return k;
+}
 /*! \mainpage KQ - The Classic Computer Role-Playing Game
  *
  * Take the part of one of eight mighty heroes as you search for the
@@ -1729,3 +1734,13 @@ int KGame::SetGold(int amount)
  *
  * The names given are the base names of the maps/lua scripts
  */
+
+void TRACE(const char* message, ...)
+{
+    va_list args;
+    va_start(args, message);
+    SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG, message, args);
+    va_end(args);
+}
+
+PALETTE black_palette;

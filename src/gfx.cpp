@@ -1,27 +1,33 @@
 #include "gfx.h"
+#include "compat.h"
+#include "kq.h"
+#include <SDL.h>
 #include <algorithm>
-#include <allegro.h>
 
+COLOR_MAP* color_map = &cmap;
+extern PALETTE pal;
+static RGB current_palette[PAL_SIZE];
+void set_palette(RGB* clrs)
+{
+    std::copy(clrs, clrs + PAL_SIZE, current_palette);
+}
+void set_palette_range(PALETTE src, int from, int to)
+{
+    std::copy(src + from, src + to, current_palette + from);
+}
+
+void get_palette(RGB* clrs)
+{
+    std::copy(current_palette, current_palette + PAL_SIZE, clrs);
+}
+#define ALIGNED(x) ((x) + alignof(char*) - 1) & ~(alignof(char*) - 1)
 Raster::Raster(uint16_t w, uint16_t h)
     : width(w)
     , height(h)
-    , stride(w)
-    , data(new uint8_t[w * h])
+    , stride(ALIGNED(w))
+    , data(new uint8_t[stride * h])
+    , xt(new int[w])
 {
-}
-
-Raster::Raster(Raster&& other)
-    : width(other.width)
-    , height(other.height)
-    , stride(other.stride)
-    , data(other.data)
-{
-    other.data = nullptr;
-}
-
-Raster::~Raster()
-{
-    delete[] data;
 }
 
 void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w, uint16_t src_h, int16_t dest_x,
@@ -31,16 +37,66 @@ void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w
     auto x1 = std::min(int(target->width), dest_x + dest_w);
     auto y0 = std::max(0, int(dest_y));
     auto y1 = std::min(int(target->height), dest_y + dest_h);
-    for (auto i = x0; i < x1; ++i)
+    bool stretch = (dest_w != src_w) || (dest_h != src_h);
+    // Four cases - stretch + masked, stretch + not masked, not stretch + masked, not stretch + not masked.
+    if (stretch)
     {
-        for (auto j = y0; j < y1; ++j)
+        for (auto i = x0; i < x1; ++i)
         {
-            int16_t scx = src_x + (i - dest_x) * src_w / dest_w;
-            int16_t scy = src_y + (j - dest_y) * src_h / dest_h;
-            uint8_t c = getpixel(scx, scy);
-            if ((c != 0) || (!masked))
+            target->xt[i] = (i - dest_x) * src_w / dest_w;
+        }
+        if (masked)
+        {
+            for (auto j = y0; j < y1; ++j)
             {
-                target->setpixel(i, j, c);
+                auto yt = src_x + stride * (src_y + (j - dest_y) * src_h / dest_h);
+                for (auto i = x0; i < x1; ++i)
+                {
+                    uint8_t c = data[target->xt[i] + yt];
+                    if (c)
+                    {
+                        target->data[i + j * target->stride] = c;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (auto j = y0; j < y1; ++j)
+            {
+                auto yt = src_x + stride * (src_y + (j - dest_y) * src_h / dest_h);
+                for (auto i = x0; i < x1; ++i)
+                {
+                    uint8_t c = data[target->xt[i] + yt];
+                    target->data[i + j * target->stride] = c;
+                }
+            }
+        }
+    }
+    else // Not stretch
+    {
+        if (masked)
+        {
+            for (auto j = y0; j < y1; ++j)
+            {
+                auto yt = src_x - dest_x + stride * (src_y - dest_y + j);
+                for (auto i = x0; i < x1; ++i)
+                {
+                    uint8_t c = data[i + yt];
+                    if (c)
+                    {
+                        target->data[i + j * target->stride] = c;
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (auto j = y0; j < y1; ++j)
+            {
+                auto src_base = data.get() + src_x - dest_x + stride * (src_y - dest_y + j);
+                auto dest_base = target->data.get() + target->stride * j;
+                std::copy(src_base + x0, src_base + x1, dest_base + x0);
             }
         }
     }
@@ -195,15 +251,41 @@ void draw_trans_sprite(Raster* dest, Raster* src, int x, int y)
     // todo
 }
 
-Raster* raster_from_bitmap(BITMAP* bmp)
+void Raster::to_rgba32(SDL_Rect* src, SDL_PixelFormat* format, void* pixels, int stride)
 {
-    Raster* ans = new Raster(bmp->w, bmp->h);
-    for (int i = 0; i < ans->width; ++i)
+    Uint32 rgbas[256];
+    static SDL_Rect defl;
+    if (!src)
     {
-        for (int j = 0; j < ans->height; ++j)
+        defl = { 0, 0, width, height };
+        src = &defl;
+    }
+    for (int i = 0; i < 256; ++i)
+    {
+        Uint8 r = 4 * current_palette[i].r;
+        Uint8 g = 4 * current_palette[i].g;
+        Uint8 b = 4 * current_palette[i].b;
+
+        rgbas[i] = SDL_MapRGB(format, r, g, b);
+    }
+
+    for (int y = 0; y < src->h; ++y)
+    {
+        Uint32* line = reinterpret_cast<Uint32*>(reinterpret_cast<Uint8*>(pixels) + stride * y);
+        int sy = y + src->y;
+        for (int x = 0; x < src->w; ++x)
         {
-            ans->ptr(i, j) = getpixel(bmp, i, j);
+            int sx = x + src->x;
+            line[x] = rgbas[data[sx + sy * this->stride]];
         }
     }
-    return ans;
+}
+
+void textprintf(Raster*, void*, int, int, int, const char* fmt, ...)
+{
+    char buffer[1024];
+    va_list args;
+    va_start(args, fmt);
+    vsprintf(buffer, fmt, args);
+    va_end(args);
 }

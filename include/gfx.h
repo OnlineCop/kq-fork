@@ -1,15 +1,13 @@
 #pragma once
 
+#include <SDL.h>
 #include <cstdint>
-
-struct BITMAP;
-
+#include <memory>
 class Raster
 {
   public:
     Raster(uint16_t w, uint16_t h);
-    Raster(Raster&&);
-    ~Raster();
+    Raster(Raster&&) = default;
     void blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w, uint16_t src_h, int16_t dest_x,
                 int16_t dest_y, uint16_t dest_w, uint16_t dest_h, bool masked);
     void blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t dest_x, uint16_t dest_y, uint16_t src_w,
@@ -27,17 +25,18 @@ class Raster
     void fill(uint8_t colour);
     uint8_t& ptr(int16_t x, int16_t y)
     {
-        return data[x + y * stride];
+        return data[x + y * size_t(stride)];
     }
     const uint16_t width, height;
     const uint16_t stride;
+    void to_rgba32(SDL_Rect* rc, SDL_PixelFormat* format, void* pixels, int stride);
 
   private:
-    uint8_t* data;
+    std::unique_ptr<uint8_t[]> data;
+    std::unique_ptr<int[]> xt;
 };
 
 // Compatibility stuff
-Raster* raster_from_bitmap(BITMAP*);
 
 inline void blit(Raster* src, Raster* dest, int sx, int sy, int dx, int dy, int w, int h)
 {
@@ -106,4 +105,12 @@ inline void rect(Raster* r, int x1, int y1, int x2, int y2, int c)
     r->vline(x2, y1, y2, c);
     r->hline(x1, x2, y1, c);
     r->hline(x1, x2, y2, c);
+}
+
+void textprintf(Raster*, void*, int, int, int, const char*, ...);
+
+void set_window_palette(SDL_Window* w);
+inline void fullblit(Raster* src, Raster* dest)
+{
+    src->blitTo(dest);
 }

@@ -2,7 +2,6 @@
 
 #include "enums.h"
 #include "structs.h"
-#include <allegro.h>
 #include <cstdint>
 class Raster;
 
@@ -17,11 +16,11 @@ class KFighter
 
   public:
     KFighter();
-    KFighter(const KFighter& rhs); // Copy constructor
-    KFighter(KFighter&& rhs);      // C++11 move constructor
+    KFighter(const KFighter& rhs) = default; // Copy constructor
+    KFighter(KFighter&& rhs) = default;      // C++11 move constructor
 
-    KFighter& operator=(const KFighter& rhs); // Assignment operator
-    KFighter& operator=(KFighter&& rhs);      // C++11 move assignment
+    KFighter& operator=(const KFighter& rhs) = default; // Assignment operator
+    KFighter& operator=(KFighter&& rhs) = default;      // C++11 move assignment
     ~KFighter() = default;
 
     void EmptyOtherFighter(KFighter& outFighter);

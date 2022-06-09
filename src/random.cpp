@@ -52,9 +52,4 @@ void KQRandom::kq_set_random_state(const std::string& new_state)
     stm >> engine;
 }
 
-// Name a specific engine here rather than default
-// just in case different platforms have different
-// implementations of default.
-static std::minstd_rand engine;
-
 KQRandom* kqrandom;

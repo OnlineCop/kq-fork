@@ -1,116 +1,46 @@
 #include "input.h"
-#include "allegro.h"
 #include "kq.h"
 #include "music.h"
 #include "platform.h"
+#include <SDL.h>
 
 KPlayerInput::KPlayerInput()
-    : right { 0 }
-    , left { 0 }
-    , up { 0 }
-    , down { 0 }
-    , besc { 0 }
-    , balt { 0 }
-    , bctrl { 0 }
-    , benter { 0 }
-    , bhelp { 0 }
-    , bcheat { 0 }
-    , kright { 0 }
-    , kleft { 0 }
-    , kup { 0 }
-    , kdown { 0 }
-    , kesc { 0 }
-    , kenter { 0 }
-    , kalt { 0 }
-    , kctrl { 0 }
-    , jbalt { 0 }
-    , jbctrl { 0 }
-    , jbenter { 0 }
-    , jbesc { 0 }
 {
+    bhelp.scancode = SDL_SCANCODE_F1;
+    bcheat.scancode = SDL_SCANCODE_F10;
 }
+// Helper functions
 
-/*! \brief Handle user input.
- *
- * Updates all of the game controls according to user input.
- * 2003-05-27 PH: updated to re-enable the joystick
- * 2003-09-07 Edge <hardedged@excite.com>: removed duplicate input, joystick code
- * 2003-09-07 Caz Jones: last time code workaround pci-gameport bug
- *            (should not affect non-buggy drivers - please report to edge)
- */
-void KPlayerInput::readcontrols()
+static void kp(KPlayerInput::button& b, SDL_KeyboardEvent* evt)
 {
-    JOYSTICK_INFO* stk;
-
-    Music.poll_music();
-
-    /* PH 2002.09.21 in case this is needed (not sure on which platforms it is) */
-    if (keyboard_needs_poll())
+    if (b.scancode == evt->keysym.scancode)
     {
-        poll_keyboard();
-    }
-
-    PlayerInput.balt = key[PlayerInput.kalt];
-    PlayerInput.besc = key[PlayerInput.kesc];
-    PlayerInput.bctrl = key[PlayerInput.kctrl];
-    PlayerInput.benter = key[PlayerInput.kenter];
-    PlayerInput.bhelp = key[KEY_F1];
-    PlayerInput.bcheat = key[KEY_F10];
-
-    PlayerInput.up = key[PlayerInput.kup];
-    PlayerInput.down = key[PlayerInput.kdown];
-    PlayerInput.left = key[PlayerInput.kleft];
-    PlayerInput.right = key[PlayerInput.kright];
-
-    /* Emergency kill-game set. */
-    /* PH modified - need to hold down for 0.50 sec */
-    if (key[KEY_ALT] && key[KEY_X])
-    {
-        int kill_time = timer_count + Game.KQ_TICKS / 2;
-
-        while (key[KEY_ALT] && key[KEY_X])
+        if (evt->state == SDL_PRESSED)
         {
-            if (timer_count >= kill_time)
+            if (evt->repeat == 0)
             {
-                /* Pressed, now wait for release */
-                clear_bitmap(screen);
-                while (key[KEY_ALT] && key[KEY_X])
-                {
-                }
-                Game.program_death(_("X-ALT pressed... exiting."));
+                b.down = b.pressed = true;
             }
         }
-    }
-#ifdef DEBUGMODE
-    extern char debugging;
-    if (debugging > 0)
-    {
-        if (key[KEY_F11])
+        else
         {
-            Game.data_dump();
+            b.down = b.pressed = false;
         }
-
-        /* Back to menu - by pretending all the heroes died.. hehe */
-        if (key[KEY_ALT] && key[KEY_M])
-        {
-            alldead = 1;
-        }
-    }
-#endif
-
-    if (use_joy > 0 && maybe_poll_joystick() == 0)
-    {
-        stk = &joy[use_joy - 1];
-        PlayerInput.left |= stk->stick[0].axis[0].d1;
-        PlayerInput.right |= stk->stick[0].axis[0].d2;
-        PlayerInput.up |= stk->stick[0].axis[1].d1;
-        PlayerInput.down |= stk->stick[0].axis[1].d2;
-
-        PlayerInput.balt |= stk->button[0].b;
-        PlayerInput.bctrl |= stk->button[1].b;
-        PlayerInput.benter |= stk->button[2].b;
-        PlayerInput.besc |= stk->button[3].b;
     }
 }
 
+void KPlayerInput::ProcessKeyboardEvent(SDL_KeyboardEvent* evt)
+{
+    kp(balt, evt);
+    kp(besc, evt);
+    kp(bctrl, evt);
+    kp(benter, evt);
+    kp(bhelp, evt);
+    kp(bcheat, evt);
+
+    kp(up, evt);
+    kp(down, evt);
+    kp(left, evt);
+    kp(right, evt);
+}
 KPlayerInput PlayerInput;

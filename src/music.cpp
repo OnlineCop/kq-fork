@@ -30,17 +30,18 @@
 #include <cstring>
 #include <string>
 
+#include "disk.h"
 #include "kq.h"
 #include "music.h"
 #include "platform.h"
 
 /* DUMB version of music */
-#include <aldumb.h>
+#include <dumb.h>
 
 /* private variables */
 #define MAX_MUSIC_PLAYERS 3
 static DUH* mod_song[MAX_MUSIC_PLAYERS];
-static AL_DUH_PLAYER* mod_player[MAX_MUSIC_PLAYERS];
+static void* mod_player[MAX_MUSIC_PLAYERS];
 static int current_music_player;
 
 /*! \brief Initiate music player (DUMB)
@@ -89,7 +90,9 @@ void KMusic::set_music_volume(float volume)
 {
     if (is_sound != 0 && mod_player[current_music_player])
     {
-        al_duh_set_volume(mod_player[current_music_player], volume);
+        /* TODO
+          al_duh_set_volume(mod_player[current_music_player], volume);
+        */
     }
 }
 
@@ -102,7 +105,9 @@ void KMusic::poll_music(void)
 {
     if (is_sound != 0)
     {
-        al_poll_duh(mod_player[current_music_player]);
+        /* TODO
+          al_poll_duh(mod_player[current_music_player]);
+        */
     }
 }
 
@@ -123,7 +128,7 @@ void KMusic::play_music(const std::string& music_name, long position)
         const char* filename = fstr.c_str();
 
         stop_music();
-        if (exists(filename))
+        if (Disk.exists(filename))
         {
             if (strstr(filename, ".mod"))
             {
@@ -149,8 +154,10 @@ void KMusic::play_music(const std::string& music_name, long position)
                 /* ML: we should (?) adjust the buffer size after everything is running
                  * smooth */
                 float vol = float(gmvol) / 250.0f;
-                mod_player[current_music_player] =
-                    al_start_duh(mod_song[current_music_player], 2, position, vol, 4096 * 4, 44100);
+                /* TODO
+                        mod_player[current_music_player] =
+                            al_start_duh(mod_song[current_music_player], 2, position, vol, 4096 * 4, 44100);
+                */
             }
             else
             {
@@ -173,9 +180,10 @@ void KMusic::play_music(const std::string& music_name, long position)
 void KMusic::stop_music(void)
 {
     if (is_sound != 0 && mod_player[current_music_player])
-    {
-        al_stop_duh(mod_player[current_music_player]);
-        unload_duh(mod_song[current_music_player]);
+    { /* TODO
+         al_stop_duh(mod_player[current_music_player]);
+         unload_duh(mod_song[current_music_player]);
+      */
         mod_player[current_music_player] = NULL;
         mod_song[current_music_player] = NULL;
     }
@@ -193,7 +201,9 @@ void KMusic::pause_music(void)
     {
         if (current_music_player < MAX_MUSIC_PLAYERS - 1)
         {
-            al_pause_duh(mod_player[current_music_player]);
+            /* TODO
+                  al_pause_duh(mod_player[current_music_player]);
+            */
             current_music_player++;
         }
         else
@@ -214,8 +224,21 @@ void KMusic::resume_music(void)
     {
         stop_music();
         current_music_player--;
-        al_resume_duh(mod_player[current_music_player]);
+        /* TODO
+            al_resume_duh(mod_player[current_music_player]);
+        */
     }
 }
 
+void KMusic::play_effect(int, int)
+{
+}
+void KMusic::play_sample(void*, int, int, int, int)
+{
+}
+void KMusic::set_volume(float, int)
+{
+}
+int _color_depth = 8;
+void* screen;
 KMusic Music;

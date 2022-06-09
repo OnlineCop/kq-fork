@@ -613,8 +613,8 @@ void KEnemy::LoadEnemies()
         return;
     }
 
-    LoadEnemies(kqres(DATA_DIR, "allstat.mon"), enemy_gfx);
-    LoadEnemyStats(kqres(DATA_DIR, "resabil.mon"));
+    LoadEnemies(kqres(eDirectories::DATA_DIR, "allstat.mon"), enemy_gfx);
+    LoadEnemyStats(kqres(eDirectories::DATA_DIR, "resabil.mon"));
 }
 
 void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
@@ -771,7 +771,7 @@ void KEnemy::LoadEnemyStats(const string& fullFilename)
             int tempval;
             iss >> tempval;
             fighter_loaded_from_disk.aip[i] = tempval;
-            //iss >> fighter_loaded_from_disk.aip[i];
+            // iss >> fighter_loaded_from_disk.aip[i];
             fighter_loaded_from_disk.atrack[i] = 0;
         }
         fighter_loaded_from_disk.hp = fighter_loaded_from_disk.mhp;

@@ -22,13 +22,17 @@
 #pragma once
 
 #include "enums.h"
-
 #include <cstdint>
 #include <cstdlib>
 #include <string>
+
 using std::string;
 
 class Raster;
+struct SDL_Window;
+struct SDL_Renderer;
+struct SDL_Texture;
+struct SDL_PixelFormat;
 enum eSpellType;
 
 // TODO: Find out whether these values paired to any color defined within
@@ -93,13 +97,25 @@ enum eBubbleStemStyle
 class KDraw
 {
   public:
+    KDraw();
+    /*! \brief set up drawing system.
+     * This will store the window, and set up a renderer and texture
+     * to go with it
+     * @param _window KQ's window
+     */
+    void set_window(SDL_Window* _window);
+    /// Get the current window
+    SDL_Window* get_window() const
+    {
+        return window;
+    }
     /*! \brief Copies from the double buffer to the screen.
      *  Handles frame-rate display, stretching and vsync waiting.
      *
      * \param   xw x-coord in double_buffer of the top-left of the screen
      * \param   yw y-coord in double_buffer of the top-left of the screen
      */
-    void blit2screen(int xw, int yw);
+    void blit2screen();
 
     /*! \brief Takes a bitmap and scales it to fit in the color range specified. Output goes to a new bitmap.
      * This is used to make a monochrome version of a bitmap, for example to
@@ -224,6 +240,21 @@ class KDraw
      */
     void print_font(Raster* where, int sx, int sy, const string& msg, eFontColor font_index);
 
+    /*! \brief Calculate font height
+     * \param index font index
+     * \returns height in pixels
+     */
+    int font_height(eFontColor index)
+    {
+        return index == FBIG ? 12 : 8;
+    }
+    /*! \brief Calculate text width
+     * \param str a string
+     * \param index font index
+     * \returns width in pixels
+     */
+    int text_length(eFontColor index, const char* str);
+
     /*! \brief Display number
      *
      * Display a number using the small font on a bitmap at the specified
@@ -315,10 +346,8 @@ class KDraw
      * \param   m Message text
      * \param   icn Icon to display or 255 for none
      * \param   delay Time to wait (milliseconds?)
-     * \param   x_m X-coord of top-left (like xofs)
-     * \param   y_m Y-coord of top-left
      */
-    void message(const char* m, int icn, int delay, int x_m, int y_m);
+    void message(const char* m, int icn, int delay);
 
     /*! \brief Adjust view
      *
@@ -376,6 +405,25 @@ class KDraw
      */
     const char* decode_utf8(const char* InString, uint32_t* cp);
 
+    /*! Boundary adjusted for parallax */
+    struct PBound
+    {
+        int left;
+        int top;
+        int right;
+        int bottom;
+        int x_offset;
+        int y_offset;
+    };
+
+    /*! \brief Calculate bounds
+     *
+     * Calculate bounds based on current view if any and taking into account parallax
+     * \param is_parallax true if parallax applies to the layer under consideration
+     * \returns a bounding box
+     */
+    PBound calculate_box(bool is_parallax);
+
     /*! \brief Draw background
      *
      * Draw the background layer.  Accounts for parallaxing.
@@ -390,11 +438,8 @@ class KDraw
      * Does not seem to do any parallaxing. (?)
      * PH modified 20030309 Simplified this a bit, removed one blit() that wasn't
      * neeeded.
-     *
-     * \param   xw x-offset - always ==16
-     * \param   yw y-offset - always ==16
      */
-    void draw_char(int xw, int yw);
+    void draw_char();
 
     /*! \brief Draw foreground
      *
@@ -524,13 +569,6 @@ class KDraw
      */
     string parse_string(const string& the_string);
 
-    /*! \brief Parallax calculations for xofs and yofs.
-     *
-     * \param dx - X offset
-     * \param dy - Y offset
-     */
-    void recalculate_offsets(int dx, int dy);
-
     // The internal processing modes during text reformatting; used in \sa relay()
     enum m_mode
     {
@@ -539,6 +577,11 @@ class KDraw
         M_NONSPACE,
         M_END
     };
+    SDL_Window* window;      /// The target window.
+    SDL_Renderer* renderer;  /// The window's renderer
+    SDL_Texture* texture;    /// The target texture
+    SDL_PixelFormat* format; /// The format of the texture
+    int btile;
 };
 
 /*  global variables  */

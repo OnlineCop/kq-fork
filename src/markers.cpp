@@ -37,63 +37,68 @@ using std::string;
 using std::shared_ptr;
 
 #include "markers.h"
-KMarkers::KMarkers()
-{
-}
 
-KMarkers::~KMarkers()
+bool KMarkers::Add(KMarker&& marker)
 {
-    for (auto marker : m_markers)
+    for (auto& m : m_markers)
     {
-        marker = nullptr;
+        if (m.name == marker.name)
+        {
+            m.x = marker.x;
+            m.y = marker.y;
+            return true;
+        }
     }
-}
-
-bool KMarkers::Add(shared_ptr<KMarker> marker)
-{
-    m_markers.push_back(marker);
+    m_markers.push_back(std::move(marker));
     return true;
 }
 
-bool KMarkers::Remove(shared_ptr<KMarker> marker)
+bool KMarkers::Remove(const string& name)
 {
-    auto found = std::find(m_markers.begin(), m_markers.end(), marker);
-    if (found != m_markers.end())
+    auto it = m_markers.begin();
+    while (it != m_markers.end())
     {
-        m_markers.erase(found);
-        return true;
+        if (it->name == name)
+        {
+            it = m_markers.erase(it);
+            return true;
+        }
+        else
+        {
+            ++it;
+        }
     }
     return false;
 }
 
-shared_ptr<KMarker> KMarkers::GetMarker(size_t index)
+const KMarker* KMarkers::GetMarker(size_t index)
 {
     if (index < m_markers.size())
     {
-        return m_markers[index];
+        return &m_markers[index];
     }
     return nullptr;
 }
 
-shared_ptr<KMarker> KMarkers::GetMarker(string marker_name)
+const KMarker* KMarkers::GetMarker(const string& marker_name)
 {
-    for (auto it = m_markers.begin(); it != m_markers.end(); it++)
+    for (auto& m : m_markers)
     {
-        if ((*it)->name == marker_name)
+        if (m.name == marker_name)
         {
-            return *it;
+            return &m;
         }
     }
     return nullptr;
 }
 
-shared_ptr<KMarker> KMarkers::GetMarker(int32_t x, int32_t y)
+const KMarker* KMarkers::GetMarker(int32_t x, int32_t y)
 {
-    for (auto it = m_markers.begin(); it != m_markers.end(); it++)
+    for (auto& m : m_markers)
     {
-        if ((*it)->x == x && (*it)->y == y)
+        if (m.x == x && m.y == y)
         {
-            return *it;
+            return &m;
         }
     }
     return nullptr;

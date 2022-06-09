@@ -27,14 +27,7 @@
  * \date ??????
  */
 
-/* Have to undef some stuff because Allegro defines it - thanks guys
- */
 #ifdef HAVE_CONFIG_H
-#undef PACKAGE_TARNAME
-#undef PACKAGE_VERSION
-#undef PACKAGE_NAME
-#undef PACKAGE_STRING
-#undef PACKAGE_BUGREPORT
 #include "config.h"
 #endif
 
@@ -48,23 +41,52 @@
 #endif /* MSVC */
 #endif /* GNUC */
 
-#include <cstdint>
-#include <string>
-using std::string;
-
-#include "gettext.h"
-#define _(s) gettext(s)
-
 #include "constants.h"
 #include "entity.h"
 #include "enums.h"
 #include "fighter.h"
+#include "gettext.h"
 #include "heroc.h"
 #include "maps.h"
 #include "player.h"
 #include "structs.h"
+#include <SDL.h>
+#include <cstdint>
+#include <string>
+
+#define _(s) gettext(s)
+
+using std::string;
 
 class Raster;
+
+class KTime
+{
+  public:
+    KTime(int seconds)
+        : value(seconds)
+    {
+    }
+    int hours() const
+    {
+        return value / 3600;
+    }
+    int minutes() const
+    {
+        return (value / 60) % 60;
+    }
+    int seconds() const
+    {
+        return value % 60;
+    }
+    int total_seconds() const
+    {
+        return value;
+    }
+
+  private:
+    int value;
+};
 
 class KGame
 {
@@ -77,9 +99,10 @@ class KGame
      *
      * \param   map_name Base name of map (xxx -> maps/xxx.map)
      * \param   player_x New x-coord for player. Pass 0 for msx and msy to use the 'default' position stored in the map
-     * file: s_map::stx and s_map::sty \param   player_y New y-coord for player \param   camera_x New x-coord for
-     * camera. Pass 0 for mvx and mvy to use the default: s_map::stx and s_map::sty) \param   camera_y New y-coord for
-     * camera
+     * file: s_map::stx and s_map::sty
+     * \param   player_y New y-coord for player
+     * \param   camera_x New x-coord for camera. Pass 0 for mvx and mvy to use the default: s_map::stx and s_map::sty)
+     * \param   camera_y New y-coord for camera
      */
     void change_map(const string& map_name, int player_x, int player_y, int camera_x, int camera_y);
 
@@ -90,7 +113,7 @@ class KGame
      *
      * \param   map_name Base name of map (xxx -> maps/xxx.map)
      * \param   marker_name Marker containing both x and y coords for player. If the marker's name doesn't exist on the
-     * map, pass 0 for msx and msy to use the 'default' position stored in the map file (s_map::stx and s_map::sty)
+     * map, use the 'default' position stored in the map file (s_map::stx and s_map::sty)
      * \param   offset_x Horizontal offset from the marker's X tile.
      * \param   offset_y Vertical offset from the marker's Y tile.
      */
@@ -141,16 +164,6 @@ class KGame
      */
     void activate(void);
 
-    /*! \brief Wait for key release
-     *
-     * This is used to wait and make sure that the user has
-     * released a key before moving on.
-     * 20030728 PH re-implemented in IMHO a neater way
-     *
-     * \note Waits at most 20 'ticks'
-     */
-    void unpress(void);
-
     /*! \brief Wait for ALT
      *
      * Simply wait for the 'alt' key to be pressed.
@@ -183,8 +196,9 @@ class KGame
      * Kill the program and spit out a message.
      *
      * \param   message Text to put into log
+     * \param   extra Addition text for convenience
      */
-    NORETURN void program_death(const char* message);
+    NORETURN void program_death(const char* message, const char* extra = nullptr);
 
     /*! \brief Is this character in the party?
      *
@@ -223,7 +237,7 @@ class KGame
      *
      * \returns name of the next event or NULL if none is ready
      */
-    char* get_timer_event(void);
+    const char* get_timer_event(void);
 
     /* \brief Add a new timer event to the list
      *
@@ -247,12 +261,6 @@ class KGame
      *  This function may be called multiple times in some cases. That should be ok.
      */
     void reset_world(void);
-
-    /*! \brief Yield processor for other tasks
-     *
-     * This function calls rest() with the value of 'cpu_usage' as its parameter
-     */
-    void kq_yield(void);
 
     /*! \brief Creates a bitmap, giving an error message with the specified name if it fails.
      *
@@ -347,11 +355,47 @@ class KGame
      * \returns the amount of gold in team's coffer.
      */
     int SetGold(int amount);
+    /*! Process the SDL events
+     * Will update various things, e.g. key pressed, window state changes
+     * Call this regularly.
+     * @return true if ready for next frame
+     */
+    bool ProcessEvents();
+    /** Get current game time.
+     * this is the elapsed time in the game;
+     * \return the time
+     */
+    KTime GetGameTime() const;
+    /*! Set the current game time
+     * This resets the clock, e.g. when a save-game is loaded
+     * \param time the new time
+     */
+    void SetGameTime(const KTime&);
+    /*! \brief Check last key
+     * \returns char of last key pressed or 0 if none
+     */
+    int peek_key() const
+    {
+        return keyp;
+    }
+    /*! \brief Return last key
+     * This resets the key so subsequent calls to this and \sa check_key() will
+     * return 0
+     * \returns char of last key pressed or 0 if none
+     */
+    int get_key();
+    /*! Handle extra controls
+     * This is for things like debugging
+     */
+    void extra_controls();
 
   public:
     const string WORLD_MAP;
     /*! The number of frames per second */
     const int32_t KQ_TICKS;
+    // Game time in ticks (should be enough for >2 years real time play)
+    int game_time;
+    bool want_console = false;
 
   protected:
     /*! Name of the current map */
@@ -359,6 +403,8 @@ class KGame
 
     /** Gold pieces held by the player */
     int gp;
+    /** Last key */
+    int keyp;
 };
 
 /*! View and character positions */
@@ -397,7 +443,6 @@ extern KQEntity g_ent[MAX_ENTITIES];
 extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
 extern s_anim adata[MAX_ANIM];
 extern uint32_t numchrs;
-extern int xofs, yofs;
 extern int gsvol, gmvol;
 /*! Number of entities (or enemies?) */
 extern uint32_t number_of_entities;
@@ -415,14 +460,15 @@ extern KFighter tempa, tempd;
 extern int shin[12], display_attack_string;
 extern string shop_name;
 extern char attack_string[39];
-extern volatile int timer, ksec, kmin, khr, animation_count, timer_count;
+extern volatile int animation_count;
 extern COLOR_MAP cmap;
 extern uint8_t can_run, do_staff_effect, display_desc;
 extern uint8_t draw_background, draw_middle, draw_foreground, draw_shadow;
 extern s_inventory g_inv[MAX_INV];
 extern s_special_item special_items[MAX_SPECIAL_ITEMS];
 extern short player_special_items[MAX_SPECIAL_ITEMS];
-extern int view_x1, view_y1, view_x2, view_y2, view_on, in_combat;
+extern int view_x1, view_y1, view_x2, view_y2, in_combat;
+extern bool view_on;
 extern int use_joy;
 extern bool show_frate;
 

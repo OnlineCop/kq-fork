@@ -59,6 +59,8 @@
 #include "structs.h"
 #include "timing.h"
 
+using namespace eSize;
+
 KCombat Combat;
 
 KCombat::KCombat()
@@ -100,7 +102,7 @@ eAttackResult KCombat::attack_result(int ar, int dr)
     attacker_weapon_element = tempa.welem;
     defender_defense = tempd.stats[eStat::Defense];
     defender_evade = tempd.stats[eStat::Evade];
-    
+
     /*  JB: check to see if the attacker is in critical status...  */
     /*      increases chance for a critical hit                    */
     if (tempa.mhp > 250)
@@ -305,7 +307,7 @@ eAttackResult KCombat::attack_result(int ar, int dr)
 #endif
 
     dmg = mult * base;
-    
+
     if (do_staff_effect && tempd.opal_power > 0)
     {
         dmg *= ((4 - tempd.opal_power) / 4.);
@@ -346,7 +348,7 @@ void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
     }
 
     clear_bitmap(double_buffer);
-    blit(backart, double_buffer, 0, 0, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H);
+    blit(backart, double_buffer, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
     if ((SelectAll == 0) && (x_coord_image_in_datafile > -1) && (y_coord_image_in_datafile > -1))
     {
@@ -727,10 +729,10 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
     for (zoom_step = 0; zoom_step < 9; zoom_step++)
     {
         Music.poll_music();
-        stretch_blit(temp.get(), double_buffer, zoom_step * (KQ_SCREEN_W / 20) + xofs,
-                     zoom_step * (KQ_SCREEN_H / 20) + yofs, KQ_SCREEN_W - (zoom_step * (KQ_SCREEN_W / 10)),
-                     KQ_SCREEN_H - (zoom_step * (KQ_SCREEN_H / 10)), 0, 0, KQ_SCREEN_W, KQ_SCREEN_H);
-        Draw.blit2screen(xofs, yofs);
+        stretch_blit(temp.get(), double_buffer, zoom_step * (SCREEN_W / 20), zoom_step * (SCREEN_H / 20),
+                     SCREEN_W - (zoom_step * (SCREEN_W / 10)), SCREEN_H - (zoom_step * (SCREEN_H / 10)), 0, 0, SCREEN_W,
+                     SCREEN_H);
+        Draw.blit2screen();
     }
 
     snap_togrid();
@@ -751,7 +753,6 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
 
     steps = 0;
     in_combat = 0;
-    timer_count = 0;
     return (1);
 }
 
@@ -767,13 +768,16 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
 void KCombat::do_round(void)
 {
     size_t a;
-    size_t fighter_index;
+    int now = 0;
+    int next = Game.KQ_TICKS / 10;
 
-    timer_count = 0;
     while (combatend == eCombatResult::StillFighting)
     {
-        if (timer_count >= 10)
+        Game.ProcessEvents();
+        ++now;
+        if (now >= next)
         {
+            next = now + Game.KQ_TICKS / 10;
             RemainingBattleCounter += BATTLE_INC;
 
             if (RemainingBattleCounter >= ROUND_MAX)
@@ -781,7 +785,7 @@ void KCombat::do_round(void)
                 RemainingBattleCounter = 0;
             }
 
-            for (fighter_index = 0; fighter_index < PSIZE + num_enemies; fighter_index++)
+            for (auto fighter_index = 0U; fighter_index < PSIZE + num_enemies; fighter_index++)
             {
                 if ((fighter_index < numchrs) || (fighter_index >= PSIZE))
                 {
@@ -913,11 +917,10 @@ void KCombat::do_round(void)
                 }
             }
 
-            PlayerInput.readcontrols();
             Combat.battle_render(0, 0, 0);
-            Draw.blit2screen(0, 0);
+            Draw.blit2screen();
 
-            for (fighter_index = 0; fighter_index < (PSIZE + num_enemies); fighter_index++)
+            for (auto fighter_index = 0U; fighter_index < (PSIZE + num_enemies); fighter_index++)
             {
                 if ((bspeed[fighter_index] >= ROUND_MAX) && GetEtherEffectActive(fighter_index))
                 {
@@ -933,11 +936,7 @@ void KCombat::do_round(void)
                     return;
                 }
             }
-
-            timer_count = 0;
         }
-
-        Game.kq_yield();
     }
 }
 
@@ -958,84 +957,64 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
     static const int AUGMENT_STRONG = 10;
     static const int AUGMENT_NORMAL = 0;
 
-    int xx;
-    int yy;
-    int ff;
-    KFighter* fr = &fighter[fighter_index];
+    KFighter& fr = fighter[fighter_index];
 
-    xx = fr->cx;
-    yy = fr->cy;
+    int xx = fr.cx;
+    int yy = fr.cy;
 
-    ff = (!fr->aframe) ? fr->facing : fr->aframe;
+    int ff = (!fr.aframe) ? fr.facing : fr.aframe;
+    auto cf = cframes[fighter_index][ff];
 
-    if (fr->IsStone())
+    if (fr.IsStone())
     {
         // Green, for sickness
         Draw.convert_cframes(fighter_index, 2, 12, 0);
     }
 
-    if (fr->IsEther())
+    if (fr.IsEther())
     {
-        draw_trans_sprite(double_buffer, cframes[fighter_index][ff], xx, yy);
+        draw_trans_sprite(double_buffer, cf, xx, yy);
     }
     else
     {
-        if (fighter_index < PSIZE)
-        {
-            // Your party
-            Raster* shad =
-                new Raster(cframes[fighter_index][ff]->width * 2 / 3, cframes[fighter_index][ff]->height / 4);
+        Raster shad(cf->width * 2 / 3, cf->height / 4);
 
-            clear_bitmap(shad);
-            ellipsefill_fast(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2,
-                             makecol(128, 128, 128));
-            draw_trans_sprite(double_buffer, shad, xx + (shad->width / 3) - 2,
-                              yy + cframes[fighter_index][ff]->height - shad->height / 2);
-            delete shad;
-        }
-        else
-        {
-            // Enemy
-            Raster* shad = new Raster(cframes[fighter_index][ff]->width, cframes[fighter_index][ff]->height / 4);
-
-            clear_bitmap(shad);
-            ellipsefill_fast(shad, shad->width / 2, shad->height / 2, shad->width / 2, shad->height / 2,
-                             makecol(128, 128, 128));
-            draw_trans_sprite(double_buffer, shad, xx, yy + cframes[fighter_index][ff]->height - shad->height / 2);
-            delete (shad);
-        }
-
-        draw_sprite(double_buffer, cframes[fighter_index][ff], xx, yy);
+        clear_bitmap(&shad);
+        ellipsefill_fast(&shad, shad.width / 2, shad.height / 2, shad.width / 2, shad.height / 2,
+                         makecol(128, 128, 128));
+        draw_trans_sprite(double_buffer, &shad, xx + cf->width / 2 - (shad.width / 3),
+                          yy + cf->height - shad.height / 2);
+        draw_sprite(double_buffer, cf, xx, yy);
     }
 
     if (dcur == 1)
     {
-        draw_sprite(double_buffer, bptr, xx + (fr->cw / 2) - 8, yy - 8);
+        draw_sprite(double_buffer, bptr, xx + (fr.cw / 2) - 8, yy - 8);
     }
 
     if (IsVisionSpellActive() && (fighter_index >= PSIZE))
     {
-        ff = fr->hp * 30 / fr->mhp;
-        if ((fr->hp > 0) && (ff < 1))
+        ff = fr.hp * 30 / fr.mhp;
+        if ((fr.hp > 0) && (ff < 1))
         {
             ff = 1;
         }
 
-        xx += fr->cw / 2;
-        rect(double_buffer, xx - 16, yy + fr->cl + 2, xx + 15, yy + fr->cl + 5, 0);
+        xx += fr.cw / 2;
+        rect(double_buffer, xx - 16, yy + fr.cl + 2, xx + 15, yy + fr.cl + 5, 0);
         if (ff > AUGMENT_STRONGEST)
         {
-            rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1, yy + fr->cl + 4, 40);
+            rectfill(double_buffer, xx - 15, yy + fr.cl + 3, xx - 15 + ff - 1, yy + fr.cl + 4, 40);
         }
 
-        else if ((ff <= AUGMENT_STRONGEST) && (ff > AUGMENT_STRONG))
+        else if (ff > AUGMENT_STRONG)
         {
-            rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1, yy + fr->cl + 4, 104);
+            rectfill(double_buffer, xx - 15, yy + fr.cl + 3, xx - 15 + ff - 1, yy + fr.cl + 4, 104);
         }
 
-        else if ((ff <= AUGMENT_STRONG) && (ff > AUGMENT_NORMAL))
+        else if (ff > AUGMENT_NORMAL)
         {
-            rectfill(double_buffer, xx - 15, yy + fr->cl + 3, xx - 15 + ff - 1, yy + fr->cl + 4, 24);
+            rectfill(double_buffer, xx - 15, yy + fr.cl + 3, xx - 15 + ff - 1, yy + fr.cl + 4, 24);
         }
     }
 }
@@ -1053,14 +1032,14 @@ void KCombat::enemies_win(void)
     Music.play_music(music_defeat, 0);
     Combat.battle_render(0, 0, 0);
     /*  RB FIXME: rest()?  */
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     kq_wait(1000);
     sprintf(strbuf, _("%s was defeated!"), party[pidx[0]].name.c_str());
     Draw.menubox(double_buffer, 152 - (strlen(strbuf) * 4), 48, strlen(strbuf), 1, BLUE);
     Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 56, strbuf, FNORMAL);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     Game.wait_enter();
-    do_transition(TRANS_FADE_OUT, 4);
+    do_transition(eTransitionFade::OUT, 4);
     alldead = 1;
 }
 
@@ -1129,10 +1108,10 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
         for (f = 0; f < 3; f++)
         {
             Combat.battle_render(defend_fighter_index + 1, 0, 0);
-            Draw.blit2screen(0, 0);
+            Draw.blit2screen();
             kq_wait(20);
-            rectfill(double_buffer, 0, 0, KQ_SCREEN_W, KQ_SCREEN_H, 15);
-            Draw.blit2screen(0, 0);
+            rectfill(double_buffer, 0, 0, SCREEN_W, SCREEN_H, 15);
+            Draw.blit2screen();
             kq_wait(20);
         }
     }
@@ -1408,7 +1387,7 @@ void KCombat::heroes_win(void)
     }
 
     Combat.battle_render(0, 0, 0);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     kq_wait(250);
     for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
     {
@@ -1444,7 +1423,7 @@ void KCombat::heroes_win(void)
 
     Draw.menubox(double_buffer, 152 - (strlen(strbuf) * 4), 8, strlen(strbuf), 1, BLUE);
     Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 16, strbuf, FNORMAL);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     fullblit(double_buffer, back);
     for (fighter_index = 0; fighter_index < num_enemies; fighter_index++)
     {
@@ -1482,7 +1461,7 @@ void KCombat::heroes_win(void)
 
     if (nr > 0)
     {
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         Game.wait_enter();
         fullblit(back, double_buffer);
     }
@@ -1542,7 +1521,7 @@ void KCombat::heroes_win(void)
         }
     }
 
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
     {
         if (!party[pidx[pidx_index]].IsStone() && party[pidx[pidx_index]].IsAlive())
@@ -1633,7 +1612,8 @@ void KCombat::multi_fight(size_t attack_fighter_index)
         if ((fighter[fighter_index].IsAlive()) && (fighter[fighter_index].mhp > 0))
         {
             // ares[fighter_index] = attack_result(attack_fighter_index, fighter_index);
-            attack_result(attack_fighter_index, fighter_index); // This actually does the damage so it cannot be removed.
+            attack_result(attack_fighter_index,
+                          fighter_index); // This actually does the damage so it cannot be removed.
             fighter[fighter_index].SetPoisoned(tempd.IsPoisoned());
             fighter[fighter_index].SetBlind(tempd.IsBlind());
             fighter[fighter_index].SetCharmed(tempd.IsCharmed());
@@ -1798,15 +1778,15 @@ void KCombat::roll_initiative(void)
     }
 
     Combat.battle_render(-1, -1, 0);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     if ((heroes_surprise_monsters == 1) && (monsters_surprise_heroes > 1))
     {
-        Draw.message(_("You have been ambushed!"), 255, 1500, 0, 0);
+        Draw.message(_("You have been ambushed!"), 255, 1500);
     }
 
     if ((heroes_surprise_monsters > 1) && (monsters_surprise_heroes == 1))
     {
-        Draw.message(_("You've surprised the enemy!"), 255, 1500, 0, 0);
+        Draw.message(_("You've surprised the enemy!"), 255, 1500);
     }
 }
 

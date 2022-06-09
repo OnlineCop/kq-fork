@@ -1,40 +1,55 @@
 #pragma once
 
+struct SDL_KeyboardEvent;
+
 class KPlayerInput
 {
   public:
     KPlayerInput();
-    ~KPlayerInput() = default;
+    void ProcessKeyboardEvent(SDL_KeyboardEvent* evt);
 
-    void readcontrols();
-
-  public:
+    struct button
+    {
+        button(int sc = 0)
+            : scancode(sc)
+        {
+        }
+        int scancode;
+        bool down = false;
+        bool pressed = false;
+        bool isDown() const
+        {
+            return down;
+        }
+        bool operator()()
+        {
+            bool rc = pressed;
+            pressed = false;
+            return rc;
+        }
+    };
     // Flags for determining keypresses and player movement.
 
     // Moves the cursor or player horizontally (right).
-    int right;
+    button right;
     // Moves the cursor or player horizontally (left).
-    int left;
+    button left;
     // Moves the cursor or player vertically (up).
-    int up;
+    button up;
     // Moves the cursor or player vertically (down).
-    int down;
+    button down;
     // Exits menus, or opens the game menu.
-    int besc;
+    button besc;
     // Usually the action or "accept" button.
-    int balt;
+    button balt;
     // Usually the run or "cancel" button.
-    int bctrl;
+    button bctrl;
     // Usually the menu button.
-    int benter;
-    // Displays the (not-yet implemented) help menu.
-    int bhelp;
-    // Activates cheats (calls cheat.lua) and runs whatever commands are found there.
-    int bcheat;
-
-    // Scan codes for the keys (help is always F1)
-    int kright, kleft, kup, kdown;
-    int kesc, kenter, kalt, kctrl;
+    button benter;
+    // Displays the (not-yet implemented) help menu (always F1).
+    button bhelp;
+    // Activates cheats (calls cheat.lua) and runs whatever commands are found there. (always F10)
+    button bcheat;
 
     // Joystick buttons
     int jbalt, jbctrl, jbenter, jbesc;

@@ -27,21 +27,26 @@
  * \remark Updated  ML Oct-2002
  */
 
-#include <cstdio>
-#include <cstring>
-#include <string>
-
+#include "setup.h"
 #include "combat.h"
 #include "constants.h"
+#include "disk.h"
 #include "draw.h"
 #include "gfx.h"
+#include "imgcache.h"
 #include "input.h"
 #include "kq.h"
 #include "music.h"
 #include "platform.h"
 #include "res.h"
-#include "setup.h"
+#include "settings.h"
 #include "timing.h"
+#include <SDL.h>
+#include <SDL_mixer.h>
+#include <string>
+
+using eSize::SCREEN_H;
+using eSize::SCREEN_W;
 
 /*! \name Globals */
 
@@ -52,20 +57,20 @@ char debugging = 0;
 char slow_computer = 0;
 
 /*  Internal variables  */
-static DATAFILE* sfx[MAX_SAMPLES];
+static void* sfx[MAX_SAMPLES];
 
 /*  Internal functions  */
 static int load_samples(void);
 static int getavalue(const char*, int, int, int, bool, void (*)(int));
-static int getakey(void);
+static bool getakey(KPlayerInput::button&, const char*);
 static void parse_allegro_setup(void);
 static void parse_jb_setup(void);
 
 /*! \brief Play sound effects / music if adjusting it */
 static void sound_feedback(int val)
 {
-    set_volume(val * 10, 0);
-    play_effect(1, 127);
+    Music.set_volume(val * 10, 0);
+    Music.play_effect(1, 127);
 }
 static void music_feedback(int val)
 {
@@ -85,8 +90,8 @@ static void music_feedback(int val)
  */
 static void citem(int y, const char* caption, const char* value, eFontColor color)
 {
-    Draw.print_font(double_buffer, 48 + xofs, y + yofs, caption, color);
-    Draw.print_font(double_buffer, SCREEN_H2 - 8 * strlen(value) + xofs, y + yofs, value, color);
+    Draw.print_font(double_buffer, 48, y, caption, color);
+    Draw.print_font(double_buffer, SCREEN_H - 8 * strlen(value), y, value, color);
 }
 
 /*! \brief Display configuration menu
@@ -100,7 +105,6 @@ void config_menu(void)
     size_t stop = 0, ptr = 0;
     int p;
     eFontColor fontColor;
-    int temp_key = 0;
 
 #ifdef DEBUGMODE
 #define MENU_SIZE 18
@@ -151,29 +155,29 @@ void config_menu(void)
     dc[17] = _("Things you can do only in DebugMode.");
 #endif
 
-    Game.unpress();
-    push_config_state();
-    set_config_file(kqres(SETTINGS_DIR, "kq.cfg").c_str());
+    Config.push_config_state();
+    Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str());
     while (!stop)
     {
+        Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, 88 + xofs, yofs, 16, 1, BLUE);
-        Draw.print_font(double_buffer, 96 + xofs, 8 + yofs, _("KQ Configuration"), FGOLD);
-        Draw.menubox(double_buffer, 32 + xofs, 24 + yofs, 30, MENU_SIZE + 3, BLUE);
+        Draw.menubox(double_buffer, 88, 0, 16, 1, BLUE);
+        Draw.print_font(double_buffer, 96, 8, _("KQ Configuration"), FGOLD);
+        Draw.menubox(double_buffer, 32, 24, 30, MENU_SIZE + 3, BLUE);
 
         citem(row[0], _("Windowed mode:"), windowed == 1 ? _("YES") : _("NO"), FNORMAL);
         citem(row[1], _("Stretch Display:"), should_stretch_view ? _("YES") : _("NO"), FNORMAL);
         citem(row[2], _("Show Frame Rate:"), show_frate ? _("YES") : _("NO"), FNORMAL);
         citem(row[3], _("Wait for Retrace:"), wait_retrace == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[4], _("Up Key:"), kq_keyname(PlayerInput.kup), FNORMAL);
-        citem(row[5], _("Down Key:"), kq_keyname(PlayerInput.kdown), FNORMAL);
-        citem(row[6], _("Left Key:"), kq_keyname(PlayerInput.kleft), FNORMAL);
-        citem(row[7], _("Right Key:"), kq_keyname(PlayerInput.kright), FNORMAL);
-        citem(row[8], _("Confirm Key:"), kq_keyname(PlayerInput.kalt), FNORMAL);
-        citem(row[9], _("Cancel Key:"), kq_keyname(PlayerInput.kctrl), FNORMAL);
-        citem(row[10], _("Menu Key:"), kq_keyname(PlayerInput.kenter), FNORMAL);
-        citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.kesc), FNORMAL);
+        citem(row[4], _("Up Key:"), kq_keyname(PlayerInput.up.scancode), FNORMAL);
+        citem(row[5], _("Down Key:"), kq_keyname(PlayerInput.down.scancode), FNORMAL);
+        citem(row[6], _("Left Key:"), kq_keyname(PlayerInput.left.scancode), FNORMAL);
+        citem(row[7], _("Right Key:"), kq_keyname(PlayerInput.right.scancode), FNORMAL);
+        citem(row[8], _("Confirm Key:"), kq_keyname(PlayerInput.balt.scancode), FNORMAL);
+        citem(row[9], _("Cancel Key:"), kq_keyname(PlayerInput.bctrl.scancode), FNORMAL);
+        citem(row[10], _("Menu Key:"), kq_keyname(PlayerInput.benter.scancode), FNORMAL);
+        citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
         citem(row[12], _("Sound System:"), is_sound ? _("ON") : _("OFF"), FNORMAL);
 
         fontColor = FNORMAL;
@@ -223,17 +227,15 @@ void config_menu(void)
         {
             p++;
         }
-        draw_sprite(double_buffer, menuptr, 32 + xofs, p * 8 + 32 + yofs);
+        draw_sprite(double_buffer, menuptr, 32, p * 8 + 32);
 
         /* This is the bottom window, where the description goes */
-        Draw.menubox(double_buffer, xofs, 216 + yofs, 38, 1, BLUE);
-        Draw.print_font(double_buffer, 8 + xofs, 224 + yofs, dc[ptr], FNORMAL);
-        Draw.blit2screen(xofs, yofs);
+        Draw.menubox(double_buffer, 0, 216, 38, 1, BLUE);
+        Draw.print_font(double_buffer, 8, 224, dc[ptr], FNORMAL);
+        Draw.blit2screen();
 
-        PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
-            Game.unpress();
             // "jump" over unusable options
             if (ptr == 15 && is_sound == 0)
             {
@@ -249,9 +251,8 @@ void config_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
-            Game.unpress();
             // "jump" over unusable options
             if (ptr == 12 && is_sound == 0)
             {
@@ -267,9 +268,8 @@ void config_menu(void)
             }
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
-            Game.unpress();
             switch (ptr)
             {
             case 0:
@@ -289,7 +289,7 @@ void config_menu(void)
                 if (p == 1)
                 {
                     windowed = !windowed;
-                    set_config_int(NULL, "windowed", windowed);
+                    Config.set_config_int(NULL, "windowed", windowed);
                     set_graphics_mode();
                 }
                 break;
@@ -310,89 +310,43 @@ void config_menu(void)
                 if (p == 1)
                 {
                     should_stretch_view = !should_stretch_view;
-                    set_config_int(NULL, "stretch_view", should_stretch_view);
+                    Config.set_config_int(NULL, "stretch_view", should_stretch_view);
                     set_graphics_mode();
                 }
                 break;
             case 2:
                 show_frate = !show_frate;
-                set_config_int(NULL, "show_frate", show_frate);
+                Config.set_config_int(NULL, "show_frate", show_frate);
                 break;
             case 3:
                 wait_retrace = !wait_retrace;
-                set_config_int(NULL, "wait_retrace", wait_retrace);
+                Config.set_config_int(NULL, "wait_retrace", wait_retrace);
                 break;
             case 4:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.kup = temp_key;
-                Game.unpress();
-                temp_key = 0;
-                set_config_int(NULL, "kup", PlayerInput.kup);
+                getakey(PlayerInput.up, "kup");
                 break;
             case 5:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.kdown = temp_key;
-                Game.unpress();
-                temp_key = 0;
-                set_config_int(NULL, "kdown", PlayerInput.kdown);
+                getakey(PlayerInput.down, "kdown");
                 break;
             case 6:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.kleft = temp_key;
-                Game.unpress();
-                temp_key = 0;
-                set_config_int(NULL, "kleft", PlayerInput.kleft);
+                getakey(PlayerInput.left, "kleft");
                 break;
             case 7:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.kright = temp_key;
-                Game.unpress();
-                temp_key = 0;
-                set_config_int(NULL, "kright", PlayerInput.kright);
+                getakey(PlayerInput.right, "kright");
                 break;
             case 8:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.kalt = temp_key;
-                Game.unpress();
-                temp_key = 0;
-                set_config_int(NULL, "kalt", PlayerInput.kalt);
+                getakey(PlayerInput.balt, "kalt");
+
                 break;
             case 9:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.kctrl = temp_key;
-                Game.unpress();
-                temp_key = 0;
-                set_config_int(NULL, "kctrl", PlayerInput.kctrl);
+                getakey(PlayerInput.bctrl, "kctrl");
                 break;
             case 10:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.kenter = temp_key;
-                Game.unpress();
-                temp_key = 0;
-                set_config_int(NULL, "kenter", PlayerInput.kenter);
+                getakey(PlayerInput.benter, "kenter");
+
                 break;
             case 11:
-                while ((temp_key = getakey()) == 0)
-                {
-                }
-                PlayerInput.kesc = temp_key;
-                Game.unpress();
-                temp_key = 0;
-                set_config_int(NULL, "kesc", PlayerInput.kesc);
+                getakey(PlayerInput.besc, "kesc");
                 break;
             case 12:
                 if (is_sound == 2)
@@ -404,13 +358,13 @@ void config_menu(void)
                     if (is_sound == 0)
                     {
                         is_sound = 1;
-                        Draw.print_font(double_buffer, 92 + 2 + xofs, 204 + yofs, _("...please wait..."), FNORMAL);
-                        Draw.blit2screen(xofs, yofs);
+                        Draw.print_font(double_buffer, 92 + 2, 204, _("...please wait..."), FNORMAL);
+                        Draw.blit2screen();
                         sound_init();
                         Music.play_music(g_map.song_file, 0);
                     }
                 }
-                set_config_int(NULL, "is_sound", is_sound != 0);
+                Config.set_config_int(NULL, "is_sound", is_sound != 0);
                 break;
             case 13:
                 if (is_sound == 2)
@@ -422,8 +376,8 @@ void config_menu(void)
                     }
 
                     /* make sure to set it no matter what */
-                    set_volume(gsvol, 0);
-                    set_config_int(NULL, "gsvol", gsvol);
+                    Music.set_volume(gsvol, 0);
+                    Config.set_config_int(NULL, "gsvol", gsvol);
                 }
                 else
                 /* Not as daft as it seems, SND_BAD also wobbles the screen */
@@ -442,7 +396,7 @@ void config_menu(void)
 
                     /* make sure to set it no matter what */
                     Music.set_music_volume(gmvol / 250.0);
-                    set_config_int(NULL, "gmvol", gmvol);
+                    Config.set_config_int(NULL, "gmvol", gmvol);
                 }
                 else
                 {
@@ -452,7 +406,7 @@ void config_menu(void)
             case 15:
                 /* TT: toggle slow_computer */
                 slow_computer = !slow_computer;
-                set_config_int(NULL, "slow_computer", slow_computer);
+                Config.set_config_int(NULL, "slow_computer", slow_computer);
                 break;
             case 16:
                 /* TT: Adjust the CPU usage:yield_timeslice() or rest() */
@@ -477,64 +431,50 @@ void config_menu(void)
 #endif
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
     }
-    pop_config_state();
-}
-
-/*! \brief Release memory used by samples
- * \author  : Josh Bolduc
- * \date ????????
- *
- *  Duh.
- */
-void free_samples(void)
-{
-    size_t index;
-
-    if (is_sound == 0)
-    {
-        return;
-    }
-
-    for (index = 0; index < MAX_SAMPLES; index++)
-    {
-        unload_datafile_object(sfx[index]);
-    }
+    Config.pop_config_state();
 }
 
 /*! \brief Process keypresses when mapping new keys
  *
- * This grabs whatever key is being pressed and returns it to the caller.
- * PH 20030527 Removed call to keypressed() and added poll_music()
- *
- * \returns the key being pressed, 0 if error (or cancel?)
+ * This helper function grabs whatever key is being pressed, stores it and saves
+ * it to the config file.
+ * \param b The control to be changed
+ * \param cfg the configuration key name
+ * \returns the true if a new code was received and stored, false otherwise
  */
-static int getakey(void)
+static bool getakey(KPlayerInput::button& b, const char* cfg)
 {
-    int a;
-
-    clear_keybuf();
-    Draw.menubox(double_buffer, 108 + xofs, 108 + yofs, 11, 1, DARKBLUE);
-    Draw.print_font(double_buffer, 116 + xofs, 116 + yofs, _("Press a key"), FNORMAL);
-    Draw.blit2screen(xofs, yofs);
-
-    while (1)
+    Draw.menubox(double_buffer, 108, 108, 11, 1, DARKBLUE);
+    Draw.print_font(double_buffer, 116, 116, _("Press a key"), FNORMAL);
+    Draw.blit2screen();
+    // Wait 5 secs then give up
+    int timeout = Game.KQ_TICKS * 5;
+    while (timeout > 0)
     {
+        Game.ProcessEvents();
+        int key_count;
+        auto key = SDL_GetKeyboardState(&key_count);
         Music.poll_music();
-        for (a = 0; a < KEY_MAX; a++)
+        for (int a = 0; a < key_count; a++)
         {
             if (key[a] != 0)
             {
-                return a;
+                if (a != b.scancode)
+                {
+                    b.scancode = a;
+                    Config.set_config_int(NULL, cfg, a);
+                }
+                return true;
             }
         }
+        --timeout;
     }
-    return 0;
+    return false;
 }
 
 /*! \brief Get value for option
@@ -561,16 +501,17 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
     bool stop = false;
     while (!stop)
     {
+        Game.ProcessEvents();
         Game.do_check_animation();
-        Draw.menubox(double_buffer, 148 - (maxu * 4) + xofs, 100 + yofs, maxu + 1, 3, DARKBLUE);
-        Draw.print_font(double_buffer, 160 - (strlen(capt) * 4) + xofs, 108 + yofs, capt, FGOLD);
-        Draw.print_font(double_buffer, 152 - (maxu * 4) + xofs, 116 + yofs, "<", FNORMAL);
-        Draw.print_font(double_buffer, 160 + (maxu * 4) + xofs, 116 + yofs, ">", FNORMAL);
-        int b = 160 - (maxu * 4) + xofs;
+        Draw.menubox(double_buffer, 148 - (maxu * 4), 100, maxu + 1, 3, DARKBLUE);
+        Draw.print_font(double_buffer, 160 - (strlen(capt) * 4), 108, capt, FGOLD);
+        Draw.print_font(double_buffer, 152 - (maxu * 4), 116, "<", FNORMAL);
+        Draw.print_font(double_buffer, 160 + (maxu * 4), 116, ">", FNORMAL);
+        int b = 160 - (maxu * 4);
         for (int a = 0; a < cv; a++)
         {
-            rectfill(double_buffer, a * 8 + b + 1, 117 + yofs, a * 8 + b + 7, 123 + yofs, 50);
-            rectfill(double_buffer, a * 8 + b, 116 + yofs, a * 8 + b + 6, 122 + yofs, 21);
+            rectfill(double_buffer, a * 8 + b + 1, 117, a * 8 + b + 7, 123, 50);
+            rectfill(double_buffer, a * 8 + b, 116, a * 8 + b + 6, 122, 21);
         }
         char strbuf[10];
         if (sp)
@@ -581,13 +522,11 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
         {
             sprintf(strbuf, "%d", cv);
         }
-        Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4) + xofs, 124 + yofs, strbuf, FGOLD);
-        Draw.blit2screen(xofs, yofs);
+        Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 124, strbuf, FGOLD);
+        Draw.blit2screen();
 
-        PlayerInput.readcontrols();
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
-            Game.unpress();
             cv--;
             if (cv < minu)
             {
@@ -598,9 +537,8 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
                 fb(cv);
             }
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
-            Game.unpress();
             cv++;
             if (cv > maxu)
             {
@@ -611,36 +549,33 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
                 fb(cv);
             }
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
-            Game.unpress();
             stop = true;
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
-            Game.unpress();
             return -1;
         }
     }
     return cv;
 }
 
-#if (ALLEGRO_VERSION >= 4 && ALLEGRO_SUB_VERSION >= 2)
-// TT: Already defined in setup.h
-// #define kq_keyname scancode_to_name
-#else
 const char* kq_keyname(int scancode)
 {
-    if (scancode >= 0 && scancode < (signed)N_KEYNAMES)
-    {
-        return keynames[scancode];
-    }
-    else
-    {
-        return "???";
-    }
+    auto kc = SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode));
+    return SDL_GetKeyName(kc);
 }
-#endif
+struct Mix_ChunkLoader
+{
+    Mix_Chunk* operator()(const std::string&);
+};
+struct Mix_ChunkDeleter
+{
+    void operator()(Mix_Chunk*);
+};
+
+static Cache<Mix_Chunk, Mix_ChunkLoader, Mix_ChunkDeleter> sample_cache;
 
 /*! \brief Load sample files
  * \author JB
@@ -657,26 +592,23 @@ const char* kq_keyname(int scancode)
  */
 static int load_samples(void)
 {
-    AL_CONST char* sndfiles[MAX_SAMPLES] = {
-        "WHOOSH_WAV",   "MENUMOVE_WAV", "BAD_WAV",     "ITEM_WAV",   "EQUIP_WAV",    "DEEQUIP_WAV", "BUYSELL_WAV",
-        "TWINKLE_WAV",  "SCORCH_WAV",   "POISON_WAV",  "CHOP_WAV",   "SLASH_WAV",    "STAB_WAV",    "HIT_WAV",
-        "ICE_WAV",      "WIND_WAV",     "QUAKE_WAV",   "BLACK_WAV",  "WHITE_WAV",    "BOLT1_WAV",   "FLOOD_WAV",
-        "HURT_WAV",     "BMAGIC_WAV",   "SHIELD_WAV",  "KILL_WAV",   "DOOROPEN_WAV", "DOOR2_WAV",   "STAIRS_WAV",
-        "TELEPORT_WAV", "CURE_WAV",     "RECOVER_WAV", "ARROW_WAV",  "BOLT2_WAV",    "BOLT3_WAV",   "FLAME_WAV",
-        "BLIND_WAV",    "INN_WAV",      "CONFUSE_WAV", "DISPEL_WAV", "DOOM_WAV",     "DRAIN_WAV",   "GAS_WAV",
-        "EXPLODE_WAV"
+    static const char* sndfiles[MAX_SAMPLES] = {
+        "whoosh.wav",   "menumove.wav", "bad.wav",     "item.wav",   "equip.wav",    "deequip.wav", "buysell.wav",
+        "twinkle.wav",  "scorch.wav",   "poison.wav",  "chop.wav",   "slash.wav",    "stab.wav",    "hit.wav",
+        "ice.wav",      "wind.wav",     "quake.wav",   "black.wav",  "white.wav",    "bolt1.wav",   "flood.wav",
+        "hurt.wav",     "bmagic.wav",   "shield.wav",  "kill.wav",   "dooropen.wav", "door2.wav",   "stairs.wav",
+        "teleport.wav", "cure.wav",     "recover.wav", "arrow.wav",  "bolt2.wav",    "bolt3.wav",   "flame.wav",
+        "blind.wav",    "inn.wav",      "confuse.wav", "dispel.wav", "doom.wav",     "drain.wav",   "gas.wav",
+        "explode.wav"
     };
-    size_t index;
-
     if (is_sound == 0)
     {
         return 1;
     }
-    string sound_datafile(kqres(DATA_DIR, "kqsnd.dat"));
-    for (index = 0; index < MAX_SAMPLES; index++)
+    for (int index = 0; index < MAX_SAMPLES; index++)
     {
-        sfx[index] = load_datafile_object(sound_datafile.c_str(), sndfiles[index]);
-        if (sfx[index] == NULL)
+        sfx[index] = Music.get_sample(sndfiles[index]);
+        if (!sfx[index])
         {
             sprintf(strbuf, _("Error loading .WAV file: %s.\n"), sndfiles[index]);
             Game.klog(strbuf);
@@ -695,75 +627,75 @@ static int load_samples(void)
  */
 static void parse_allegro_setup(void)
 {
-    const string cfg = kqres(SETTINGS_DIR, "kq.cfg").c_str();
+    const string cfg = kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str();
 
-    if (!exists(cfg.c_str()))
+    if (!Disk.exists(cfg.c_str()))
     {
         /* config file does not exist. Fall back to setup.cfg */
         /* Transitional code */
         parse_jb_setup();
-        push_config_state();
-        set_config_file(kqres(SETTINGS_DIR, "kq.cfg").c_str());
+        Config.push_config_state();
+        Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str());
 
-        set_config_int(NULL, "skip_intro", skip_intro);
-        set_config_int(NULL, "windowed", windowed);
+        Config.set_config_int(NULL, "skip_intro", skip_intro);
+        Config.set_config_int(NULL, "windowed", windowed);
 
-        set_config_int(NULL, "stretch_view", should_stretch_view);
-        set_config_int(NULL, "show_frate", show_frate);
-        set_config_int(NULL, "is_sound", is_sound);
-        set_config_int(NULL, "use_joy", use_joy);
-        set_config_int(NULL, "slow_computer", slow_computer);
+        Config.set_config_int(NULL, "stretch_view", should_stretch_view);
+        Config.set_config_int(NULL, "show_frate", show_frate);
+        Config.set_config_int(NULL, "is_sound", is_sound);
+        Config.set_config_int(NULL, "use_joy", use_joy);
+        Config.set_config_int(NULL, "slow_computer", slow_computer);
 
-        set_config_int(NULL, "kup", PlayerInput.kup);
-        set_config_int(NULL, "kdown", PlayerInput.kdown);
-        set_config_int(NULL, "kleft", PlayerInput.kleft);
-        set_config_int(NULL, "kright", PlayerInput.kright);
-        set_config_int(NULL, "kesc", PlayerInput.kesc);
-        set_config_int(NULL, "kalt", PlayerInput.kalt);
-        set_config_int(NULL, "kctrl", PlayerInput.kctrl);
-        set_config_int(NULL, "kenter", PlayerInput.kenter);
+        Config.set_config_int(NULL, "kup", PlayerInput.up.scancode);
+        Config.set_config_int(NULL, "kdown", PlayerInput.down.scancode);
+        Config.set_config_int(NULL, "kleft", PlayerInput.left.scancode);
+        Config.set_config_int(NULL, "kright", PlayerInput.right.scancode);
+        Config.set_config_int(NULL, "kesc", PlayerInput.besc.scancode);
+        Config.set_config_int(NULL, "kalt", PlayerInput.balt.scancode);
+        Config.set_config_int(NULL, "kctrl", PlayerInput.bctrl.scancode);
+        Config.set_config_int(NULL, "kenter", PlayerInput.benter.scancode);
 
 #ifdef DEBUGMODE
-        set_config_int(NULL, "debugging", debugging);
+        Config.set_config_int(NULL, "debugging", debugging);
 #endif
 
-        pop_config_state();
+        Config.pop_config_state();
         return;
     }
-    push_config_state();
-    set_config_file(cfg.c_str());
+    Config.push_config_state();
+    Config.set_config_file(cfg.c_str());
 
     /* NB. JB's config file uses intro=yes --> skip_intro=0 */
-    skip_intro = get_config_int(NULL, "skip_intro", 0);
-    windowed = get_config_int(NULL, "windowed", 1);
-    should_stretch_view = get_config_int(NULL, "stretch_view", 1) != 0;
-    wait_retrace = get_config_int(NULL, "wait_retrace", 1);
-    show_frate = get_config_int(NULL, "show_frate", 0) != 0;
-    is_sound = get_config_int(NULL, "is_sound", 1);
-    gmvol = get_config_int(NULL, "gmvol", 250);
-    gsvol = get_config_int(NULL, "gsvol", 250);
-    use_joy = get_config_int(NULL, "use_joy", 0);
-    slow_computer = get_config_int(NULL, "slow_computer", 0);
-    cpu_usage = get_config_int(NULL, "cpu_usage", 2);
+    skip_intro = Config.get_config_int(NULL, "skip_intro", 0);
+    windowed = Config.get_config_int(NULL, "windowed", 1);
+    should_stretch_view = Config.get_config_int(NULL, "stretch_view", 1) != 0;
+    wait_retrace = Config.get_config_int(NULL, "wait_retrace", 1);
+    show_frate = Config.get_config_int(NULL, "show_frate", 0) != 0;
+    is_sound = Config.get_config_int(NULL, "is_sound", 1);
+    gmvol = Config.get_config_int(NULL, "gmvol", 250);
+    gsvol = Config.get_config_int(NULL, "gsvol", 250);
+    use_joy = Config.get_config_int(NULL, "use_joy", 0);
+    slow_computer = Config.get_config_int(NULL, "slow_computer", 0);
+    cpu_usage = Config.get_config_int(NULL, "cpu_usage", 2);
 #ifdef KQ_CHEATS
-    cheat = get_config_int(NULL, "cheat", 0);
-    no_random_encounters = get_config_int(NULL, "no_random_encounters", 0);
-    no_monsters = get_config_int(NULL, "no_monsters", 0);
-    every_hit_999 = get_config_int(NULL, "every_hit_999", 0);
+    cheat = Config.get_config_int(NULL, "cheat", 0);
+    no_random_encounters = Config.get_config_int(NULL, "no_random_encounters", 0);
+    no_monsters = Config.get_config_int(NULL, "no_monsters", 0);
+    every_hit_999 = Config.get_config_int(NULL, "every_hit_999", 0);
 #endif
 #ifdef DEBUGMODE
-    debugging = get_config_int(NULL, "debugging", 0);
+    debugging = Config.get_config_int(NULL, "debugging", 0);
 #endif
 
-    PlayerInput.kup = get_config_int(NULL, "kup", KEY_UP);
-    PlayerInput.kdown = get_config_int(NULL, "kdown", KEY_DOWN);
-    PlayerInput.kleft = get_config_int(NULL, "kleft", KEY_LEFT);
-    PlayerInput.kright = get_config_int(NULL, "kright", KEY_RIGHT);
-    PlayerInput.kesc = get_config_int(NULL, "kesc", KEY_ESC);
-    PlayerInput.kalt = get_config_int(NULL, "kalt", KEY_ALT);
-    PlayerInput.kctrl = get_config_int(NULL, "kctrl", KEY_LCONTROL);
-    PlayerInput.kenter = get_config_int(NULL, "kenter", KEY_ENTER);
-    pop_config_state();
+    PlayerInput.up.scancode = Config.get_config_int(NULL, "kup", SDL_SCANCODE_UP);
+    PlayerInput.down.scancode = Config.get_config_int(NULL, "kdown", SDL_SCANCODE_DOWN);
+    PlayerInput.left.scancode = Config.get_config_int(NULL, "kleft", SDL_SCANCODE_LEFT);
+    PlayerInput.right.scancode = Config.get_config_int(NULL, "kright", SDL_SCANCODE_RIGHT);
+    PlayerInput.besc.scancode = Config.get_config_int(NULL, "kesc", SDL_SCANCODE_ESCAPE);
+    PlayerInput.balt.scancode = Config.get_config_int(NULL, "kalt", SDL_SCANCODE_LALT);
+    PlayerInput.bctrl.scancode = Config.get_config_int(NULL, "kctrl", SDL_SCANCODE_LCTRL);
+    PlayerInput.benter.scancode = Config.get_config_int(NULL, "kenter", SDL_SCANCODE_RETURN);
+    Config.pop_config_state();
 }
 
 /*! \brief Parse setup.cfg
@@ -781,20 +713,16 @@ static void parse_jb_setup(void)
     int dab = 0;
 
     /* Default key assignments */
-    PlayerInput.kup = KEY_UP;
-    PlayerInput.kdown = KEY_DOWN;
-    PlayerInput.kright = KEY_RIGHT;
-    PlayerInput.kleft = KEY_LEFT;
-    PlayerInput.kalt = KEY_ALT;
-    PlayerInput.kctrl = KEY_LCONTROL;
-    PlayerInput.kenter = KEY_ENTER;
-    PlayerInput.kesc = KEY_ESC;
-    PlayerInput.jbalt = 0;
-    PlayerInput.jbctrl = 1;
-    PlayerInput.jbenter = 2;
-    PlayerInput.jbesc = 3;
+    PlayerInput.up.scancode = SDL_SCANCODE_UP;
+    PlayerInput.down.scancode = SDL_SCANCODE_DOWN;
+    PlayerInput.right.scancode = SDL_SCANCODE_RIGHT;
+    PlayerInput.left.scancode = SDL_SCANCODE_LEFT;
+    PlayerInput.balt.scancode = SDL_SCANCODE_LALT;
+    PlayerInput.bctrl.scancode = SDL_SCANCODE_LCTRL;
+    PlayerInput.benter.scancode = SDL_SCANCODE_RETURN;
+    PlayerInput.besc.scancode = SDL_SCANCODE_ESCAPE;
     /* PH Why in the world doesn't he use Allegro cfg functions here? */
-    if (!(s = fopen(kqres(SETTINGS_DIR, "setup.cfg").c_str(), "r")))
+    if (!(s = fopen(kqres(eDirectories::SETTINGS_DIR, "setup.cfg").c_str(), "r")))
     {
         Game.klog(_("Could not open saves/setup.cfg - Using defaults."));
         return;
@@ -877,42 +805,42 @@ static void parse_jb_setup(void)
         if (!strcmp(strbuf, "rightkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kright = atoi(strbuf);
+            PlayerInput.right.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "leftkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kleft = atoi(strbuf);
+            PlayerInput.left.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "upkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kup = atoi(strbuf);
+            PlayerInput.up.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "downkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kdown = atoi(strbuf);
+            PlayerInput.down.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "sysmenukey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kesc = atoi(strbuf);
+            PlayerInput.besc.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "cancelkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kctrl = atoi(strbuf);
+            PlayerInput.bctrl.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "confirmkey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kalt = atoi(strbuf);
+            PlayerInput.balt.scancode = atoi(strbuf);
         }
         if (!strcmp(strbuf, "chrmenukey"))
         {
             fscanf(s, "%s", strbuf);
-            PlayerInput.kenter = atoi(strbuf);
+            PlayerInput.benter.scancode = atoi(strbuf);
         }
         fscanf(s, "%s", strbuf);
     }
@@ -941,22 +869,17 @@ void parse_setup(void)
  */
 void play_effect(int efc, int panning)
 {
-    int a, s, xo = 1, yo = 1;
     static const int bx[8] = { -1, 0, 1, 0, -1, 0, 1, 0 };
     static const int by[8] = { -1, 0, 1, 0, 1, 0, -1, 0 };
     static const int sc[] = { 1, 2, 3, 5, 3, 3, 3, 2, 1 };
-    SAMPLE* samp;
+    void* samp = nullptr;
     PALETTE whiteout, old;
 
     /* Patch provided by mattrope: */
     /* sfx array is empty if sound is not initialized */
-    if (is_sound != 0)
+    if (is_sound)
     {
-        samp = (SAMPLE*)sfx[efc]->dat;
-    }
-    else
-    {
-        samp = NULL; /* PH not strictly needed but I added it */
+        samp = sfx[efc];
     }
 
     switch (efc)
@@ -964,7 +887,7 @@ void play_effect(int efc, int panning)
     default:
         if (samp)
         {
-            play_sample(samp, gsvol, panning, 1000, 0);
+            Music.play_sample(samp, gsvol, panning, 1000, 0);
         }
         break;
     case SND_BAD:
@@ -972,20 +895,12 @@ void play_effect(int efc, int panning)
 
         if (samp)
         {
-            play_sample(samp, gsvol, panning, 1000, 0);
+            Music.play_sample(samp, gsvol, panning, 1000, 0);
         }
-        clear_bitmap(double_buffer);
-        blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, KQ_SCREEN_W, KQ_SCREEN_H);
-
-        if (in_combat == 0)
+        for (int a = 0; a < 8; a++)
         {
-            xo = xofs;
-            yo = yofs;
-        }
-
-        for (a = 0; a < 8; a++)
-        {
-            Draw.blit2screen(xo + bx[a], yo + by[a]);
+            blit(fx_buffer, double_buffer, 0, 0, bx[a], by[a], SCREEN_W, SCREEN_H);
+            Draw.blit2screen();
             kq_wait(10);
         }
         fullblit(fx_buffer, double_buffer);
@@ -994,17 +909,17 @@ void play_effect(int efc, int panning)
         fullblit(double_buffer, fx_buffer);
         clear_bitmap(double_buffer);
         get_palette(old);
-        for (a = 0; a < 256; ++a)
+        for (int a = 0; a < 256; ++a)
         {
-            s = (old[a].r + old[a].g + old[a].b) > 40 ? 0 : 63;
+            int s = (old[a].r + old[a].g + old[a].b) > 40 ? 0 : 63;
             whiteout[a].r = whiteout[a].g = whiteout[a].b = s;
         }
-        blit(fx_buffer, double_buffer, xofs, yofs, xofs, yofs, KQ_SCREEN_W, KQ_SCREEN_H);
+        fullblit(fx_buffer, double_buffer);
         if (samp)
         {
-            play_sample(samp, gsvol, panning, 1000, 0);
+            Music.play_sample(samp, gsvol, panning, 1000, 0);
         }
-        for (s = 0; s < (int)(sizeof(sc) / sizeof(*sc)); ++s)
+        for (int s = 0; s < (int)(sizeof(sc) / sizeof(*sc)); ++s)
         {
             if (s == 1)
             {
@@ -1015,9 +930,10 @@ void play_effect(int efc, int panning)
                 set_palette(old);
             }
 
-            for (a = 0; a < 8; a++)
+            for (int a = 0; a < 8; a++)
             {
-                Draw.blit2screen(xofs + bx[a] * sc[s], yofs + by[a] * sc[s]);
+                blit(fx_buffer, double_buffer, 0, 0, bx[a] * sc[s], by[a] * sc[s], SCREEN_W, SCREEN_H);
+                Draw.blit2screen();
                 kq_wait(10);
             }
         }
@@ -1033,23 +949,14 @@ void play_effect(int efc, int panning)
  */
 void set_graphics_mode(void)
 {
-    set_color_depth(8);
-    int card = GFX_AUTODETECT_WINDOWED;
-    if (windowed != 1)
-    {
-        card = GFX_AUTODETECT;
-    }
-
-    int w = KQ_SCALED_SCREEN_W;
-    int h = KQ_SCALED_SCREEN_H;
+    int w = eSize::SCALED_SCREEN_W;
+    int h = eSize::SCALED_SCREEN_H;
     if (!should_stretch_view)
     {
-        w = KQ_SCREEN_W;
-        h = KQ_SCREEN_H;
+        w = eSize::SCREEN_W;
+        h = eSize::SCREEN_H;
     }
-
-    set_gfx_mode(card, w, h, 0, 0);
-    set_palette(pal);
+    Draw.set_window(SDL_CreateWindow("KQ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, SDL_WINDOW_SHOWN));
 }
 
 /*! \brief Show keys help
@@ -1059,28 +966,27 @@ void set_graphics_mode(void)
  */
 void show_help(void)
 {
-    Draw.menubox(double_buffer, 116 + xofs, yofs, 9, 1, BLUE);
-    Draw.print_font(double_buffer, 132 + xofs, 8 + yofs, _("KQ Help"), FGOLD);
-    Draw.menubox(double_buffer, 32 + xofs, 32 + yofs, 30, 20, BLUE);
-    Draw.menubox(double_buffer, xofs, 216 + yofs, 38, 1, BLUE);
-    Draw.print_font(double_buffer, 16 + xofs, 224 + yofs, _("Press CONFIRM to exit this screen"), FNORMAL);
-    citem(72, _("Up Key:"), kq_keyname(PlayerInput.kup), FNORMAL);
-    citem(80, _("Down Key:"), kq_keyname(PlayerInput.kdown), FNORMAL);
-    citem(88, _("Left Key:"), kq_keyname(PlayerInput.kleft), FNORMAL);
-    citem(96, _("Right Key:"), kq_keyname(PlayerInput.kright), FNORMAL);
-    citem(104, _("Confirm Key:"), kq_keyname(PlayerInput.kalt), FNORMAL);
-    citem(112, _("Cancel Key:"), kq_keyname(PlayerInput.kctrl), FNORMAL);
-    citem(120, _("Menu Key:"), kq_keyname(PlayerInput.kenter), FNORMAL);
-    citem(128, _("System Menu Key:"), kq_keyname(PlayerInput.kesc), FNORMAL);
+    Draw.menubox(double_buffer, 116, 0, 9, 1, BLUE);
+    Draw.print_font(double_buffer, 132, 8, _("KQ Help"), FGOLD);
+    Draw.menubox(double_buffer, 32, 32, 30, 20, BLUE);
+    Draw.menubox(double_buffer, 0, 216, 38, 1, BLUE);
+    Draw.print_font(double_buffer, 16, 224, _("Press CONFIRM to exit this screen"), FNORMAL);
+    citem(72, _("Up Key:"), kq_keyname(PlayerInput.up.scancode), FNORMAL);
+    citem(80, _("Down Key:"), kq_keyname(PlayerInput.down.scancode), FNORMAL);
+    citem(88, _("Left Key:"), kq_keyname(PlayerInput.left.scancode), FNORMAL);
+    citem(96, _("Right Key:"), kq_keyname(PlayerInput.right.scancode), FNORMAL);
+    citem(104, _("Confirm Key:"), kq_keyname(PlayerInput.balt.scancode), FNORMAL);
+    citem(112, _("Cancel Key:"), kq_keyname(PlayerInput.bctrl.scancode), FNORMAL);
+    citem(120, _("Menu Key:"), kq_keyname(PlayerInput.benter.scancode), FNORMAL);
+    citem(128, _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
     do
     {
-        Draw.blit2screen(xofs, yofs);
-        PlayerInput.readcontrols();
-    } while (!PlayerInput.balt && !PlayerInput.bctrl);
-    Game.unpress();
+        Game.ProcessEvents();
+        Draw.blit2screen();
+    } while (!PlayerInput.balt() && !PlayerInput.bctrl());
 }
 
-/*! \brief Initialize sound system
+/*! \brief Initialize or shutdown sound system
  * \author JB
  * \date ????????
  * \remark On entry is_sound=1 to initialize,
@@ -1101,14 +1007,13 @@ void sound_init(void)
     switch (is_sound)
     {
     case 1:
-        /* set_volume_per_voice (2); */
         Music.init_music();
         is_sound = load_samples() ? 0 : 2; /* load the wav files */
         break;
     case 2:
         /* TT: We forgot to add this line, causing phantom music to loop */
         Music.stop_music();
-        free_samples();
+        Music.free_samples();
         is_sound = 0;
         break;
     }

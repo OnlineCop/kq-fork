@@ -27,7 +27,6 @@
  * \date 20030805
  */
 
-#include <allegro.h>
 #include <cstdint>
 #include <string>
 #include <vector>

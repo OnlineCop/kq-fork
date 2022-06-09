@@ -35,6 +35,7 @@
 #include <cctype>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 
 #include "combat.h"
 #include "constants.h"
@@ -66,7 +67,7 @@ s_sgstats s_sgstats::get_current()
 {
     s_sgstats stats;
     stats.gold = Game.GetGold();
-    stats.time = khr * 60 + kmin;
+    stats.time = Game.GetGameTime().total_seconds() / 60;
     stats.num_characters = numchrs;
     for (auto i = 0U; i < numchrs; ++i)
     {
@@ -101,22 +102,20 @@ int KSaveGame::confirm_action(void)
     fullblit(double_buffer, back);
     Draw.menubox(double_buffer, 128, pointer_offset + 12, 14, 1, DARKBLUE);
     Draw.print_font(double_buffer, 136, pointer_offset + 20, _("Confirm/Cancel"), FNORMAL);
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     fullblit(back, double_buffer);
     while (!stop)
     {
-        PlayerInput.readcontrols();
-        if (PlayerInput.balt)
+        Game.ProcessEvents();
+
+        if (PlayerInput.balt())
         {
-            Game.unpress();
             return 1;
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
-            Game.unpress();
             return 0;
         }
-        Game.kq_yield();
     }
     return 0;
 }
@@ -152,7 +151,7 @@ void KSaveGame::delete_game(void)
     int pointer_offset = (save_ptr - top_pointer) * 48;
 
     sprintf(strbuf, "sg%d.sav", save_ptr);
-    remove_result = remove(kqres(SAVE_DIR, strbuf).c_str());
+    remove_result = remove(kqres(eDirectories::SAVE_DIR, strbuf).c_str());
     if (remove_result == 0)
     {
         Draw.menubox(double_buffer, 128, pointer_offset + 12, 12, 1, DARKBLUE);
@@ -168,18 +167,15 @@ void KSaveGame::delete_game(void)
         Draw.menubox(double_buffer, 128, pointer_offset + 12, 16, 1, DARKBLUE);
         Draw.print_font(double_buffer, 136, pointer_offset + 20, _("File Not Deleted"), FNORMAL);
     }
-    Draw.blit2screen(0, 0);
+    Draw.blit2screen();
     fullblit(back, double_buffer);
 
     while (!stop)
     {
-        PlayerInput.readcontrols();
-        if (PlayerInput.balt || PlayerInput.bctrl)
+        if (PlayerInput.balt() || PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
-        Game.kq_yield();
     }
 }
 
@@ -193,13 +189,11 @@ void KSaveGame::delete_game(void)
 int KSaveGame::load_game(void)
 {
     sprintf(strbuf, "sg%d.xml", save_ptr);
-    Disk.load_game_from_file(kqres(SAVE_DIR, strbuf).c_str());
-    timer_count = 0;
-    ksec = 0;
+    Disk.load_game_from_file(kqres(eDirectories::SAVE_DIR, strbuf).c_str());
     hold_fade = 0;
     Game.change_map(Game.GetCurmap(), g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
     /* Set music and sound volume */
-    set_volume(gsvol, -1);
+    Music.set_volume(gsvol, -1);
     Music.set_music_volume(((float)gmvol) / 250.0);
     return 1;
 }
@@ -216,9 +210,9 @@ void KSaveGame::load_sgstats(void)
     {
         char buf[32];
         sprintf(buf, "sg%u.xml", sg);
-        string path = kqres(SAVE_DIR, string(buf));
+        string path = kqres(eDirectories::SAVE_DIR, string(buf));
         s_sgstats& stats = savegame[sg];
-        if (exists(path.c_str()) && (Disk.load_stats_only(path.c_str(), stats) != 0))
+        if (Disk.exists(path.c_str()) && (Disk.load_stats_only(path.c_str(), stats) != 0))
         {
             // Not found (which is OK), so zero out the struct
             stats.num_characters = 0;
@@ -235,7 +229,7 @@ void KSaveGame::load_sgstats(void)
 int KSaveGame::save_game(void)
 {
     sprintf(strbuf, "sg%d.xml", save_ptr);
-    int rc = Disk.save_game_to_file(kqres(SAVE_DIR, strbuf).c_str());
+    int rc = Disk.save_game_to_file(kqres(eDirectories::SAVE_DIR, strbuf).c_str());
     if (rc)
     {
         savegame[save_ptr] = s_sgstats::get_current();
@@ -256,24 +250,19 @@ int KSaveGame::saveload(int am_saving)
     int stop = 0;
 
     // Have no more than 5 savestate boxes onscreen, but fewer if NUMSG < 5
-    max_onscreen = 5;
-    if (max_onscreen > NUMSG)
-    {
-        max_onscreen = NUMSG;
-    }
+    max_onscreen = std::min(5, NUMSG);
 
     play_effect(SND_MENU, 128);
     while (!stop)
     {
+        Game.ProcessEvents();
         Game.do_check_animation();
         double_buffer->fill(0);
         show_sgstats(am_saving);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
 
-        PlayerInput.readcontrols();
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
-            Game.unpress();
             save_ptr--;
             if (save_ptr < 0)
             {
@@ -292,9 +281,8 @@ int KSaveGame::saveload(int am_saving)
 
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
-            Game.unpress();
             save_ptr++;
             if (save_ptr > NUMSG - 1)
             {
@@ -313,25 +301,22 @@ int KSaveGame::saveload(int am_saving)
 
             play_effect(SND_CLICK, 128);
         }
-        if (PlayerInput.right)
+        if (PlayerInput.right())
         {
-            Game.unpress();
             if (am_saving < 2)
             {
                 am_saving = am_saving + 2;
             }
         }
-        if (PlayerInput.left)
+        if (PlayerInput.left())
         {
-            Game.unpress();
             if (am_saving >= 2)
             {
                 am_saving = am_saving - 2;
             }
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
-            Game.unpress();
             switch (am_saving)
             {
             case 0: // Load
@@ -372,9 +357,8 @@ int KSaveGame::saveload(int am_saving)
                 break;
             }
         }
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
-            Game.unpress();
             stop = 1;
         }
     }
@@ -435,7 +419,7 @@ void KSaveGame::show_sgstats(int saving)
     }
     if (top_pointer < NUMSG - max_onscreen)
     {
-        draw_sprite(double_buffer, dnptr, 32, KQ_SCREEN_H - 8);
+        draw_sprite(double_buffer, dnptr, 32, eSize::SCREEN_H - 8);
     }
 
     for (sg = top_pointer; sg < top_pointer + max_onscreen; sg++)
@@ -490,84 +474,81 @@ void KSaveGame::show_sgstats(int saving)
         }
     }
 }
+static void show_splash_screen()
+{
+    Raster* splash = get_cached_image("kqt.png");
+    Raster staff(72, 226);
+    Raster dudes(112, 112);
+    Raster tdudes(112, 112);
+    blit(splash, &staff, 0, 7, 0, 0, 72, 226);
+    blit(splash, &dudes, 80, 0, 0, 0, 112, 112);
+    double_buffer->fill(0x000000);
+    blit(&staff, double_buffer, 0, 0, 124, 22, 72, 226);
+    Draw.blit2screen();
+    kq_wait(1000);
+    for (int a = 0; a < 42; ++a)
+    {
+        kq_wait(100);
+        stretch_blit(&staff, double_buffer, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64),
+                     226 + (a * 192));
+        Draw.blit2screen();
+    }
+
+    for (int a = 0; a < 5; ++a)
+    {
+        Draw.color_scale(&dudes, &tdudes, 53 - a, 53 + a);
+        draw_sprite(double_buffer, &tdudes, 106, 64);
+        Draw.blit2screen();
+        kq_wait(300);
+    }
+    draw_sprite(double_buffer, &dudes, 106, 64);
+    Draw.blit2screen();
+    kq_wait(1000);
+    do_transition(eTransitionFade::TO_WHITE, 1);
+}
 
 /*! \brief Main menu screen
  *
  * This is the main menu... just display the opening and then the menu and
  * then wait for input.  Also handles loading a saved game, and the config menu.
  *
- * \param   c zero if the splash (the bit with the staff and the eight heroes)
+ * \param   c false if the splash (the bit with the staff and the eight heroes)
  *            should be displayed.
  * \returns 1 if new game, 0 if continuing, 2 if exit
  */
-int KSaveGame::start_menu(int skip_splash)
+int KSaveGame::start_menu(bool skip_splash)
 {
-    int stop = 0, ptr = 0, redraw = 1, a;
-    unsigned int fade_color;
-    Raster *staff, *dudes, *tdudes;
+    int stop = 0, ptr = 0, redraw = 1;
     Raster* title = get_cached_image("title.png");
+    Game.ProcessEvents(); // do this first off to make sure everything is ready
 #ifdef DEBUGMODE
     if (debugging == 0)
     {
 #endif
         Music.play_music(music_title, 0);
         /* Play splash (with the staff and the heroes in circle */
-        if (skip_splash == 0)
+        if (!skip_splash)
         {
-            Raster* splash = get_cached_image("kqt.png");
-            staff = new Raster(72, 226);
-            dudes = new Raster(112, 112);
-            tdudes = new Raster(112, 112);
-            blit(splash, staff, 0, 7, 0, 0, 72, 226);
-            blit(splash, dudes, 80, 0, 0, 0, 112, 112);
-            double_buffer->fill(0);
-            blit(staff, double_buffer, 0, 0, 124, 22, 72, 226);
-            Draw.blit2screen(0, 0);
-
-            kq_wait(1000);
-            for (a = 0; a < 42; a++)
-            {
-                stretch_blit(staff, double_buffer, 0, 0, 72, 226, 124 - (a * 32), 22 - (a * 96), 72 + (a * 64),
-                             226 + (a * 192));
-                Draw.blit2screen(0, 0);
-                kq_wait(100);
-            }
-            for (a = 0; a < 5; a++)
-            {
-                Draw.color_scale(dudes, tdudes, 53 - a, 53 + a);
-                draw_sprite(double_buffer, tdudes, 106, 64);
-                Draw.blit2screen(0, 0);
-                kq_wait(100);
-            }
-            draw_sprite(double_buffer, dudes, 106, 64);
-            Draw.blit2screen(0, 0);
-            kq_wait(1000);
-            delete (staff);
-            delete (dudes);
-            delete (tdudes);
-            /*
-                TODO: this fade should actually be to white
-                if (_color_depth == 8)
-                fade_from (pal, whp, 1);
-                else
-             */
-            do_transition(TRANS_FADE_WHITE, 1);
+            show_splash_screen();
         }
         clear_to_color(double_buffer, 15);
-        Draw.blit2screen(0, 0);
+        Draw.blit2screen();
         set_palette(pal);
-
-        for (fade_color = 0; fade_color < 16; fade_color++)
+        int fade_color = 0;
+        int count = 0;
+        while (fade_color < 16)
         {
+            Game.ProcessEvents();
             clear_to_color(double_buffer, 15 - fade_color);
-            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), KQ_SCREEN_W, 124);
-            Draw.blit2screen(0, 0);
-            kq_wait(fade_color == 0 ? 500 : 100);
+            masked_blit(title, double_buffer, 0, 0, 0, 60 - (fade_color * 4), eSize::SCREEN_W, 124);
+            Draw.blit2screen();
+            if (++count > 3)
+            {
+                count -= 3;
+                ++fade_color;
+            }
         }
-        if (skip_splash == 0)
-        {
-            kq_wait(500);
-        }
+        kq_wait(1000);
 #ifdef DEBUGMODE
     }
     else
@@ -580,10 +561,11 @@ int KSaveGame::start_menu(int skip_splash)
     /* Draw menu and handle menu selection */
     while (!stop)
     {
+        Game.ProcessEvents();
         if (redraw)
         {
             clear_bitmap(double_buffer);
-            masked_blit(title, double_buffer, 0, 0, 0, 0, KQ_SCREEN_W, 124);
+            masked_blit(title, double_buffer, 0, 0, 0, 0, eSize::SCREEN_W, 124);
             Draw.menubox(double_buffer, 112, 116, 10, 4, BLUE);
             Draw.print_font(double_buffer, 128, 124, _("Continue"), FNORMAL);
             Draw.print_font(double_buffer, 128, 132, _("New Game"), FNORMAL);
@@ -593,17 +575,14 @@ int KSaveGame::start_menu(int skip_splash)
             redraw = 0;
         }
         display_credits(double_buffer);
-        Draw.blit2screen(0, 0);
-        PlayerInput.readcontrols();
-        if (PlayerInput.bhelp)
+        Draw.blit2screen();
+        if (PlayerInput.bhelp())
         {
-            Game.unpress();
             show_help();
             redraw = 1;
         }
-        if (PlayerInput.up)
+        if (PlayerInput.up())
         {
-            Game.unpress();
             if (ptr > 0)
             {
                 ptr--;
@@ -615,9 +594,8 @@ int KSaveGame::start_menu(int skip_splash)
             play_effect(SND_CLICK, 128);
             redraw = 1;
         }
-        if (PlayerInput.down)
+        if (PlayerInput.down())
         {
-            Game.unpress();
             if (ptr < 3)
             {
                 ptr++;
@@ -629,9 +607,8 @@ int KSaveGame::start_menu(int skip_splash)
             play_effect(SND_CLICK, 128);
             redraw = 1;
         }
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
-            Game.unpress();
             if (ptr == 0) /* User selected "Continue" */
             {
                 // Check if we've saved any games at all
@@ -712,42 +689,38 @@ int KSaveGame::system_menu(void)
 
     while (!stop)
     {
+        Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, xofs, yofs, 8, 4, BLUE);
+        Draw.menubox(double_buffer, 0, 0, 8, 4, BLUE);
 
-        Draw.print_font(double_buffer, 16 + xofs, 8 + yofs, save_str, text_color);
-        Draw.print_font(double_buffer, 16 + xofs, 16 + yofs, _("Load"), FNORMAL);
-        Draw.print_font(double_buffer, 16 + xofs, 24 + yofs, _("Config"), FNORMAL);
-        Draw.print_font(double_buffer, 16 + xofs, 32 + yofs, _("Exit"), FNORMAL);
+        Draw.print_font(double_buffer, 16, 8, save_str, text_color);
+        Draw.print_font(double_buffer, 16, 16, _("Load"), FNORMAL);
+        Draw.print_font(double_buffer, 16, 24, _("Config"), FNORMAL);
+        Draw.print_font(double_buffer, 16, 32, _("Exit"), FNORMAL);
 
-        draw_sprite(double_buffer, menuptr, 0 + xofs, ptr * 8 + 8 + yofs);
-        Draw.blit2screen(xofs, yofs);
-        PlayerInput.readcontrols();
+        draw_sprite(double_buffer, menuptr, 0, ptr * 8 + 8);
+        Draw.blit2screen();
 
-        // TT:
-        // When pressed, 'up' or 'down' == 1.  Otherwise, they equal 0.  So:
-        //    ptr = ptr - up + down;
-        // will correctly modify the pointer, but with less code.
-        if (PlayerInput.up || PlayerInput.down)
+        if (PlayerInput.up())
         {
-            ptr = ptr + PlayerInput.up - PlayerInput.down;
-            if (ptr < 0)
+            if (--ptr < 0)
             {
                 ptr = 3;
             }
-            else if (ptr > 3)
+            play_effect(SND_CLICK, 128);
+        }
+        else if (PlayerInput.down())
+        {
+            if (++ptr > 3)
             {
                 ptr = 0;
             }
             play_effect(SND_CLICK, 128);
-            Game.unpress();
         }
 
-        if (PlayerInput.balt)
+        if (PlayerInput.balt())
         {
-            Game.unpress();
-
             if (ptr == 0)
             {
                 // Pointer is over the SAVE option
@@ -785,10 +758,9 @@ int KSaveGame::system_menu(void)
             }
         }
 
-        if (PlayerInput.bctrl)
+        if (PlayerInput.bctrl())
         {
             stop = 1;
-            Game.unpress();
         }
     }
 

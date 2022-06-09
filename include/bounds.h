@@ -21,11 +21,9 @@
 
 #pragma once
 
-#include <allegro.h>
 #include <cstdint>
 #include <memory>
 #include <vector>
-using std::shared_ptr;
 using std::vector;
 
 struct PACKFILE;
@@ -75,11 +73,11 @@ class KBounds
     }
 
     // Add a new bound to the map. Returns true on success, or false on failure.
-    bool Add(shared_ptr<KBound> bound);
+    bool Add(KBound&& bound);
 
     // Return a pointer to the bound at the given @param index. If index is
     // invalid, returns null.
-    shared_ptr<KBound> GetBound(size_t index);
+    KBound* GetBound(size_t index);
 
     size_t Size()
     {
@@ -97,7 +95,17 @@ class KBounds
      * \returns true if the specified coordinate was found within a bounding area, else false.
      */
     bool IsBound(size_t& outIndex, int left, int top, int right, int bottom) const;
+    /*! \brief Determine whether given coordinates are within any bounding boxes
+     *
+     * \param   left - Left edge of current bounding area
+     * \param   top - Top edge of current bounding area
+     * \param   right - Right edge of current bounding area
+     * \param   bottom - Bottom edge of current bounding area
+     *
+     * \returns pointer to bounds or null
+     */
+    const KBound* IsBound(int left, int top, int right, int bottom) const;
 
   protected:
-    vector<shared_ptr<KBound>> m_bounds;
+    vector<KBound> m_bounds;
 };

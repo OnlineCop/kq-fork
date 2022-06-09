@@ -22,6 +22,7 @@ using std::string;
 using std::unique_ptr;
 using std::vector;
 using namespace tinyxml2;
+using namespace eSize;
 KTiledMap TiledMap;
 
 // Compatibility as VC insists we use these for safety
@@ -73,21 +74,16 @@ void KTiledMap::load_tmx(const string& name)
 {
     XMLDocument tmx;
     string path = name + string(".tmx");
-    tmx.LoadFile(kqres(MAP_DIR, path).c_str());
+    tmx.LoadFile(kqres(eDirectories::MAP_DIR, path).c_str());
     if (tmx.Error())
     {
-#ifdef WIN32
-        TRACE("Error loading %s\n%s\n%s\n", name.c_str(), tmx.GetErrorStr1(), tmx.GetErrorStr2());
-#else
         TRACE("Error loading %s\n%s\n", name.c_str(), tmx.ErrorStr());
-#endif // WIN32
-
         Game.program_death("Could not load map file ");
     }
     Game.reset_timer_events();
     if (hold_fade == 0)
     {
-        do_transition(TRANS_FADE_OUT, 4);
+        do_transition(eTransitionFade::OUT, 4);
     }
 
     auto loaded_map = load_tmx_map(tmx.RootElement());
@@ -218,12 +214,11 @@ KBounds KTiledMap::load_tmx_bounds(XMLElement const* el)
         {
             if (i->Attribute("type", "bounds"))
             {
-                auto new_bound = make_shared<KBound>();
-                new_bound->left = i->IntAttribute("x") / TILE_W;
-                new_bound->top = i->IntAttribute("y") / TILE_H;
-                new_bound->right = i->IntAttribute("width") / TILE_W + new_bound->left - 1;
-                new_bound->bottom = i->IntAttribute("height") / TILE_H + new_bound->top - 1;
-                new_bound->btile = 0;
+                auto x = i->IntAttribute("x") / TILE_W;
+                auto y = i->IntAttribute("y") / TILE_H;
+                auto w = i->IntAttribute("width") / TILE_W;
+                auto h = i->IntAttribute("height") / TILE_H;
+                short b = 0;
                 auto props = i->FirstChildElement("properties");
                 if (props)
                 {
@@ -232,11 +227,11 @@ KBounds KTiledMap::load_tmx_bounds(XMLElement const* el)
                     {
                         if (property->Attribute("name", "btile"))
                         {
-                            new_bound->btile = property->IntAttribute("value");
+                            b = property->IntAttribute("value");
                         }
                     }
                 }
-                bounds.Add(new_bound);
+                bounds.Add({ x, y, x + w - 1, y + h - 1, b });
             }
         }
     }
@@ -276,11 +271,8 @@ KMarkers KTiledMap::load_tmx_markers(XMLElement const* el)
         {
             if (obj->Attribute("type", "marker"))
             {
-                auto marker = make_shared<KMarker>();
-                marker->x = obj->IntAttribute("x") / TILE_W;
-                marker->y = obj->IntAttribute("y") / TILE_H;
-                marker->name = obj->Attribute("name");
-                markers.Add(marker);
+                markers.Add(
+                    { obj->Attribute("name"), obj->IntAttribute("x") / TILE_W, obj->IntAttribute("y") / TILE_H });
             }
         }
     }
@@ -501,14 +493,10 @@ KTmxTileset KTiledMap::load_tmx_tileset(XMLElement const* el)
     if (source)
     {
         // Specified 'source' so it's an external tileset. Load it.
-        sourcedoc.LoadFile(kqres(MAP_DIR, source).c_str());
+        sourcedoc.LoadFile(kqres(eDirectories::MAP_DIR, source).c_str());
         if (sourcedoc.Error())
         {
-#ifdef WIN32
-            TRACE("Error loading %s\n%s\n%s\n", source, sourcedoc.GetErrorStr1(), sourcedoc.GetErrorStr2());
-#else
             TRACE("Error loading %s\n%s\n", source, sourcedoc.ErrorStr());
-#endif // WIN32
             Game.program_death("Couldn't load external tileset");
         }
         tsx = sourcedoc.RootElement();

@@ -21,10 +21,9 @@
 
 #pragma once
 
-#include <allegro.h>
 #include <cstdint>
 
-void display_console(uint32_t, uint32_t);
+void display_console();
 void do_console_command(const char*);
 void init_console(void);
 void run_console(void);
