@@ -1,29 +1,41 @@
 cmake_minimum_required(VERSION 3.18)
-include(FindPkgConfig)
 
 project(kq-fork)
 
 set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}"
   "${CMAKE_CURRENT_SOURCE_DIR}")
 
-find_package(SDL2 CONFIG REQUIRED)
+find_package(SDL2 REQUIRED)
 find_package(Lua REQUIRED)
 find_package(PNG REQUIRED)
-find_package(tinyxml2 CONFIG REQUIRED)
-if(WIN32)
-find_package(sdl2-mixer CONFIG REQUIRED)
-set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main SDL2::SDL2_mixer)
+find_package(tinyxml2)
+find_package(sdl2-mixer)
+
+# homebrew doesn't seem to have a FindXXX module for tinyxml2 and SDL_mixer, but vcpkg does,
+# therefore if find_package doesn't work, fall back to pkg-config. There is (usually) no
+# pkg-config on windows so it's included conditionally.
+if(tinyxml2_FOUND)
+  set(TINYXML2_LINK_LIBRARIES tinyxml2::tinyxml2)
 else()
-pkg_check_modules(SDL2_MIXER REQUIRED sdl2_mixer)
-set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main ${SDL2_MIXER_LINK_LIBRARIES})
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(TINYXML2 REQUIRED tinyxml2)
 endif()
-configure_file(config.cmake.h makeconfig.h)
+
+if(sdl2-mixer_FOUND)
+  set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main SDL2::SDL2_mixer)
+else()
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer)
+  set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main ${SDL2_MIXER_LINK_LIBRARIES})
+endif()
+
 include_directories(${CMAKE_BINARY_DIR}) # for makeconfig.h
 include_directories( ${LUA_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${SDL2_INCLUDE_DIRS} ${SDL2_mixer_INCLUDE_DIRS} ${SDL2_MIXER_INCLUDE_DIRS})
 add_definitions(${PNG_DEFINITIONS})
 set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
 set(KQ_CHEATS 1 CACHE BOOL "Features for allowing Lua script cheats in game")
-set(KQ_DATADIR "." CACHE STRING "Where the data dirs are going to be installed")
+set(KQ_DATADIR "." CACHE PATH "Where the data dirs are going to be installed")
+configure_file(config.cmake.h makeconfig.h)
 
 set(kq-fork_SRCS
 	src/anim_sequence.cpp
@@ -65,10 +77,9 @@ set(kq-fork_SRCS
 	src/shopmenu.cpp
 	src/tiledmap.cpp
 	src/timing.cpp
-	$<$<PLATFORM_ID:Unix,Darwin>:src/unix.cpp>
+	$<$<PLATFORM_ID:Linux,Darwin>:src/unix.cpp>
 	$<$<PLATFORM_ID:Windows>:src/win.cpp>
 )
-set(TINYXML2_LIBRARIES tinyxml2::tinyxml2)
 set(PNG_LIBRARIES PNG::PNG)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -79,6 +90,5 @@ target_compile_features(kq-fork PUBLIC cxx_std_17)
 target_link_libraries(kq-fork
 	${LUA_LIBRARIES}
 	${SDL2_LIBRARIES}
-	${TINYXML2_LIBRARIES}
-	${M_LIB}
+	${TINYXML2_LINK_LIBRARIES}
 	${PNG_LIBRARIES})
