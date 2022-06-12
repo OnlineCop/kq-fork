@@ -946,8 +946,14 @@ void set_script(t_entity target_entity, const char* movestring)
 static void speed_adjust(t_entity target_entity)
 {
     auto& ent = g_ent[target_entity];
+    int speed = ent.speed;
+    /* TT: This is to see if the player is "running" */
+    if (PlayerInput.bctrl.isDown() && target_entity < PSIZE)
+    {
+        speed += 2;
+    }
 
-    switch (ent.speed)
+    switch (speed)
     {
     case 1:
         process_entity(target_entity);
@@ -978,6 +984,7 @@ static void speed_adjust(t_entity target_entity)
         process_entity(target_entity);
         break;
     case 7:
+    default:
         process_entity(target_entity);
         process_entity(target_entity);
         process_entity(target_entity);
@@ -985,11 +992,6 @@ static void speed_adjust(t_entity target_entity)
         process_entity(target_entity);
         process_entity(target_entity);
         break;
-    }
-    /* TT: This is to see if the player is "running" */
-    if (PlayerInput.bctrl() && target_entity < PSIZE)
-    {
-        process_entity(target_entity);
     }
 }
 
