@@ -583,8 +583,6 @@ static Cache<Mix_Chunk, Mix_ChunkLoader, Mix_ChunkDeleter> sample_cache;
  *
  * Load the list of samples from the data file.
  *
- * \todo RB FIXME: This must be generated from the kqsnd.h header,
- *          not hardcoded, to make it easier to maintain (a perl script?).
  * \remark Updated : 20020914 - 05:20 (RB)
  * \remark ML 2002-09-22: altered this so it returns an error on failure
  *
