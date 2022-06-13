@@ -202,7 +202,7 @@ int auto_select_enemy(int whom, int csts)
 int auto_select_hero(int whom, int csts)
 {
     unsigned int cntr = 0;
-    int tmpd[NUM_FIGHTERS] = {0};
+    int tmpd[NUM_FIGHTERS] = { 0 };
     /*  RB TODO  */
     (void)whom;
 
