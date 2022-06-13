@@ -32,7 +32,7 @@ int KConfig::get_config_int(const char* section, const char* key, int defl)
 void KConfig::set_config_int(const char* section, const char* key, int value)
 {
     auto& data = section ? current.sections[section] : current.unnamed;
-    data.emplace(key, value);
+    data[key] = value;
     current.dirty = true;
 }
 
