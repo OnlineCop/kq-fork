@@ -16,7 +16,7 @@ end
 
 function zone_handler(zn)
   if (zn == 0) then
-    -- combat(24)
+    combat(68)
   elseif (zn == 1) then
     change_map("shrine", "statue_6")
   elseif (zn == 2) then

@@ -448,17 +448,22 @@ function zone_handler(zn)
 
   elseif (zn == 86) then
     --combat shrine island
+    combat(72)
 
   elseif (zn == 87) then
     --combat shrine island xenar pass
-
+    combat(73)
+    
   elseif (zn == 88) then
+    combat(74)
     --combat shrine island forest
-
+    
   elseif (zn == 89) then
     --combat malks island
+    combat(75)
   elseif (zn == 90) then
     --combat malks island forest
+    combat(76)
 
   elseif (zn == 91) then
     change_map("prison", "entrance")

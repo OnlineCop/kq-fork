@@ -25,7 +25,8 @@ end
 
 function zone_handler(zn)
   if (zn == 0) then
-    -- combat(6)
+    combat(65)
+
   elseif (zn == 1) then
     change_map("main", "cave6a")
 

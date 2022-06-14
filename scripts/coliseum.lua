@@ -81,8 +81,8 @@ function entity_handler(en)
           bubble(en, _"Consider yourself registered. After each battle, come back and talk to me.")
           set_ent_script(en, "U2R1F2")
           wait_for_entity(en, en)
-          progress.roundnum = 7
-          -- progress.roundnum = 1
+          -- progress.roundnum = 7
+          progress.roundnum = 1
           progress.battlestatus = 0
         else
           bubble(en, _"Umm... you don't seem to have enough. I would suggest selling some junk. In any case, you can't register at this point.")
@@ -124,11 +124,6 @@ function entity_handler(en)
           set_ent_script(en, "L1D2")
           wait_for_entity(en, en)
           bubble(en, _"Good luck in your endeavours.")
-
-          -- Commented this out because it can cause you to meet someone you haven't actually recruited yet, so there would be 2 Temmin's at the same time. -Z
-          if (get_numchrs() > 1) then -- Skip this partnering up bit.
-            return
-          end
 
           if (progress.oldpartner > 0) then
             progress.finalpartner = progress.oldpartner

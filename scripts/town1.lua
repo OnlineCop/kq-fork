@@ -385,7 +385,8 @@ function LOC_talk_derig(en)
           if progress.portalgone == 0 then
             bubble(en, _"Now that you have the rod, go down and seal the portal.")
           elseif progress.portalgone == 1 then
-            bubble(en, _"You've done it! The portal is gone, and you have returned the Unadium coin and Rod of Cancellation.")
+            bubble(HERO1, _"It's like you said, the portal closed.")
+            bubble(en, _"You've done it! The portal is gone!")
             progress.ucoin = 3
             remove_special_item(SI_UCOIN)
             progress.cancelrod = 2
@@ -393,6 +394,8 @@ function LOC_talk_derig(en)
             progress.talkderig = 6
             msg(_"Derig takes the Rod of Cancellation and Unadium Coin.", 255, 0)
             bubble(en, _"I'll take these back to the grotto for safe keeping. Thank you.")
+            bubble(en, _"This is great, Randen's Inn has a lot better ale.")
+            bubble(2, _"Grandfather!")
           end -- portalgone
         end -- cancelrod
       end -- ucoin
@@ -434,10 +437,10 @@ function LOC_talk_jen (en)
     if progress.ucoin == 0 then
       if progress.talkderig == 0 then
         -- You have never gone to the grotto.
-        bubble(en, _"Jen:", _"I'm Derig's granddaughter. Go find Derig in the grotto north of here.")
+        bubble(en, _"I'm Derig's granddaughter, Jen. Go find Derig in the grotto north of here.")
       elseif progress.talkderig == 1 then
         -- You entered the grotto, but did not fall in the pit.
-        bubble(en, _"Jen:", _"I'm Derig's granddaughter. Go find Derig in the grotto north of here. You've been there once before.")
+        bubble(en, _"I'm Derig's granddaughter, Jen. Go find Derig in the grotto north of here. You've been there once before.")
       elseif progress.talkderig == 2 then
         -- You entered the grotto and fell in pit (you had NOT spoken to Jen first, though).  Someone helped you get out.
         bubble(en, _"You've already been to the grotto.")
@@ -515,7 +518,7 @@ function LOC_talk_jen (en)
       end
     end -- ucoin
   elseif progress.talk_tsorin == 1 then
-    bubble(en, _"Jen:", _"You must be looking for Derig, my grandfather. Find him in the grotto north of here.")
+    bubble(en, _"You must be looking for Derig, my grandfather. Find him in the grotto north of here.")
   elseif progress.talk_tsorin == 2 then
     bubble(en, _"You should finish Derig's assignment before I give you another.")
   end -- talk_tsorin

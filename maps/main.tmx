@@ -372,7 +372,7 @@
   <object id="323" name="15" type="zone" x="3856" y="960" width="160" height="16"/>
   <object id="324" name="15" type="zone" x="3856" y="976" width="144" height="16"/>
   <object id="325" name="15" type="zone" x="3856" y="992" width="128" height="16"/>
-  <object id="326" name="15" type="zone" x="3856" y="1072" width="16" height="16"/>
+  <object id="326" name="15" type="zone" x="3856" y="1072" width="48" height="16"/>
   <object id="327" name="22" type="zone" x="3856" y="1536" width="160" height="32"/>
   <object id="328" name="25" type="zone" x="3856" y="1568" width="16" height="16"/>
   <object id="329" name="25" type="zone" x="3856" y="1728" width="80" height="32"/>
@@ -833,7 +833,6 @@
   <object id="786" name="27" type="zone" x="4768" y="1328" width="16" height="80"/>
   <object id="787" name="27" type="zone" x="4768" y="1472" width="32" height="48"/>
   <object id="788" name="27" type="zone" x="4784" y="1360" width="16" height="112"/>
-  <object id="838" name="242" type="zone" x="3872" y="1072" width="16" height="16"/>
   <object id="841" name="241" type="zone" x="1696" y="624" width="16" height="16"/>
   <object id="843" name="86" type="zone" x="3264" y="2816" width="288" height="160"/>
   <object id="844" name="87" type="zone" x="3392" y="2672" width="288" height="144"/>

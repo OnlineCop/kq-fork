@@ -16,10 +16,12 @@ end
 
 function zone_handler(zn)
   if (zn == 0) then
-    -- combat(24)
+    combat(70)
   elseif (zn == 1) then
     change_map("tunnelb", "entrance_w")
   elseif (zn == 2) then
     change_map("shrine2", "tunnel_exit")
+  elseif (zn == 3) then
+    combat(71)
   end
 end

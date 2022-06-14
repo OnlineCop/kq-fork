@@ -31,14 +31,14 @@ end
 
 function zone_handler(zn)
   if (zn == 0) then
-    -- combat(6)
+    combat(66)
     
   elseif (zn == 1) then
     change_map("cave6a", "exit")
     
   elseif (zn == 2) then
     if progress.trident == 0 then
-      -- combat(6)
+      combat(67)
       
       msg(_"Magic Trident procured", 255, 0)
       add_special_item(SI_TRIDENT)

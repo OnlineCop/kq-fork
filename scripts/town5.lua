@@ -356,7 +356,7 @@ function zone_handler(zn)
       bubble(HERO1, _"Finally here it is, the Embers Mark coin.")
       bubble(HERO1, _"But why did they use the signature of a bird? It better not be just so they could use that bad bird pun.")
       add_special_item(SI_EMBERCOIN)
-      progress.oddwall = 2
+      progress.sidequest6 = 2
     end
   end
 end

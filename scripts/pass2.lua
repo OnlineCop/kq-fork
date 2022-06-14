@@ -34,7 +34,7 @@ end
 
 function zone_handler(zn)
   if (zn == 0) then
-    combat(50)
+    combat(77)
 
   elseif (zn == 1) then
     change_map("main", "malk_pass_w")

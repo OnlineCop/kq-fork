@@ -225,7 +225,7 @@ function zone_handler(zn)
     change_map("cave1", "dstairs1")
 
   elseif (zn == 29) then
-    bubble(HERO1, _"It reads", _"To Reginald who would forget his nose if it wasn't attached to his face.")
+    bubble(HERO1, _"It reads:", _"To Reginald who would forget his nose if it wasn't attached to his face.")
     bubble(HERO1, _"If you ever lose track of the bird you can find one in the fountain.")
     if (progress.sidequest6 == 0) then
       if (party[0] == Ayla) then
@@ -268,48 +268,55 @@ function LOC_ayla_join(en)
     bubble(en, _"Hey, $0. Rumor has it that the guild has a bunch of treasure hoarded somewhere.")
     bubble(HERO1, _"That's possible. Why?")
     bubble(en, _"Let's just suppose that you help me find it. I wouldn't mind joining your little party and helping you out.")
-    bubble(HERO1, _"Well, I can always use a little extra help. What do we have to do?")
-    bubble(en, _"Let's have a talk around town. I'm sure someone's bound to spill something about the guild's whereabouts.")
-    set_ent_active(en, 0)
-    -- bubble(HERO1, _"Well, alright then.")
-    set_all_equip(AYLA, I_SWORD4, I_SHIELD3, I_CAP3, I_SUIT3, I_BAND2, 0)
-    level_partner(AYLA)
-    id = select_team{AYLA}
-    --  Add the characters that were deselected to the manor
-    while (LOC_get_ayla() ~= HERO1) do
-      bubble(HERO1, _"Stop wasting my time. You either let me lead or I leave.")
-      id = select_team{AYLA}
+    if (prompt(en, 2, 0, "So what will it be?",
+      "are you willing to help me look for the treasure?",
+      "  yes",
+      "  no") == 0) then
+        bubble(HERO1, _"Well, I can always use a little extra help. What do we have to do?")
+        bubble(en, _"Let's have a talk around town. I'm sure someone's bound to spill something about the guild's whereabouts.")
+        set_ent_active(en, 0)
+        -- bubble(HERO1, _"Well, alright then.")
+        set_all_equip(AYLA, I_SWORD4, I_SHIELD3, I_CAP3, I_SUIT3, I_BAND2, 0)
+        level_partner(AYLA)
+        id = select_team{AYLA}
+        --  Add the characters that were deselected to the manor
+        while (LOC_get_ayla() ~= HERO1) do
+          bubble(HERO1, _"Stop wasting my time. I'm going to be the leader here.")
+          id = select_team{AYLA}
+        end
+    
+        add_to_manor(id)
+        if (id[1]) then
+          set_ent_id(en, id[1])
+          set_ent_speed(en, 4)
+    
+          if (id[2]) then
+            -- // Two heroes were de-selected
+            -- set_ent_obsmode(2, 0)
+            set_ent_id(2, id[2])
+            set_ent_active(2, 1)
+            set_ent_tilex(2, get_ent_tilex(en))
+            set_ent_tiley(2, get_ent_tiley(en) + 1)
+            bubble(en, _"If you need us, we'll be back at the manor.")
+            -- set_ent_script(en, "D9K")
+            -- set_ent_script(2, "D9K")
+            move_entity(en, 8, 25, 1)
+            move_entity(2, 8, 25, 1)
+            wait_for_entity(en, 2)
+            wait_for_entity(en, en)
+            -- set_ent_active(en, 0)
+            -- set_ent_active(42, 0)
+          else
+            -- // One hero was de-selected
+            bubble(en, _"If you need me, I'll be back at the manor.")
+            move_entity(en, 8, 25, 1)
+            wait_for_entity(en, en)
+          end
+        end
+        progress.players = progress.players + 1
+    else
+      bubble(en, _"Your loss. Think of the treasure.")
     end
-
-    add_to_manor(id)
-    if (id[1]) then
-      set_ent_id(en, id[1])
-      set_ent_speed(en, 4)
-
-      if (id[2]) then
-        -- // Two heroes were de-selected
-        -- set_ent_obsmode(2, 0)
-        set_ent_id(2, id[2])
-        set_ent_active(2, 1)
-        set_ent_tilex(2, get_ent_tilex(en))
-        set_ent_tiley(2, get_ent_tiley(en) + 1)
-        bubble(en, _"If you need us, we'll be back at the manor.")
-        -- set_ent_script(en, "D9K")
-        -- set_ent_script(2, "D9K")
-        move_entity(en, 8, 25, 1)
-        move_entity(2, 8, 25, 1)
-        wait_for_entity(en, 2)
-        wait_for_entity(en, en)
-        -- set_ent_active(en, 0)
-        -- set_ent_active(42, 0)
-      else
-        -- // One hero was de-selected
-        bubble(en, _"If you need me, I'll be back at the manor.")
-        move_entity(en, 8, 25, 1)
-        wait_for_entity(en, en)
-      end
-    end
-    progress.players = progress.players + 1
   end
 end
 
@@ -392,7 +399,7 @@ function LOC_get_helm()
     screen_dump()
     wait(50)
     bubble(HERO1, _"I don't like this.",
-                 _"It was just too easy.")
+                 _"It was just too easy. Why would they leave this behind?")
   end
 end
 
