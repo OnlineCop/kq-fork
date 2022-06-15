@@ -34,7 +34,7 @@ include_directories( ${LUA_INCLUDE_DIR} ${TINYXML2_INCLUDE_DIR} ${PNG_INCLUDE_DI
 add_definitions(${PNG_DEFINITIONS})
 set(KQ_DEBUGGING 1 CACHE BOOL "Features for debugging the game")
 set(KQ_CHEATS 1 CACHE BOOL "Features for allowing Lua script cheats in game")
-set(KQ_DATADIR "." CACHE PATH "Where the data dirs are going to be installed")
+set(KQ_DATADIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE PATH "Where the data dirs are going to be installed")
 configure_file(config.cmake.h makeconfig.h)
 
 set(kq-fork_SRCS
