@@ -178,7 +178,7 @@ class KGame
      *
      * \param   msg String to add to log file
      */
-    void klog(const char* msg);
+    void klog(const std::string& msg);
 
     /*! \brief Pause for a time
      *

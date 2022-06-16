@@ -867,9 +867,9 @@ size_t KGame::in_party(ePIDX pn)
     return MAXCHRS;
 }
 
-void KGame::klog(const char* msg)
+void KGame::klog(const std::string& msg)
 {
-    TRACE("%s\n", msg);
+    TRACE("%s\n", msg.c_str());
 }
 
 void KGame::kwait(int dtime)
