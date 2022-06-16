@@ -642,15 +642,13 @@ void tmx_map::set_current()
         {
             // Shadows
             unsigned short shadow_offset = find_tileset("misc").firstgid + SHADOW_OFFSET;
-            free(s_seg);
-            auto sptr = s_seg = static_cast<unsigned char*>(calloc(layer.size, sizeof(*s_seg)));
-            for (auto t : layer)
+            Game.Map.shadow_array.assign(layer.size, {});
+            for (int i = 0; i < layer.size; ++i)
             {
-                if (t > 0)
+                if (layer.data[i] > eShadow::SHADOW_NONE)
                 {
-                    t -= shadow_offset;
+                    Game.Map.shadow_array[i] = static_cast<eShadow>(layer.data[i] - shadow_offset);
                 }
-                *sptr++ = static_cast<unsigned char>(t);
             }
         }
         else if (layer.name == "obstacles")

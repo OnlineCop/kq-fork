@@ -98,7 +98,7 @@ Raster* obj_mesh;
 #endif
 
 uint16_t *map_seg = NULL, *b_seg = NULL, *f_seg = NULL;
-uint8_t *z_seg = NULL, *s_seg = NULL;
+uint8_t *z_seg = NULL;
 uint8_t progress[SIZE_PROGRESS];
 uint8_t treasure[SIZE_TREASURE];
 uint8_t save_spells[SIZE_SAVE_SPELL];
@@ -306,6 +306,7 @@ s_progress progresses[SIZE_PROGRESS] = {
 
 KMap::KMap()
     : obstacle_array{}
+    , shadow_array{}
 {
 }
 
@@ -802,10 +803,7 @@ void KGame::deallocate_stuff(void)
     {
         free(z_seg);
     }
-    if (s_seg)
-    {
-        free(s_seg);
-    }
+    this->Map.shadow_array.clear();
     this->Map.obstacle_array.clear();
     if (strbuf)
     {
@@ -1051,7 +1049,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 
     for (i = 0; i < mapsize; i++)
     {
-        if (s_seg[i] > 0)
+        if (this->Map.shadow_array[i] > eShadow::SHADOW_NONE)
         {
             draw_shadow = 1;
             break;
@@ -1264,7 +1262,8 @@ void KGame::startup(void)
     strbuf = (char*)malloc(4096);
 
     map_seg = b_seg = f_seg = NULL;
-    s_seg = z_seg = NULL;
+    z_seg = NULL;
+    this->Map.shadow_array.clear();
     this->Map.obstacle_array.clear();
 
     allocate_stuff();

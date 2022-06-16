@@ -633,8 +633,8 @@ void KDraw::draw_shadows(void)
         for (int x = box.left; x <= box.right; x++)
         {
             int here = y * g_map.xsize + x;
-            int pix = s_seg[here];
-            if (pix > 0)
+            eShadow pix = Game.Map.shadow_array[here];
+            if (pix > eShadow::SHADOW_NONE)
             {
                 draw_trans_sprite(double_buffer, shadow[pix], x * 16 - box.x_offset, y * 16 - box.y_offset);
             }
