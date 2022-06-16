@@ -258,7 +258,7 @@ void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_targe
     {
         if (Combat.GetHealthAdjust(start_fighter_index) == MISS)
         {
-            play_effect(Audio::eSound::SND_MENU, 128);
+            play_effect(KAudio::eSound::SND_MENU, 128);
         }
         else
         {

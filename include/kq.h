@@ -451,7 +451,8 @@ extern int gsvol, gmvol;
 /*! Number of entities (or enemies?) */
 extern uint32_t number_of_entities;
 extern ePIDX pidx[MAXCHRS];
-extern uint8_t autoparty, alldead, is_sound, deadeffect, use_sstone, sound_avail;
+extern uint8_t autoparty, alldead, deadeffect, use_sstone;
+extern uint8_t sound_initialized_and_ready, sound_avail;
 extern bool bDoesViewportFollowPlayer;
 extern const uint8_t kq_version;
 extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, cpu_usage;

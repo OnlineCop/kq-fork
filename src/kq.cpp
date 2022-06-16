@@ -127,7 +127,7 @@ uint8_t autoparty = 0;
 uint8_t alldead = 0;
 
 /*! Is sound activated/available? */
-uint8_t is_sound = 1, sound_avail;
+uint8_t sound_initialized_and_ready = KAudio::eSoundSystem::Initialize, sound_avail;
 
 /*! Makes is_active() return TRUE even if the character is dead */
 uint8_t deadeffect = 0;
@@ -807,7 +807,7 @@ void KGame::deallocate_stuff(void)
         free(strbuf);
     }
 
-    if (is_sound)
+    if (sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized)
     {
         Music.shutdown_music();
         Music.free_samples();

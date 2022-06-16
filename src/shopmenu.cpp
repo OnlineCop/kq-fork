@@ -86,7 +86,7 @@ static void buy_item(int how_many, int item_no)
     cost = items[l].price * how_many;
     if (cost > Game.GetGold() || how_many == 0)
     {
-        play_effect(Audio::eSound::SND_BAD, 128);
+        play_effect(KAudio::eSound::SND_BAD, 128);
         return;
     }
     while (!stop)
@@ -113,10 +113,10 @@ static void buy_item(int how_many, int item_no)
     {
         Game.AddGold(-cost);
         shops[shop_no].items_current[item_no] -= how_many;
-        play_effect(Audio::eSound::SND_MONEY, 128);
+        play_effect(KAudio::eSound::SND_MONEY, 128);
         return;
     }
-    play_effect(Audio::eSound::SND_BAD, 128);
+    play_effect(KAudio::eSound::SND_BAD, 128);
     Draw.message(_("No room!"), -1, 0);
     return;
 }
@@ -208,7 +208,7 @@ static void buy_menu(void)
             {
                 yptr = num_shop_items - 1;
             }
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.down())
         {
@@ -220,17 +220,17 @@ static void buy_menu(void)
             {
                 yptr = 0;
             }
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.left() && xptr > 1)
         {
             xptr--;
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.right() && xptr < max_x)
         {
             xptr++;
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
@@ -527,7 +527,7 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
             {
                 my = 0;
             }
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.up())
         {
@@ -539,7 +539,7 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
             {
                 my = 0;
             }
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
@@ -574,7 +574,7 @@ static void sell_howmany(int item_no, size_t inv_page)
     prc = items[l].price;
     if (prc == 0)
     {
-        play_effect(Audio::eSound::SND_BAD, 128);
+        play_effect(KAudio::eSound::SND_BAD, 128);
         return;
     }
     // Maximum (total) number of items
@@ -672,7 +672,7 @@ static void sell_item(int itno, int qty_being_sold)
                     }
                 }
             }
-            play_effect(Audio::eSound::SND_MONEY, 128);
+            play_effect(KAudio::eSound::SND_MONEY, 128);
             remove_item(itno, qty_being_sold);
             stop = 1;
         }
@@ -766,7 +766,7 @@ static void sell_menu(void)
             {
                 yptr = 0;
             }
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.up())
         {
@@ -778,7 +778,7 @@ static void sell_menu(void)
             {
                 yptr = (NUM_ITEMS_PER_PAGE - 1);
             }
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.left())
         {
@@ -790,7 +790,7 @@ static void sell_menu(void)
             {
                 inv_page = MAX_INV / NUM_ITEMS_PER_PAGE - 1;
             }
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.right())
         {
@@ -802,7 +802,7 @@ static void sell_menu(void)
             {
                 inv_page = 0;
             }
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
@@ -863,7 +863,7 @@ int shop(int shop_num)
         return 1;
     }
 
-    play_effect(Audio::eSound::SND_MENU, 128);
+    play_effect(KAudio::eSound::SND_MENU, 128);
     while (!stop)
     {
         Game.ProcessEvents();
@@ -883,12 +883,12 @@ int shop(int shop_num)
         if (PlayerInput.left() && ptr > 0)
         {
             ptr--;
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.right() && ptr < 2)
         {
             ptr++;
-            play_effect(Audio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {

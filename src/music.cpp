@@ -26,11 +26,12 @@
  * Interfaces to SDL2_Mixer
  */
 
+#include "music.h"
 #include "disk.h"
 #include "imgcache.h"
 #include "kq.h"
-#include "music.h"
 #include "platform.h"
+#include "setup.h"
 #include <SDL_mixer.h>
 #include <algorithm>
 #include <string>
@@ -120,7 +121,7 @@ void KMusic::poll_music(void)
  */
 void KMusic::play_music(const std::string& music_name, long)
 {
-    if (is_sound == 0)
+    if (sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return;
     }
@@ -144,7 +145,7 @@ void KMusic::play_music(const std::string& music_name, long)
  */
 void KMusic::stop_music(void)
 {
-    if (is_sound == 0)
+    if (sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return;
     }
@@ -160,7 +161,7 @@ void KMusic::stop_music(void)
  */
 void KMusic::pause_music(void)
 {
-    if (is_sound == 0)
+    if (sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return;
     }
@@ -174,7 +175,7 @@ void KMusic::pause_music(void)
  */
 void KMusic::resume_music(void)
 {
-    if (is_sound == 0)
+    if (sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return;
     }
@@ -186,7 +187,7 @@ void KMusic::play_effect(int, int)
 }
 void KMusic::play_sample(void* chunk, int, int, int, int)
 {
-    if (is_sound == 0)
+    if (sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return;
     }

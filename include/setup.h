@@ -37,6 +37,17 @@ class KAudio
             SND_EXPLODE = 42,
             MAX_SAMPLES // always last
         };
+
+        enum eSoundSystem
+        {
+            NotInitialized,
+            Initialize,
+            Ready
+        };
+
+    public:
+        ~KAudio() = default;
+        KAudio();
 };
 
 /*! \file */

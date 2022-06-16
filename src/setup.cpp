@@ -50,6 +50,10 @@ using eSize::SCREEN_W;
 
 /*! \name Globals */
 
+KAudio::KAudio()
+{
+}
+
 /*! Debug level 0..3 */
 char debugging = 0;
 
@@ -176,11 +180,13 @@ void config_menu(void)
         citem(row[9], _("Cancel Key:"), kq_keyname(PlayerInput.bctrl.scancode), FNORMAL);
         citem(row[10], _("Menu Key:"), kq_keyname(PlayerInput.benter.scancode), FNORMAL);
         citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
-        citem(row[12], _("Sound System:"), is_sound ? _("ON") : _("OFF"), FNORMAL);
+
+        // Show "ON" when either initializing or ready; its color will differ below.
+        citem(row[12], _("Sound System:"), sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized ? _("ON") : _("OFF"), FNORMAL);
 
         fontColor = FNORMAL;
         /* TT: This needs to check for ==0 because 1 means sound init */
-        if (is_sound == 0)
+        if (sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
         {
             fontColor = FDARK;
         }
@@ -235,7 +241,7 @@ void config_menu(void)
         if (PlayerInput.up())
         {
             // "jump" over unusable options
-            if (ptr == 15 && is_sound == 0)
+            if (ptr == 15 && sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
             {
                 ptr -= 2;
             }
@@ -252,7 +258,7 @@ void config_menu(void)
         if (PlayerInput.down())
         {
             // "jump" over unusable options
-            if (ptr == 12 && is_sound == 0)
+            if (ptr == 12 && sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
             {
                 ptr += 2;
             }
@@ -334,38 +340,37 @@ void config_menu(void)
                 break;
             case 8:
                 getakey(PlayerInput.balt, "kalt");
-
                 break;
             case 9:
                 getakey(PlayerInput.bctrl, "kctrl");
                 break;
             case 10:
                 getakey(PlayerInput.benter, "kenter");
-
                 break;
             case 11:
                 getakey(PlayerInput.besc, "kesc");
                 break;
+
             case 12:
-                if (is_sound == 2)
+                if (sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     sound_init();
                 }
                 else
                 {
-                    if (is_sound == 0)
+                    if (sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
                     {
-                        is_sound = 1;
+                        sound_initialized_and_ready = KAudio::eSoundSystem::Initialize;
                         Draw.print_font(double_buffer, 92 + 2, 204, _("...please wait..."), FNORMAL);
                         Draw.blit2screen();
                         sound_init();
                         Music.play_music(g_map.song_file, 0);
                     }
                 }
-                Config.set_config_int(NULL, "is_sound", is_sound != 0);
+                Config.set_config_int(NULL, "is_sound", sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized);
                 break;
             case 13:
-                if (is_sound == 2)
+                if (sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     p = getavalue(_("Sound Volume"), 0, 25, gsvol / 10, true, sound_feedback);
                     if (p != -1)
@@ -384,7 +389,7 @@ void config_menu(void)
                 }
                 break;
             case 14:
-                if (is_sound == 2)
+                if (sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     p = getavalue(_("Music Volume"), 0, 25, gmvol / 10, true, music_feedback);
                     if (p != -1)
@@ -603,7 +608,7 @@ static int load_samples(void)
         "blind.wav",    "inn.wav",      "confuse.wav", "dispel.wav", "doom.wav",     "drain.wav",   "gas.wav",
         "explode.wav"
     };
-    if (is_sound == 0)
+    if (sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return 1;
     }
@@ -638,7 +643,7 @@ void parse_setup(void)
     should_stretch_view = Config.get_config_int(NULL, "stretch_view", 1) != 0;
     wait_retrace = Config.get_config_int(NULL, "wait_retrace", 1);
     show_frate = Config.get_config_int(NULL, "show_frate", 0) != 0;
-    is_sound = Config.get_config_int(NULL, "is_sound", 1);
+    sound_initialized_and_ready = Config.get_config_int(NULL, "is_sound", KAudio::eSoundSystem::Initialize);
     gmvol = Config.get_config_int(NULL, "gmvol", 250);
     gsvol = Config.get_config_int(NULL, "gsvol", 250);
     use_joy = Config.get_config_int(NULL, "use_joy", 0);
@@ -685,7 +690,7 @@ void play_effect(int efc, int panning)
 
     /* Patch provided by mattrope: */
     /* sfx array is empty if sound is not initialized */
-    if (is_sound)
+    if (sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized)
     {
         samp = sfx[efc];
     }
@@ -795,34 +800,34 @@ void show_help(void)
 }
 
 /*! \brief Initialize or shutdown sound system
- * \author JB
- * \date ????????
- * \remark On entry is_sound=1 to initialize,
- *         on exit is_sound=0 (failure) or 2 (success),
- *         is_sound=2 to shutdown,
- *         on exit is_sound=0
- * \remark 20020914 - 05:28 RB : Updated
- *  20020922 - ML : updated to use DUMB
- *  20020922 - ML : Changed to only reserving 8 voices. (32 seemed over-kill?)
+ *
+ * If sound_initialized_and_ready == eSoundSystem::Initialize on entry,
+ * then we want to initialize the sound system.
+ * - sound_initialized_and_ready will be set either to:
+ *   eSoundSystem::NotInitialized (failure) or
+ *   eSoundSystem::Ready (success)
+ *
+ * If sound_initialized_and_ready == eSoundSystem::Ready on entry,
+ * then we want to shut down the sound system.
+ * - sound_initialized_and_ready will be set to: eSoundSystem::NotInitialized
  */
 void sound_init(void)
 {
     if (!sound_avail)
     {
-        is_sound = 0;
+        sound_initialized_and_ready = KAudio::eSoundSystem::NotInitialized;
         return;
     }
-    switch (is_sound)
+    switch (sound_initialized_and_ready)
     {
-    case 1:
+    case KAudio::eSoundSystem::Initialize:
         Music.init_music();
-        is_sound = load_samples() ? 0 : 2; /* load the wav files */
+        sound_initialized_and_ready = load_samples() ? KAudio::eSoundSystem::NotInitialized : KAudio::eSoundSystem::Ready; /* load the wav files */
         break;
-    case 2:
-        /* TT: We forgot to add this line, causing phantom music to loop */
+    case KAudio::eSoundSystem::Ready:
         Music.stop_music();
         Music.free_samples();
-        is_sound = 0;
+        sound_initialized_and_ready = KAudio::eSoundSystem::NotInitialized;
         break;
     }
 }
