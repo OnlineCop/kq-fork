@@ -44,7 +44,8 @@ class tmx_layer
 {
   public:
     tmx_layer(int w, int h)
-        : width(w)
+        : name("")
+        , width(w)
         , height(h)
         , size(w * h)
         , data(new uint32_t[size])

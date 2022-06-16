@@ -416,7 +416,7 @@ void KDraw::draw_char()
              * are moving diagonally. If so, we need to draw both layers 1&2 on
              * the correct tile, which helps correct diagonal movement artifacts.
              * We also need to ensure that the target coords has SOMETHING in the
-             * o_seg[] portion, else there will be graphical glitches.
+             * obstacle_array[] portion, else there will be graphical glitches.
              */
             if (fighter_index == 0 && g_ent[0].moving)
             {
@@ -530,7 +530,7 @@ void KDraw::draw_forelayer(void)
             if (debugging > 3)
             {
                 // Obstacles
-                if (o_seg[here] == 1)
+                if (Game.Map.obstacle_array[here] == eObstacle::BLOCK_ALL)
                 {
                     draw_sprite(double_buffer, obj_mesh, x * 16 - box.x_offset, y * 16 - box.y_offset);
                 }

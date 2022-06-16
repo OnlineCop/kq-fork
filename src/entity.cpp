@@ -618,8 +618,8 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
     dest_y = origin_y + move_y;
 
     // Check the current and target tiles' obstacles
-    current_tile = o_seg[(origin_y * g_map.xsize) + origin_x];
-    target_tile = o_seg[(dest_y * g_map.xsize) + dest_x];
+    current_tile = Game.Map.obstacle_array[(origin_y * g_map.xsize) + origin_x];
+    target_tile = Game.Map.obstacle_array[(dest_y * g_map.xsize) + dest_x];
 
     // Return early if the destination tile is an obstruction
     if (target_tile == BLOCK_ALL)

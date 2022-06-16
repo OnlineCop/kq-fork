@@ -88,6 +88,15 @@ class KTime
     int value;
 };
 
+class KMap
+{
+  public:
+    ~KMap() = default;
+    KMap();
+    
+    std::vector<eObstacle> obstacle_array;
+};
+
 class KGame
 {
   public:
@@ -401,6 +410,7 @@ class KGame
     int game_time;
     bool want_console = false;
 
+    KMap Map;
   protected:
     /*! Name of the current map */
     string m_curmap;
@@ -432,7 +442,7 @@ extern Raster* shadow[MAX_SHADOWS];
 extern uint16_t *map_seg, *b_seg, *f_seg;
 
 /*! Zone, shadow and obstacle layers */
-extern uint8_t *z_seg, *s_seg, *o_seg;
+extern uint8_t *z_seg, *s_seg;
 
 /*! Tasks completed */
 extern uint8_t progress[SIZE_PROGRESS];

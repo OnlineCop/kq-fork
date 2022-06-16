@@ -130,7 +130,7 @@ static void copy_map(int* map)
         {
             index = y * g_map.xsize + x;
 
-            if (o_seg[index] != BLOCK_NONE)
+            if (Game.Map.obstacle_array[index] != eObstacle::BLOCK_NONE)
             {
                 map[index] = -1;
             }

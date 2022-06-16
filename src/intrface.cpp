@@ -1616,7 +1616,7 @@ static int KQ_copy_tile_all(lua_State* L)
             f_seg[od] = f_seg[os];
             b_seg[od] = b_seg[os];
             z_seg[od] = z_seg[os];
-            o_seg[od] = o_seg[os];
+            Game.Map.obstacle_array[od] = Game.Map.obstacle_array[os];
             s_seg[od] = s_seg[os];
         }
     }
@@ -4378,7 +4378,7 @@ static void set_zone(int x, int y, int value)
 
 static void set_obs(int x, int y, int value)
 {
-    o_seg[y * g_map.xsize + x] = value;
+    Game.Map.obstacle_array[y * g_map.xsize + x] = static_cast<eObstacle>(value);
 }
 
 static void set_shadow(int x, int y, int value)

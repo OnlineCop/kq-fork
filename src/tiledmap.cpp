@@ -657,16 +657,13 @@ void tmx_map::set_current()
         {
             // Obstacles
             unsigned short obstacle_offset = find_tileset("obstacles").firstgid - 1;
-            free(o_seg);
-            auto sptr = o_seg = static_cast<unsigned char*>(calloc(layer.size, sizeof(*o_seg)));
-
-            for (auto t : layer)
+            Game.Map.obstacle_array.assign(layer.size, {});
+            for (int i = 0; i < layer.size; ++i)
             {
-                if (t > 0)
+                if (layer.data[i] > eObstacle::BLOCK_NONE)
                 {
-                    t -= obstacle_offset;
+                    Game.Map.obstacle_array[i] = static_cast<eObstacle>(layer.data[i] - obstacle_offset);
                 }
-                *sptr++ = static_cast<unsigned char>(t);
             }
         }
     }
