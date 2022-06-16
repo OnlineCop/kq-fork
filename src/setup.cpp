@@ -63,8 +63,6 @@ static void* sfx[MAX_SAMPLES];
 static int load_samples(void);
 static int getavalue(const char*, int, int, int, bool, void (*)(int));
 static bool getakey(KPlayerInput::button&, const char*);
-static void parse_allegro_setup(void);
-static void parse_jb_setup(void);
 
 /*! \brief Play sound effects / music if adjusting it */
 static void sound_feedback(int val)
@@ -616,50 +614,15 @@ static int load_samples(void)
     return 0;
 }
 
-/*! \brief Parse allegro file kq.cfg
+/*! \brief Parse setup file
  *
- * This is like parse_setup(), but using Allegro format files
- *
- * \author PH
  * \date 20030831
+ * \author PH
  */
-static void parse_allegro_setup(void)
+void parse_setup(void)
 {
-    const string cfg = kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str();
+    const string cfg = kqres(eDirectories::SETTINGS_DIR, "kq.cfg");
 
-    if (!Disk.exists(cfg.c_str()))
-    {
-        /* config file does not exist. Fall back to setup.cfg */
-        /* Transitional code */
-        parse_jb_setup();
-        Config.push_config_state();
-        Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str());
-
-        Config.set_config_int(NULL, "skip_intro", skip_intro);
-        Config.set_config_int(NULL, "windowed", windowed);
-
-        Config.set_config_int(NULL, "stretch_view", should_stretch_view);
-        Config.set_config_int(NULL, "show_frate", show_frate);
-        Config.set_config_int(NULL, "is_sound", is_sound);
-        Config.set_config_int(NULL, "use_joy", use_joy);
-        Config.set_config_int(NULL, "slow_computer", slow_computer);
-
-        Config.set_config_int(NULL, "kup", PlayerInput.up.scancode);
-        Config.set_config_int(NULL, "kdown", PlayerInput.down.scancode);
-        Config.set_config_int(NULL, "kleft", PlayerInput.left.scancode);
-        Config.set_config_int(NULL, "kright", PlayerInput.right.scancode);
-        Config.set_config_int(NULL, "kesc", PlayerInput.besc.scancode);
-        Config.set_config_int(NULL, "kalt", PlayerInput.balt.scancode);
-        Config.set_config_int(NULL, "kctrl", PlayerInput.bctrl.scancode);
-        Config.set_config_int(NULL, "kenter", PlayerInput.benter.scancode);
-
-#ifdef DEBUGMODE
-        Config.set_config_int(NULL, "debugging", debugging);
-#endif
-
-        Config.pop_config_state();
-        return;
-    }
     Config.push_config_state();
     Config.set_config_file(cfg.c_str());
 
@@ -694,165 +657,6 @@ static void parse_allegro_setup(void)
     PlayerInput.bctrl.scancode = Config.get_config_int(NULL, "kctrl", SDL_SCANCODE_LCTRL);
     PlayerInput.benter.scancode = Config.get_config_int(NULL, "kenter", SDL_SCANCODE_RETURN);
     Config.pop_config_state();
-}
-
-/*! \brief Parse setup.cfg
- *
- * Read settings from file
- * Parse the setup.cfg file for key configurations.
- * This file would also contain sound options, but that
- * isn't necessary right now.
- *
- * Remember that setup.cfg is found in the /saves dir!
- */
-static void parse_jb_setup(void)
-{
-    FILE* s;
-    int dab = 0;
-
-    /* Default key assignments */
-    PlayerInput.up.scancode = SDL_SCANCODE_UP;
-    PlayerInput.down.scancode = SDL_SCANCODE_DOWN;
-    PlayerInput.right.scancode = SDL_SCANCODE_RIGHT;
-    PlayerInput.left.scancode = SDL_SCANCODE_LEFT;
-    PlayerInput.balt.scancode = SDL_SCANCODE_LALT;
-    PlayerInput.bctrl.scancode = SDL_SCANCODE_LCTRL;
-    PlayerInput.benter.scancode = SDL_SCANCODE_RETURN;
-    PlayerInput.besc.scancode = SDL_SCANCODE_ESCAPE;
-    /* PH Why in the world doesn't he use Allegro cfg functions here? */
-    if (!(s = fopen(kqres(eDirectories::SETTINGS_DIR, "setup.cfg").c_str(), "r")))
-    {
-        Game.klog(_("Could not open saves/setup.cfg - Using defaults."));
-        return;
-    }
-    fscanf(s, "%s", strbuf);
-    while (!feof(s))
-    {
-        if (strbuf[0] == '#')
-        {
-            fgets(strbuf, 254, s);
-        }
-#ifdef KQ_CHEATS
-        if (!strcmp(strbuf, "cheat"))
-        {
-            fscanf(s, "%d", &dab);
-            cheat = dab;
-        }
-#endif
-        if (!strcmp(strbuf, "debug"))
-        {
-            fscanf(s, "%d", &dab);
-            debugging = dab;
-        }
-        if (!strcmp(strbuf, "intro"))
-        {
-            fscanf(s, "%s", strbuf);
-            if (!strcmp(strbuf, "no"))
-            {
-                skip_intro = 1;
-            }
-        }
-        if (!strcmp(strbuf, "windowed"))
-        {
-            fscanf(s, "%s", strbuf);
-            if (!strcmp(strbuf, "yes"))
-            {
-                windowed = 1;
-            }
-        }
-        if (!strcmp(strbuf, "stretch"))
-        {
-            fscanf(s, "%s", strbuf);
-            if (!strcmp(strbuf, "yes"))
-            {
-                should_stretch_view = true;
-            }
-        }
-        if (!strcmp(strbuf, "framerate"))
-        {
-            fscanf(s, "%s", strbuf);
-            if (!strcmp(strbuf, "on"))
-            {
-                show_frate = true;
-            }
-        }
-        if (!strcmp(strbuf, "sound"))
-        {
-            fscanf(s, "%s", strbuf);
-            if (!strcmp(strbuf, "off"))
-            {
-                is_sound = 0;
-            }
-        }
-        if (!strcmp(strbuf, "joystick"))
-        {
-            fscanf(s, "%s", strbuf);
-            if (!strcmp(strbuf, "no"))
-            {
-                use_joy = 0;
-            }
-        }
-        if (!strcmp(strbuf, "slow_computer"))
-        {
-            fscanf(s, "%s", strbuf);
-            if (!strcmp(strbuf, "yes"))
-            {
-                slow_computer = 1;
-            }
-        }
-        if (!strcmp(strbuf, "rightkey"))
-        {
-            fscanf(s, "%s", strbuf);
-            PlayerInput.right.scancode = atoi(strbuf);
-        }
-        if (!strcmp(strbuf, "leftkey"))
-        {
-            fscanf(s, "%s", strbuf);
-            PlayerInput.left.scancode = atoi(strbuf);
-        }
-        if (!strcmp(strbuf, "upkey"))
-        {
-            fscanf(s, "%s", strbuf);
-            PlayerInput.up.scancode = atoi(strbuf);
-        }
-        if (!strcmp(strbuf, "downkey"))
-        {
-            fscanf(s, "%s", strbuf);
-            PlayerInput.down.scancode = atoi(strbuf);
-        }
-        if (!strcmp(strbuf, "sysmenukey"))
-        {
-            fscanf(s, "%s", strbuf);
-            PlayerInput.besc.scancode = atoi(strbuf);
-        }
-        if (!strcmp(strbuf, "cancelkey"))
-        {
-            fscanf(s, "%s", strbuf);
-            PlayerInput.bctrl.scancode = atoi(strbuf);
-        }
-        if (!strcmp(strbuf, "confirmkey"))
-        {
-            fscanf(s, "%s", strbuf);
-            PlayerInput.balt.scancode = atoi(strbuf);
-        }
-        if (!strcmp(strbuf, "chrmenukey"))
-        {
-            fscanf(s, "%s", strbuf);
-            PlayerInput.benter.scancode = atoi(strbuf);
-        }
-        fscanf(s, "%s", strbuf);
-    }
-    fclose(s);
-}
-
-/*! \brief Parse setup file
- *
- * \date 20030831
- * \author PH
- */
-void parse_setup(void)
-{
-    parse_allegro_setup();
 }
 
 /*! \brief Play sample effect
