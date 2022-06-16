@@ -30,8 +30,8 @@ class KMusic
     void shutdown_music(void);
     void poll_music(void);
 
-    void set_music_volume(float volume);
-    void set_volume(float vol, int);
+    void set_music_volume(int volume);
+    void set_volume(int volume);
 
     void play_music(const std::string& music_name, long position);
     void pause_music(void);
@@ -41,6 +41,10 @@ class KMusic
     void play_effect(int, int);
     void play_sample(void*, int, int, int, int);
     void free_samples();
+
+  private:
+    float mvol = 1.0f;
+    float dvol = 1.0f;
 };
 
 extern KMusic Music;

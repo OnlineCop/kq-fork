@@ -88,12 +88,16 @@ void KMusic::shutdown_music(void)
  *
  * Sets the volume of the currently playing music.
  *
- * \param   volume 0 (silent) to 100 (loudest)
+ * \param   volume 0 (silent) to 250 (loudest)
  */
-void KMusic::set_music_volume(float volume)
+void KMusic::set_music_volume(int volume)
 {
-    int ivol = int(volume * float(MIX_MAX_VOLUME));
-    Mix_VolumeMusic(ivol);
+    float v = float(volume) / 250.0f;
+    if (v >= 0.0f && v <= 1.0f)
+    {
+        mvol = v;
+        Mix_VolumeMusic(int(dvol * mvol * float(MIX_MAX_VOLUME)));
+    }
 }
 
 /*! \brief Poll the music  (SDL2_Mixer)
@@ -191,8 +195,18 @@ void KMusic::play_sample(void* chunk, int, int, int, int)
     }
     Mix_PlayChannel(-1, reinterpret_cast<Mix_Chunk*>(chunk), 0);
 }
-void KMusic::set_volume(float, int)
+/* \brief Set overall sound volume.
+ * \param   volume 0 (silent) to 250 (loudest)
+ */
+void KMusic::set_volume(int sound_volume)
 {
+    float v = float(sound_volume) / 250.0f;
+    if (v >= 0.0f && v <= 1.0f)
+    {
+        dvol = v;
+        Mix_Volume(-1, int(128.0f * dvol));
+        Mix_VolumeMusic(int(dvol * mvol * float(MIX_MAX_VOLUME)));
+    }
 }
 KMusic Music;
 

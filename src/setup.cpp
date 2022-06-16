@@ -69,12 +69,12 @@ static void parse_jb_setup(void);
 /*! \brief Play sound effects / music if adjusting it */
 static void sound_feedback(int val)
 {
-    Music.set_volume(val * 10, 0);
+    Music.set_volume(val * 10);
     Music.play_effect(1, 127);
 }
 static void music_feedback(int val)
 {
-    Music.set_music_volume(float(val * 10) / 250.0f);
+    Music.set_music_volume(val);
 }
 
 /*! \brief Draw a setting and its title
@@ -376,7 +376,7 @@ void config_menu(void)
                     }
 
                     /* make sure to set it no matter what */
-                    Music.set_volume(gsvol, 0);
+                    Music.set_volume(gsvol);
                     Config.set_config_int(NULL, "gsvol", gsvol);
                 }
                 else
@@ -395,7 +395,7 @@ void config_menu(void)
                     }
 
                     /* make sure to set it no matter what */
-                    Music.set_music_volume(gmvol / 250.0);
+                    Music.set_music_volume(gmvol);
                     Config.set_config_int(NULL, "gmvol", gmvol);
                 }
                 else

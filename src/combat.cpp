@@ -717,7 +717,7 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
 
     /*  RB: do the zoom at the beginning of the combat.  */
     Music.pause_music();
-    Music.set_music_volume((gmvol / 250.0) * 0.75);
+    Music.set_music_volume(gmvol * 3 / 4);
     Music.play_music(mus, 0);
 
     /* TT TODO:
@@ -744,7 +744,7 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
 
     /*  RB: execute combat  */
     do_round();
-    Music.set_music_volume(gmvol / 250.0);
+    Music.set_music_volume(gmvol);
     Music.resume_music();
     if (alldead)
     {
