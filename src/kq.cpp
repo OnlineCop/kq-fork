@@ -983,6 +983,7 @@ int main(int argc, char* argv[])
                 if (Game.want_console)
                 {
                     Game.want_console = false;
+                    Game.wait_released();
                     run_console();
                 }
                 if (PlayerInput.besc())
@@ -1454,6 +1455,25 @@ void KGame::extra_controls()
         want_console = true;
     }
 #endif
+}
+void KGame::wait_released()
+{
+    bool any = true;
+    while (any)
+    {
+        ProcessEvents();
+        int count;
+        auto key = SDL_GetKeyboardState(&count);
+        any = false;
+        for (int i = 0; i < count; ++i)
+        {
+            if (key[i])
+            {
+                any = true;
+                break;
+            }
+        }
+    }
 }
 void KGame::wait_enter(void)
 {

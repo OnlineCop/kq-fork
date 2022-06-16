@@ -449,6 +449,8 @@ void config_menu(void)
  */
 static bool getakey(KPlayerInput::button& b, const char* cfg)
 {
+    // Wait for all keys to be released
+    Game.wait_released();
     Draw.menubox(double_buffer, 108, 108, 11, 1, DARKBLUE);
     Draw.print_font(double_buffer, 116, 116, _("Press a key"), FNORMAL);
     Draw.blit2screen();
