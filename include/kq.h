@@ -388,6 +388,10 @@ class KGame
      * This is for things like debugging
      */
     void extra_controls();
+    /*! Wait for keyboard release.
+     * Process events and don't return until all keys are released
+     */
+    void wait_released();
 
   public:
     const string WORLD_MAP;
