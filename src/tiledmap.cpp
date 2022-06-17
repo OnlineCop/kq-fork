@@ -1,13 +1,5 @@
-#include <algorithm>
-#include <map>
-#include <string>
-#include <tinyxml2.h>
-#include <vector>
-using std::map;
-#include <memory>
-using std::make_shared;
-#include <iterator>
-#define ZLIB_CONST
+#include "tiledmap.h"
+
 #include "animation.h"
 #include "enums.h"
 #include "fade.h"
@@ -15,15 +7,27 @@ using std::make_shared;
 #include "kq.h"
 #include "platform.h"
 #include "structs.h"
-#include "tiledmap.h"
+
+#include <algorithm>
+#include <iterator>
+#include <map>
+#include <memory>
+#include <string>
+#include <tinyxml2.h>
+#include <vector>
+
+#define ZLIB_CONST // needed in uncompress() for 'reinterpret_cast<z_const Bytef*>(data.data())'
 #include <zlib.h>
 
+using std::make_shared;
 using std::map;
 using std::string;
 using std::unique_ptr;
 using std::vector;
+
 using namespace tinyxml2;
 using namespace eSize;
+
 KTiledMap TiledMap;
 
 // Compatibility as VC insists we use these for safety
