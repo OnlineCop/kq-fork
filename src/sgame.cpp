@@ -190,11 +190,11 @@ int KSaveGame::load_game(void)
 {
     sprintf(strbuf, "sg%d.xml", save_ptr);
     Disk.load_game_from_file(kqres(eDirectories::SAVE_DIR, strbuf).c_str());
-    hold_fade = 0;
-    Game.change_map(Game.GetCurmap(), g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
     /* Set music and sound volume */
     Music.set_volume(gsvol);
     Music.set_music_volume(gmvol);
+    hold_fade = 0;
+    Game.change_map(Game.GetCurmap(), g_ent[0].tilex, g_ent[0].tiley, g_ent[0].tilex, g_ent[0].tiley);
     return 1;
 }
 
