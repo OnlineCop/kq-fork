@@ -97,6 +97,10 @@ void KMusic::shutdown_music(void)
  */
 void KMusic::set_music_volume(int volume)
 {
+    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    {
+        return;
+    }
     mvol = float(std::clamp(volume, 0, 250)) / 250.0f;
     Mix_VolumeMusic(int(dvol * mvol * float(MIX_MAX_VOLUME)));
 }
@@ -203,6 +207,10 @@ void KMusic::play_sample(void* chunk, int, int, int, int)
  */
 void KMusic::set_volume(int sound_volume)
 {
+    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    {
+        return;
+    }
     dvol = float(std::clamp(sound_volume, 0, 250)) / 250.0f;
     Mix_Volume(-1, int(128.0f * dvol));
     Mix_VolumeMusic(int(dvol * mvol * float(MIX_MAX_VOLUME)));
