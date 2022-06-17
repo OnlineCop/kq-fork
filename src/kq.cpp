@@ -126,9 +126,6 @@ uint8_t autoparty = 0;
 /*! Are all heroes dead? */
 uint8_t alldead = 0;
 
-/*! Is sound activated/available? */
-uint8_t sound_initialized_and_ready = KAudio::eSoundSystem::Initialize, sound_avail;
-
 /*! Makes is_active() return TRUE even if the character is dead */
 uint8_t deadeffect = 0;
 
@@ -807,7 +804,7 @@ void KGame::deallocate_stuff(void)
         free(strbuf);
     }
 
-    if (sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized)
+    if (Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized)
     {
         Music.shutdown_music();
         Music.free_samples();
@@ -1265,8 +1262,8 @@ void KGame::startup(void)
 
     start_timer(KQ_TICKS);
 
-    sound_avail = Mix_Init(MIX_INIT_MOD) != 0;
-    if (!sound_avail)
+    Audio.sound_system_avail = Mix_Init(MIX_INIT_MOD) != 0;
+    if (!Audio.sound_system_avail)
     {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, _("Error with sound: %s\n"), Mix_GetError());
     }

@@ -48,11 +48,13 @@ class KAudio
     public:
         ~KAudio() = default;
         KAudio();
+
+        eSoundSystem sound_initialized_and_ready;
+        bool sound_system_avail;
 };
 
-/*! \file */
+extern KAudio Audio;
 
-/*  This is in addition to setup.c:  */
 void parse_setup(void);
 void config_menu(void);
 void show_help(void);

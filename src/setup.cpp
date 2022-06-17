@@ -51,8 +51,12 @@ using eSize::SCREEN_W;
 /*! \name Globals */
 
 KAudio::KAudio()
+    : sound_initialized_and_ready{KAudio::eSoundSystem::NotInitialized}
+    , sound_system_avail{false}
 {
 }
+
+KAudio Audio;
 
 /*! Debug level 0..3 */
 char debugging = 0;
@@ -74,6 +78,7 @@ static void sound_feedback(int val)
     Music.set_volume(val * 10);
     Music.play_effect(1, 127);
 }
+
 static void music_feedback(int val)
 {
     Music.set_music_volume(val);
@@ -182,11 +187,11 @@ void config_menu(void)
         citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
 
         // Show "ON" when either initializing or ready; its color will differ below.
-        citem(row[12], _("Sound System:"), sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized ? _("ON") : _("OFF"), FNORMAL);
+        citem(row[12], _("Sound System:"), Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized ? _("ON") : _("OFF"), FNORMAL);
 
         fontColor = FNORMAL;
         /* TT: This needs to check for ==0 because 1 means sound init */
-        if (sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+        if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
         {
             fontColor = FDARK;
         }
@@ -241,7 +246,7 @@ void config_menu(void)
         if (PlayerInput.up())
         {
             // "jump" over unusable options
-            if (ptr == 15 && sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+            if (ptr == 15 && Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
             {
                 ptr -= 2;
             }
@@ -258,7 +263,7 @@ void config_menu(void)
         if (PlayerInput.down())
         {
             // "jump" over unusable options
-            if (ptr == 12 && sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+            if (ptr == 12 && Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
             {
                 ptr += 2;
             }
@@ -352,25 +357,25 @@ void config_menu(void)
                 break;
 
             case 12:
-                if (sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
+                if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     sound_init();
                 }
                 else
                 {
-                    if (sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+                    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
                     {
-                        sound_initialized_and_ready = KAudio::eSoundSystem::Initialize;
+                        Audio.sound_initialized_and_ready = KAudio::eSoundSystem::Initialize;
                         Draw.print_font(double_buffer, 92 + 2, 204, _("...please wait..."), FNORMAL);
                         Draw.blit2screen();
                         sound_init();
                         Music.play_music(g_map.song_file, 0);
                     }
                 }
-                Config.set_config_int(NULL, "is_sound", sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized);
+                Config.set_config_int(NULL, "is_sound", Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized);
                 break;
             case 13:
-                if (sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
+                if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     p = getavalue(_("Sound Volume"), 0, 25, gsvol / 10, true, sound_feedback);
                     if (p != -1)
@@ -389,7 +394,7 @@ void config_menu(void)
                 }
                 break;
             case 14:
-                if (sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
+                if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     p = getavalue(_("Music Volume"), 0, 25, gmvol / 10, true, music_feedback);
                     if (p != -1)
@@ -575,10 +580,12 @@ const char* kq_keyname(int scancode)
     auto kc = SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode));
     return SDL_GetKeyName(kc);
 }
+
 struct Mix_ChunkLoader
 {
     Mix_Chunk* operator()(const std::string&);
 };
+
 struct Mix_ChunkDeleter
 {
     void operator()(Mix_Chunk*);
@@ -608,7 +615,7 @@ static int load_samples(void)
         "blind.wav",    "inn.wav",      "confuse.wav", "dispel.wav", "doom.wav",     "drain.wav",   "gas.wav",
         "explode.wav"
     };
-    if (sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return 1;
     }
@@ -643,7 +650,7 @@ void parse_setup(void)
     should_stretch_view = Config.get_config_int(NULL, "stretch_view", 1) != 0;
     wait_retrace = Config.get_config_int(NULL, "wait_retrace", 1);
     show_frate = Config.get_config_int(NULL, "show_frate", 0) != 0;
-    sound_initialized_and_ready = Config.get_config_int(NULL, "is_sound", KAudio::eSoundSystem::Initialize);
+    Audio.sound_initialized_and_ready = (KAudio::eSoundSystem)Config.get_config_int(NULL, "is_sound", KAudio::eSoundSystem::Initialize);
     gmvol = Config.get_config_int(NULL, "gmvol", 250);
     gsvol = Config.get_config_int(NULL, "gsvol", 250);
     use_joy = Config.get_config_int(NULL, "use_joy", 0);
@@ -690,7 +697,7 @@ void play_effect(int efc, int panning)
 
     /* Patch provided by mattrope: */
     /* sfx array is empty if sound is not initialized */
-    if (sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized)
+    if (Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized)
     {
         samp = sfx[efc];
     }
@@ -813,21 +820,21 @@ void show_help(void)
  */
 void sound_init(void)
 {
-    if (!sound_avail)
+    if (!Audio.sound_system_avail)
     {
-        sound_initialized_and_ready = KAudio::eSoundSystem::NotInitialized;
+        Audio.sound_initialized_and_ready = KAudio::eSoundSystem::NotInitialized;
         return;
     }
-    switch (sound_initialized_and_ready)
+    switch (Audio.sound_initialized_and_ready)
     {
     case KAudio::eSoundSystem::Initialize:
         Music.init_music();
-        sound_initialized_and_ready = load_samples() ? KAudio::eSoundSystem::NotInitialized : KAudio::eSoundSystem::Ready; /* load the wav files */
+        Audio.sound_initialized_and_ready = load_samples() ? KAudio::eSoundSystem::NotInitialized : KAudio::eSoundSystem::Ready; /* load the wav files */
         break;
     case KAudio::eSoundSystem::Ready:
         Music.stop_music();
         Music.free_samples();
-        sound_initialized_and_ready = KAudio::eSoundSystem::NotInitialized;
+        Audio.sound_initialized_and_ready = KAudio::eSoundSystem::NotInitialized;
         break;
     }
 }
