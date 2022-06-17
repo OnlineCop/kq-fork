@@ -81,7 +81,7 @@ static void sound_feedback(int val)
 
 static void music_feedback(int val)
 {
-    Music.set_music_volume(val);
+    Music.set_music_volume(val * 10);
 }
 
 /*! \brief Draw a setting and its title
@@ -581,18 +581,6 @@ const char* kq_keyname(int scancode)
     return SDL_GetKeyName(kc);
 }
 
-struct Mix_ChunkLoader
-{
-    Mix_Chunk* operator()(const std::string&);
-};
-
-struct Mix_ChunkDeleter
-{
-    void operator()(Mix_Chunk*);
-};
-
-static Cache<Mix_Chunk, Mix_ChunkLoader, Mix_ChunkDeleter> sample_cache;
-
 /*! \brief Load sample files
  * \author JB
  * \date ????????
@@ -830,6 +818,8 @@ void sound_init(void)
     case KAudio::eSoundSystem::Initialize:
         Music.init_music();
         Audio.sound_initialized_and_ready = load_samples() ? KAudio::eSoundSystem::NotInitialized : KAudio::eSoundSystem::Ready; /* load the wav files */
+        Music.set_volume(gsvol);
+        Music.set_music_volume(gmvol);
         break;
     case KAudio::eSoundSystem::Ready:
         Music.stop_music();
