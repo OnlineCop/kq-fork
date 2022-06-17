@@ -245,7 +245,7 @@ void KMenu::menu(void)
 {
     int stop = 0, ptr = 0, z = -1;
 
-    play_effect(SND_MENU, 128);
+    play_effect(Audio::eSound::SND_MENU, 128);
     while (!stop)
     {
         Game.ProcessEvents();
@@ -262,7 +262,7 @@ void KMenu::menu(void)
             {
                 ptr = 5;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.down())
         {
@@ -271,7 +271,7 @@ void KMenu::menu(void)
             {
                 ptr = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         /* Allow player to rearrange the party at any time by pressing LEFT */
         if (PlayerInput.left())
@@ -345,7 +345,7 @@ void KMenu::display_quest_window(void)
     if (quest_list.size() == 0)
     {
         /* There was nothing.. */
-        play_effect(SND_BAD, 128);
+        play_effect(Audio::eSound::SND_BAD, 128);
         return;
     }
 
@@ -417,7 +417,7 @@ void KMenu::display_quest_window(void)
         // If player pressed any of the inputs, newSelectedQuest will have changed.
         if (newSelectedQuest != (int)currentQuestSelected)
         {
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
 
         // Positive modulus: Keep the selected quest
@@ -502,10 +502,10 @@ void KMenu::spec_items(void)
 
     if (num_items == 0)
     {
-        play_effect(SND_BAD, 128);
+        play_effect(Audio::eSound::SND_BAD, 128);
         return;
     }
-    play_effect(SND_MENU, 128);
+    play_effect(Audio::eSound::SND_MENU, 128);
     while (!stop)
     {
         Game.ProcessEvents();
@@ -533,12 +533,12 @@ void KMenu::spec_items(void)
         if (PlayerInput.down())
         {
             ptr = (ptr + 1) % num_items;
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.up())
         {
             ptr = (ptr - 1 + num_items) % num_items;
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.bctrl())
         {
@@ -559,7 +559,7 @@ void KMenu::status_screen(size_t fighter_index)
     uint32_t rect_fill_amount = 0, curr_fill, res_index, stats_y, equipment_index;
     size_t pidx_index, stats_index;
 
-    play_effect(SND_MENU, 128);
+    play_effect(Audio::eSound::SND_MENU, 128);
     pidx_index = pidx[fighter_index];
     update_equipstats();
     while (!stop)
@@ -677,17 +677,17 @@ void KMenu::status_screen(size_t fighter_index)
         {
             fighter_index--;
             pidx_index = pidx[fighter_index];
-            play_effect(SND_MENU, 128);
+            play_effect(Audio::eSound::SND_MENU, 128);
         }
         if (PlayerInput.right() && fighter_index < numchrs - 1)
         {
             fighter_index++;
             pidx_index = pidx[fighter_index];
-            play_effect(SND_MENU, 128);
+            play_effect(Audio::eSound::SND_MENU, 128);
         }
         if (PlayerInput.bctrl())
         {
-            play_effect(SND_MENU, 128);
+            play_effect(Audio::eSound::SND_MENU, 128);
             stop = 1;
         }
     }

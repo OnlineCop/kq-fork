@@ -252,7 +252,7 @@ int KSaveGame::saveload(int am_saving)
     // Have no more than 5 savestate boxes onscreen, but fewer if NUMSG < 5
     max_onscreen = std::min(5, NUMSG);
 
-    play_effect(SND_MENU, 128);
+    play_effect(KAudio::eSound::SND_MENU, 128);
     while (!stop)
     {
         Game.ProcessEvents();
@@ -279,7 +279,7 @@ int KSaveGame::saveload(int am_saving)
                 top_pointer = NUMSG - max_onscreen;
             }
 
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.down())
         {
@@ -299,7 +299,7 @@ int KSaveGame::saveload(int am_saving)
                 top_pointer = 0;
             }
 
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.right())
         {
@@ -591,7 +591,7 @@ int KSaveGame::start_menu(bool skip_splash)
             {
                 ptr = 3;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
             redraw = 1;
         }
         if (PlayerInput.down())
@@ -604,7 +604,7 @@ int KSaveGame::start_menu(bool skip_splash)
             {
                 ptr = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
             redraw = 1;
         }
         if (PlayerInput.balt())
@@ -708,7 +708,7 @@ int KSaveGame::system_menu(void)
             {
                 ptr = 3;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         else if (PlayerInput.down())
         {
@@ -716,7 +716,7 @@ int KSaveGame::system_menu(void)
             {
                 ptr = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
 
         if (PlayerInput.balt())
@@ -735,7 +735,7 @@ int KSaveGame::system_menu(void)
                 }
                 else
                 {
-                    play_effect(SND_BAD, 128);
+                    play_effect(KAudio::eSound::SND_BAD, 128);
                 }
             }
 

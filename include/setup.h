@@ -21,21 +21,25 @@
 
 #pragma once
 
+class KAudio
+{
+    public:
+        enum eSound
+        {
+            SND_MENU = 0,
+            SND_CLICK = 1,
+            SND_BAD = 2,
+            SND_ITEM = 3,
+            SND_EQUIP = 4,
+            SND_UNEQUIP = 5,
+            SND_MONEY = 6,
+            SND_TWINKLE = 7,
+            SND_EXPLODE = 42,
+            MAX_SAMPLES // always last
+        };
+};
+
 /*! \file */
-
-/*  RB IDEA: We can use the COUNT definition of the new datafile  */
-/*           dump rather than hardcoding the value here.          */
-#define MAX_SAMPLES 43
-
-#define SND_MENU 0
-#define SND_CLICK 1
-#define SND_BAD 2
-#define SND_ITEM 3
-#define SND_EQUIP 4
-#define SND_UNEQUIP 5
-#define SND_MONEY 6
-#define SND_TWINKLE 7
-#define SND_EXPLODE 42
 
 /*  This is in addition to setup.c:  */
 void parse_setup(void);

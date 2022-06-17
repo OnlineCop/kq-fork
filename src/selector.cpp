@@ -348,12 +348,12 @@ static eMiniMenu mini_menu(int omask)
             if (cp == MM_OPTIONS_LEAVE)
             {
                 cp = MM_OPTIONS_JOIN;
-                play_effect(SND_CLICK, 128);
+                play_effect(KAudio::eSound::SND_CLICK, 128);
             }
             else if (cp == MM_OPTIONS_LEAD)
             {
                 cp = MM_OPTIONS_LEAVE;
-                play_effect(SND_CLICK, 128);
+                play_effect(KAudio::eSound::SND_CLICK, 128);
             }
             else
             {
@@ -365,12 +365,12 @@ static eMiniMenu mini_menu(int omask)
         {
             if (cp == MM_OPTIONS_JOIN)
             {
-                play_effect(SND_CLICK, 128);
+                play_effect(KAudio::eSound::SND_CLICK, 128);
                 cp = MM_OPTIONS_LEAVE;
             }
             else if (cp == MM_OPTIONS_LEAVE)
             {
-                play_effect(SND_CLICK, 128);
+                play_effect(KAudio::eSound::SND_CLICK, 128);
                 cp = MM_OPTIONS_LEAD;
             }
             else
@@ -390,7 +390,7 @@ static eMiniMenu mini_menu(int omask)
             }
             else
             {
-                play_effect(SND_BAD, 128);
+                play_effect(KAudio::eSound::SND_BAD, 128);
             }
         }
     }
@@ -549,7 +549,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
                 {
                     ptr--;
                 }
-                play_effect(SND_CLICK, 128);
+                play_effect(KAudio::eSound::SND_CLICK, 128);
             }
             if (PlayerInput.down())
             {
@@ -557,7 +557,7 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
                 {
                     ptr++;
                 }
-                play_effect(SND_CLICK, 128);
+                play_effect(KAudio::eSound::SND_CLICK, 128);
             }
 
             if (PlayerInput.balt())
@@ -941,7 +941,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
             if (hero == PIDX_UNDEFINED)
             {
                 /* Selected a space with no hero in it! */
-                play_effect(SND_BAD, 128);
+                play_effect(KAudio::eSound::SND_BAD, 128);
             }
             else
             {
@@ -1004,7 +1004,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
         }
         if (oldcur != cur)
         {
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
     }
     return 0;
@@ -1044,7 +1044,7 @@ int select_player(void)
             {
                 ptr = numchrs - 1;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.down())
         {
@@ -1056,7 +1056,7 @@ int select_player(void)
             {
                 ptr = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {

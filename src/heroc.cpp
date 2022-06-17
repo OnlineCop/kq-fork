@@ -407,7 +407,7 @@ static int combat_item_menu(int whom)
             {
                 ptr = 15;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.down())
         {
@@ -416,7 +416,7 @@ static int combat_item_menu(int whom)
             {
                 ptr = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.left())
         {
@@ -425,7 +425,7 @@ static int combat_item_menu(int whom)
             {
                 pptr = 3;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.right())
         {
@@ -434,7 +434,7 @@ static int combat_item_menu(int whom)
             {
                 pptr = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
@@ -508,7 +508,7 @@ int combat_spell_menu(int c)
     int ptr = 0, pgno = 0, stop = 0;
 
     fullblit(double_buffer, back);
-    play_effect(SND_MENU, 128);
+    play_effect(KAudio::eSound::SND_MENU, 128);
     while (!stop)
     {
         Game.ProcessEvents();
@@ -524,7 +524,7 @@ int combat_spell_menu(int c)
             {
                 ptr = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.up())
         {
@@ -533,7 +533,7 @@ int combat_spell_menu(int c)
             {
                 ptr = 11;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.right())
         {
@@ -542,7 +542,7 @@ int combat_spell_menu(int c)
             {
                 pgno = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.left())
         {
@@ -551,7 +551,7 @@ int combat_spell_menu(int c)
             {
                 pgno = 4;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
@@ -819,7 +819,7 @@ void hero_choose_action(size_t fighter_index)
             {
                 ptr = my - 1;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.down())
         {
@@ -831,7 +831,7 @@ void hero_choose_action(size_t fighter_index)
             {
                 ptr = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.left())
         {
@@ -1062,7 +1062,7 @@ static int hero_invoke(int whom)
             {
                 ptr = 5;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.down())
         {
@@ -1071,7 +1071,7 @@ static int hero_invoke(int whom)
             {
                 ptr = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
@@ -1084,7 +1084,7 @@ static int hero_invoke(int whom)
             }
             else
             {
-                play_effect(SND_BAD, 128);
+                play_effect(KAudio::eSound::SND_BAD, 128);
             }
         }
         if (PlayerInput.bctrl())

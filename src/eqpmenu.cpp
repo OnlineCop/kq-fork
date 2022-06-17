@@ -134,7 +134,7 @@ static void choose_equipment(int c, int slot)
         if (tot == 0)
         {
             draw_equippreview(c, -1, 0);
-            play_effect(SND_BAD, 128);
+            play_effect(Audio::eSound::SND_BAD, 128);
             return;
         }
         draw_equippreview(c, slot, g_inv[t_inv[pptr + yptr]].item);
@@ -167,7 +167,7 @@ static void choose_equipment(int c, int slot)
                     yptr++;
                 }
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.up())
         {
@@ -183,18 +183,18 @@ static void choose_equipment(int c, int slot)
             {
                 yptr--;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
             if (equip(pidx[c], t_inv[pptr + yptr], 0) == 1)
             {
-                play_effect(SND_EQUIP, 128);
+                play_effect(Audio::eSound::SND_EQUIP, 128);
                 stop = 1;
             }
             else
             {
-                play_effect(SND_BAD, 128);
+                play_effect(Audio::eSound::SND_BAD, 128);
             }
         }
         if (PlayerInput.bctrl())
@@ -537,7 +537,7 @@ void equip_menu(uint32_t c)
     int a, b, d;
 
     eqp_act = 0;
-    play_effect(SND_MENU, 128);
+    play_effect(Audio::eSound::SND_MENU, 128);
     while (!stop)
     {
         Game.ProcessEvents();
@@ -576,7 +576,7 @@ void equip_menu(uint32_t c)
                 {
                     eqp_act = 3;
                 }
-                play_effect(SND_CLICK, 128);
+                play_effect(Audio::eSound::SND_CLICK, 128);
             }
             if (PlayerInput.right())
             {
@@ -585,7 +585,7 @@ void equip_menu(uint32_t c)
                 {
                     eqp_act = 0;
                 }
-                play_effect(SND_CLICK, 128);
+                play_effect(Audio::eSound::SND_CLICK, 128);
             }
         }
         else
@@ -597,7 +597,7 @@ void equip_menu(uint32_t c)
                 {
                     yptr = 0;
                 }
-                play_effect(SND_CLICK, 128);
+                play_effect(Audio::eSound::SND_CLICK, 128);
             }
             if (PlayerInput.up())
             {
@@ -606,7 +606,7 @@ void equip_menu(uint32_t c)
                 {
                     yptr = 5;
                 }
-                play_effect(SND_CLICK, 128);
+                play_effect(Audio::eSound::SND_CLICK, 128);
             }
         }
         if (PlayerInput.balt())
@@ -636,11 +636,11 @@ void equip_menu(uint32_t c)
                     }
                     if (b == d)
                     {
-                        play_effect(SND_UNEQUIP, 128);
+                        play_effect(Audio::eSound::SND_UNEQUIP, 128);
                     }
                     else
                     {
-                        play_effect(SND_BAD, 128);
+                        play_effect(Audio::eSound::SND_BAD, 128);
                     }
                 }
             }
@@ -656,11 +656,11 @@ void equip_menu(uint32_t c)
                     {
                         if (deequip(c, yptr) == 1)
                         {
-                            play_effect(SND_UNEQUIP, 128);
+                            play_effect(Audio::eSound::SND_UNEQUIP, 128);
                         }
                         else
                         {
-                            play_effect(SND_BAD, 128);
+                            play_effect(Audio::eSound::SND_BAD, 128);
                         }
                     }
                 }
@@ -773,5 +773,5 @@ static void optimize_equip(int c)
             return;
         }
     }
-    play_effect(SND_EQUIP, 128);
+    play_effect(Audio::eSound::SND_EQUIP, 128);
 }

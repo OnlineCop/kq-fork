@@ -64,7 +64,7 @@ void camp_item_menu(void)
     int stop = 0, ptr = 0, pptr = 0, sel = 0;
 
     item_act = 0;
-    play_effect(SND_MENU, 128);
+    play_effect(Audio::eSound::SND_MENU, 128);
     while (!stop)
     {
         Game.ProcessEvents();
@@ -82,7 +82,7 @@ void camp_item_menu(void)
                 {
                     ptr = 0;
                 }
-                play_effect(SND_CLICK, 128);
+                play_effect(Audio::eSound::SND_CLICK, 128);
             }
             if (PlayerInput.up())
             {
@@ -91,7 +91,7 @@ void camp_item_menu(void)
                 {
                     ptr = 15;
                 }
-                play_effect(SND_CLICK, 128);
+                play_effect(Audio::eSound::SND_CLICK, 128);
             }
         }
         if (PlayerInput.right())
@@ -114,7 +114,7 @@ void camp_item_menu(void)
                     item_act = 0;
                 }
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.left())
         {
@@ -136,7 +136,7 @@ void camp_item_menu(void)
                     item_act = 2;
                 }
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
@@ -238,14 +238,14 @@ static void camp_item_targetting(int pp)
             eItemEffectResult z = item_effects(0, tg, t1);
             if (z == ITEM_EFFECT_INEFFECTIVE)
             {
-                play_effect(SND_BAD, 128);
+                play_effect(Audio::eSound::SND_BAD, 128);
             }
             else
             {
                 kmenu.revert_equipstats();
                 if (z == ITEM_EFFECT_SUCCESS_SINGLE)
                 {
-                    play_effect(SND_ITEM, 128);
+                    play_effect(Audio::eSound::SND_ITEM, 128);
                     select_any_player(TGT_NONE, 0, "");
                 }
                 if (items[t1].use != USE_ANY_INF && items[t1].use != USE_CAMP_INF)
@@ -691,7 +691,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         }
         z = items[ti].bst; // eAttribute
         party[pidx[fighter_index]].stats[z] += kqrandom->random_range_exclusive(1, 4) * 100;
-        play_effect(SND_TWINKLE, 128);
+        play_effect(Audio::eSound::SND_TWINKLE, 128);
         switch (z)
         {
         case 0:
@@ -749,7 +749,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
             }
         }
         sprintf(strbuf, _("%s learned!"), magic[tmp].name);
-        play_effect(SND_TWINKLE, 128);
+        play_effect(Audio::eSound::SND_TWINKLE, 128);
         Draw.message(strbuf, magic[tmp].icon, 0);
         return ITEM_EFFECT_SUCCESS_MULTIPLE;
     }

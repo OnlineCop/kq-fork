@@ -1489,7 +1489,7 @@ static int KQ_chest(lua_State* L)
     {
         Game.AddGold(item_quantity);
         sprintf(strbuf, _("Found %d gp!"), item_quantity);
-        play_effect(SND_MONEY, 128);
+        play_effect(KAudio::eSound::SND_MONEY, 128);
         Draw.message(strbuf, 255, 0);
         if (treasure_index > -1)
         {
@@ -1537,7 +1537,7 @@ static int KQ_chest(lua_State* L)
         {
             sprintf(strbuf, _("%s ^%d procured!"), items[inventory_index].name, (int)item_quantity);
         }
-        play_effect(SND_UNEQUIP, 128);
+        play_effect(KAudio::eSound::SND_UNEQUIP, 128);
         Draw.message(strbuf, items[inventory_index].icon, 0);
         if (treasure_index > -1)
         {

@@ -135,11 +135,11 @@ void camp_spell_menu(int c)
 
     if (party[pidx[c]].IsMute())
     {
-        play_effect(SND_BAD, 128);
+        play_effect(Audio::eSound::SND_BAD, 128);
         return;
     }
     kmenu.update_equipstats();
-    play_effect(SND_MENU, 128);
+    play_effect(Audio::eSound::SND_MENU, 128);
     while (!stop)
     {
         Game.ProcessEvents();
@@ -166,7 +166,7 @@ void camp_spell_menu(int c)
             {
                 ptr[smove] = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.up())
         {
@@ -175,7 +175,7 @@ void camp_spell_menu(int c)
             {
                 ptr[smove] = 11;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.right())
         {
@@ -184,7 +184,7 @@ void camp_spell_menu(int c)
             {
                 pg[smove] = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.left())
         {
@@ -193,7 +193,7 @@ void camp_spell_menu(int c)
             {
                 pg[smove] = 4;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(Audio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
@@ -288,7 +288,7 @@ static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_numbe
             }
             if (need_spell(tg, spell_number) == 0)
             {
-                play_effect(SND_BAD, 128);
+                play_effect(Audio::eSound::SND_BAD, 128);
                 return;
             }
             fighter[caster_fighter_index].ctmem = tg;
@@ -319,11 +319,11 @@ static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_numbe
                     Magic.adjust_hp(fighter_index, Combat.GetHealthAdjust(fighter_index));
                 }
             }
-            play_effect(SND_TWINKLE, 128);
+            play_effect(Audio::eSound::SND_TWINKLE, 128);
         }
         else
         {
-            play_effect(SND_TWINKLE, 128); /* this should be a failure sound */
+            play_effect(Audio::eSound::SND_TWINKLE, 128); /* this should be a failure sound */
         }
         kmenu.revert_equipstats();
     }

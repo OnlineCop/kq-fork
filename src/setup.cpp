@@ -57,7 +57,7 @@ char debugging = 0;
 char slow_computer = 0;
 
 /*  Internal variables  */
-static void* sfx[MAX_SAMPLES];
+static void* sfx[KAudio::eSound::MAX_SAMPLES];
 
 /*  Internal functions  */
 static int load_samples(void);
@@ -247,7 +247,7 @@ void config_menu(void)
             {
                 ptr = MENU_SIZE - 1;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.down())
         {
@@ -264,7 +264,7 @@ void config_menu(void)
             {
                 ptr = 0;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
@@ -380,7 +380,7 @@ void config_menu(void)
                 else
                 /* Not as daft as it seems, SND_BAD also wobbles the screen */
                 {
-                    play_effect(SND_BAD, 128);
+                    play_effect(KAudio::eSound::SND_BAD, 128);
                 }
                 break;
             case 14:
@@ -398,7 +398,7 @@ void config_menu(void)
                 }
                 else
                 {
-                    play_effect(SND_BAD, 128);
+                    play_effect(KAudio::eSound::SND_BAD, 128);
                 }
                 break;
             case 15:
@@ -594,7 +594,7 @@ static Cache<Mix_Chunk, Mix_ChunkLoader, Mix_ChunkDeleter> sample_cache;
  */
 static int load_samples(void)
 {
-    static const char* sndfiles[MAX_SAMPLES] = {
+    static const char* sndfiles[KAudio::eSound::MAX_SAMPLES] = {
         "whoosh.wav",   "menumove.wav", "bad.wav",     "item.wav",   "equip.wav",    "deequip.wav", "buysell.wav",
         "twinkle.wav",  "scorch.wav",   "poison.wav",  "chop.wav",   "slash.wav",    "stab.wav",    "hit.wav",
         "ice.wav",      "wind.wav",     "quake.wav",   "black.wav",  "white.wav",    "bolt1.wav",   "flood.wav",
@@ -607,7 +607,7 @@ static int load_samples(void)
     {
         return 1;
     }
-    for (int index = 0; index < MAX_SAMPLES; index++)
+    for (int index = 0; index < KAudio::eSound::MAX_SAMPLES; index++)
     {
         sfx[index] = Music.get_sample(sndfiles[index]);
         if (!sfx[index])
@@ -698,7 +698,7 @@ void play_effect(int efc, int panning)
             Music.play_sample(samp, gsvol, panning, 1000, 0);
         }
         break;
-    case SND_BAD:
+    case KAudio::eSound::SND_BAD:
         fullblit(double_buffer, fx_buffer);
 
         if (samp)
@@ -713,7 +713,7 @@ void play_effect(int efc, int panning)
         }
         fullblit(fx_buffer, double_buffer);
         break;
-    case SND_EXPLODE:
+    case KAudio::eSound::SND_EXPLODE:
         fullblit(double_buffer, fx_buffer);
         clear_bitmap(double_buffer);
         get_palette(old);
