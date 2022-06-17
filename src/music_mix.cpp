@@ -32,6 +32,7 @@
 #include "music.h"
 #include "platform.h"
 #include <SDL_mixer.h>
+#include <algorithm>
 #include <string>
 
 /* SDL version of music */
@@ -92,12 +93,8 @@ void KMusic::shutdown_music(void)
  */
 void KMusic::set_music_volume(int volume)
 {
-    float v = float(volume) / 250.0f;
-    if (v >= 0.0f && v <= 1.0f)
-    {
-        mvol = v;
-        Mix_VolumeMusic(int(dvol * mvol * float(MIX_MAX_VOLUME)));
-    }
+    mvol = float(std::clamp(volume, 0, 250)) / 250.0f;
+    Mix_VolumeMusic(int(dvol * mvol * float(MIX_MAX_VOLUME)));
 }
 
 /*! \brief Poll the music  (SDL2_Mixer)
@@ -200,13 +197,9 @@ void KMusic::play_sample(void* chunk, int, int, int, int)
  */
 void KMusic::set_volume(int sound_volume)
 {
-    float v = float(sound_volume) / 250.0f;
-    if (v >= 0.0f && v <= 1.0f)
-    {
-        dvol = v;
-        Mix_Volume(-1, int(128.0f * dvol));
-        Mix_VolumeMusic(int(dvol * mvol * float(MIX_MAX_VOLUME)));
-    }
+    dvol = float(std::clamp(sound_volume, 0, 250)) / 250.0f;
+    Mix_Volume(-1, int(128.0f * dvol));
+    Mix_VolumeMusic(int(dvol * mvol * float(MIX_MAX_VOLUME)));
 }
 KMusic Music;
 
