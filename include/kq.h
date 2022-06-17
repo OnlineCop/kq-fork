@@ -96,6 +96,7 @@ class KMap
     
     std::vector<eObstacle> obstacle_array;
     std::vector<eShadow> shadow_array;
+    std::vector<int> zone_array;
 };
 
 class KGame
@@ -441,9 +442,6 @@ extern Raster* shadow[MAX_SHADOWS];
 
 /*! Layers in the map */
 extern uint16_t *map_seg, *b_seg, *f_seg;
-
-/*! Zone, shadow and obstacle layers */
-extern uint8_t *z_seg;
 
 /*! Tasks completed */
 extern uint8_t progress[SIZE_PROGRESS];

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <map>
 #include <string>
 #include <tinyxml2.h>
@@ -667,15 +668,15 @@ void tmx_map::set_current()
     }
 
     // Zones
-    free(z_seg);
-    z_seg = static_cast<unsigned char*>(calloc(xsize * ysize, sizeof(unsigned char)));
+    Game.Map.zone_array.assign(xsize * ysize, KZone::ZONE_NONE);
     for (auto&& zone : zones)
     {
         for (int i = 0; i < zone.w; ++i)
         {
             for (int j = 0; j < zone.h; ++j)
             {
-                z_seg[(i + zone.x) + xsize * (j + zone.y)] = zone.n;
+                unsigned int index = std::clamp(unsigned int(i + zone.x + xsize * (j + zone.y)), 0U, g_map.xsize * g_map.ysize - 1);
+                Game.Map.zone_array[index] = zone.n;
             }
         }
     }

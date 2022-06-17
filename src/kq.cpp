@@ -98,7 +98,6 @@ Raster* obj_mesh;
 #endif
 
 uint16_t *map_seg = NULL, *b_seg = NULL, *f_seg = NULL;
-uint8_t *z_seg = NULL;
 uint8_t progress[SIZE_PROGRESS];
 uint8_t treasure[SIZE_TREASURE];
 uint8_t save_spells[SIZE_SAVE_SPELL];
@@ -307,6 +306,7 @@ s_progress progresses[SIZE_PROGRESS] = {
 KMap::KMap()
     : obstacle_array{}
     , shadow_array{}
+    , zone_array{}
 {
 }
 
@@ -365,9 +365,9 @@ void KGame::activate(void)
 
     q = looking_at_y * g_map.xsize + looking_at_x;
 
-    if (Game.Map.obstacle_array[q] != eObstacle::BLOCK_NONE && z_seg[q] > 0)
+    if (Game.Map.obstacle_array[q] != eObstacle::BLOCK_NONE && Game.Map.zone_array[q] > KZone::ZONE_NONE)
     {
-        do_zone(z_seg[q]);
+        do_zone(Game.Map.zone_array[q]);
     }
 
     p = entityat(looking_at_x, looking_at_y, 0);
@@ -799,10 +799,7 @@ void KGame::deallocate_stuff(void)
     {
         free(f_seg);
     }
-    if (z_seg)
-    {
-        free(z_seg);
-    }
+    this->Map.zone_array.clear();
     this->Map.shadow_array.clear();
     this->Map.obstacle_array.clear();
     if (strbuf)
@@ -1262,7 +1259,7 @@ void KGame::startup(void)
     strbuf = (char*)malloc(4096);
 
     map_seg = b_seg = f_seg = NULL;
-    z_seg = NULL;
+    this->Map.zone_array.clear();
     this->Map.shadow_array.clear();
     this->Map.obstacle_array.clear();
 
@@ -1593,7 +1590,8 @@ void KGame::zone_check(void)
         }
     }
 
-    stc = z_seg[zy * g_map.xsize + zx];
+    unsigned int index = std::clamp(zy * g_map.xsize + zx, 0U, g_map.xsize * g_map.ysize - 1);
+    stc = Game.Map.zone_array[index];
 
     if (g_map.zero_zone != 0)
     {
@@ -1601,7 +1599,7 @@ void KGame::zone_check(void)
     }
     else
     {
-        if (stc > 0)
+        if (stc > KZone::ZONE_NONE)
         {
             do_zone(stc);
         }

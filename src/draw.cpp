@@ -43,6 +43,7 @@
 #include "res.h"
 #include "setup.h"
 #include "timing.h"
+#include "zone.h"
 #include <SDL.h>
 #include <cassert>
 #include <cctype>
@@ -536,15 +537,14 @@ void KDraw::draw_forelayer(void)
                 }
 
                 // Zones
-                if (z_seg[here] == 0)
+                if (Game.Map.zone_array[here] == KZone::ZONE_NONE)
                 {
                     // Do nothing
                 }
                 else
                 {
-                    char buf[8];
-                    sprintf(buf, "%d", z_seg[here]);
-                    size_t l = strlen(buf) * 8;
+                    std::string buf = std::to_string(Game.Map.zone_array[here]);
+                    size_t l = buf.size() * 8; // 8 is the width of the font in pixels
                     print_num(double_buffer, x * 16 + 8 - l / 2 - box.x_offset, y * 16 + 4 - box.y_offset, buf,
                               FONT_WHITE);
                 }

@@ -1615,7 +1615,7 @@ static int KQ_copy_tile_all(lua_State* L)
             map_seg[od] = map_seg[os];
             f_seg[od] = f_seg[os];
             b_seg[od] = b_seg[os];
-            z_seg[od] = z_seg[os];
+            Game.Map.zone_array[od] = Game.Map.zone_array[os];
             Game.Map.obstacle_array[od] = Game.Map.obstacle_array[os];
             Game.Map.shadow_array[od] = Game.Map.shadow_array[os];
         }
@@ -4373,7 +4373,8 @@ static void set_ftile(int x, int y, int value)
 
 static void set_zone(int x, int y, int value)
 {
-    z_seg[y * g_map.xsize + x] = value;
+    unsigned int index = std::clamp(y * g_map.xsize + x, 0U, g_map.xsize * g_map.ysize - 1);
+    Game.Map.zone_array[index] = value;
 }
 
 static void set_obs(int x, int y, int value)
