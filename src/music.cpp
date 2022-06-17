@@ -26,11 +26,12 @@
  * Interfaces to SDL2_Mixer
  */
 
+#include "music.h"
 #include "disk.h"
 #include "imgcache.h"
 #include "kq.h"
-#include "music.h"
 #include "platform.h"
+#include "setup.h"
 #include <SDL_mixer.h>
 #include <algorithm>
 #include <string>
@@ -40,6 +41,7 @@ struct Mix_MusicLoader
 {
     Mix_Music* operator()(const std::string&);
 };
+
 struct Mix_MusicDeleter
 {
     void operator()(Mix_Music* m)
@@ -47,10 +49,12 @@ struct Mix_MusicDeleter
         Mix_FreeMusic(m);
     }
 };
+
 struct Mix_ChunkLoader
 {
     Mix_Chunk* operator()(const std::string&);
 };
+
 struct Mix_ChunkDeleter
 {
     void operator()(Mix_Chunk*);
@@ -93,6 +97,10 @@ void KMusic::shutdown_music(void)
  */
 void KMusic::set_music_volume(int volume)
 {
+    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    {
+        return;
+    }
     mvol = float(std::clamp(volume, 0, 250)) / 250.0f;
     Mix_VolumeMusic(int(dvol * mvol * float(MIX_MAX_VOLUME)));
 }
@@ -120,7 +128,7 @@ void KMusic::poll_music(void)
  */
 void KMusic::play_music(const std::string& music_name, long)
 {
-    if (is_sound == 0)
+    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return;
     }
@@ -144,7 +152,7 @@ void KMusic::play_music(const std::string& music_name, long)
  */
 void KMusic::stop_music(void)
 {
-    if (is_sound == 0)
+    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return;
     }
@@ -160,7 +168,7 @@ void KMusic::stop_music(void)
  */
 void KMusic::pause_music(void)
 {
-    if (is_sound == 0)
+    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return;
     }
@@ -174,7 +182,7 @@ void KMusic::pause_music(void)
  */
 void KMusic::resume_music(void)
 {
-    if (is_sound == 0)
+    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return;
     }
@@ -184,19 +192,25 @@ void KMusic::resume_music(void)
 void KMusic::play_effect(int, int)
 {
 }
+
 void KMusic::play_sample(void* chunk, int, int, int, int)
 {
-    if (is_sound == 0)
+    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
         return;
     }
     Mix_PlayChannel(-1, reinterpret_cast<Mix_Chunk*>(chunk), 0);
 }
+
 /* \brief Set overall sound volume.
  * \param   volume 0 (silent) to 250 (loudest)
  */
 void KMusic::set_volume(int sound_volume)
 {
+    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    {
+        return;
+    }
     dvol = float(std::clamp(sound_volume, 0, 250)) / 250.0f;
     Mix_Volume(-1, int(128.0f * dvol));
     Mix_VolumeMusic(int(dvol * mvol * float(MIX_MAX_VOLUME)));
@@ -208,19 +222,23 @@ Mix_Music* Mix_MusicLoader::operator()(const std::string& music_name)
     auto mpath = kqres(eDirectories::MUSIC_DIR, music_name);
     return Mix_LoadMUS(mpath.c_str());
 }
+
 Mix_Chunk* Mix_ChunkLoader::operator()(const std::string& name)
 {
     auto path = kqres(eDirectories::DATA_DIR, name);
     return Mix_LoadWAV(path.c_str());
 }
+
 void Mix_ChunkDeleter::operator()(Mix_Chunk* chunk)
 {
     Mix_FreeChunk(chunk);
 }
+
 void* KMusic::get_sample(const string& s)
 {
     return sample_cache.get(s);
 }
+
 void KMusic::free_samples()
 {
     sample_cache.clear();

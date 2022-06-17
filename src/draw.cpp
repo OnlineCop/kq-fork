@@ -1188,7 +1188,7 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
             {
                 --ptr;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.down())
         {
@@ -1196,7 +1196,7 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
             {
                 ++ptr;
             }
-            play_effect(SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.balt())
         {
@@ -1296,24 +1296,24 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
 
                 if (PlayerInput.up() && curopt > 0)
                 {
-                    play_effect(SND_CLICK, 128);
+                    play_effect(KAudio::eSound::SND_CLICK, 128);
                     --curopt;
                 }
                 else if (PlayerInput.down() && curopt < (n_opt - 1))
                 {
-                    play_effect(SND_CLICK, 128);
+                    play_effect(KAudio::eSound::SND_CLICK, 128);
                     ++curopt;
                 }
                 else if (PlayerInput.balt())
                 {
                     /* Selected an option */
-                    play_effect(SND_CLICK, 128);
+                    play_effect(KAudio::eSound::SND_CLICK, 128);
                     running = 0;
                 }
                 else if (PlayerInput.bctrl())
                 {
                     /* Just go "ow!" */
-                    play_effect(SND_BAD, 128);
+                    play_effect(KAudio::eSound::SND_BAD, 128);
                 }
 
                 /* Adjust top position so that the current option is always shown */

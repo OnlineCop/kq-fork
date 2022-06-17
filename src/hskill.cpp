@@ -779,7 +779,7 @@ int skill_use(size_t attack_fighter_index)
         Combat.battle_render(0, attack_fighter_index + 1, 0);
         Draw.blit2screen();
         kq_wait(100);
-        play_effect(SND_MENU, 128);
+        play_effect(KAudio::eSound::SND_MENU, 128);
         kq_wait(500);
         display_attack_string = 0;
         Combat.battle_render(attack_fighter_index, attack_fighter_index, 0);

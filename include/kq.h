@@ -178,7 +178,7 @@ class KGame
      *
      * \param   msg String to add to log file
      */
-    void klog(const char* msg);
+    void klog(const std::string& msg);
 
     /*! \brief Pause for a time
      *
@@ -451,7 +451,7 @@ extern int gsvol, gmvol;
 /*! Number of entities (or enemies?) */
 extern uint32_t number_of_entities;
 extern ePIDX pidx[MAXCHRS];
-extern uint8_t autoparty, alldead, is_sound, deadeffect, use_sstone, sound_avail;
+extern uint8_t autoparty, alldead, deadeffect, use_sstone;
 extern bool bDoesViewportFollowPlayer;
 extern const uint8_t kq_version;
 extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, cpu_usage;
