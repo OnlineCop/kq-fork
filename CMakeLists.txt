@@ -67,7 +67,7 @@ set(kq-fork_SRCS
 	src/masmenu.cpp
 	src/menu.cpp
 	src/movement.cpp
-	src/music_mix.cpp
+	src/music.cpp
 	src/player.cpp
 	src/random.cpp
 	src/res.cpp
