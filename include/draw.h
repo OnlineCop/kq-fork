@@ -96,6 +96,13 @@ class KDraw
     {
         return window;
     }
+    /*! \brief Resize window.
+     * \param w the new width
+     * \param h the new height
+     * \param windowed true to go to windowed mode,
+     * false to go to full screen.
+     */
+    void resize_window(int w, int h, bool windowed);
 
     /*! \brief Copies from the double buffer to the screen.
      *  Handles frame-rate display, stretching and vsync waiting.

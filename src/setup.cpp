@@ -769,7 +769,8 @@ void set_graphics_mode()
         w = eSize::SCREEN_W;
         h = eSize::SCREEN_H;
     }
-    Draw.set_window(SDL_CreateWindow("KQ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, SDL_WINDOW_SHOWN));
+    Draw.set_window(SDL_CreateWindow("KQ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h,
+                                     SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE));
 }
 
 /*! \brief Show keys help

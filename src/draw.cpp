@@ -105,6 +105,7 @@ void KDraw::set_window(SDL_Window* _window)
     Uint32 pix = SDL_GetWindowPixelFormat(window);
     // Take the first renderer we can get
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+    SDL_RenderSetLogicalSize(renderer, SCREEN_W, SCREEN_H);
     texture = SDL_CreateTexture(renderer, pix, SDL_TEXTUREACCESS_STREAMING, SCREEN_W, SCREEN_H);
     format = SDL_AllocFormat(pix);
 }
@@ -142,6 +143,8 @@ void KDraw::blit2screen()
     SDL_Rect src { 0, 0, SCREEN_W, SCREEN_H };
     double_buffer->to_rgba32(&src, format, pixels, pitch);
     SDL_UnlockTexture(texture);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
     rc = SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     if (rc < 0)
     {
@@ -1611,4 +1614,12 @@ void KDraw::porttext_ex(eBubbleStyle fmt, int who, const char* s)
 int KDraw::text_length(eFontColor, const char* s)
 {
     return 8 * strlen(s);
+}
+
+void KDraw::resize_window(int w, int h, bool win)
+{
+    SDL_SetWindowFullscreen(window, win ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+    if (!win) {
+	SDL_SetWindowSize(window, w, h);
+    }
 }
