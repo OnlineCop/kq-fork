@@ -112,6 +112,7 @@ KQEntity g_ent[MAX_ENTITIES];
 uint32_t number_of_entities = 0;
 
 /*! Identifies characters in the party */
+// Ideally, this would hold values 0..7 (ePIDX::SENSAR..ePIDX::NOSLOM) in whatever order they belonged to the current party.
 ePIDX pidx[MAXCHRS] = { ePIDX::PIDX_UNDEFINED };
 
 /*! Number of characters in the party */
@@ -216,9 +217,10 @@ short player_special_items[MAX_SPECIAL_ITEMS];
 /*! The number of special items that the character possesses */
 short num_special_items = 0;
 
-/*! View coordinates; the view is a way of selecting a subset of the map to
- * show. */
-int view_x1, view_y1, view_x2, view_y2;
+int view_x1; // Left edge of viewport, in tiles (such as entity.tilex)
+int view_y1; // Top edge of viewport, in tiles (such as entity.tiley)
+int view_x2; // Right edge of viewport [inclusive], in tiles (such as entity.tilex)
+int view_y2; // Bottom edge of viewport [inclusive], in tiles (such as entity.tiley)
 bool view_on = false;
 
 /*! Are we in combat mode? */

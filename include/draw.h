@@ -351,17 +351,15 @@ class KDraw
 
     /*! \brief Adjust view
      *
-     * This merely sets the view variables for use in
-     * other functions that rely on the view.
-     * The view defines a subset of the map,
-     * for example when you move to a house in a town,
+     * This merely sets the view variables for use in other functions that rely on the view.
+     * The view defines a subset of the map, for example when you move to a house in a town,
      * the view contracts to display only the interior.
      *
      * \param   vw Non-zero to enable view, otherwise show the whole map
-     * \param   x1 Top-left of view
-     * \param   y1 Top-left of view
-     * \param   x2 Bottom-right of view
-     * \param   y2 Bottom-right of view
+     * \param   x1 Top-left of view, in full tiles (such as entity.tilex)
+     * \param   y1 Top-left of view, in full tiles (such as entity.tiley)
+     * \param   x2 Bottom-right of view [inclusive], in full tiles (such as entity.tilex)
+     * \param   y2 Bottom-right of view [inclusive], in full tiles (such as entity.tiley)
      */
     void set_view(int vw, int x1, int y1, int x2, int y2);
 

@@ -121,13 +121,30 @@ class tmx_map
     // Tilesets defined within this tilemap
     vector<KTmxTileset> tilesets;
 
+    // Areas on the map which limit the viewable area, such as the interiors of rooms
     KBounds bounds;
+
+    // Tiles which trigger map-specific events, such as a doorway, a chest, or a shop counter
     vector<KZone> zones;
+
+    // Named positions on a map; scripts should use these instead of hard-coded coordinates so resizing a map won't break the script.
     KMarkers markers;
+
+    // Total entities displayed on the map, including player's party
     vector<KQEntity> entities;
+
+    // Each layer of tiles to be rendered to screen. Layers may be different sizes to account for parallax.
     vector<tmx_layer> layers;
+
+    /*! \brief Make this map the current one.
+     * Make this map the one in play by copying its information into the
+     * global structures. This function is the 'bridge' between the
+     * TMX loader and the original KQ code.
+     */
     void set_current();
-    const KTmxTileset& find_tileset(const string&) const;
+
+    // Get the tileset within this map's structure with the given name.
+    const KTmxTileset& find_tileset(const string& name) const;
 };
 
 class KTiledMap

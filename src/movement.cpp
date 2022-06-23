@@ -115,7 +115,7 @@ static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, ch
  * The function generates a map setting to -1 any square that is blocked
  * by either an object or an entity.
  *
- * \param map [out] The map where the result will be copied
+ * \param[in,out] map The map where the result will be copied.
  *
  * \sa search_paths compose_path find_path minimize_path
  */

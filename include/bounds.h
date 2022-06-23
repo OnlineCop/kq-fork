@@ -47,10 +47,10 @@ struct PACKFILE;
 struct KBound
 {
   public:
-    int left;    /*!< Left edge of the bounding box */
-    int top;     /*!< Top edge of the bounding box */
-    int right;   /*!< Right edge of the bounding box */
-    int bottom;  /*!< Bottom edge of the bounding box */
+    int left;    /*!< Left edge of the bounding box, in full tiles (such as entity.tilex) */
+    int top;     /*!< Top edge of the bounding box, in full tiles (such as entity.tiley) */
+    int right;   /*!< Right edge of the bounding box, in full tiles (such as entity.tilex) */
+    int bottom;  /*!< Bottom edge of the bounding box, in full tiles (such as entity.tiley) */
     short btile; /*!< Index of the tile to draw everywhere BUT here */
 };
 

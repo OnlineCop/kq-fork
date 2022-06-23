@@ -411,8 +411,10 @@ class KGame
     int keyp;
 };
 
-/*! View and character positions */
-extern int viewport_x_coord, viewport_y_coord, mx, my;
+/*! View positions in pixels, (such as entity.x, not entity.tilex) */
+extern int viewport_x_coord, viewport_y_coord;
+/*! Character positions */
+extern int mx, my;
 
 /*! What was the last direction each player moved in */
 extern int steps;
@@ -471,7 +473,12 @@ extern uint8_t draw_background, draw_middle, draw_foreground, draw_shadow;
 extern s_inventory g_inv[MAX_INV];
 extern s_special_item special_items[MAX_SPECIAL_ITEMS];
 extern short player_special_items[MAX_SPECIAL_ITEMS];
+
+/*! View coordinates; the view is a way of selecting a subset of the map to show.
+ *  Corresponds to full tiles, such as entity.tilex, entity.tiley, etc.
+ */
 extern int view_x1, view_y1, view_x2, view_y2, in_combat;
+
 extern bool view_on;
 extern int use_joy;
 extern bool show_frate;

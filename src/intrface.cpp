@@ -4146,9 +4146,8 @@ static int KQ_party_getter(lua_State* L)
 
 /*! \brief Set party array
  *
- * Implement setting the character objects in the
- * party array. Set an element to nil to remove the relevant
- * hero from the party.
+ * Implement setting the character objects in the party array.
+ * Set an element to nil to remove the relevant hero from the party.
  * \param L::1 which party member (0..PSIZE-1)
  * \param L::2 hero object
  * \returns 0 (no values returned)
