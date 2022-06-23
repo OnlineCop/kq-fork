@@ -144,7 +144,11 @@ class tmx_map
      */
     void set_current();
 
-    // Get the tileset within this map's structure with the given name.
+    /*! \brief Get the tileset within this map's structure with the given name.
+     * \param name Tileset name to search for.
+     * \return Specified tileset.
+     * \throws If tileset with given name cannot be found.
+     */
     const KTmxTileset& find_tileset(const string& name) const;
 };
 

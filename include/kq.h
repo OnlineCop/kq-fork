@@ -93,7 +93,7 @@ class KMap
   public:
     ~KMap() = default;
     KMap();
-    
+
     std::vector<eObstacle> obstacle_array;
     std::vector<eShadow> shadow_array;
     std::vector<int> zone_array;
@@ -454,7 +454,10 @@ extern uint8_t save_spells[SIZE_SAVE_SPELL];
 
 extern Raster* kfonts;
 extern s_map g_map;
+
+/* Total entities within the current map: players + NPCs */
 extern KQEntity g_ent[MAX_ENTITIES];
+
 extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
 extern s_anim adata[MAX_ANIM];
 extern uint32_t numchrs;
