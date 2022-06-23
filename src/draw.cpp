@@ -44,11 +44,13 @@
 #include "setup.h"
 #include "timing.h"
 #include "zone.h"
+
 #include <SDL.h>
 #include <cassert>
 #include <cctype>
 #include <cstdio>
 #include <cstring>
+#include <string>
 
 KDraw Draw;
 
@@ -1117,14 +1119,14 @@ void KDraw::print_font(Raster* where, int sx, int sy, const string& msg, eFontCo
     }
 }
 
-void KDraw::print_num(Raster* where, int sx, int sy, const string msg, eFont font_index)
+void KDraw::print_num(Raster* where, int sx, int sy, const string& msg, eFont font_index)
 {
-    assert(where && "where == NULL");
+    assert(where != nullptr && "where == NULL");
     // Check ought not to be necessary if using the enum correctly.
-    if (font_index >= NUM_FONTS)
+    if (font_index < eFont::FONT_WHITE || font_index >= eFont::NUM_FONTS)
     {
-        sprintf(strbuf, _("print_num: Bad font index, %d"), (int)font_index);
-        Game.program_death(strbuf);
+        string error_msg = "Bad font index: " + std::to_string(font_index);
+        Game.program_death(__FUNCTION__, error_msg);
     }
     for (size_t z = 0; z < msg.length(); z++)
     {
