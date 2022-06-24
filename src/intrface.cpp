@@ -1223,12 +1223,7 @@ static int KQ_change_map(lua_State* L)
  */
 static int KQ_char_getter(lua_State* L)
 {
-    signed int prop;
-    int top;
-    KPlayer* pl;
-    KQEntity* ent;
-
-    prop = get_field(lua_tostring(L, 2));
+    signed int prop = get_field(lua_tostring(L, 2));
     if (prop == -1)
     {
         /* it is a user-defined property, get it directly */
@@ -1237,13 +1232,13 @@ static int KQ_char_getter(lua_State* L)
     }
     lua_pushstring(L, LUA_PLR_KEY);
     lua_rawget(L, 1);
-    pl = (KPlayer*)lua_touserdata(L, -1);
+    KPlayer* pl = (KPlayer*)lua_touserdata(L, -1);
     lua_pop(L, 1);
     lua_pushstring(L, LUA_ENT_KEY);
     lua_rawget(L, 1);
-    ent = (KQEntity*)lua_touserdata(L, -1);
+    KQEntity* ent = (KQEntity*)lua_touserdata(L, -1);
     lua_pop(L, 1);
-    top = lua_gettop(L);
+    int top = lua_gettop(L);
     if (pl)
     {
         /* These properties relate to s_player structures */
@@ -1293,7 +1288,7 @@ static int KQ_char_getter(lua_State* L)
             break;
         }
     }
-    if (ent)
+    if (ent != nullptr)
     {
         /* These properties relate to s_entity structures */
         switch (prop)
@@ -1351,11 +1346,7 @@ static int KQ_char_getter(lua_State* L)
  */
 static int KQ_char_setter(lua_State* L)
 {
-    int prop;
-    KPlayer* pl;
-    KQEntity* ent;
-
-    prop = get_field(lua_tostring(L, 2));
+    int prop = get_field(lua_tostring(L, 2));
     if (prop == -1)
     {
         /* It is a user-defined property, set it directly in the table */
@@ -1364,11 +1355,11 @@ static int KQ_char_setter(lua_State* L)
     }
     lua_pushstring(L, LUA_PLR_KEY);
     lua_rawget(L, 1);
-    pl = (KPlayer*)lua_touserdata(L, -1);
+    KPlayer* pl = (KPlayer*)lua_touserdata(L, -1);
     lua_pop(L, 1);
     lua_pushstring(L, LUA_ENT_KEY);
     lua_rawget(L, 1);
-    ent = (KQEntity*)lua_touserdata(L, -1);
+    KQEntity* ent = (KQEntity*)lua_touserdata(L, -1);
     lua_pop(L, 1);
     if (pl)
     {
@@ -2515,7 +2506,7 @@ static int KQ_move_entity(lua_State* L)
     int entity_id = real_entity_num(L, 1);
     int kill = 0, target_x = 0, target_y = 0;
 
-    char buffer[1024];
+    char buffer[1024] = {0};
 
     if (lua_type(L, 2) == LUA_TSTRING)
     {
@@ -4182,12 +4173,10 @@ static int KQ_party_setter(lua_State* L)
         }
         else if (lua_istable(L, 3))
         {
-            KPlayer* tt;
-
             lua_pushstring(L, LUA_PLR_KEY);
             lua_rawget(L, -2);
-            tt = (KPlayer*)lua_touserdata(L, -1);
-            if (tt)
+            KPlayer* tt = (KPlayer*)lua_touserdata(L, -1);
+            if (tt != nullptr)
             {
                 /* OK so far */
                 if (which > numchrs)
@@ -4344,13 +4333,11 @@ static int real_entity_num(lua_State* L, int pos)
     }
     if (lua_istable(L, pos))
     {
-        KQEntity* ent;
-
         lua_pushstring(L, LUA_ENT_KEY);
         lua_rawget(L, pos);
-        ent = (KQEntity*)lua_touserdata(L, -1);
+        KQEntity* ent = (KQEntity*)lua_touserdata(L, -1);   //TODO: What is this doing? Is this persisting POD to memory?
         lua_pop(L, 1);
-        if (ent)
+        if (ent != nullptr)
         {
             return ent - g_ent;
         }
