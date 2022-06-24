@@ -694,7 +694,7 @@ static void optimize_equip(int c)
 {
     uint32_t a;
     int b, z, maxx, maxi, v = 0;
-
+    // First, de-equip all slots
     for (a = 0; a < NUM_EQUIPMENT; a++)
     {
         if (party[pidx[c]].eqp[a] > 0)
@@ -705,6 +705,7 @@ static void optimize_equip(int c)
             }
         }
     }
+    // Equip Hand1
     maxx = 0;
     maxi = -1;
     calc_possible_equip(c, 0);
@@ -719,11 +720,9 @@ static void optimize_equip(int c)
     }
     if (maxi > -1)
     {
-        if (equip(pidx[c], t_inv[maxi], 0) == 0)
-        {
-            return;
-        }
+        equip(pidx[c], t_inv[maxi], 0);
     }
+    // Equip Hand2, Head, Body, Arms
     for (z = 1; z < 5; z++)
     {
         maxx = 0;
@@ -740,12 +739,10 @@ static void optimize_equip(int c)
         }
         if (maxi > -1)
         {
-            if (equip(pidx[c], t_inv[maxi], 0) == 0)
-            {
-                return;
-            }
+            equip(pidx[c], t_inv[maxi], 0);
         }
     }
+    // Equip Other
     maxx = 0;
     maxi = -1;
     calc_possible_equip(c, 5);
@@ -768,10 +765,7 @@ static void optimize_equip(int c)
     }
     if (maxi > -1)
     {
-        if (equip(pidx[c], t_inv[maxi], 0) == 0)
-        {
-            return;
-        }
+        equip(pidx[c], t_inv[maxi], 0);
     }
     play_effect(KAudio::eSound::SND_EQUIP, 128);
 }
