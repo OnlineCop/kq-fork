@@ -279,7 +279,7 @@ Raster* KDraw::copy_bitmap(Raster* target, Raster* source)
 
 void KDraw::draw_backlayer(void)
 {
-    auto box = calculate_box(g_map.map_mode == 2 || g_map.map_mode == 3);
+    auto box = calculate_box(g_map.map_mode == eMapMode::MAPMODE_1p2E3S || g_map.map_mode == eMapMode::MAPMODE_1E2p3S);
     int tile_x1 = box.x_offset / 16;
     int tile_x2 = (box.x_offset + SCREEN_W - 1) / 16;
     int tile_y1 = box.y_offset / 16;
@@ -519,7 +519,7 @@ void KDraw::draw_char()
 
 void KDraw::draw_forelayer(void)
 {
-    auto box = calculate_box(g_map.map_mode == 3 || g_map.map_mode == 4);
+    KDraw::PBound box = calculate_box(g_map.map_mode == eMapMode::MAPMODE_1E2p3S || g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
     {
         for (int x = box.left; x <= box.right; x++)
@@ -611,7 +611,7 @@ void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, e
 
 void KDraw::draw_midlayer(void)
 {
-    auto box = calculate_box(g_map.map_mode == 3 || g_map.map_mode == 4);
+    auto box = calculate_box(g_map.map_mode == eMapMode::MAPMODE_1E2p3S || g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
     {
         for (int x = box.left; x <= box.right; x++)
@@ -754,7 +754,7 @@ void KDraw::drawmap(void)
     {
         draw_backlayer();
     }
-    if (g_map.map_mode == 1 || g_map.map_mode == 3 || g_map.map_mode == 5)
+    if (g_map.map_mode == eMapMode::MAPMODE_1E23S || g_map.map_mode == eMapMode::MAPMODE_1E2p3S || g_map.map_mode == eMapMode::MAPMODE_12EP3S)
     {
         draw_char();
     }
@@ -762,7 +762,7 @@ void KDraw::drawmap(void)
     {
         draw_midlayer();
     }
-    if (g_map.map_mode == 0 || g_map.map_mode == 2 || g_map.map_mode == 4)
+    if (g_map.map_mode == eMapMode::MAPMODE_12E3S || g_map.map_mode == eMapMode::MAPMODE_1p2E3S || g_map.map_mode == eMapMode::MAPMODE_1P2E3S)
     {
         draw_char();
     }
@@ -771,7 +771,6 @@ void KDraw::drawmap(void)
         draw_forelayer();
     }
     draw_shadows();
-    // draw_playerbound();
 
     if (save_spells[P_REPULSE] > 0)
     {

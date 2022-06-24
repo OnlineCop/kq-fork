@@ -117,7 +117,7 @@ tmx_map KTiledMap::load_tmx_map(XMLElement const* root)
 
         if (xprop->Attribute("name", "map_mode"))
         {
-            smap.map_mode = value->IntValue();
+            smap.map_mode = std::clamp(value->IntValue(), (int)eMapMode::MAPMODE_12E3S, (int)eMapMode::MAPMODE_12EP3S);
         }
         if (xprop->Attribute("name", "map_no"))
         {
@@ -553,7 +553,7 @@ XMLElement const* KTiledMap::find_objectgroup(XMLElement const* root, const char
 tmx_map::tmx_map()
     : map_no(0)
     , zero_zone(false)
-    , map_mode(0)
+    , map_mode(eMapMode::MAPMODE_12E3S)
     , can_save(false)
     , tileset(0)
     , use_sstone(false)

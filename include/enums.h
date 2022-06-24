@@ -274,22 +274,6 @@ enum eDirection
     NUM_FACING_DIRECTIONS // always last
 };
 
-/* The map modes (parallax and drawing order) are listed here in
- * coded format. The layers are listed as 1, 2, 3, E (entity) S (shadow)
- * and a ) or ( marks which layers use the parallax mult/div.
- */
-enum eMapMode
-{
-    MAPMODE_12E3S = 0,  // "12E3S "
-    MAPMODE_1E23S = 1,  // "1E23S "
-    MAPMODE_1p2E3S = 2, // "1)2E3S"
-    MAPMODE_1E2p3S = 3, // "1E2)3S"
-    MAPMODE_1P2E3S = 4, // "1(2E3S"
-    MAPMODE_12EP3S = 5, // "12E(3S"
-
-    NUM_MAPMODES // always last
-};
-
 /* move modes */
 enum eMoveMode
 {

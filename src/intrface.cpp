@@ -76,6 +76,8 @@ using std::shared_ptr;
 #include "imgcache.h"
 #include "random.h"
 
+#include <algorithm>
+
 /* Defines */
 #define LUA_ENT_KEY "_ent"
 #define LUA_PLR_KEY "_obj"
@@ -3195,7 +3197,7 @@ static int KQ_set_holdfade(lua_State* L)
 
 static int KQ_set_map_mode(lua_State* L)
 {
-    g_map.map_mode = (int)lua_tonumber(L, 1);
+    g_map.map_mode = std::clamp((eMapMode)lua_tonumber(L, 1), eMapMode::MAPMODE_12E3S, eMapMode::MAPMODE_12EP3S);
     return 0;
 }
 

@@ -68,7 +68,7 @@ class tmx_map
     // Non-zero if zone 0 triggers an event
     bool zero_zone;
 
-    // Map's parallax mode (see drawmap())
+    // Draw order for layers, plus parallax settings (see eMapMode)
     int map_mode;
 
     // Non-zero if Save is allowed in this map
