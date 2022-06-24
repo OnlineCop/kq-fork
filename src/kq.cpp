@@ -1091,11 +1091,11 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     pcxb = g_map.map_tiles;
-    for (o = 0; o < (size_t)pcxb->height / 16; o++)
+    for (o = 0; o < (size_t)pcxb->height / TILE_H; o++)
     {
-        for (i = 0; i < (size_t)pcxb->width / 16; i++)
+        for (i = 0; i < (size_t)pcxb->width / TILE_W; i++)
         {
-            pcxb->blitTo(map_icons[o * (pcxb->width / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
+            pcxb->blitTo(map_icons[o * (pcxb->width / TILE_W) + i], i * TILE_W, o * TILE_H, 0, 0, TILE_W, TILE_H);
         }
     }
 

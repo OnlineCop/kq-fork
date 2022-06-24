@@ -280,48 +280,48 @@ Raster* KDraw::copy_bitmap(Raster* target, Raster* source)
 void KDraw::draw_backlayer(void)
 {
     auto box = calculate_box(g_map.map_mode == eMapMode::MAPMODE_1p2E3S || g_map.map_mode == eMapMode::MAPMODE_1E2p3S);
-    int tile_x1 = box.x_offset / 16;
-    int tile_x2 = (box.x_offset + SCREEN_W - 1) / 16;
-    int tile_y1 = box.y_offset / 16;
-    int tile_y2 = (box.y_offset + SCREEN_H - 1) / 16;
+    int tile_x1 = box.x_offset / TILE_W;
+    int tile_x2 = (box.x_offset + SCREEN_W - 1) / TILE_W;
+    int tile_y1 = box.y_offset / TILE_H;
+    int tile_y2 = (box.y_offset + SCREEN_H - 1) / TILE_H;
     auto tx = map_icons[tilex[btile]];
     for (int y = tile_y1; y < box.top; ++y)
     {
         for (int x = tile_x1; x <= tile_x2; x++)
         {
-            blit(tx, double_buffer, 0, 0, x * 16 - box.x_offset, y * 16 - box.y_offset, 16, 16);
+            blit(tx, double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
         }
     }
     for (int y = box.top; y <= box.bottom; y++)
     {
         for (int x = tile_x1; x < box.left; x++)
         {
-            blit(tx, double_buffer, 0, 0, x * 16 - box.x_offset, y * 16 - box.y_offset, 16, 16);
+            blit(tx, double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
         }
 
         for (int x = box.left; x <= box.right; x++)
         {
             int here = y * g_map.xsize + x;
             int pix = map_seg[here];
-            blit(map_icons[tilex[pix]], double_buffer, 0, 0, x * 16 - box.x_offset, y * 16 - box.y_offset, 16, 16);
+            blit(map_icons[tilex[pix]], double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
         }
         for (int x = box.right + 1; x <= tile_x2; x++)
         {
-            blit(tx, double_buffer, 0, 0, x * 16 - box.x_offset, y * 16 - box.y_offset, 16, 16);
+            blit(tx, double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
         }
     }
     for (int y = box.bottom + 1; y <= tile_y2; ++y)
     {
         for (int x = tile_x1; x <= tile_x2; x++)
         {
-            blit(tx, double_buffer, 0, 0, x * 16 - box.x_offset, y * 16 - box.y_offset, 16, 16);
+            blit(tx, double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
         }
     }
 }
 
 KDraw::PBound KDraw::calculate_box(bool is_parallax)
 {
-    int x, y;
+    int x = 0, y = 0;
     if (is_parallax)
     {
         x = viewport_x_coord * g_map.pmult / g_map.pdiv;
@@ -332,10 +332,10 @@ KDraw::PBound KDraw::calculate_box(bool is_parallax)
         x = viewport_x_coord;
         y = viewport_y_coord;
     }
-    int tile_x1 = std::max(view_x1, x / 16);
-    int tile_x2 = std::min(view_x2, (x + SCREEN_W - 1) / 16);
-    int tile_y1 = std::max(view_y1, y / 16);
-    int tile_y2 = std::min(view_y2, (y + SCREEN_H - 1) / 16);
+    int tile_x1 = std::max(view_x1, x / TILE_W);
+    int tile_x2 = std::min(view_x2, (x + SCREEN_W - 1) / TILE_W);
+    int tile_y1 = std::max(view_y1, y / TILE_H);
+    int tile_y2 = std::min(view_y2, (y + SCREEN_H - 1) / TILE_H);
     return { tile_x1, tile_y1, tile_x2, tile_y2, x, y };
 }
 
@@ -401,7 +401,7 @@ void KDraw::draw_char()
                 if (f)
                 {
                     clear_to_color(tc, 0);
-                    blit(spr, tc, 0, 0, 0, 0, 16, 6);
+                    blit(spr, tc, 0, 0, 0, 0, 16, 6); // 16,6 = avatar's width and top 6 pixels of height (head only)
                     spr = tc;
                 }
             }
@@ -527,7 +527,7 @@ void KDraw::draw_forelayer(void)
             // Used in several places in this loop, so shortened the name
             int here = y * g_map.xsize + x;
             int pix = f_seg[here];
-            draw_sprite(double_buffer, map_icons[tilex[pix]], +x * 16 - box.x_offset, y * 16 - box.y_offset);
+            draw_sprite(double_buffer, map_icons[tilex[pix]], + x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
 
 #ifdef DEBUGMODE
             if (debugging > 3)
@@ -535,7 +535,7 @@ void KDraw::draw_forelayer(void)
                 // Obstacles
                 if (Game.Map.obstacle_array[here] == eObstacle::BLOCK_ALL)
                 {
-                    draw_sprite(double_buffer, obj_mesh, x * 16 - box.x_offset, y * 16 - box.y_offset);
+                    draw_sprite(double_buffer, obj_mesh, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
                 }
 
                 // Zones
@@ -545,9 +545,12 @@ void KDraw::draw_forelayer(void)
                 }
                 else
                 {
+                    // Print the zone number on top of all other tiles, obstacles, and shadows.
+                    // To get the positioning right, get the full zone number (0..255) as a string,
+                    // position it over the correct tile, and adjust the padding so it's centered.
                     std::string buf = std::to_string(Game.Map.zone_array[here]);
-                    size_t l = buf.size() * 8; // 8 is the width of the font in pixels
-                    print_num(double_buffer, x * 16 + 8 - l / 2 - box.x_offset, y * 16 + 4 - box.y_offset, buf,
+                    int l = buf.size() * 8;
+                    print_num(double_buffer, x * TILE_W + 8 - l / 2 - box.x_offset, y * TILE_H + 4 - box.y_offset, buf,
                               FONT_WHITE);
                 }
             }
@@ -618,7 +621,7 @@ void KDraw::draw_midlayer(void)
         {
             int here = y * g_map.xsize + x;
             int pix = b_seg[here];
-            draw_sprite(double_buffer, map_icons[tilex[pix]], x * 16 - box.x_offset, y * 16 - box.y_offset);
+            draw_sprite(double_buffer, map_icons[tilex[pix]], x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
         }
     }
 }
