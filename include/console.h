@@ -21,10 +21,31 @@
 
 #pragma once
 
-#include <cstdint>
+#include <string>
+#include <vector>
+#include <deque>
 
-void display_console();
-void do_console_command(const char*);
-void init_console(void);
-void run_console(void);
-void scroll_console(const char*);
+class KConsole
+{
+  public:
+    ~KConsole() = default;
+    KConsole();
+
+    void init(size_t num_lines, size_t num_columns);
+
+    void display();
+    void run();
+    void scroll(const std::string& l);
+
+  protected:
+    std::deque<std::string> lines;
+    std::string inputline;
+    int blink;
+    bool on; // Whether
+
+  private:
+    size_t _num_lines;
+    size_t _max_columns;
+};
+
+extern KConsole Console;
