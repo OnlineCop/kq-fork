@@ -25,8 +25,7 @@
  * \author Josh Bolduc
  * \date ????????
  */
-#include <cstdio>
-#include <cstring>
+#include "selector.h"
 
 #include "combat.h"
 #include "constants.h"
@@ -37,9 +36,12 @@
 #include "kq.h"
 #include "menu.h"
 #include "random.h"
-#include "selector.h"
 #include "setup.h"
 #include "structs.h"
+
+#include <algorithm>
+#include <cstdio>
+#include <cstring>
 
 enum eMiniMenu
 {
@@ -434,23 +436,14 @@ static void party_add(ePIDX id, int lead)
  */
 void party_newlead(void)
 {
-    uint32_t i;
-    uint8_t j;
-    ePIDX t;
-
-    for (i = 1; i < numchrs; ++i)
+    // Shift all IDs to the right; shift last ID to the front.
+    for (size_t i = 1; i < numchrs; ++i)
     {
-        t = pidx[0];
-        pidx[0] = pidx[i];
-        pidx[i] = t;
-
-        j = g_ent[0].eid;
-        g_ent[0].eid = g_ent[i].eid;
-        g_ent[i].eid = j;
-
-        j = g_ent[0].chrx;
-        g_ent[0].chrx = g_ent[i].chrx;
-        g_ent[i].chrx = j;
+        // Change only the entity's type and look; retain the other
+        // attributes such as direction facing, speed, etc.
+        std::swap(pidx[0], pidx[i]);
+        std::swap(g_ent[0].eid, g_ent[i].eid);
+        std::swap(g_ent[0].chrx, g_ent[i].chrx);
     }
 }
 
@@ -460,9 +453,7 @@ void party_newlead(void)
  */
 static void party_remove(ePIDX id)
 {
-    size_t pidx_index;
-
-    for (pidx_index = 0; pidx_index < numchrs; ++pidx_index)
+    for (size_t pidx_index = 0; pidx_index < numchrs; ++pidx_index)
     {
         if (pidx[pidx_index] == id)
         {

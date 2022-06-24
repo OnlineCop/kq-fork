@@ -429,7 +429,7 @@ static void getcommand(t_entity target_entity)
         break;
     case 'k':
     case 'K':
-        /* PH add: command K makes the ent disappear */
+        /* PH add: command K makes the entity disappear */
         ent.cmd = COMMAND_KILL;
         ent.active = 0;
         break;
@@ -437,7 +437,7 @@ static void getcommand(t_entity target_entity)
 #ifdef DEBUGMODE
         if (debugging > 0)
         {
-            sprintf(strbuf, _("Invalid entity command (%c) at position %d for ent %d"), s, ent.sidx, target_entity);
+            sprintf(strbuf, _("Invalid entity command (%c) at position %d for entity %d"), s, ent.sidx, target_entity);
             Game.program_death(strbuf);
         }
 #endif
@@ -930,12 +930,12 @@ static void process_entity(t_entity target_entity)
 void set_script(t_entity target_entity, const char* movestring)
 {
     auto& ent = g_ent[target_entity];
-    ent.moving = 0; // Stop entity from moving
-    ent.movcnt = 0; // Reset the move counter to 0
+    ent.moving = 0;             // Stop entity from moving
+    ent.movcnt = 0;             // Reset the move counter to 0
     ent.cmd = COMMAND_NONE;
-    ent.sidx = 0;             // Reset script command index
-    ent.cmdnum = 0;           // There are no scripted commands
-    ent.movemode = MM_SCRIPT; // Force the entity to follow the script
+    ent.sidx = 0;               // Reset script command index
+    ent.cmdnum = 0;             // There are no scripted commands
+    ent.movemode = MM_SCRIPT;   // Force the entity to follow the script
     strncpy(ent.script, movestring, sizeof(ent.script));
 }
 

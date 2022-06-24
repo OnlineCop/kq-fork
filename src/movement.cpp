@@ -32,6 +32,7 @@
 #include "movement.h"
 #include "kq.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 
