@@ -1167,15 +1167,15 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     do_postexec();
 }
 
-void KGame::program_death(const char* message, const char* extra)
+void KGame::program_death(const std::string& message, const std::string& extra)
 {
-    if (extra)
+    if (!extra.empty())
     {
-        TRACE("%s: %s\n", message, extra);
+        TRACE("%s: %s\n", message.c_str(), extra.c_str());
     }
     else
     {
-        TRACE("%s\n", message);
+        TRACE("%s\n", message.c_str());
     }
     deallocate_stuff();
     exit(EXIT_FAILURE);

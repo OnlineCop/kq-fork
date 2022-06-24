@@ -209,7 +209,7 @@ class KGame
      * \param   message Text to put into log
      * \param   extra Addition text for convenience
      */
-    NORETURN void program_death(const char* message, const char* extra = nullptr);
+    NORETURN void program_death(const std::string& message, const std::string& extra = "");
 
     /*! \brief Is this character in the party?
      *
