@@ -23,18 +23,20 @@
 
 /*! \file
  * \brief Structures common to mapedit and the game (s_map and s_entity)
- * \author PH
- * \date 20030805
+ * \note All structs in this file should be considered PODs: Plain Old Data.
+ * They cannot have C++ constructors, memory management, etc. so they can
+ * serialize to/from raw Lua objects.
+ *
+ * If you want to convert these C structs into C++ structs/classes, move
+ * them out of this file.
  */
 
-#include "bounds.h"
 #include "enums.h"
-#include "markers.h"
-#include "player.h"
-#include "res.h"
-class Raster;
 
 #include <cstdint>
+
+class Raster;
+
 
 /*! \brief Entity
  *

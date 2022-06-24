@@ -2,7 +2,10 @@
 
 #include "enums.h"
 #include "structs.h"
-#include <cstdint>
+
+#include <string>
+#include <memory>
+
 class Raster;
 
 /*! \brief Fighter
@@ -22,8 +25,6 @@ class KFighter
     KFighter& operator=(const KFighter& rhs) = default; // Assignment operator
     KFighter& operator=(KFighter&& rhs) = default;      // C++11 move assignment
     ~KFighter() = default;
-
-    void EmptyOtherFighter(KFighter& outFighter);
 
     // S_POISON
     bool IsPoisoned() const;
@@ -130,7 +131,7 @@ class KFighter
     uint8_t GetStatValueBySpellType(eSpellType spellType);
 
     /*! \brief Name */
-    string name;
+    std::string name;
     /*! \brief eXperience Points */
     int xp;
     /*! \brief Gold Points */
