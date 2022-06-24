@@ -42,6 +42,14 @@ static int minimize_path(const char*, char*, size_t);
 static int search_paths(uint32_t, int*, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
                         uint32_t);
 
+enum ePathResult
+{
+    Path_Success = 0,
+    Path_NoneFound = 1,
+    Path_FoundButBufferTooSmall = 2,
+    Path_MemoryOrSizeError = 3,
+};
+
 /*! \brief Generates the solution path.
  *
  * The only way of doing this is walking the path backwards, minimizing and
@@ -57,21 +65,15 @@ static int search_paths(uint32_t, int*, uint32_t, uint32_t, uint32_t, uint32_t, 
  *          0 The solution was copied.
  *          1 The buffer was too small for the solution to be copied.
  *          2 There was no solution, or internal error.
- *
- * \sa search_paths copy_map find_path minimize_path
  */
 static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, char* buffer, size_t size)
 {
-    char temp[1024];
-    int index = 0;
-    uint32_t x;
-    uint32_t y;
-    int value;
+    uint32_t x = target_x;
+    uint32_t y = target_y;
+    int value = map[y * g_map.xsize + x];
+    int index = value - 2;
 
-    x = target_x;
-    y = target_y;
-    value = map[y * g_map.xsize + x];
-    index = value - 2;
+    char temp[1024] = {0};
     memset(temp, '\0', sizeof(temp));
 
     while (value > 1)
@@ -118,19 +120,15 @@ static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, ch
  * by either an object or an entity.
  *
  * \param[in,out] map The map where the result will be copied.
- *
- * \sa search_paths compose_path find_path minimize_path
  */
 static void copy_map(int* map)
 {
-    size_t x, y;
-    size_t index, entity_index;
-
-    for (y = 0; y < g_map.ysize; y++)
+    // Set any tile to -1 when there's an obstacle or active (as in, visible on the map) entity there.
+    for (size_t y = 0; y < g_map.ysize; y++)
     {
-        for (x = 0; x < g_map.xsize; x++)
+        for (size_t x = 0; x < g_map.xsize; x++)
         {
-            index = y * g_map.xsize + x;
+            size_t index = y * g_map.xsize + x;
 
             if (Game.Map.obstacle_array[index] != eObstacle::BLOCK_NONE)
             {
@@ -141,7 +139,7 @@ static void copy_map(int* map)
 
     /*  RB: faster to do this than to check if there is an entity at every square
      */
-    for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++)
+    for (size_t entity_index = 0; entity_index < MAX_ENTITIES; entity_index++)
     {
         if (g_ent[entity_index].active)
         {
@@ -168,33 +166,25 @@ static void copy_map(int* map)
  *          1 No path found,
  *          2 Path found but result buffer too small to hold the answer.
  *          3 Misc error.
- *
- * \sa copy_map compose_path search_paths minimize_path
  */
 int find_path(size_t entity_id, uint32_t source_x, uint32_t source_y, uint32_t target_x, uint32_t target_y,
               char* buffer, uint32_t size)
 {
-    int* map = NULL;
-    uint32_t result = 0;
-
-    if (buffer == NULL || size == 0)
+    if (buffer == nullptr || size == 0)
     {
         return 3;
     }
 
     memset(buffer, '\0', size);
 
-    /*  TODO: Allocate memory once instead of every call  */
-    result = g_map.xsize * g_map.ysize * sizeof(int);
-    map = (int*)malloc(result);
-    if (map == NULL)
+    int* map = (int*)calloc(g_map.xsize * g_map.ysize, sizeof(int));
+    if (map == nullptr)
     {
         return 3;
     }
 
-    memset(map, 0, result);
     copy_map(map);
-    result = search_paths(entity_id, map, 1, source_x, source_y, target_x, target_y, 0, 0, g_map.xsize, g_map.ysize);
+    uint32_t result = search_paths(entity_id, map, 1, source_x, source_y, target_x, target_y, 0, 0, g_map.xsize, g_map.ysize);
 
     if (result == 0)
     {
@@ -219,8 +209,6 @@ int find_path(size_t entity_id, uint32_t source_x, uint32_t source_y, uint32_t t
  *
  * \returns 0 if the solution was copied,
  *          1 if the buffer was too small for the solution to be copied.
- *
- * \sa search_paths copy_map find_path compose_path
  */
 static int minimize_path(const char* source, char* target, size_t size)
 {
@@ -278,19 +266,15 @@ static int minimize_path(const char* source, char* target, size_t size)
  *
  * \returns 0 if a path was successfully found, otherwise non-zero to indicate
  * failure.
- *
- * \sa copy_map compose_path find_path minimize_path
  */
 static int search_paths(uint32_t entity_id, int* map, uint32_t step, uint32_t source_x, uint32_t source_y,
                         uint32_t target_x, uint32_t target_y, uint32_t start_x, uint32_t start_y, uint32_t limit_x,
                         uint32_t limit_y)
 {
-    int index;
-    int value;
     int result = 1;
 
-    index = source_y * limit_x + source_x;
-    value = map[index];
+    int index = source_y * limit_x + source_x;
+    int value = map[index];
     if ((value != -1) && (value == 0 || value > (int)step) && (step == 1 || !entityat(source_x, source_y, entity_id)))
     {
         map[index] = step;
