@@ -137,7 +137,7 @@ void KDraw::blit2screen()
     }
     ++animation_count;
 #ifdef DEBUGMODE
-    display_console();
+    Console.display();
 #endif
     int pitch;
     void* pixels;

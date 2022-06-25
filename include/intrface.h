@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <string>
+
 /* Special identifiers for bubble() */
 enum eHero
 {
@@ -38,3 +40,4 @@ void do_importquests(void);
 void do_timefunc(const char* funcname);
 void do_zone(int zn_num);
 void lua_user_init(void);
+void do_console_command(const std::string& cmd);

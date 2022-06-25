@@ -24,9 +24,12 @@
 #include "draw.h"
 #include "gfx.h"
 #include "input.h"
+#include "intrface.h"
 #include "kq.h"
 #include "music.h"
 #include "structs.h"
+
+#include <cassert>
 #include <cstddef>
 
 /*! \file
@@ -34,21 +37,6 @@
  * \author PH
  * \date 20070723
  */
-
-/* Internal variables */
-static struct console_state
-{
-#define CONSOLE_LINES 25
-    char* lines[CONSOLE_LINES];
-    int cur_line;
-    char inputline[80];
-    int cursor;
-    int blink;
-    bool on;
-    void init();
-    void display();
-    void scroll(const char*);
-} g_console;
 
 enum eRunConsoleKeys
 {
@@ -61,20 +49,29 @@ enum eRunConsoleKeys
     RUNKEY_CTRL_S = 19
 };
 
+KConsole::KConsole()
+    : lines{}
+    , inputline{}
+    , blink{0}
+    , on{false}
+    , _num_lines{0}
+    , _max_columns{0}
+{
+}
+
 /*! \brief Initialize the console state
  *
  * Set up the global state ready for using the console
  * \author PH
  */
-void console_state::init()
+void KConsole::init(size_t num_lines, size_t num_columns)
 {
-    cursor = 0;
-    on = false;
-    blink = 0;
-    for (int console_line = 0; console_line < CONSOLE_LINES; ++console_line)
-    {
-        lines[console_line] = NULL;
-    }
+    this->inputline.clear();
+    this->blink = 0;
+    this->on = false;
+    this->_num_lines = num_lines;
+    this->_max_columns = num_columns;
+    this->lines.assign(num_lines, "");
 }
 
 /*! \brief Show the current console
@@ -84,7 +81,7 @@ void console_state::init()
  * up 320x120 pixels.
  * \author PH
  */
-void console_state::display()
+void KConsole::display()
 {
     static const int max_y = 120;
 
@@ -92,22 +89,25 @@ void console_state::display()
     {
         return;
     }
+    assert(!lines.empty());
+
     rectfill(double_buffer, 0, max_y, 320, 240, makecol(0, 0, 0));
     hline(double_buffer, 0, max_y, 320, makecol(255, 255, 255));
     int y = 240 - 2 * Draw.font_height(FNORMAL);
-    int i = CONSOLE_LINES - 1;
-    auto fhgt = Draw.font_height(FNORMAL);
+    size_t i = lines.size() - 1;
+    const int fhgt = Draw.font_height(FNORMAL);
     while (y > max_y)
     {
-        if (lines[i])
+        if (!lines[i].empty())
         {
             Draw.print_font(double_buffer, 0, y, lines[i], FGREEN);
         }
         y -= fhgt;
         --i;
     }
-    auto w = Draw.text_length(FNORMAL, inputline);
+    auto w = Draw.text_length(FNORMAL, inputline.c_str());
     Draw.print_font(double_buffer, 0, 240 - 8, inputline, FNORMAL);
+
     // Draw a cursor
     if ((blink % 50) < 25)
     {
@@ -117,44 +117,28 @@ void console_state::display()
 
 /*! \brief Display a line on the console
  *
- * This displays a line of text, scrolling up all the other
- * lines. No wrapping is performed.
+ * This displays a line of text, scrolling up all the other lines. No wrapping is performed.
  * \param l the text to display
  */
-void console_state::scroll(const char* l)
+void KConsole::scroll(const std::string& l)
 {
-    int i;
-
-    if (l == NULL)
-    {
-        return;
-    }
-    free(lines[0]);
-    for (i = 0; i < CONSOLE_LINES - 1; ++i)
-    {
-        lines[i] = lines[i + 1];
-    }
-    lines[CONSOLE_LINES - 1] = strcpy((char*)malloc(strlen(l) + 1), l);
+    lines.pop_front();
+    lines.push_back(l);
 }
 
 /* \brief Enter console mode
  *
- * Run the console. Does not return until the console
- * is closed.
+ * Run the console. Does not return until the console is closed.
  */
-void run_console(void)
+void KConsole::run()
 {
-    size_t sl;
-    bool running;
-    uint32_t string_len;
-    uint32_t i;
-    static const char get[] = "return progress.";
-    static const char ret[] = "return ";
-    static const char set[] = "progress.";
-    string prevCmd = "";
+    static const std::string get{"return progress."};
+    static const std::string ret{"return "};
+    static const std::string set{"progress."};
+    std::string prevCmd = "";
 
-    g_console.inputline[0] = '\0';
-    g_console.on = true;
+    inputline.clear();
+    this->on = true;
 
     /* Wait for all keys up */
     while (Game.peek_key())
@@ -162,98 +146,79 @@ void run_console(void)
         Game.ProcessEvents();
         Game.get_key();
     }
-    running = true;
-    while (running)
-    {
-        sl = strlen(g_console.inputline);
 
+    bool running = this->on;
+    while (this->on/*running*/)
+    {
         /* Get a key */
         Game.ProcessEvents();
         Game.do_check_animation();
         Draw.blit2screen();
         Music.poll_music();
+
         int c = Game.get_key();
         switch (c)
         {
         case 0: /* Nothing */
-            g_console.blink++;
+            ++this->blink;
             break;
+
         case RUNKEY_RETURN: /* Return */
-            if (sl == 0)
+            if (this->inputline.empty())
             {
                 /* Stop when blank line is entered */
-                running = g_console.on = false;
+                running = this->on = false;
             }
             else
             {
-                g_console.on = false;
-                g_console.scroll(g_console.inputline);
-                prevCmd = g_console.inputline;
-                do_console_command(g_console.inputline);
-                g_console.inputline[0] = '\0';
-                g_console.on = true;
+                this->on = false;
+                this->scroll(this->inputline);
+                prevCmd = this->inputline;
+                do_console_command(this->inputline);
+                this->inputline.clear();
+                this->on = true;
             }
             break;
 
         case RUNKEY_DELETE: /* delete */
-            if (strlen(g_console.inputline) > 0)
+            if (!this->inputline.empty())
             {
-                g_console.inputline[sl - 1] = '\0';
+                this->inputline.pop_back();
             }
             break;
 
         case RUNKEY_CTRL_G: /* ctrl g */
-            do_console_command(g_console.inputline);
-
-            string_len = strlen(get);
-            for (i = 0; i < string_len; i++)
-            {
-                g_console.inputline[i] = get[i];
-            }
+            do_console_command(this->inputline);
+            this->inputline = get;
             break;
 
         case RUNKEY_CTRL_Z:
-            do_console_command(g_console.inputline);
-
-            string_len = strlen(prevCmd.c_str());
-            for (i = 0; i < string_len; i++)
-            {
-                g_console.inputline[i] = prevCmd.c_str()[i];
-            }
+            do_console_command(this->inputline);
+            this->inputline = prevCmd;
             break;
 
         case RUNKEY_BACKSPACE: /* backspace */
-            if (strlen(g_console.inputline) > 0)
+            if (!this->inputline.empty())
             {
-                g_console.inputline[sl - 1] = '\0';
+                this->inputline.pop_back();
             }
             break;
 
         case RUNKEY_CTRL_R: /* ctrl r */
-            do_console_command(g_console.inputline);
-
-            string_len = strlen(ret);
-            for (i = 0; i < string_len; i++)
-            {
-                g_console.inputline[i] = ret[i];
-            }
+            do_console_command(this->inputline);
+            this->inputline = ret;
             break;
 
         case RUNKEY_CTRL_S: /* ctrl s */
-            do_console_command(g_console.inputline);
-
-            string_len = strlen(set);
-            for (i = 0; i < string_len; i++)
-            {
-                g_console.inputline[i] = set[i];
-            }
+            do_console_command(this->inputline);
+            this->inputline = set;
             break;
 
         default:
-            if (strlen(g_console.inputline) < sizeof(g_console.inputline) - 1)
+            if (this->inputline.size() < this->_max_columns - 1)
             {
-                g_console.inputline[sl] = c & 0xff;
-                g_console.inputline[sl + 1] = '\0';
+                const char ch = (c & 0xff);
+                this->inputline.append(1, ch);
             }
             break;
         }
@@ -266,15 +231,4 @@ void run_console(void)
     } while (PlayerInput.benter());
 }
 
-void init_console()
-{
-    g_console.init();
-}
-void scroll_console(const char* s)
-{
-    g_console.scroll(s);
-}
-void display_console()
-{
-    g_console.display();
-}
+KConsole Console;

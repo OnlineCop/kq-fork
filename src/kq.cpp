@@ -983,7 +983,7 @@ int main(int argc, char* argv[])
                 {
                     Game.want_console = false;
                     Game.wait_released();
-                    run_console();
+                    Console.run();
                 }
                 if (PlayerInput.besc())
                 {
@@ -1244,7 +1244,8 @@ static int rgb_index(RGB& c)
     }
     return bestindex;
 }
-void KGame::startup(void)
+
+void KGame::startup()
 {
     int p, i, q;
     time_t t;
@@ -1424,7 +1425,9 @@ void KGame::startup(void)
     }
 #endif
 
-    init_console();
+    constexpr size_t MaxConsoleColumns = 80;
+    constexpr size_t NumConsoleLines = 25;
+    Console.init(NumConsoleLines, MaxConsoleColumns);
 }
 
 void KGame::extra_controls()
@@ -1662,6 +1665,12 @@ bool KGame::ProcessEvents()
                     break;
                 case SDLK_BACKSPACE:
                     keyp = 0x8;
+                    break;
+                case SDLK_LEFT:
+                    keyp = 0;
+                    break;
+                case SDLK_RIGHT:
+                    keyp = 0;
                     break;
                 }
                 break;

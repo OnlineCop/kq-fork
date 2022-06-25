@@ -4036,54 +4036,51 @@ int lua_dofile(lua_State* L, const char* filename)
  */
 static int kq_dostring(lua_State* L, const char* cmd)
 {
-    int retval, nrets, top;
-    int i;
-
-    top = lua_gettop(L);
+    int top = lua_gettop(L);
     /* Parse the command into an anonymous function on the stack */
-    retval = lua_load(L, (lua_Reader)stringreader, &cmd, "<console>", NULL);
+    int retval = lua_load(L, (lua_Reader)stringreader, &cmd, "<console>", NULL);
     if (retval != 0)
     {
-        scroll_console("Parse error");
+        Console.scroll("Parse error");
         return retval;
     }
     /* Call it with no args and any number of return values */
     retval = lua_pcall(L, 0, LUA_MULTRET, 0);
     if (retval != 0)
     {
-        scroll_console("Execute error");
+        Console.scroll("Execute error");
         return retval;
     }
-    nrets = lua_gettop(L) - top;
-    for (i = -nrets; i < 0; ++i)
+    int nrets = lua_gettop(L) - top;
+    for (int i = -nrets; i < 0; ++i)
     {
         if (lua_isboolean(L, i))
         {
-            scroll_console(lua_toboolean(L, i) ? "true" : "false");
+            Console.scroll(lua_toboolean(L, i) ? "true" : "false");
         }
         else if (lua_isstring(L, i))
         {
-            scroll_console(lua_tostring(L, i));
+            Console.scroll(lua_tostring(L, i));
         }
         else if (lua_isfunction(L, i))
         {
-            scroll_console("<FUNCTION>");
+            Console.scroll("<FUNCTION>");
         }
         else if (lua_isuserdata(L, i))
         {
-            scroll_console("<USERDATA>");
+            Console.scroll("<USERDATA>");
         }
         else if (lua_istable(L, i))
         {
-            scroll_console("<TABLE>");
+            Console.scroll("<TABLE>");
         }
         else if (lua_isnil(L, i))
         {
-            scroll_console("<NIL>");
+            Console.scroll("<NIL>");
         }
         else
         {
-            scroll_console("<OTHER>");
+            Console.scroll("<OTHER>");
         }
     }
     lua_pop(L, nrets);
@@ -4097,15 +4094,15 @@ static int kq_dostring(lua_State* L, const char* cmd)
  *
  * \param cmd the string to execute
  */
-void do_console_command(const char* cmd)
+void do_console_command(const std::string& cmd)
 {
-    if (theL != NULL)
+    if (theL != nullptr)
     {
-        kq_dostring(theL, cmd);
+        kq_dostring(theL, cmd.c_str());
     }
     else
     {
-        scroll_console("No script engine running");
+        Console.scroll("No script engine running");
     }
 }
 
@@ -4117,7 +4114,7 @@ void do_console_command(const char* cmd)
  */
 int KQ_print(lua_State* L)
 {
-    scroll_console(lua_tostring(L, 1));
+    Console.scroll(lua_tostring(L, 1));
     return 0;
 }
 
