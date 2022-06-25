@@ -56,12 +56,6 @@ KEntityManager::KEntityManager()
 {
 }
 
-/*! \brief Count active entities
- *
- * Force calculation of the 'number_of_entities' variable.
- * This actually calculates the last index of any active entity plus one,
- * so if there are entities present, but not active, they may be counted.
- */
 void KEntityManager::count_entities()
 {
     number_of_entities = 0;
@@ -74,17 +68,6 @@ void KEntityManager::count_entities()
     }
 }
 
-/*! \brief Check entites at location
- *
- * Check for any entities in the specified co-ordinates.
- * Runs combat routines if a character and an enemy meet,
- * and de-activate the enemy if it was defeated.
- *
- * \param   ox x-coord to check
- * \param   oy y-coord to check
- * \param   who Id of entity doing the checking
- * \returns index of entity found+1 or 0 if none found
- */
 int KEntityManager::entityat(int ox, int oy, t_entity who)
 {
     t_entity i;
@@ -125,14 +108,6 @@ int KEntityManager::entityat(int ox, int oy, t_entity who)
     return 0;
 }
 
-/*! \brief Set position
- *
- * Position an entity manually.
- *
- * \param   en Entity to position
- * \param   ex x-coord
- * \param   ey y-coord
- */
 void KEntityManager::place_ent(t_entity en, int ex, int ey)
 {
     g_ent[en].tilex = ex;
@@ -141,11 +116,6 @@ void KEntityManager::place_ent(t_entity en, int ex, int ey)
     g_ent[en].y = g_ent[en].tiley * TILE_H;
 }
 
-/*! \brief Main entity routine
- *
- * The main routine that loops through the entity list and processes each
- * one.
- */
 void KEntityManager::process_entities()
 {
     for (auto i = 0U; i < MAX_ENTITIES; i++)
@@ -164,14 +134,6 @@ void KEntityManager::process_entities()
     }
 }
 
-/*! \brief Initialize script
- *
- * This is used to set up an entity with a movement script so that
- * it can be automatically controlled.
- *
- * \param   target_entity Entity to process
- * \param   movestring The script
- */
 void KEntityManager::set_script(t_entity target_entity, const char* movestring)
 {
     KQEntity& ent = g_ent[target_entity];
@@ -184,14 +146,6 @@ void KEntityManager::set_script(t_entity target_entity, const char* movestring)
     strncpy(ent.script, movestring, sizeof(ent.script));
 }
 
-/*! \brief Chase player
- *
- * Chase after the main player #0, if he/she is near.
- * Speed up until at maximum. If the player goes out
- * of range, wander for a bit.
- *
- * \param   target_entity Index of entity
- */
 void KEntityManager::chase(t_entity target_entity)
 {
     int emoved = 0;
@@ -252,18 +206,6 @@ void KEntityManager::chase(t_entity target_entity)
     }
 }
 
-/*! \brief Check proximity
- *
- * Check to see if the target is within "rad" squares.
- * Test area is a square box rather than a circle
- * target entity needs to be within the view area
- * to be visible
- *
- * \param   eno Entity under consideration
- * \param   tgt Entity to test
- * \param   rad Radius to test within
- * \returns true if near, false otherwise
- */
 bool KEntityManager::entity_near(t_entity eno, t_entity tgt, int rad)
 {
     KQEntity& tnt = g_ent[tgt];
@@ -279,12 +221,6 @@ bool KEntityManager::entity_near(t_entity eno, t_entity tgt, int rad)
     return false;
 }
 
-/*! \brief Run script
- *
- * This executes script commands.  This is from Verge1.
- *
- * \param   target_entity Entity to process
- */
 void KEntityManager::entscript(t_entity target_entity)
 {
     KQEntity& ent = g_ent[target_entity];
@@ -370,10 +306,6 @@ void KEntityManager::entscript(t_entity target_entity)
     }
 }
 
-/*! \brief Party following leader
- *
- * This makes any characters (after the first) follow the leader.
- */
 void KEntityManager::follow(int tile_x, int tile_y)
 {
     t_entity i;
@@ -395,22 +327,6 @@ void KEntityManager::follow(int tile_x, int tile_y)
     }
 }
 
-/*! \brief Read a command and parameter from a script
- *
- * This processes entity commands from the movement script.
- * This is from Verge1.
- *
- * Script commands are:
- * - U,R,D,L + param:  move up, right, down, left by param spaces
- * - W+param: wait param frames
- * - B: start script again
- * - X+param: move to x-coord param
- * - Y+param: move to y-coord param
- * - F+param: face direction param (0=S, 1=N, 2=W, 3=E)
- * - K: kill (remove) entity
- *
- * \param   target_entity Entity to process
- */
 void KEntityManager::getcommand(t_entity target_entity)
 {
     char s;
@@ -495,14 +411,6 @@ void KEntityManager::getcommand(t_entity target_entity)
     }
 }
 
-/*! \brief Generic movement
- *
- * Set up the entity vars to move in the given direction
- *
- * \param   target_entity Index of entity to move
- * \param   dx tiles to move in x direction
- * \param   dy tiles to move in y direction
- */
 int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
 {
     if (dx == 0 && dy == 0)
@@ -722,17 +630,6 @@ int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
     return 1;
 }
 
-/*! \brief Check for obstruction
- *
- * Check for any map-based obstructions in the specified co-ordinates.
- *
- * \param   origin_x Original x-coord position
- * \param   origin_y Original y-coord position
- * \param   move_x Amount to move -1..+1
- * \param   move_y Amount to move -1..+1
- * \param   check_entity Whether to return 1 if an entity is at the target
- * \returns 1 if path is obstructed, 0 otherwise
- */
 int KEntityManager::obstruction(int origin_x, int origin_y, int move_x, int move_y, int check_entity)
 {
     int current_tile; // obstrution for current tile
@@ -807,13 +704,6 @@ int KEntityManager::obstruction(int origin_x, int origin_y, int move_x, int move
     return 0;
 }
 
-/*! \brief Read an int from a script
- *
- * This parses the movement script for a value that relates
- * to a command.  This is from Verge1.
- *
- * \param   target_entity Entity to process
- */
 void KEntityManager::parsems(t_entity target_entity)
 {
     uint32_t p = 0;
@@ -834,13 +724,6 @@ void KEntityManager::parsems(t_entity target_entity)
     ent.cmdnum = atoi(tok);
 }
 
-/*! \brief Process movement for player
- *
- * This is the replacement for process_controls that used to be in kq.c
- * I realized that all the work in process_controls was already being
- * done in process_entity... I just had to make this exception for the
- * player-controlled dude.
- */
 void KEntityManager::player_move()
 {
     KQEntity& plr = g_ent[0];
@@ -893,15 +776,6 @@ void KEntityManager::player_move()
     }
 }
 
-/*! \brief Actions for one entity
- * \date    20040310 PH added TARGET movemode, broke out chase into separate function
- *
- * Process an individual active entity.  If the entity in question is main character (#0)
- * and the party is not automated, then allow for player input.
- *
- * \param   target_entity Index of entity
- * \date    20040310 PH added TARGET movemode, broke out chase into separate function
- */
 void KEntityManager::process_entity(t_entity target_entity)
 {
     KQEntity& ent = g_ent[target_entity];
@@ -1012,13 +886,6 @@ void KEntityManager::process_entity(t_entity target_entity)
     }
 }
 
-/*! \brief Adjust movement speed
- *
- * This has to adjust for each entity's speed.
- * 'Normal' speed appears to be 4.
- *
- * \param   target_entity Index of entity
- */
 void KEntityManager::speed_adjust(t_entity target_entity)
 {
     KQEntity& ent = g_ent[target_entity];
@@ -1071,17 +938,6 @@ void KEntityManager::speed_adjust(t_entity target_entity)
     }
 }
 
-/*! \brief Move entity towards target
- * \author PH
- * \date 20040310
- *
- * When entity is in target mode (MM_TARGET) move towards the goal.  This is
- * fairly simple; it doesn't do clever obstacle avoidance.  It simply moves
- * either horizontally or vertically, preferring the _closer_ one. In other
- * words, it will try to get on a vertical or horizontal line with its target.
- *
- * \param   target_entity Index of entity
- */
 void KEntityManager::target(t_entity target_entity)
 {
     int dx, dy, ax, ay, emoved = 0;
@@ -1153,13 +1009,6 @@ void KEntityManager::target(t_entity target_entity)
     }
 }
 
-/*! \brief Move randomly
- *
- * Choose a random direction for the entity to walk in and set up the
- * vars to do so.
- *
- * \param   target_entity Index of entity to move
- */
 void KEntityManager::wander(t_entity target_entity)
 {
     KQEntity& ent = g_ent[target_entity];
