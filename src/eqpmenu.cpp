@@ -42,21 +42,21 @@
 #include "setup.h"
 
 /* Globals  */
-int tstats[13], tres[R_TOTAL_RES];
-uint16_t t_inv[MAX_INV], sm;
-size_t tot;
-char eqp_act;
+static int tstats[13], tres[R_TOTAL_RES];
+static uint16_t t_inv[MAX_INV], sm;
+static size_t tot;
+static char eqp_act;
 
 /* Internal functions */
-static void draw_equipmenu(int, int);
+static void draw_equipmenu(int, bool);
 static void draw_equippable(uint32_t, uint32_t, uint32_t);
 static void calc_possible_equip(int, int);
 static void optimize_equip(int);
 static void choose_equipment(int, int);
 static void calc_equippreview(uint32_t, uint32_t, int);
 static void draw_equippreview(int, int, int);
-static int equip(uint32_t, uint32_t, uint32_t);
-static int deequip(uint32_t, uint32_t);
+static bool equip(uint32_t, uint32_t);
+static bool deequip(uint32_t, uint32_t);
 
 /*! \brief Show the effect on stats if this piece were selected
  *
@@ -90,6 +90,7 @@ static void calc_equippreview(uint32_t aa, uint32_t p2, int ii)
  *
  * Create a list of equipment that can be equipped in a particular
  * slot for a particular hero.
+ * Write list into t_inv[], length tot.
  *
  * \param   c Character to equip
  * \param   slot Which body part to equip
@@ -187,7 +188,7 @@ static void choose_equipment(int c, int slot)
         }
         if (PlayerInput.balt())
         {
-            if (equip(pidx[c], t_inv[pptr + yptr], 0) == 1)
+            if (equip(pidx[c], t_inv[pptr + yptr]) == 1)
             {
                 play_effect(KAudio::eSound::SND_EQUIP, 128);
                 stop = 1;
@@ -214,31 +215,23 @@ static void choose_equipment(int c, int slot)
  * \param   ptr Slot to de-equip
  * \returns 0 if unsuccessful, 1 if successful
  */
-static int deequip(uint32_t c, uint32_t ptr)
+static bool deequip(uint32_t c, uint32_t ptr)
 {
-    int a, b = 0;
-
     if (ptr >= NUM_EQUIPMENT)
     {
-        return 0;
+        return false;
     }
 
-    a = party[pidx[c]].eqp[ptr];
-    if (a > 0)
+    int existing_item = party[pidx[c]].eqp[ptr];
+    if (existing_item > 0 && check_inventory(existing_item, 1) != 0)
     {
-        b = check_inventory(a, 1);
+        party[pidx[c]].eqp[ptr] = 0;
+        return true;
     }
     else
     {
-        return 0;
+        return false;
     }
-
-    if (b == 0)
-    {
-        return 0;
-    }
-    party[pidx[c]].eqp[ptr] = 0;
-    return 1;
 }
 
 /*! \brief Draw the equipment menu
@@ -253,13 +246,11 @@ static int deequip(uint32_t c, uint32_t ptr)
  *              Otherwise just show Equip if eqp_act is 0 or Remove if it is 2.
  *              (This is when you're selecting the item to Equip/Remove)
  */
-static void draw_equipmenu(int c, int sel)
+static void draw_equipmenu(int c, bool sel)
 {
-    int l, j, k;
-
-    l = pidx[c];
+    int l = pidx[c];
     Draw.menubox(double_buffer, 12, 4, 35, 1, BLUE);
-    if (sel == 1)
+    if (sel)
     {
         Draw.menubox(double_buffer, eqp_act * 72 + 12, 4, 8, 1, DARKBLUE);
         Draw.print_font(double_buffer, 32, 12, _("Equip"), FGOLD);
@@ -288,9 +279,9 @@ static void draw_equipmenu(int c, int sel)
     Draw.print_font(double_buffer, 28, 60, _("Body:"), FGOLD);
     Draw.print_font(double_buffer, 28, 68, _("Arms:"), FGOLD);
     Draw.print_font(double_buffer, 28, 76, _("Other:"), FGOLD);
-    for (k = 0; k < NUM_EQUIPMENT; k++)
+    for (int k = 0; k < NUM_EQUIPMENT; k++)
     {
-        j = party[l].eqp[k];
+        int j = party[l].eqp[k];
         Draw.draw_icon(double_buffer, items[j].icon, 84, k * 8 + 36);
         Draw.print_font(double_buffer, 92, k * 8 + 36, items[j].name, FNORMAL);
     }
@@ -308,8 +299,6 @@ static void draw_equipmenu(int c, int sel)
  */
 static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
 {
-    int z, j, k;
-
     if (slot < NUM_EQUIPMENT)
     {
         calc_possible_equip(c, slot);
@@ -327,12 +316,12 @@ static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
         sm = NUM_ITEMS_PER_PAGE;
     }
     Draw.menubox(double_buffer, 12, 92, 20, NUM_ITEMS_PER_PAGE, BLUE);
-    for (k = 0; k < sm; k++)
+    for (int k = 0; k < sm; k++)
     {
         // j == item index #
-        j = g_inv[t_inv[pptr + k]].item;
+        int j = g_inv[t_inv[pptr + k]].item;
         // z == number of items
-        z = g_inv[t_inv[pptr + k]].quantity;
+        int z = g_inv[t_inv[pptr + k]].quantity;
         Draw.draw_icon(double_buffer, items[j].icon, 28, k * 8 + 100);
         Draw.print_font(double_buffer, 36, k * 8 + 100, items[j].name, FNORMAL);
         if (z > 1)
@@ -366,8 +355,6 @@ static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
  */
 static void draw_equippreview(int ch, int ptr, int pp)
 {
-    int z, c1, c2;
-
     if (ptr >= 0)
     {
         calc_equippreview(ch, ptr, pp);
@@ -390,10 +377,10 @@ static void draw_equippreview(int ch, int ptr, int pp)
     Draw.print_font(double_buffer, 196, 180, _("Def:"), FNORMAL);
     Draw.print_font(double_buffer, 196, 188, _("Evd:"), FNORMAL);
     Draw.print_font(double_buffer, 196, 196, _("Mdf:"), FNORMAL);
-    for (z = 0; z < 13; z++)
+    for (int z = 0; z < 13; z++)
     {
-        c1 = fighter[ch].stats[z];
-        c2 = tstats[z];
+        int c1 = fighter[ch].stats[z];
+        int c2 = tstats[z];
         sprintf(strbuf, "%d", c1);
         Draw.print_font(double_buffer, 252 - (strlen(strbuf) * 8), z * 8 + 100, strbuf, FNORMAL);
         Draw.print_font(double_buffer, 260, z * 8 + 100, ">", FNORMAL);
@@ -411,9 +398,9 @@ static void draw_equippreview(int ch, int ptr, int pp)
     Draw.menubox(double_buffer, 188, 212, 13, 1, BLUE);
     if (ptr >= 0)
     {
-        c1 = 0;
-        c2 = 0;
-        for (z = 0; z < R_TOTAL_RES; z++)
+        int c1 = 0;
+        int c2 = 0;
+        for (int z = 0; z < R_TOTAL_RES; z++)
         {
             c1 += fighter[ch].res[z];
             c2 += tres[z];
@@ -428,101 +415,82 @@ static void draw_equippreview(int ch, int ptr, int pp)
 /*! \brief Change a character's equipment
  *
  * Do the actual equip.  Of course, it will de-equip anything that
- * is currently in the specified slot.  The 'forced' var is used to
- * give the character an item and equip it all in one shot.  This is
- * typically only used for scripted events, but could be added to the
- * shop menu processing, so that things are equipped as soon as you
- * buy them.
+ * is currently in the specified slot.
  *
  * \param   c Character to process
  * \param   selected_item Item to add
- * \param   forced Non-zero if character doesn't already have the item (see
- * above)
  * \returns 1 if equip was successful, 0 otherwise
  */
-static int equip(uint32_t c, uint32_t selected_item, uint32_t forced)
+static bool equip(uint32_t c, uint32_t selected_item)
 {
-    uint32_t a;
-    int d, b, z, n = 0, i;
-
     if (selected_item >= MAX_INV)
     {
-        return 0;
+        return false;
     }
 
-    if (forced == 0)
+    int item = g_inv[selected_item].item;
+    int slot = items[item].type;
+    int existing;
+    if (slot < NUM_EQUIPMENT)
     {
-        d = g_inv[selected_item].item;
+        existing = party[c].eqp[slot];
     }
     else
     {
-        d = selected_item;
-    }
-    a = items[d].type;
-    if (a < NUM_EQUIPMENT)
-    {
-        b = party[c].eqp[a];
-    }
-    else
-    {
-        return 0;
+        return false;
     }
 
-    if (items[d].eq[c] == 0)
+    if (items[item].eq[c] == 0)
     {
-        return 0;
+        return false;
     }
-    if (a == EQP_SHIELD)
+    if (slot == EQP_SHIELD)
     {
+        // Can't equip a shield if holding a two-handed weapon
         if (party[c].eqp[EQP_WEAPON] > 0 && items[party[c].eqp[EQP_WEAPON]].hnds == 1)
         {
-            return 0;
+            return false;
         }
     }
-    else if (a == EQP_WEAPON)
+    else if (slot == EQP_WEAPON)
     {
-        if (party[c].eqp[EQP_SHIELD] > 0 && items[d].hnds == 1)
+        // Can't equip a two-handed weapon if holding a shield
+        if (party[c].eqp[EQP_SHIELD] > 0 && items[item].hnds == 1)
         {
-            return 0;
+            return false;
         }
     }
-    if (b > 0)
+    if (existing > 0)
     {
-        for (i = 0; i < MAX_INV; i++)
-        {
-            // Check if we have any items at all
-            if (g_inv[selected_item].item > 0 && g_inv[selected_item].quantity > 0)
-            {
-                n++;
-            }
-        }
+        // Check if we have any items at all
+        bool got = g_inv[selected_item].item > 0 && g_inv[selected_item].quantity > 0;
         // this first argument checks to see if there's one of given item
-        if (g_inv[selected_item].quantity == 1 && n == MAX_INV && forced == 0)
+        if (g_inv[selected_item].quantity == 1 && got)
         {
-            party[c].eqp[a] = d;
-            g_inv[selected_item].item = b;
+            // swap 1 for 1
+            party[c].eqp[slot] = item;
+            g_inv[selected_item].item = existing;
             g_inv[selected_item].quantity = 1;
-            return 1;
+            return true;
         }
         else
         {
-            z = check_inventory(b, 1);
+            // otherwise try and move the existing item away
+            int z = check_inventory(existing, 1);
             if (z != 0)
             {
-                party[c].eqp[a] = 0;
+                party[c].eqp[slot] = 0;
             }
             else
             {
-                return 0;
+                return false;
             }
         }
     }
-    party[c].eqp[a] = d;
-    if (forced == 0)
-    {
-        remove_item(selected_item, 1);
-    }
-    return 1;
+    // Place in the slot
+    party[c].eqp[slot] = item;
+    remove_item(selected_item, 1);
+    return true;
 }
 
 /*! \brief Handle equip menu
@@ -533,9 +501,10 @@ static int equip(uint32_t c, uint32_t selected_item, uint32_t forced)
  */
 void equip_menu(uint32_t c)
 {
-    int stop = 0, yptr = 0, sl = 1;
-    int a, b, d;
-
+    int yptr = 0;
+    // If sl is true, focus is on the "Action bar"
+    // otherwise the focus is on the list of slots
+    bool stop = false, sl = true;
     eqp_act = 0;
     play_effect(KAudio::eSound::SND_MENU, 128);
     while (!stop)
@@ -544,7 +513,13 @@ void equip_menu(uint32_t c)
         Game.do_check_animation();
         Draw.drawmap();
         draw_equipmenu(c, sl);
-        if (sl == 0)
+        if (sl)
+        {
+            // Draw 'empty' menu
+            draw_equippable(c, NUM_EQUIPMENT, 0);
+            draw_equippreview(c, -1, 0);
+        }
+        else
         {
             draw_equippable(c, yptr, 0);
             if (eqp_act == 2)
@@ -555,19 +530,11 @@ void equip_menu(uint32_t c)
             {
                 draw_equippreview(c, -1, 0);
             }
-        }
-        else
-        {
-            draw_equippable(c, (uint32_t)-1, 0);
-            draw_equippreview(c, -1, 0);
-        }
-        if (sl == 0)
-        {
             draw_sprite(double_buffer, menuptr, 12, yptr * 8 + 36);
         }
         Draw.blit2screen();
 
-        if (sl == 1)
+        if (sl)
         {
             if (PlayerInput.left())
             {
@@ -611,30 +578,29 @@ void equip_menu(uint32_t c)
         }
         if (PlayerInput.balt())
         {
-            if (sl == 1)
+            if (sl)
             {
                 // If the selection is over 'Equip' or 'Remove'
                 if (eqp_act == 0 || eqp_act == 2)
                 {
-                    sl = 0;
+                    sl = false;
                 }
-                else if (eqp_act == 1)
+                else if (eqp_act == 1) // Optimize
                 {
                     optimize_equip(c);
                 }
-                else if (eqp_act == 3)
+                else if (eqp_act == 3) // Clear
+
                 {
-                    b = 0;
-                    d = 0;
-                    for (a = 0; a < NUM_EQUIPMENT; a++)
+                    bool all_ok = true;
+                    for (int slot = 0; slot < NUM_EQUIPMENT; slot++)
                     {
-                        if (party[pidx[c]].eqp[a] > 0)
+                        if (party[pidx[c]].eqp[slot] > 0)
                         {
-                            d++;
-                            b += deequip(c, a);
+                            all_ok &= deequip(c, slot);
                         }
                     }
-                    if (b == d)
+                    if (all_ok)
                     {
                         play_effect(KAudio::eSound::SND_UNEQUIP, 128);
                     }
@@ -646,15 +612,15 @@ void equip_menu(uint32_t c)
             }
             else
             {
-                if (eqp_act == 0)
+                if (eqp_act == 0) // Equip
                 {
                     choose_equipment(c, yptr);
                 }
                 else
                 {
-                    if (eqp_act == 2)
+                    if (eqp_act == 2) // Remove
                     {
-                        if (deequip(c, yptr) == 1)
+                        if (deequip(c, yptr))
                         {
                             play_effect(KAudio::eSound::SND_UNEQUIP, 128);
                         }
@@ -668,13 +634,13 @@ void equip_menu(uint32_t c)
         }
         if (PlayerInput.bctrl())
         {
-            if (sl == 0)
+            if (sl)
             {
-                sl = 1;
+                stop = true;
             }
             else
             {
-                stop = 1;
+                sl = true;
             }
         }
     }
@@ -695,11 +661,11 @@ static void optimize_equip(int c)
     uint32_t a;
     int b, z, maxx, maxi, v = 0;
     // First, de-equip all slots
-    for (a = 0; a < NUM_EQUIPMENT; a++)
+    for (int slot = 0; slot < NUM_EQUIPMENT; ++slot)
     {
-        if (party[pidx[c]].eqp[a] > 0)
+        if (party[pidx[c]].eqp[slot] > 0)
         {
-            if (deequip(c, a) == 0)
+            if (!deequip(c, a))
             {
                 return;
             }
@@ -709,21 +675,22 @@ static void optimize_equip(int c)
     maxx = 0;
     maxi = -1;
     calc_possible_equip(c, 0);
-    for (a = 0; a < tot; a++)
+    for (int a = 0; a < tot; a++)
     {
-        b = g_inv[t_inv[a]].item;
-        if (items[b].stats[eStat::Attack] > maxx)
+        int b = g_inv[t_inv[a]].item;
+        int v = items[b].stats[eStat::Attack];
+        if (v > maxx)
         {
-            maxx = items[b].stats[eStat::Attack];
+            maxx = v;
             maxi = a;
         }
     }
     if (maxi > -1)
     {
-        equip(pidx[c], t_inv[maxi], 0);
+        equip(pidx[c], t_inv[maxi]);
     }
     // Equip Hand2, Head, Body, Arms
-    for (z = 1; z < 5; z++)
+    for (z = EQP_SHIELD; z < EQP_SPECIAL; z++)
     {
         maxx = 0;
         maxi = -1;
@@ -731,24 +698,26 @@ static void optimize_equip(int c)
         for (a = 0; a < tot; a++)
         {
             b = g_inv[t_inv[a]].item;
-            if (items[b].stats[eStat::Defense] + items[b].stats[eStat::MagicDefense] > maxx)
+            int v = items[b].stats[eStat::Defense] + items[b].stats[eStat::MagicDefense];
+            if (v > maxx)
             {
-                maxx = items[b].stats[eStat::Defense] + items[b].stats[eStat::MagicDefense];
+                maxx = v;
                 maxi = a;
             }
         }
         if (maxi > -1)
         {
-            equip(pidx[c], t_inv[maxi], 0);
+            equip(pidx[c], t_inv[maxi]);
         }
     }
     // Equip Other
     maxx = 0;
     maxi = -1;
-    calc_possible_equip(c, 5);
-    for (a = 0; a < tot; a++)
+    calc_possible_equip(c, EQP_SPECIAL);
+    for (int a = 0; a < tot; a++)
     {
-        b = g_inv[t_inv[a]].item;
+        int b = g_inv[t_inv[a]].item;
+        int v = 0;
         for (z = 0; z < eStat::NUM_STATS; z++)
         {
             v += items[b].stats[z];
@@ -765,7 +734,7 @@ static void optimize_equip(int c)
     }
     if (maxi > -1)
     {
-        equip(pidx[c], t_inv[maxi], 0);
+        equip(pidx[c], t_inv[maxi]);
     }
     play_effect(KAudio::eSound::SND_EQUIP, 128);
 }
