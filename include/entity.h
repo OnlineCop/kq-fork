@@ -33,12 +33,6 @@
 
 typedef uint32_t t_entity;
 
-void process_entities(void);
-int entityat(int, int, t_entity);
-void set_script(t_entity, const char*);
-void place_ent(t_entity, int, int);
-void count_entities(void);
-
 enum eCommands
 {
     COMMAND_NONE = 0,
@@ -56,3 +50,33 @@ enum eCommands
 
     NUM_COMMANDS // always last
 };
+
+class KEntityManager
+{
+  public:
+    ~KEntityManager() = default;
+    KEntityManager();
+
+    void count_entities();
+    int entityat(int ox, int oy, t_entity who);
+    void place_ent(t_entity en, int ex, int ey);
+    void process_entities();
+    void set_script(t_entity target_entity, const char* movestring);
+
+  protected:
+    void chase(t_entity target_entity);
+    bool entity_near(t_entity eno, t_entity tgt, int rad);
+    void entscript(t_entity target_entity);
+    void follow(int tile_x, int tile_y);
+    void getcommand(t_entity target_entity);
+    int move(t_entity target_entity, signed int dx, signed int dy);
+    int obstruction(int origin_x, int origin_y, int move_x, int move_y, int check_entity);
+    void parsems(t_entity target_entity);
+    void player_move();
+    void process_entity(t_entity target_entity);
+    void speed_adjust(t_entity target_entity);
+    void target(t_entity target_entity);
+    void wander(t_entity target_entity);
+};
+
+extern KEntityManager EntityManager;

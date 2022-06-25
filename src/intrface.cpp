@@ -2533,7 +2533,7 @@ static int KQ_move_entity(lua_State* L)
         strcat(buffer, "K");
     }
 
-    set_script(entity_id, buffer);
+    EntityManager.set_script(entity_id, buffer);
     return 0;
 }
 
@@ -2629,7 +2629,7 @@ static int KQ_place_ent(lua_State* L)
         y = (int)lua_tonumber(L, 3);
     }
 
-    place_ent(a, x, y);
+    EntityManager.place_ent(a, x, y);
     return 0;
 }
 
@@ -3050,7 +3050,7 @@ static int KQ_set_ent_script(lua_State* L)
 {
     int a = real_entity_num(L, 1);
 
-    set_script(a, lua_tostring(L, 2));
+    EntityManager.set_script(a, lua_tostring(L, 2));
     return 0;
 }
 

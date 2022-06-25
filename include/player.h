@@ -88,7 +88,7 @@ class KPlayer
     string name;                 /*!< Entity name */
     int xp;                      /*!< Entity experience */
     int next;                    /*!< Experience needed for level-up */
-    int lvl;                     /*!< Entity's level */
+    int lvl;                     /*!< Entity's level (according to KMenu::check_xp(), max is 50) */
     int mrp;                     /*!< Magic use rate (0-100) */
     int hp;                      /*!< Hit points */
     int mhp;                     /*!< Maximum hit points */
