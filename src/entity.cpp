@@ -46,13 +46,14 @@
 
 using namespace eSize;
 
-constexpr size_t Coords(int tile_x, int tile_y)
+constexpr auto Coords(int tile_x, int tile_y)
 {
-    int index = std::clamp(g_map.xsize * tile_y + tile_x, 0U, g_map.xsize * g_map.ysize - 1);
+    auto index = std::clamp(g_map.xsize * tile_y + tile_x, 0U, g_map.xsize * g_map.ysize - 1);
     return index;
 }
 
 KEntityManager::KEntityManager()
+    : number_of_entities{0}
 {
 }
 
@@ -82,7 +83,7 @@ int KEntityManager::entityat(int ox, int oy, t_entity who)
                 {
                     if (Combat.combat(0) == 1)
                     {
-                        g_ent[who].active = 0;
+                        g_ent[who].active = false;
                     }
                     return 0;
                 }
@@ -94,7 +95,7 @@ int KEntityManager::entityat(int ox, int oy, t_entity who)
                 {
                     if (Combat.combat(0) == 1)
                     {
-                        g_ent[i].active = 0;
+                        g_ent[i].active = false;
                     }
                     return 0;
                 }
@@ -120,7 +121,7 @@ void KEntityManager::process_entities()
 {
     for (auto i = 0U; i < MAX_ENTITIES; i++)
     {
-        if (g_ent[i].active == 1)
+        if (g_ent[i].active)
         {
             speed_adjust(i);
         }
@@ -224,7 +225,7 @@ bool KEntityManager::entity_near(t_entity eno, t_entity tgt, int rad)
 void KEntityManager::entscript(t_entity target_entity)
 {
     KQEntity& ent = g_ent[target_entity];
-    if (ent.active == 0)
+    if (!ent.active)
     {
         return;
     }
@@ -397,7 +398,7 @@ void KEntityManager::getcommand(t_entity target_entity)
     case 'K':
         /* PH add: command K makes the entity disappear */
         ent.cmd = eCommands::COMMAND_KILL;
-        ent.active = 0;
+        ent.active = false;
         break;
     default:
 #ifdef DEBUGMODE
@@ -554,9 +555,9 @@ int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
     // be triggered as though the entity walked over that tile.
     if (dx != 0 && dy != 0)
     {
-        const int source_tile = Coords(tile_x, tile_y);
-        const int dest_tile_x = Coords(tile_x + dx, tile_y);
-        const int dest_tile_y = Coords(tile_x, tile_y + dy);
+        const unsigned int source_tile = Coords(tile_x, tile_y);
+        const unsigned int dest_tile_x = Coords(tile_x + dx, tile_y);
+        const unsigned int dest_tile_y = Coords(tile_x, tile_y + dy);
 
         // Check whether the zone immediately to the left or right, OR the zone immediately
         // above or below, the entity is a different value (for example: the entity is standing
@@ -649,8 +650,8 @@ int KEntityManager::obstruction(int origin_x, int origin_y, int move_x, int move
     dest_y = origin_y + move_y;
 
     // Check the current and target tiles' obstacles
-    current_tile = Game.Map.obstacle_array[(origin_y * g_map.xsize) + origin_x];
-    target_tile = Game.Map.obstacle_array[(dest_y * g_map.xsize) + dest_x];
+    current_tile = Game.Map.obstacle_array[Coords(origin_x, origin_y)];
+    target_tile = Game.Map.obstacle_array[Coords(dest_x, dest_y)];
 
     // Return early if the destination tile is an obstruction
     if (target_tile == BLOCK_ALL)
