@@ -658,14 +658,13 @@ void equip_menu(uint32_t c)
  */
 static void optimize_equip(int c)
 {
-    uint32_t a;
-    int b, z, maxx, maxi, v = 0;
+    int maxx, maxi;
     // First, de-equip all slots
     for (int slot = 0; slot < NUM_EQUIPMENT; ++slot)
     {
         if (party[pidx[c]].eqp[slot] > 0)
         {
-            if (!deequip(c, a))
+            if (!deequip(c, slot))
             {
                 return;
             }
@@ -690,14 +689,14 @@ static void optimize_equip(int c)
         equip(pidx[c], t_inv[maxi]);
     }
     // Equip Hand2, Head, Body, Arms
-    for (z = EQP_SHIELD; z < EQP_SPECIAL; z++)
+    for (int z = EQP_SHIELD; z < EQP_SPECIAL; z++)
     {
         maxx = 0;
         maxi = -1;
         calc_possible_equip(c, z);
-        for (a = 0; a < tot; a++)
+        for (int a = 0; a < tot; a++)
         {
-            b = g_inv[t_inv[a]].item;
+            int b = g_inv[t_inv[a]].item;
             int v = items[b].stats[eStat::Defense] + items[b].stats[eStat::MagicDefense];
             if (v > maxx)
             {
@@ -718,11 +717,11 @@ static void optimize_equip(int c)
     {
         int b = g_inv[t_inv[a]].item;
         int v = 0;
-        for (z = 0; z < eStat::NUM_STATS; z++)
+        for (int z = 0; z < eStat::NUM_STATS; z++)
         {
             v += items[b].stats[z];
         }
-        for (z = 0; z < R_TOTAL_RES; z++)
+        for (int z = 0; z < R_TOTAL_RES; z++)
         {
             v += items[b].item_resistance[z];
         }
