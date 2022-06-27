@@ -1,12 +1,5 @@
-#include <map>
-#include <string>
-#include <tinyxml2.h>
-#include <vector>
-using std::map;
-#include <memory>
-using std::make_shared;
-#include <iterator>
-#define ZLIB_CONST
+#include "tiledmap.h"
+
 #include "animation.h"
 #include "enums.h"
 #include "fade.h"
@@ -14,15 +7,27 @@ using std::make_shared;
 #include "kq.h"
 #include "platform.h"
 #include "structs.h"
-#include "tiledmap.h"
+
+#include <algorithm>
+#include <iterator>
+#include <map>
+#include <memory>
+#include <string>
+#include <tinyxml2.h>
+#include <vector>
+
+#define ZLIB_CONST // needed in uncompress() for 'reinterpret_cast<z_const Bytef*>(data.data())'
 #include <zlib.h>
 
+using std::make_shared;
 using std::map;
 using std::string;
 using std::unique_ptr;
 using std::vector;
+
 using namespace tinyxml2;
 using namespace eSize;
+
 KTiledMap TiledMap;
 
 // Compatibility as VC insists we use these for safety
@@ -112,7 +117,7 @@ tmx_map KTiledMap::load_tmx_map(XMLElement const* root)
 
         if (xprop->Attribute("name", "map_mode"))
         {
-            smap.map_mode = value->IntValue();
+            smap.map_mode = std::clamp(value->IntValue(), (int)eMapMode::MAPMODE_12E3S, (int)eMapMode::MAPMODE_12EP3S);
         }
         if (xprop->Attribute("name", "map_no"))
         {
@@ -548,7 +553,7 @@ XMLElement const* KTiledMap::find_objectgroup(XMLElement const* root, const char
 tmx_map::tmx_map()
     : map_no(0)
     , zero_zone(false)
-    , map_mode(0)
+    , map_mode(eMapMode::MAPMODE_12E3S)
     , can_save(false)
     , tileset(0)
     , use_sstone(false)
@@ -642,45 +647,40 @@ void tmx_map::set_current()
         {
             // Shadows
             unsigned short shadow_offset = find_tileset("misc").firstgid + SHADOW_OFFSET;
-            free(s_seg);
-            auto sptr = s_seg = static_cast<unsigned char*>(calloc(layer.size, sizeof(*s_seg)));
-            for (auto t : layer)
+            Game.Map.shadow_array.assign(layer.size, {});
+            for (int i = 0; i < layer.size; ++i)
             {
-                if (t > 0)
+                if (layer.data[i] > eShadow::SHADOW_NONE)
                 {
-                    t -= shadow_offset;
+                    Game.Map.shadow_array[i] = static_cast<eShadow>(layer.data[i] - shadow_offset);
                 }
-                *sptr++ = static_cast<unsigned char>(t);
             }
         }
         else if (layer.name == "obstacles")
         {
             // Obstacles
             unsigned short obstacle_offset = find_tileset("obstacles").firstgid - 1;
-            free(o_seg);
-            auto sptr = o_seg = static_cast<unsigned char*>(calloc(layer.size, sizeof(*o_seg)));
-
-            for (auto t : layer)
+            Game.Map.obstacle_array.assign(layer.size, {});
+            for (int i = 0; i < layer.size; ++i)
             {
-                if (t > 0)
+                if (layer.data[i] > eObstacle::BLOCK_NONE)
                 {
-                    t -= obstacle_offset;
+                    Game.Map.obstacle_array[i] = static_cast<eObstacle>(layer.data[i] - obstacle_offset);
                 }
-                *sptr++ = static_cast<unsigned char>(t);
             }
         }
     }
 
     // Zones
-    free(z_seg);
-    z_seg = static_cast<unsigned char*>(calloc(xsize * ysize, sizeof(unsigned char)));
+    Game.Map.zone_array.assign(xsize * ysize, KZone::ZONE_NONE);
     for (auto&& zone : zones)
     {
         for (int i = 0; i < zone.w; ++i)
         {
             for (int j = 0; j < zone.h; ++j)
             {
-                z_seg[(i + zone.x) + xsize * (j + zone.y)] = zone.n;
+                unsigned int index = std::clamp(unsigned int(i + zone.x + xsize * (j + zone.y)), 0U, g_map.xsize * g_map.ysize - 1);
+                Game.Map.zone_array[index] = zone.n;
             }
         }
     }

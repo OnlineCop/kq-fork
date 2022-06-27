@@ -88,6 +88,17 @@ class KTime
     int value;
 };
 
+class KMap
+{
+  public:
+    ~KMap() = default;
+    KMap();
+
+    std::vector<eObstacle> obstacle_array;
+    std::vector<eShadow> shadow_array;
+    std::vector<int> zone_array;
+};
+
 class KGame
 {
   public:
@@ -198,7 +209,7 @@ class KGame
      * \param   message Text to put into log
      * \param   extra Addition text for convenience
      */
-    NORETURN void program_death(const char* message, const char* extra = nullptr);
+    NORETURN void program_death(const std::string& message, const std::string& extra = "");
 
     /*! \brief Is this character in the party?
      *
@@ -401,6 +412,7 @@ class KGame
     int game_time;
     bool want_console = false;
 
+    KMap Map;
   protected:
     /*! Name of the current map */
     string m_curmap;
@@ -431,9 +443,6 @@ extern Raster* shadow[MAX_SHADOWS];
 /*! Layers in the map */
 extern uint16_t *map_seg, *b_seg, *f_seg;
 
-/*! Zone, shadow and obstacle layers */
-extern uint8_t *z_seg, *s_seg, *o_seg;
-
 /*! Tasks completed */
 extern uint8_t progress[SIZE_PROGRESS];
 
@@ -445,7 +454,10 @@ extern uint8_t save_spells[SIZE_SAVE_SPELL];
 
 extern Raster* kfonts;
 extern s_map g_map;
+
+/* Total entities within the current map: players + NPCs */
 extern KQEntity g_ent[MAX_ENTITIES];
+
 extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
 extern s_anim adata[MAX_ANIM];
 extern uint32_t numchrs;

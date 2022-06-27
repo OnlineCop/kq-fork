@@ -44,7 +44,8 @@ class tmx_layer
 {
   public:
     tmx_layer(int w, int h)
-        : width(w)
+        : name("")
+        , width(w)
         , height(h)
         , size(w * h)
         , data(new uint32_t[size])
@@ -67,7 +68,7 @@ class tmx_map
     // Non-zero if zone 0 triggers an event
     bool zero_zone;
 
-    // Map's parallax mode (see drawmap())
+    // Draw order for layers, plus parallax settings (see eMapMode)
     int map_mode;
 
     // Non-zero if Save is allowed in this map
@@ -143,7 +144,11 @@ class tmx_map
      */
     void set_current();
 
-    // Get the tileset within this map's structure with the given name.
+    /*! \brief Get the tileset within this map's structure with the given name.
+     * \param name Tileset name to search for.
+     * \return Specified tileset.
+     * \throws If tileset with given name cannot be found.
+     */
     const KTmxTileset& find_tileset(const string& name) const;
 };
 

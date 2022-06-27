@@ -38,6 +38,22 @@ using std::vector;
 
 class Raster;
 
+/* The map modes (parallax and drawing order) are listed here in
+ * coded format. The layers are listed as 1, 2, 3, E (entity) S (shadow)
+ * and a ) or ( marks which layers use the parallax mult/div.
+ */
+enum eMapMode
+{
+    MAPMODE_12E3S = 0,  // "12E3S "
+    MAPMODE_1E23S = 1,  // "1E23S "
+    MAPMODE_1p2E3S = 2, // "1)2E3S"
+    MAPMODE_1E2p3S = 3, // "1E2)3S"
+    MAPMODE_1P2E3S = 4, // "1(2E3S"
+    MAPMODE_12EP3S = 5, // "12E(3S"
+
+    NUM_MAPMODES // always last
+};
+
 /*! \brief Map definition
  *
  * This is the structure of each map on disk.
@@ -46,7 +62,7 @@ struct s_map
 {
     signed char map_no; /*!< Not used in code. */
     uint8_t zero_zone;  /*!< Non-zero if zone 0 triggers an event */
-    uint8_t map_mode;   /*!< Map's parallax mode (see draw_map()) */
+    uint8_t map_mode;   /*!< Draw order for layers, plus parallax settings (see eMapMode) */
     uint8_t can_save;   /*!< Non-zero if Save is allowed in this map */
     uint8_t tileset;    /*!< Which tile-set to use */
     uint8_t use_sstone; /*!< Non-zero if sunstone works on this map */

@@ -90,15 +90,18 @@ int steps = 0;
 /*! 23: various global bitmaps */
 Raster *double_buffer, *fx_buffer, *map_icons[MAX_TILES], *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse,
     *b_mp, *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES],
-    *eframes[MAXE][MAXEFRAMES], *pgb[9], *sfonts[5], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr,
+    *eframes[MAXE][MAXEFRAMES], *pgb[9], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr,
     *missbmp, *noway, *upptr, *dnptr, *shadow[MAX_SHADOWS], *kfonts;
+
+// 5 different colors of fonts, each 8 tall by 6 wide, found within misc.png between (0,100) and (60, 108).
+// sfonts[0] is scanned in, and sfonts[1] through sfonts[4] are simply recolored.
+Raster* sfonts[5];
 
 #ifdef DEBUGMODE
 Raster* obj_mesh;
 #endif
 
 uint16_t *map_seg = NULL, *b_seg = NULL, *f_seg = NULL;
-uint8_t *z_seg = NULL, *s_seg = NULL, *o_seg = NULL;
 uint8_t progress[SIZE_PROGRESS];
 uint8_t treasure[SIZE_TREASURE];
 uint8_t save_spells[SIZE_SAVE_SPELL];
@@ -304,11 +307,22 @@ s_progress progresses[SIZE_PROGRESS] = {
 };
 #endif
 
+KMap::KMap()
+    : obstacle_array{}
+    , shadow_array{}
+    , zone_array{}
+{
+}
+
 KGame::KGame()
     : WORLD_MAP("main")
     , KQ_TICKS(30)
     , game_time(0)
+    , want_console(false)
+    , Map()
+    , m_curmap("")
     , gp(0)
+    , keyp(0)
 {
 }
 
@@ -355,9 +369,9 @@ void KGame::activate(void)
 
     q = looking_at_y * g_map.xsize + looking_at_x;
 
-    if (o_seg[q] != BLOCK_NONE && z_seg[q] > 0)
+    if (Game.Map.obstacle_array[q] != eObstacle::BLOCK_NONE && Game.Map.zone_array[q] > KZone::ZONE_NONE)
     {
-        do_zone(z_seg[q]);
+        do_zone(Game.Map.zone_array[q]);
     }
 
     p = entityat(looking_at_x, looking_at_y, 0);
@@ -789,18 +803,9 @@ void KGame::deallocate_stuff(void)
     {
         free(f_seg);
     }
-    if (z_seg)
-    {
-        free(z_seg);
-    }
-    if (s_seg)
-    {
-        free(s_seg);
-    }
-    if (o_seg)
-    {
-        free(o_seg);
-    }
+    this->Map.zone_array.clear();
+    this->Map.shadow_array.clear();
+    this->Map.obstacle_array.clear();
     if (strbuf)
     {
         free(strbuf);
@@ -1045,7 +1050,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 
     for (i = 0; i < mapsize; i++)
     {
-        if (s_seg[i] > 0)
+        if (this->Map.shadow_array[i] > eShadow::SHADOW_NONE)
         {
             draw_shadow = 1;
             break;
@@ -1090,11 +1095,11 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     pcxb = g_map.map_tiles;
-    for (o = 0; o < (size_t)pcxb->height / 16; o++)
+    for (o = 0; o < (size_t)pcxb->height / TILE_H; o++)
     {
-        for (i = 0; i < (size_t)pcxb->width / 16; i++)
+        for (i = 0; i < (size_t)pcxb->width / TILE_W; i++)
         {
-            pcxb->blitTo(map_icons[o * (pcxb->width / 16) + i], i * 16, o * 16, 0, 0, 16, 16);
+            pcxb->blitTo(map_icons[o * (pcxb->width / TILE_W) + i], i * TILE_W, o * TILE_H, 0, 0, TILE_W, TILE_H);
         }
     }
 
@@ -1166,15 +1171,15 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     do_postexec();
 }
 
-void KGame::program_death(const char* message, const char* extra)
+void KGame::program_death(const std::string& message, const std::string& extra)
 {
-    if (extra)
+    if (!extra.empty())
     {
-        TRACE("%s: %s\n", message, extra);
+        TRACE("%s: %s\n", message.c_str(), extra.c_str());
     }
     else
     {
-        TRACE("%s\n", message);
+        TRACE("%s\n", message.c_str());
     }
     deallocate_stuff();
     exit(EXIT_FAILURE);
@@ -1259,7 +1264,9 @@ void KGame::startup()
     strbuf = (char*)malloc(4096);
 
     map_seg = b_seg = f_seg = NULL;
-    s_seg = z_seg = o_seg = NULL;
+    this->Map.zone_array.clear();
+    this->Map.shadow_array.clear();
+    this->Map.obstacle_array.clear();
 
     allocate_stuff();
 
@@ -1335,7 +1342,8 @@ void KGame::startup()
     misc->blitTo(b_mp, 0, 24, 0, 0, 10, 8);
     misc->blitTo(sfonts[0], 0, 128, 0, 0, 60, 8);
 
-    // sfonts[1-4] are the same font shape, just colored differently.
+    // sfonts[1-4] are the same font size/shape as sfonts[0], just colored differently.
+    // sfonts[0] is white-on-blue (blue shadow is shifted diagonally down-right 1 pixel).
     sfonts[0]->blitTo(sfonts[1]);
     sfonts[0]->blitTo(sfonts[2]);
     sfonts[0]->blitTo(sfonts[3]);
@@ -1344,12 +1352,13 @@ void KGame::startup()
     {
         for (int16_t sfont_x = 0; sfont_x < 60; sfont_x++)
         {
-            if (sfonts[0]->getpixel(sfont_x, sfont_y) == 15)
+            // Recolor each 'white' pixel found within sfonts[0] for each of the other fonts.
+            if (sfonts[0]->getpixel(sfont_x, sfont_y) == 15)    // pal[15]  == RGB{ 63, 63, 63, 0 }, white
             {
-                sfonts[1]->setpixel(sfont_x, sfont_y, 22);
-                sfonts[2]->setpixel(sfont_x, sfont_y, 105);
-                sfonts[3]->setpixel(sfont_x, sfont_y, 39);
-                sfonts[4]->setpixel(sfont_x, sfont_y, 8);
+                sfonts[1]->setpixel(sfont_x, sfont_y, 22);      // pal[22]  == RGB{ 55, 0, 0, 0 }, red (#CD0000)
+                sfonts[2]->setpixel(sfont_x, sfont_y, 105);     // pal[105] == RGB{ 54, 54, 0, 0 }, yellow (#D8D800)
+                sfonts[3]->setpixel(sfont_x, sfont_y, 39);      // pal[39]  == RGB{ 0, 39, 0, 0 }, green (#009C00)
+                sfonts[4]->setpixel(sfont_x, sfont_y, 8);       // pal[8]   == RGB{ 33, 33, 33, 0 }, grey (#848484)
             }
         }
     }
@@ -1590,7 +1599,8 @@ void KGame::zone_check(void)
         }
     }
 
-    stc = z_seg[zy * g_map.xsize + zx];
+    unsigned int index = std::clamp(zy * g_map.xsize + zx, 0U, g_map.xsize * g_map.ysize - 1);
+    stc = Game.Map.zone_array[index];
 
     if (g_map.zero_zone != 0)
     {
@@ -1598,7 +1608,7 @@ void KGame::zone_check(void)
     }
     else
     {
-        if (stc > 0)
+        if (stc > KZone::ZONE_NONE)
         {
             do_zone(stc);
         }

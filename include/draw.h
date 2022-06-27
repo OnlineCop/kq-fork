@@ -263,12 +263,12 @@ class KDraw
      * a different font for numerical display in combat.
      *
      * \param   where Bitmap to draw to
-     * \param   sx x-coord
-     * \param   sy y-coord
+     * \param   sx x-coord in pixels
+     * \param   sy y-coord in pixels
      * \param   msg String to draw
      * \param   font_index Font index (0..4)
      */
-    void print_num(Raster* where, int sx, int sy, const string msg, eFont font_index);
+    void print_num(Raster* where, int sx, int sy, const string& msg, eFont font_index);
 
     /*! \brief Display speech/thought bubble
      * \author PH

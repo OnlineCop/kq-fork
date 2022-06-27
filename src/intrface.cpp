@@ -76,6 +76,8 @@ using std::shared_ptr;
 #include "imgcache.h"
 #include "random.h"
 
+#include <algorithm>
+
 /* Defines */
 #define LUA_ENT_KEY "_ent"
 #define LUA_PLR_KEY "_obj"
@@ -1221,12 +1223,7 @@ static int KQ_change_map(lua_State* L)
  */
 static int KQ_char_getter(lua_State* L)
 {
-    signed int prop;
-    int top;
-    KPlayer* pl;
-    KQEntity* ent;
-
-    prop = get_field(lua_tostring(L, 2));
+    signed int prop = get_field(lua_tostring(L, 2));
     if (prop == -1)
     {
         /* it is a user-defined property, get it directly */
@@ -1235,13 +1232,13 @@ static int KQ_char_getter(lua_State* L)
     }
     lua_pushstring(L, LUA_PLR_KEY);
     lua_rawget(L, 1);
-    pl = (KPlayer*)lua_touserdata(L, -1);
+    KPlayer* pl = (KPlayer*)lua_touserdata(L, -1);
     lua_pop(L, 1);
     lua_pushstring(L, LUA_ENT_KEY);
     lua_rawget(L, 1);
-    ent = (KQEntity*)lua_touserdata(L, -1);
+    KQEntity* ent = (KQEntity*)lua_touserdata(L, -1);
     lua_pop(L, 1);
-    top = lua_gettop(L);
+    int top = lua_gettop(L);
     if (pl)
     {
         /* These properties relate to s_player structures */
@@ -1291,7 +1288,7 @@ static int KQ_char_getter(lua_State* L)
             break;
         }
     }
-    if (ent)
+    if (ent != nullptr)
     {
         /* These properties relate to s_entity structures */
         switch (prop)
@@ -1349,11 +1346,7 @@ static int KQ_char_getter(lua_State* L)
  */
 static int KQ_char_setter(lua_State* L)
 {
-    int prop;
-    KPlayer* pl;
-    KQEntity* ent;
-
-    prop = get_field(lua_tostring(L, 2));
+    int prop = get_field(lua_tostring(L, 2));
     if (prop == -1)
     {
         /* It is a user-defined property, set it directly in the table */
@@ -1362,11 +1355,11 @@ static int KQ_char_setter(lua_State* L)
     }
     lua_pushstring(L, LUA_PLR_KEY);
     lua_rawget(L, 1);
-    pl = (KPlayer*)lua_touserdata(L, -1);
+    KPlayer* pl = (KPlayer*)lua_touserdata(L, -1);
     lua_pop(L, 1);
     lua_pushstring(L, LUA_ENT_KEY);
     lua_rawget(L, 1);
-    ent = (KQEntity*)lua_touserdata(L, -1);
+    KQEntity* ent = (KQEntity*)lua_touserdata(L, -1);
     lua_pop(L, 1);
     if (pl)
     {
@@ -1615,9 +1608,9 @@ static int KQ_copy_tile_all(lua_State* L)
             map_seg[od] = map_seg[os];
             f_seg[od] = f_seg[os];
             b_seg[od] = b_seg[os];
-            z_seg[od] = z_seg[os];
-            o_seg[od] = o_seg[os];
-            s_seg[od] = s_seg[os];
+            Game.Map.zone_array[od] = Game.Map.zone_array[os];
+            Game.Map.obstacle_array[od] = Game.Map.obstacle_array[os];
+            Game.Map.shadow_array[od] = Game.Map.shadow_array[os];
         }
     }
     return 0;
@@ -2513,7 +2506,7 @@ static int KQ_move_entity(lua_State* L)
     int entity_id = real_entity_num(L, 1);
     int kill = 0, target_x = 0, target_y = 0;
 
-    char buffer[1024];
+    char buffer[1024] = {0};
 
     if (lua_type(L, 2) == LUA_TSTRING)
     {
@@ -3195,7 +3188,7 @@ static int KQ_set_holdfade(lua_State* L)
 
 static int KQ_set_map_mode(lua_State* L)
 {
-    g_map.map_mode = (int)lua_tonumber(L, 1);
+    g_map.map_mode = std::clamp((eMapMode)lua_tonumber(L, 1), eMapMode::MAPMODE_12E3S, eMapMode::MAPMODE_12EP3S);
     return 0;
 }
 
@@ -4177,12 +4170,10 @@ static int KQ_party_setter(lua_State* L)
         }
         else if (lua_istable(L, 3))
         {
-            KPlayer* tt;
-
             lua_pushstring(L, LUA_PLR_KEY);
             lua_rawget(L, -2);
-            tt = (KPlayer*)lua_touserdata(L, -1);
-            if (tt)
+            KPlayer* tt = (KPlayer*)lua_touserdata(L, -1);
+            if (tt != nullptr)
             {
                 /* OK so far */
                 if (which > numchrs)
@@ -4339,13 +4330,11 @@ static int real_entity_num(lua_State* L, int pos)
     }
     if (lua_istable(L, pos))
     {
-        KQEntity* ent;
-
         lua_pushstring(L, LUA_ENT_KEY);
         lua_rawget(L, pos);
-        ent = (KQEntity*)lua_touserdata(L, -1);
+        KQEntity* ent = (KQEntity*)lua_touserdata(L, -1);   //TODO: What is this doing? Is this persisting POD to memory?
         lua_pop(L, 1);
-        if (ent)
+        if (ent != nullptr)
         {
             return ent - g_ent;
         }
@@ -4370,15 +4359,16 @@ static void set_ftile(int x, int y, int value)
 
 static void set_zone(int x, int y, int value)
 {
-    z_seg[y * g_map.xsize + x] = value;
+    unsigned int index = std::clamp(y * g_map.xsize + x, 0U, g_map.xsize * g_map.ysize - 1);
+    Game.Map.zone_array[index] = value;
 }
 
 static void set_obs(int x, int y, int value)
 {
-    o_seg[y * g_map.xsize + x] = value;
+    Game.Map.obstacle_array[y * g_map.xsize + x] = static_cast<eObstacle>(value);
 }
 
 static void set_shadow(int x, int y, int value)
 {
-    s_seg[y * g_map.xsize + x] = value;
+    Game.Map.shadow_array[y * g_map.xsize + x] = static_cast<eShadow>(value);
 }

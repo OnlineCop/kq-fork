@@ -26,6 +26,7 @@
  * \date ??????
  */
 
+#include <algorithm>
 #include <cassert>
 #include <cctype>
 #include <cmath>
@@ -428,7 +429,7 @@ static void getcommand(t_entity target_entity)
         break;
     case 'k':
     case 'K':
-        /* PH add: command K makes the ent disappear */
+        /* PH add: command K makes the entity disappear */
         ent.cmd = COMMAND_KILL;
         ent.active = 0;
         break;
@@ -436,7 +437,7 @@ static void getcommand(t_entity target_entity)
 #ifdef DEBUGMODE
         if (debugging > 0)
         {
-            sprintf(strbuf, _("Invalid entity command (%c) at position %d for ent %d"), s, ent.sidx, target_entity);
+            sprintf(strbuf, _("Invalid entity command (%c) at position %d for entity %d"), s, ent.sidx, target_entity);
             Game.program_death(strbuf);
         }
 #endif
@@ -542,8 +543,10 @@ static int move(t_entity target_entity, int dx, int dy)
     if (dx && dy)
     {
         source_tile = tile_y * g_map.xsize + tile_x;
-        if (z_seg[source_tile] != z_seg[source_tile + dx] ||
-            z_seg[source_tile] != z_seg[source_tile + dy * g_map.xsize])
+        int dest_tile_x = std::clamp(unsigned int(source_tile + dx), 0U, g_map.xsize * g_map.ysize - 1);
+        int dest_tile_y = std::clamp(unsigned int(source_tile + dy * g_map.xsize), 0U, g_map.xsize * g_map.ysize - 1);
+        if (Game.Map.zone_array[source_tile] != Game.Map.zone_array[dest_tile_x] ||
+            Game.Map.zone_array[source_tile] != Game.Map.zone_array[dest_tile_y])
         {
             if (ent.facing == FACE_LEFT || ent.facing == FACE_RIGHT)
             {
@@ -618,8 +621,8 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
     dest_y = origin_y + move_y;
 
     // Check the current and target tiles' obstacles
-    current_tile = o_seg[(origin_y * g_map.xsize) + origin_x];
-    target_tile = o_seg[(dest_y * g_map.xsize) + dest_x];
+    current_tile = Game.Map.obstacle_array[(origin_y * g_map.xsize) + origin_x];
+    target_tile = Game.Map.obstacle_array[(dest_y * g_map.xsize) + dest_x];
 
     // Return early if the destination tile is an obstruction
     if (target_tile == BLOCK_ALL)
@@ -927,12 +930,12 @@ static void process_entity(t_entity target_entity)
 void set_script(t_entity target_entity, const char* movestring)
 {
     auto& ent = g_ent[target_entity];
-    ent.moving = 0; // Stop entity from moving
-    ent.movcnt = 0; // Reset the move counter to 0
+    ent.moving = 0;             // Stop entity from moving
+    ent.movcnt = 0;             // Reset the move counter to 0
     ent.cmd = COMMAND_NONE;
-    ent.sidx = 0;             // Reset script command index
-    ent.cmdnum = 0;           // There are no scripted commands
-    ent.movemode = MM_SCRIPT; // Force the entity to follow the script
+    ent.sidx = 0;               // Reset script command index
+    ent.cmdnum = 0;             // There are no scripted commands
+    ent.movemode = MM_SCRIPT;   // Force the entity to follow the script
     strncpy(ent.script, movestring, sizeof(ent.script));
 }
 
