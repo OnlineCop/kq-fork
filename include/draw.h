@@ -35,14 +35,12 @@ struct SDL_Texture;
 struct SDL_PixelFormat;
 enum eSpellType;
 
-// TODO: Find out whether these values paired to any color defined within
-// PALETTE 'pal'
-#define GREY1 4
-#define GREY2 8
-#define GREY3 13
-#define WHITE 15
-#define DBLUE 3
-#define DRED 6
+constexpr uint8_t GREY1 = 4;    // pal[4]:  { 16, 16, 16, 0 }
+constexpr uint8_t GREY2 = 8;    // pal[8]:  { 33, 33, 33, 0 }
+constexpr uint8_t GREY3 = 13;   // pal[13]: { 55, 55, 55, 0 }
+constexpr uint8_t WHITE = 15;   // pal[15]: { 63, 63, 63, 0 }
+constexpr uint8_t DBLUE = 3;    // pal[3]:  { 12, 12, 12, 0 }
+constexpr uint8_t DRED = 6;     // pal[6]:  { 24, 24, 24, 0 }
 
 enum eFontColor
 {
@@ -57,14 +55,15 @@ enum eFontColor
     NUM_FONT_COLORS // always last
 };
 
-enum eFont
+enum eFont //TODO: Can eFontColor and eFont be merged?
 {
     FONT_WHITE = 0,
-    FONT_RED,
-    FONT_YELLOW,
-    FONT_GREEN,
-    FONT_PURPLE,
-    FONT_DECIDE,
+    FONT_RED = 1,
+    FONT_YELLOW = 2,
+    FONT_GREEN = 3,
+    FONT_PURPLE = 4,
+    FONT_DECIDE = 5,
+
     NUM_FONTS // always last
 };
 

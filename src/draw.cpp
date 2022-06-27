@@ -549,9 +549,12 @@ void KDraw::draw_forelayer(void)
                     // To get the positioning right, get the full zone number (0..255) as a string,
                     // position it over the correct tile, and adjust the padding so it's centered.
                     std::string buf = std::to_string(Game.Map.zone_array[here]);
-                    int l = buf.size() * 8;
-                    print_num(double_buffer, x * TILE_W + 8 - l / 2 - box.x_offset, y * TILE_H + 4 - box.y_offset, buf,
-                              FONT_WHITE);
+                    int h = font_height(eFontColor::FNORMAL) / 2;
+                    int l = (buf.size() * 6) / 2; // font width for FNORMAL/FONT_WHITE is 6
+                    print_num(double_buffer,
+                        x * TILE_W + (TILE_W / 2 - l) - box.x_offset,
+                        y * TILE_H + h - box.y_offset,
+                        buf, eFont::FONT_WHITE);
                 }
             }
 #endif /* DEBUGMODE */
