@@ -35,6 +35,7 @@ build/
 maps/build/
 Debug/
 Release/
+out/
 
 # Visual Studio Code (see https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore)
 .vscode/*
