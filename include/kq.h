@@ -94,6 +94,15 @@ class KMap
     ~KMap() = default;
     KMap();
 
+    /*! \brief Return a valid index within the current g_map: [0, g_map.xsize*g_map.ysize).
+     * \param tile_x Should be within the range [0, g_map.xsize).
+     * \param tile_y Should be within the range [0, g_map.ysize).
+     * \return Unsigned value within the range [0, g_map.xsize * g_map.ysize - 1].
+     */
+    size_t Clamp(signed int tile_x, signed int tile_y) const;
+
+    size_t MapSize() const;
+
     /*! Current map */
     s_map g_map;
 
