@@ -679,7 +679,7 @@ void tmx_map::set_current()
         {
             for (int j = 0; j < zone.h; ++j)
             {
-                unsigned int index = std::clamp(unsigned int(i + zone.x + xsize * (j + zone.y)), 0U, g_map.xsize * g_map.ysize - 1);
+                unsigned int index = std::clamp(static_cast<unsigned int>(i + zone.x + xsize * (j + zone.y)), 0U, g_map.xsize * g_map.ysize - 1);
                 Game.Map.zone_array[index] = zone.n;
             }
         }
