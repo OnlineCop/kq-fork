@@ -205,10 +205,6 @@ uint8_t do_staff_effect = 0;
 /*! Is the map description is displayed on screen? */
 uint8_t display_desc = 0;
 
-/*! Which map layers should be drawn. These are set when the map is loaded; see change_map()
- */
-uint8_t draw_background = 1, draw_middle = 1, draw_foreground = 1, draw_shadow = 1;
-
 /*! Items in inventory.  */
 s_inventory g_inv[MAX_INV];
 
@@ -413,6 +409,10 @@ int main(int argc, char* argv[])
 
 KMap::KMap()
     : g_map{}
+    , draw_background { true }
+    , draw_middle { true }
+    , draw_foreground { true }
+    , draw_shadow { true }
     , obstacle_array{}
     , shadow_array{}
     , zone_array{}
@@ -1058,13 +1058,16 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 
     const size_t mapsize = Map.MapSize();
 
-    draw_background = draw_middle = draw_foreground = draw_shadow = 0;
+    Map.draw_background = false;
+    Map.draw_middle = false;
+    Map.draw_foreground = false;
+    Map.draw_shadow = false;
 
     for (size_t i = 0; i < mapsize; ++i)
     {
         if (map_seg[i] > 0)
         {
-            draw_background = 1;
+            Map.draw_background = true;
             break;
         }
     }
@@ -1073,7 +1076,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     {
         if (b_seg[i] > 0)
         {
-            draw_middle = 1;
+            Map.draw_middle = true;
             break;
         }
     }
@@ -1082,7 +1085,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     {
         if (f_seg[i] > 0)
         {
-            draw_foreground = 1;
+            Map.draw_foreground = true;
             break;
         }
     }
@@ -1091,7 +1094,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     {
         if (Map.shadow_array[i] > eShadow::SHADOW_NONE)
         {
-            draw_shadow = 1;
+            Map.draw_shadow = true;
             break;
         }
     }

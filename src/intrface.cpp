@@ -2909,7 +2909,7 @@ static int KQ_set_autoparty(lua_State* L)
 
 static int KQ_set_background(lua_State* L)
 {
-    draw_background = ((int)lua_tonumber(L, 1) == 0 ? 0 : 1);
+    Game.Map.draw_background = lua_toboolean(L, 1);
 
     return 0;
 }
@@ -3124,7 +3124,7 @@ static int KQ_set_ent_transl(lua_State* L)
 
 static int KQ_set_foreground(lua_State* L)
 {
-    draw_foreground = ((int)lua_tonumber(L, 1) == 0 ? 0 : 1);
+    Game.Map.draw_foreground = lua_toboolean(L, 1);
 
     return 0;
 }
@@ -3204,7 +3204,7 @@ static int KQ_set_marker(lua_State* L)
 
 static int KQ_set_midground(lua_State* L)
 {
-    draw_middle = ((int)lua_tonumber(L, 1) == 0 ? 0 : 1);
+    Game.Map.draw_middle = lua_toboolean(L, 1);
 
     return 0;
 }

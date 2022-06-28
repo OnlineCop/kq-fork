@@ -103,6 +103,13 @@ class KMap
 
     size_t MapSize() const;
 
+    /*! Which map layers should be drawn. These are set when the map is loaded; see change_map() */
+    bool draw_background;
+    bool draw_middle;
+    bool draw_foreground;
+    bool draw_shadow;
+
+
     /*! Current map */
     s_map g_map;
 
@@ -493,7 +500,6 @@ extern char attack_string[39];
 extern volatile int animation_count;
 extern COLOR_MAP cmap;
 extern uint8_t can_run, do_staff_effect, display_desc;
-extern uint8_t draw_background, draw_middle, draw_foreground, draw_shadow;
 extern s_inventory g_inv[MAX_INV];
 extern s_special_item special_items[MAX_SPECIAL_ITEMS];
 extern short player_special_items[MAX_SPECIAL_ITEMS];
