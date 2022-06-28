@@ -33,10 +33,10 @@ Raster::Raster(uint16_t w, uint16_t h)
 void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w, uint16_t src_h, int16_t dest_x,
                     int16_t dest_y, uint16_t dest_w, uint16_t dest_h, bool masked)
 {
-    auto x0 = std::max(0, int(dest_x));
-    auto x1 = std::min(int(target->width), dest_x + dest_w);
-    auto y0 = std::max(0, int(dest_y));
-    auto y1 = std::min(int(target->height), dest_y + dest_h);
+    auto x0 = std::max(0, static_cast<int>(dest_x));
+    auto x1 = std::min(static_cast<int>(target->width), dest_x + dest_w);
+    auto y0 = std::max(0, static_cast<int>(dest_y));
+    auto y1 = std::min(static_cast<int>(target->height), dest_y + dest_h);
     bool stretch = (dest_w != src_w) || (dest_h != src_h);
     // Four cases - stretch + masked, stretch + not masked, not stretch + masked, not stretch + not masked.
     if (stretch)
