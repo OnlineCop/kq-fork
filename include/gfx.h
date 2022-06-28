@@ -25,7 +25,7 @@ class Raster
     void fill(uint8_t colour);
     uint8_t& ptr(int16_t x, int16_t y)
     {
-        return data[x + y * size_t(stride)];
+        return data[x + y * static_cast<size_t>(stride)];
     }
     const uint16_t width, height;
     const uint16_t stride;

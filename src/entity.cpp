@@ -543,8 +543,8 @@ static int move(t_entity target_entity, int dx, int dy)
     if (dx && dy)
     {
         source_tile = tile_y * g_map.xsize + tile_x;
-        int dest_tile_x = std::clamp(unsigned int(source_tile + dx), 0U, g_map.xsize * g_map.ysize - 1);
-        int dest_tile_y = std::clamp(unsigned int(source_tile + dy * g_map.xsize), 0U, g_map.xsize * g_map.ysize - 1);
+        int dest_tile_x = std::clamp(static_cast<unsigned int>(source_tile + dx), 0U, g_map.xsize * g_map.ysize - 1);
+        int dest_tile_y = std::clamp(static_cast<unsigned int>(source_tile + dy * g_map.xsize), 0U, g_map.xsize * g_map.ysize - 1);
         if (Game.Map.zone_array[source_tile] != Game.Map.zone_array[dest_tile_x] ||
             Game.Map.zone_array[source_tile] != Game.Map.zone_array[dest_tile_y])
         {

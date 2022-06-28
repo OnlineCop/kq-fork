@@ -1014,10 +1014,9 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 {
     Raster* pcxb;
     unsigned int i;
-    size_t mapsize;
     unsigned int o;
 
-    mapsize = (size_t)g_map.xsize * (size_t)g_map.ysize;
+    size_t mapsize = g_map.xsize * g_map.ysize;
 
     draw_background = draw_middle = draw_foreground = draw_shadow = 0;
 
