@@ -579,27 +579,27 @@ static const uint16_t SHADOW_OFFSET = 200;
 void tmx_map::set_current()
 {
     // general map properties
-    g_map.xsize = xsize;
-    g_map.ysize = ysize;
-    g_map.map_no = map_no;
-    g_map.can_save = can_save;
-    g_map.can_warp = can_warp;
-    g_map.pdiv = pdiv;
-    g_map.pmult = pmult;
-    g_map.map_mode = map_mode;
-    g_map.stx = stx;
-    g_map.sty = sty;
-    g_map.warpx = warpx;
-    g_map.warpy = warpy;
-    g_map.tileset = tileset;
-    g_map.use_sstone = use_sstone;
-    g_map.zero_zone = zero_zone;
-    g_map.map_desc = description;
-    g_map.song_file = song_file;
+    Game.Map.g_map.xsize = xsize;
+    Game.Map.g_map.ysize = ysize;
+    Game.Map.g_map.map_no = map_no;
+    Game.Map.g_map.can_save = can_save;
+    Game.Map.g_map.can_warp = can_warp;
+    Game.Map.g_map.pdiv = pdiv;
+    Game.Map.g_map.pmult = pmult;
+    Game.Map.g_map.map_mode = map_mode;
+    Game.Map.g_map.stx = stx;
+    Game.Map.g_map.sty = sty;
+    Game.Map.g_map.warpx = warpx;
+    Game.Map.g_map.warpy = warpy;
+    Game.Map.g_map.tileset = tileset;
+    Game.Map.g_map.use_sstone = use_sstone;
+    Game.Map.g_map.zero_zone = zero_zone;
+    Game.Map.g_map.map_desc = description;
+    Game.Map.g_map.song_file = song_file;
     // Markers
-    g_map.markers = markers;
+    Game.Map.g_map.markers = markers;
     // Bounding boxes
-    g_map.bounds = bounds;
+    Game.Map.g_map.bounds = bounds;
     // Allocate space for layers
     for (auto&& layer : layers)
     {
@@ -679,7 +679,8 @@ void tmx_map::set_current()
         {
             for (int j = 0; j < zone.h; ++j)
             {
-                unsigned int index = std::clamp(static_cast<unsigned int>(i + zone.x + xsize * (j + zone.y)), 0U, g_map.xsize * g_map.ysize - 1);
+                const unsigned int lastIndex = Game.Map.g_map.xsize * Game.Map.g_map.ysize - 1;
+                unsigned int index = std::clamp(static_cast<unsigned int>(i + zone.x + xsize * (j + zone.y)), 0U, lastIndex);
                 Game.Map.zone_array[index] = zone.n;
             }
         }
@@ -690,9 +691,9 @@ void tmx_map::set_current()
     copy(begin(entities), end(entities), make_checked_array_iterator(g_ent, MAX_ENTITIES, PSIZE));
 
     // Tilemaps
-    g_map.map_tiles = find_tileset(primary_tileset_name).imagedata;
-    g_map.misc_tiles = find_tileset("misc").imagedata;
-    g_map.entity_tiles = find_tileset("entities").imagedata;
+    Game.Map.g_map.map_tiles = find_tileset(primary_tileset_name).imagedata;
+    Game.Map.g_map.misc_tiles = find_tileset("misc").imagedata;
+    Game.Map.g_map.entity_tiles = find_tileset("entities").imagedata;
 
     // Animations
     Animation.clear_animations();

@@ -94,6 +94,9 @@ class KMap
     ~KMap() = default;
     KMap();
 
+    /*! Current map */
+    s_map g_map;
+
     std::vector<eObstacle> obstacle_array;
     std::vector<eShadow> shadow_array;
     std::vector<int> zone_array;
@@ -109,8 +112,7 @@ class KGame
      * This loads a new map and performs all of the functions that accompany the loading of a new map.
      *
      * \param   map_name Base name of map (xxx -> maps/xxx.map)
-     * \param   player_x New x-coord for player. Pass 0 for msx and msy to use the 'default' position stored in the map
-     * file: s_map::stx and s_map::sty
+     * \param   player_x New x-coord for player. Pass 0 for msx and msy to use the 'default' position stored in the map file: s_map::stx and s_map::sty
      * \param   player_y New y-coord for player
      * \param   camera_x New x-coord for camera. Pass 0 for mvx and mvy to use the default: s_map::stx and s_map::sty)
      * \param   camera_y New y-coord for camera
@@ -453,7 +455,6 @@ extern uint8_t treasure[SIZE_TREASURE];
 extern uint8_t save_spells[SIZE_SAVE_SPELL];
 
 extern Raster* kfonts;
-extern s_map g_map;
 
 /* Total entities within the current map: players + NPCs */
 extern KQEntity g_ent[MAX_ENTITIES];

@@ -279,7 +279,7 @@ Raster* KDraw::copy_bitmap(Raster* target, Raster* source)
 
 void KDraw::draw_backlayer(void)
 {
-    auto box = calculate_box(g_map.map_mode == eMapMode::MAPMODE_1p2E3S || g_map.map_mode == eMapMode::MAPMODE_1E2p3S);
+    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S);
     int tile_x1 = box.x_offset / TILE_W;
     int tile_x2 = (box.x_offset + SCREEN_W - 1) / TILE_W;
     int tile_y1 = box.y_offset / TILE_H;
@@ -301,7 +301,7 @@ void KDraw::draw_backlayer(void)
 
         for (int x = box.left; x <= box.right; x++)
         {
-            int here = y * g_map.xsize + x;
+            int here = y * Game.Map.g_map.xsize + x;
             int pix = map_seg[here];
             blit(map_icons[tilex[pix]], double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
         }
@@ -324,8 +324,8 @@ KDraw::PBound KDraw::calculate_box(bool is_parallax)
     int x = 0, y = 0;
     if (is_parallax)
     {
-        x = viewport_x_coord * g_map.pmult / g_map.pdiv;
-        y = viewport_y_coord * g_map.pmult / g_map.pdiv;
+        x = viewport_x_coord * Game.Map.g_map.pmult / Game.Map.g_map.pdiv;
+        y = viewport_y_coord * Game.Map.g_map.pmult / Game.Map.g_map.pdiv;
     }
     else
     {
@@ -461,9 +461,9 @@ void KDraw::draw_char()
                         // Final y-coord is same as starting y-coord
                         y = g_ent[fighter_index].tiley * TILE_H - viewport_y_coord;
                         // Where the tile is on the map that we will draw over
-                        there = (g_ent[fighter_index].tiley) * g_map.xsize + g_ent[fighter_index].tilex - horiz;
+                        there = (g_ent[fighter_index].tiley) * Game.Map.g_map.xsize + g_ent[fighter_index].tilex - horiz;
                         // Original position, before you started moving
-                        here = (g_ent[fighter_index].tiley - vert) * g_map.xsize + g_ent[fighter_index].tilex - horiz;
+                        here = (g_ent[fighter_index].tiley - vert) * Game.Map.g_map.xsize + g_ent[fighter_index].tilex - horiz;
                     }
                     else
                     {
@@ -474,9 +474,9 @@ void KDraw::draw_char()
                         // Final y-coord is above starting y-coord
                         y = (g_ent[fighter_index].tiley - vert) * TILE_H - viewport_y_coord;
                         // Where the tile is on the map that we will draw over
-                        there = (g_ent[fighter_index].tiley - vert) * g_map.xsize + g_ent[fighter_index].tilex;
+                        there = (g_ent[fighter_index].tiley - vert) * Game.Map.g_map.xsize + g_ent[fighter_index].tilex;
                         // Target position
-                        here = (g_ent[fighter_index].tiley) * g_map.xsize + g_ent[fighter_index].tilex;
+                        here = (g_ent[fighter_index].tiley) * Game.Map.g_map.xsize + g_ent[fighter_index].tilex;
                     }
 
                     /* Because of possible redraw problems, only draw if there is
@@ -519,13 +519,13 @@ void KDraw::draw_char()
 
 void KDraw::draw_forelayer(void)
 {
-    KDraw::PBound box = calculate_box(g_map.map_mode == eMapMode::MAPMODE_1E2p3S || g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
+    KDraw::PBound box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
     {
         for (int x = box.left; x <= box.right; x++)
         {
             // Used in several places in this loop, so shortened the name
-            int here = y * g_map.xsize + x;
+            int here = y * Game.Map.g_map.xsize + x;
             int pix = f_seg[here];
             draw_sprite(double_buffer, map_icons[tilex[pix]], + x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
 
@@ -617,12 +617,12 @@ void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, e
 
 void KDraw::draw_midlayer(void)
 {
-    auto box = calculate_box(g_map.map_mode == eMapMode::MAPMODE_1E2p3S || g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
+    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
     {
         for (int x = box.left; x <= box.right; x++)
         {
-            int here = y * g_map.xsize + x;
+            int here = y * Game.Map.g_map.xsize + x;
             int pix = b_seg[here];
             draw_sprite(double_buffer, map_icons[tilex[pix]], x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
         }
@@ -640,7 +640,7 @@ void KDraw::draw_shadows(void)
     {
         for (int x = box.left; x <= box.right; x++)
         {
-            int here = y * g_map.xsize + x;
+            int here = y * Game.Map.g_map.xsize + x;
             eShadow pix = Game.Map.shadow_array[here];
             if (pix > eShadow::SHADOW_NONE)
             {
@@ -727,7 +727,7 @@ void KDraw::draw_porttextbox(eBubbleStyle bstyle, int chr)
 
 void KDraw::drawmap(void)
 {
-    if (g_map.xsize <= 0)
+    if (Game.Map.g_map.xsize <= 0)
     {
         clear_to_color(double_buffer, 1);
         return;
@@ -737,7 +737,7 @@ void KDraw::drawmap(void)
 
     /* Is the player standing inside a bounding area? */
     const KBound* found;
-    if ((found = g_map.bounds.IsBound(ent_x, ent_y, ent_x, ent_y)) != nullptr)
+    if ((found = Game.Map.g_map.bounds.IsBound(ent_x, ent_y, ent_x, ent_y)) != nullptr)
     {
         view_on = 1;
         view_y1 = found->top;
@@ -750,9 +750,9 @@ void KDraw::drawmap(void)
     {
         view_on = 0;
         view_y1 = 0;
-        view_y2 = g_map.ysize - 1;
+        view_y2 = Game.Map.g_map.ysize - 1;
         view_x1 = 0;
-        view_x2 = g_map.xsize - 1;
+        view_x2 = Game.Map.g_map.xsize - 1;
     }
 
     clear_bitmap(double_buffer);
@@ -760,7 +760,7 @@ void KDraw::drawmap(void)
     {
         draw_backlayer();
     }
-    if (g_map.map_mode == eMapMode::MAPMODE_1E23S || g_map.map_mode == eMapMode::MAPMODE_1E2p3S || g_map.map_mode == eMapMode::MAPMODE_12EP3S)
+    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E23S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_12EP3S)
     {
         draw_char();
     }
@@ -768,7 +768,7 @@ void KDraw::drawmap(void)
     {
         draw_midlayer();
     }
-    if (g_map.map_mode == eMapMode::MAPMODE_12E3S || g_map.map_mode == eMapMode::MAPMODE_1p2E3S || g_map.map_mode == eMapMode::MAPMODE_1P2E3S)
+    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_12E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S)
     {
         draw_char();
     }
@@ -786,8 +786,8 @@ void KDraw::drawmap(void)
     }
     if (display_desc == 1)
     {
-        menubox(double_buffer, 152 - (g_map.map_desc.length() * 4), 8, g_map.map_desc.length(), 1, BLUE);
-        print_font(double_buffer, 160 - (g_map.map_desc.length() * 4), 16, g_map.map_desc.c_str(), FNORMAL);
+        menubox(double_buffer, 152 - (Game.Map.g_map.map_desc.length() * 4), 8, Game.Map.g_map.map_desc.length(), 1, BLUE);
+        print_font(double_buffer, 160 - (Game.Map.g_map.map_desc.length() * 4), 16, Game.Map.g_map.map_desc.c_str(), FNORMAL);
     }
 }
 
@@ -845,7 +845,7 @@ int KDraw::is_forestsquare(int fx, int fy)
     {
         return 0;
     }
-    auto mapseg = map_seg[(fy * g_map.xsize) + fx];
+    auto mapseg = map_seg[(fy * Game.Map.g_map.xsize) + fx];
     switch (mapseg)
     {
     case 63:
@@ -1585,8 +1585,8 @@ void KDraw::set_view(int vw, int x1, int y1, int x2, int y2)
     {
         view_x1 = 0;
         view_y1 = 0;
-        view_x2 = g_map.xsize - 1;
-        view_y2 = g_map.ysize - 1;
+        view_x2 = Game.Map.g_map.xsize - 1;
+        view_y2 = Game.Map.g_map.ysize - 1;
     }
 }
 

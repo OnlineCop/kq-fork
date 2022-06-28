@@ -39,15 +39,7 @@
  * fixes
  */
 
-#include <SDL.h>
-#include <SDL_mixer.h>
-#include <cassert>
-#include <clocale>
-#include <cstdio>
-#include <memory>
-#include <string>
-#include <time.h>
-#include <vector>
+#include "kq.h"
 
 #include "animation.h"
 #include "console.h"
@@ -62,7 +54,6 @@
 #include "intrface.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
-#include "kq.h"
 #include "magic.h"
 #include "masmenu.h"
 #include "menu.h"
@@ -79,6 +70,18 @@
 
 #include "gfx.h"
 #include "random.h"
+
+#include <SDL.h>
+#include <SDL_mixer.h>
+#include <cassert>
+#include <clocale>
+#include <cstdio>
+#include <fstream>
+#include <iomanip>
+#include <memory>
+#include <string>
+#include <time.h>
+#include <vector>
 
 using namespace eSize;
 
@@ -105,9 +108,6 @@ uint16_t *map_seg = NULL, *b_seg = NULL, *f_seg = NULL;
 uint8_t progress[SIZE_PROGRESS];
 uint8_t treasure[SIZE_TREASURE];
 uint8_t save_spells[SIZE_SAVE_SPELL];
-
-/*! Current map */
-s_map g_map;
 
 /*! Current entities (players+NPCs) */
 KQEntity g_ent[MAX_ENTITIES];
@@ -305,8 +305,112 @@ s_progress progresses[SIZE_PROGRESS] = {
 };
 #endif
 
+/*! \mainpage KQ - The Classic Computer Role-Playing Game
+ *
+ * Take the part of one of eight mighty heroes as you search for the
+ * Staff of Xenarum.  Visit over twenty different locations, fight a
+ * multitude of evil monsters, wield deadly weapons and cast powerful
+ * spells. On your quest, you will find out how the Oracle knows
+ * everything, who killed the former master of the Embers guild, why
+ * no-one trusts the old man in the manor, and what exactly is
+ * terrorizing the poor Denorians.
+ *
+ * KQ is licensed under the GPL.
+ */
+
+/*! \brief Main function
+ *
+ * Well, this one is pretty obvious.
+ */
+int main(int argc, char* argv[])
+{
+    int stop, game_on, skip_splash;
+
+    setlocale(LC_ALL, "");
+
+    skip_splash = 0;
+    for (int i = 1; i < argc; i++)
+    {
+        if (!strcmp(argv[i], "-nosplash") || !strcmp(argv[i], "--nosplash"))
+        {
+            skip_splash = 1;
+        }
+
+        if (!strcmp(argv[i], "--help"))
+        {
+            printf(_("Sorry, no help screen at this time.\n"));
+            return EXIT_SUCCESS;
+        }
+    }
+
+    Game.startup();
+    game_on = 1;
+    kqrandom = new KQRandom();
+    /* While KQ is running (playing or at startup menu) */
+    while (game_on)
+    {
+        switch (SaveGame.start_menu(skip_splash))
+        {
+        case 0: /* Continue */
+            break;
+        case 1: /* New game */
+            Game.SetGameTime(0);
+            Game.change_map("starting", 0, 0, 0, 0);
+            if (kqrandom)
+            {
+                delete kqrandom;
+            }
+            kqrandom = new KQRandom();
+            break;
+        default: /* Exit */
+            game_on = 0;
+            break;
+        }
+        /* Only show it once at the start */
+        skip_splash = 1;
+        if (game_on)
+        {
+            stop = 0;
+            alldead = 0;
+
+            /* While the actual game is playing */
+            while (!stop)
+            {
+                Game.ProcessEvents();
+                EntityManager.process_entities();
+                Game.do_check_animation();
+                Draw.drawmap();
+                Draw.blit2screen();
+                Music.poll_music();
+                if (Game.want_console)
+                {
+                    Game.want_console = false;
+                    Game.wait_released();
+                    Console.run();
+                }
+                if (PlayerInput.besc())
+                {
+                    stop = SaveGame.system_menu();
+                }
+                if (PlayerInput.bhelp())
+                {
+                    /* TODO: In-game help system. */
+                }
+                if (alldead)
+                {
+                    do_transition(eTransitionFade::IN, 16);
+                    stop = 1;
+                }
+            }
+        }
+    }
+    Game.deallocate_stuff();
+    return EXIT_SUCCESS;
+}
+
 KMap::KMap()
-    : obstacle_array{}
+    : g_map{}
+    , obstacle_array{}
     , shadow_array{}
     , zone_array{}
 {
@@ -365,11 +469,11 @@ void KGame::activate(void)
     looking_at_x += zx;
     looking_at_y += zy;
 
-    q = looking_at_y * g_map.xsize + looking_at_x;
+    q = looking_at_y * Map.g_map.xsize + looking_at_x;
 
-    if (Game.Map.obstacle_array[q] != eObstacle::BLOCK_NONE && Game.Map.zone_array[q] > KZone::ZONE_NONE)
+    if (Map.obstacle_array[q] != eObstacle::BLOCK_NONE && Map.zone_array[q] > KZone::ZONE_NONE)
     {
-        do_zone(Game.Map.zone_array[q]);
+        do_zone(Map.zone_array[q]);
     }
 
     p = EntityManager.entityat(looking_at_x, looking_at_y, 0);
@@ -643,7 +747,7 @@ void KGame::change_map(const string& map_name, int player_x, int player_y, int c
     prepare_map(player_x, player_y, camera_x, camera_y);
 }
 
-void KGame::change_map(const string& map_name, const string& marker_name, int offset_x, int offset_y)
+void KGame::change_map(const string& map_name, const string& marker_name, signed int offset_x, signed int offset_y)
 {
     int msx = 0, msy = 0, mvx = 0, mvy = 0;
 
@@ -651,7 +755,7 @@ void KGame::change_map(const string& map_name, const string& marker_name, int of
     /* Search for the marker with the name passed into the function. Both
      * player's starting position and camera position will be the same
      */
-    auto marker = g_map.markers.GetMarker(marker_name);
+    auto marker = Map.g_map.markers.GetMarker(marker_name);
     if (marker != nullptr)
     {
         msx = mvx = marker->x + offset_x;
@@ -671,33 +775,47 @@ void KGame::do_check_animation(void)
 
 void KGame::data_dump(void)
 {
-    FILE* ff;
-    int a;
-
-    if (debugging > 0)
+    if (debugging <= 0)
     {
-        ff = fopen("treasure.log", "w");
-        if (!ff)
-        {
-            program_death(_("Could not open treasure.log!"));
-        }
-        for (a = 0; a < SIZE_TREASURE; a++)
-        {
-            fprintf(ff, "%d = %d\n", a, treasure[a]);
-        }
-        fclose(ff);
-
-        ff = fopen("progress.log", "w");
-        if (!ff)
-        {
-            program_death(_("Could not open progress.log!"));
-        }
-        for (a = 0; a < SIZE_PROGRESS; a++)
-        {
-            fprintf(ff, "%d: %s = %d\n", progresses[a].num_progress, progresses[a].name, progress[a]);
-        }
-        fclose(ff);
+        return;
     }
+
+    std::ofstream ff;
+    ff.open("treasure.log", std::ios::out);
+    if (!ff)
+    {
+        program_death(_("Could not open treasure.log!"));
+    }
+
+    ff << "List of treasures obtained in KQ:\n\n" << std::flush;
+    for (size_t a = 0; a < SIZE_TREASURE; a++)
+    {
+        if (treasure[a] == 0)
+        {
+            continue;
+        }
+        const int value = treasure[a];
+        ff << a << " = " << value << "\n";
+    }
+    ff.close();
+
+    ff.open("progress.log", std::ios::out);
+    if (!ff)
+    {
+        program_death(_("Could not open progress.log!"));
+    }
+
+    ff << "List of progress in KQ:\n\n" << std::flush;
+    for (size_t a = 0; a < SIZE_PROGRESS; a++)
+    {
+        if (progress[a] == 0)
+        {
+            continue;
+        }
+        const int value = progress[a];
+        ff << progresses[a].num_progress << ": " << progresses[a].name << " = " << value << "\n";
+    }
+    ff.close();
 }
 #endif
 
@@ -801,9 +919,9 @@ void KGame::deallocate_stuff(void)
     {
         free(f_seg);
     }
-    this->Map.zone_array.clear();
-    this->Map.shadow_array.clear();
-    this->Map.obstacle_array.clear();
+    Map.zone_array.clear();
+    Map.shadow_array.clear();
+    Map.obstacle_array.clear();
     if (strbuf)
     {
         free(strbuf);
@@ -918,107 +1036,16 @@ void KGame::load_heroes(void)
         faces->blitTo(players[player_index + 4].portrait, 40, player_index * 40, 0, 0, 40, 40);
     }
 }
-/*! \brief Main function
- *
- * Well, this one is pretty obvious.
- */
-int main(int argc, char* argv[])
-{
-    int stop, game_on, skip_splash;
-
-    setlocale(LC_ALL, "");
-
-    skip_splash = 0;
-    for (int i = 1; i < argc; i++)
-    {
-        if (!strcmp(argv[i], "-nosplash") || !strcmp(argv[i], "--nosplash"))
-        {
-            skip_splash = 1;
-        }
-
-        if (!strcmp(argv[i], "--help"))
-        {
-            printf(_("Sorry, no help screen at this time.\n"));
-            return EXIT_SUCCESS;
-        }
-    }
-
-    Game.startup();
-    game_on = 1;
-    kqrandom = new KQRandom();
-    /* While KQ is running (playing or at startup menu) */
-    while (game_on)
-    {
-        switch (SaveGame.start_menu(skip_splash))
-        {
-        case 0: /* Continue */
-            break;
-        case 1: /* New game */
-            Game.SetGameTime(0);
-            Game.change_map("starting", 0, 0, 0, 0);
-            if (kqrandom)
-            {
-                delete kqrandom;
-            }
-            kqrandom = new KQRandom();
-            break;
-        default: /* Exit */
-            game_on = 0;
-            break;
-        }
-        /* Only show it once at the start */
-        skip_splash = 1;
-        if (game_on)
-        {
-            stop = 0;
-            alldead = 0;
-
-            /* While the actual game is playing */
-            while (!stop)
-            {
-                Game.ProcessEvents();
-                EntityManager.process_entities();
-                Game.do_check_animation();
-                Draw.drawmap();
-                Draw.blit2screen();
-                Music.poll_music();
-                if (Game.want_console)
-                {
-                    Game.want_console = false;
-                    Game.wait_released();
-                    Console.run();
-                }
-                if (PlayerInput.besc())
-                {
-                    stop = SaveGame.system_menu();
-                }
-                if (PlayerInput.bhelp())
-                {
-                    /* TODO: In-game help system. */
-                }
-                if (alldead)
-                {
-                    do_transition(eTransitionFade::IN, 16);
-                    stop = 1;
-                }
-            }
-        }
-    }
-    Game.deallocate_stuff();
-    return EXIT_SUCCESS;
-}
 
 void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 {
-    Raster* pcxb;
-    unsigned int i;
-    unsigned int o;
+    Raster* pcxb = nullptr;
 
-    size_t mapsize = g_map.xsize * g_map.ysize;
+    const unsigned int mapsize = Map.g_map.xsize * Map.g_map.ysize;
 
     draw_background = draw_middle = draw_foreground = draw_shadow = 0;
 
-    for (i = 0; i < mapsize; i++)
+    for (unsigned int i = 0; i < mapsize; i++)
     {
         if (map_seg[i] > 0)
         {
@@ -1027,7 +1054,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    for (i = 0; i < mapsize; i++)
+    for (unsigned int i = 0; i < mapsize; i++)
     {
         if (b_seg[i] > 0)
         {
@@ -1036,7 +1063,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    for (i = 0; i < mapsize; i++)
+    for (unsigned int i = 0; i < mapsize; i++)
     {
         if (f_seg[i] > 0)
         {
@@ -1045,16 +1072,16 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    for (i = 0; i < mapsize; i++)
+    for (unsigned int i = 0; i < mapsize; i++)
     {
-        if (this->Map.shadow_array[i] > eShadow::SHADOW_NONE)
+        if (Map.shadow_array[i] > eShadow::SHADOW_NONE)
         {
             draw_shadow = 1;
             break;
         }
     }
 
-    for (i = 0; i < (size_t)numchrs; i++)
+    for (unsigned int i = 0; i < numchrs; i++)
     {
         /* This allows us to either go to the map's default starting coords
          * or specify exactly where on the map to go to (like when there
@@ -1063,7 +1090,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         if (msx == 0 && msy == 0)
         {
             // Place players at default map starting coords
-            EntityManager.place_ent(i, g_map.stx, g_map.sty);
+            EntityManager.place_ent(i, Map.g_map.stx, Map.g_map.sty);
         }
         else
         {
@@ -1076,7 +1103,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         g_ent[i].moving = 0;
     }
 
-    for (i = 0; i < MAX_ENTITIES; i++)
+    for (unsigned int i = 0; i < MAX_ENTITIES; i++)
     {
         // FIXME: This shouldn't be hard-coded into the game engine. Move it to a lua script.
         // The enemy at index 38 within entities.png is a kind of non-moving "black blob" or cloak or something.
@@ -1093,29 +1120,29 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    pcxb = g_map.map_tiles;
-    for (o = 0; o < (size_t)pcxb->height / TILE_H; o++)
+    pcxb = Map.g_map.map_tiles;
+    for (unsigned int o = 0, oo = static_cast<unsigned int>(pcxb->height / TILE_H); o < oo; ++o)
     {
-        for (i = 0; i < (size_t)pcxb->width / TILE_W; i++)
+        for (unsigned int i = 0, ii = static_cast<unsigned int>(pcxb->width / TILE_W); i < ii; ++i)
         {
-            pcxb->blitTo(map_icons[o * (pcxb->width / TILE_W) + i], i * TILE_W, o * TILE_H, 0, 0, TILE_W, TILE_H);
+            pcxb->blitTo(map_icons[o * ii + i], i * TILE_W, o * TILE_H, 0, 0, TILE_W, TILE_H);
         }
     }
 
-    for (o = 0; o < MAX_ANIM; o++)
+    for (unsigned int o = 0; o < MAX_ANIM; o++)
     {
         adelay[o] = 0;
     }
 
-    Music.play_music(g_map.song_file, 0);
-    mx = g_map.xsize * TILE_W - (19 * TILE_W);
+    Music.play_music(Map.g_map.song_file, 0);
+    mx = (Map.g_map.xsize - 19) * TILE_W; //FIXME: What is this magic '19'?
     /*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
-    my = g_map.ysize * TILE_H - (16 * TILE_H);
+    my = (Map.g_map.ysize - 16) * TILE_H; //FIXME: What is this magic '16'?
 
     if (mvx == 0 && mvy == 0)
     {
-        viewport_x_coord = g_map.stx * TILE_W;
-        viewport_y_coord = g_map.sty * TILE_H;
+        viewport_x_coord = Map.g_map.stx * TILE_W;
+        viewport_y_coord = Map.g_map.sty * TILE_H;
     }
     else
     {
@@ -1125,12 +1152,12 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 
     calc_viewport();
 
-    for (i = 0; i < MAX_TILES; i++)
+    for (unsigned int i = 0; i < MAX_TILES; i++)
     {
         tilex[i] = (uint16_t)i;
     }
 
-    for (i = 0; i < (size_t)numchrs; i++)
+    for (unsigned int i = 0; i < numchrs; i++)
     {
         g_ent[i].active = true;
     }
@@ -1138,14 +1165,14 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     EntityManager.number_of_entities = 0;
     EntityManager.count_entities();
 
-    for (i = 0; i < MAX_ENTITIES; i++)
+    for (unsigned int i = 0; i < MAX_ENTITIES; i++)
     {
         g_ent[i].delayctr = 0;
     }
 
     Draw.set_view(0, 0, 0, 0, 0);
 
-    if (g_map.map_desc.length() > 0)
+    if (!Map.g_map.map_desc.empty())
     {
         display_desc = 1;
     }
@@ -1155,7 +1182,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     do_luakill();
-    do_luainit(Game.GetCurmap().c_str(), 1);
+    do_luainit(GetCurmap().c_str(), 1);
     do_autoexec();
 
     if (hold_fade == 0 && numchrs > 0)
@@ -1165,8 +1192,8 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         do_transition(eTransitionFade::IN, 4);
     }
 
-    use_sstone = g_map.use_sstone;
-    cansave = g_map.can_save;
+    use_sstone = Map.g_map.use_sstone;
+    cansave = Map.g_map.can_save;
     do_postexec();
 }
 
@@ -1263,9 +1290,9 @@ void KGame::startup()
     strbuf = (char*)malloc(4096);
 
     map_seg = b_seg = f_seg = NULL;
-    this->Map.zone_array.clear();
-    this->Map.shadow_array.clear();
-    this->Map.obstacle_array.clear();
+    Map.zone_array.clear();
+    Map.shadow_array.clear();
+    Map.obstacle_array.clear();
 
     allocate_stuff();
 
@@ -1321,7 +1348,7 @@ void KGame::startup()
 
         if (use_joy == 0)
         {
-            Game.klog(_("Only joysticks/gamepads with at least 4 buttons can be used."));
+            klog(_("Only joysticks/gamepads with at least 4 buttons can be used."));
         }
     }
 
@@ -1510,7 +1537,7 @@ void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
         ProcessEvents();
         EntityManager.process_entities();
         Music.poll_music();
-        Game.do_check_animation();
+        do_check_animation();
         Draw.drawmap();
         Draw.blit2screen();
 
@@ -1576,7 +1603,7 @@ void KGame::zone_check(void)
 
     if (save_spells[P_REPULSE] > 0)
     {
-        if (Game.IsOverworldMap())
+        if (IsOverworldMap())
         {
             save_spells[P_REPULSE]--;
         }
@@ -1598,10 +1625,10 @@ void KGame::zone_check(void)
         }
     }
 
-    unsigned int index = std::clamp(zy * g_map.xsize + zx, 0U, g_map.xsize * g_map.ysize - 1);
-    stc = Game.Map.zone_array[index];
+    unsigned int index = std::clamp(zy * Map.g_map.xsize + zx, 0U, Map.g_map.xsize * Map.g_map.ysize - 1);
+    stc = Map.zone_array[index];
 
-    if (g_map.zero_zone != 0)
+    if (Map.g_map.zero_zone != 0)
     {
         do_zone(stc);
     }
@@ -1647,7 +1674,7 @@ bool KGame::ProcessEvents()
         int rc = SDL_WaitEvent(&event);
         if (rc == 0)
         {
-            Game.program_death("Error waiting for events", SDL_GetError());
+            program_death("Error waiting for events", SDL_GetError());
         }
         do
         {
@@ -1660,7 +1687,7 @@ bool KGame::ProcessEvents()
                 break;
             case SDL_QUIT:
                 // TODO don't be so brutal
-                Game.program_death("SDL quit");
+                program_death("SDL quit");
                 break;
             case SDL_KEYDOWN:
                 PlayerInput.ProcessKeyboardEvent(&event.key);
@@ -1717,18 +1744,6 @@ int KGame::get_key()
     keyp = 0;
     return k;
 }
-/*! \mainpage KQ - The Classic Computer Role-Playing Game
- *
- * Take the part of one of eight mighty heroes as you search for the
- * Staff of Xenarum.  Visit over twenty different locations, fight a
- * multitude of evil monsters, wield deadly weapons and cast powerful
- * spells. On your quest, you will find out how the Oracle knows
- * everything, who killed the former master of the Embers guild, why
- * no-one trusts the old man in the manor, and what exactly is
- * terrorizing the poor Denorians.
- *
- * KQ is licensed under the GPL.
- */
 
 /*! \page treasure A Note on Treasure
  *

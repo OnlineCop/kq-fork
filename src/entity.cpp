@@ -48,7 +48,8 @@ using namespace eSize;
 
 constexpr auto Coords(int tile_x, int tile_y)
 {
-    auto index = std::clamp(g_map.xsize * tile_y + tile_x, 0U, g_map.xsize * g_map.ysize - 1);
+    const auto lastIndex = Game.Map.g_map.xsize * Game.Map.g_map.ysize - 1;
+    auto index = std::clamp(Game.Map.g_map.xsize * tile_y + tile_x, 0U, lastIndex);
     return index;
 }
 
@@ -422,8 +423,9 @@ int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
 
     KQEntity& ent = g_ent[target_entity];
 
-    int tile_x = std::clamp(ent.x / TILE_W, 0, int(g_map.xsize * g_map.ysize - 1));
-    int tile_y = std::clamp(ent.y / TILE_H, 0, int(g_map.xsize * g_map.ysize - 1));
+    const int lastIndex = Game.Map.g_map.xsize * Game.Map.g_map.ysize - 1;
+    int tile_x = std::clamp(ent.x / TILE_W, 0, lastIndex);
+    int tile_y = std::clamp(ent.y / TILE_H, 0, lastIndex);
     int oldfacing = ent.facing;
     if (dx < 0)
     {
@@ -441,8 +443,8 @@ int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
     {
         ent.facing = FACE_UP;
     }
-    if (tile_x + dx < 0 || tile_x + dx >= (int)g_map.xsize ||
-        tile_y + dy < 0 || tile_y + dy >= (int)g_map.ysize)
+    if (tile_x + dx < 0 || tile_x + dx >= (int)Game.Map.g_map.xsize ||
+        tile_y + dy < 0 || tile_y + dy >= (int)Game.Map.g_map.ysize)
     {
         return 0;
     }
@@ -641,7 +643,8 @@ int KEntityManager::obstruction(int origin_x, int origin_y, int move_x, int move
 
     // Block entity if it tries to walk off the map
     if ((origin_x == 0 && move_x < 0) || (origin_y == 0 && move_y < 0) ||
-        (origin_x == (int)g_map.xsize - 1 && move_x > 0) || (origin_y == (int)g_map.ysize - 1 && move_y > 0))
+        (origin_x == (int)Game.Map.g_map.xsize - 1 && move_x > 0) ||
+        (origin_y == (int)Game.Map.g_map.ysize - 1 && move_y > 0))
     {
         return 1;
     }
