@@ -438,7 +438,11 @@ extern Raster* map_icons[MAX_TILES];
 
 extern Raster *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse, *b_mp;
 extern Raster *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES];
-extern Raster *eframes[MAXE][MAXEFRAMES], *pgb[9], *sfonts[5], *bord[8];
+
+/*! Enemy animation frames */
+extern Raster* eframes[MAXE][MAXEFRAMES];
+
+extern Raster *pgb[9], *sfonts[5], *bord[8];
 extern Raster *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr;
 extern Raster* shadow[MAX_SHADOWS];
 

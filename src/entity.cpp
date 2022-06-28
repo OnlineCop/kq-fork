@@ -652,7 +652,7 @@ int KEntityManager::obstruction(int origin_x, int origin_y, int move_x, int move
     dest_x = origin_x + move_x;
     dest_y = origin_y + move_y;
 
-    // Check the current and target tiles' obstacles
+    // Check the current tile's and target tile's obstacles
     current_tile = Game.Map.obstacle_array[Coords(origin_x, origin_y)];
     target_tile = Game.Map.obstacle_array[Coords(dest_x, dest_y)];
 

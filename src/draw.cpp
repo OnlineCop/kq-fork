@@ -846,7 +846,7 @@ int KDraw::is_forestsquare(int fx, int fy)
         return 0;
     }
     auto mapseg = map_seg[(fy * Game.Map.g_map.xsize) + fx];
-    switch (mapseg)
+    switch (mapseg) //FIXME: The indexes of overworld forest tiles should come from either a map (.tmx) or a script (.lua).
     {
     case 63:
     case 65:
@@ -1573,6 +1573,7 @@ void KDraw::set_textpos(uint32_t entity_index)
 
 void KDraw::set_view(int vw, int x1, int y1, int x2, int y2)
 {
+    //FIXME: set_view(true) needs the x1,y1,x2,y2 parameters, but set_view(false) needs no parameters.
     view_on = vw;
     if (view_on)
     {

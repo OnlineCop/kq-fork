@@ -93,8 +93,11 @@ int steps = 0;
 /*! 23: various global bitmaps */
 Raster *double_buffer, *fx_buffer, *map_icons[MAX_TILES], *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse,
     *b_mp, *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES],
-    *eframes[MAXE][MAXEFRAMES], *pgb[9], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr,
+    *pgb[9], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr,
     *missbmp, *noway, *upptr, *dnptr, *shadow[MAX_SHADOWS], *kfonts;
+
+/*! Enemy animation frames */
+Raster* eframes[MAXE][MAXEFRAMES];
 
 // 5 different colors of fonts, each 8 tall by 6 wide, found within misc.png between (0,100) and (60, 108).
 // sfonts[0] is scanned in, and sfonts[1] through sfonts[4] are simply recolored.
