@@ -46,13 +46,6 @@
 
 using namespace eSize;
 
-constexpr auto Coords(int tile_x, int tile_y)
-{
-    const auto lastIndex = Game.Map.g_map.xsize * Game.Map.g_map.ysize - 1;
-    auto index = std::clamp(Game.Map.g_map.xsize * tile_y + tile_x, 0U, lastIndex);
-    return index;
-}
-
 KEntityManager::KEntityManager()
     : number_of_entities{0}
 {
@@ -423,9 +416,6 @@ int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
 
     KQEntity& ent = g_ent[target_entity];
 
-    const int lastIndex = Game.Map.g_map.xsize * Game.Map.g_map.ysize - 1;
-    int tile_x = std::clamp(ent.x / TILE_W, 0, lastIndex);
-    int tile_y = std::clamp(ent.y / TILE_H, 0, lastIndex);
     int oldfacing = ent.facing;
     if (dx < 0)
     {
@@ -443,6 +433,10 @@ int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
     {
         ent.facing = FACE_UP;
     }
+
+    const int lastIndex = Game.Map.MapSize() - 1;
+    int tile_x = std::clamp(ent.x / TILE_W, 0, lastIndex);
+    int tile_y = std::clamp(ent.y / TILE_H, 0, lastIndex);
     if (tile_x + dx < 0 || tile_x + dx >= (int)Game.Map.g_map.xsize ||
         tile_y + dy < 0 || tile_y + dy >= (int)Game.Map.g_map.ysize)
     {
@@ -557,9 +551,9 @@ int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
     // be triggered as though the entity walked over that tile.
     if (dx != 0 && dy != 0)
     {
-        const unsigned int source_tile = Coords(tile_x, tile_y);
-        const unsigned int dest_tile_x = Coords(tile_x + dx, tile_y);
-        const unsigned int dest_tile_y = Coords(tile_x, tile_y + dy);
+        const unsigned int source_tile = Game.Map.Clamp(tile_x, tile_y);
+        const unsigned int dest_tile_x = Game.Map.Clamp(tile_x + dx, tile_y);
+        const unsigned int dest_tile_y = Game.Map.Clamp(tile_x, tile_y + dy);
 
         // Check whether the zone immediately to the left or right, OR the zone immediately
         // above or below, the entity is a different value (for example: the entity is standing
@@ -635,12 +629,6 @@ int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
 
 int KEntityManager::obstruction(int origin_x, int origin_y, int move_x, int move_y, int check_entity)
 {
-    int current_tile; // obstrution for current tile
-    int target_tile;  // obstruction for destination tile
-    int dest_x;       // destination tile, x-coord
-    int dest_y;       // destination tile, y-coord
-    t_entity i;
-
     // Block entity if it tries to walk off the map
     if ((origin_x == 0 && move_x < 0) || (origin_y == 0 && move_y < 0) ||
         (origin_x == (int)Game.Map.g_map.xsize - 1 && move_x > 0) ||
@@ -649,12 +637,12 @@ int KEntityManager::obstruction(int origin_x, int origin_y, int move_x, int move
         return 1;
     }
 
-    dest_x = origin_x + move_x;
-    dest_y = origin_y + move_y;
+    int dest_x = origin_x + move_x;
+    int dest_y = origin_y + move_y;
 
     // Check the current tile's and target tile's obstacles
-    current_tile = Game.Map.obstacle_array[Coords(origin_x, origin_y)];
-    target_tile = Game.Map.obstacle_array[Coords(dest_x, dest_y)];
+    size_t current_tile = Game.Map.obstacle_array[Game.Map.Clamp(origin_x, origin_y)];
+    size_t target_tile = Game.Map.obstacle_array[Game.Map.Clamp(dest_x, dest_y)];
 
     // Return early if the destination tile is an obstruction
     if (target_tile == BLOCK_ALL)
@@ -695,7 +683,7 @@ int KEntityManager::obstruction(int origin_x, int origin_y, int move_x, int move
     // Another entity blocks movement as well
     if (check_entity)
     {
-        for (i = 0; i < MAX_ENTITIES; i++)
+        for (t_entity i = 0; i < MAX_ENTITIES; i++)
         {
             if (g_ent[i].active && dest_x == g_ent[i].tilex && dest_y == g_ent[i].tiley)
             {

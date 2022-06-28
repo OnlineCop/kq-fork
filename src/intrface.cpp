@@ -1587,24 +1587,23 @@ static int KQ_copy_ent(lua_State* L)
  */
 static int KQ_copy_tile_all(lua_State* L)
 {
-    auto sx = lua_tointeger(L, 1);
-    auto sy = lua_tointeger(L, 2);
-    auto dx = lua_tointeger(L, 3);
-    auto dy = lua_tointeger(L, 4);
+    uint32_t sx = lua_tointeger(L, 1);
+    uint32_t sy = lua_tointeger(L, 2);
+    uint32_t dx = lua_tointeger(L, 3);
+    uint32_t dy = lua_tointeger(L, 4);
     uint32_t wid = (uint32_t)lua_tonumber(L, 5);
     uint32_t hgt = (uint32_t)lua_tonumber(L, 6);
-    size_t os, od, i, j;
 
     /*
     sprintf (strbuf, "Copy (%d,%d)x(%d,%d) to (%d,%d)", sx, sy, wid, hgt, dx, dy);
     Game.klog(strbuf);
     */
-    for (j = 0; j < hgt; ++j)
+    for (size_t j = 0; j < hgt; ++j)
     {
-        for (i = 0; i < wid; ++i)
+        for (size_t i = 0; i < wid; ++i)
         {
-            os = sx + i + Game.Map.g_map.xsize * (sy + j);
-            od = dx + i + Game.Map.g_map.xsize * (dy + j);
+            const size_t os = Game.Map.Clamp(sx + i, sy + j);
+            const size_t od = Game.Map.Clamp(dx + i, dy + j);
             map_seg[od] = map_seg[os];
             f_seg[od] = f_seg[os];
             b_seg[od] = b_seg[os];
@@ -1643,16 +1642,13 @@ static int KQ_do_inn_effects(lua_State* L)
 
 static int KQ_door_in(lua_State* L)
 {
-    int hx, hy, hy2, db, dt;
-    int x, y;
-
     use_sstone = 0;
 
-    hx = g_ent[0].tilex;
-    hy = g_ent[0].tiley;
-    hy2 = hy - 1;
-    db = map_seg[hy * Game.Map.g_map.xsize + hx];
-    dt = map_seg[hy2 * Game.Map.g_map.xsize + hx];
+    const int hx = g_ent[0].tilex;
+    const int hy = g_ent[0].tiley;
+    const int hy2 = hy - 1;
+    uint16_t db = map_seg[Game.Map.Clamp(hx, hy)];
+    uint16_t dt = map_seg[Game.Map.Clamp(hx, hy2)];
     if (Game.Map.g_map.tileset == 1)
     {
         set_btile(hx, hy, db + 433);
@@ -1674,6 +1670,7 @@ static int KQ_door_in(lua_State* L)
     Draw.blit2screen();
     kq_wait(50);
 
+    int x = 0, y = 0;
     if (lua_type(L, 1) == LUA_TSTRING)
     {
         /* It's in "marker" form */
@@ -4341,31 +4338,30 @@ static int real_entity_num(lua_State* L, int pos)
 
 static void set_btile(int x, int y, int value)
 {
-    map_seg[y * Game.Map.g_map.xsize + x] = value;
+    map_seg[Game.Map.Clamp(x, y)] = value;
 }
 
 static void set_mtile(int x, int y, int value)
 {
-    b_seg[y * Game.Map.g_map.xsize + x] = value;
+    b_seg[Game.Map.Clamp(x, y)] = value;
 }
 
 static void set_ftile(int x, int y, int value)
 {
-    f_seg[y * Game.Map.g_map.xsize + x] = value;
+    f_seg[Game.Map.Clamp(x, y)] = value;
 }
 
 static void set_zone(int x, int y, int value)
 {
-    unsigned int index = std::clamp(y * Game.Map.g_map.xsize + x, 0U, Game.Map.g_map.xsize * Game.Map.g_map.ysize - 1);
-    Game.Map.zone_array[index] = value;
+    Game.Map.zone_array[Game.Map.Clamp(x, y)] = value;
 }
 
 static void set_obs(int x, int y, int value)
 {
-    Game.Map.obstacle_array[y * Game.Map.g_map.xsize + x] = static_cast<eObstacle>(value);
+    Game.Map.obstacle_array[Game.Map.Clamp(x, y)] = static_cast<eObstacle>(value);
 }
 
 static void set_shadow(int x, int y, int value)
 {
-    Game.Map.shadow_array[y * Game.Map.g_map.xsize + x] = static_cast<eShadow>(value);
+    Game.Map.shadow_array[Game.Map.Clamp(x, y)] = static_cast<eShadow>(value);
 }

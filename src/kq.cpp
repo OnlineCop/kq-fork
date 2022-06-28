@@ -445,7 +445,7 @@ KGame::KGame()
 
 void KGame::activate(void)
 {
-    int zx, zy, looking_at_x = 0, looking_at_y = 0, q, target_char_facing = 0, tf;
+    int zx, zy, looking_at_x = 0, looking_at_y = 0, target_char_facing = 0, tf;
 
     uint32_t p;
 
@@ -484,7 +484,7 @@ void KGame::activate(void)
     looking_at_x += zx;
     looking_at_y += zy;
 
-    q = looking_at_y * Map.g_map.xsize + looking_at_x;
+    size_t q = Game.Map.Clamp(looking_at_x, looking_at_y);
 
     if (Map.obstacle_array[q] != eObstacle::BLOCK_NONE && Map.zone_array[q] > KZone::ZONE_NONE)
     {
@@ -1056,11 +1056,11 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 {
     Raster* pcxb = nullptr;
 
-    const unsigned int mapsize = Map.g_map.xsize * Map.g_map.ysize;
+    const size_t mapsize = Map.MapSize();
 
     draw_background = draw_middle = draw_foreground = draw_shadow = 0;
 
-    for (unsigned int i = 0; i < mapsize; i++)
+    for (size_t i = 0; i < mapsize; ++i)
     {
         if (map_seg[i] > 0)
         {
@@ -1069,7 +1069,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    for (unsigned int i = 0; i < mapsize; i++)
+    for (size_t i = 0; i < mapsize; ++i)
     {
         if (b_seg[i] > 0)
         {
@@ -1078,7 +1078,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    for (unsigned int i = 0; i < mapsize; i++)
+    for (size_t i = 0; i < mapsize; ++i)
     {
         if (f_seg[i] > 0)
         {
@@ -1087,7 +1087,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    for (unsigned int i = 0; i < mapsize; i++)
+    for (size_t i = 0; i < mapsize; ++i)
     {
         if (Map.shadow_array[i] > eShadow::SHADOW_NONE)
         {
@@ -1096,7 +1096,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    for (unsigned int i = 0; i < numchrs; i++)
+    for (size_t i = 0; i < numchrs; ++i)
     {
         /* This allows us to either go to the map's default starting coords
          * or specify exactly where on the map to go to (like when there
@@ -1118,7 +1118,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         g_ent[i].moving = 0;
     }
 
-    for (unsigned int i = 0; i < MAX_ENTITIES; i++)
+    for (size_t i = 0; i < MAX_ENTITIES; ++i)
     {
         // FIXME: This shouldn't be hard-coded into the game engine. Move it to a lua script.
         // The enemy at index 38 within entities.png is a kind of non-moving "black blob" or cloak or something.
@@ -1136,17 +1136,17 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     pcxb = Map.g_map.map_tiles;
-    for (unsigned int o = 0, oo = static_cast<unsigned int>(pcxb->height / TILE_H); o < oo; ++o)
+    for (size_t tile_y = 0, num_tiles_y = static_cast<size_t>(pcxb->height / TILE_H); tile_y < num_tiles_y; ++tile_y)
     {
-        for (unsigned int i = 0, ii = static_cast<unsigned int>(pcxb->width / TILE_W); i < ii; ++i)
+        for (size_t tile_x = 0, num_tiles_x = static_cast<unsigned int>(pcxb->width / TILE_W); tile_x < num_tiles_x; ++tile_x)
         {
-            pcxb->blitTo(map_icons[o * ii + i], i * TILE_W, o * TILE_H, 0, 0, TILE_W, TILE_H);
+            pcxb->blitTo(map_icons[tile_y * num_tiles_x + tile_x], tile_x * TILE_W, tile_y * TILE_H, 0, 0, TILE_W, TILE_H);
         }
     }
 
-    for (unsigned int o = 0; o < MAX_ANIM; o++)
+    for (size_t i = 0; i < MAX_ANIM; i++)
     {
-        adelay[o] = 0;
+        adelay[i] = 0;
     }
 
     Music.play_music(Map.g_map.song_file, 0);
@@ -1167,12 +1167,12 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 
     calc_viewport();
 
-    for (unsigned int i = 0; i < MAX_TILES; i++)
+    for (size_t i = 0; i < MAX_TILES; ++i)
     {
         tilex[i] = (uint16_t)i;
     }
 
-    for (unsigned int i = 0; i < numchrs; i++)
+    for (size_t i = 0; i < numchrs; ++i)
     {
         g_ent[i].active = true;
     }
@@ -1180,7 +1180,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     EntityManager.number_of_entities = 0;
     EntityManager.count_entities();
 
-    for (unsigned int i = 0; i < MAX_ENTITIES; i++)
+    for (size_t i = 0; i < MAX_ENTITIES; ++i)
     {
         g_ent[i].delayctr = 0;
     }
@@ -1611,11 +1611,6 @@ void KGame::warp(int wtx, int wty, int fspeed)
 
 void KGame::zone_check(void)
 {
-    uint16_t stc, zx, zy;
-
-    zx = g_ent[0].x / TILE_W;
-    zy = g_ent[0].y / TILE_H;
-
     if (save_spells[P_REPULSE] > 0)
     {
         if (IsOverworldMap())
@@ -1640,8 +1635,7 @@ void KGame::zone_check(void)
         }
     }
 
-    unsigned int index = std::clamp(zy * Map.g_map.xsize + zx, 0U, Map.g_map.xsize * Map.g_map.ysize - 1);
-    stc = Map.zone_array[index];
+    uint16_t stc = Map.zone_array[Game.Map.Clamp(g_ent[0].x / TILE_W, g_ent[0].y / TILE_H)];
 
     if (Map.g_map.zero_zone != 0)
     {
@@ -1658,11 +1652,7 @@ void KGame::zone_check(void)
 
 int KGame::AddGold(signed int amount)
 {
-    gp += amount;
-    if (gp < 0)
-    {
-        gp = 0;
-    }
+    gp = std::max(0, gp + amount);
     return gp;
 }
 
@@ -1673,7 +1663,7 @@ int KGame::GetGold() const
 
 int KGame::SetGold(int amount)
 {
-    gp = amount >= 0 ? amount : 0;
+    gp = std::max(0, amount);
     return gp;
 }
 

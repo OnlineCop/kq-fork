@@ -108,8 +108,8 @@ tmx_map KTiledMap::load_tmx_map(XMLElement const* root)
     tmx_map smap;
     auto properties = root->FirstChildElement("properties");
 
-    smap.xsize = root->IntAttribute("width");
-    smap.ysize = root->IntAttribute("height");
+    smap.xsize = std::max(0, root->IntAttribute("width"));
+    smap.ysize = std::max(0, root->IntAttribute("height"));
     smap.pmult = smap.pdiv = 1;
     for (auto xprop = properties->FirstChildElement("property"); xprop; xprop = xprop->NextSiblingElement("property"))
     {
@@ -672,15 +672,14 @@ void tmx_map::set_current()
     }
 
     // Zones
-    Game.Map.zone_array.assign(xsize * ysize, KZone::ZONE_NONE);
-    for (auto&& zone : zones)
+    Game.Map.zone_array.assign(Game.Map.MapSize(), KZone::ZONE_NONE);
+    for (const auto& zone : zones)
     {
         for (int i = 0; i < zone.w; ++i)
         {
             for (int j = 0; j < zone.h; ++j)
             {
-                const unsigned int lastIndex = Game.Map.g_map.xsize * Game.Map.g_map.ysize - 1;
-                unsigned int index = std::clamp(static_cast<unsigned int>(i + zone.x + xsize * (j + zone.y)), 0U, lastIndex);
+                const size_t index = Game.Map.Clamp(i + zone.x, j + zone.y);
                 Game.Map.zone_array[index] = zone.n;
             }
         }
