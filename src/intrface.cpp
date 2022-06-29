@@ -1025,7 +1025,7 @@ static void init_obj(lua_State* L)
     /* entity[] array */
     lua_newtable(L);
     /* entities */
-    for (i = 0; i < number_of_entities; ++i)
+    for (i = 0; i < EntityManager.number_of_entities; ++i)
     {
         lua_newtable(L);
         lua_pushvalue(L, -2);
@@ -1039,7 +1039,7 @@ static void init_obj(lua_State* L)
     for (i = 0; i < numchrs; ++i)
     {
         lua_getglobal(L, party[pidx[i]].name.c_str());
-        lua_rawseti(L, -2, i + number_of_entities);
+        lua_rawseti(L, -2, i + EntityManager.number_of_entities);
     }
     lua_setglobal(L, "entity");
 }
@@ -1051,7 +1051,7 @@ static int KQ_add_chr(lua_State* L)
     if (numchrs < PSIZE)
     {
         pidx[numchrs] = a;
-        g_ent[numchrs].active = 1;
+        g_ent[numchrs].active = true;
         g_ent[numchrs].eid = (int)a;
         g_ent[numchrs].chrx = 0;
         numchrs++;
@@ -1314,7 +1314,7 @@ static int KQ_char_getter(lua_State* L)
             break;
 
         case 15:
-            lua_pushnumber(L, ent->active);
+            lua_pushboolean(L, ent->active);
             break;
 
         case 16:
@@ -1436,7 +1436,7 @@ static int KQ_char_setter(lua_State* L)
             break;
 
         case 15:
-            ent->active = (int)lua_tonumber(L, 3);
+            ent->active = lua_toboolean(L, 3);
             break;
 
         default:
@@ -1862,7 +1862,7 @@ static int KQ_get_ent_active(lua_State* L)
 {
     int a = real_entity_num(L, 1);
 
-    lua_pushnumber(L, g_ent[a].active);
+    lua_pushboolean(L, g_ent[a].active);
     return 1;
 }
 
@@ -2026,7 +2026,7 @@ static int KQ_get_marker_tiley(lua_State* L)
 
 static int KQ_get_noe(lua_State* L)
 {
-    lua_pushnumber(L, number_of_entities);
+    lua_pushnumber(L, EntityManager.number_of_entities);
     return 1;
 }
 
@@ -2533,7 +2533,7 @@ static int KQ_move_entity(lua_State* L)
         strcat(buffer, "K");
     }
 
-    set_script(entity_id, buffer);
+    EntityManager.set_script(entity_id, buffer);
     return 0;
 }
 
@@ -2629,7 +2629,7 @@ static int KQ_place_ent(lua_State* L)
         y = (int)lua_tonumber(L, 3);
     }
 
-    place_ent(a, x, y);
+    EntityManager.place_ent(a, x, y);
     return 0;
 }
 
@@ -2965,12 +2965,9 @@ static int KQ_set_desc(lua_State* L)
 static int KQ_set_ent_active(lua_State* L)
 {
     int a = real_entity_num(L, 1);
-    auto b = lua_tointeger(L, 2);
+    auto b = lua_toboolean(L, 2);
+    g_ent[a].active = b;
 
-    if (b == 0 || b == 1)
-    {
-        g_ent[a].active = b;
-    }
     return 0;
 }
 
@@ -3050,7 +3047,7 @@ static int KQ_set_ent_script(lua_State* L)
 {
     int a = real_entity_num(L, 1);
 
-    set_script(a, lua_tostring(L, 2));
+    EntityManager.set_script(a, lua_tostring(L, 2));
     return 0;
 }
 
@@ -3255,7 +3252,7 @@ static int KQ_set_noe(lua_State* L)
 
     if (a <= MAX_ENTITIES_PER_MAP + PSIZE)
     {
-        number_of_entities = a;
+        EntityManager.number_of_entities = a;
     }
     return 0;
 }
@@ -4165,7 +4162,7 @@ static int KQ_party_setter(lua_State* L)
                 memcpy(&g_ent[i], &g_ent[i + 1], sizeof(KQEntity));
             }
             --numchrs;
-            g_ent[numchrs].active = 0;
+            g_ent[numchrs].active = false;
             pidx[numchrs] = PIDX_UNDEFINED;
         }
         else if (lua_istable(L, 3))

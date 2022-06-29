@@ -427,7 +427,7 @@ static void party_add(ePIDX id, int lead)
         }
         ++numchrs;
         t->eid = (uint8_t)id;
-        t->active = 1;
+        t->active = true;
         t->chrx = 0;
     }
 }
@@ -461,7 +461,7 @@ static void party_remove(ePIDX id)
             memmove(&pidx[pidx_index], &pidx[pidx_index + 1], sizeof(*pidx) * (numchrs - pidx_index));
             memmove(&g_ent[pidx_index], &g_ent[pidx_index + 1], sizeof(*g_ent) * (numchrs - pidx_index));
             pidx[numchrs] = PIDX_UNDEFINED;
-            g_ent[numchrs].active = 0;
+            g_ent[numchrs].active = false;
             return;
         }
     }

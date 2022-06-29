@@ -462,8 +462,6 @@ extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
 extern s_anim adata[MAX_ANIM];
 extern uint32_t numchrs;
 extern int gsvol, gmvol;
-/*! Number of entities (or enemies?) */
-extern uint32_t number_of_entities;
 extern ePIDX pidx[MAXCHRS];
 extern uint8_t autoparty, alldead, deadeffect, use_sstone;
 extern bool bDoesViewportFollowPlayer;

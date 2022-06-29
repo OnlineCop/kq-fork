@@ -20,11 +20,20 @@
 */
 
 /*! \file
- * \brief Entity functions
- *
- * \author JB
- * \date ??????
+ * \brief Entity management functions
  */
+
+#include "entity.h"
+
+#include "combat.h"
+#include "enums.h"
+#include "input.h"
+#include "intrface.h"
+#include "itemdefs.h"
+#include "kq.h"
+#include "menu.h"
+#include "random.h"
+#include "setup.h"
 
 #include <algorithm>
 #include <cassert>
@@ -35,47 +44,114 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "combat.h"
-#include "entity.h"
-#include "enums.h"
-#include "input.h"
-#include "intrface.h"
-#include "itemdefs.h"
-#include "kq.h"
-#include "menu.h"
-#include "random.h"
-#include "setup.h"
-
 using namespace eSize;
 
-/*  internal functions  */
-static void chase(t_entity);
-static bool entity_near(t_entity, t_entity, int);
-static void entscript(t_entity);
-static void follow(int, int);
-static void getcommand(t_entity);
-static int move(t_entity, int, int);
-static int obstruction(int, int, int, int, int);
-static void parsems(t_entity);
-static void player_move(void);
-static void process_entity(t_entity);
-static void speed_adjust(t_entity);
-static void target(t_entity);
-static void wander(t_entity);
+constexpr auto Coords(int tile_x, int tile_y)
+{
+    auto index = std::clamp(g_map.xsize * tile_y + tile_x, 0U, g_map.xsize * g_map.ysize - 1);
+    return index;
+}
 
-/*! \brief Chase player
- *
- * Chase after the main player #0, if he/she is near.
- * Speed up until at maximum. If the player goes out
- * of range, wander for a bit.
- *
- * \param   target_entity Index of entity
- */
-static void chase(t_entity target_entity)
+KEntityManager::KEntityManager()
+    : number_of_entities{0}
+{
+}
+
+void KEntityManager::count_entities()
+{
+    number_of_entities = 0;
+    for (size_t entity_index = 0; entity_index < MAX_ENTITIES; entity_index++)
+    {
+        if (g_ent[entity_index].active == 1)
+        {
+            number_of_entities = entity_index + 1;
+        }
+    }
+}
+
+int KEntityManager::entityat(int ox, int oy, t_entity who)
+{
+    t_entity i;
+
+    for (i = 0; i < MAX_ENTITIES; i++)
+    {
+        if (g_ent[i].active && ox == g_ent[i].tilex && oy == g_ent[i].tiley)
+        {
+            if (who >= PSIZE)
+            {
+                if (g_ent[who].eid == ID_ENEMY && i < PSIZE)
+                {
+                    if (Combat.combat(0) == 1)
+                    {
+                        g_ent[who].active = false;
+                    }
+                    return 0;
+                }
+                return i + 1;
+            }
+            else
+            {
+                if (g_ent[i].eid == ID_ENEMY)
+                {
+                    if (Combat.combat(0) == 1)
+                    {
+                        g_ent[i].active = false;
+                    }
+                    return 0;
+                }
+                if (i >= PSIZE)
+                {
+                    return i + 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+void KEntityManager::place_ent(t_entity en, int ex, int ey)
+{
+    g_ent[en].tilex = ex;
+    g_ent[en].tiley = ey;
+    g_ent[en].x = g_ent[en].tilex * TILE_W;
+    g_ent[en].y = g_ent[en].tiley * TILE_H;
+}
+
+void KEntityManager::process_entities()
+{
+    for (auto i = 0U; i < MAX_ENTITIES; i++)
+    {
+        if (g_ent[i].active)
+        {
+            speed_adjust(i);
+        }
+    }
+
+    /* Do timers */
+    auto t_evt = Game.get_timer_event();
+    if (t_evt)
+    {
+        do_timefunc(t_evt);
+    }
+}
+
+void KEntityManager::set_script(t_entity target_entity, const char* movestring)
+{
+    KQEntity& ent = g_ent[target_entity];
+    ent.moving = 0;             // Stop entity from moving
+    ent.movcnt = 0;             // Reset the move counter to 0
+    ent.cmd = eCommands::COMMAND_NONE;
+    ent.sidx = 0;               // Reset script command index
+    ent.cmdnum = 0;             // There are no scripted commands
+    ent.movemode = MM_SCRIPT;   // Force the entity to follow the script
+    strncpy(ent.script, movestring, sizeof(ent.script));
+}
+
+void KEntityManager::chase(t_entity target_entity)
 {
     int emoved = 0;
-    auto& ent = g_ent[target_entity];
-    auto& plr = g_ent[0];
+    KQEntity& ent = g_ent[target_entity];
+    KQEntity& plr = g_ent[0];
 
     if (ent.chasing == 0)
     {
@@ -131,46 +207,14 @@ static void chase(t_entity target_entity)
     }
 }
 
-/*! \brief Count active entities
- *
- * Force calculation of the 'number_of_entities' variable.
- * This actually calculates the last index of any active entity plus one,
- * so if there are entities present, but not active, they may be counted.
- */
-void count_entities(void)
+bool KEntityManager::entity_near(t_entity eno, t_entity tgt, int rad)
 {
-    size_t entity_index;
-
-    number_of_entities = 0;
-    for (entity_index = 0; entity_index < MAX_ENTITIES; entity_index++)
-    {
-        if (g_ent[entity_index].active == 1)
-        {
-            number_of_entities = entity_index + 1;
-        }
-    }
-}
-
-/*! \brief Check proximity
- *
- * Check to see if the target is within "rad" squares.
- * Test area is a square box rather than a circle
- * target entity needs to be within the view area
- * to be visible
- *
- * \param   eno Entity under consideration
- * \param   tgt Entity to test
- * \param   rad Radius to test within
- * \returns true if near, false otherwise
- */
-static bool entity_near(t_entity eno, t_entity tgt, int rad)
-{
-    auto& tnt = g_ent[tgt];
+    KQEntity& tnt = g_ent[tgt];
     int ax = tnt.tilex;
     int ay = tnt.tiley;
     if (ax >= view_x1 && ay >= view_y1 && ax <= view_x2 && ay <= view_y2)
     {
-        auto& ent = g_ent[eno];
+        KQEntity& ent = g_ent[eno];
         int ex = ent.tilex - ax;
         int ey = ent.tiley - ay;
         return ex >= -rad && ey >= -rad && ex <= rad && ey <= rad;
@@ -178,67 +222,10 @@ static bool entity_near(t_entity eno, t_entity tgt, int rad)
     return false;
 }
 
-/*! \brief Check entites at location
- *
- * Check for any entities in the specified co-ordinates.
- * Runs combat routines if a character and an enemy meet,
- * and de-activate the enemy if it was defeated.
- *
- * \param   ox x-coord to check
- * \param   oy y-coord to check
- * \param   who Id of entity doing the checking
- * \returns index of entity found+1 or 0 if none found
- */
-int entityat(int ox, int oy, t_entity who)
+void KEntityManager::entscript(t_entity target_entity)
 {
-    t_entity i;
-
-    for (i = 0; i < MAX_ENTITIES; i++)
-    {
-        if (g_ent[i].active && ox == g_ent[i].tilex && oy == g_ent[i].tiley)
-        {
-            if (who >= PSIZE)
-            {
-                if (g_ent[who].eid == ID_ENEMY && i < PSIZE)
-                {
-                    if (Combat.combat(0) == 1)
-                    {
-                        g_ent[who].active = 0;
-                    }
-                    return 0;
-                }
-                return i + 1;
-            }
-            else
-            {
-                if (g_ent[i].eid == ID_ENEMY)
-                {
-                    if (Combat.combat(0) == 1)
-                    {
-                        g_ent[i].active = 0;
-                    }
-                    return 0;
-                }
-                if (i >= PSIZE)
-                {
-                    return i + 1;
-                }
-            }
-        }
-    }
-    return 0;
-}
-
-/*! \brief Run script
- *
- * This executes script commands.  This is from Verge1.
- *
- * \param   target_entity Entity to process
- */
-static void entscript(t_entity target_entity)
-{
-    auto& ent = g_ent[target_entity];
-    if (ent.active == 0)
+    KQEntity& ent = g_ent[target_entity];
+    if (!ent.active)
     {
         return;
     }
@@ -248,40 +235,40 @@ static void entscript(t_entity target_entity)
     }
     switch (ent.cmd)
     {
-    case COMMAND_MOVE_UP:
+    case eCommands::COMMAND_MOVE_UP:
         if (move(target_entity, 0, -1))
         {
             ent.cmdnum--;
         }
         break;
-    case COMMAND_MOVE_DOWN:
+    case eCommands::COMMAND_MOVE_DOWN:
         if (move(target_entity, 0, 1))
         {
             ent.cmdnum--;
         }
         break;
-    case COMMAND_MOVE_LEFT:
+    case eCommands::COMMAND_MOVE_LEFT:
         if (move(target_entity, -1, 0))
         {
             ent.cmdnum--;
         }
         break;
-    case COMMAND_MOVE_RIGHT:
+    case eCommands::COMMAND_MOVE_RIGHT:
         if (move(target_entity, 1, 0))
         {
             ent.cmdnum--;
         }
         break;
-    case COMMAND_WAIT:
+    case eCommands::COMMAND_WAIT:
         ent.cmdnum--;
         break;
-    case COMMAND_FINISH_COMMANDS:
+    case eCommands::COMMAND_FINISH_COMMANDS:
         return;
-    case COMMAND_REPEAT:
+    case eCommands::COMMAND_REPEAT:
         ent.sidx = 0;
         ent.cmdnum = 0;
         break;
-    case COMMAND_MOVETO_X:
+    case eCommands::COMMAND_MOVETO_X:
         if (ent.tilex < ent.cmdnum)
         {
             move(target_entity, 1, 0);
@@ -295,7 +282,7 @@ static void entscript(t_entity target_entity)
             ent.cmdnum = 0;
         }
         break;
-    case COMMAND_MOVETO_Y:
+    case eCommands::COMMAND_MOVETO_Y:
         if (ent.tiley < ent.cmdnum)
         {
             move(target_entity, 0, 1);
@@ -309,7 +296,7 @@ static void entscript(t_entity target_entity)
             ent.cmdnum = 0;
         }
         break;
-    case COMMAND_FACE:
+    case eCommands::COMMAND_FACE:
         ent.facing = ent.cmdnum;
         ent.cmdnum = 0;
         break;
@@ -320,11 +307,7 @@ static void entscript(t_entity target_entity)
     }
 }
 
-/*! \brief Party following leader
- *
- * This makes any characters (after the first) follow the leader.
- */
-static void follow(int tile_x, int tile_y)
+void KEntityManager::follow(int tile_x, int tile_y)
 {
     t_entity i;
 
@@ -345,26 +328,10 @@ static void follow(int tile_x, int tile_y)
     }
 }
 
-/*! \brief Read a command and parameter from a script
- *
- * This processes entity commands from the movement script.
- * This is from Verge1.
- *
- * Script commands are:
- * - U,R,D,L + param:  move up, right, down, left by param spaces
- * - W+param: wait param frames
- * - B: start script again
- * - X+param: move to x-coord param
- * - Y+param: move to y-coord param
- * - F+param: face direction param (0=S, 1=N, 2=W, 3=E)
- * - K: kill (remove) entity
- *
- * \param   target_entity Entity to process
- */
-static void getcommand(t_entity target_entity)
+void KEntityManager::getcommand(t_entity target_entity)
 {
     char s;
-    auto& ent = g_ent[target_entity];
+    KQEntity& ent = g_ent[target_entity];
 
     /* PH FIXME: prevented from running off end of string */
     if (ent.sidx < sizeof(ent.script))
@@ -379,59 +346,59 @@ static void getcommand(t_entity target_entity)
     {
     case 'u':
     case 'U':
-        ent.cmd = COMMAND_MOVE_UP;
+        ent.cmd = eCommands::COMMAND_MOVE_UP;
         parsems(target_entity);
         break;
     case 'd':
     case 'D':
-        ent.cmd = COMMAND_MOVE_DOWN;
+        ent.cmd = eCommands::COMMAND_MOVE_DOWN;
         parsems(target_entity);
         break;
     case 'l':
     case 'L':
-        ent.cmd = COMMAND_MOVE_LEFT;
+        ent.cmd = eCommands::COMMAND_MOVE_LEFT;
         parsems(target_entity);
         break;
     case 'r':
     case 'R':
-        ent.cmd = COMMAND_MOVE_RIGHT;
+        ent.cmd = eCommands::COMMAND_MOVE_RIGHT;
         parsems(target_entity);
         break;
     case 'w':
     case 'W':
-        ent.cmd = COMMAND_WAIT;
+        ent.cmd = eCommands::COMMAND_WAIT;
         parsems(target_entity);
         break;
     case '\0':
-        ent.cmd = COMMAND_FINISH_COMMANDS;
+        ent.cmd = eCommands::COMMAND_FINISH_COMMANDS;
         ent.movemode = MM_STAND;
         ent.cmdnum = 0;
         ent.sidx = 0;
         break;
     case 'b':
     case 'B':
-        ent.cmd = COMMAND_REPEAT;
+        ent.cmd = eCommands::COMMAND_REPEAT;
         break;
     case 'x':
     case 'X':
-        ent.cmd = COMMAND_MOVETO_X;
+        ent.cmd = eCommands::COMMAND_MOVETO_X;
         parsems(target_entity);
         break;
     case 'y':
     case 'Y':
-        ent.cmd = COMMAND_MOVETO_Y;
+        ent.cmd = eCommands::COMMAND_MOVETO_Y;
         parsems(target_entity);
         break;
     case 'f':
     case 'F':
-        ent.cmd = COMMAND_FACE;
+        ent.cmd = eCommands::COMMAND_FACE;
         parsems(target_entity);
         break;
     case 'k':
     case 'K':
         /* PH add: command K makes the entity disappear */
-        ent.cmd = COMMAND_KILL;
-        ent.active = 0;
+        ent.cmd = eCommands::COMMAND_KILL;
+        ent.active = false;
         break;
     default:
 #ifdef DEBUGMODE
@@ -445,27 +412,19 @@ static void getcommand(t_entity target_entity)
     }
 }
 
-/*! \brief Generic movement
- *
- * Set up the entity vars to move in the given direction
- *
- * \param   target_entity Index of entity to move
- * \param   dx tiles to move in x direction
- * \param   dy tiles to move in y direction
- */
-static int move(t_entity target_entity, int dx, int dy)
+int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
 {
-    int tile_x, tile_y, source_tile, oldfacing;
-    auto& ent = g_ent[target_entity];
-
-    if (dx == 0 && dy == 0) // Speed optimization.
+    if (dx == 0 && dy == 0)
     {
+        // Not moving vertically OR horizontally? Nothing to do.
         return 0;
     }
 
-    tile_x = ent.x / TILE_W;
-    tile_y = ent.y / TILE_H;
-    oldfacing = ent.facing;
+    KQEntity& ent = g_ent[target_entity];
+
+    int tile_x = std::clamp(ent.x / TILE_W, 0, int(g_map.xsize * g_map.ysize - 1));
+    int tile_y = std::clamp(ent.y / TILE_H, 0, int(g_map.xsize * g_map.ysize - 1));
+    int oldfacing = ent.facing;
     if (dx < 0)
     {
         ent.facing = FACE_LEFT;
@@ -482,127 +441,197 @@ static int move(t_entity target_entity, int dx, int dy)
     {
         ent.facing = FACE_UP;
     }
-    if (tile_x + dx == -1 || tile_x + dx == (int)g_map.xsize || tile_y + dy == -1 || tile_y + dy == (int)g_map.ysize)
+    if (tile_x + dx < 0 || tile_x + dx >= (int)g_map.xsize ||
+        tile_y + dy < 0 || tile_y + dy >= (int)g_map.ysize)
     {
         return 0;
     }
+
+    // When ObstacleMode is false, this entity can walk through any obstructions, including other entities.
     if (ent.obsmode == 1)
     {
-        // Try to automatically walk/run around obstacle.
-        if (dx && obstruction(tile_x, tile_y, dx, 0, FALSE))
+        // If:  the entity is trying to move left or right, AND
+        //      there is a NON-entity obstruction on the tile in that cardinal direction
+        // Then: attempt to move around the obstacle diagonally
+        if (dx != 0 && obstruction(tile_x, tile_y, dx, 0, false))
         {
-            if (dy != -1 && oldfacing == ent.facing && !obstruction(tile_x, tile_y + 1, dx, 0, TRUE) &&
-                !obstruction(tile_x, tile_y, 0, 1, TRUE))
+            // If:  the entity was not trying to walk up (specifically, diagonally-up), AND
+            //      the entity is still facing the same direction as before (left or right), AND
+            //      there is NO obstruction/entity diagonally-down, AND
+            //      there is also NO obstruction/entity straight down
+            // Then: have the entity move diagonally-down.
+            if (dy >= 0 && oldfacing == ent.facing &&
+                !obstruction(tile_x, tile_y + 1, dx, 0, true) &&
+                !obstruction(tile_x, tile_y, 0, 1, true))
             {
+                // The entity may not have been trying moving down before, but make it try to now.
                 dy = 1;
             }
-            else if (dy != 1 && oldfacing == ent.facing && !obstruction(tile_x, tile_y - 1, dx, 0, TRUE) &&
-                     !obstruction(tile_x, tile_y, 0, -1, TRUE))
+            // If:  the entity was not trying to walk down (specifically, diagonally-down), AND
+            //      the entity is still facing the same direction as before (left or right), AND
+            //      there is NO obstruction/entity diagonally-up, AND
+            //      there is also NO obstruction straight up
+            // Then: have the entity move diagonally-up.
+            else if (dy <= 0 && oldfacing == ent.facing &&
+                !obstruction(tile_x, tile_y - 1, dx, 0, true) &&
+                !obstruction(tile_x, tile_y, 0, -1, true))
             {
+                // The entity may not have been trying moving up before, but make it try to now.
                 dy = -1;
             }
             else
             {
+                // Forbid movement to the left or right now.
                 dx = 0;
             }
         }
-        if (dy && obstruction(tile_x, tile_y, 0, dy, FALSE))
+
+        // If:  the entity is trying to move up or down, AND
+        //      there is a NON-entity obstruction on the tile in that cardinal direction
+        // Then: attempt to move around the obstacle diagonally
+        if (dy != 0 && obstruction(tile_x, tile_y, 0, dy, false))
         {
-            if (dx != -1 && oldfacing == ent.facing && !obstruction(tile_x + 1, tile_y, 0, dy, TRUE) &&
-                !obstruction(tile_x, tile_y, 1, 0, TRUE))
+            // If:  the entity was not trying to walk left (specifically, diagonally-left), AND
+            //      the entity is still facing the same direction as before (up or down), AND
+            //      there is NO obstruction/entity diagonally-right, AND
+            //      there is also NO obstruction/entity straight right
+            // Then: have the entity move diagonally-right.
+            if (dx >= 0 && oldfacing == ent.facing &&
+                !obstruction(tile_x + 1, tile_y, 0, dy, true) &&
+                !obstruction(tile_x, tile_y, 1, 0, true))
             {
+                // The entity may not have been trying moving right before, but make it try to now.
                 dx = 1;
             }
-            else if (dx != 1 && oldfacing == ent.facing && !obstruction(tile_x - 1, tile_y, 0, dy, TRUE) &&
-                     !obstruction(tile_x, tile_y, -1, 0, TRUE))
+            // If:  the entity was not trying to walk right (specifically, diagonally-right), AND
+            //      the entity is still facing the same direction as before (up or down), AND
+            //      there is NO obstruction/entity diagonally-left, AND
+            //      there is also NO obstruction/entity straight left
+            // Then: have the entity move diagonally-left.
+            else if (dx <= 0 && oldfacing == ent.facing &&
+                !obstruction(tile_x - 1, tile_y, 0, dy, true) &&
+                !obstruction(tile_x, tile_y, -1, 0, true))
             {
+                // The entity may not have been trying moving left before, but make it try to now.
                 dx = -1;
             }
             else
             {
+                // Forbid movement up or down now.
                 dy = 0;
             }
         }
-        if ((dx || dy) && obstruction(tile_x, tile_y, dx, dy, FALSE))
+
+        // If:  the above calculations didn't totally forbid the entity from moving, AND
+        //      the destination tile is obstructed (by anything other than another entity)
+        // Then: forbid the entity's movement now.
+        if ((dx != 0 || dy != 0) && obstruction(tile_x, tile_y, dx, dy, false))
         {
             dx = dy = 0;
         }
     }
 
-    if (!dx && !dy && oldfacing == ent.facing)
+    // If the entity's movement is forbidden AND it didn't change direction, nothing to do.
+    if (dx == 0 && dy == 0 && oldfacing == ent.facing)
     {
         return 0;
     }
 
-    if (ent.obsmode == 1 && entityat(tile_x + dx, tile_y + dy, target_entity))
+    // If the current entity can be affected by obstacles, AND
+    // there is another entity on the destination tile, nothing to do.
+    if (ent.obsmode == 1 && EntityManager.entityat(tile_x + dx, tile_y + dy, target_entity))
     {
         return 0;
     }
 
-    // Make sure that the player can't avoid special zones by moving diagonally.
-    if (dx && dy)
+    // Make sure that the entity can't avoid special zones by moving diagonally.
+    // Example:
+    //  ....    ....
+    //  .E..    .E5.
+    //  .5x.    ..x.
+    //  ....    ....
+    // If the entity 'E' is trying to move down-right to the target 'x', and zone '5'
+    // is either immediately below, or immediately right, of 'E', then the zone should
+    // be triggered as though the entity walked over that tile.
+    if (dx != 0 && dy != 0)
     {
-        source_tile = tile_y * g_map.xsize + tile_x;
-        int dest_tile_x = std::clamp(static_cast<unsigned int>(source_tile + dx), 0U, g_map.xsize * g_map.ysize - 1);
-        int dest_tile_y = std::clamp(static_cast<unsigned int>(source_tile + dy * g_map.xsize), 0U, g_map.xsize * g_map.ysize - 1);
+        const unsigned int source_tile = Coords(tile_x, tile_y);
+        const unsigned int dest_tile_x = Coords(tile_x + dx, tile_y);
+        const unsigned int dest_tile_y = Coords(tile_x, tile_y + dy);
+
+        // Check whether the zone immediately to the left or right, OR the zone immediately
+        // above or below, the entity is a different value (for example: the entity is standing
+        // on a tile with Zone '1' but the neighboring tile is Zone '2').
         if (Game.Map.zone_array[source_tile] != Game.Map.zone_array[dest_tile_x] ||
             Game.Map.zone_array[source_tile] != Game.Map.zone_array[dest_tile_y])
         {
+            // If the entity is facing an obstruction or another entity, then forbid movement
+            // in that direction, and instead, force the entity up or down (if the obstacle is
+            // left or right) OR left or right (if the obstacle is up or down).
             if (ent.facing == FACE_LEFT || ent.facing == FACE_RIGHT)
             {
-                if (!obstruction(tile_x, tile_y, dx, 0, TRUE))
+                // If:  facing left and the obstruction is to the left, OR
+                //      facing right and the obstruction is to the right,
+                // Then: forbid movement left or right (retain up/down movement).
+                if (obstruction(tile_x, tile_y, dx, 0, true))
                 {
-                    dy = 0;
+                    dx = 0;
                 }
                 else
                 {
-                    dx = 0;
+                    // The tile left or right of the entity is NOT obstructed by an obstacle or entity,
+                    // so forbid movement up or down instead.
+                    dy = 0;
                 }
             }
             else // They are facing up or down.
             {
-                if (!obstruction(tile_x, tile_y, 0, dy, TRUE))
+                // If:  facing up and the obstruction is above, OR
+                //      facing down and the obstruction is below,
+                // Then: forbid movement up or down (retain left/right movement).
+                if (obstruction(tile_x, tile_y, 0, dy, true))
                 {
-                    dx = 0;
+                    dy = 0;
                 }
                 else
                 {
-                    dy = 0;
+                    // The tile above or below the entity is NOT obstructed by an obstacle or entity,
+                    // so forbid movement left or right instead.
+                    dx = 0;
                 }
             }
         }
     }
 
     // Make sure player can't walk diagonally between active entities.
-    if (dx && dy)
+    if (dx != 0 && dy != 0)
     {
-        if (obstruction(tile_x, tile_y, dx, 0, TRUE) && obstruction(tile_x, tile_y, 0, dy, TRUE))
+        if (obstruction(tile_x, tile_y, dx, 0, true) &&
+            obstruction(tile_x, tile_y, 0, dy, true))
         {
             return 0;
         }
     }
 
+    // Increase the full tile the entity is considered at (even if they visually have not arrived there yet).
     ent.tilex = tile_x + dx;
     ent.tiley = tile_y + dy;
-    ent.y += dy;
+
+    // Move the entity in the target direction by 1 pixel.
     ent.x += dx;
+    ent.y += dy;
+
     ent.moving = 1;
-    ent.movcnt = 15;
+
+    // The entity moves 1 pixel per tick, and since its .x and/or .y were just advanced 1 pixel,
+    // set this to the size of a tile (either TILE_W or TILE_H if they are the same, else some
+    // other logic is going to have to be involved if the tile sizes are not equal).
+    ent.movcnt = TILE_W - 1;
+
     return 1;
 }
 
-/*! \brief Check for obstruction
- *
- * Check for any map-based obstructions in the specified co-ordinates.
- *
- * \param   origin_x Original x-coord position
- * \param   origin_y Original y-coord position
- * \param   move_x Amount to move -1..+1
- * \param   move_y Amount to move -1..+1
- * \param   check_entity Whether to return 1 if an entity is at the target
- * \returns 1 if path is obstructed, 0 otherwise
- */
-static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int check_entity)
+int KEntityManager::obstruction(int origin_x, int origin_y, int move_x, int move_y, int check_entity)
 {
     int current_tile; // obstrution for current tile
     int target_tile;  // obstruction for destination tile
@@ -621,8 +650,8 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
     dest_y = origin_y + move_y;
 
     // Check the current and target tiles' obstacles
-    current_tile = Game.Map.obstacle_array[(origin_y * g_map.xsize) + origin_x];
-    target_tile = Game.Map.obstacle_array[(dest_y * g_map.xsize) + dest_x];
+    current_tile = Game.Map.obstacle_array[Coords(origin_x, origin_y)];
+    target_tile = Game.Map.obstacle_array[Coords(dest_x, dest_y)];
 
     // Return early if the destination tile is an obstruction
     if (target_tile == BLOCK_ALL)
@@ -676,18 +705,11 @@ static int obstruction(int origin_x, int origin_y, int move_x, int move_y, int c
     return 0;
 }
 
-/*! \brief Read an int from a script
- *
- * This parses the movement script for a value that relates
- * to a command.  This is from Verge1.
- *
- * \param   target_entity Entity to process
- */
-static void parsems(t_entity target_entity)
+void KEntityManager::parsems(t_entity target_entity)
 {
     uint32_t p = 0;
     char tok[10];
-    auto& ent = g_ent[target_entity];
+    KQEntity& ent = g_ent[target_entity];
     char s = ent.script[ent.sidx];
 
     // 48..57 are '0'..'9' ASCII
@@ -703,32 +725,9 @@ static void parsems(t_entity target_entity)
     ent.cmdnum = atoi(tok);
 }
 
-/*! \brief Set position
- *
- * Position an entity manually.
- *
- * \param   en Entity to position
- * \param   ex x-coord
- * \param   ey y-coord
- */
-void place_ent(t_entity en, int ex, int ey)
+void KEntityManager::player_move()
 {
-    g_ent[en].tilex = ex;
-    g_ent[en].tiley = ey;
-    g_ent[en].x = g_ent[en].tilex * TILE_W;
-    g_ent[en].y = g_ent[en].tiley * TILE_H;
-}
-
-/*! \brief Process movement for player
- *
- * This is the replacement for process_controls that used to be in kq.c
- * I realized that all the work in process_controls was already being
- * done in process_entity... I just had to make this exception for the
- * player-controlled dude.
- */
-static void player_move(void)
-{
-    auto& plr = g_ent[0];
+    KQEntity& plr = g_ent[0];
     int oldx = plr.tilex;
     int oldy = plr.tiley;
 
@@ -778,41 +777,9 @@ static void player_move(void)
     }
 }
 
-/*! \brief Main entity routine
- *
- * The main routine that loops through the entity list and processes each
- * one.
- */
-void process_entities(void)
+void KEntityManager::process_entity(t_entity target_entity)
 {
-    for (auto i = 0U; i < MAX_ENTITIES; i++)
-    {
-        if (g_ent[i].active == 1)
-        {
-            speed_adjust(i);
-        }
-    }
-
-    /* Do timers */
-    auto t_evt = Game.get_timer_event();
-    if (t_evt)
-    {
-        do_timefunc(t_evt);
-    }
-}
-
-/*! \brief Actions for one entity
- * \date    20040310 PH added TARGET movemode, broke out chase into separate function
- *
- * Process an individual active entity.  If the entity in question is main character (#0)
- * and the party is not automated, then allow for player input.
- *
- * \param   target_entity Index of entity
- * \date    20040310 PH added TARGET movemode, broke out chase into separate function
- */
-static void process_entity(t_entity target_entity)
-{
-    auto& ent = g_ent[target_entity];
+    KQEntity& ent = g_ent[target_entity];
 
     ent.scount = 0;
 
@@ -839,7 +806,6 @@ static void process_entity(t_entity target_entity)
         {
             --ent.y;
         }
-        ent.movcnt--;
 
         if (ent.framectr < 20)
         {
@@ -849,12 +815,14 @@ static void process_entity(t_entity target_entity)
         {
             ent.framectr = 0;
         }
+
+        ent.movcnt--;
         if (ent.movcnt == 0)
         {
             ent.moving = 0;
             if (target_entity < PSIZE)
             {
-                auto& player = party[pidx[target_entity]];
+                KPlayer& player = party[pidx[target_entity]];
                 if (steps < STEPS_NEEDED)
                 {
                     steps++;
@@ -919,36 +887,9 @@ static void process_entity(t_entity target_entity)
     }
 }
 
-/*! \brief Initialize script
- *
- * This is used to set up an entity with a movement script so that
- * it can be automatically controlled.
- *
- * \param   target_entity Entity to process
- * \param   movestring The script
- */
-void set_script(t_entity target_entity, const char* movestring)
+void KEntityManager::speed_adjust(t_entity target_entity)
 {
-    auto& ent = g_ent[target_entity];
-    ent.moving = 0;             // Stop entity from moving
-    ent.movcnt = 0;             // Reset the move counter to 0
-    ent.cmd = COMMAND_NONE;
-    ent.sidx = 0;               // Reset script command index
-    ent.cmdnum = 0;             // There are no scripted commands
-    ent.movemode = MM_SCRIPT;   // Force the entity to follow the script
-    strncpy(ent.script, movestring, sizeof(ent.script));
-}
-
-/*! \brief Adjust movement speed
- *
- * This has to adjust for each entity's speed.
- * 'Normal' speed appears to be 4.
- *
- * \param   target_entity Index of entity
- */
-static void speed_adjust(t_entity target_entity)
-{
-    auto& ent = g_ent[target_entity];
+    KQEntity& ent = g_ent[target_entity];
     int speed = ent.speed;
     /* TT: This is to see if the player is "running" */
     if (PlayerInput.bctrl.isDown() && target_entity < PSIZE)
@@ -998,22 +939,11 @@ static void speed_adjust(t_entity target_entity)
     }
 }
 
-/*! \brief Move entity towards target
- * \author PH
- * \date 20040310
- *
- * When entity is in target mode (MM_TARGET) move towards the goal.  This is
- * fairly simple; it doesn't do clever obstacle avoidance.  It simply moves
- * either horizontally or vertically, preferring the _closer_ one. In other
- * words, it will try to get on a vertical or horizontal line with its target.
- *
- * \param   target_entity Index of entity
- */
-static void target(t_entity target_entity)
+void KEntityManager::target(t_entity target_entity)
 {
     int dx, dy, ax, ay, emoved = 0;
 
-    auto& ent = g_ent[target_entity];
+    KQEntity& ent = g_ent[target_entity];
 
     ax = dx = ent.target_x - ent.tilex;
     ay = dy = ent.target_y - ent.tiley;
@@ -1080,16 +1010,9 @@ static void target(t_entity target_entity)
     }
 }
 
-/*! \brief Move randomly
- *
- * Choose a random direction for the entity to walk in and set up the
- * vars to do so.
- *
- * \param   target_entity Index of entity to move
- */
-static void wander(t_entity target_entity)
+void KEntityManager::wander(t_entity target_entity)
 {
-    auto& ent = g_ent[target_entity];
+    KQEntity& ent = g_ent[target_entity];
 
     if (ent.delayctr < ent.delay)
     {
@@ -1113,3 +1036,5 @@ static void wander(t_entity target_entity)
         break;
     }
 }
+
+KEntityManager EntityManager;

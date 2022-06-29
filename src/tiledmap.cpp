@@ -402,7 +402,7 @@ vector<KQEntity> KTiledMap::load_tmx_entities(XMLElement const* el)
                 }
                 if (xprop->Attribute("name", "active"))
                 {
-                    entity.active = value->IntValue();
+                    entity.active = value->BoolValue();
                 }
                 if (xprop->Attribute("name", "facing"))
                 {

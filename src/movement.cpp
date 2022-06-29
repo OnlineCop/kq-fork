@@ -275,7 +275,7 @@ static int search_paths(uint32_t entity_id, int* map, uint32_t step, uint32_t so
 
     int index = source_y * limit_x + source_x;
     int value = map[index];
-    if ((value != -1) && (value == 0 || value > (int)step) && (step == 1 || !entityat(source_x, source_y, entity_id)))
+    if ((value != -1) && (value == 0 || value > (int)step) && (step == 1 || !EntityManager.entityat(source_x, source_y, entity_id)))
     {
         map[index] = step;
 

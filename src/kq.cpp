@@ -112,8 +112,6 @@ s_map g_map;
 /*! Current entities (players+NPCs) */
 KQEntity g_ent[MAX_ENTITIES];
 
-uint32_t number_of_entities = 0;
-
 /*! Identifies characters in the party */
 // Ideally, this would hold values 0..7 (ePIDX::SENSAR..ePIDX::NOSLOM) in whatever order they belonged to the current party.
 ePIDX pidx[MAXCHRS] = { ePIDX::PIDX_UNDEFINED };
@@ -374,7 +372,7 @@ void KGame::activate(void)
         do_zone(Game.Map.zone_array[q]);
     }
 
-    p = entityat(looking_at_x, looking_at_y, 0);
+    p = EntityManager.entityat(looking_at_x, looking_at_y, 0);
 
     if (p >= PSIZE)
     {
@@ -885,7 +883,7 @@ void KGame::kwait(int dtime)
         ProcessEvents();
         Music.poll_music();
         --dtime;
-        process_entities();
+        EntityManager.process_entities();
         do_check_animation();
         Draw.drawmap();
         Draw.blit2screen();
@@ -979,7 +977,7 @@ int main(int argc, char* argv[])
             while (!stop)
             {
                 Game.ProcessEvents();
-                process_entities();
+                EntityManager.process_entities();
                 Game.do_check_animation();
                 Draw.drawmap();
                 Draw.blit2screen();
@@ -1065,12 +1063,12 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         if (msx == 0 && msy == 0)
         {
             // Place players at default map starting coords
-            place_ent(i, g_map.stx, g_map.sty);
+            EntityManager.place_ent(i, g_map.stx, g_map.sty);
         }
         else
         {
             // Place players at specific coordinates in the map
-            place_ent(i, msx, msy);
+            EntityManager.place_ent(i, msx, msy);
         }
 
         g_ent[i].speed = 4;
@@ -1080,7 +1078,9 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 
     for (i = 0; i < MAX_ENTITIES; i++)
     {
-        if (g_ent[i].chrx == 38 && g_ent[i].active == 1)
+        // FIXME: This shouldn't be hard-coded into the game engine. Move it to a lua script.
+        // The enemy at index 38 within entities.png is a kind of non-moving "black blob" or cloak or something.
+        if (g_ent[i].chrx == 38 && g_ent[i].active)
         {
             g_ent[i].eid = ID_ENEMY;
             g_ent[i].speed = kqrandom->random_range_exclusive(1, 5);
@@ -1130,13 +1130,13 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         tilex[i] = (uint16_t)i;
     }
 
-    number_of_entities = 0;
     for (i = 0; i < (size_t)numchrs; i++)
     {
-        g_ent[i].active = 1;
+        g_ent[i].active = true;
     }
 
-    count_entities();
+    EntityManager.number_of_entities = 0;
+    EntityManager.count_entities();
 
     for (i = 0; i < MAX_ENTITIES; i++)
     {
@@ -1508,7 +1508,7 @@ void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
     do
     {
         ProcessEvents();
-        process_entities();
+        EntityManager.process_entities();
         Music.poll_music();
         Game.do_check_animation();
         Draw.drawmap();
@@ -1518,7 +1518,7 @@ void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
         for (entity_index = first_entity_index; entity_index <= last_entity_index; ++entity_index)
         {
             move_mode = g_ent[entity_index].movemode;
-            if (g_ent[entity_index].active == 1 && (move_mode == MM_SCRIPT || move_mode == MM_TARGET))
+            if (g_ent[entity_index].active && (move_mode == MM_SCRIPT || move_mode == MM_TARGET))
             {
                 any_following_entities = true;
                 break; // for()
@@ -1548,7 +1548,7 @@ void KGame::warp(int wtx, int wty, int fspeed)
 
     for (entity_index = 0; entity_index < last_entity; entity_index++)
     {
-        place_ent(entity_index, wtx, wty);
+        EntityManager.place_ent(entity_index, wtx, wty);
         g_ent[entity_index].moving = 0;
         g_ent[entity_index].movcnt = 0;
         g_ent[entity_index].framectr = 0;
