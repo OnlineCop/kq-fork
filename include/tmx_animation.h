@@ -5,6 +5,13 @@
 class KTmxAnimation
 {
   public:
+    ~KTmxAnimation() = default;
+    KTmxAnimation();
+    KTmxAnimation(const KTmxAnimation& other) = default;
+    KTmxAnimation(KTmxAnimation&& other) = default;
+    KTmxAnimation& operator=(const KTmxAnimation& other) = default;
+    KTmxAnimation& operator=(KTmxAnimation&& other) = default;
+
     int tilenumber; //!< Base tile number to be altered
     struct animation_frame
     {
