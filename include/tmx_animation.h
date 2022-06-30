@@ -33,11 +33,15 @@ class KTmxAnimation
     KTmxAnimation& operator=(const KTmxAnimation& other) = default;
     KTmxAnimation& operator=(KTmxAnimation&& other) = default;
 
-    int tilenumber; //!< Base tile number to be altered
+    /*! Base tile number to be altered */
+    int tilenumber;
     struct animation_frame
     {
-        int tile;  //!< New tile value
-        int delay; //!< Delay in milliseconds before showing this tile
+        /*! New tile value */
+        int tile;
+        /*! Delay in milliseconds before showing this tile */
+        int delay;
     };
-    std::vector<animation_frame> frames; //!< Sequence of animation frames
+    /*! Sequence of animation frames */
+    std::vector<animation_frame> frames;
 };

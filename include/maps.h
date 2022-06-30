@@ -60,28 +60,50 @@ enum eMapMode
  */
 struct s_map
 {
-    signed char map_no; /*!< Not used in code. */
-    uint8_t zero_zone;  /*!< Non-zero if zone 0 triggers an event */
-    uint8_t map_mode;   /*!< Draw order for layers, plus parallax settings (see eMapMode) */
-    uint8_t can_save;   /*!< Non-zero if Save is allowed in this map */
-    uint8_t tileset;    /*!< Which tile-set to use */
-    uint8_t use_sstone; /*!< Non-zero if sunstone works on this map */
-    uint8_t can_warp;   /*!< Non-zero if Warp is allowed in this map */
-    uint8_t extra_byte; /*!< Currently unused */
-    uint32_t xsize;     /*!< Map width in tiles (pixels / TILE_W) */
-    uint32_t ysize;     /*!< Map height in tiles (pixels / TILE_H) */
-    int32_t pmult;      /*!< Parallax multiplier */
-    int32_t pdiv;       /*!< Parallax divider */
-    int32_t stx;        /*!< Default start x-coord */
-    int32_t sty;        /*!< Default start y-coord */
-    int32_t warpx;      /*!< x-coord where warp spell takes you to (see special_spells()) */
-    int32_t warpy;      /*!< y-coord where warp spell takes you to (see special_spells()) */
-    int revision;       /*!< Internal revision number for the map file */
-    int extra_sdword2;  /*!< Not used */
-    std::string song_file;   /*!< Base file name for map song */
-    std::string map_desc;    /*!< Map name (shown when map first appears) */
-    KMarkers markers;   /*!< Marker array */
-    KBounds bounds;     /*!< Bound array and bound size */
+    /*! Not used in code. */
+    signed char map_no;
+    /*! Non-zero if zone 0 triggers an event */
+    uint8_t zero_zone;
+    /*! Draw order for layers, plus parallax settings (see eMapMode) */
+    uint8_t map_mode;
+    /*! Non-zero if Save is allowed in this map */
+    uint8_t can_save;
+    /*! Which tile-set to use */
+    uint8_t tileset;
+    /*! Non-zero if sunstone works on this map */
+    uint8_t use_sstone;
+    /*! Non-zero if Warp is allowed in this map */
+    uint8_t can_warp;
+    /*! Currently unused */
+    uint8_t extra_byte;
+    /*! Map width in tiles (pixels / TILE_W) */
+    uint32_t xsize;
+    /*! Map height in tiles (pixels / TILE_H) */
+    uint32_t ysize;
+    /*! Parallax multiplier */
+    int32_t pmult;
+    /*! Parallax divider */
+    int32_t pdiv;
+    /*! Default start x-coord */
+    int32_t stx;
+    /*! Default start y-coord */
+    int32_t sty;
+    /*! x-coord where warp spell takes you to (see special_spells()) */
+    int32_t warpx;
+    /*! y-coord where warp spell takes you to (see special_spells()) */
+    int32_t warpy;
+    /*! Internal revision number for the map file */
+    int revision;
+    /*! Not used */
+    int extra_sdword2;
+    /*! Base file name for map song */
+    std::string song_file;
+    /*! Map name (shown when map first appears) */
+    std::string map_desc;
+    /*! Marker array */
+    KMarkers markers;
+    /*! Bound array and bound size */
+    KBounds bounds;
     Raster* map_tiles;
     Raster* misc_tiles;
     Raster* entity_tiles;

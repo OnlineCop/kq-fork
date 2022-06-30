@@ -43,35 +43,64 @@ class Raster;
  * Contains info on an entity's appearance, position and behaviour */
 struct KQEntity
 {
-    uint8_t chrx;       //!< Entity's identity (what s/he looks like)
-    uint16_t x;         //!< x-coord on map
-    uint16_t y;         //!< y-coord on map
-    uint16_t tilex;     //!< x-coord tile that entity is standing on
-    uint16_t tiley;     //!< y-coord tile that entity is standing on
-    uint8_t eid;        //!< Entity type (fighter, enemy, normal)
-    uint8_t active;     //!< "Alive" or not
-    uint8_t facing;     //!< Direction
-    uint8_t moving;     //!< In the middle of a move
-    uint8_t movcnt;     //!< How far along the move entity is, in pixels; 0 (not moving, or finished moving) up to 15 (TILE_W - 1)
-    uint8_t framectr;   //!< Counter for determining animation frame
-    uint8_t movemode;   //!< Stand, wander, script or chasing
-    uint8_t obsmode;    //!< Determine if affected by obstacles or not
-    uint8_t delay;      //!< Movement delay (between steps)
-    uint8_t delayctr;   //!< Counter for movement delay
-    uint8_t speed;      //!< How hyperactive the entity is
-    uint8_t scount;     //<< UNUSED
-    uint8_t cmd;        //!< Scripted commands (eCommands in entity.h)
-    uint8_t sidx;       //!< Index within script parser
-    uint8_t extra;      //!< Used with random numbers to detect when an entity should chase the player
-    uint8_t chasing;    //!< Entity is following another
-    signed int cmdnum;  //!< Number of times we need to repeat 'cmd'
-    uint8_t atype;      //!< UNUSED
-    uint8_t snapback;   //!< Snaps back to direction previously facing
-    uint8_t facehero;   //!< Look at player when talked to
-    uint8_t transl;     //!< Entity is see-through or not
-    char script[60];    //!< Movement/action script (pacing, etc.)
-    uint16_t target_x;  //!< Scripted x-coord the ent is moving to
-    uint16_t target_y;  //!< Scripted y-coord the ent is moving to
+    /*! Entity's identity (what s/he looks like) */
+    uint8_t chrx;
+    /*! x-coord on map */
+    uint16_t x;
+    /*! y-coord on map */
+    uint16_t y;
+    /*! x-coord tile that entity is standing on */
+    uint16_t tilex;
+    /*! y-coord tile that entity is standing on */
+    uint16_t tiley;
+    /*! Entity type (fighter, enemy, normal) */
+    uint8_t eid;
+    /*! "Alive" or not */
+    uint8_t active;
+    /*! Direction */
+    uint8_t facing;
+    /*! In the middle of a move */
+    uint8_t moving;
+    /*! How far along the move entity is, in pixels; 0 (not moving, or finished moving) up to 15 (TILE_W - 1) */
+    uint8_t movcnt;
+    /*! Counter for determining animation frame */
+    uint8_t framectr;
+    /*! Stand, wander, script or chasing */
+    uint8_t movemode;
+    /*! Determine if affected by obstacles or not */
+    uint8_t obsmode;
+    /*! Movement delay (between steps) */
+    uint8_t delay;
+    /*! Counter for movement delay */
+    uint8_t delayctr;
+    /*! How hyperactive the entity is */
+    uint8_t speed;
+    /*! UNUSED */
+    uint8_t scount;
+    /*! Scripted commands (eCommands in entity.h) */
+    uint8_t cmd;
+    /*! Index within script parser */
+    uint8_t sidx;
+    /*! Used with random numbers to detect when an entity should chase the player */
+    uint8_t extra;
+    /*! Entity is following another */
+    uint8_t chasing;
+    /*! Number of times we need to repeat 'cmd' */
+    signed int cmdnum;
+    /*! UNUSED */
+    uint8_t atype;
+    /*! Snaps back to direction previously facing */
+    uint8_t snapback;
+    /*! Look at player when talked to */
+    uint8_t facehero;
+    /*! Entity is see-through or not */
+    uint8_t transl;
+    /*! Movement/action script (pacing, etc.) */
+    char script[60]; 
+    /*! Scripted x-coord the ent is moving to */
+    uint16_t target_x;
+    /*! Scripted y-coord the ent is moving to */
+    uint16_t target_y;
 };
 
 /*! \brief Animation specifier
@@ -81,9 +110,12 @@ struct KQEntity
  */
 struct s_anim
 {
-    uint16_t start; /*!< First tile in sequence  */
-    uint16_t end;   /*!< Last tile in sequence */
-    uint16_t delay; /*!< Frames to wait between tile changes */
+    /*! First tile in sequence  */
+    uint16_t start;
+    /*! Last tile in sequence */
+    uint16_t end;
+    /*! Frames to wait between tile changes */
+    uint16_t delay;
 };
 
 /*! \brief Tileset definition
@@ -104,8 +136,10 @@ struct s_tileset
  */
 struct s_progress
 {
-    uint32_t num_progress; /*!< Number of current progress */
-    char name[18];         /*!< Name of current progress */
+    /*! Number of current progress */
+    uint32_t num_progress;
+    /*! Name of current progress */
+    char name[18]; 
 };
 
 /*! \brief Hero information
@@ -115,10 +149,12 @@ struct s_progress
  */
 struct s_heroinfo
 {
-    // s_player plr;                /*!< all other statistics */
-    Raster* portrait;            /*!< The hero's portrait for the stats screen */
-    Raster* frames[MAXFRAMES];   /*!< Frames for movement */
-    Raster* cframes[MAXCFRAMES]; /*!< Frames for combat */
+    /*! The hero's portrait for the stats screen */
+    Raster* portrait;
+    /*! Frames for movement */
+    Raster* frames[MAXFRAMES]; 
+    /*! Frames for combat */
+    Raster* cframes[MAXCFRAMES]; 
 };
 
 /*! \brief Special Items

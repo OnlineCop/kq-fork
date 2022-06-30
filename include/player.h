@@ -106,29 +106,43 @@ class KPlayer
     uint8_t GetRemainingShield() const;
     void AddShield(signed int AmountOfEffectToAdd);
 
-    std::string name;            /*!< Entity name */
-    int xp;                      /*!< Entity experience */
-    int next;                    /*!< Experience needed for level-up */
-    int lvl;                     /*!< Entity's level (according to KMenu::check_xp(), max is 50) */
-    int mrp;                     /*!< Magic use rate (0-100) */
-    int hp;                      /*!< Hit points */
-    int mhp;                     /*!< Maximum hit points */
-    int mp;                      /*!< Magic points */
-    int mmp;                     /*!< Maximum magic points */
-    int stats[eStat::NUM_STATS]; /*!< eAttribute: (A_* enumerations) in enums.h */
-    char res[NUM_RES];           /*!< eResistance: See R_* constants */
-    uint8_t eqp[NUM_EQUIPMENT];  /*!< eEquipment: Weapons, armor, etc. equipped */
-    uint8_t spells[NUM_SPELLS];  /*!< Known spells */
-                                 /*! \brief Level up information
-                                  * * Item 0, 1 - used to calculate the XP you need for the next level
-                                  * * Item 2 - Boost to your HP/MHP
-                                  * * Item 3 - Boost to your MP/MMP
-                                  * * Items 4..16 - Actually used by player2fighter to adjust your base stats to the level you're on.
-                                  */
+    /*! Entity name */
+    std::string name;
+    /*! Entity experience */
+    int xp;
+    /*! Experience needed for level-up */
+    int next;
+    /*! Entity's level (according to KMenu::check_xp(), max is 50) */
+    int lvl;
+    /*! Magic use rate (0-100) */
+    int mrp;
+    /*! Hit points */
+    int hp;
+    /*! Maximum hit points */
+    int mhp;
+    /*! Magic points */
+    int mp;
+    /*! Maximum magic points */
+    int mmp;
+    /*! eAttribute: (A_* enumerations) in enums.h */
+    int stats[eStat::NUM_STATS];
+    /*! eResistance: See R_* constants */
+    char res[NUM_RES];
+    /*! eEquipment: Weapons, armor, etc. equipped */
+    uint8_t eqp[NUM_EQUIPMENT];
+    /*! Known spells */
+    uint8_t spells[NUM_SPELLS];
+    /*! \brief Level up information
+     * * Item 0, 1 - used to calculate the XP you need for the next level
+     * * Item 2 - Boost to your HP/MHP
+     * * Item 3 - Boost to your MP/MMP
+     * * Items 4..16 - Actually used by player2fighter to adjust your base stats to the level you're on.
+     */
     unsigned short lup[NUM_LUP];
 
   protected:
-    uint8_t sts[NUM_SPELL_TYPES]; /*!< eSpellType */
+    /*! eSpellType */
+    uint8_t sts[NUM_SPELL_TYPES];
 };
 
 extern KPlayer party[MAXCHRS];

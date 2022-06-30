@@ -232,8 +232,8 @@ class KFighter
     int opal_power;
 
   protected:
-    uint8_t sts[NUM_SPELL_TYPES]; /*!< eSpellType, how long a specific status effect remains on this fighter (such as
-                                     "remaining poison", etc.). */
+    /*! eSpellType, how long a specific status effect remains on this fighter (such as "remaining poison", etc.). */
+    uint8_t sts[NUM_SPELL_TYPES];
 };
 
 extern KFighter Fighter;
