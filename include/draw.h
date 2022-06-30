@@ -26,8 +26,6 @@
 #include <cstdlib>
 #include <string>
 
-using std::string;
-
 class Raster;
 struct SDL_Window;
 struct SDL_Renderer;

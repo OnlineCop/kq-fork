@@ -23,7 +23,6 @@
 
 #include <cstdint>
 #include <vector>
-using std::vector;
 
 #include "tmx_animation.h"
 

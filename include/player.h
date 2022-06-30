@@ -27,7 +27,6 @@
 
 #include <cstdint>
 #include <string>
-using std::string;
 
 /*! \brief Player */
 class KPlayer

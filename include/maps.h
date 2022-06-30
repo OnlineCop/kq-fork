@@ -30,8 +30,6 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-using std::string;
-using std::vector;
 
 #include "bounds.h"
 #include "markers.h"

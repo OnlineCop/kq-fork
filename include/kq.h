@@ -56,8 +56,6 @@
 
 #define _(s) gettext(s)
 
-using std::string;
-
 class Raster;
 
 class KTime

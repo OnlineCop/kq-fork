@@ -25,9 +25,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-using std::shared_ptr;
-using std::string;
-using std::vector;
 
 /*! \file
  * \brief Structures common to mapedit and the game (s_map and s_entity)

@@ -26,9 +26,6 @@
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-
 KFighter player2fighter(int);
 
 /* These are hints/reminders about the game - e.g:

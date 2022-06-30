@@ -27,9 +27,6 @@
 #include <tinyxml2.h>
 #include <vector>
 
-using std::string;
-using std::unique_ptr;
-using std::vector;
 using namespace tinyxml2;
 
 #include "bounds.h"

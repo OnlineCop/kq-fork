@@ -24,7 +24,6 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
-using std::vector;
 
 struct PACKFILE;
 
