@@ -443,7 +443,7 @@ KGame::KGame()
 {
 }
 
-void KGame::activate(void)
+void KGame::activate()
 {
     int zx, zy, looking_at_x = 0, looking_at_y = 0, target_char_facing = 0, tf;
 
@@ -580,7 +580,7 @@ Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char*)
 }
 #endif
 
-void KGame::allocate_stuff(void)
+void KGame::allocate_stuff()
 {
     kfonts = alloc_bmp(1024, 60, "kfonts");
 
@@ -779,7 +779,7 @@ void KGame::change_map(const string& map_name, const string& marker_name, signed
     prepare_map(msx, msy, mvx, mvy);
 }
 
-void KGame::do_check_animation(void)
+void KGame::do_check_animation()
 {
     int millis = (1000 * animation_count) / KQ_TICKS;
     animation_count -= (KQ_TICKS * millis) / 1000;
@@ -788,7 +788,7 @@ void KGame::do_check_animation(void)
 
 #ifdef DEBUGMODE
 
-void KGame::data_dump(void)
+void KGame::data_dump()
 {
     if (debugging <= 0)
     {
@@ -834,7 +834,7 @@ void KGame::data_dump(void)
 }
 #endif
 
-void KGame::deallocate_stuff(void)
+void KGame::deallocate_stuff()
 {
     int i, p;
 
@@ -955,7 +955,7 @@ void KGame::deallocate_stuff(void)
 #endif
 }
 
-const char* KGame::get_timer_event(void)
+const char* KGame::get_timer_event()
 {
     static string buf;
     int next = INT_MAX;
@@ -1024,7 +1024,7 @@ void KGame::kwait(int dtime)
     autoparty = 0;
 }
 
-void KGame::load_heroes(void)
+void KGame::load_heroes()
 {
     Raster* eb = get_cached_image("uschrs.png");
 
@@ -1229,7 +1229,7 @@ void KGame::program_death(const std::string& message, const std::string& extra)
     exit(EXIT_FAILURE);
 }
 
-void KGame::reset_timer_events(void)
+void KGame::reset_timer_events()
 {
     for (auto& t : timer_events)
     {
@@ -1238,7 +1238,7 @@ void KGame::reset_timer_events(void)
     next_event_time = INT_MAX;
 }
 
-void KGame::reset_world(void)
+void KGame::reset_world()
 {
     /* Start with no characters in play */
     numchrs = 0;
@@ -1530,7 +1530,7 @@ void KGame::wait_released()
         }
     }
 }
-void KGame::wait_enter(void)
+void KGame::wait_enter()
 {
     while (!PlayerInput.balt())
     {
@@ -1612,7 +1612,7 @@ void KGame::warp(int wtx, int wty, int fspeed)
     }
 }
 
-void KGame::zone_check(void)
+void KGame::zone_check()
 {
     if (save_spells[P_REPULSE] > 0)
     {

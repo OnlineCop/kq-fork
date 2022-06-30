@@ -66,16 +66,16 @@ class KMenu
     void draw_mainmenu(int);
     void draw_playerstat(Raster* where, int player_index_in_party, int dx, int dy);
     bool give_xp(int, int, int);
-    void menu(void);
-    void revert_equipstats(void);
-    void spec_items(void);
-    void update_equipstats(void);
+    void menu();
+    void revert_equipstats();
+    void spec_items();
+    void update_equipstats();
 
   private:
     bool check_xp(int, int);
     void clear_quests();
     void level_up(int);
-    void display_quest_window(void);
+    void display_quest_window();
     void status_screen(size_t);
     vector<KQuestItem> quest_list;
 };

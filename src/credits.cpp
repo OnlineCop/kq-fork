@@ -69,7 +69,7 @@ static Raster* wk = nullptr;
 
 static volatile uint32_t ticks = UINT32_MAX;
 
-void allocate_credits(void)
+void allocate_credits()
 {
     if (wk == nullptr)
     {
@@ -98,7 +98,7 @@ void allocate_credits(void)
     cc = credits;
 }
 
-void deallocate_credits(void)
+void deallocate_credits()
 {
     delete (wk);
     wk = NULL;

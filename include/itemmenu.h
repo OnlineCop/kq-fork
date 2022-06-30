@@ -32,7 +32,7 @@ enum eItemEffectResult
     ITEM_EFFECT_SUCCESS_MULTIPLE = 2
 };
 
-void camp_item_menu(void);
+void camp_item_menu();
 
 /*! \brief Check if we can add item quantity to inventory
  *

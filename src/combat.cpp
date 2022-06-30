@@ -469,7 +469,7 @@ void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
  * \returns 1 if the battle ended (either the heroes or the enemies won),
  *          0 otherwise.
  */
-int KCombat::check_end(void)
+int KCombat::check_end()
 {
     size_t fighter_index;
     int alive = 0;
@@ -765,7 +765,7 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
  * when necessary. This is also where things like poison, sleep,
  * and what-not are checked.
  */
-void KCombat::do_round(void)
+void KCombat::do_round()
 {
     size_t a;
     int now = 0;
@@ -1027,7 +1027,7 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
  * Play some sad music and set the dead flag so that the game
  * will return to the main menu.
  */
-void KCombat::enemies_win(void)
+void KCombat::enemies_win()
 {
     Music.play_music(music_defeat, 0);
     Combat.battle_render(0, 0, 0);
@@ -1363,7 +1363,7 @@ uint8_t KCombat::GetMonsterSurprisesPartyValue() const
  *
  * Distribute the booty!
  */
-void KCombat::heroes_win(void)
+void KCombat::heroes_win()
 {
     int tgp = 0;
     size_t fighter_index;
@@ -1543,7 +1543,7 @@ void KCombat::heroes_win(void)
  *
  * Pre-combat setup of fighter structures and initial vars.
  */
-void KCombat::init_fighters(void)
+void KCombat::init_fighters()
 {
     for (size_t fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
     {
@@ -1712,7 +1712,7 @@ void KCombat::multi_fight(size_t attack_fighter_index)
  *
  * Set up surprise vars, speeds, act vars, etc.
  */
-void KCombat::roll_initiative(void)
+void KCombat::roll_initiative()
 {
     size_t j;
 
@@ -1797,7 +1797,7 @@ void KCombat::roll_initiative(void)
  *
  * Calculate where the fighters should be drawn.
  */
-void KCombat::snap_togrid(void)
+void KCombat::snap_togrid()
 {
     size_t fighter_index;
     int hf = 0; /* Heroes facing up, away from screen and toward monsters. */

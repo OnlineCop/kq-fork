@@ -277,7 +277,7 @@ Raster* KDraw::copy_bitmap(Raster* target, Raster* source)
     return target;
 }
 
-void KDraw::draw_backlayer(void)
+void KDraw::draw_backlayer()
 {
     auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S);
     int tile_x1 = box.x_offset / TILE_W;
@@ -516,7 +516,7 @@ void KDraw::draw_char()
     }
 }
 
-void KDraw::draw_forelayer(void)
+void KDraw::draw_forelayer()
 {
     KDraw::PBound box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
@@ -614,7 +614,7 @@ void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, e
     }
 }
 
-void KDraw::draw_midlayer(void)
+void KDraw::draw_midlayer()
 {
     auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
@@ -628,7 +628,7 @@ void KDraw::draw_midlayer(void)
     }
 }
 
-void KDraw::draw_shadows(void)
+void KDraw::draw_shadows()
 {
     if (!Game.Map.draw_shadow)
     {
@@ -724,7 +724,7 @@ void KDraw::draw_porttextbox(eBubbleStyle bstyle, int chr)
     print_font(double_buffer, 74, 204 - linexofs, party[chr].name, FNORMAL);
 }
 
-void KDraw::drawmap(void)
+void KDraw::drawmap()
 {
     if (Game.Map.MapSize() == 0)
     {

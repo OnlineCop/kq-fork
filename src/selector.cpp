@@ -434,7 +434,7 @@ static void party_add(ePIDX id, int lead)
 
 /*! \brief Select the second party member to lead the group
  */
-void party_newlead(void)
+void party_newlead()
 {
     // Shift all IDs to the right; shift last ID to the front.
     for (size_t i = 1; i < numchrs; ++i)
@@ -1008,7 +1008,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
  *
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled
  */
-int select_player(void)
+int select_player()
 {
     uint32_t stop = 0, ptr;
 

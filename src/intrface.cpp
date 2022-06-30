@@ -83,7 +83,7 @@ using std::shared_ptr;
 #define LUA_PLR_KEY "_obj"
 
 /* Internal functions */
-static void fieldsort(void);
+static void fieldsort();
 static const char* filereader(lua_State* L, void* data, size_t* size);
 static const char* stringreader(lua_State* L, void* data, size_t* size);
 static void init_markers(lua_State* L);
@@ -268,7 +268,7 @@ static int KQ_warp(lua_State*);
 
 static int KQ_char_getter(lua_State* L);
 static int KQ_char_setter(lua_State* L);
-static int KQ_check_map_change(void);
+static int KQ_check_map_change();
 static int KQ_party_getter(lua_State* L);
 static int KQ_party_setter(lua_State* L);
 #ifdef DEBUGMODE
@@ -522,7 +522,7 @@ static enum { NOT_CHANGING, CHANGE_TO_COORDS, CHANGE_TO_MARKER } changing_map;
  * Check to see if we can change the map.  Does nothing if we are already in
  * the process of changing the map.
  */
-static int KQ_check_map_change(void)
+static int KQ_check_map_change()
 {
     switch (changing_map)
     {
@@ -552,7 +552,7 @@ static int KQ_check_map_change(void)
  * should NOT call any graphical functions because this causes KQ to lock.
  * Instead, use postexec().
  */
-void do_autoexec(void)
+void do_autoexec()
 {
     int oldtop = lua_gettop(theL);
 
@@ -601,7 +601,7 @@ void do_entity(int en_num)
  * pressed.  This can contain any scripting code, in the function cheat().
  * The cheat can be used repeatedly.
  */
-void do_luacheat(void)
+void do_luacheat()
 {
     int oldtop;
     string cheatfile;
@@ -688,7 +688,7 @@ void do_luainit(const char* fname, int global)
  *
  * Close the Lua virtual machine.
  */
-void do_luakill(void)
+void do_luakill()
 {
     Game.reset_timer_events();
     if (theL)
@@ -703,7 +703,7 @@ void do_luakill(void)
  * This function is called after the map is faded back in.  It's possible to
  * show speech, move entities, etc. here.
  */
-void do_postexec(void)
+void do_postexec()
 {
     int oldtop = lua_gettop(theL);
 
@@ -724,7 +724,7 @@ void do_postexec(void)
  * When user opens the Quest menu, the actual quest data is imported from Lua.
  * The get_quest_info() function returns its quests via a callback to add_quest_item().
  */
-void do_importquests(void)
+void do_importquests()
 {
     int oldtop = lua_gettop(theL);
 
@@ -806,7 +806,7 @@ void do_zone(int zn_num)
  * world-specific stuff. It does not have any arguments, or
  * return any values.
  */
-void lua_user_init(void)
+void lua_user_init()
 {
     do_luakill();
     do_luainit("init", 1);
@@ -828,7 +828,7 @@ static int fieldcmp(const void* pa, const void* pb)
  * \author PH
  * \date Created 20030407
  */
-static void fieldsort(void)
+static void fieldsort()
 {
     qsort(fields, sizeof(fields) / sizeof(*fields), sizeof(struct s_field), fieldcmp);
 }

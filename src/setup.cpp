@@ -68,7 +68,7 @@ char slow_computer = 0;
 static void* sfx[KAudio::eSound::MAX_SAMPLES];
 
 /*  Internal functions  */
-static int load_samples(void);
+static int load_samples();
 static int getavalue(const char*, int, int, int, bool, void (*)(int));
 static bool getakey(KPlayerInput::button&, const char*);
 
@@ -107,7 +107,7 @@ static void citem(int y, const char* caption, const char* value, eFontColor colo
  * menu.  Here you can adjust the music or sound volume, or
  * the speed that the battle gauge moves at.
  */
-void config_menu(void)
+void config_menu()
 {
     size_t stop = 0, ptr = 0;
     int p;
@@ -592,7 +592,7 @@ const char* kq_keyname(int scancode)
  *
  * \returns 0 on success, 1 on failure.
  */
-static int load_samples(void)
+static int load_samples()
 {
     static const char* sndfiles[KAudio::eSound::MAX_SAMPLES] = {
         "whoosh.wav",   "menumove.wav", "bad.wav",     "item.wav",   "equip.wav",    "deequip.wav", "buysell.wav",
@@ -625,7 +625,7 @@ static int load_samples(void)
  * \date 20030831
  * \author PH
  */
-void parse_setup(void)
+void parse_setup()
 {
     const string cfg = kqres(eDirectories::SETTINGS_DIR, "kq.cfg");
 
@@ -755,7 +755,7 @@ void play_effect(int efc, int panning)
  * Set the graphics mode, taking into account the Windowed and Stretched
  * settings.
  */
-void set_graphics_mode(void)
+void set_graphics_mode()
 {
     int w = eSize::SCALED_SCREEN_W;
     int h = eSize::SCALED_SCREEN_H;
@@ -772,7 +772,7 @@ void set_graphics_mode(void)
  * \author PH
  * \date 20030527
  */
-void show_help(void)
+void show_help()
 {
     Draw.menubox(double_buffer, 116, 0, 9, 1, BLUE);
     Draw.print_font(double_buffer, 132, 8, _("KQ Help"), FGOLD);
@@ -806,7 +806,7 @@ void show_help(void)
  * then we want to shut down the sound system.
  * - sound_initialized_and_ready will be set to: eSoundSystem::NotInitialized
  */
-void sound_init(void)
+void sound_init()
 {
     if (!Audio.sound_system_avail)
     {

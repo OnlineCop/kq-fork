@@ -90,7 +90,7 @@ s_sgstats s_sgstats::get_current()
  *
  * \returns 0 if cancelled, 1 if confirmed
  */
-int KSaveGame::confirm_action(void)
+int KSaveGame::confirm_action()
 {
     int stop = 0;
     int pointer_offset = (save_ptr - top_pointer) * 48;
@@ -128,7 +128,7 @@ int KSaveGame::confirm_action(void)
  *
  * \returns 1=quit 0=don't quit
  */
-static int confirm_quit(void)
+static int confirm_quit()
 {
     const char* opts[2];
     int ans;
@@ -144,7 +144,7 @@ static int confirm_quit(void)
  *
  * You guessed it... delete the game.
  */
-void KSaveGame::delete_game(void)
+void KSaveGame::delete_game()
 {
     int stop = 0;
     int remove_result;
@@ -186,7 +186,7 @@ void KSaveGame::delete_game(void)
  * PH 20030914 Now ignores keyboard settings etc in the save file
  * \returns 1 if load succeeded, 0 otherwise
  */
-int KSaveGame::load_game(void)
+int KSaveGame::load_game()
 {
     sprintf(strbuf, "sg%d.xml", save_ptr);
     Disk.load_game_from_file(kqres(eDirectories::SAVE_DIR, strbuf).c_str());
@@ -204,7 +204,7 @@ int KSaveGame::load_game(void)
  * These mini stats are just for displaying info about the save game on the
  * save/load game screen.
  */
-void KSaveGame::load_sgstats(void)
+void KSaveGame::load_sgstats()
 {
     for (int sg = 0; sg < NUMSG; ++sg)
     {
@@ -226,7 +226,7 @@ void KSaveGame::load_sgstats(void)
  *
  * \returns 0 if save failed, 1 if success
  */
-int KSaveGame::save_game(void)
+int KSaveGame::save_game()
 {
     sprintf(strbuf, "sg%d.xml", save_ptr);
     int rc = Disk.save_game_to_file(kqres(eDirectories::SAVE_DIR, strbuf).c_str());
@@ -667,7 +667,7 @@ int KSaveGame::start_menu(bool skip_splash)
  *
  * \returns 0 if cancelled or nothing happened, 1 otherwise
  */
-int KSaveGame::system_menu(void)
+int KSaveGame::system_menu()
 {
     int stop = 0, ptr = 0;
     char save_str[10];

@@ -74,7 +74,7 @@ static void draw_invokable(int);
 static int can_invoke_item(int);
 static int hero_invoke(int);
 static int hero_invokeitem(size_t, size_t);
-static void hero_run(void);
+static void hero_run();
 static void combat_draw_spell_menu(int, int, int);
 static int combat_spell_targeting(int);
 static int combat_castable(int, int);
@@ -935,7 +935,7 @@ void hero_choose_action(size_t fighter_index)
  * determined by s_item::kol .
  * The shape is chosen by s_fighter::current_weapon_type
  */
-void hero_init(void)
+void hero_init()
 {
     kmenu.update_equipstats();
     Raster* eb = get_cached_image("usbat.png");
@@ -1175,7 +1175,7 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
  * Check whether or not the heroes can run, and then display
  * the little running-away sequence.
  */
-static void hero_run(void)
+static void hero_run()
 {
     int num_living_party_members = 0, num_living_enemies = 0;
     int party_average_speed = 0, enemy_average_speed = 0;

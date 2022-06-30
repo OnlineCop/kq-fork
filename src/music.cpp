@@ -70,7 +70,7 @@ static Mix_Music* music = nullptr;
  * Initializes the music players. Must be called before any other
  * music function. Needs to be shutdown when finished.
  */
-void KMusic::init_music(void)
+void KMusic::init_music()
 {
     int rc = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
     if (rc == -1)
@@ -83,7 +83,7 @@ void KMusic::init_music(void)
  *
  * Performs any cleanup needed. Must be called before the program exits.
  */
-void KMusic::shutdown_music(void)
+void KMusic::shutdown_music()
 {
     music_cache.clear();
     Mix_CloseAudio();
@@ -110,7 +110,7 @@ void KMusic::set_music_volume(int volume)
  * Does whatever is needed to ensure the music keeps playing.
  * It's safe to call this too much, but shouldn't be called inside a timer.
  */
-void KMusic::poll_music(void)
+void KMusic::poll_music()
 {
     // No-op for SDL_mixer
 }
@@ -150,7 +150,7 @@ void KMusic::play_music(const std::string& music_name, long)
  * must call play_music(), as the current music player will no longer
  * be available and the song unloaded from memory.
  */
-void KMusic::stop_music(void)
+void KMusic::stop_music()
 {
     if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
@@ -166,7 +166,7 @@ void KMusic::stop_music(void)
  * by calling resume_music(). Pausing the music file may be used
  * to nest music (such as during a battle).
  */
-void KMusic::pause_music(void)
+void KMusic::pause_music()
 {
     if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {
@@ -180,7 +180,7 @@ void KMusic::pause_music(void)
  * Resumes the most recently paused music file. If a call to
  * play_music() was made in between, that file will be stopped.
  */
-void KMusic::resume_music(void)
+void KMusic::resume_music()
 {
     if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
     {

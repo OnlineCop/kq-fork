@@ -241,7 +241,7 @@ void KMenu::level_up(int pr)
  *
  * Main menu that calls all the other little menus :)
  */
-void KMenu::menu(void)
+void KMenu::menu()
 {
     int stop = 0, ptr = 0, z = -1;
 
@@ -330,7 +330,7 @@ void KMenu::menu(void)
 /*! \brief Do the Quest Info menu
  *  Show the current list of quest information items
  */
-void KMenu::display_quest_window(void)
+void KMenu::display_quest_window()
 {
     // Show up to this number of quest entries in the menu.
     const size_t VisibleQuestEntries = 10;
@@ -434,7 +434,7 @@ void KMenu::display_quest_window(void)
  *
  * This converts from fighter to player structure.  Used when leaving combat.
  */
-void KMenu::revert_equipstats(void)
+void KMenu::revert_equipstats()
 {
     const size_t end_fighter_index = (numchrs > PSIZE) ? PSIZE : numchrs;
 
@@ -483,7 +483,7 @@ void KMenu::revert_equipstats(void)
  * WK: This function would be more appropriate in a script, such as global.lua.
  * This function is preventing me from completely removing progress.h
  */
-void KMenu::spec_items(void)
+void KMenu::spec_items()
 {
     int a, num_items = 0, stop = 0, ptr = 0;
     short list_item_which[MAX_PLAYER_SPECIAL_ITEMS];
@@ -698,7 +698,7 @@ void KMenu::status_screen(size_t fighter_index)
  * Just used to convert all characters in party from party structure
  * to fighter structure.
  */
-void KMenu::update_equipstats(void)
+void KMenu::update_equipstats()
 {
     size_t fighter_index;
 

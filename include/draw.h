@@ -211,7 +211,7 @@ class KDraw
      * Also handles the Repulse indicator and the map description display.
      * \bug PH: Shadows are never drawn with parallax (is this a bug?)
      */
-    void drawmap(void);
+    void drawmap();
 
     /*! \brief Draw menu box
      *
@@ -426,7 +426,7 @@ class KDraw
      * Draw the background layer.  Accounts for parallaxing.
      * Parallax is on for modes 2 & 3
      */
-    void draw_backlayer(void);
+    void draw_backlayer();
 
     /*! \brief Draw heroes on map
      *
@@ -443,7 +443,7 @@ class KDraw
      * Draw the foreground layer.  Accounts for parallaxing.
      * Parallax is on for modes 4 & 5.
      */
-    void draw_forelayer(void);
+    void draw_forelayer();
 
     /*! \brief Draw  box, with different backgrounds and borders
      *
@@ -469,14 +469,14 @@ class KDraw
      * Draw the middle layer.  Accounts for parallaxing.
      * Parallax is on for modes 3 & 4
      */
-    void draw_midlayer(void);
+    void draw_midlayer();
 
     /* Check whether the player is standing inside a bounding area. If so,
      * update the view_area coordinates before drawing to the map.
      *
      * \param   map - The map containing the bounded area data
      */
-    void draw_playerbound(void);
+    void draw_playerbound();
 
     /*! \brief Draw shadows
      *
@@ -484,7 +484,7 @@ class KDraw
      * moved in the future to fall between the background and foreground layers.
      * Shadows are never parallaxed.
      */
-    void draw_shadows(void);
+    void draw_shadows();
 
     /*! \brief Draw text box
      *
