@@ -1,4 +1,3 @@
-#pragma once
 /*! \page License
    KQ is Copyright (C) 2002 by Josh Bolduc
 
@@ -19,6 +18,8 @@
    the Free Software Foundation,
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
+#pragma once
 
 #include <map>
 #include <stack>

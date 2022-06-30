@@ -36,7 +36,6 @@
 #include "random.h"
 #include "res.h"
 #include "setup.h"
-#include "ssprites.h"
 #include "structs.h"
 
 /*! \file

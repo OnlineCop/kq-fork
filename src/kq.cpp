@@ -57,7 +57,6 @@
 #include "magic.h"
 #include "masmenu.h"
 #include "menu.h"
-#include "mpcx.h"
 #include "music.h"
 #include "platform.h"
 #include "res.h"

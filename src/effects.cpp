@@ -42,7 +42,6 @@
 #include "platform.h"
 #include "res.h"
 #include "setup.h"
-#include "ssprites.h"
 #include "timing.h"
 
 KEffects Effects;
