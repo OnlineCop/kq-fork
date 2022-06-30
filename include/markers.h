@@ -47,7 +47,7 @@ using std::vector;
 struct KMarker
 {
     // The name of the current marker
-    string name;
+    std::string name;
 
     // The X position the marker refers to
     int32_t x;
@@ -64,7 +64,7 @@ class KMarkers
 
     // Remove the named marker from the map. Returns true if the marker was
     // removed, or false if the marker was not found.
-    bool Remove(const string& name);
+    bool Remove(const std::string& name);
 
     // Return a pointer to the marker at the given @param index. If index is
     // invalid, returns null.
@@ -72,7 +72,7 @@ class KMarkers
 
     // Return a pointer to the marker that has the given @param name. If no
     // markers by that name are found, returns null.
-    const KMarker* GetMarker(const string& name);
+    const KMarker* GetMarker(const std::string& name);
 
     // Return a pointer to the marker whose @param x and @param y coordinates
     // match. If no marker is at those coordinates, returns null.
@@ -85,7 +85,7 @@ class KMarkers
     }
 
   protected:
-    vector<KMarker> m_markers;
+    std::vector<KMarker> m_markers;
 };
 
 extern KMarker Marker;

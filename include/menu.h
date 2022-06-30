@@ -47,14 +47,16 @@ struct KQuestItem
     {
     }
 
-    KQuestItem(const string& inKey, const string& inText)
+    KQuestItem(const std::string& inKey, const std::string& inText)
         : key(inKey)
         , text(inText)
     {
     }
 
-    string key;  /*!< The identifying title */
-    string text; /*!< The actual info */
+    /*! The identifying title */
+    std::string key;
+    /*! The actual info */
+    std::string text;
 };
 
 class KMenu
@@ -62,7 +64,7 @@ class KMenu
   public:
     KMenu();
 
-    void add_questinfo(const string& key, const string& text);
+    void add_questinfo(const std::string& key, const std::string& text);
     void draw_mainmenu(int);
     void draw_playerstat(Raster* where, int player_index_in_party, int dx, int dy);
     bool give_xp(int, int, int);
@@ -77,7 +79,7 @@ class KMenu
     void level_up(int);
     void display_quest_window();
     void status_screen(size_t);
-    vector<KQuestItem> quest_list;
+    std::vector<KQuestItem> quest_list;
 };
 
 extern KMenu kmenu;

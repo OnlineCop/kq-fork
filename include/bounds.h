@@ -107,5 +107,5 @@ class KBounds
     const KBound* IsBound(int left, int top, int right, int bottom) const;
 
   protected:
-    vector<KBound> m_bounds;
+    std::vector<KBound> m_bounds;
 };

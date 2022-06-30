@@ -72,7 +72,7 @@ class KDisk
      * \param str a string containing the list
      * \returns the numbers in a vector
      */
-    vector<int> parse_list(const char* str);
+    std::vector<int> parse_list(const char* str);
     int load_spelltypes_xml(KPlayer* s, XMLElement* node);
     int load_resistances_xml(KPlayer* s, XMLElement* node);
     int load_spells_xml(KPlayer* s, XMLElement* node);
@@ -120,8 +120,8 @@ class KDisk
     int load_shop_info_xml(XMLElement* node);
     int save_general_props_xml(XMLElement* node);
     int load_general_props_xml(XMLElement* node);
-    void printprop(tinyxml2::XMLPrinter& out, const string& name, int value);
-    void printprop(tinyxml2::XMLPrinter& out, const string& name, const string& value);
+    void printprop(tinyxml2::XMLPrinter& out, const std::string& name, int value);
+    void printprop(tinyxml2::XMLPrinter& out, const std::string& name, const std::string& value);
     int save_s_fighter(tinyxml2::XMLPrinter& out, const KFighter& f);
 
     /** Load everything from a node */

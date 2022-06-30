@@ -36,7 +36,7 @@ class KAnimation
     void clear_animations();
 
   private:
-    vector<KAnimSequence> animations;
+    std::vector<KAnimSequence> animations;
 };
 
 extern KAnimation Animation;

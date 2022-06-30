@@ -106,7 +106,7 @@ class KPlayer
     uint8_t GetRemainingShield() const;
     void AddShield(signed int AmountOfEffectToAdd);
 
-    string name;                 /*!< Entity name */
+    std::string name;            /*!< Entity name */
     int xp;                      /*!< Entity experience */
     int next;                    /*!< Experience needed for level-up */
     int lvl;                     /*!< Entity's level (according to KMenu::check_xp(), max is 50) */

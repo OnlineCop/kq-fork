@@ -133,7 +133,7 @@ class KGame
      * \param   camera_x New x-coord for camera. Pass 0 for mvx and mvy to use the default: s_map::stx and s_map::sty)
      * \param   camera_y New y-coord for camera
      */
-    void change_map(const string& map_name, int player_x, int player_y, int camera_x, int camera_y);
+    void change_map(const std::string& map_name, int player_x, int player_y, int camera_x, int camera_y);
 
     /*! \brief Free old map data and load a new one.
      *
@@ -146,7 +146,7 @@ class KGame
      * \param   offset_x Horizontal offset from the marker's X tile.
      * \param   offset_y Vertical offset from the marker's Y tile.
      */
-    void change_map(const string& map_name, const string& marker_name, signed int offset_x, signed int offset_y);
+    void change_map(const std::string& map_name, const std::string& marker_name, signed int offset_x, signed int offset_y);
 
     /*! \brief Move the viewport if necessary to include the players
      *
@@ -351,14 +351,14 @@ class KGame
 
     /*! \brief Getter for current map name.
      */
-    inline string GetCurmap()
+    inline std::string GetCurmap()
     {
         return m_curmap;
     }
 
     /*! \brief Setter for current map name.
      */
-    void SetCurmap(string curmap)
+    void SetCurmap(std::string curmap)
     {
         m_curmap = curmap;
     }
@@ -423,7 +423,7 @@ class KGame
     void wait_released();
 
   public:
-    const string WORLD_MAP;
+    const std::string WORLD_MAP;
     /*! The number of frames per second */
     const int32_t KQ_TICKS;
     // Game time in ticks (should be enough for >2 years real time play)
@@ -433,7 +433,7 @@ class KGame
     KMap Map;
   protected:
     /*! Name of the current map */
-    string m_curmap;
+    std::string m_curmap;
 
     /** Gold pieces held by the player */
     int gp;
@@ -495,7 +495,7 @@ extern s_heroinfo players[MAXCHRS];
 extern KFighter fighter[NUM_FIGHTERS];
 extern KFighter tempa, tempd;
 extern int shin[12], display_attack_string;
-extern string shop_name;
+extern std::string shop_name;
 extern char attack_string[39];
 extern volatile int animation_count;
 extern COLOR_MAP cmap;

@@ -42,4 +42,4 @@ enum class eDirectories
 /* Get the directory for application data (music, gfx, etc.)
    or user data (screenshots, prefs, saved games)
  */
-const string kqres(enum eDirectories, const std::string&);
+const std::string kqres(enum eDirectories, const std::string&);
