@@ -40,6 +40,9 @@
 
 KDisk Disk;
 
+using tinyxml2::XMLDocument;
+using tinyxml2::XMLElement;
+
 /** Generate a comma-separated list from a range specified by two iterators
  * \param begin the start of the range (inclusive)
  * \param end the end of the range (exclusive)

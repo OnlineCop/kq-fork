@@ -27,8 +27,6 @@
 #include <tinyxml2.h>
 #include <vector>
 
-using namespace tinyxml2;
-
 #include "bounds.h"
 #include "entity.h"
 #include "markers.h"
@@ -155,15 +153,15 @@ class KTiledMap
     void load_tmx(const std::string&);
 
   private:
-    tmx_map load_tmx_map(XMLElement const* root);
-    XMLElement const* find_tmx_element(XMLElement const*, const char*, const char*);
-    KBounds load_tmx_bounds(XMLElement const*);
-    KMarkers load_tmx_markers(XMLElement const*);
-    std::vector<KZone> load_tmx_zones(XMLElement const*);
-    tmx_layer load_tmx_layer(XMLElement const* el);
-    std::vector<KQEntity> load_tmx_entities(XMLElement const*);
-    KTmxTileset load_tmx_tileset(XMLElement const*);
-    XMLElement const* find_objectgroup(XMLElement const* root, const char* name);
+    tmx_map load_tmx_map(tinyxml2::XMLElement const* root);
+    tinyxml2::XMLElement const* find_tmx_element(tinyxml2::XMLElement const*, const char*, const char*);
+    KBounds load_tmx_bounds(tinyxml2::XMLElement const*);
+    KMarkers load_tmx_markers(tinyxml2::XMLElement const*);
+    std::vector<KZone> load_tmx_zones(tinyxml2::XMLElement const*);
+    tmx_layer load_tmx_layer(tinyxml2::XMLElement const* el);
+    std::vector<KQEntity> load_tmx_entities(tinyxml2::XMLElement const*);
+    KTmxTileset load_tmx_tileset(tinyxml2::XMLElement const*);
+    tinyxml2::XMLElement const* find_objectgroup(tinyxml2::XMLElement const* root, const char* name);
     std::vector<uint8_t> b64decode(const char*);
     std::vector<uint8_t> uncompress(const std::vector<uint8_t>& data);
 };

@@ -38,7 +38,8 @@
 #define ZLIB_CONST // needed in uncompress() for 'reinterpret_cast<z_const Bytef*>(data.data())'
 #include <zlib.h>
 
-using namespace tinyxml2;
+using tinyxml2::XMLDocument;
+using tinyxml2::XMLElement;
 using namespace eSize;
 
 KTiledMap TiledMap;
