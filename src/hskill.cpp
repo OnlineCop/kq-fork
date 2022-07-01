@@ -38,6 +38,7 @@
 #include "gfx.h"
 #include "heroc.h"
 #include "hskill.h"
+#include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
 #include "magic.h"
@@ -46,7 +47,6 @@
 #include "selector.h"
 #include "setup.h"
 #include "timing.h"
-#include <itemdefs.h>
 
 /* Internal function */
 static void infusion(int, int);
