@@ -182,7 +182,7 @@ KFighter fighter[NUM_FIGHTERS];
 KFighter tempa, tempd;
 
 /*! Name of current shop */
-string shop_name;
+std::string shop_name;
 
 /*! Should we display a box with attack_string in it (used in combat) */
 int display_attack_string = 0;
@@ -246,7 +246,7 @@ int every_hit_999 = 0;
  */
 static struct timer_event
 {
-    string name; /*!< Name of the event */
+    std::string name; /*!< Name of the event */
     int when;    /*!< Absolute time when it will trigger */
 } timer_events[5];
 
@@ -755,13 +755,13 @@ void KGame::calc_viewport()
     }
 }
 
-void KGame::change_map(const string& map_name, int player_x, int player_y, int camera_x, int camera_y)
+void KGame::change_map(const std::string& map_name, int player_x, int player_y, int camera_x, int camera_y)
 {
     TiledMap.load_tmx(map_name);
     prepare_map(player_x, player_y, camera_x, camera_y);
 }
 
-void KGame::change_map(const string& map_name, const string& marker_name, signed int offset_x, signed int offset_y)
+void KGame::change_map(const std::string& map_name, const std::string& marker_name, signed int offset_x, signed int offset_y)
 {
     int msx = 0, msy = 0, mvx = 0, mvy = 0;
 
@@ -956,7 +956,7 @@ void KGame::deallocate_stuff()
 
 const char* KGame::get_timer_event()
 {
-    static string buf;
+    static std::string buf;
     int next = INT_MAX;
 
     if (game_time < next_event_time)
@@ -971,7 +971,7 @@ const char* KGame::get_timer_event()
             if (t.when <= game_time)
             {
                 std::swap(buf, t.name);
-                t.name = string {};
+                t.name = std::string {};
             }
             else
             {
@@ -1232,7 +1232,7 @@ void KGame::reset_timer_events()
 {
     for (auto& t : timer_events)
     {
-        t.name = string {};
+        t.name = std::string {};
     }
     next_event_time = INT_MAX;
 }

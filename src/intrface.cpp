@@ -67,10 +67,7 @@ extern "C" {
 #include "timing.h"
 
 #include <string>
-using std::string;
 #include <memory>
-using std::make_shared;
-using std::shared_ptr;
 
 #include "gfx.h"
 #include "imgcache.h"
@@ -604,7 +601,7 @@ void do_entity(int en_num)
 void do_luacheat()
 {
     int oldtop;
-    string cheatfile;
+    std::string cheatfile;
 
     /* kqres might return null if the cheat file doesn't exist.
      * in that case, just do a no-op.
@@ -892,7 +889,7 @@ static const char* stringreader(lua_State*, void* data, size_t* size)
  *
  * \returns pointer to marker or nullptr if name not found
  */
-static const KMarker* KQ_find_marker(string name, bool required)
+static const KMarker* KQ_find_marker(std::string name, bool required)
 {
     auto found_marker = Game.Map.g_map.markers.GetMarker(name);
     if (found_marker != nullptr)
@@ -1062,8 +1059,8 @@ static int KQ_add_chr(lua_State* L)
 /* Callback from get_quest_info */
 static int KQ_add_quest_item(lua_State* L)
 {
-    string key = lua_tostring(L, 1);
-    string text = lua_tostring(L, 2);
+    std::string key = lua_tostring(L, 1);
+    std::string text = lua_tostring(L, 2);
 
     kmenu.add_questinfo(key, text);
     return 0;

@@ -875,7 +875,7 @@ void KDraw::message(const char* inMessage, int icn, int delay)
     int idx;
 
     /* Do the $0 replacement stuff */
-    string parsed = parse_string(inMessage);
+    std::string parsed = parse_string(inMessage);
     char* unsplit_string = new char[1024];
     memset(unsplit_string, 0, 1024);
     strncpy(unsplit_string, parsed.c_str(), 1023);
@@ -939,7 +939,7 @@ void KDraw::message(const char* inMessage, int icn, int delay)
 }
 
 // Origin: http://stackoverflow.com/a/3418285/801098
-void KDraw::replaceAll(string& str, const string& from, const string& to)
+void KDraw::replaceAll(std::string& str, const std::string& from, const std::string& to)
 {
     if (from.empty())
     {
@@ -956,14 +956,14 @@ void KDraw::replaceAll(string& str, const string& from, const string& to)
 /** This only handles extremely simple strings; you CAN break it if you try hard enough:
  *    "$$0" or "\\$0" or "\$0" or "$-1", etc.
  */
-string KDraw::parse_string(const string& the_string)
+std::string KDraw::parse_string(const std::string& the_string)
 {
-    if (the_string.find('$', 0) == string::npos)
+    if (the_string.find('$', 0) == std::string::npos)
     {
         return the_string;
     }
 
-    string output(the_string);
+    std::string output(the_string);
     replaceAll(output, "$0", party[pidx[0]].name);
     replaceAll(output, "$1", party[pidx[1]].name);
 
@@ -1097,7 +1097,7 @@ int KDraw::get_glyph_index(uint32_t cp)
     return 0;
 }
 
-void KDraw::print_font(Raster* where, int sx, int sy, const string& msg, eFontColor font_index)
+void KDraw::print_font(Raster* where, int sx, int sy, const std::string& msg, eFontColor font_index)
 {
     int z = 0;
 
@@ -1108,7 +1108,7 @@ void KDraw::print_font(Raster* where, int sx, int sy, const string& msg, eFontCo
     }
     // MagicNumber: font heights for BIG/NORMAL text
     int hgt = font_height(font_index);
-    string chopped_message(msg);
+    std::string chopped_message(msg);
     while (1)
     {
         uint32_t cc;
@@ -1123,13 +1123,13 @@ void KDraw::print_font(Raster* where, int sx, int sy, const string& msg, eFontCo
     }
 }
 
-void KDraw::print_num(Raster* where, int sx, int sy, const string& msg, eFont font_index)
+void KDraw::print_num(Raster* where, int sx, int sy, const std::string& msg, eFont font_index)
 {
     assert(where != nullptr && "where == NULL");
     // Check ought not to be necessary if using the enum correctly.
     if (font_index < eFont::FONT_WHITE || font_index >= eFont::NUM_FONTS)
     {
-        string error_msg = "Bad font index: " + std::to_string(font_index);
+        std::string error_msg = "Bad font index: " + std::to_string(font_index);
         Game.program_death(__FUNCTION__, error_msg);
     }
     for (size_t z = 0; z < msg.length(); z++)
@@ -1152,10 +1152,10 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
     gbbw = 1;
     gbbh = 0;
     gbbs = 0;
-    string parsed1 = parse_string(sp1);
-    string parsed2 = parse_string(sp2);
-    string parsed3 = parse_string(sp3);
-    string parsed4 = parse_string(sp4);
+    std::string parsed1 = parse_string(sp1);
+    std::string parsed2 = parse_string(sp2);
+    std::string parsed3 = parse_string(sp3);
+    std::string parsed4 = parse_string(sp4);
     strcpy(msgbuf[0], parsed1.c_str());
     strcpy(msgbuf[1], parsed2.c_str());
     strcpy(msgbuf[2], parsed3.c_str());
@@ -1221,7 +1221,7 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
     int winx, winy;
     int i, w, running;
 
-    string parsed = parse_string(ptext);
+    std::string parsed = parse_string(ptext);
     ptext = parsed.c_str();
     while (1)
     {
@@ -1592,7 +1592,7 @@ void KDraw::set_view(int vw, int x1, int y1, int x2, int y2)
 
 void KDraw::text_ex(eBubbleStyle fmt, int who, const char* s)
 {
-    string parsed = parse_string(s);
+    std::string parsed = parse_string(s);
     s = parsed.c_str();
 
     while (s)
@@ -1604,7 +1604,7 @@ void KDraw::text_ex(eBubbleStyle fmt, int who, const char* s)
 
 void KDraw::porttext_ex(eBubbleStyle fmt, int who, const char* s)
 {
-    string parsed = parse_string(s);
+    std::string parsed = parse_string(s);
     s = parsed.c_str();
 
     while (s)

@@ -27,11 +27,13 @@
  */
 
 #include "music.h"
+
 #include "disk.h"
 #include "imgcache.h"
 #include "kq.h"
 #include "platform.h"
 #include "setup.h"
+
 #include <SDL_mixer.h>
 #include <algorithm>
 #include <string>
@@ -234,7 +236,7 @@ void Mix_ChunkDeleter::operator()(Mix_Chunk* chunk)
     Mix_FreeChunk(chunk);
 }
 
-void* KMusic::get_sample(const string& s)
+void* KMusic::get_sample(const std::string& s)
 {
     return sample_cache.get(s);
 }

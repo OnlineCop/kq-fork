@@ -27,13 +27,8 @@
  * \date ????????
  */
 
-#include <cstdio>
-#include <cstring>
-#include <memory>
-
-#include <iostream>
-
 #include "combat.h"
+
 #include "constants.h"
 #include "draw.h"
 #include "effects.h"
@@ -58,6 +53,11 @@
 #include "setup.h"
 #include "structs.h"
 #include "timing.h"
+
+#include <cstdio>
+#include <cstring>
+#include <memory>
+#include <iostream>
 
 using namespace eSize;
 
@@ -682,7 +682,7 @@ void KCombat::do_action(size_t fighter_index)
  * \param   is_rnd If !=0 then this is a random combat
  * \returns 1 if battle occurred
  */
-int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
+int KCombat::do_combat(const std::string& bg, const std::string& mus, int is_rnd)
 {
     int zoom_step;
 

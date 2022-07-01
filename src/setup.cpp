@@ -627,7 +627,7 @@ static int load_samples()
  */
 void parse_setup()
 {
-    const string cfg = kqres(eDirectories::SETTINGS_DIR, "kq.cfg");
+    const std::string cfg = kqres(eDirectories::SETTINGS_DIR, "kq.cfg");
 
     Config.push_config_state();
     Config.set_config_file(cfg.c_str());

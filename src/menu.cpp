@@ -59,7 +59,7 @@ KMenu::KMenu()
  * \param key The title of the item
  * \param text The text to display to the player regarding this quest
  */
-void KMenu::add_questinfo(const string& key, const string& text)
+void KMenu::add_questinfo(const std::string& key, const std::string& text)
 {
     quest_list.push_back({ key, text });
 }

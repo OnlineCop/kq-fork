@@ -38,9 +38,6 @@
 #include <tinyxml2.h>
 #include <vector>
 
-using std::begin;
-using std::copy;
-using std::end;
 using tinyxml2::XMLDocument;
 using tinyxml2::XMLElement;
 
