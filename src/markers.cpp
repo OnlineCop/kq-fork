@@ -33,9 +33,8 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <string>
 #include <memory>
-
+#include <string>
 
 bool KMarkers::Add(KMarker&& marker)
 {

@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <cstdio>
-#include <cstring>
+#include "magic.h"
 
 #include "combat.h"
 #include "draw.h"
@@ -31,12 +30,14 @@
 #include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
-#include "magic.h"
 #include "menu.h"
 #include "random.h"
 #include "res.h"
 #include "setup.h"
 #include "structs.h"
+
+#include <cstdio>
+#include <cstring>
 
 /*! \file
  * \brief Magic spells

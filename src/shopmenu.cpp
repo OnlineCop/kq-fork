@@ -26,8 +26,7 @@
  * \date ????????
  */
 
-#include <cstdio>
-#include <cstring>
+#include "shopmenu.h"
 
 #include "constants.h"
 #include "draw.h"
@@ -42,8 +41,10 @@
 #include "player.h"
 #include "res.h"
 #include "setup.h"
-#include "shopmenu.h"
 #include "timing.h"
+
+#include <cstdio>
+#include <cstring>
 
 /* Winter Knight: I'm making it so shops are declared in scripts, rather than
 in the code. It is part of my "separate the engine and the data" campaign. */

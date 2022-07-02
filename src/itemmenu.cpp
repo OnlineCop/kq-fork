@@ -26,8 +26,7 @@
  * \date ????????
  */
 
-#include <cstdio>
-#include <cstring>
+#include "itemmenu.h"
 
 #include "combat.h"
 #include "draw.h"
@@ -35,7 +34,6 @@
 #include "gfx.h"
 #include "input.h"
 #include "itemdefs.h"
-#include "itemmenu.h"
 #include "kq.h"
 #include "magic.h"
 #include "menu.h"
@@ -44,6 +42,9 @@
 #include "selector.h"
 #include "setup.h"
 #include "skills.h"
+
+#include <cstdio>
+#include <cstring>
 
 char item_act;
 

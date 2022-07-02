@@ -26,13 +26,10 @@
  * \date ???????
  */
 
-#include <cstdio>
-#include <cstring>
-#include <memory>
+#include "effects.h"
 
 #include "combat.h"
 #include "draw.h"
-#include "effects.h"
 #include "gfx.h"
 #include "imgcache.h"
 #include "itemmenu.h"
@@ -43,6 +40,10 @@
 #include "res.h"
 #include "setup.h"
 #include "timing.h"
+
+#include <cstdio>
+#include <cstring>
+#include <memory>
 
 KEffects Effects;
 

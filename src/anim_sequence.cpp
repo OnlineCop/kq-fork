@@ -19,10 +19,11 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <vector>
-
 #include "anim_sequence.h"
+
 #include "tmx_animation.h"
+
+#include <vector>
 
 // Note: *copy* the base animation into this instance. The base animation
 // comes from a tmx_map which may be destroyed.

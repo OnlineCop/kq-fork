@@ -20,14 +20,16 @@
 */
 
 #include "imgcache.h"
+
 #include "gfx.h"
 #include "kq.h"
 #include "platform.h"
 #include "res.h"
-#include <map>
-#include <memory>
-#include <png.h>
+
+#include <cstdio>
 #include <string>
+#include <png.h>
+#include <memory>
 
 typedef std::unique_ptr<Raster> BITMAP_PTR;
 struct RasterLoader
@@ -77,6 +79,7 @@ static int palindex(uint8_t* ptr)
     }
     return bestindex;
 }
+
 // For libpng 1.6 and above there's a high-level image loader
 #ifdef PNG_SIMPLIFIED_READ_SUPPORTED
 /*! \brief Load a bitmap from a file
@@ -116,7 +119,6 @@ static Raster* bmp_from_png(const std::string& path)
     return bitmap;
 }
 #else // !PNG_SIMPLIFIED_READ_SUPPORTED
-#include <cstdio>
 static Raster* bmp_from_png(const std::string& path)
 {
     FILE* fp = std::fopen(path.c_str(), "rb");

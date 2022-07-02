@@ -32,13 +32,8 @@
  * the C code and the Lua scripts.
  *
  */
-#include "kq.h"
 
-extern "C" {
-#include <lauxlib.h>
-#include <lua.h>
-#include <lualib.h>
-}
+#include "intrface.h"
 
 #include "bounds.h"
 #include "combat.h"
@@ -48,17 +43,20 @@ extern "C" {
 #include "enemyc.h"
 #include "enums.h"
 #include "fade.h"
+#include "gfx.h"
 #include "heroc.h"
+#include "imgcache.h"
 #include "input.h"
-#include "intrface.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
+#include "kq.h"
 #include "magic.h"
 #include "masmenu.h"
 #include "menu.h"
 #include "movement.h"
 #include "music.h"
 #include "platform.h"
+#include "random.h"
 #include "res.h"
 #include "selector.h"
 #include "setup.h"
@@ -66,14 +64,15 @@ extern "C" {
 #include "shopmenu.h"
 #include "timing.h"
 
-#include <string>
-#include <memory>
-
-#include "gfx.h"
-#include "imgcache.h"
-#include "random.h"
-
 #include <algorithm>
+#include <memory>
+#include <string>
+
+extern "C" {
+#include <lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
+}
 
 /* Defines */
 #define LUA_ENT_KEY "_ent"

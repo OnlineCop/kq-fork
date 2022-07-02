@@ -21,10 +21,10 @@
 
 #pragma once
 
+#include "tmx_animation.h"
+
 #include <cstdint>
 #include <vector>
-
-#include "tmx_animation.h"
 
 class KAnimSequence;
 class KAnimation

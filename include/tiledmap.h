@@ -21,12 +21,6 @@
 
 #pragma once
 
-#include <cstdint>
-#include <memory>
-#include <string>
-#include <tinyxml2.h>
-#include <vector>
-
 #include "bounds.h"
 #include "entity.h"
 #include "markers.h"
@@ -34,6 +28,12 @@
 #include "tmx_animation.h"
 #include "tmx_tileset.h"
 #include "zone.h"
+
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <tinyxml2.h>
+#include <vector>
 
 class tmx_layer
 {

@@ -23,6 +23,8 @@
 
 #include <cstdint>
 
+enum eFont;
+
 class KEffects
 {
   public:

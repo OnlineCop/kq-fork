@@ -26,11 +26,14 @@
  *
  * Looks after keeping the music playing whilst the game is 'paused'
  */
+
 #include "timing.h"
+
 #include "kq.h"
 #include "music.h"
-#include <SDL.h>
+
 #include <cassert>
+#include <SDL.h>
 
 static SDL_TimerID timer_id = 0;
 static int watchdog;

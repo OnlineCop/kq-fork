@@ -32,10 +32,7 @@
  *          mode to be saved/loaded ?
  */
 
-#include <cctype>
-#include <cstdio>
-#include <cstring>
-#include <memory>
+#include "sgame.h"
 
 #include "combat.h"
 #include "constants.h"
@@ -55,10 +52,14 @@
 #include "platform.h"
 #include "res.h"
 #include "setup.h"
-#include "sgame.h"
 #include "shopmenu.h"
 #include "structs.h"
 #include "timing.h"
+
+#include <cctype>
+#include <cstdio>
+#include <cstring>
+#include <memory>
 
 /*! Get the save-game stats that apply to the current state.
  * \returns a structure containing the stats;

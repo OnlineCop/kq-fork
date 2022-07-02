@@ -21,9 +21,8 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
 #include <deque>
+#include <string>
 
 class KConsole
 {

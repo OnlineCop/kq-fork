@@ -31,10 +31,10 @@
  * \date ????????
  */
 
+#include "enums.h"
+
 #include <cstdint>
 #include <string>
-
-#include "enums.h"
 
 #define BATTLE_INC 20
 #define ROUND_MAX 400

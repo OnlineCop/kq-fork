@@ -21,11 +21,14 @@
 
 #pragma once
 
+#include "enums.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
 
 class KFighter;
+class Raster;
 
 class KEnemy
 {

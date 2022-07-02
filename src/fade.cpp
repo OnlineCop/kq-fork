@@ -27,10 +27,12 @@
  */
 
 #include "fade.h"
+
 #include "draw.h"
 #include "kq.h"
 #include "music.h"
 #include "res.h"
+
 #include <algorithm>
 #include <cstring>
 

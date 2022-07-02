@@ -27,12 +27,12 @@
  * \date 20030805
  */
 
+#include "bounds.h"
+#include "markers.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
-
-#include "bounds.h"
-#include "markers.h"
 
 class Raster;
 

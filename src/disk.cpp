@@ -28,6 +28,7 @@
  */
 
 #include "disk.h"
+
 #include "bounds.h"
 #include "heroc.h"
 #include "kq.h"
@@ -36,7 +37,6 @@
 #include "random.h"
 #include "sgame.h"
 #include "shopmenu.h"
-#include <sys/stat.h>
 
 KDisk Disk;
 

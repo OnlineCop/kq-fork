@@ -28,6 +28,7 @@
  */
 
 #include "setup.h"
+
 #include "combat.h"
 #include "constants.h"
 #include "disk.h"
@@ -41,8 +42,9 @@
 #include "res.h"
 #include "settings.h"
 #include "timing.h"
-#include <SDL.h>
+
 #include <SDL_mixer.h>
+#include <SDL.h>
 #include <string>
 
 using eSize::SCREEN_H;

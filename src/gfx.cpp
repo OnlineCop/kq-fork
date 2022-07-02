@@ -20,10 +20,12 @@
 */
 
 #include "gfx.h"
+
 #include "compat.h"
 #include "kq.h"
-#include <SDL.h>
+
 #include <algorithm>
+#include <SDL.h>
 
 COLOR_MAP* color_map = &cmap;
 extern PALETTE pal;

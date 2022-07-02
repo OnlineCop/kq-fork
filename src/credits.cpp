@@ -27,10 +27,12 @@
  */
 
 #include "credits.h"
+
 #include "constants.h"
 #include "draw.h"
 #include "gettext.h"
 #include "gfx.h"
+
 #include <string>
 
 using eSize::SCREEN_H;

@@ -49,6 +49,7 @@
 #include "entity.h"
 #include "enums.h"
 #include "fade.h"
+#include "gfx.h"
 #include "imgcache.h"
 #include "input.h"
 #include "intrface.h"
@@ -59,6 +60,7 @@
 #include "menu.h"
 #include "music.h"
 #include "platform.h"
+#include "random.h"
 #include "res.h"
 #include "setup.h"
 #include "sgame.h"
@@ -67,8 +69,14 @@
 #include "tiledmap.h"
 #include "timing.h"
 
-#include "gfx.h"
-#include "random.h"
+#include <cassert>
+#include <clocale>
+#include <cstdio>
+#include <memory>
+#include <SDL.h>
+#include <SDL_mixer.h>
+#include <string>
+#include <time.h>
 
 #include <SDL.h>
 #include <SDL_mixer.h>

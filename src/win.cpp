@@ -36,13 +36,13 @@
 #include "kq.h"
 #include "makeconfig.h"
 #include "platform.h"
-#include <PathCch.h>
-#include <SDL.h>
+
 #include <cstdio>
 #include <direct.h>
 #include <memory>
+#include <PathCch.h>
+#include <SDL.h>
 #include <stringapiset.h>
-#include <sys/stat.h>
 
 #pragma comment(lib, "pathcch")
 static bool init_path = false;

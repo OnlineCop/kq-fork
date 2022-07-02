@@ -26,9 +26,7 @@
  * \date ????????
  */
 
-#include <cstdio>
-#include <cstring>
-#include <memory>
+#include "hskill.h"
 
 #include "combat.h"
 #include "constants.h"
@@ -37,7 +35,6 @@
 #include "fade.h"
 #include "gfx.h"
 #include "heroc.h"
-#include "hskill.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
@@ -47,6 +44,10 @@
 #include "selector.h"
 #include "setup.h"
 #include "timing.h"
+
+#include <cstdio>
+#include <cstring>
+#include <memory>
 
 /* Internal function */
 static void infusion(int, int);

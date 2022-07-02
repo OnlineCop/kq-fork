@@ -19,14 +19,12 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <cstdio>
-#include <cstring>
+#include "eskill.h"
 
 #include "combat.h"
 #include "draw.h"
 #include "effects.h"
 #include "enemyc.h"
-#include "eskill.h"
 #include "heroc.h"
 #include "itemmenu.h"
 #include "kq.h"
@@ -36,6 +34,9 @@
 #include "random.h"
 #include "res.h"
 #include "setup.h"
+
+#include <cstdio>
+#include <cstring>
 
 /*! \file
  * \brief Enemy skills

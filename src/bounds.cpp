@@ -25,14 +25,14 @@
  * \date 20060720
  */
 
-#include <cassert>
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
 #include "bounds.h"
+
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <cmath>
+#include <cctype>
+#include <cassert>
 
 bool KBounds::Add(KBound&& bound)
 {

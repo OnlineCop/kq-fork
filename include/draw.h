@@ -22,6 +22,7 @@
 #pragma once
 
 #include "enums.h"
+
 #include <cstdint>
 #include <cstdlib>
 #include <string>

@@ -32,6 +32,7 @@
  */
 
 #include "heroc.h"
+
 #include "combat.h"
 #include "draw.h"
 #include "effects.h"
@@ -52,6 +53,7 @@
 #include "setup.h"
 #include "skills.h"
 #include "timing.h"
+
 #include <cstdio>
 #include <cstring>
 #include <memory>

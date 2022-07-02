@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <cstdio>
-#include <cstring>
+#include "masmenu.h"
 
 #include "combat.h"
 #include "draw.h"
@@ -29,12 +28,15 @@
 #include "input.h"
 #include "kq.h"
 #include "magic.h"
-#include "masmenu.h"
 #include "menu.h"
 #include "player.h"
 #include "res.h"
 #include "selector.h"
 #include "setup.h"
+
+#include <cstdio>
+#include <cstring>
+
 /*! \file
  * \brief Menus for spells
  *

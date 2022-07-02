@@ -19,7 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <cstdio>
+#include "menu.h"
 
 #include "constants.h"
 #include "draw.h"
@@ -33,13 +33,14 @@
 #include "itemmenu.h"
 #include "kq.h"
 #include "masmenu.h"
-#include "menu.h"
 #include "player.h"
 #include "random.h"
 #include "res.h"
 #include "selector.h"
 #include "setup.h"
 #include "structs.h"
+
+#include <cstdio>
 
 KMenu kmenu;
 

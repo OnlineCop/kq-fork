@@ -50,8 +50,9 @@
 #include "maps.h"
 #include "player.h"
 #include "structs.h"
-#include <SDL.h>
+
 #include <cstdint>
+#include <SDL.h>
 #include <string>
 
 #define _(s) gettext(s)

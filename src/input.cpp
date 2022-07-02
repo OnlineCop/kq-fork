@@ -20,9 +20,11 @@
 */
 
 #include "input.h"
+
 #include "kq.h"
 #include "music.h"
 #include "platform.h"
+
 #include <SDL.h>
 
 KPlayerInput::KPlayerInput()

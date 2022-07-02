@@ -28,11 +28,9 @@
  * including dropping and optimizing the items carried.
  */
 
-#include <cstdio>
-#include <cstring>
+#include "eqpmenu.h"
 
 #include "draw.h"
-#include "eqpmenu.h"
 #include "gfx.h"
 #include "input.h"
 #include "itemmenu.h"
@@ -40,6 +38,9 @@
 #include "menu.h"
 #include "res.h"
 #include "setup.h"
+
+#include <cstdio>
+#include <cstring>
 
 /* Globals  */
 static int tstats[13], tres[R_TOTAL_RES];
