@@ -40,6 +40,7 @@
 #include "zone.h"
 
 #include <cassert>
+#include <SDL.h>
 
 KDraw Draw;
 

@@ -46,8 +46,6 @@
 #include "credits.h"
 #include "disk.h"
 #include "draw.h"
-#include "entity.h"
-#include "enums.h"
 #include "fade.h"
 #include "gfx.h"
 #include "imgcache.h"
@@ -65,30 +63,12 @@
 #include "setup.h"
 #include "sgame.h"
 #include "shopmenu.h"
-#include "structs.h"
 #include "tiledmap.h"
 #include "timing.h"
 
-#include <cassert>
-#include <clocale>
-#include <cstdio>
-#include <memory>
-#include <SDL.h>
-#include <SDL_mixer.h>
-#include <string>
-#include <time.h>
-
-#include <SDL.h>
-#include <SDL_mixer.h>
-#include <cassert>
-#include <clocale>
-#include <cstdio>
 #include <fstream>
-#include <iomanip>
-#include <memory>
-#include <string>
-#include <time.h>
-#include <vector>
+#include <SDL.h>
+#include <SDL_mixer.h>
 
 using namespace eSize;
 

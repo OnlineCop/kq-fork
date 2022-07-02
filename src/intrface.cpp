@@ -66,6 +66,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <SDL.h>
 #include <string>
 
 extern "C" {

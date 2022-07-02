@@ -52,7 +52,6 @@
 #include "structs.h"
 
 #include <cstdint>
-#include <SDL.h>
 #include <string>
 
 #define _(s) gettext(s)
