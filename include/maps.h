@@ -87,7 +87,6 @@ struct s_map
     Raster* entity_tiles;
 };
 
-extern s_map g_map;
 
 /* Local Variables:     */
 /* mode: c              */

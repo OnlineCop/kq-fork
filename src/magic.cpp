@@ -1581,7 +1581,7 @@ void KMagic::special_spells(size_t caster_fighter_index, size_t spell_number)
             }
             else
             {
-                Game.change_map(Game.WORLD_MAP, g_map.warpx, g_map.warpy, g_map.warpx, g_map.warpy);
+                Game.change_map(Game.WORLD_MAP, Game.Map.g_map.warpx, Game.Map.g_map.warpy, Game.Map.g_map.warpx, Game.Map.g_map.warpy);
             }
         }
         break;

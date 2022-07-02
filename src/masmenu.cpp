@@ -64,7 +64,7 @@ static int camp_castable(int, int);
  */
 static int camp_castable(int who, int sno)
 {
-    if (sno == M_VISION || (sno == M_WARP && g_map.can_warp == 0))
+    if (sno == M_VISION || (sno == M_WARP && Game.Map.g_map.can_warp == 0))
     {
         return 0;
     }
@@ -492,7 +492,7 @@ static int need_spell(size_t target_fighter_index, size_t spell_number)
          *     you can get away from this battle.  But if you're somewhere that the
          *     map is defined as 'can_warp = 0', you can't use the warp spell there.
          */
-        if (g_map.can_warp == 0)
+        if (Game.Map.g_map.can_warp == 0)
         {
             return 0;
         }

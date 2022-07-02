@@ -894,7 +894,7 @@ static const char* stringreader(lua_State*, void* data, size_t* size)
  */
 static const KMarker* KQ_find_marker(string name, bool required)
 {
-    auto found_marker = g_map.markers.GetMarker(name);
+    auto found_marker = Game.Map.g_map.markers.GetMarker(name);
     if (found_marker != nullptr)
     {
         return found_marker;
@@ -942,9 +942,9 @@ static int get_field(const char* n)
 static void init_markers(lua_State* L)
 {
     lua_newtable(L);
-    for (size_t i = 0; i < g_map.markers.Size(); i++)
+    for (size_t i = 0, ii = Game.Map.g_map.markers.Size(); i < ii; ++i)
     {
-        auto marker = g_map.markers.GetMarker(i);
+        auto marker = Game.Map.g_map.markers.GetMarker(i);
         if (marker != nullptr)
         {
             lua_pushstring(L, marker->name.c_str());
@@ -1493,7 +1493,7 @@ static int KQ_chest(lua_State* L)
          * tile to the given value, and set the zone zero (so we can't search
          * in the same place twice.
          */
-        if (chestx < g_map.xsize || chesty < g_map.ysize)
+        if (chestx < Game.Map.g_map.xsize || chesty < Game.Map.g_map.ysize)
         {
             set_mtile(chestx, chesty, tile);
         }
@@ -1587,24 +1587,23 @@ static int KQ_copy_ent(lua_State* L)
  */
 static int KQ_copy_tile_all(lua_State* L)
 {
-    auto sx = lua_tointeger(L, 1);
-    auto sy = lua_tointeger(L, 2);
-    auto dx = lua_tointeger(L, 3);
-    auto dy = lua_tointeger(L, 4);
+    uint32_t sx = lua_tointeger(L, 1);
+    uint32_t sy = lua_tointeger(L, 2);
+    uint32_t dx = lua_tointeger(L, 3);
+    uint32_t dy = lua_tointeger(L, 4);
     uint32_t wid = (uint32_t)lua_tonumber(L, 5);
     uint32_t hgt = (uint32_t)lua_tonumber(L, 6);
-    size_t os, od, i, j;
 
     /*
     sprintf (strbuf, "Copy (%d,%d)x(%d,%d) to (%d,%d)", sx, sy, wid, hgt, dx, dy);
     Game.klog(strbuf);
     */
-    for (j = 0; j < hgt; ++j)
+    for (size_t j = 0; j < hgt; ++j)
     {
-        for (i = 0; i < wid; ++i)
+        for (size_t i = 0; i < wid; ++i)
         {
-            os = sx + i + g_map.xsize * (sy + j);
-            od = dx + i + g_map.xsize * (dy + j);
+            const size_t os = Game.Map.Clamp(sx + i, sy + j);
+            const size_t od = Game.Map.Clamp(dx + i, dy + j);
             map_seg[od] = map_seg[os];
             f_seg[od] = f_seg[os];
             b_seg[od] = b_seg[os];
@@ -1643,17 +1642,14 @@ static int KQ_do_inn_effects(lua_State* L)
 
 static int KQ_door_in(lua_State* L)
 {
-    int hx, hy, hy2, db, dt;
-    int x, y;
-
     use_sstone = 0;
 
-    hx = g_ent[0].tilex;
-    hy = g_ent[0].tiley;
-    hy2 = hy - 1;
-    db = map_seg[hy * g_map.xsize + hx];
-    dt = map_seg[hy2 * g_map.xsize + hx];
-    if (g_map.tileset == 1)
+    const int hx = g_ent[0].tilex;
+    const int hy = g_ent[0].tiley;
+    const int hy2 = hy - 1;
+    uint16_t db = map_seg[Game.Map.Clamp(hx, hy)];
+    uint16_t dt = map_seg[Game.Map.Clamp(hx, hy2)];
+    if (Game.Map.g_map.tileset == 1)
     {
         set_btile(hx, hy, db + 433);
         if (dt == 149)
@@ -1674,6 +1670,7 @@ static int KQ_door_in(lua_State* L)
     Draw.blit2screen();
     kq_wait(50);
 
+    int x = 0, y = 0;
     if (lua_type(L, 1) == LUA_TSTRING)
     {
         /* It's in "marker" form */
@@ -1699,7 +1696,7 @@ static int KQ_door_in(lua_State* L)
 
     // Don't forget to set the door tile back to its "unopened" state
     set_btile(hx, hy, db);
-    if (g_map.tileset == 1)
+    if (Game.Map.g_map.tileset == 1)
     {
         set_btile(hx, hy2, dt);
     }
@@ -1841,7 +1838,7 @@ static int KQ_get_bounds(lua_State* L)
 
         ent_x = g_ent[a].tilex;
         ent_y = g_ent[a].tiley;
-        if (g_map.bounds.IsBound(found_index, ent_x, ent_y, ent_x, ent_y))
+        if (Game.Map.g_map.bounds.IsBound(found_index, ent_x, ent_y, ent_x, ent_y))
         {
             lua_pushnumber(L, found_index);
         }
@@ -2636,7 +2633,7 @@ static int KQ_place_ent(lua_State* L)
 static int KQ_play_map_song(lua_State* L)
 {
     (void)L;
-    Music.play_music(g_map.song_file, 0);
+    Music.play_music(Game.Map.g_map.song_file, 0);
     return 0;
 }
 
@@ -2912,7 +2909,7 @@ static int KQ_set_autoparty(lua_State* L)
 
 static int KQ_set_background(lua_State* L)
 {
-    draw_background = ((int)lua_tonumber(L, 1) == 0 ? 0 : 1);
+    Game.Map.draw_background = lua_toboolean(L, 1);
 
     return 0;
 }
@@ -3127,7 +3124,7 @@ static int KQ_set_ent_transl(lua_State* L)
 
 static int KQ_set_foreground(lua_State* L)
 {
-    draw_foreground = ((int)lua_tonumber(L, 1) == 0 ? 0 : 1);
+    Game.Map.draw_foreground = lua_toboolean(L, 1);
 
     return 0;
 }
@@ -3185,7 +3182,7 @@ static int KQ_set_holdfade(lua_State* L)
 
 static int KQ_set_map_mode(lua_State* L)
 {
-    g_map.map_mode = std::clamp((eMapMode)lua_tonumber(L, 1), eMapMode::MAPMODE_12E3S, eMapMode::MAPMODE_12EP3S);
+    Game.Map.g_map.map_mode = std::clamp((eMapMode)lua_tonumber(L, 1), eMapMode::MAPMODE_12E3S, eMapMode::MAPMODE_12EP3S);
     return 0;
 }
 
@@ -3201,13 +3198,13 @@ static int KQ_set_marker(lua_State* L)
     const int x_coord = lua_tonumber(L, 2);
     const int y_coord = lua_tonumber(L, 3);
 
-    g_map.markers.Add({ marker_name, x_coord, y_coord });
+    Game.Map.g_map.markers.Add({ marker_name, x_coord, y_coord });
     return 0;
 }
 
 static int KQ_set_midground(lua_State* L)
 {
-    draw_middle = ((int)lua_tonumber(L, 1) == 0 ? 0 : 1);
+    Game.Map.draw_middle = lua_toboolean(L, 1);
 
     return 0;
 }
@@ -3689,10 +3686,10 @@ static int KQ_set_warp(lua_State* L)
 
     if (a == 0 || a == 1)
     {
-        g_map.can_warp = a;
+        Game.Map.g_map.can_warp = a;
     }
-    g_map.warpx = (int)lua_tonumber(L, 2);
-    g_map.warpy = (int)lua_tonumber(L, 3);
+    Game.Map.g_map.warpx = (int)lua_tonumber(L, 2);
+    Game.Map.g_map.warpy = (int)lua_tonumber(L, 3);
     return 0;
 }
 
@@ -4341,31 +4338,30 @@ static int real_entity_num(lua_State* L, int pos)
 
 static void set_btile(int x, int y, int value)
 {
-    map_seg[y * g_map.xsize + x] = value;
+    map_seg[Game.Map.Clamp(x, y)] = value;
 }
 
 static void set_mtile(int x, int y, int value)
 {
-    b_seg[y * g_map.xsize + x] = value;
+    b_seg[Game.Map.Clamp(x, y)] = value;
 }
 
 static void set_ftile(int x, int y, int value)
 {
-    f_seg[y * g_map.xsize + x] = value;
+    f_seg[Game.Map.Clamp(x, y)] = value;
 }
 
 static void set_zone(int x, int y, int value)
 {
-    unsigned int index = std::clamp(y * g_map.xsize + x, 0U, g_map.xsize * g_map.ysize - 1);
-    Game.Map.zone_array[index] = value;
+    Game.Map.zone_array[Game.Map.Clamp(x, y)] = value;
 }
 
 static void set_obs(int x, int y, int value)
 {
-    Game.Map.obstacle_array[y * g_map.xsize + x] = static_cast<eObstacle>(value);
+    Game.Map.obstacle_array[Game.Map.Clamp(x, y)] = static_cast<eObstacle>(value);
 }
 
 static void set_shadow(int x, int y, int value)
 {
-    Game.Map.shadow_array[y * g_map.xsize + x] = static_cast<eShadow>(value);
+    Game.Map.shadow_array[Game.Map.Clamp(x, y)] = static_cast<eShadow>(value);
 }

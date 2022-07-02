@@ -369,7 +369,7 @@ void config_menu(void)
                         Draw.print_font(double_buffer, 92 + 2, 204, _("...please wait..."), FNORMAL);
                         Draw.blit2screen();
                         sound_init();
-                        Music.play_music(g_map.song_file, 0);
+                        Music.play_music(Game.Map.g_map.song_file, 0);
                     }
                 }
                 Config.set_config_int(NULL, "is_sound", Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized);

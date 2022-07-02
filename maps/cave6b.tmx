@@ -59,11 +59,5 @@
   <object id="10" name="save_point" type="marker" x="608" y="1056" width="16" height="16"/>
   <object id="11" name="entrance" type="marker" x="1184" y="1104" width="16" height="16"/>
  </objectgroup>
- <objectgroup color="#0000ff" id="9" name="bounds">
-  <object id="12" name="bounds" type="bounds" x="0" y="-16" width="1408" height="1424">
-   <properties>
-    <property name="btile" value="0"/>
-   </properties>
-  </object>
- </objectgroup>
+ <objectgroup color="#0000ff" id="9" name="bounds"/>
 </map>

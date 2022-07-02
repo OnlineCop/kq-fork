@@ -94,6 +94,25 @@ class KMap
     ~KMap() = default;
     KMap();
 
+    /*! \brief Return a valid index within the current g_map: [0, g_map.xsize*g_map.ysize).
+     * \param tile_x Should be within the range [0, g_map.xsize).
+     * \param tile_y Should be within the range [0, g_map.ysize).
+     * \return Unsigned value within the range [0, g_map.xsize * g_map.ysize - 1].
+     */
+    size_t Clamp(signed int tile_x, signed int tile_y) const;
+
+    size_t MapSize() const;
+
+    /*! Which map layers should be drawn. These are set when the map is loaded; see change_map() */
+    bool draw_background;
+    bool draw_middle;
+    bool draw_foreground;
+    bool draw_shadow;
+
+
+    /*! Current map */
+    s_map g_map;
+
     std::vector<eObstacle> obstacle_array;
     std::vector<eShadow> shadow_array;
     std::vector<int> zone_array;
@@ -109,8 +128,7 @@ class KGame
      * This loads a new map and performs all of the functions that accompany the loading of a new map.
      *
      * \param   map_name Base name of map (xxx -> maps/xxx.map)
-     * \param   player_x New x-coord for player. Pass 0 for msx and msy to use the 'default' position stored in the map
-     * file: s_map::stx and s_map::sty
+     * \param   player_x New x-coord for player. Pass 0 for msx and msy to use the 'default' position stored in the map file: s_map::stx and s_map::sty
      * \param   player_y New y-coord for player
      * \param   camera_x New x-coord for camera. Pass 0 for mvx and mvy to use the default: s_map::stx and s_map::sty)
      * \param   camera_y New y-coord for camera
@@ -436,7 +454,11 @@ extern Raster* map_icons[MAX_TILES];
 
 extern Raster *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse, *b_mp;
 extern Raster *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES];
-extern Raster *eframes[MAXE][MAXEFRAMES], *pgb[9], *sfonts[5], *bord[8];
+
+/*! Enemy animation frames */
+extern Raster* eframes[MAXE][MAXEFRAMES];
+
+extern Raster *pgb[9], *sfonts[5], *bord[8];
 extern Raster *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr;
 extern Raster* shadow[MAX_SHADOWS];
 
@@ -453,7 +475,6 @@ extern uint8_t treasure[SIZE_TREASURE];
 extern uint8_t save_spells[SIZE_SAVE_SPELL];
 
 extern Raster* kfonts;
-extern s_map g_map;
 
 /* Total entities within the current map: players + NPCs */
 extern KQEntity g_ent[MAX_ENTITIES];
@@ -479,7 +500,6 @@ extern char attack_string[39];
 extern volatile int animation_count;
 extern COLOR_MAP cmap;
 extern uint8_t can_run, do_staff_effect, display_desc;
-extern uint8_t draw_background, draw_middle, draw_foreground, draw_shadow;
 extern s_inventory g_inv[MAX_INV];
 extern s_special_item special_items[MAX_SPECIAL_ITEMS];
 extern short player_special_items[MAX_SPECIAL_ITEMS];

@@ -279,7 +279,7 @@ Raster* KDraw::copy_bitmap(Raster* target, Raster* source)
 
 void KDraw::draw_backlayer(void)
 {
-    auto box = calculate_box(g_map.map_mode == eMapMode::MAPMODE_1p2E3S || g_map.map_mode == eMapMode::MAPMODE_1E2p3S);
+    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S);
     int tile_x1 = box.x_offset / TILE_W;
     int tile_x2 = (box.x_offset + SCREEN_W - 1) / TILE_W;
     int tile_y1 = box.y_offset / TILE_H;
@@ -301,8 +301,7 @@ void KDraw::draw_backlayer(void)
 
         for (int x = box.left; x <= box.right; x++)
         {
-            int here = y * g_map.xsize + x;
-            int pix = map_seg[here];
+            size_t pix = map_seg[Game.Map.Clamp(x, y)];
             blit(map_icons[tilex[pix]], double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
         }
         for (int x = box.right + 1; x <= tile_x2; x++)
@@ -322,10 +321,10 @@ void KDraw::draw_backlayer(void)
 KDraw::PBound KDraw::calculate_box(bool is_parallax)
 {
     int x = 0, y = 0;
-    if (is_parallax)
+    if (is_parallax && Game.Map.g_map.pdiv != 0)
     {
-        x = viewport_x_coord * g_map.pmult / g_map.pdiv;
-        y = viewport_y_coord * g_map.pmult / g_map.pdiv;
+        x = viewport_x_coord * Game.Map.g_map.pmult / Game.Map.g_map.pdiv;
+        y = viewport_y_coord * Game.Map.g_map.pmult / Game.Map.g_map.pdiv;
     }
     else
     {
@@ -341,32 +340,23 @@ KDraw::PBound KDraw::calculate_box(bool is_parallax)
 
 void KDraw::draw_char()
 {
-    signed int dx, dy;
-    int f;
-    int x, y;
-    signed int horiz, vert;
-    unsigned int here, there;
-    Raster** sprite_base;
-    Raster* spr = NULL;
-    size_t follower_fighter_index;
-    size_t fighter_index;
-    size_t fighter_frame, fighter_frame_add;
-    size_t fighter_type_id;
-
-    for (follower_fighter_index = PSIZE + EntityManager.number_of_entities; follower_fighter_index > 0; follower_fighter_index--)
+    for (size_t follower_fighter_index = PSIZE + EntityManager.number_of_entities; follower_fighter_index > 0; follower_fighter_index--)
     {
-        fighter_index = follower_fighter_index - 1;
-        fighter_type_id = g_ent[fighter_index].eid;
-        dx = g_ent[fighter_index].x - viewport_x_coord;
-        dy = g_ent[fighter_index].y - viewport_y_coord;
-        if (!g_ent[fighter_index].moving)
+        size_t fighter_index = follower_fighter_index - 1;
+        KQEntity& follower_entity = g_ent[fighter_index];
+
+        signed int dx = follower_entity.x - viewport_x_coord;
+        signed int dy = follower_entity.y - viewport_y_coord;
+
+        size_t fighter_frame = follower_entity.facing * ENT_FRAMES_PER_DIR;
+        if (follower_entity.moving)
         {
-            fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + 2;
+            size_t fighter_frame_add = follower_entity.framectr > 10 ? 1 : 0;
+            fighter_frame = follower_entity.facing * ENT_FRAMES_PER_DIR + fighter_frame_add;
         }
         else
         {
-            fighter_frame_add = g_ent[fighter_index].framectr > 10 ? 1 : 0;
-            fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + fighter_frame_add;
+            fighter_frame = follower_entity.facing * ENT_FRAMES_PER_DIR + 2;
         }
 
         if (fighter_index < PSIZE && fighter_index < numchrs)
@@ -374,11 +364,13 @@ void KDraw::draw_char()
             /* It's a hero */
             /* Masquerade: if chrx!=0 then this hero is disguised as someone else...
              */
-            sprite_base = g_ent[fighter_index].chrx ? eframes[g_ent[fighter_index].chrx] : frames[fighter_type_id];
+            const size_t fighter_type_id = follower_entity.eid;
+            Raster** sprite_base = follower_entity.chrx ? eframes[follower_entity.chrx] : frames[fighter_type_id];
+            Raster* spr = nullptr;
 
             if (party[fighter_type_id].IsDead())
             {
-                fighter_frame = g_ent[fighter_index].facing * ENT_FRAMES_PER_DIR + 2;
+                fighter_frame = follower_entity.facing * ENT_FRAMES_PER_DIR + 2;
             }
             if (party[fighter_type_id].IsPoisoned())
             {
@@ -390,15 +382,15 @@ void KDraw::draw_char()
             {
                 spr = sprite_base[fighter_frame];
             }
-            if (is_forestsquare(g_ent[fighter_index].tilex, g_ent[fighter_index].tiley))
+
+            if (is_forestsquare(follower_entity.tilex, follower_entity.tiley))
             {
-                f = !g_ent[fighter_index].moving;
-                if (g_ent[fighter_index].moving &&
-                    is_forestsquare(g_ent[fighter_index].x / TILE_W, g_ent[fighter_index].y / TILE_H))
+                bool f = follower_entity.moving;
+                if (f && is_forestsquare(follower_entity.x / TILE_W, follower_entity.y / TILE_H))
                 {
-                    f = 1;
+                    f = false;
                 }
-                if (f)
+                if (!f)
                 {
                     clear_to_color(tc, 0);
                     blit(spr, tc, 0, 0, 0, 0, 16, 6); // 16,6 = avatar's width and top 6 pixels of height (head only)
@@ -421,89 +413,96 @@ void KDraw::draw_char()
              * We also need to ensure that the target coords has SOMETHING in the
              * obstacle_array[] portion, else there will be graphical glitches.
              */
-            if (fighter_index == 0 && g_ent[0].moving)
+            if (fighter_index > 0 || !g_ent[0].moving)
             {
-                horiz = 0;
-                vert = 0;
-                /* Determine the direction moving */
+                continue;
+            }
 
-                if (g_ent[fighter_index].tilex * TILE_W > g_ent[fighter_index].x)
+            /* Determine the direction moving */
+            signed int horiz = 0;
+            signed int vert = 0;
+            if (follower_entity.tilex * TILE_W > follower_entity.x)
+            {
+                horiz = 1; // Right
+            }
+            else if (follower_entity.tilex * TILE_W < follower_entity.x)
+            {
+                horiz = -1; // Left
+            }
+
+            if (follower_entity.tiley * TILE_H > follower_entity.y)
+            {
+                vert = 1; // Down
+            }
+            else if (follower_entity.tiley * TILE_H < follower_entity.y)
+            {
+                vert = -1; // Up
+            }
+
+            /* Moving diagonally means both horiz and vert are non-zero */
+            if (horiz != 0 && vert != 0)
+            {
+                signed int x = 0;
+                signed int y = 0;
+                size_t here = 0;
+                size_t there = 0;
+
+                /* When moving down, we will draw over the spot directly below
+                    * our starting position. Since tile[xy] shows our final coord,
+                    * we will instead draw to the left or right of the final pos.
+                    */
+                if (vert > 0)
                 {
-                    horiz = 1; // Right
+                    /* Moving diag down */
+
+                    // Final x-coord is one left/right of starting x-coord
+                    x = (follower_entity.tilex - horiz) * TILE_W - viewport_x_coord;
+                    // Final y-coord is same as starting y-coord
+                    y = follower_entity.tiley * TILE_H - viewport_y_coord;
+                    // Where the tile is on the map that we will draw over
+                    there = Game.Map.Clamp(follower_entity.tilex - horiz, follower_entity.tiley);
+                    // Original position, before you started moving
+                    here = Game.Map.Clamp(follower_entity.tilex - horiz, follower_entity.tiley - vert);
                 }
-                else if (g_ent[fighter_index].tilex * TILE_W < g_ent[fighter_index].x)
+                else
                 {
-                    horiz = -1; // Left
+                    /* Moving diag up */
+
+                    // Final x-coord is same as starting x-coord
+                    x = follower_entity.tilex * TILE_W - viewport_x_coord;
+                    // Final y-coord is above starting y-coord
+                    y = (follower_entity.tiley - vert) * TILE_H - viewport_y_coord;
+                    // Where the tile is on the map that we will draw over
+                    there = Game.Map.Clamp(follower_entity.tilex, follower_entity.tiley - vert);
+                    // Target position
+                    here = Game.Map.Clamp(follower_entity.tilex, follower_entity.tiley);
                 }
 
-                if (g_ent[fighter_index].tiley * TILE_H > g_ent[fighter_index].y)
+                /* Because of possible redraw problems, only draw if there is
+                 * something drawn over the player (f_seg[] != 0)
+                 */
+                if (tilex[f_seg[here]] != 0)
                 {
-                    vert = 1; // Down
-                }
-                else if (g_ent[fighter_index].tiley * TILE_H < g_ent[fighter_index].y)
-                {
-                    vert = -1; // Up
-                }
-
-                /* Moving diagonally means both horiz and vert are non-zero */
-                if (horiz && vert)
-                {
-                    /* When moving down, we will draw over the spot directly below
-                     * our starting position. Since tile[xy] shows our final coord,
-                     * we will instead draw to the left or right of the final pos.
-                     */
-                    if (vert > 0)
-                    {
-                        /* Moving diag down */
-
-                        // Final x-coord is one left/right of starting x-coord
-                        x = (g_ent[fighter_index].tilex - horiz) * TILE_W - viewport_x_coord;
-                        // Final y-coord is same as starting y-coord
-                        y = g_ent[fighter_index].tiley * TILE_H - viewport_y_coord;
-                        // Where the tile is on the map that we will draw over
-                        there = (g_ent[fighter_index].tiley) * g_map.xsize + g_ent[fighter_index].tilex - horiz;
-                        // Original position, before you started moving
-                        here = (g_ent[fighter_index].tiley - vert) * g_map.xsize + g_ent[fighter_index].tilex - horiz;
-                    }
-                    else
-                    {
-                        /* Moving diag up */
-
-                        // Final x-coord is same as starting x-coord
-                        x = g_ent[fighter_index].tilex * TILE_W - viewport_x_coord;
-                        // Final y-coord is above starting y-coord
-                        y = (g_ent[fighter_index].tiley - vert) * TILE_H - viewport_y_coord;
-                        // Where the tile is on the map that we will draw over
-                        there = (g_ent[fighter_index].tiley - vert) * g_map.xsize + g_ent[fighter_index].tilex;
-                        // Target position
-                        here = (g_ent[fighter_index].tiley) * g_map.xsize + g_ent[fighter_index].tilex;
-                    }
-
-                    /* Because of possible redraw problems, only draw if there is
-                     * something drawn over the player (f_seg[] != 0)
-                     */
-                    if (tilex[f_seg[here]] != 0)
-                    {
-                        draw_sprite(double_buffer, map_icons[tilex[map_seg[there]]], x, y);
-                        draw_sprite(double_buffer, map_icons[tilex[b_seg[there]]], x, y);
-                    }
+                    draw_sprite(double_buffer, map_icons[tilex[map_seg[there]]], x, y);
+                    draw_sprite(double_buffer, map_icons[tilex[b_seg[there]]], x, y);
                 }
             }
         }
         else
         {
             /* It's an NPC */
-            if (g_ent[fighter_index].active && g_ent[fighter_index].tilex >= view_x1 &&
-                g_ent[fighter_index].tilex <= view_x2 && g_ent[fighter_index].tiley >= view_y1 &&
-                g_ent[fighter_index].tiley <= view_y2)
+            if (follower_entity.active &&
+                follower_entity.tilex >= view_x1 && follower_entity.tilex <= view_x2 &&
+                follower_entity.tiley >= view_y1 && follower_entity.tiley <= view_y2)
             {
-                if (dx >= TILE_W * -1 && dx <= TILE_W * (ONSCREEN_TILES_W + 1) && dy >= TILE_H * -1 &&
-                    dy <= TILE_H * (ONSCREEN_TILES_H + 1))
+                if (dx >= TILE_W * -1 && dx <= TILE_W * (ONSCREEN_TILES_W + 1) &&
+                    dy >= TILE_H * -1 && dy <= TILE_H * (ONSCREEN_TILES_H + 1))
                 {
-                    spr = (g_ent[fighter_index].eid >= ID_ENEMY) ? eframes[g_ent[fighter_index].chrx][fighter_frame]
-                                                                 : frames[g_ent[fighter_index].eid][fighter_frame];
+                    const uint8_t eid = follower_entity.eid;
+                    const uint8_t chrx = follower_entity.chrx;
+                    Raster* spr = (eid >= ID_ENEMY) ? eframes[chrx][fighter_frame] : frames[eid][fighter_frame];
 
-                    if (g_ent[fighter_index].transl == 0)
+                    if (follower_entity.transl == 0)
                     {
                         draw_sprite(double_buffer, spr, dx, dy);
                     }
@@ -519,14 +518,14 @@ void KDraw::draw_char()
 
 void KDraw::draw_forelayer(void)
 {
-    KDraw::PBound box = calculate_box(g_map.map_mode == eMapMode::MAPMODE_1E2p3S || g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
+    KDraw::PBound box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
     {
         for (int x = box.left; x <= box.right; x++)
         {
             // Used in several places in this loop, so shortened the name
-            int here = y * g_map.xsize + x;
-            int pix = f_seg[here];
+            const size_t here = Game.Map.Clamp(x, y);
+            const size_t pix = f_seg[here];
             draw_sprite(double_buffer, map_icons[tilex[pix]], + x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
 
 #ifdef DEBUGMODE
@@ -617,13 +616,13 @@ void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, e
 
 void KDraw::draw_midlayer(void)
 {
-    auto box = calculate_box(g_map.map_mode == eMapMode::MAPMODE_1E2p3S || g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
+    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
     {
         for (int x = box.left; x <= box.right; x++)
         {
-            int here = y * g_map.xsize + x;
-            int pix = b_seg[here];
+            size_t here = Game.Map.Clamp(x, y);
+            size_t pix = b_seg[here];
             draw_sprite(double_buffer, map_icons[tilex[pix]], x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
         }
     }
@@ -631,7 +630,7 @@ void KDraw::draw_midlayer(void)
 
 void KDraw::draw_shadows(void)
 {
-    if (draw_shadow == 0)
+    if (!Game.Map.draw_shadow)
     {
         return;
     }
@@ -640,11 +639,11 @@ void KDraw::draw_shadows(void)
     {
         for (int x = box.left; x <= box.right; x++)
         {
-            int here = y * g_map.xsize + x;
+            const size_t here = Game.Map.Clamp(x, y);
             eShadow pix = Game.Map.shadow_array[here];
-            if (pix > eShadow::SHADOW_NONE)
+            if (pix > eShadow::SHADOW_NONE && pix < eShadow::NUM_SHADOWS)
             {
-                draw_trans_sprite(double_buffer, shadow[pix], x * 16 - box.x_offset, y * 16 - box.y_offset);
+                draw_trans_sprite(double_buffer, shadow[static_cast<size_t>(pix)], x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
             }
         }
     }
@@ -727,7 +726,7 @@ void KDraw::draw_porttextbox(eBubbleStyle bstyle, int chr)
 
 void KDraw::drawmap(void)
 {
-    if (g_map.xsize <= 0)
+    if (Game.Map.MapSize() == 0)
     {
         clear_to_color(double_buffer, 1);
         return;
@@ -737,7 +736,7 @@ void KDraw::drawmap(void)
 
     /* Is the player standing inside a bounding area? */
     const KBound* found;
-    if ((found = g_map.bounds.IsBound(ent_x, ent_y, ent_x, ent_y)) != nullptr)
+    if ((found = Game.Map.g_map.bounds.IsBound(ent_x, ent_y, ent_x, ent_y)) != nullptr)
     {
         view_on = 1;
         view_y1 = found->top;
@@ -750,29 +749,29 @@ void KDraw::drawmap(void)
     {
         view_on = 0;
         view_y1 = 0;
-        view_y2 = g_map.ysize - 1;
+        view_y2 = Game.Map.g_map.ysize - 1;
         view_x1 = 0;
-        view_x2 = g_map.xsize - 1;
+        view_x2 = Game.Map.g_map.xsize - 1;
     }
 
     clear_bitmap(double_buffer);
-    if (draw_background)
+    if (Game.Map.draw_background)
     {
         draw_backlayer();
     }
-    if (g_map.map_mode == eMapMode::MAPMODE_1E23S || g_map.map_mode == eMapMode::MAPMODE_1E2p3S || g_map.map_mode == eMapMode::MAPMODE_12EP3S)
+    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E23S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_12EP3S)
     {
         draw_char();
     }
-    if (draw_middle)
+    if (Game.Map.draw_middle)
     {
         draw_midlayer();
     }
-    if (g_map.map_mode == eMapMode::MAPMODE_12E3S || g_map.map_mode == eMapMode::MAPMODE_1p2E3S || g_map.map_mode == eMapMode::MAPMODE_1P2E3S)
+    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_12E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S)
     {
         draw_char();
     }
-    if (draw_foreground)
+    if (Game.Map.draw_foreground)
     {
         draw_forelayer();
     }
@@ -786,8 +785,8 @@ void KDraw::drawmap(void)
     }
     if (display_desc == 1)
     {
-        menubox(double_buffer, 152 - (g_map.map_desc.length() * 4), 8, g_map.map_desc.length(), 1, BLUE);
-        print_font(double_buffer, 160 - (g_map.map_desc.length() * 4), 16, g_map.map_desc.c_str(), FNORMAL);
+        menubox(double_buffer, 152 - (Game.Map.g_map.map_desc.length() * 4), 8, Game.Map.g_map.map_desc.length(), 1, BLUE);
+        print_font(double_buffer, 160 - (Game.Map.g_map.map_desc.length() * 4), 16, Game.Map.g_map.map_desc.c_str(), FNORMAL);
     }
 }
 
@@ -845,8 +844,8 @@ int KDraw::is_forestsquare(int fx, int fy)
     {
         return 0;
     }
-    auto mapseg = map_seg[(fy * g_map.xsize) + fx];
-    switch (mapseg)
+    auto mapseg = map_seg[Game.Map.Clamp(fx, fy)];
+    switch (mapseg) //FIXME: The indexes of overworld forest tiles should come from either a map (.tmx) or a script (.lua).
     {
     case 63:
     case 65:
@@ -1573,6 +1572,7 @@ void KDraw::set_textpos(uint32_t entity_index)
 
 void KDraw::set_view(int vw, int x1, int y1, int x2, int y2)
 {
+    //FIXME: set_view(true) needs the x1,y1,x2,y2 parameters, but set_view(false) needs no parameters.
     view_on = vw;
     if (view_on)
     {
@@ -1585,8 +1585,8 @@ void KDraw::set_view(int vw, int x1, int y1, int x2, int y2)
     {
         view_x1 = 0;
         view_y1 = 0;
-        view_x2 = g_map.xsize - 1;
-        view_y2 = g_map.ysize - 1;
+        view_x2 = Game.Map.g_map.xsize - 1;
+        view_y2 = Game.Map.g_map.ysize - 1;
     }
 }
 

@@ -53,11 +53,5 @@
   <object id="3" name="entrance" type="marker" x="1280" y="1312" width="16" height="16"/>
   <object id="4" name="exit" type="marker" x="240" y="384" width="16" height="16"/>
  </objectgroup>
- <objectgroup color="#0000ff" id="9" name="bounds">
-  <object id="5" name="bounds" type="bounds" x="-16" y="16" width="1456" height="1376">
-   <properties>
-    <property name="btile" value="0"/>
-   </properties>
-  </object>
- </objectgroup>
+ <objectgroup color="#0000ff" id="9" name="bounds"/>
 </map>

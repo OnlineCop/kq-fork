@@ -70,7 +70,7 @@ static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, ch
 {
     uint32_t x = target_x;
     uint32_t y = target_y;
-    int value = map[y * g_map.xsize + x];
+    int value = map[Game.Map.Clamp(x, y)];
     int index = value - 2;
 
     char temp[1024] = {0};
@@ -79,7 +79,7 @@ static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, ch
     while (value > 1)
     {
         /*  move as many squares up as possible  */
-        while ((y > 0) && (map[(y - 1) * g_map.xsize + x] == (value - 1)) && (value > 1))
+        while ((y > 0) && (map[Game.Map.Clamp(x, y - 1)] == (value - 1)) && (value > 1))
         {
             value--;
             y--;
@@ -87,7 +87,7 @@ static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, ch
         }
 
         /*  move as many squares left as possible  */
-        while ((x > 0) && (map[y * g_map.xsize + (x - 1)] == (value - 1)) && (value > 1))
+        while ((x > 0) && (map[Game.Map.Clamp(x - 1, y)] == (value - 1)) && (value > 1))
         {
             value--;
             x--;
@@ -95,7 +95,7 @@ static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, ch
         }
 
         /*  move as many squares down as possible  */
-        while ((y < g_map.ysize - 1) && (map[(y + 1) * g_map.xsize + x] == (value - 1)) && (value > 1))
+        while ((y < Game.Map.g_map.ysize - 1) && (map[Game.Map.Clamp(x, y + 1)] == (value - 1)) && (value > 1))
         {
             value--;
             y++;
@@ -103,7 +103,7 @@ static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, ch
         }
 
         /*  move as many squares right as possible  */
-        while ((x < g_map.xsize - 1) && (map[y * g_map.xsize + (x + 1)] == (value - 1)) && (value > 1))
+        while ((x < Game.Map.g_map.xsize - 1) && (map[Game.Map.Clamp(x + 1, y)] == (value - 1)) && (value > 1))
         {
             value--;
             x++;
@@ -124,12 +124,11 @@ static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, ch
 static void copy_map(int* map)
 {
     // Set any tile to -1 when there's an obstacle or active (as in, visible on the map) entity there.
-    for (size_t y = 0; y < g_map.ysize; y++)
+    for (size_t y = 0; y < Game.Map.g_map.ysize; y++)
     {
-        for (size_t x = 0; x < g_map.xsize; x++)
+        for (size_t x = 0; x < Game.Map.g_map.xsize; x++)
         {
-            size_t index = y * g_map.xsize + x;
-
+            const size_t index = Game.Map.Clamp(x, y);
             if (Game.Map.obstacle_array[index] != eObstacle::BLOCK_NONE)
             {
                 map[index] = -1;
@@ -143,7 +142,7 @@ static void copy_map(int* map)
     {
         if (g_ent[entity_index].active)
         {
-            map[g_ent[entity_index].tilex * g_map.ysize + g_ent[entity_index].tiley] = -1;
+            map[Game.Map.Clamp(g_ent[entity_index].tilex, g_ent[entity_index].tiley)] = -1;
         }
     }
 }
@@ -177,14 +176,14 @@ int find_path(size_t entity_id, uint32_t source_x, uint32_t source_y, uint32_t t
 
     memset(buffer, '\0', size);
 
-    int* map = (int*)calloc(g_map.xsize * g_map.ysize, sizeof(int));
+    int* map = (int*)calloc(Game.Map.MapSize(), sizeof(int));
     if (map == nullptr)
     {
         return 3;
     }
 
     copy_map(map);
-    uint32_t result = search_paths(entity_id, map, 1, source_x, source_y, target_x, target_y, 0, 0, g_map.xsize, g_map.ysize);
+    uint32_t result = search_paths(entity_id, map, 1, source_x, source_y, target_x, target_y, 0, 0, Game.Map.g_map.xsize, Game.Map.g_map.ysize);
 
     if (result == 0)
     {
