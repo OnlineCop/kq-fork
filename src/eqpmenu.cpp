@@ -36,11 +36,7 @@
 #include "itemmenu.h"
 #include "kq.h"
 #include "menu.h"
-#include "res.h"
 #include "setup.h"
-
-#include <cstdio>
-#include <cstring>
 
 /* Globals  */
 static int tstats[13], tres[R_TOTAL_RES];

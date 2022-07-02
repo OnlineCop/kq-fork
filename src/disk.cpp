@@ -29,13 +29,7 @@
 
 #include "disk.h"
 
-#include "bounds.h"
-#include "heroc.h"
-#include "kq.h"
-#include "markers.h"
-#include "platform.h"
 #include "random.h"
-#include "sgame.h"
 #include "shopmenu.h"
 
 KDisk Disk;

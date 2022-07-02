@@ -23,8 +23,6 @@
 
 #include "tmx_animation.h"
 
-#include <vector>
-
 // Note: *copy* the base animation into this instance. The base animation
 // comes from a tmx_map which may be destroyed.
 KAnimSequence::KAnimSequence(const KTmxAnimation& base)

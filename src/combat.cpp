@@ -29,35 +29,19 @@
 
 #include "combat.h"
 
-#include "constants.h"
 #include "draw.h"
 #include "effects.h"
 #include "enemyc.h"
-#include "enums.h"
 #include "fade.h"
-#include "fighter.h"
 #include "gfx.h"
-#include "heroc.h"
 #include "imgcache.h"
-#include "input.h"
 #include "itemmenu.h"
-#include "kq.h"
 #include "magic.h"
 #include "masmenu.h"
 #include "menu.h"
 #include "music.h"
-#include "platform.h"
-#include "player.h"
 #include "random.h"
-#include "res.h"
-#include "setup.h"
-#include "structs.h"
 #include "timing.h"
-
-#include <cstdio>
-#include <cstring>
-#include <memory>
-#include <iostream>
 
 using namespace eSize;
 

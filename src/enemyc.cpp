@@ -29,26 +29,16 @@
 #include "enemyc.h"
 
 #include "combat.h"
-#include "disk.h"
 #include "draw.h"
 #include "eskill.h"
 #include "gfx.h"
-#include "heroc.h"
 #include "imgcache.h"
-#include "kq.h"
 #include "magic.h"
 #include "platform.h"
 #include "random.h"
-#include "res.h"
 #include "selector.h"
-#include "skills.h"
 
-#include <cstdio>
-#include <cstring>
 #include <fstream>
-#include <memory>
-#include <sstream>
-#include <string>
 
 KEnemy Enemy;
 

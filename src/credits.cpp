@@ -33,8 +33,6 @@
 #include "gettext.h"
 #include "gfx.h"
 
-#include <string>
-
 using eSize::SCREEN_H;
 using eSize::SCREEN_W;
 

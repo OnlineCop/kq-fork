@@ -26,7 +26,6 @@
 #include "entity.h"
 
 #include "combat.h"
-#include "enums.h"
 #include "input.h"
 #include "intrface.h"
 #include "itemdefs.h"
@@ -34,15 +33,6 @@
 #include "menu.h"
 #include "random.h"
 #include "setup.h"
-
-#include <algorithm>
-#include <cassert>
-#include <cctype>
-#include <cmath>
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 
 using namespace eSize;
 

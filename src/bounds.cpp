@@ -27,13 +27,6 @@
 
 #include "bounds.h"
 
-#include <cstring>
-#include <cstdlib>
-#include <cstdio>
-#include <cmath>
-#include <cctype>
-#include <cassert>
-
 bool KBounds::Add(KBound&& bound)
 {
     m_bounds.push_back(bound);

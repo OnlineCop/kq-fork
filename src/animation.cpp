@@ -20,6 +20,7 @@
 */
 
 #include "animation.h"
+
 #include "anim_sequence.h"
 
 void KAnimation::check_animation(int millis, uint16_t* tilex)

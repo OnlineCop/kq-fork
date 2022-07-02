@@ -32,18 +32,9 @@
 #include "draw.h"
 #include "gfx.h"
 #include "imgcache.h"
-#include "itemmenu.h"
-#include "kq.h"
 #include "magic.h"
-#include "music.h"
-#include "platform.h"
-#include "res.h"
 #include "setup.h"
 #include "timing.h"
-
-#include <cstdio>
-#include <cstring>
-#include <memory>
 
 KEffects Effects;
 

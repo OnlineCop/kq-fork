@@ -27,15 +27,6 @@
 
 #include "markers.h"
 
-#include <algorithm>
-#include <cassert>
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <memory>
-#include <string>
-
 bool KMarkers::Add(KMarker&& marker)
 {
     for (auto& m : m_markers)

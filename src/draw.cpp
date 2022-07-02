@@ -29,28 +29,17 @@
  */
 
 #include "draw.h"
-#include "bounds.h"
+
 #include "combat.h"
 #include "console.h"
-#include "constants.h"
-#include "entity.h"
 #include "gfx.h"
 #include "input.h"
-#include "kq.h"
 #include "magic.h"
-#include "music.h"
-#include "player.h"
-#include "res.h"
 #include "setup.h"
 #include "timing.h"
 #include "zone.h"
 
-#include <SDL.h>
 #include <cassert>
-#include <cctype>
-#include <cstdio>
-#include <cstring>
-#include <string>
 
 KDraw Draw;
 

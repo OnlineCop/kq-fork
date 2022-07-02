@@ -20,17 +20,15 @@
 */
 
 #include "console.h"
-#include "constants.h"
+
 #include "draw.h"
 #include "gfx.h"
 #include "input.h"
 #include "intrface.h"
 #include "kq.h"
 #include "music.h"
-#include "structs.h"
 
 #include <cassert>
-#include <cstddef>
 
 /*! \file
  * \brief Lua console for debugging
