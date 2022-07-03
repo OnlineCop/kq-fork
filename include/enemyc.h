@@ -23,6 +23,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <string>
 
 class KFighter;
 
@@ -191,9 +192,9 @@ class KEnemy
     /*! Index related to enemies in an encounter */
     int cf[NUM_FIGHTERS];
 
-    void LoadEnemies(const string& fullPath, Raster* enemy_gfx);
+    void LoadEnemies(const std::string& fullPath, Raster* enemy_gfx);
 
-    void LoadEnemyStats(const string& path_resabil);
+    void LoadEnemyStats(const std::string& path_resabil);
 };
 
 extern KEnemy Enemy;

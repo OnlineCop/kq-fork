@@ -26,8 +26,6 @@
 #include <cstdlib>
 #include <string>
 
-using std::string;
-
 class Raster;
 struct SDL_Window;
 struct SDL_Renderer;
@@ -237,7 +235,7 @@ class KDraw
      * \param   msg String to draw
      * \param   font_index Font index (0..6)
      */
-    void print_font(Raster* where, int sx, int sy, const string& msg, eFontColor font_index);
+    void print_font(Raster* where, int sx, int sy, const std::string& msg, eFontColor font_index);
 
     /*! \brief Calculate font height
      * \param index font index
@@ -267,7 +265,7 @@ class KDraw
      * \param   msg String to draw
      * \param   font_index Font index (0..4)
      */
-    void print_num(Raster* where, int sx, int sy, const string& msg, eFont font_index);
+    void print_num(Raster* where, int sx, int sy, const std::string& msg, eFont font_index);
 
     /*! \brief Display speech/thought bubble
      * \author PH
@@ -394,13 +392,13 @@ class KDraw
      *
      * Extract the next unicode char from a UTF-8 string
      *
-     * \param InString Text to decode
+     * \param iter Text to decode
      * \param cp The next character
      * \return Pointer to after the next character
      * \author PH
      * \date 20071116
      */
-    const char* decode_utf8(const char* InString, uint32_t* cp);
+    std::string::const_iterator decode_utf8(std::string::const_iterator iter, uint32_t* cp);
 
     /*! Boundary adjusted for parallax */
     struct PBound
@@ -552,7 +550,7 @@ class KDraw
 
     /*! \brief Replace all occurrences of "from" with "to" and apply changes back to "str".
      */
-    void replaceAll(string& str, const string& from, const string& to);
+    void replaceAll(std::string& str, const std::string& from, const std::string& to);
 
     /*! \brief Insert character names
      *
@@ -564,7 +562,7 @@ class KDraw
      * \returns a string where any $0 or $1 are replaced by player names, or the original
      * string if none found.
      */
-    string parse_string(const string& the_string);
+    std::string parse_string(const std::string& the_string);
 
     // The internal processing modes during text reformatting; used in \sa relay()
     enum m_mode
