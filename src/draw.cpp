@@ -960,105 +960,105 @@ std::string KDraw::parse_string(const std::string& the_string)
     return output;
 }
 
-const char* KDraw::decode_utf8(const char* InString, uint32_t* cp)
+string::const_iterator KDraw::decode_utf8(string::const_iterator it, uint32_t* cp)
 {
-    char ch = *InString;
-
+    char ch = *it;
+    bool ok = true;
     if ((ch & 0x80) == 0x0)
     {
         /* single byte */
         *cp = (int)ch;
-        ++InString;
+        ++it;
     }
     else if ((ch & 0xe0) == 0xc0)
     {
         /* double byte */
         *cp = ((ch & 0x1f) << 6);
-        ++InString;
-        ch = *InString;
+        ++it;
+        ch = *it;
 
         if ((ch & 0xc0) == 0x80)
         {
             *cp |= (ch & 0x3f);
-            ++InString;
+            ++it;
         }
         else
         {
-            InString = NULL;
+            ok = false;
         }
     }
     else if ((ch & 0xf0) == 0xe0)
     {
         /* triple */
         *cp = (ch & 0x0f) << 12;
-        ++InString;
-        ch = *InString;
+        ++it;
+        ch = *it;
         if ((ch & 0xc0) == 0x80)
         {
             *cp |= (ch & 0x3f) << 6;
-            ++InString;
-            ch = *InString;
+            ++it;
+            ch = *it;
             if ((ch & 0xc0) == 0x80)
             {
                 *cp |= (ch & 0x3f);
-                ++InString;
+                ++it;
             }
             else
             {
-                InString = NULL;
+                ok = false;
             }
         }
         else
         {
-            InString = NULL;
+            ok = false;
         }
     }
     else if ((ch & 0xf8) == 0xe0)
     {
         /* Quadruple */
         *cp = (ch & 0x0f) << 18;
-        ++InString;
-        ch = *InString;
+        ++it;
+        ch = *it;
         if ((ch & 0xc0) == 0x80)
         {
             *cp |= (ch & 0x3f) << 12;
-            ++InString;
-            ch = *InString;
+            ++it;
+            ch = *it;
             if ((ch & 0xc0) == 0x80)
             {
                 *cp |= (ch & 0x3f) << 6;
-                ++InString;
-                ch = *InString;
+                ++it;
+                ch = *it;
                 if ((ch & 0xc0) == 0x80)
                 {
                     *cp |= (ch & 0x3f);
-                    ++InString;
+                    ++it;
                 }
                 else
                 {
-                    InString = NULL;
+                    ok = false;
                 }
             }
             else
             {
-                InString = NULL;
+                ok = false;
             }
         }
         else
         {
-            InString = NULL;
+            ok = false;
         }
     }
     else
     {
-        InString = NULL;
+        ok = false;
     }
 
-    if (InString == NULL)
+    if (!ok)
     {
         Game.program_death(_("UTF-8 decode error"));
     }
-    return InString;
+    return it;
 }
 
 int KDraw::get_glyph_index(uint32_t cp)
@@ -1098,15 +1098,11 @@ void KDraw::print_font(Raster* where, int sx, int sy, const std::string& msg, eF
     }
     // MagicNumber: font heights for BIG/NORMAL text
     int hgt = font_height(font_index);
-    std::string chopped_message(msg);
-    while (1)
+    auto msg_iter = msg.cbegin();
+    while (msg_iter != msg.cend())
     {
         uint32_t cc;
-        chopped_message = decode_utf8(chopped_message.c_str(), &cc);
-        if (cc == 0)
-        {
-            break;
-        }
+        msg_iter = decode_utf8(msg_iter, &cc);
         cc = get_glyph_index(cc);
         masked_blit(kfonts, where, cc * 8, font_index * 8, z + sx, sy, 8, hgt);
         z += 8;

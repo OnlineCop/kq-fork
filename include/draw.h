@@ -393,13 +393,13 @@ class KDraw
      *
      * Extract the next unicode char from a UTF-8 string
      *
-     * \param InString Text to decode
+     * \param iter Text to decode
      * \param cp The next character
      * \return Pointer to after the next character
      * \author PH
      * \date 20071116
      */
-    const char* decode_utf8(const char* InString, uint32_t* cp);
+    std::string::const_iterator decode_utf8(std::string::const_iterator iter, uint32_t* cp);
 
     /*! Boundary adjusted for parallax */
     struct PBound
