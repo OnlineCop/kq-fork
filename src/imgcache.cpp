@@ -27,9 +27,9 @@
 #include "res.h"
 
 #include <cstdio>
-#include <string>
-#include <png.h>
 #include <memory>
+#include <png.h>
+#include <string>
 
 typedef std::unique_ptr<Raster> BITMAP_PTR;
 struct RasterLoader

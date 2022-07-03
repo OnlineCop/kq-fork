@@ -23,34 +23,34 @@
 
 class KAudio
 {
-    public:
-        enum eSound
-        {
-            SND_MENU = 0,
-            SND_CLICK = 1,
-            SND_BAD = 2,
-            SND_ITEM = 3,
-            SND_EQUIP = 4,
-            SND_UNEQUIP = 5,
-            SND_MONEY = 6,
-            SND_TWINKLE = 7,
-            SND_EXPLODE = 42,
-            MAX_SAMPLES // always last
-        };
+  public:
+    enum eSound
+    {
+        SND_MENU = 0,
+        SND_CLICK = 1,
+        SND_BAD = 2,
+        SND_ITEM = 3,
+        SND_EQUIP = 4,
+        SND_UNEQUIP = 5,
+        SND_MONEY = 6,
+        SND_TWINKLE = 7,
+        SND_EXPLODE = 42,
+        MAX_SAMPLES // always last
+    };
 
-        enum eSoundSystem
-        {
-            NotInitialized,
-            Initialize,
-            Ready
-        };
+    enum eSoundSystem
+    {
+        NotInitialized,
+        Initialize,
+        Ready
+    };
 
-    public:
-        ~KAudio() = default;
-        KAudio();
+  public:
+    ~KAudio() = default;
+    KAudio();
 
-        eSoundSystem sound_initialized_and_ready;
-        bool sound_system_avail;
+    eSoundSystem sound_initialized_and_ready;
+    bool sound_system_avail;
 };
 
 extern KAudio Audio;

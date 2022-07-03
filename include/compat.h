@@ -25,33 +25,31 @@ struct RGB
 {
     unsigned char r, g, b, a;
 };
+
 #define PAL_SIZE 256
 typedef RGB PALETTE[PAL_SIZE];
 extern PALETTE black_palette;
+
 void get_palette(RGB*);
 void set_palette(RGB*);
 void set_palette_range(RGB*, int, int);
+
 struct COLOR_MAP
 {
     char data[PAL_SIZE][PAL_SIZE];
 };
+
 inline int makecol(int r, int g, int b)
 {
     return ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
 }
 
-void fade_interpolate(RGB*, RGB*, RGB*, int, int, int);
+enum eDrawMode
+{
+    DRAW_MODE_SOLID = 0,
+    DRAW_MODE_TRANS = 1,
+};
 
-#define DRAW_MODE_SOLID 0
-#define DRAW_MODE_TRANS 1
 inline void drawing_mode(int, void*, int, int)
 {
 }
-
-#ifndef TRUE
-#define TRUE true
-#endif
-#ifndef FALSE
-#define FALSE false
-#endif
-#define MAYBE true | false /* I'm joking of course */

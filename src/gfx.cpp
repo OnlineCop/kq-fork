@@ -24,8 +24,8 @@
 #include "compat.h"
 #include "kq.h"
 
-#include <algorithm>
 #include <SDL.h>
+#include <algorithm>
 
 COLOR_MAP* color_map = &cmap;
 extern PALETTE pal;

@@ -24,24 +24,24 @@
 #include <memory>
 
 KTmxTileset::KTmxTileset()
-    : firstgid{}
-    , name{}
-    , sourceimage{}
-    , imagedata{}
-    , animations{}
-    , width{}
-    , height{}
+    : firstgid {}
+    , name {}
+    , sourceimage {}
+    , imagedata {}
+    , animations {}
+    , width {}
+    , height {}
 {
 }
 
 KTmxTileset::KTmxTileset(const KTmxTileset& other)
-    : firstgid{other.firstgid}
-    , name{other.name}
-    , sourceimage{other.sourceimage}
-    , imagedata{other.imagedata}    // This is copying the pointer; do we want a deep copy?
-    , animations{other.animations}
-    , width{other.width}
-    , height{other.height}
+    : firstgid { other.firstgid }
+    , name { other.name }
+    , sourceimage { other.sourceimage }
+    , imagedata { other.imagedata } // This is copying the pointer; do we want a deep copy?
+    , animations { other.animations }
+    , width { other.width }
+    , height { other.height }
 {
 }
 
@@ -57,7 +57,7 @@ KTmxTileset& KTmxTileset::operator=(const KTmxTileset& other)
         firstgid = other.firstgid;
         name = other.name;
         sourceimage = other.sourceimage;
-        imagedata = other.imagedata;    // This is copying the pointer; do we want a deep copy?
+        imagedata = other.imagedata; // This is copying the pointer; do we want a deep copy?
         animations = other.animations;
         width = other.width;
         height = other.height;
@@ -69,7 +69,7 @@ KTmxTileset& KTmxTileset::operator=(KTmxTileset&& other)
 {
     if (this != &other)
     {
-        firstgid = std::exchange(other.firstgid, 0);;
+        firstgid = std::exchange(other.firstgid, 0);
         name = std::exchange(other.name, "");
         sourceimage = std::exchange(other.sourceimage, "");
         imagedata = std::exchange(other.imagedata, nullptr);

@@ -48,12 +48,12 @@ enum eRunConsoleKeys
 };
 
 KConsole::KConsole()
-    : lines{}
-    , inputline{}
-    , blink{0}
-    , on{false}
-    , _num_lines{0}
-    , _max_columns{0}
+    : lines {}
+    , inputline {}
+    , blink { 0 }
+    , on { false }
+    , _num_lines { 0 }
+    , _max_columns { 0 }
 {
 }
 
@@ -130,9 +130,9 @@ void KConsole::scroll(const std::string& l)
  */
 void KConsole::run()
 {
-    static const std::string get{"return progress."};
-    static const std::string ret{"return "};
-    static const std::string set{"progress."};
+    static const std::string get { "return progress." };
+    static const std::string ret { "return " };
+    static const std::string set { "progress." };
     std::string prevCmd = "";
 
     inputline.clear();
@@ -146,7 +146,7 @@ void KConsole::run()
     }
 
     bool running = this->on;
-    while (this->on/*running*/)
+    while (this->on /*running*/)
     {
         /* Get a key */
         Game.ProcessEvents();

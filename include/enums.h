@@ -58,10 +58,10 @@ enum eShadow
 };
 
 #define MAX_TILES 1024
-#define MAXE 41                     //!< Max number of enemy types
+#define MAXE 41 //!< Max number of enemy types
 #define PSIZE 2U
 #define MAXFRAMES 12
-#define MAXEFRAMES 12               //!< Max number of animation frames per enemy
+#define MAXEFRAMES 12 //!< Max number of animation frames per enemy
 #define MAX_ENTITIES_PER_MAP 50
 #define MAX_ENTITIES (MAX_ENTITIES_PER_MAP + PSIZE)
 #define ID_ENEMY 254

@@ -34,12 +34,12 @@ struct SDL_Texture;
 struct SDL_PixelFormat;
 enum eSpellType;
 
-constexpr uint8_t GREY1 = 4;    // pal[4]:  { 16, 16, 16, 0 }
-constexpr uint8_t GREY2 = 8;    // pal[8]:  { 33, 33, 33, 0 }
-constexpr uint8_t GREY3 = 13;   // pal[13]: { 55, 55, 55, 0 }
-constexpr uint8_t WHITE = 15;   // pal[15]: { 63, 63, 63, 0 }
-constexpr uint8_t DBLUE = 3;    // pal[3]:  { 12, 12, 12, 0 }
-constexpr uint8_t DRED = 6;     // pal[6]:  { 24, 24, 24, 0 }
+constexpr uint8_t GREY1 = 4;  // pal[4]:  { 16, 16, 16, 0 }
+constexpr uint8_t GREY2 = 8;  // pal[8]:  { 33, 33, 33, 0 }
+constexpr uint8_t GREY3 = 13; // pal[13]: { 55, 55, 55, 0 }
+constexpr uint8_t WHITE = 15; // pal[15]: { 63, 63, 63, 0 }
+constexpr uint8_t DBLUE = 3;  // pal[3]:  { 12, 12, 12, 0 }
+constexpr uint8_t DRED = 6;   // pal[6]:  { 24, 24, 24, 0 }
 
 enum eFontColor
 {
@@ -54,7 +54,7 @@ enum eFontColor
     NUM_FONT_COLORS // always last
 };
 
-enum eFont //TODO: Can eFontColor and eFont be merged?
+enum eFont // TODO: Can eFontColor and eFont be merged?
 {
     FONT_WHITE = 0,
     FONT_RED = 1,

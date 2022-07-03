@@ -246,7 +246,6 @@ class KEntityManager
      */
     void wander(t_entity target_entity);
 
-
   public:
     // Number of active entities (player + NPCs) on the current map.
     uint32_t number_of_entities;

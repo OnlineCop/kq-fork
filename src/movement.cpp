@@ -73,7 +73,7 @@ static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, ch
     int value = map[Game.Map.Clamp(x, y)];
     int index = value - 2;
 
-    char temp[1024] = {0};
+    char temp[1024] = { 0 };
     memset(temp, '\0', sizeof(temp));
 
     while (value > 1)
@@ -183,7 +183,8 @@ int find_path(size_t entity_id, uint32_t source_x, uint32_t source_y, uint32_t t
     }
 
     copy_map(map);
-    uint32_t result = search_paths(entity_id, map, 1, source_x, source_y, target_x, target_y, 0, 0, Game.Map.g_map.xsize, Game.Map.g_map.ysize);
+    uint32_t result = search_paths(entity_id, map, 1, source_x, source_y, target_x, target_y, 0, 0,
+                                   Game.Map.g_map.xsize, Game.Map.g_map.ysize);
 
     if (result == 0)
     {
@@ -274,7 +275,8 @@ static int search_paths(uint32_t entity_id, int* map, uint32_t step, uint32_t so
 
     int index = source_y * limit_x + source_x;
     int value = map[index];
-    if ((value != -1) && (value == 0 || value > (int)step) && (step == 1 || !EntityManager.entityat(source_x, source_y, entity_id)))
+    if ((value != -1) && (value == 0 || value > (int)step) &&
+        (step == 1 || !EntityManager.entityat(source_x, source_y, entity_id)))
     {
         map[index] = step;
 

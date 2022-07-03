@@ -24,8 +24,8 @@
 #include "enums.h"
 #include "structs.h"
 
-#include <string>
 #include <memory>
+#include <string>
 
 class Raster;
 

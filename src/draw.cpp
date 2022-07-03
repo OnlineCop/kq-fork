@@ -39,8 +39,8 @@
 #include "timing.h"
 #include "zone.h"
 
-#include <cassert>
 #include <SDL.h>
+#include <cassert>
 
 KDraw Draw;
 
@@ -269,7 +269,8 @@ Raster* KDraw::copy_bitmap(Raster* target, Raster* source)
 
 void KDraw::draw_backlayer()
 {
-    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S);
+    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S ||
+                             Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S);
     int tile_x1 = box.x_offset / TILE_W;
     int tile_x2 = (box.x_offset + SCREEN_W - 1) / TILE_W;
     int tile_y1 = box.y_offset / TILE_H;
@@ -292,7 +293,8 @@ void KDraw::draw_backlayer()
         for (int x = box.left; x <= box.right; x++)
         {
             size_t pix = map_seg[Game.Map.Clamp(x, y)];
-            blit(map_icons[tilex[pix]], double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
+            blit(map_icons[tilex[pix]], double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset,
+                 TILE_W, TILE_H);
         }
         for (int x = box.right + 1; x <= tile_x2; x++)
         {
@@ -330,7 +332,8 @@ KDraw::PBound KDraw::calculate_box(bool is_parallax)
 
 void KDraw::draw_char()
 {
-    for (size_t follower_fighter_index = PSIZE + EntityManager.number_of_entities; follower_fighter_index > 0; follower_fighter_index--)
+    for (size_t follower_fighter_index = PSIZE + EntityManager.number_of_entities; follower_fighter_index > 0;
+         follower_fighter_index--)
     {
         size_t fighter_index = follower_fighter_index - 1;
         KQEntity& follower_entity = g_ent[fighter_index];
@@ -438,9 +441,9 @@ void KDraw::draw_char()
                 size_t there = 0;
 
                 /* When moving down, we will draw over the spot directly below
-                    * our starting position. Since tile[xy] shows our final coord,
-                    * we will instead draw to the left or right of the final pos.
-                    */
+                 * our starting position. Since tile[xy] shows our final coord,
+                 * we will instead draw to the left or right of the final pos.
+                 */
                 if (vert > 0)
                 {
                     /* Moving diag down */
@@ -481,12 +484,11 @@ void KDraw::draw_char()
         else
         {
             /* It's an NPC */
-            if (follower_entity.active &&
-                follower_entity.tilex >= view_x1 && follower_entity.tilex <= view_x2 &&
+            if (follower_entity.active && follower_entity.tilex >= view_x1 && follower_entity.tilex <= view_x2 &&
                 follower_entity.tiley >= view_y1 && follower_entity.tiley <= view_y2)
             {
-                if (dx >= TILE_W * -1 && dx <= TILE_W * (ONSCREEN_TILES_W + 1) &&
-                    dy >= TILE_H * -1 && dy <= TILE_H * (ONSCREEN_TILES_H + 1))
+                if (dx >= TILE_W * -1 && dx <= TILE_W * (ONSCREEN_TILES_W + 1) && dy >= TILE_H * -1 &&
+                    dy <= TILE_H * (ONSCREEN_TILES_H + 1))
                 {
                     const uint8_t eid = follower_entity.eid;
                     const uint8_t chrx = follower_entity.chrx;
@@ -508,7 +510,8 @@ void KDraw::draw_char()
 
 void KDraw::draw_forelayer()
 {
-    KDraw::PBound box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
+    KDraw::PBound box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S ||
+                                      Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
     {
         for (int x = box.left; x <= box.right; x++)
@@ -516,7 +519,7 @@ void KDraw::draw_forelayer()
             // Used in several places in this loop, so shortened the name
             const size_t here = Game.Map.Clamp(x, y);
             const size_t pix = f_seg[here];
-            draw_sprite(double_buffer, map_icons[tilex[pix]], + x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
+            draw_sprite(double_buffer, map_icons[tilex[pix]], x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
 
 #ifdef DEBUGMODE
             if (debugging > 3)
@@ -540,10 +543,8 @@ void KDraw::draw_forelayer()
                     std::string buf = std::to_string(Game.Map.zone_array[here]);
                     int h = font_height(eFontColor::FNORMAL) / 2;
                     int l = (buf.size() * 6) / 2; // font width for FNORMAL/FONT_WHITE is 6
-                    print_num(double_buffer,
-                        x * TILE_W + (TILE_W / 2 - l) - box.x_offset,
-                        y * TILE_H + h - box.y_offset,
-                        buf, eFont::FONT_WHITE);
+                    print_num(double_buffer, x * TILE_W + (TILE_W / 2 - l) - box.x_offset,
+                              y * TILE_H + h - box.y_offset, buf, eFont::FONT_WHITE);
                 }
             }
 #endif /* DEBUGMODE */
@@ -563,14 +564,14 @@ void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, e
     /* Draw a maybe-translucent background */
     if (bg == BLUE)
     {
-        drawing_mode(DRAW_MODE_TRANS, NULL, 0, 0);
+        drawing_mode(eDrawMode::DRAW_MODE_TRANS, NULL, 0, 0);
     }
     else
     {
         bg = (bg == DARKBLUE) ? DBLUE : DRED;
     }
     rectfill(where, x1 + 2, y1 + 2, x2 - 3, y2 - 3, bg);
-    drawing_mode(DRAW_MODE_SOLID, NULL, 0, 0);
+    drawing_mode(eDrawMode::DRAW_MODE_SOLID, NULL, 0, 0);
     /* Now the border */
     switch (bstyle)
     {
@@ -606,7 +607,8 @@ void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, e
 
 void KDraw::draw_midlayer()
 {
-    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
+    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S ||
+                             Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
     {
         for (int x = box.left; x <= box.right; x++)
@@ -633,7 +635,8 @@ void KDraw::draw_shadows()
             eShadow pix = Game.Map.shadow_array[here];
             if (pix > eShadow::SHADOW_NONE && pix < eShadow::NUM_SHADOWS)
             {
-                draw_trans_sprite(double_buffer, shadow[static_cast<size_t>(pix)], x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
+                draw_trans_sprite(double_buffer, shadow[static_cast<size_t>(pix)], x * TILE_W - box.x_offset,
+                                  y * TILE_H - box.y_offset);
             }
         }
     }
@@ -749,7 +752,8 @@ void KDraw::drawmap()
     {
         draw_backlayer();
     }
-    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E23S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_12EP3S)
+    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E23S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S ||
+        Game.Map.g_map.map_mode == eMapMode::MAPMODE_12EP3S)
     {
         draw_char();
     }
@@ -757,7 +761,8 @@ void KDraw::drawmap()
     {
         draw_midlayer();
     }
-    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_12E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S)
+    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_12E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S ||
+        Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S)
     {
         draw_char();
     }
@@ -775,8 +780,10 @@ void KDraw::drawmap()
     }
     if (display_desc == 1)
     {
-        menubox(double_buffer, 152 - (Game.Map.g_map.map_desc.length() * 4), 8, Game.Map.g_map.map_desc.length(), 1, BLUE);
-        print_font(double_buffer, 160 - (Game.Map.g_map.map_desc.length() * 4), 16, Game.Map.g_map.map_desc.c_str(), FNORMAL);
+        menubox(double_buffer, 152 - (Game.Map.g_map.map_desc.length() * 4), 8, Game.Map.g_map.map_desc.length(), 1,
+                BLUE);
+        print_font(double_buffer, 160 - (Game.Map.g_map.map_desc.length() * 4), 16, Game.Map.g_map.map_desc.c_str(),
+                   FNORMAL);
     }
 }
 
@@ -835,7 +842,8 @@ int KDraw::is_forestsquare(int fx, int fy)
         return 0;
     }
     auto mapseg = map_seg[Game.Map.Clamp(fx, fy)];
-    switch (mapseg) //FIXME: The indexes of overworld forest tiles should come from either a map (.tmx) or a script (.lua).
+    // FIXME: The indexes of overworld forest tiles should come from either a map (.tmx) or a script (.lua).
+    switch (mapseg)
     {
     case 63:
     case 65:
@@ -1558,7 +1566,7 @@ void KDraw::set_textpos(uint32_t entity_index)
 
 void KDraw::set_view(int vw, int x1, int y1, int x2, int y2)
 {
-    //FIXME: set_view(true) needs the x1,y1,x2,y2 parameters, but set_view(false) needs no parameters.
+    // FIXME: set_view(true) needs the x1,y1,x2,y2 parameters, but set_view(false) needs no parameters.
     view_on = vw;
     if (view_on)
     {

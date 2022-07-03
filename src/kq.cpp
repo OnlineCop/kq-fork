@@ -66,9 +66,9 @@
 #include "tiledmap.h"
 #include "timing.h"
 
-#include <fstream>
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <fstream>
 
 using namespace eSize;
 
@@ -80,8 +80,8 @@ int steps = 0;
 /*! 23: various global bitmaps */
 Raster *double_buffer, *fx_buffer, *map_icons[MAX_TILES], *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse,
     *b_mp, *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES],
-    *pgb[9], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr,
-    *missbmp, *noway, *upptr, *dnptr, *shadow[MAX_SHADOWS], *kfonts;
+    *pgb[9], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr,
+    *shadow[MAX_SHADOWS], *kfonts;
 
 /*! Enemy animation frames */
 Raster* eframes[MAXE][MAXEFRAMES];
@@ -103,7 +103,8 @@ uint8_t save_spells[SIZE_SAVE_SPELL];
 KQEntity g_ent[MAX_ENTITIES];
 
 /*! Identifies characters in the party */
-// Ideally, this would hold values 0..7 (ePIDX::SENSAR..ePIDX::NOSLOM) in whatever order they belonged to the current party.
+// Ideally, this would hold values 0..7 (ePIDX::SENSAR..ePIDX::NOSLOM) in whatever order they belonged to the current
+// party.
 ePIDX pidx[MAXCHRS] = { ePIDX::PIDX_UNDEFINED };
 
 /*! Number of characters in the party */
@@ -235,7 +236,7 @@ int every_hit_999 = 0;
 static struct timer_event
 {
     std::string name; /*!< Name of the event */
-    int when;    /*!< Absolute time when it will trigger */
+    int when;         /*!< Absolute time when it will trigger */
 } timer_events[5];
 
 static int next_event_time; /*!< The time the next event will trigger */
@@ -395,14 +396,14 @@ int main(int argc, char* argv[])
 }
 
 KMap::KMap()
-    : g_map{}
+    : g_map {}
     , draw_background { true }
     , draw_middle { true }
     , draw_foreground { true }
     , draw_shadow { true }
-    , obstacle_array{}
-    , shadow_array{}
-    , zone_array{}
+    , obstacle_array {}
+    , shadow_array {}
+    , zone_array {}
 {
 }
 
@@ -749,7 +750,8 @@ void KGame::change_map(const std::string& map_name, int player_x, int player_y, 
     prepare_map(player_x, player_y, camera_x, camera_y);
 }
 
-void KGame::change_map(const std::string& map_name, const std::string& marker_name, signed int offset_x, signed int offset_y)
+void KGame::change_map(const std::string& map_name, const std::string& marker_name, signed int offset_x,
+                       signed int offset_y)
 {
     int msx = 0, msy = 0, mvx = 0, mvy = 0;
 
@@ -1128,9 +1130,11 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     pcxb = Map.g_map.map_tiles;
     for (size_t tile_y = 0, num_tiles_y = static_cast<size_t>(pcxb->height / TILE_H); tile_y < num_tiles_y; ++tile_y)
     {
-        for (size_t tile_x = 0, num_tiles_x = static_cast<unsigned int>(pcxb->width / TILE_W); tile_x < num_tiles_x; ++tile_x)
+        for (size_t tile_x = 0, num_tiles_x = static_cast<unsigned int>(pcxb->width / TILE_W); tile_x < num_tiles_x;
+             ++tile_x)
         {
-            pcxb->blitTo(map_icons[tile_y * num_tiles_x + tile_x], tile_x * TILE_W, tile_y * TILE_H, 0, 0, TILE_W, TILE_H);
+            pcxb->blitTo(map_icons[tile_y * num_tiles_x + tile_x], tile_x * TILE_W, tile_y * TILE_H, 0, 0, TILE_W,
+                         TILE_H);
         }
     }
 
@@ -1140,9 +1144,9 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     Music.play_music(Map.g_map.song_file, 0);
-    mx = (Map.g_map.xsize - 19) * TILE_W; //FIXME: What is this magic '19'?
+    mx = (Map.g_map.xsize - 19) * TILE_W; // FIXME: What is this magic '19'?
     /*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
-    my = (Map.g_map.ysize - 16) * TILE_H; //FIXME: What is this magic '16'?
+    my = (Map.g_map.ysize - 16) * TILE_H; // FIXME: What is this magic '16'?
 
     if (mvx == 0 && mvy == 0)
     {

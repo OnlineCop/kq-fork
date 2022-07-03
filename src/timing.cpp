@@ -32,8 +32,8 @@
 #include "kq.h"
 #include "music.h"
 
-#include <cassert>
 #include <SDL.h>
+#include <cassert>
 
 static SDL_TimerID timer_id = 0;
 static int watchdog;

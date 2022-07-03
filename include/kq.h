@@ -53,6 +53,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #define _(s) gettext(s)
 
@@ -107,7 +108,6 @@ class KMap
     bool draw_foreground;
     bool draw_shadow;
 
-
     /*! Current map */
     s_map g_map;
 
@@ -144,7 +144,8 @@ class KGame
      * \param   offset_x Horizontal offset from the marker's X tile.
      * \param   offset_y Vertical offset from the marker's Y tile.
      */
-    void change_map(const std::string& map_name, const std::string& marker_name, signed int offset_x, signed int offset_y);
+    void change_map(const std::string& map_name, const std::string& marker_name, signed int offset_x,
+                    signed int offset_y);
 
     /*! \brief Move the viewport if necessary to include the players
      *
@@ -429,6 +430,7 @@ class KGame
     bool want_console = false;
 
     KMap Map;
+
   protected:
     /*! Name of the current map */
     std::string m_curmap;

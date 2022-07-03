@@ -64,9 +64,9 @@
 #include "shopmenu.h"
 #include "timing.h"
 
+#include <SDL.h>
 #include <algorithm>
 #include <memory>
-#include <SDL.h>
 #include <string>
 
 extern "C" {
@@ -2500,7 +2500,7 @@ static int KQ_move_entity(lua_State* L)
     int entity_id = real_entity_num(L, 1);
     int kill = 0, target_x = 0, target_y = 0;
 
-    char buffer[1024] = {0};
+    char buffer[1024] = { 0 };
 
     if (lua_type(L, 2) == LUA_TSTRING)
     {
@@ -3179,7 +3179,8 @@ static int KQ_set_holdfade(lua_State* L)
 
 static int KQ_set_map_mode(lua_State* L)
 {
-    Game.Map.g_map.map_mode = std::clamp((eMapMode)lua_tonumber(L, 1), eMapMode::MAPMODE_12E3S, eMapMode::MAPMODE_12EP3S);
+    Game.Map.g_map.map_mode =
+        std::clamp((eMapMode)lua_tonumber(L, 1), eMapMode::MAPMODE_12E3S, eMapMode::MAPMODE_12EP3S);
     return 0;
 }
 
@@ -4323,7 +4324,7 @@ static int real_entity_num(lua_State* L, int pos)
     {
         lua_pushstring(L, LUA_ENT_KEY);
         lua_rawget(L, pos);
-        KQEntity* ent = (KQEntity*)lua_touserdata(L, -1);   //TODO: What is this doing? Is this persisting POD to memory?
+        KQEntity* ent = (KQEntity*)lua_touserdata(L, -1); // TODO: What is this doing? Is this persisting POD to memory?
         lua_pop(L, 1);
         if (ent != nullptr)
         {

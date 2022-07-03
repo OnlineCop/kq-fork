@@ -37,7 +37,6 @@
 
 class Raster;
 
-
 /*! \brief Entity
  *
  * Contains info on an entity's appearance, position and behaviour */
@@ -96,7 +95,7 @@ struct KQEntity
     /*! Entity is see-through or not */
     uint8_t transl;
     /*! Movement/action script (pacing, etc.) */
-    char script[60]; 
+    char script[60];
     /*! Scripted x-coord the ent is moving to */
     uint16_t target_x;
     /*! Scripted y-coord the ent is moving to */
@@ -139,7 +138,7 @@ struct s_progress
     /*! Number of current progress */
     uint32_t num_progress;
     /*! Name of current progress */
-    char name[18]; 
+    char name[18];
 };
 
 /*! \brief Hero information
@@ -152,9 +151,9 @@ struct s_heroinfo
     /*! The hero's portrait for the stats screen */
     Raster* portrait;
     /*! Frames for movement */
-    Raster* frames[MAXFRAMES]; 
+    Raster* frames[MAXFRAMES];
     /*! Frames for combat */
-    Raster* cframes[MAXCFRAMES]; 
+    Raster* cframes[MAXCFRAMES];
 };
 
 /*! \brief Special Items

@@ -43,8 +43,8 @@
 #include "settings.h"
 #include "timing.h"
 
-#include <SDL_mixer.h>
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <string>
 
 using eSize::SCREEN_H;
@@ -53,8 +53,8 @@ using eSize::SCREEN_W;
 /*! \name Globals */
 
 KAudio::KAudio()
-    : sound_initialized_and_ready{KAudio::eSoundSystem::NotInitialized}
-    , sound_system_avail{false}
+    : sound_initialized_and_ready { KAudio::eSoundSystem::NotInitialized }
+    , sound_system_avail { false }
 {
 }
 
@@ -189,7 +189,8 @@ void config_menu()
         citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
 
         // Show "ON" when either initializing or ready; its color will differ below.
-        citem(row[12], _("Sound System:"), Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized ? _("ON") : _("OFF"), FNORMAL);
+        citem(row[12], _("Sound System:"),
+              Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized ? _("ON") : _("OFF"), FNORMAL);
 
         fontColor = FNORMAL;
         /* TT: This needs to check for ==0 because 1 means sound init */
@@ -374,7 +375,8 @@ void config_menu()
                         Music.play_music(Game.Map.g_map.song_file, 0);
                     }
                 }
-                Config.set_config_int(NULL, "is_sound", Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized);
+                Config.set_config_int(NULL, "is_sound",
+                                      Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized);
                 break;
             case 13:
                 if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
@@ -640,7 +642,8 @@ void parse_setup()
     should_stretch_view = Config.get_config_int(NULL, "stretch_view", 1) != 0;
     wait_retrace = Config.get_config_int(NULL, "wait_retrace", 1);
     show_frate = Config.get_config_int(NULL, "show_frate", 0) != 0;
-    Audio.sound_initialized_and_ready = (KAudio::eSoundSystem)Config.get_config_int(NULL, "is_sound", KAudio::eSoundSystem::Initialize);
+    Audio.sound_initialized_and_ready =
+        (KAudio::eSoundSystem)Config.get_config_int(NULL, "is_sound", KAudio::eSoundSystem::Initialize);
     gmvol = Config.get_config_int(NULL, "gmvol", 250);
     gsvol = Config.get_config_int(NULL, "gsvol", 250);
     use_joy = Config.get_config_int(NULL, "use_joy", 0);
@@ -819,7 +822,8 @@ void sound_init()
     {
     case KAudio::eSoundSystem::Initialize:
         Music.init_music();
-        Audio.sound_initialized_and_ready = load_samples() ? KAudio::eSoundSystem::NotInitialized : KAudio::eSoundSystem::Ready; /* load the wav files */
+        Audio.sound_initialized_and_ready = load_samples() ? KAudio::eSoundSystem::NotInitialized
+                                                           : KAudio::eSoundSystem::Ready; /* load the wav files */
         Music.set_volume(gsvol);
         Music.set_music_volume(gmvol);
         break;

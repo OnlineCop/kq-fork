@@ -107,7 +107,6 @@ struct s_map
     Raster* entity_tiles;
 };
 
-
 /* Local Variables:     */
 /* mode: c              */
 /* comment-column: 0    */

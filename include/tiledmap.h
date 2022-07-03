@@ -123,7 +123,8 @@ class tmx_map
     // Tiles which trigger map-specific events, such as a doorway, a chest, or a shop counter
     std::vector<KZone> zones;
 
-    // Named positions on a map; scripts should use these instead of hard-coded coordinates so resizing a map won't break the script.
+    // Named positions on a map; scripts should use these instead of hard-coded coordinates so resizing a map won't
+    // break the script.
     KMarkers markers;
 
     // Total entities displayed on the map, including player's party
