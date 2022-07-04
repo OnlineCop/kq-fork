@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -28,17 +28,14 @@
  */
 
 #include "disk.h"
-#include "bounds.h"
-#include "heroc.h"
-#include "kq.h"
-#include "markers.h"
-#include "platform.h"
+
 #include "random.h"
-#include "sgame.h"
 #include "shopmenu.h"
-#include <sys/stat.h>
 
 KDisk Disk;
+
+using tinyxml2::XMLDocument;
+using tinyxml2::XMLElement;
 
 /** Generate a comma-separated list from a range specified by two iterators
  * \param begin the start of the range (inclusive)
@@ -152,9 +149,9 @@ xiterable children(XMLElement* parent, const char* tag = nullptr)
     return xiterable(parent, tag);
 }
 
-vector<int> KDisk::parse_list(const char* str)
+std::vector<int> KDisk::parse_list(const char* str)
 {
-    vector<int> list;
+    std::vector<int> list;
     while (str && *str)
     {
         const char* next = strchr(str, ',');
@@ -793,7 +790,7 @@ int KDisk::save_general_props_xml(XMLElement* node)
     addprop(properties, "random-state", kqrandom->kq_get_random_state());
     // Save-Game Stats - id, level, hp (as a % of mhp), mp% for each member of the
     // party
-    vector<int> sgs;
+    std::vector<int> sgs;
     for (int i = 0; i < stats.num_characters; ++i)
     {
         auto& chr = stats.characters[i];
@@ -921,7 +918,7 @@ int KDisk::load_game_from_file(const char* filename)
     return 0;
 }
 
-void KDisk::printprop(tinyxml2::XMLPrinter& out, const string& name, int value)
+void KDisk::printprop(tinyxml2::XMLPrinter& out, const std::string& name, int value)
 {
     out.OpenElement(TAG_PROPERTY);
     out.PushAttribute("name", name.c_str());
@@ -929,7 +926,7 @@ void KDisk::printprop(tinyxml2::XMLPrinter& out, const string& name, int value)
     out.CloseElement();
 }
 
-void KDisk::printprop(tinyxml2::XMLPrinter& out, const string& name, const string& value)
+void KDisk::printprop(tinyxml2::XMLPrinter& out, const std::string& name, const std::string& value)
 {
     out.OpenElement(TAG_PROPERTY);
     out.PushAttribute("name", name.c_str());
@@ -992,7 +989,7 @@ int KDisk::save_s_fighter(tinyxml2::XMLPrinter& out, const KFighter& f)
     out.PushText(make_list(std::begin(f.atrack), std::end(f.atrack)).c_str());
     out.CloseElement(/*atrack*/);
     out.OpenElement("imb");
-    vector<int> imb { f.imb_s, f.imb_a, f.imb[0], f.imb[1] };
+    std::vector<int> imb { f.imb_s, f.imb_a, f.imb[0], f.imb[1] };
     out.PushText(make_list(imb.begin(), imb.end()).c_str());
     out.CloseElement(/*imb*/);
     out.CloseElement(/*fighter*/);

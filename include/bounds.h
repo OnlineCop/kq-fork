@@ -1,4 +1,4 @@
-/*! License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -24,7 +24,6 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
-using std::vector;
 
 struct PACKFILE;
 
@@ -47,11 +46,16 @@ struct PACKFILE;
 struct KBound
 {
   public:
-    int left;    /*!< Left edge of the bounding box, in full tiles (such as entity.tilex) */
-    int top;     /*!< Top edge of the bounding box, in full tiles (such as entity.tiley) */
-    int right;   /*!< Right edge of the bounding box, in full tiles (such as entity.tilex) */
-    int bottom;  /*!< Bottom edge of the bounding box, in full tiles (such as entity.tiley) */
-    short btile; /*!< Index of the tile to draw everywhere BUT here */
+    /*! Left edge of the bounding box, in full tiles (such as entity.tilex) */
+    int left;
+    /*! Top edge of the bounding box, in full tiles (such as entity.tiley) */
+    int top;
+    /*! Right edge of the bounding box, in full tiles (such as entity.tilex) */
+    int right;
+    /*! Bottom edge of the bounding box, in full tiles (such as entity.tiley) */
+    int bottom;
+    /*! Index of the tile to draw everywhere BUT here */
+    short btile;
 };
 
 /*! \brief Container holding array of bounds
@@ -107,5 +111,5 @@ class KBounds
     const KBound* IsBound(int left, int top, int right, int bottom) const;
 
   protected:
-    vector<KBound> m_bounds;
+    std::vector<KBound> m_bounds;
 };

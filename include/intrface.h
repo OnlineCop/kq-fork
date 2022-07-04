@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -30,14 +30,14 @@ enum eHero
     HERO2 = 201
 };
 
-void do_autoexec(void);
+void do_autoexec();
 void do_entity(int en_num);
-void do_luacheat(void);
+void do_luacheat();
 void do_luainit(const char* fname, int global);
-void do_luakill(void);
-void do_postexec(void);
-void do_importquests(void);
+void do_luakill();
+void do_postexec();
+void do_importquests();
 void do_timefunc(const char* funcname);
 void do_zone(int zn_num);
-void lua_user_init(void);
+void lua_user_init();
 void do_console_command(const std::string& cmd);

@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -26,17 +26,17 @@
 class KMusic
 {
   public:
-    void init_music(void);
-    void shutdown_music(void);
-    void poll_music(void);
+    void init_music();
+    void shutdown_music();
+    void poll_music();
 
     void set_music_volume(int volume);
     void set_volume(int volume);
 
     void play_music(const std::string& music_name, long position);
-    void pause_music(void);
-    void resume_music(void);
-    void stop_music(void);
+    void pause_music();
+    void resume_music();
+    void stop_music();
     void* get_sample(const std::string&);
     void play_effect(int, int);
     void play_sample(void*, int, int, int, int);

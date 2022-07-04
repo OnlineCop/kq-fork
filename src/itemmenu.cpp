@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -26,8 +26,7 @@
  * \date ????????
  */
 
-#include <cstdio>
-#include <cstring>
+#include "itemmenu.h"
 
 #include "combat.h"
 #include "draw.h"
@@ -35,7 +34,6 @@
 #include "gfx.h"
 #include "input.h"
 #include "itemdefs.h"
-#include "itemmenu.h"
 #include "kq.h"
 #include "magic.h"
 #include "menu.h"
@@ -45,21 +43,24 @@
 #include "setup.h"
 #include "skills.h"
 
+#include <cstdio>
+#include <cstring>
+
 char item_act;
 
 /* Internal functions */
 static void draw_itemmenu(int, int, int);
-static void sort_items(void);
-static void join_items(void);
+static void sort_items();
+static void join_items();
 static void camp_item_targetting(int);
-static void sort_inventory(void);
+static void sort_inventory();
 
 /*! \brief Process the item menu
  *
  * This screen displays the list of items that the character has, then
  * waits for the player to select one.
  */
-void camp_item_menu(void)
+void camp_item_menu()
 {
     int stop = 0, ptr = 0, pptr = 0, sel = 0;
 
@@ -800,7 +801,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
  *
  * Join like items into groups of nine or less.
  */
-static void join_items(void)
+static void join_items()
 {
     uint16_t t_inv[NUM_ITEMS + 1];
     size_t inventory_index;
@@ -870,7 +871,7 @@ void remove_item(size_t inventory_index, int qi)
  *
  * This simply re-arranges the group inventory to remove blank rows.
  */
-static void sort_inventory(void)
+static void sort_inventory()
 {
     size_t old_inventory_index, new_inventory_index, stop;
 
@@ -917,7 +918,7 @@ static void sort_inventory(void)
  * Sorting means grouping by type and putting the groups in the
  * order specified by 'tt' below.
  */
-static void sort_items(void)
+static void sort_items()
 {
     s_inventory t_inv[MAX_INV];
     static const int type_order[7] = { 6, 0, 1, 2, 3, 4, 5 };

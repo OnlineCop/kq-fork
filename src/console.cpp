@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -20,17 +20,15 @@
 */
 
 #include "console.h"
-#include "constants.h"
+
 #include "draw.h"
 #include "gfx.h"
 #include "input.h"
 #include "intrface.h"
 #include "kq.h"
 #include "music.h"
-#include "structs.h"
 
 #include <cassert>
-#include <cstddef>
 
 /*! \file
  * \brief Lua console for debugging
@@ -50,12 +48,12 @@ enum eRunConsoleKeys
 };
 
 KConsole::KConsole()
-    : lines{}
-    , inputline{}
-    , blink{0}
-    , on{false}
-    , _num_lines{0}
-    , _max_columns{0}
+    : lines {}
+    , inputline {}
+    , blink { 0 }
+    , on { false }
+    , _num_lines { 0 }
+    , _max_columns { 0 }
 {
 }
 
@@ -132,9 +130,9 @@ void KConsole::scroll(const std::string& l)
  */
 void KConsole::run()
 {
-    static const std::string get{"return progress."};
-    static const std::string ret{"return "};
-    static const std::string set{"progress."};
+    static const std::string get { "return progress." };
+    static const std::string ret { "return " };
+    static const std::string set { "progress." };
     std::string prevCmd = "";
 
     inputline.clear();
@@ -148,7 +146,7 @@ void KConsole::run()
     }
 
     bool running = this->on;
-    while (this->on/*running*/)
+    while (this->on /*running*/)
     {
         /* Get a key */
         Game.ProcessEvents();

@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -26,8 +26,7 @@
  * \date ????????
  */
 
-#include <cstdio>
-#include <cstring>
+#include "shopmenu.h"
 
 #include "constants.h"
 #include "draw.h"
@@ -42,8 +41,10 @@
 #include "player.h"
 #include "res.h"
 #include "setup.h"
-#include "shopmenu.h"
 #include "timing.h"
+
+#include <cstdio>
+#include <cstring>
 
 /* Winter Knight: I'm making it so shops are declared in scripts, rather than
 in the code. It is part of my "separate the engine and the data" campaign. */
@@ -63,9 +64,9 @@ static uint8_t shop_no;
 
 /*  internal functions  */
 static void draw_sideshot(int);
-static void buy_menu(void);
+static void buy_menu();
 static void buy_item(int, int);
-static void sell_menu(void);
+static void sell_menu();
 static void sell_howmany(int, size_t);
 static void sell_item(int, int);
 
@@ -126,7 +127,7 @@ static void buy_item(int how_many, int item_no)
  * Show the player a list of items which can be bought
  * and wait for him/her to choose something or exit.
  */
-static void buy_menu(void)
+static void buy_menu()
 {
     bool stop = false;
     unsigned short xptr = 1, yptr = 0;
@@ -291,7 +292,7 @@ void do_inn_effects(int do_delay)
  *
  * Display the party's funds.
  */
-void draw_shopgold(void)
+void draw_shopgold()
 {
     Draw.menubox(double_buffer, 248, 208, 7, 2, BLUE);
     Draw.print_font(double_buffer, 256, 216, _("Gold:"), FGOLD);
@@ -688,7 +689,7 @@ static void sell_item(int itno, int qty_being_sold)
  * Display a list of items that are in inventory and ask which
  * item or items to sell.
  */
-static void sell_menu(void)
+static void sell_menu()
 {
     size_t yptr = 0, stop = 0;
     int p, sp;

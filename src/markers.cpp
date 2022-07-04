@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -25,17 +25,6 @@
  * \date 20100222
  */
 
-#include <algorithm>
-#include <cassert>
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <string>
-using std::string;
-#include <memory>
-using std::shared_ptr;
-
 #include "markers.h"
 
 bool KMarkers::Add(KMarker&& marker)
@@ -53,7 +42,7 @@ bool KMarkers::Add(KMarker&& marker)
     return true;
 }
 
-bool KMarkers::Remove(const string& name)
+bool KMarkers::Remove(const std::string& name)
 {
     auto it = m_markers.begin();
     while (it != m_markers.end())
@@ -80,7 +69,7 @@ const KMarker* KMarkers::GetMarker(size_t index)
     return nullptr;
 }
 
-const KMarker* KMarkers::GetMarker(const string& marker_name)
+const KMarker* KMarkers::GetMarker(const std::string& marker_name)
 {
     for (auto& m : m_markers)
     {

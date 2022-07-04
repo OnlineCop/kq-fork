@@ -1,4 +1,4 @@
-/*! License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -24,13 +24,6 @@
  * \author TT
  * \date 20060720
  */
-
-#include <cassert>
-#include <cctype>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 
 #include "bounds.h"
 

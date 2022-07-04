@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -22,12 +22,10 @@
 #pragma once
 
 #include "kq.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
-
-using std::string;
-using std::vector;
 
 KFighter player2fighter(int);
 
@@ -47,14 +45,16 @@ struct KQuestItem
     {
     }
 
-    KQuestItem(const string& inKey, const string& inText)
+    KQuestItem(const std::string& inKey, const std::string& inText)
         : key(inKey)
         , text(inText)
     {
     }
 
-    string key;  /*!< The identifying title */
-    string text; /*!< The actual info */
+    /*! The identifying title */
+    std::string key;
+    /*! The actual info */
+    std::string text;
 };
 
 class KMenu
@@ -62,22 +62,22 @@ class KMenu
   public:
     KMenu();
 
-    void add_questinfo(const string& key, const string& text);
+    void add_questinfo(const std::string& key, const std::string& text);
     void draw_mainmenu(int);
     void draw_playerstat(Raster* where, int player_index_in_party, int dx, int dy);
     bool give_xp(int, int, int);
-    void menu(void);
-    void revert_equipstats(void);
-    void spec_items(void);
-    void update_equipstats(void);
+    void menu();
+    void revert_equipstats();
+    void spec_items();
+    void update_equipstats();
 
   private:
     bool check_xp(int, int);
     void clear_quests();
     void level_up(int);
-    void display_quest_window(void);
+    void display_quest_window();
     void status_screen(size_t);
-    vector<KQuestItem> quest_list;
+    std::vector<KQuestItem> quest_list;
 };
 
 extern KMenu kmenu;

@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -23,44 +23,44 @@
 
 class KAudio
 {
-    public:
-        enum eSound
-        {
-            SND_MENU = 0,
-            SND_CLICK = 1,
-            SND_BAD = 2,
-            SND_ITEM = 3,
-            SND_EQUIP = 4,
-            SND_UNEQUIP = 5,
-            SND_MONEY = 6,
-            SND_TWINKLE = 7,
-            SND_EXPLODE = 42,
-            MAX_SAMPLES // always last
-        };
+  public:
+    enum eSound
+    {
+        SND_MENU = 0,
+        SND_CLICK = 1,
+        SND_BAD = 2,
+        SND_ITEM = 3,
+        SND_EQUIP = 4,
+        SND_UNEQUIP = 5,
+        SND_MONEY = 6,
+        SND_TWINKLE = 7,
+        SND_EXPLODE = 42,
+        MAX_SAMPLES // always last
+    };
 
-        enum eSoundSystem
-        {
-            NotInitialized,
-            Initialize,
-            Ready
-        };
+    enum eSoundSystem
+    {
+        NotInitialized,
+        Initialize,
+        Ready
+    };
 
-    public:
-        ~KAudio() = default;
-        KAudio();
+  public:
+    ~KAudio() = default;
+    KAudio();
 
-        eSoundSystem sound_initialized_and_ready;
-        bool sound_system_avail;
+    eSoundSystem sound_initialized_and_ready;
+    bool sound_system_avail;
 };
 
 extern KAudio Audio;
 
-void parse_setup(void);
-void config_menu(void);
-void show_help(void);
-void set_graphics_mode(void);
-void sound_init(void);
-void free_samples(void);
+void parse_setup();
+void config_menu();
+void show_help();
+void set_graphics_mode();
+void sound_init();
+void free_samples();
 void play_effect(int, int);
 
 extern char debugging;

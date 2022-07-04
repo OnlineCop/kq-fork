@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -32,13 +32,8 @@
  * the C code and the Lua scripts.
  *
  */
-#include "kq.h"
 
-extern "C" {
-#include <lauxlib.h>
-#include <lua.h>
-#include <lualib.h>
-}
+#include "intrface.h"
 
 #include "bounds.h"
 #include "combat.h"
@@ -48,17 +43,20 @@ extern "C" {
 #include "enemyc.h"
 #include "enums.h"
 #include "fade.h"
+#include "gfx.h"
 #include "heroc.h"
+#include "imgcache.h"
 #include "input.h"
-#include "intrface.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
+#include "kq.h"
 #include "magic.h"
 #include "masmenu.h"
 #include "menu.h"
 #include "movement.h"
 #include "music.h"
 #include "platform.h"
+#include "random.h"
 #include "res.h"
 #include "selector.h"
 #include "setup.h"
@@ -66,24 +64,23 @@ extern "C" {
 #include "shopmenu.h"
 #include "timing.h"
 
-#include <string>
-using std::string;
-#include <memory>
-using std::make_shared;
-using std::shared_ptr;
-
-#include "gfx.h"
-#include "imgcache.h"
-#include "random.h"
-
+#include <SDL.h>
 #include <algorithm>
+#include <memory>
+#include <string>
+
+extern "C" {
+#include <lauxlib.h>
+#include <lua.h>
+#include <lualib.h>
+}
 
 /* Defines */
 #define LUA_ENT_KEY "_ent"
 #define LUA_PLR_KEY "_obj"
 
 /* Internal functions */
-static void fieldsort(void);
+static void fieldsort();
 static const char* filereader(lua_State* L, void* data, size_t* size);
 static const char* stringreader(lua_State* L, void* data, size_t* size);
 static void init_markers(lua_State* L);
@@ -268,7 +265,7 @@ static int KQ_warp(lua_State*);
 
 static int KQ_char_getter(lua_State* L);
 static int KQ_char_setter(lua_State* L);
-static int KQ_check_map_change(void);
+static int KQ_check_map_change();
 static int KQ_party_getter(lua_State* L);
 static int KQ_party_setter(lua_State* L);
 #ifdef DEBUGMODE
@@ -522,7 +519,7 @@ static enum { NOT_CHANGING, CHANGE_TO_COORDS, CHANGE_TO_MARKER } changing_map;
  * Check to see if we can change the map.  Does nothing if we are already in
  * the process of changing the map.
  */
-static int KQ_check_map_change(void)
+static int KQ_check_map_change()
 {
     switch (changing_map)
     {
@@ -552,7 +549,7 @@ static int KQ_check_map_change(void)
  * should NOT call any graphical functions because this causes KQ to lock.
  * Instead, use postexec().
  */
-void do_autoexec(void)
+void do_autoexec()
 {
     int oldtop = lua_gettop(theL);
 
@@ -601,10 +598,10 @@ void do_entity(int en_num)
  * pressed.  This can contain any scripting code, in the function cheat().
  * The cheat can be used repeatedly.
  */
-void do_luacheat(void)
+void do_luacheat()
 {
     int oldtop;
-    string cheatfile;
+    std::string cheatfile;
 
     /* kqres might return null if the cheat file doesn't exist.
      * in that case, just do a no-op.
@@ -688,7 +685,7 @@ void do_luainit(const char* fname, int global)
  *
  * Close the Lua virtual machine.
  */
-void do_luakill(void)
+void do_luakill()
 {
     Game.reset_timer_events();
     if (theL)
@@ -703,7 +700,7 @@ void do_luakill(void)
  * This function is called after the map is faded back in.  It's possible to
  * show speech, move entities, etc. here.
  */
-void do_postexec(void)
+void do_postexec()
 {
     int oldtop = lua_gettop(theL);
 
@@ -724,7 +721,7 @@ void do_postexec(void)
  * When user opens the Quest menu, the actual quest data is imported from Lua.
  * The get_quest_info() function returns its quests via a callback to add_quest_item().
  */
-void do_importquests(void)
+void do_importquests()
 {
     int oldtop = lua_gettop(theL);
 
@@ -806,7 +803,7 @@ void do_zone(int zn_num)
  * world-specific stuff. It does not have any arguments, or
  * return any values.
  */
-void lua_user_init(void)
+void lua_user_init()
 {
     do_luakill();
     do_luainit("init", 1);
@@ -828,7 +825,7 @@ static int fieldcmp(const void* pa, const void* pb)
  * \author PH
  * \date Created 20030407
  */
-static void fieldsort(void)
+static void fieldsort()
 {
     qsort(fields, sizeof(fields) / sizeof(*fields), sizeof(struct s_field), fieldcmp);
 }
@@ -892,7 +889,7 @@ static const char* stringreader(lua_State*, void* data, size_t* size)
  *
  * \returns pointer to marker or nullptr if name not found
  */
-static const KMarker* KQ_find_marker(string name, bool required)
+static const KMarker* KQ_find_marker(std::string name, bool required)
 {
     auto found_marker = Game.Map.g_map.markers.GetMarker(name);
     if (found_marker != nullptr)
@@ -1062,8 +1059,8 @@ static int KQ_add_chr(lua_State* L)
 /* Callback from get_quest_info */
 static int KQ_add_quest_item(lua_State* L)
 {
-    string key = lua_tostring(L, 1);
-    string text = lua_tostring(L, 2);
+    std::string key = lua_tostring(L, 1);
+    std::string text = lua_tostring(L, 2);
 
     kmenu.add_questinfo(key, text);
     return 0;
@@ -2503,7 +2500,7 @@ static int KQ_move_entity(lua_State* L)
     int entity_id = real_entity_num(L, 1);
     int kill = 0, target_x = 0, target_y = 0;
 
-    char buffer[1024] = {0};
+    char buffer[1024] = { 0 };
 
     if (lua_type(L, 2) == LUA_TSTRING)
     {
@@ -3182,7 +3179,8 @@ static int KQ_set_holdfade(lua_State* L)
 
 static int KQ_set_map_mode(lua_State* L)
 {
-    Game.Map.g_map.map_mode = std::clamp((eMapMode)lua_tonumber(L, 1), eMapMode::MAPMODE_12E3S, eMapMode::MAPMODE_12EP3S);
+    Game.Map.g_map.map_mode =
+        std::clamp((eMapMode)lua_tonumber(L, 1), eMapMode::MAPMODE_12E3S, eMapMode::MAPMODE_12EP3S);
     return 0;
 }
 
@@ -4326,7 +4324,7 @@ static int real_entity_num(lua_State* L, int pos)
     {
         lua_pushstring(L, LUA_ENT_KEY);
         lua_rawget(L, pos);
-        KQEntity* ent = (KQEntity*)lua_touserdata(L, -1);   //TODO: What is this doing? Is this persisting POD to memory?
+        KQEntity* ent = (KQEntity*)lua_touserdata(L, -1); // TODO: What is this doing? Is this persisting POD to memory?
         lua_pop(L, 1);
         if (ent != nullptr)
         {

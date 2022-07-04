@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -22,6 +22,8 @@
 #pragma once
 
 #include <cstdint>
+
+enum eFont;
 
 class KEffects
 {

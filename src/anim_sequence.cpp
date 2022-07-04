@@ -1,4 +1,4 @@
-/*! License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -19,10 +19,8 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <vector>
-using std::vector;
-
 #include "anim_sequence.h"
+
 #include "tmx_animation.h"
 
 // Note: *copy* the base animation into this instance. The base animation

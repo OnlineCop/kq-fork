@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -22,6 +22,7 @@
 #pragma once
 
 #include "enums.h"
+
 #include <cstdint>
 #include <cstdlib>
 #include <string>
@@ -33,12 +34,12 @@ struct SDL_Texture;
 struct SDL_PixelFormat;
 enum eSpellType;
 
-constexpr uint8_t GREY1 = 4;    // pal[4]:  { 16, 16, 16, 0 }
-constexpr uint8_t GREY2 = 8;    // pal[8]:  { 33, 33, 33, 0 }
-constexpr uint8_t GREY3 = 13;   // pal[13]: { 55, 55, 55, 0 }
-constexpr uint8_t WHITE = 15;   // pal[15]: { 63, 63, 63, 0 }
-constexpr uint8_t DBLUE = 3;    // pal[3]:  { 12, 12, 12, 0 }
-constexpr uint8_t DRED = 6;     // pal[6]:  { 24, 24, 24, 0 }
+constexpr uint8_t GREY1 = 4;  // pal[4]:  { 16, 16, 16, 0 }
+constexpr uint8_t GREY2 = 8;  // pal[8]:  { 33, 33, 33, 0 }
+constexpr uint8_t GREY3 = 13; // pal[13]: { 55, 55, 55, 0 }
+constexpr uint8_t WHITE = 15; // pal[15]: { 63, 63, 63, 0 }
+constexpr uint8_t DBLUE = 3;  // pal[3]:  { 12, 12, 12, 0 }
+constexpr uint8_t DRED = 6;   // pal[6]:  { 24, 24, 24, 0 }
 
 enum eFontColor
 {
@@ -53,7 +54,7 @@ enum eFontColor
     NUM_FONT_COLORS // always last
 };
 
-enum eFont //TODO: Can eFontColor and eFont be merged?
+enum eFont // TODO: Can eFontColor and eFont be merged?
 {
     FONT_WHITE = 0,
     FONT_RED = 1,
@@ -209,7 +210,7 @@ class KDraw
      * Also handles the Repulse indicator and the map description display.
      * \bug PH: Shadows are never drawn with parallax (is this a bug?)
      */
-    void drawmap(void);
+    void drawmap();
 
     /*! \brief Draw menu box
      *
@@ -424,7 +425,7 @@ class KDraw
      * Draw the background layer.  Accounts for parallaxing.
      * Parallax is on for modes 2 & 3
      */
-    void draw_backlayer(void);
+    void draw_backlayer();
 
     /*! \brief Draw heroes on map
      *
@@ -441,7 +442,7 @@ class KDraw
      * Draw the foreground layer.  Accounts for parallaxing.
      * Parallax is on for modes 4 & 5.
      */
-    void draw_forelayer(void);
+    void draw_forelayer();
 
     /*! \brief Draw  box, with different backgrounds and borders
      *
@@ -467,14 +468,14 @@ class KDraw
      * Draw the middle layer.  Accounts for parallaxing.
      * Parallax is on for modes 3 & 4
      */
-    void draw_midlayer(void);
+    void draw_midlayer();
 
     /* Check whether the player is standing inside a bounding area. If so,
      * update the view_area coordinates before drawing to the map.
      *
      * \param   map - The map containing the bounded area data
      */
-    void draw_playerbound(void);
+    void draw_playerbound();
 
     /*! \brief Draw shadows
      *
@@ -482,7 +483,7 @@ class KDraw
      * moved in the future to fall between the background and foreground layers.
      * Shadows are never parallaxed.
      */
-    void draw_shadows(void);
+    void draw_shadows();
 
     /*! \brief Draw text box
      *

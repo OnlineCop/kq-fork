@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -19,8 +19,7 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <cstdio>
-#include <cstring>
+#include "magic.h"
 
 #include "combat.h"
 #include "draw.h"
@@ -31,13 +30,14 @@
 #include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
-#include "magic.h"
 #include "menu.h"
 #include "random.h"
 #include "res.h"
 #include "setup.h"
-#include "ssprites.h"
 #include "structs.h"
+
+#include <cstdio>
+#include <cstring>
 
 /*! \file
  * \brief Magic spells
@@ -1581,7 +1581,8 @@ void KMagic::special_spells(size_t caster_fighter_index, size_t spell_number)
             }
             else
             {
-                Game.change_map(Game.WORLD_MAP, Game.Map.g_map.warpx, Game.Map.g_map.warpy, Game.Map.g_map.warpx, Game.Map.g_map.warpy);
+                Game.change_map(Game.WORLD_MAP, Game.Map.g_map.warpx, Game.Map.g_map.warpy, Game.Map.g_map.warpx,
+                                Game.Map.g_map.warpy);
             }
         }
         break;

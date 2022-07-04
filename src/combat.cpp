@@ -1,4 +1,4 @@
-/*! License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -27,36 +27,20 @@
  * \date ????????
  */
 
-#include <cstdio>
-#include <cstring>
-#include <memory>
-
-#include <iostream>
-
 #include "combat.h"
-#include "constants.h"
+
 #include "draw.h"
 #include "effects.h"
 #include "enemyc.h"
-#include "enums.h"
 #include "fade.h"
-#include "fighter.h"
 #include "gfx.h"
-#include "heroc.h"
 #include "imgcache.h"
-#include "input.h"
 #include "itemmenu.h"
-#include "kq.h"
 #include "magic.h"
 #include "masmenu.h"
 #include "menu.h"
 #include "music.h"
-#include "platform.h"
-#include "player.h"
 #include "random.h"
-#include "res.h"
-#include "setup.h"
-#include "structs.h"
 #include "timing.h"
 
 using namespace eSize;
@@ -469,7 +453,7 @@ void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
  * \returns 1 if the battle ended (either the heroes or the enemies won),
  *          0 otherwise.
  */
-int KCombat::check_end(void)
+int KCombat::check_end()
 {
     size_t fighter_index;
     int alive = 0;
@@ -682,7 +666,7 @@ void KCombat::do_action(size_t fighter_index)
  * \param   is_rnd If !=0 then this is a random combat
  * \returns 1 if battle occurred
  */
-int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
+int KCombat::do_combat(const std::string& bg, const std::string& mus, int is_rnd)
 {
     int zoom_step;
 
@@ -765,7 +749,7 @@ int KCombat::do_combat(const string& bg, const string& mus, int is_rnd)
  * when necessary. This is also where things like poison, sleep,
  * and what-not are checked.
  */
-void KCombat::do_round(void)
+void KCombat::do_round()
 {
     size_t a;
     int now = 0;
@@ -1027,7 +1011,7 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
  * Play some sad music and set the dead flag so that the game
  * will return to the main menu.
  */
-void KCombat::enemies_win(void)
+void KCombat::enemies_win()
 {
     Music.play_music(music_defeat, 0);
     Combat.battle_render(0, 0, 0);
@@ -1363,7 +1347,7 @@ uint8_t KCombat::GetMonsterSurprisesPartyValue() const
  *
  * Distribute the booty!
  */
-void KCombat::heroes_win(void)
+void KCombat::heroes_win()
 {
     int tgp = 0;
     size_t fighter_index;
@@ -1543,7 +1527,7 @@ void KCombat::heroes_win(void)
  *
  * Pre-combat setup of fighter structures and initial vars.
  */
-void KCombat::init_fighters(void)
+void KCombat::init_fighters()
 {
     for (size_t fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
     {
@@ -1712,7 +1696,7 @@ void KCombat::multi_fight(size_t attack_fighter_index)
  *
  * Set up surprise vars, speeds, act vars, etc.
  */
-void KCombat::roll_initiative(void)
+void KCombat::roll_initiative()
 {
     size_t j;
 
@@ -1797,7 +1781,7 @@ void KCombat::roll_initiative(void)
  *
  * Calculate where the fighters should be drawn.
  */
-void KCombat::snap_togrid(void)
+void KCombat::snap_togrid()
 {
     size_t fighter_index;
     int hf = 0; /* Heroes facing up, away from screen and toward monsters. */

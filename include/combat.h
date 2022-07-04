@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -31,10 +31,10 @@
  * \date ????????
  */
 
+#include "enums.h"
+
 #include <cstdint>
 #include <string>
-
-#include "enums.h"
 
 #define BATTLE_INC 20
 #define ROUND_MAX 400
@@ -99,15 +99,15 @@ class KCombat
 
   protected:
     eAttackResult attack_result(int ar, int dr);
-    int check_end(void);
+    int check_end();
     void do_action(size_t);
     int do_combat(const std::string& bg, const std::string& mus, int is_rnd);
-    void do_round(void);
-    void enemies_win(void);
-    void heroes_win(void);
-    void init_fighters(void);
-    void roll_initiative(void);
-    void snap_togrid(void);
+    void do_round();
+    void enemies_win();
+    void heroes_win();
+    void init_fighters();
+    void roll_initiative();
+    void snap_togrid();
 
   protected:
     eCombatResult combatend;

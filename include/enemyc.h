@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -21,11 +21,15 @@
 
 #pragma once
 
+#include "enums.h"
+
 #include <cstdint>
+#include <string>
 #include <vector>
 #include <string>
 
 class KFighter;
+class Raster;
 
 class KEnemy
 {

@@ -77,6 +77,8 @@ set(kq-fork_SRCS
 	src/shopmenu.cpp
 	src/tiledmap.cpp
 	src/timing.cpp
+	src/tmx_animation.cpp
+	src/tmx_tileset.cpp
 	$<$<PLATFORM_ID:Linux,Darwin>:src/unix.cpp>
 	$<$<PLATFORM_ID:Windows>:src/win.cpp>
 )

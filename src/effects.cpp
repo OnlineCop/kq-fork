@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -26,23 +26,14 @@
  * \date ???????
  */
 
-#include <cstdio>
-#include <cstring>
-#include <memory>
+#include "effects.h"
 
 #include "combat.h"
 #include "draw.h"
-#include "effects.h"
 #include "gfx.h"
 #include "imgcache.h"
-#include "itemmenu.h"
-#include "kq.h"
 #include "magic.h"
-#include "music.h"
-#include "platform.h"
-#include "res.h"
 #include "setup.h"
-#include "ssprites.h"
 #include "timing.h"
 
 KEffects Effects;

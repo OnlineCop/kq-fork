@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -26,28 +26,19 @@
  * \date ??????
  */
 
-#include <cstdio>
-#include <cstring>
-#include <fstream>
-#include <memory>
-#include <sstream>
-#include <string>
+#include "enemyc.h"
 
 #include "combat.h"
-#include "disk.h"
 #include "draw.h"
-#include "enemyc.h"
 #include "eskill.h"
 #include "gfx.h"
-#include "heroc.h"
 #include "imgcache.h"
-#include "kq.h"
 #include "magic.h"
 #include "platform.h"
 #include "random.h"
-#include "res.h"
 #include "selector.h"
-#include "skills.h"
+
+#include <fstream>
 
 KEnemy Enemy;
 
@@ -617,14 +608,14 @@ void KEnemy::LoadEnemies()
     LoadEnemyStats(kqres(eDirectories::DATA_DIR, "resabil.mon"));
 }
 
-void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
+void KEnemy::LoadEnemies(const std::string& fullPath, Raster* enemy_gfx)
 {
     std::ifstream infile(fullPath.c_str());
     if (infile.fail())
     {
         Game.program_death(_("Could not load 1st enemy datafile!"));
     }
-    string line;
+    std::string line;
 
     // Loop through for every monster in allstat.mon
     while (std::getline(infile, line))
@@ -726,7 +717,7 @@ void KEnemy::LoadEnemies(const string& fullPath, Raster* enemy_gfx)
     infile.close();
 }
 
-void KEnemy::LoadEnemyStats(const string& fullFilename)
+void KEnemy::LoadEnemyStats(const std::string& fullFilename)
 {
     int tmp;
     std::ifstream infile(fullFilename.c_str());
@@ -736,7 +727,7 @@ void KEnemy::LoadEnemyStats(const string& fullFilename)
     }
 
     size_t current_enemy = 0;
-    string line;
+    std::string line;
     while (std::getline(infile, line))
     {
         KFighter& fighter_loaded_from_disk = m_enemy_fighters[current_enemy];

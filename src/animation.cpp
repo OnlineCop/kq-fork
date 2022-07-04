@@ -1,4 +1,4 @@
-/*! License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -20,6 +20,7 @@
 */
 
 #include "animation.h"
+
 #include "anim_sequence.h"
 
 void KAnimation::check_animation(int millis, uint16_t* tilex)

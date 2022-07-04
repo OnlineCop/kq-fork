@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -26,7 +26,6 @@
 #include "entity.h"
 
 #include "combat.h"
-#include "enums.h"
 #include "input.h"
 #include "intrface.h"
 #include "itemdefs.h"
@@ -35,19 +34,10 @@
 #include "random.h"
 #include "setup.h"
 
-#include <algorithm>
-#include <cassert>
-#include <cctype>
-#include <cmath>
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
 using namespace eSize;
 
 KEntityManager::KEntityManager()
-    : number_of_entities{0}
+    : number_of_entities { 0 }
 {
 }
 
@@ -132,12 +122,12 @@ void KEntityManager::process_entities()
 void KEntityManager::set_script(t_entity target_entity, const char* movestring)
 {
     KQEntity& ent = g_ent[target_entity];
-    ent.moving = 0;             // Stop entity from moving
-    ent.movcnt = 0;             // Reset the move counter to 0
-    ent.cmd = eCommands::COMMAND_NONE;
-    ent.sidx = 0;               // Reset script command index
-    ent.cmdnum = 0;             // There are no scripted commands
-    ent.movemode = MM_SCRIPT;   // Force the entity to follow the script
+    ent.moving = 0;                    // Stop entity from moving
+    ent.movcnt = 0;                    // Reset the move counter to 0
+    ent.cmd = eCommands::COMMAND_NONE; // Entity should not be trying to move
+    ent.sidx = 0;                      // Reset script command index
+    ent.cmdnum = 0;                    // There are no scripted commands
+    ent.movemode = MM_SCRIPT;          // Force the entity to follow the script
     strncpy(ent.script, movestring, sizeof(ent.script));
 }
 

@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -32,17 +32,19 @@
 #include "disk.h"
 #include "makeconfig.h"
 #include "platform.h"
+
 #include <SDL.h>
+#include <string>
 #include <sys/errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 static bool init_path = false;
-static string user_dir;
-static string data_dir;
-static string lib_dir;
+static std::string user_dir;
+static std::string data_dir;
+static std::string lib_dir;
 
-static string join(const string& path1, const string& path2)
+static std::string join(const std::string& path1, const std::string& path2)
 {
     if (path1.empty())
     {
@@ -62,7 +64,7 @@ static string join(const string& path1, const string& path2)
     }
     else
     {
-        return path1 + string { '/' } + path2;
+        return path1 + std::string { '/' } + path2;
     }
 }
 
@@ -78,10 +80,10 @@ static string join(const string& path1, const string& path2)
  * \param file The filename
  * \returns the combined path
  */
-static string get_resource_file_path(const string& str1, const string& str2, const string& file)
+static std::string get_resource_file_path(const std::string& str1, const std::string& str2, const std::string& file)
 {
-    string tail = join(str2, file);
-    string ans = join(user_dir, tail);
+    std::string tail = join(str2, file);
+    std::string ans = join(user_dir, tail);
 
     if (!Disk.exists(ans.c_str()))
     {
@@ -105,13 +107,13 @@ static string get_resource_file_path(const string& str1, const string& str2, con
  * \param file The filename
  * \returns the combined path
  */
-static string get_lua_file_path(const string& str1, const string& file)
+static std::string get_lua_file_path(const std::string& str1, const std::string& file)
 {
-    string ans;
-    string scripts { "scripts" };
-    string lob { ".lob" };
-    string lua { ".lua" };
-    string base = join(user_dir, scripts);
+    std::string ans;
+    std::string scripts { "scripts" };
+    std::string lob { ".lob" };
+    std::string lua { ".lua" };
+    std::string base = join(user_dir, scripts);
     ans = join(base, file + lob);
     if (!Disk.exists(ans.c_str()))
     {
@@ -119,7 +121,7 @@ static string get_lua_file_path(const string& str1, const string& file)
 
         if (!Disk.exists(ans.c_str()))
         {
-            string base = join(str1, scripts);
+            std::string base = join(str1, scripts);
             ans = join(base, file + lob);
 
             if (!Disk.exists(ans.c_str()))
@@ -128,7 +130,7 @@ static string get_lua_file_path(const string& str1, const string& file)
 
                 if (!Disk.exists(ans.c_str()))
                 {
-                    return string();
+                    return std::string();
                 }
             }
         }
@@ -143,11 +145,11 @@ static string get_lua_file_path(const string& str1, const string& file)
  * \param   file File name below that directory.
  * \returns the combined path
  */
-const string kqres(enum eDirectories dir, const string& file)
+const std::string kqres(enum eDirectories dir, const std::string& file)
 {
     if (!init_path)
     {
-        user_dir = string(SDL_GetPrefPath("kq-fork", "kq"));
+        user_dir = std::string(SDL_GetPrefPath("kq-fork", "kq"));
         /* Always try to make the directory, just to be sure. */
         if (::mkdir(user_dir.c_str(), 0755) == -1)
         {
@@ -159,10 +161,10 @@ const string kqres(enum eDirectories dir, const string& file)
 /* Now the data directory */
 #ifdef KQ_DATADIR
         /* We specified where... */
-        data_dir = lib_dir = string { KQ_DATADIR };
+        data_dir = lib_dir = std::string { KQ_DATADIR };
 #else
         /* ...or, use SDL's idea */
-        data_dir = lib_dir = string { SDL_GetBasePath() };
+        data_dir = lib_dir = std::string { SDL_GetBasePath() };
 #endif
         init_path = true;
     }

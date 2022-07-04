@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -24,10 +24,10 @@
 class Raster;
 
 /*! Allocate memory for credits display */
-void allocate_credits(void);
+void allocate_credits();
 
 /*! Deallocate memory */
-void deallocate_credits(void);
+void deallocate_credits();
 
 /*! Display credits (call in a loop) */
 void display_credits(Raster*);

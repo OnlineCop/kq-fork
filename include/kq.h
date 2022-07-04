@@ -50,13 +50,12 @@
 #include "maps.h"
 #include "player.h"
 #include "structs.h"
-#include <SDL.h>
+
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #define _(s) gettext(s)
-
-using std::string;
 
 class Raster;
 
@@ -109,7 +108,6 @@ class KMap
     bool draw_foreground;
     bool draw_shadow;
 
-
     /*! Current map */
     s_map g_map;
 
@@ -133,7 +131,7 @@ class KGame
      * \param   camera_x New x-coord for camera. Pass 0 for mvx and mvy to use the default: s_map::stx and s_map::sty)
      * \param   camera_y New y-coord for camera
      */
-    void change_map(const string& map_name, int player_x, int player_y, int camera_x, int camera_y);
+    void change_map(const std::string& map_name, int player_x, int player_y, int camera_x, int camera_y);
 
     /*! \brief Free old map data and load a new one.
      *
@@ -146,7 +144,8 @@ class KGame
      * \param   offset_x Horizontal offset from the marker's X tile.
      * \param   offset_y Vertical offset from the marker's Y tile.
      */
-    void change_map(const string& map_name, const string& marker_name, signed int offset_x, signed int offset_y);
+    void change_map(const std::string& map_name, const std::string& marker_name, signed int offset_x,
+                    signed int offset_y);
 
     /*! \brief Move the viewport if necessary to include the players
      *
@@ -162,7 +161,7 @@ class KGame
      * However, there is a member of the map structure called zero_zone that lets you call the event handler on 0 zones
      * if you wish. This function also handles the Repulse functionality.
      */
-    void zone_check(void);
+    void zone_check();
 
     /*! \brief Move player(s) to new coordinates
      *
@@ -183,7 +182,7 @@ class KGame
      * tile index, and a delay. The smaller the delay value, the faster that the
      * animation cycles through the tiles.
      */
-    void do_check_animation(void);
+    void do_check_animation();
 
     /*! \brief Alt key handler
      *
@@ -191,13 +190,13 @@ class KGame
      * Things that can be activated are entities and zones that are
      * obstructed.
      */
-    void activate(void);
+    void activate();
 
     /*! \brief Wait for ALT
      *
      * Simply wait for the 'alt' key to be pressed.
      */
-    void wait_enter(void);
+    void wait_enter();
 
     /*! \brief Log events
      *
@@ -266,7 +265,7 @@ class KGame
      *
      * \returns name of the next event or NULL if none is ready
      */
-    const char* get_timer_event(void);
+    const char* get_timer_event();
 
     /* \brief Add a new timer event to the list
      *
@@ -284,12 +283,12 @@ class KGame
      *
      * This removes any events from the list
      */
-    void reset_timer_events(void);
+    void reset_timer_events();
 
     /*! \brief Resets the world. Called every new game and load game
      *  This function may be called multiple times in some cases. That should be ok.
      */
-    void reset_world(void);
+    void reset_world();
 
     /*! \brief Creates a bitmap, giving an error message with the specified name if it fails.
      *
@@ -309,19 +308,19 @@ class KGame
      * Set up allegro, set up variables, load stuff, blah...
      * This is called once per game.
      */
-    void startup(void);
+    void startup();
 
     /*! \brief Free allocated memory
      *
      * This frees memory and such things.
      */
-    void deallocate_stuff(void);
+    void deallocate_stuff();
 
     /*! \brief Create bitmaps
      *
      * A separate function to create all global bitmaps needed in the game.
      */
-    void allocate_stuff(void);
+    void allocate_stuff();
 
     /*! \brief Load initial hero stuff from file
      *
@@ -330,7 +329,7 @@ class KGame
      * Loads the hero stats from a file.
      *
      */
-    void load_heroes(void);
+    void load_heroes();
 
     /*! \brief Do everything necessary to load a map
      *
@@ -347,18 +346,18 @@ class KGame
      * and "progress.log" respectively. This happens in response to user hitting
      * the F11 key.
      */
-    void data_dump(void);
+    void data_dump();
 
     /*! \brief Getter for current map name.
      */
-    inline string GetCurmap()
+    inline std::string GetCurmap()
     {
         return m_curmap;
     }
 
     /*! \brief Setter for current map name.
      */
-    void SetCurmap(string curmap)
+    void SetCurmap(std::string curmap)
     {
         m_curmap = curmap;
     }
@@ -423,7 +422,7 @@ class KGame
     void wait_released();
 
   public:
-    const string WORLD_MAP;
+    const std::string WORLD_MAP;
     /*! The number of frames per second */
     const int32_t KQ_TICKS;
     // Game time in ticks (should be enough for >2 years real time play)
@@ -431,9 +430,10 @@ class KGame
     bool want_console = false;
 
     KMap Map;
+
   protected:
     /*! Name of the current map */
-    string m_curmap;
+    std::string m_curmap;
 
     /** Gold pieces held by the player */
     int gp;
@@ -495,7 +495,7 @@ extern s_heroinfo players[MAXCHRS];
 extern KFighter fighter[NUM_FIGHTERS];
 extern KFighter tempa, tempd;
 extern int shin[12], display_attack_string;
-extern string shop_name;
+extern std::string shop_name;
 extern char attack_string[39];
 extern volatile int animation_count;
 extern COLOR_MAP cmap;

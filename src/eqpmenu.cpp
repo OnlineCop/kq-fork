@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -28,17 +28,14 @@
  * including dropping and optimizing the items carried.
  */
 
-#include <cstdio>
-#include <cstring>
+#include "eqpmenu.h"
 
 #include "draw.h"
-#include "eqpmenu.h"
 #include "gfx.h"
 #include "input.h"
 #include "itemmenu.h"
 #include "kq.h"
 #include "menu.h"
-#include "res.h"
 #include "setup.h"
 
 /* Globals  */

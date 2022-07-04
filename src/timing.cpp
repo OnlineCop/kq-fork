@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -26,9 +26,12 @@
  *
  * Looks after keeping the music playing whilst the game is 'paused'
  */
+
 #include "timing.h"
+
 #include "kq.h"
 #include "music.h"
+
 #include <SDL.h>
 #include <cassert>
 

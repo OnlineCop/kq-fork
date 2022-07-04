@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -27,7 +27,7 @@
 #define SHOPITEMS 12
 
 void do_inn_effects(int);
-void draw_shopgold(void);
+void draw_shopgold();
 void inn(const char*, uint32_t, int);
 int shop(int);
 

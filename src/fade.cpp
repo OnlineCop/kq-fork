@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -27,10 +27,12 @@
  */
 
 #include "fade.h"
+
 #include "draw.h"
 #include "kq.h"
 #include "music.h"
 #include "res.h"
+
 #include <algorithm>
 #include <cstring>
 

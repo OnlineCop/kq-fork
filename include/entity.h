@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -245,7 +245,6 @@ class KEntityManager
      * \param   target_entity Index of entity to move
      */
     void wander(t_entity target_entity);
-
 
   public:
     // Number of active entities (player + NPCs) on the current map.

@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -23,4 +23,5 @@
 
 #include <cstdint>
 #include <cstdlib>
+
 int find_path(size_t, uint32_t, uint32_t, uint32_t, uint32_t, char*, uint32_t);

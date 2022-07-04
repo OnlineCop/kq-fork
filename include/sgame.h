@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -35,7 +35,7 @@ struct s_sgstats
     {
         int id, level, hp, mp;
     } characters[PSIZE];
-    static s_sgstats get_current(void);
+    static s_sgstats get_current();
 };
 
 /* Number of save game slots */
@@ -44,17 +44,17 @@ struct s_sgstats
 class KSaveGame
 {
   public:
-    void load_sgstats(void);
+    void load_sgstats();
     int start_menu(bool);
-    int system_menu(void);
+    int system_menu();
 
   protected:
     void show_sgstats(int);
-    int save_game(void);
-    int load_game(void);
-    void delete_game(void);
+    int save_game();
+    int load_game();
+    void delete_game();
     int saveload(int);
-    int confirm_action(void);
+    int confirm_action();
 
   protected:
     /* These describe the save slots. Number of characters, gp, etc */

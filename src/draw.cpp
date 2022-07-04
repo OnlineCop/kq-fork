@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -29,28 +29,18 @@
  */
 
 #include "draw.h"
-#include "bounds.h"
+
 #include "combat.h"
 #include "console.h"
-#include "constants.h"
-#include "entity.h"
 #include "gfx.h"
 #include "input.h"
-#include "kq.h"
 #include "magic.h"
-#include "music.h"
-#include "player.h"
-#include "res.h"
 #include "setup.h"
 #include "timing.h"
 #include "zone.h"
 
 #include <SDL.h>
 #include <cassert>
-#include <cctype>
-#include <cstdio>
-#include <cstring>
-#include <string>
 
 KDraw Draw;
 
@@ -277,9 +267,10 @@ Raster* KDraw::copy_bitmap(Raster* target, Raster* source)
     return target;
 }
 
-void KDraw::draw_backlayer(void)
+void KDraw::draw_backlayer()
 {
-    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S);
+    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S ||
+                             Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S);
     int tile_x1 = box.x_offset / TILE_W;
     int tile_x2 = (box.x_offset + SCREEN_W - 1) / TILE_W;
     int tile_y1 = box.y_offset / TILE_H;
@@ -302,7 +293,8 @@ void KDraw::draw_backlayer(void)
         for (int x = box.left; x <= box.right; x++)
         {
             size_t pix = map_seg[Game.Map.Clamp(x, y)];
-            blit(map_icons[tilex[pix]], double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
+            blit(map_icons[tilex[pix]], double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset,
+                 TILE_W, TILE_H);
         }
         for (int x = box.right + 1; x <= tile_x2; x++)
         {
@@ -340,7 +332,8 @@ KDraw::PBound KDraw::calculate_box(bool is_parallax)
 
 void KDraw::draw_char()
 {
-    for (size_t follower_fighter_index = PSIZE + EntityManager.number_of_entities; follower_fighter_index > 0; follower_fighter_index--)
+    for (size_t follower_fighter_index = PSIZE + EntityManager.number_of_entities; follower_fighter_index > 0;
+         follower_fighter_index--)
     {
         size_t fighter_index = follower_fighter_index - 1;
         KQEntity& follower_entity = g_ent[fighter_index];
@@ -448,9 +441,9 @@ void KDraw::draw_char()
                 size_t there = 0;
 
                 /* When moving down, we will draw over the spot directly below
-                    * our starting position. Since tile[xy] shows our final coord,
-                    * we will instead draw to the left or right of the final pos.
-                    */
+                 * our starting position. Since tile[xy] shows our final coord,
+                 * we will instead draw to the left or right of the final pos.
+                 */
                 if (vert > 0)
                 {
                     /* Moving diag down */
@@ -491,12 +484,11 @@ void KDraw::draw_char()
         else
         {
             /* It's an NPC */
-            if (follower_entity.active &&
-                follower_entity.tilex >= view_x1 && follower_entity.tilex <= view_x2 &&
+            if (follower_entity.active && follower_entity.tilex >= view_x1 && follower_entity.tilex <= view_x2 &&
                 follower_entity.tiley >= view_y1 && follower_entity.tiley <= view_y2)
             {
-                if (dx >= TILE_W * -1 && dx <= TILE_W * (ONSCREEN_TILES_W + 1) &&
-                    dy >= TILE_H * -1 && dy <= TILE_H * (ONSCREEN_TILES_H + 1))
+                if (dx >= TILE_W * -1 && dx <= TILE_W * (ONSCREEN_TILES_W + 1) && dy >= TILE_H * -1 &&
+                    dy <= TILE_H * (ONSCREEN_TILES_H + 1))
                 {
                     const uint8_t eid = follower_entity.eid;
                     const uint8_t chrx = follower_entity.chrx;
@@ -516,9 +508,10 @@ void KDraw::draw_char()
     }
 }
 
-void KDraw::draw_forelayer(void)
+void KDraw::draw_forelayer()
 {
-    KDraw::PBound box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
+    KDraw::PBound box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S ||
+                                      Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
     {
         for (int x = box.left; x <= box.right; x++)
@@ -526,7 +519,7 @@ void KDraw::draw_forelayer(void)
             // Used in several places in this loop, so shortened the name
             const size_t here = Game.Map.Clamp(x, y);
             const size_t pix = f_seg[here];
-            draw_sprite(double_buffer, map_icons[tilex[pix]], + x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
+            draw_sprite(double_buffer, map_icons[tilex[pix]], x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
 
 #ifdef DEBUGMODE
             if (debugging > 3)
@@ -550,10 +543,8 @@ void KDraw::draw_forelayer(void)
                     std::string buf = std::to_string(Game.Map.zone_array[here]);
                     int h = font_height(eFontColor::FNORMAL) / 2;
                     int l = (buf.size() * 6) / 2; // font width for FNORMAL/FONT_WHITE is 6
-                    print_num(double_buffer,
-                        x * TILE_W + (TILE_W / 2 - l) - box.x_offset,
-                        y * TILE_H + h - box.y_offset,
-                        buf, eFont::FONT_WHITE);
+                    print_num(double_buffer, x * TILE_W + (TILE_W / 2 - l) - box.x_offset,
+                              y * TILE_H + h - box.y_offset, buf, eFont::FONT_WHITE);
                 }
             }
 #endif /* DEBUGMODE */
@@ -573,14 +564,14 @@ void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, e
     /* Draw a maybe-translucent background */
     if (bg == BLUE)
     {
-        drawing_mode(DRAW_MODE_TRANS, NULL, 0, 0);
+        drawing_mode(eDrawMode::DRAW_MODE_TRANS, NULL, 0, 0);
     }
     else
     {
         bg = (bg == DARKBLUE) ? DBLUE : DRED;
     }
     rectfill(where, x1 + 2, y1 + 2, x2 - 3, y2 - 3, bg);
-    drawing_mode(DRAW_MODE_SOLID, NULL, 0, 0);
+    drawing_mode(eDrawMode::DRAW_MODE_SOLID, NULL, 0, 0);
     /* Now the border */
     switch (bstyle)
     {
@@ -614,9 +605,10 @@ void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, e
     }
 }
 
-void KDraw::draw_midlayer(void)
+void KDraw::draw_midlayer()
 {
-    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
+    auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S ||
+                             Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
     for (int y = box.top; y <= box.bottom; y++)
     {
         for (int x = box.left; x <= box.right; x++)
@@ -628,7 +620,7 @@ void KDraw::draw_midlayer(void)
     }
 }
 
-void KDraw::draw_shadows(void)
+void KDraw::draw_shadows()
 {
     if (!Game.Map.draw_shadow)
     {
@@ -643,7 +635,8 @@ void KDraw::draw_shadows(void)
             eShadow pix = Game.Map.shadow_array[here];
             if (pix > eShadow::SHADOW_NONE && pix < eShadow::NUM_SHADOWS)
             {
-                draw_trans_sprite(double_buffer, shadow[static_cast<size_t>(pix)], x * TILE_W - box.x_offset, y * TILE_H - box.y_offset);
+                draw_trans_sprite(double_buffer, shadow[static_cast<size_t>(pix)], x * TILE_W - box.x_offset,
+                                  y * TILE_H - box.y_offset);
             }
         }
     }
@@ -724,7 +717,7 @@ void KDraw::draw_porttextbox(eBubbleStyle bstyle, int chr)
     print_font(double_buffer, 74, 204 - linexofs, party[chr].name, FNORMAL);
 }
 
-void KDraw::drawmap(void)
+void KDraw::drawmap()
 {
     if (Game.Map.MapSize() == 0)
     {
@@ -759,7 +752,8 @@ void KDraw::drawmap(void)
     {
         draw_backlayer();
     }
-    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E23S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_12EP3S)
+    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E23S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S ||
+        Game.Map.g_map.map_mode == eMapMode::MAPMODE_12EP3S)
     {
         draw_char();
     }
@@ -767,7 +761,8 @@ void KDraw::drawmap(void)
     {
         draw_midlayer();
     }
-    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_12E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S)
+    if (Game.Map.g_map.map_mode == eMapMode::MAPMODE_12E3S || Game.Map.g_map.map_mode == eMapMode::MAPMODE_1p2E3S ||
+        Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S)
     {
         draw_char();
     }
@@ -785,8 +780,10 @@ void KDraw::drawmap(void)
     }
     if (display_desc == 1)
     {
-        menubox(double_buffer, 152 - (Game.Map.g_map.map_desc.length() * 4), 8, Game.Map.g_map.map_desc.length(), 1, BLUE);
-        print_font(double_buffer, 160 - (Game.Map.g_map.map_desc.length() * 4), 16, Game.Map.g_map.map_desc.c_str(), FNORMAL);
+        menubox(double_buffer, 152 - (Game.Map.g_map.map_desc.length() * 4), 8, Game.Map.g_map.map_desc.length(), 1,
+                BLUE);
+        print_font(double_buffer, 160 - (Game.Map.g_map.map_desc.length() * 4), 16, Game.Map.g_map.map_desc.c_str(),
+                   FNORMAL);
     }
 }
 
@@ -845,7 +842,8 @@ int KDraw::is_forestsquare(int fx, int fy)
         return 0;
     }
     auto mapseg = map_seg[Game.Map.Clamp(fx, fy)];
-    switch (mapseg) //FIXME: The indexes of overworld forest tiles should come from either a map (.tmx) or a script (.lua).
+    // FIXME: The indexes of overworld forest tiles should come from either a map (.tmx) or a script (.lua).
+    switch (mapseg)
     {
     case 63:
     case 65:
@@ -875,7 +873,7 @@ void KDraw::message(const char* inMessage, int icn, int delay)
     int idx;
 
     /* Do the $0 replacement stuff */
-    string parsed = parse_string(inMessage);
+    std::string parsed = parse_string(inMessage);
     char* unsplit_string = new char[1024];
     memset(unsplit_string, 0, 1024);
     strncpy(unsplit_string, parsed.c_str(), 1023);
@@ -939,7 +937,7 @@ void KDraw::message(const char* inMessage, int icn, int delay)
 }
 
 // Origin: http://stackoverflow.com/a/3418285/801098
-void KDraw::replaceAll(string& str, const string& from, const string& to)
+void KDraw::replaceAll(std::string& str, const std::string& from, const std::string& to)
 {
     if (from.empty())
     {
@@ -956,14 +954,14 @@ void KDraw::replaceAll(string& str, const string& from, const string& to)
 /** This only handles extremely simple strings; you CAN break it if you try hard enough:
  *    "$$0" or "\\$0" or "\$0" or "$-1", etc.
  */
-string KDraw::parse_string(const string& the_string)
+std::string KDraw::parse_string(const std::string& the_string)
 {
-    if (the_string.find('$', 0) == string::npos)
+    if (the_string.find('$', 0) == std::string::npos)
     {
         return the_string;
     }
 
-    string output(the_string);
+    std::string output(the_string);
     replaceAll(output, "$0", party[pidx[0]].name);
     replaceAll(output, "$1", party[pidx[1]].name);
 
@@ -1097,7 +1095,7 @@ int KDraw::get_glyph_index(uint32_t cp)
     return 0;
 }
 
-void KDraw::print_font(Raster* where, int sx, int sy, const string& msg, eFontColor font_index)
+void KDraw::print_font(Raster* where, int sx, int sy, const std::string& msg, eFontColor font_index)
 {
     int z = 0;
 
@@ -1119,13 +1117,13 @@ void KDraw::print_font(Raster* where, int sx, int sy, const string& msg, eFontCo
     }
 }
 
-void KDraw::print_num(Raster* where, int sx, int sy, const string& msg, eFont font_index)
+void KDraw::print_num(Raster* where, int sx, int sy, const std::string& msg, eFont font_index)
 {
     assert(where != nullptr && "where == NULL");
     // Check ought not to be necessary if using the enum correctly.
     if (font_index < eFont::FONT_WHITE || font_index >= eFont::NUM_FONTS)
     {
-        string error_msg = "Bad font index: " + std::to_string(font_index);
+        std::string error_msg = "Bad font index: " + std::to_string(font_index);
         Game.program_death(__FUNCTION__, error_msg);
     }
     for (size_t z = 0; z < msg.length(); z++)
@@ -1148,10 +1146,10 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
     gbbw = 1;
     gbbh = 0;
     gbbs = 0;
-    string parsed1 = parse_string(sp1);
-    string parsed2 = parse_string(sp2);
-    string parsed3 = parse_string(sp3);
-    string parsed4 = parse_string(sp4);
+    std::string parsed1 = parse_string(sp1);
+    std::string parsed2 = parse_string(sp2);
+    std::string parsed3 = parse_string(sp3);
+    std::string parsed4 = parse_string(sp4);
     strcpy(msgbuf[0], parsed1.c_str());
     strcpy(msgbuf[1], parsed2.c_str());
     strcpy(msgbuf[2], parsed3.c_str());
@@ -1217,7 +1215,7 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
     int winx, winy;
     int i, w, running;
 
-    string parsed = parse_string(ptext);
+    std::string parsed = parse_string(ptext);
     ptext = parsed.c_str();
     while (1)
     {
@@ -1568,7 +1566,7 @@ void KDraw::set_textpos(uint32_t entity_index)
 
 void KDraw::set_view(int vw, int x1, int y1, int x2, int y2)
 {
-    //FIXME: set_view(true) needs the x1,y1,x2,y2 parameters, but set_view(false) needs no parameters.
+    // FIXME: set_view(true) needs the x1,y1,x2,y2 parameters, but set_view(false) needs no parameters.
     view_on = vw;
     if (view_on)
     {
@@ -1588,7 +1586,7 @@ void KDraw::set_view(int vw, int x1, int y1, int x2, int y2)
 
 void KDraw::text_ex(eBubbleStyle fmt, int who, const char* s)
 {
-    string parsed = parse_string(s);
+    std::string parsed = parse_string(s);
     s = parsed.c_str();
 
     while (s)
@@ -1600,7 +1598,7 @@ void KDraw::text_ex(eBubbleStyle fmt, int who, const char* s)
 
 void KDraw::porttext_ex(eBubbleStyle fmt, int who, const char* s)
 {
-    string parsed = parse_string(s);
+    std::string parsed = parse_string(s);
     s = parsed.c_str();
 
     while (s)

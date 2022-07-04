@@ -46,9 +46,8 @@
 #include "credits.h"
 #include "disk.h"
 #include "draw.h"
-#include "entity.h"
-#include "enums.h"
 #include "fade.h"
+#include "gfx.h"
 #include "imgcache.h"
 #include "input.h"
 #include "intrface.h"
@@ -57,31 +56,19 @@
 #include "magic.h"
 #include "masmenu.h"
 #include "menu.h"
-#include "mpcx.h"
 #include "music.h"
 #include "platform.h"
+#include "random.h"
 #include "res.h"
 #include "setup.h"
 #include "sgame.h"
 #include "shopmenu.h"
-#include "structs.h"
 #include "tiledmap.h"
 #include "timing.h"
 
-#include "gfx.h"
-#include "random.h"
-
 #include <SDL.h>
 #include <SDL_mixer.h>
-#include <cassert>
-#include <clocale>
-#include <cstdio>
 #include <fstream>
-#include <iomanip>
-#include <memory>
-#include <string>
-#include <time.h>
-#include <vector>
 
 using namespace eSize;
 
@@ -93,8 +80,8 @@ int steps = 0;
 /*! 23: various global bitmaps */
 Raster *double_buffer, *fx_buffer, *map_icons[MAX_TILES], *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse,
     *b_mp, *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES],
-    *pgb[9], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr,
-    *missbmp, *noway, *upptr, *dnptr, *shadow[MAX_SHADOWS], *kfonts;
+    *pgb[9], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr,
+    *shadow[MAX_SHADOWS], *kfonts;
 
 /*! Enemy animation frames */
 Raster* eframes[MAXE][MAXEFRAMES];
@@ -116,7 +103,8 @@ uint8_t save_spells[SIZE_SAVE_SPELL];
 KQEntity g_ent[MAX_ENTITIES];
 
 /*! Identifies characters in the party */
-// Ideally, this would hold values 0..7 (ePIDX::SENSAR..ePIDX::NOSLOM) in whatever order they belonged to the current party.
+// Ideally, this would hold values 0..7 (ePIDX::SENSAR..ePIDX::NOSLOM) in whatever order they belonged to the current
+// party.
 ePIDX pidx[MAXCHRS] = { ePIDX::PIDX_UNDEFINED };
 
 /*! Number of characters in the party */
@@ -183,7 +171,7 @@ KFighter fighter[NUM_FIGHTERS];
 KFighter tempa, tempd;
 
 /*! Name of current shop */
-string shop_name;
+std::string shop_name;
 
 /*! Should we display a box with attack_string in it (used in combat) */
 int display_attack_string = 0;
@@ -247,8 +235,8 @@ int every_hit_999 = 0;
  */
 static struct timer_event
 {
-    string name; /*!< Name of the event */
-    int when;    /*!< Absolute time when it will trigger */
+    std::string name; /*!< Name of the event */
+    int when;         /*!< Absolute time when it will trigger */
 } timer_events[5];
 
 static int next_event_time; /*!< The time the next event will trigger */
@@ -408,14 +396,14 @@ int main(int argc, char* argv[])
 }
 
 KMap::KMap()
-    : g_map{}
+    : g_map {}
     , draw_background { true }
     , draw_middle { true }
     , draw_foreground { true }
     , draw_shadow { true }
-    , obstacle_array{}
-    , shadow_array{}
-    , zone_array{}
+    , obstacle_array {}
+    , shadow_array {}
+    , zone_array {}
 {
 }
 
@@ -443,7 +431,7 @@ KGame::KGame()
 {
 }
 
-void KGame::activate(void)
+void KGame::activate()
 {
     int zx, zy, looking_at_x = 0, looking_at_y = 0, target_char_facing = 0, tf;
 
@@ -580,7 +568,7 @@ Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char*)
 }
 #endif
 
-void KGame::allocate_stuff(void)
+void KGame::allocate_stuff()
 {
     kfonts = alloc_bmp(1024, 60, "kfonts");
 
@@ -756,13 +744,14 @@ void KGame::calc_viewport()
     }
 }
 
-void KGame::change_map(const string& map_name, int player_x, int player_y, int camera_x, int camera_y)
+void KGame::change_map(const std::string& map_name, int player_x, int player_y, int camera_x, int camera_y)
 {
     TiledMap.load_tmx(map_name);
     prepare_map(player_x, player_y, camera_x, camera_y);
 }
 
-void KGame::change_map(const string& map_name, const string& marker_name, signed int offset_x, signed int offset_y)
+void KGame::change_map(const std::string& map_name, const std::string& marker_name, signed int offset_x,
+                       signed int offset_y)
 {
     int msx = 0, msy = 0, mvx = 0, mvy = 0;
 
@@ -779,7 +768,7 @@ void KGame::change_map(const string& map_name, const string& marker_name, signed
     prepare_map(msx, msy, mvx, mvy);
 }
 
-void KGame::do_check_animation(void)
+void KGame::do_check_animation()
 {
     int millis = (1000 * animation_count) / KQ_TICKS;
     animation_count -= (KQ_TICKS * millis) / 1000;
@@ -788,7 +777,7 @@ void KGame::do_check_animation(void)
 
 #ifdef DEBUGMODE
 
-void KGame::data_dump(void)
+void KGame::data_dump()
 {
     if (debugging <= 0)
     {
@@ -834,7 +823,7 @@ void KGame::data_dump(void)
 }
 #endif
 
-void KGame::deallocate_stuff(void)
+void KGame::deallocate_stuff()
 {
     int i, p;
 
@@ -955,9 +944,9 @@ void KGame::deallocate_stuff(void)
 #endif
 }
 
-const char* KGame::get_timer_event(void)
+const char* KGame::get_timer_event()
 {
-    static string buf;
+    static std::string buf;
     int next = INT_MAX;
 
     if (game_time < next_event_time)
@@ -972,7 +961,7 @@ const char* KGame::get_timer_event(void)
             if (t.when <= game_time)
             {
                 std::swap(buf, t.name);
-                t.name = string {};
+                t.name = std::string {};
             }
             else
             {
@@ -1024,7 +1013,7 @@ void KGame::kwait(int dtime)
     autoparty = 0;
 }
 
-void KGame::load_heroes(void)
+void KGame::load_heroes()
 {
     Raster* eb = get_cached_image("uschrs.png");
 
@@ -1141,9 +1130,11 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     pcxb = Map.g_map.map_tiles;
     for (size_t tile_y = 0, num_tiles_y = static_cast<size_t>(pcxb->height / TILE_H); tile_y < num_tiles_y; ++tile_y)
     {
-        for (size_t tile_x = 0, num_tiles_x = static_cast<unsigned int>(pcxb->width / TILE_W); tile_x < num_tiles_x; ++tile_x)
+        for (size_t tile_x = 0, num_tiles_x = static_cast<unsigned int>(pcxb->width / TILE_W); tile_x < num_tiles_x;
+             ++tile_x)
         {
-            pcxb->blitTo(map_icons[tile_y * num_tiles_x + tile_x], tile_x * TILE_W, tile_y * TILE_H, 0, 0, TILE_W, TILE_H);
+            pcxb->blitTo(map_icons[tile_y * num_tiles_x + tile_x], tile_x * TILE_W, tile_y * TILE_H, 0, 0, TILE_W,
+                         TILE_H);
         }
     }
 
@@ -1153,9 +1144,9 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     Music.play_music(Map.g_map.song_file, 0);
-    mx = (Map.g_map.xsize - 19) * TILE_W; //FIXME: What is this magic '19'?
+    mx = (Map.g_map.xsize - 19) * TILE_W; // FIXME: What is this magic '19'?
     /*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
-    my = (Map.g_map.ysize - 16) * TILE_H; //FIXME: What is this magic '16'?
+    my = (Map.g_map.ysize - 16) * TILE_H; // FIXME: What is this magic '16'?
 
     if (mvx == 0 && mvy == 0)
     {
@@ -1229,16 +1220,16 @@ void KGame::program_death(const std::string& message, const std::string& extra)
     exit(EXIT_FAILURE);
 }
 
-void KGame::reset_timer_events(void)
+void KGame::reset_timer_events()
 {
     for (auto& t : timer_events)
     {
-        t.name = string {};
+        t.name = std::string {};
     }
     next_event_time = INT_MAX;
 }
 
-void KGame::reset_world(void)
+void KGame::reset_world()
 {
     /* Start with no characters in play */
     numchrs = 0;
@@ -1530,7 +1521,7 @@ void KGame::wait_released()
         }
     }
 }
-void KGame::wait_enter(void)
+void KGame::wait_enter()
 {
     while (!PlayerInput.balt())
     {
@@ -1612,7 +1603,7 @@ void KGame::warp(int wtx, int wty, int fspeed)
     }
 }
 
-void KGame::zone_check(void)
+void KGame::zone_check()
 {
     if (save_spells[P_REPULSE] > 0)
     {

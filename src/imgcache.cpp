@@ -1,38 +1,40 @@
-/* License
-KQ is Copyright (C) 2002 by Josh Bolduc
+/**
+   KQ is Copyright (C) 2002 by Josh Bolduc
 
-This file is part of KQ... a freeware RPG.
+   This file is part of KQ... a freeware RPG.
 
-KQ is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published
-by the Free Software Foundation; either version 2, or (at your
-option) any later version.
+   KQ is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation; either version 2, or (at your
+   option) any later version.
 
-KQ is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   KQ is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with KQ; see the file COPYING.  If not, write to
-the Free Software Foundation,
-675 Mass Ave, Cambridge, MA 02139, USA.
+   You should have received a copy of the GNU General Public License
+   along with KQ; see the file COPYING.  If not, write to
+   the Free Software Foundation,
+       675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
 #include "imgcache.h"
+
 #include "gfx.h"
 #include "kq.h"
 #include "platform.h"
 #include "res.h"
-#include <map>
+
+#include <cstdio>
 #include <memory>
 #include <png.h>
 #include <string>
-using std::string;
 
 typedef std::unique_ptr<Raster> BITMAP_PTR;
 struct RasterLoader
 {
-    Raster* operator()(const string& keyname);
+    Raster* operator()(const std::string& keyname);
 };
 using image_cache = Cache<Raster, RasterLoader>;
 
@@ -77,6 +79,7 @@ static int palindex(uint8_t* ptr)
     }
     return bestindex;
 }
+
 // For libpng 1.6 and above there's a high-level image loader
 #ifdef PNG_SIMPLIFIED_READ_SUPPORTED
 /*! \brief Load a bitmap from a file
@@ -86,7 +89,7 @@ static int palindex(uint8_t* ptr)
  * \param path the filename
  * \returns the bitmap
  */
-static Raster* bmp_from_png(const string& path)
+static Raster* bmp_from_png(const std::string& path)
 {
     png_image image;
     image.version = PNG_IMAGE_VERSION;
@@ -116,8 +119,7 @@ static Raster* bmp_from_png(const string& path)
     return bitmap;
 }
 #else // !PNG_SIMPLIFIED_READ_SUPPORTED
-#include <cstdio>
-static Raster* bmp_from_png(const string& path)
+static Raster* bmp_from_png(const std::string& path)
 {
     FILE* fp = std::fopen(path.c_str(), "rb");
     if (!fp)

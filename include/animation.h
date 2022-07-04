@@ -1,4 +1,4 @@
-/*! License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -21,11 +21,10 @@
 
 #pragma once
 
+#include "tmx_animation.h"
+
 #include <cstdint>
 #include <vector>
-using std::vector;
-
-#include "tmx_animation.h"
 
 class KAnimSequence;
 class KAnimation
@@ -36,7 +35,7 @@ class KAnimation
     void clear_animations();
 
   private:
-    vector<KAnimSequence> animations;
+    std::vector<KAnimSequence> animations;
 };
 
 extern KAnimation Animation;

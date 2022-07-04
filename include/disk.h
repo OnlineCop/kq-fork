@@ -1,4 +1,4 @@
-/*! \page License
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -38,14 +38,6 @@
 #include <tinyxml2.h>
 #include <vector>
 
-using std::begin;
-using std::copy;
-using std::end;
-using std::string;
-using std::vector;
-using tinyxml2::XMLDocument;
-using tinyxml2::XMLElement;
-
 class KDisk
 {
   public:
@@ -72,63 +64,63 @@ class KDisk
      * \param str a string containing the list
      * \returns the numbers in a vector
      */
-    vector<int> parse_list(const char* str);
-    int load_spelltypes_xml(KPlayer* s, XMLElement* node);
-    int load_resistances_xml(KPlayer* s, XMLElement* node);
-    int load_spells_xml(KPlayer* s, XMLElement* node);
-    int load_equipment_xml(KPlayer* s, XMLElement* node);
-    int load_attributes_xml(KPlayer* s, XMLElement* node);
-    int load_core_properties_xml(KPlayer* s, XMLElement* node);
-    int load_lup_xml(KPlayer* s, XMLElement* node);
+    std::vector<int> parse_list(const char* str);
+    int load_spelltypes_xml(KPlayer* s, tinyxml2::XMLElement* node);
+    int load_resistances_xml(KPlayer* s, tinyxml2::XMLElement* node);
+    int load_spells_xml(KPlayer* s, tinyxml2::XMLElement* node);
+    int load_equipment_xml(KPlayer* s, tinyxml2::XMLElement* node);
+    int load_attributes_xml(KPlayer* s, tinyxml2::XMLElement* node);
+    int load_core_properties_xml(KPlayer* s, tinyxml2::XMLElement* node);
+    int load_lup_xml(KPlayer* s, tinyxml2::XMLElement* node);
 
     /** Store spell info or nothing if all spells are 'zero' */
-    int store_spells_xml(const KPlayer* s, XMLElement* node);
-    int store_equipment_xml(const KPlayer* s, XMLElement* node);
-    int store_spelltypes_xml(const KPlayer* s, XMLElement* node);
-    int store_resistances_xml(const KPlayer* s, XMLElement* node);
-    int store_stats_xml(const KPlayer* s, XMLElement* node);
-    int store_lup_xml(const KPlayer* s, XMLElement* node);
+    int store_spells_xml(const KPlayer* s, tinyxml2::XMLElement* node);
+    int store_equipment_xml(const KPlayer* s, tinyxml2::XMLElement* node);
+    int store_spelltypes_xml(const KPlayer* s, tinyxml2::XMLElement* node);
+    int store_resistances_xml(const KPlayer* s, tinyxml2::XMLElement* node);
+    int store_stats_xml(const KPlayer* s, tinyxml2::XMLElement* node);
+    int store_lup_xml(const KPlayer* s, tinyxml2::XMLElement* node);
     /** Store player inside a node that you supply. */
-    int save_player_xml(const KPlayer* s, XMLElement* node);
+    int save_player_xml(const KPlayer* s, tinyxml2::XMLElement* node);
 
     /** Get player (hero) data from an XML node.
      * @param s the structure to write to
      * @param node a node within an XML document.
      * @returns 0 if OK otherwise -1
      */
-    int load_s_player_xml(KPlayer* s, XMLElement* node);
-    int load_players_xml(XMLElement* root);
+    int load_s_player_xml(KPlayer* s, tinyxml2::XMLElement* node);
+    int load_players_xml(tinyxml2::XMLElement* root);
 
     /** Save all hero data into an XML node.
      * \param heroes array of all heroes
      * \param node a node to save into
      * \returns 0 if error otherwise 1
      */
-    int save_players_xml(XMLElement* node);
+    int save_players_xml(tinyxml2::XMLElement* node);
     /** Helper functions for various chunks of data that need saving or loading */
-    int save_treasures_xml(XMLElement* node);
-    int load_treasures_xml(XMLElement* node);
-    int save_progress_xml(XMLElement* node);
-    int load_progress_xml(XMLElement* node);
-    int save_save_spells_xml(XMLElement* node);
-    int load_save_spells_xml(XMLElement* node);
-    int save_specials_xml(XMLElement* node);
-    int load_specials_xml(XMLElement* node);
-    int save_global_inventory_xml(XMLElement* node);
-    int load_global_inventory_xml(XMLElement* node);
-    int save_shop_info_xml(XMLElement* node);
-    int load_shop_info_xml(XMLElement* node);
-    int save_general_props_xml(XMLElement* node);
-    int load_general_props_xml(XMLElement* node);
-    void printprop(tinyxml2::XMLPrinter& out, const string& name, int value);
-    void printprop(tinyxml2::XMLPrinter& out, const string& name, const string& value);
+    int save_treasures_xml(tinyxml2::XMLElement* node);
+    int load_treasures_xml(tinyxml2::XMLElement* node);
+    int save_progress_xml(tinyxml2::XMLElement* node);
+    int load_progress_xml(tinyxml2::XMLElement* node);
+    int save_save_spells_xml(tinyxml2::XMLElement* node);
+    int load_save_spells_xml(tinyxml2::XMLElement* node);
+    int save_specials_xml(tinyxml2::XMLElement* node);
+    int load_specials_xml(tinyxml2::XMLElement* node);
+    int save_global_inventory_xml(tinyxml2::XMLElement* node);
+    int load_global_inventory_xml(tinyxml2::XMLElement* node);
+    int save_shop_info_xml(tinyxml2::XMLElement* node);
+    int load_shop_info_xml(tinyxml2::XMLElement* node);
+    int save_general_props_xml(tinyxml2::XMLElement* node);
+    int load_general_props_xml(tinyxml2::XMLElement* node);
+    void printprop(tinyxml2::XMLPrinter& out, const std::string& name, int value);
+    void printprop(tinyxml2::XMLPrinter& out, const std::string& name, const std::string& value);
     int save_s_fighter(tinyxml2::XMLPrinter& out, const KFighter& f);
 
     /** Load everything from a node */
-    int load_game_xml(XMLElement* node);
+    int load_game_xml(tinyxml2::XMLElement* node);
 
     /** Save everything into a node */
-    int save_game_xml(XMLElement* node);
+    int save_game_xml(tinyxml2::XMLElement* node);
 
   protected:
     const char* TAG_ATTRIBUTES = "attributes";

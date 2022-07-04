@@ -1,4 +1,4 @@
-/*!
+/**
    KQ is Copyright (C) 2002 by Josh Bolduc
 
    This file is part of KQ... a freeware RPG.
@@ -21,17 +21,6 @@
 
 #pragma once
 
-#include <cstdint>
-#include <memory>
-#include <string>
-#include <tinyxml2.h>
-#include <vector>
-
-using std::string;
-using std::unique_ptr;
-using std::vector;
-using namespace tinyxml2;
-
 #include "bounds.h"
 #include "entity.h"
 #include "markers.h"
@@ -39,6 +28,12 @@ using namespace tinyxml2;
 #include "tmx_animation.h"
 #include "tmx_tileset.h"
 #include "zone.h"
+
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <tinyxml2.h>
+#include <vector>
 
 class tmx_layer
 {
@@ -51,18 +46,18 @@ class tmx_layer
         , data(new uint32_t[size])
     {
     }
-    string name;
+    std::string name;
     const int width;
     const int height;
     const int size;
-    unique_ptr<uint32_t[]> data;
+    std::unique_ptr<uint32_t[]> data;
 };
 
 class tmx_map
 {
   public:
     tmx_map();
-    string name;
+    std::string name;
     int map_no;
 
     // Non-zero if zone 0 triggers an event
@@ -111,31 +106,32 @@ class tmx_map
     int revision;
 
     // Base file name for map song
-    string song_file;
+    std::string song_file;
 
     // Map name (shown when map first appears)
-    string description;
+    std::string description;
 
     // The name of the primary tileset (the one with gid=1)
-    string primary_tileset_name;
+    std::string primary_tileset_name;
 
     // Tilesets defined within this tilemap
-    vector<KTmxTileset> tilesets;
+    std::vector<KTmxTileset> tilesets;
 
     // Areas on the map which limit the viewable area, such as the interiors of rooms
     KBounds bounds;
 
     // Tiles which trigger map-specific events, such as a doorway, a chest, or a shop counter
-    vector<KZone> zones;
+    std::vector<KZone> zones;
 
-    // Named positions on a map; scripts should use these instead of hard-coded coordinates so resizing a map won't break the script.
+    // Named positions on a map; scripts should use these instead of hard-coded coordinates so resizing a map won't
+    // break the script.
     KMarkers markers;
 
     // Total entities displayed on the map, including player's party
-    vector<KQEntity> entities;
+    std::vector<KQEntity> entities;
 
     // Each layer of tiles to be rendered to screen. Layers may be different sizes to account for parallax.
-    vector<tmx_layer> layers;
+    std::vector<tmx_layer> layers;
 
     /*! \brief Make this map the current one.
      * Make this map the one in play by copying its information into the
@@ -149,26 +145,26 @@ class tmx_map
      * \return Specified tileset.
      * \throws If tileset with given name cannot be found.
      */
-    const KTmxTileset& find_tileset(const string& name) const;
+    const KTmxTileset& find_tileset(const std::string& name) const;
 };
 
 class KTiledMap
 {
   public:
-    void load_tmx(const string&);
+    void load_tmx(const std::string&);
 
   private:
-    tmx_map load_tmx_map(XMLElement const* root);
-    XMLElement const* find_tmx_element(XMLElement const*, const char*, const char*);
-    KBounds load_tmx_bounds(XMLElement const*);
-    KMarkers load_tmx_markers(XMLElement const*);
-    vector<KZone> load_tmx_zones(XMLElement const*);
-    tmx_layer load_tmx_layer(XMLElement const* el);
-    vector<KQEntity> load_tmx_entities(XMLElement const*);
-    KTmxTileset load_tmx_tileset(XMLElement const*);
-    XMLElement const* find_objectgroup(XMLElement const* root, const char* name);
-    vector<uint8_t> b64decode(const char*);
-    vector<uint8_t> uncompress(const vector<uint8_t>& data);
+    tmx_map load_tmx_map(tinyxml2::XMLElement const* root);
+    tinyxml2::XMLElement const* find_tmx_element(tinyxml2::XMLElement const*, const char*, const char*);
+    KBounds load_tmx_bounds(tinyxml2::XMLElement const*);
+    KMarkers load_tmx_markers(tinyxml2::XMLElement const*);
+    std::vector<KZone> load_tmx_zones(tinyxml2::XMLElement const*);
+    tmx_layer load_tmx_layer(tinyxml2::XMLElement const* el);
+    std::vector<KQEntity> load_tmx_entities(tinyxml2::XMLElement const*);
+    KTmxTileset load_tmx_tileset(tinyxml2::XMLElement const*);
+    tinyxml2::XMLElement const* find_objectgroup(tinyxml2::XMLElement const* root, const char* name);
+    std::vector<uint8_t> b64decode(const char*);
+    std::vector<uint8_t> uncompress(const std::vector<uint8_t>& data);
 };
 
 extern KTiledMap TiledMap;
