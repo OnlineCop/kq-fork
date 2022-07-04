@@ -968,7 +968,7 @@ std::string KDraw::parse_string(const std::string& the_string)
     return output;
 }
 
-string::const_iterator KDraw::decode_utf8(string::const_iterator it, uint32_t* cp)
+std::string::const_iterator KDraw::decode_utf8(std::string::const_iterator it, uint32_t* cp)
 {
     char ch = *it;
     bool ok = true;
