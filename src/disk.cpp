@@ -31,6 +31,7 @@
 
 #include "random.h"
 #include "shopmenu.h"
+#include <sys/stat.h>
 
 KDisk Disk;
 

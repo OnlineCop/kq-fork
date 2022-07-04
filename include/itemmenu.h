@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 #define MAX_ITEMS 9

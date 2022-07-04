@@ -309,3 +309,15 @@ enum eEquipment
 
     NUM_EQUIPMENT // always last
 };
+
+enum eFont // TODO: Can eFontColor and eFont be merged?
+{
+    FONT_WHITE = 0,
+    FONT_RED = 1,
+    FONT_YELLOW = 2,
+    FONT_GREEN = 3,
+    FONT_PURPLE = 4,
+    FONT_DECIDE = 5,
+
+    NUM_FONTS // always last
+};
