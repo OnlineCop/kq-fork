@@ -7,32 +7,28 @@ end
 
 
 function entity_handler(en)
+
   if (get_ent_id(en) == SENSAR) then
     bubble(en, _"Thinking of Malkaron's army makes me angry.")
-    -- bubble(en, _"I would be useful to you, since I can use Rage in battle.")
   elseif (get_ent_id(en) == SARINA) then
-    bubble(en, _"Let's go.")
-    -- bubble(en, _"In battle, I can attack multiple targets at once if I'm equipped with the right weapon.")
+    bubble(en, _"I'm tired of waiting. Let's go.")
   elseif (get_ent_id(en) == CORIN) then
-    -- bubble(en, _"I can infuse weapons with magic during battle.")
+    bubble(en, _"Do you really think Noslom has enough gold to pay all of us?")
   elseif (get_ent_id(en) == AJATHAR) then
-    -- bubble(en, _"I notice that chanting a prayer during battle can heal your party or dispells the undead monsters.")
     bubble(en, _"I've prepared for this moment.")
   elseif (get_ent_id(en) == CASANDRA) then
-    -- bubble(en, _"I can use my Boost ability to strengthen spells when I am attacking.")
-    bubble(en, _"It's time.")
+    bubble(en, _"Malkaron won't know what hits him.")
   elseif (get_ent_id(en) == TEMMIN) then
-    -- bubble(en, _"I am very protective of my team members and will take a beating in their place.")
-    bubble(en, _"It's time.")
+    bubble(en, _"It's time to make Malkaron pay for his crimes.")
   elseif (get_ent_id(en) == AYLA) then
-    bubble(en, _"It's time.")
-    -- bubble(en, _"I'm a thief by trade. You might be surprised what you can steal from enemies!")
+    bubble(en, _"I wonder if Malkaron has any good treasure.")
   elseif (get_ent_id(en) == NOSLOM) then
-    bubble(en, _"It's time.")
-    -- bubble(en, _"I have a very keen eye. Not even enemies can hide their weaknesses from me!")
-    
+    bubble(en, _"Hmm not everything is adding up. I must be missing something.")
+
   elseif (en == 8) then
-    bubble(en, _"Were close now I can feel it.")
+    bubble(en, _"We're close now, I can feel it.")
+    set_ent_active(0, 0)
+    set_ent_active(1, 0)
 
   elseif (en == 9) then
     bubble(HERO1, _"Do you have any more of that smelly oil?")
@@ -89,9 +85,11 @@ function LOC_at_table()
     end
     if (id < 0) then
       -- Remove entity from the map
+      -- msg("Removing " .. a)
       set_ent_active(a, 0)
-      all_found = false
+      -- all_found = false
     else
+      -- msg("placing " .. a)
       -- Place around the table
       set_ent_active(a, 1)
       set_ent_chrx(a, 255)

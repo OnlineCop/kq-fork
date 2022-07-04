@@ -32,9 +32,9 @@
   </data>
  </layer>
  <objectgroup color="#ff00ff" id="3" name="entities">
-  <object id="57" name="Entity 0" type="entity" gid="321" x="400" y="528" width="16" height="16">
+  <object id="1" name="Entity 0" type="entity" gid="321" x="400" y="528" width="16" height="16">
    <properties>
-    <property name="active" value="1"/>
+    <property name="active" value="0"/>
     <property name="atype" value="0"/>
     <property name="chasing" value="0"/>
     <property name="chrx" value="0"/>
@@ -58,9 +58,9 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="58" name="Entity 1" type="entity" gid="321" x="400" y="560" width="16" height="16">
+  <object id="2" name="Entity 1" type="entity" gid="321" x="400" y="560" width="16" height="16">
    <properties>
-    <property name="active" value="1"/>
+    <property name="active" value="0"/>
     <property name="atype" value="0"/>
     <property name="chasing" value="0"/>
     <property name="chrx" value="0"/>
@@ -84,9 +84,9 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="59" name="Entity 2" type="entity" gid="321" x="416" y="528" width="16" height="16">
+  <object id="3" name="Entity 2" type="entity" gid="321" x="416" y="528" width="16" height="16">
    <properties>
-    <property name="active" value="1"/>
+    <property name="active" value="0"/>
     <property name="atype" value="0"/>
     <property name="chasing" value="0"/>
     <property name="chrx" value="0"/>
@@ -110,9 +110,9 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="60" name="Entity 3" type="entity" gid="321" x="416" y="576" width="16" height="16">
+  <object id="4" name="Entity 3" type="entity" gid="321" x="416" y="576" width="16" height="16">
    <properties>
-    <property name="active" value="1"/>
+    <property name="active" value="0"/>
     <property name="atype" value="0"/>
     <property name="chasing" value="0"/>
     <property name="chrx" value="0"/>
@@ -136,9 +136,9 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="61" name="Entity 4" type="entity" gid="321" x="448" y="528" width="16" height="16">
+  <object id="5" name="Entity 4" type="entity" gid="321" x="448" y="528" width="16" height="16">
    <properties>
-    <property name="active" value="1"/>
+    <property name="active" value="0"/>
     <property name="atype" value="0"/>
     <property name="chasing" value="0"/>
     <property name="chrx" value="0"/>
@@ -162,9 +162,9 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="62" name="Entity 5" type="entity" gid="321" x="464" y="528" width="16" height="16">
+  <object id="6" name="Entity 5" type="entity" gid="321" x="464" y="528" width="16" height="16">
    <properties>
-    <property name="active" value="1"/>
+    <property name="active" value="0"/>
     <property name="atype" value="0"/>
     <property name="chasing" value="0"/>
     <property name="chrx" value="0"/>
@@ -188,9 +188,9 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="63" name="Entity 6" type="entity" gid="321" x="464" y="560" width="16" height="16">
+  <object id="7" name="Entity 6" type="entity" gid="321" x="464" y="560" width="16" height="16">
    <properties>
-    <property name="active" value="1"/>
+    <property name="active" value="0"/>
     <property name="atype" value="0"/>
     <property name="chasing" value="0"/>
     <property name="chrx" value="0"/>
@@ -214,9 +214,9 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="64" name="Entity 7" type="entity" gid="321" x="448" y="576" width="16" height="16">
+  <object id="8" name="Entity 7" type="entity" gid="321" x="448" y="576" width="16" height="16">
    <properties>
-    <property name="active" value="1"/>
+    <property name="active" value="0"/>
     <property name="atype" value="0"/>
     <property name="chasing" value="0"/>
     <property name="chrx" value="0"/>
@@ -240,7 +240,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="65" name="Entity 8" type="entity" gid="789" x="240" y="480" width="16" height="16">
+  <object id="9" name="Entity 8" type="entity" gid="789" x="240" y="480" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -266,7 +266,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="66" name="Entity 9" type="entity" gid="489" x="288" y="480" width="16" height="16">
+  <object id="10" name="Entity 9" type="entity" gid="489" x="288" y="480" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>

@@ -89,7 +89,9 @@ function entity_handler(en)
     -- We've never spoken to Tsorin, or we've finished his quest already
     if progress.talk_tsorin == 0 or progress.talk_tsorin > 2 then
       -- talkderig will always == 3 the first time you talk to him
-      if progress.talkderig == 3 then
+      if progress.portalgone == 1 then
+        bubble(en, _"Good job with the portal.")
+      elseif progress.talkderig == 3 then
         if progress.talk_tsorin > 2 then
           -- You have spoken to Derig because of Tsorin
           bubble(en, _"Thank you for your assistance, $0. I have another request for you.")

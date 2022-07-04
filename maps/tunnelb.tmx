@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="140" height="60" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="19">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="140" height="60" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="20">
  <properties>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="0"/>
@@ -54,5 +54,11 @@
   <object id="3" name="entrance_e" type="marker" x="2224" y="688" width="16" height="16"/>
   <object id="18" name="entrance_w" type="marker" x="0" y="688" width="16" height="16"/>
  </objectgroup>
- <objectgroup color="#0000ff" id="9" name="bounds" visible="0"/>
+ <objectgroup color="#0000ff" id="9" name="bounds">
+  <object id="19" name="bounds" type="bounds" x="0" y="112" width="2240" height="704">
+   <properties>
+    <property name="btile" value="0"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="130" height="151" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="59">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="130" height="151" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="61">
  <properties>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="1"/>
@@ -28,7 +28,7 @@
  </layer>
  <layer id="2" name="bmap" width="130" height="151">
   <data encoding="base64" compression="zlib">
-   eJztzjENAAAIA7DZwb9BTCyBo1XQBAAAAAAA+uY6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMALC7piACo=
+   eJztzgEJAAAIAzDrvH9BSygibAlWBQAAAAAA83IdAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgjVwHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIBVDV7ZAFM=
   </data>
  </layer>
  <objectgroup color="#ff00ff" id="3" name="entities"/>
@@ -44,7 +44,7 @@
  </layer>
  <layer id="6" name="obstacles" width="130" height="151" opacity="0.5">
   <data encoding="base64" compression="zlib">
-   eJzt2k0OgjAYBFBX3v+i3sGFIbKAyo+0Q/te4o5A880AijweAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDoXs/Ph/FM2c/z14e+zTP/lXVpm637IM+WzLZkXtqGbDUyWuuJ60aOmhmUrh360NaZ2Z+5l1yxHo5LzEQX6kuceeKaepc488Q19e7IzP+V09r3B+q7cu579u33QnsJ809Yw+gSMkhYA+1zcF/IUSuHtePoQYbWObQ+Pl8ts9CDLCn/PdFejWzkfi9L75scfQ7p3O/P3ueF9Gvrua0HYyj1QQfGs/S+GWOastcBdAAAAAAAAAAAAAAAAAAAAAAAAAAAAADu7w2TSWhr
+   eJzt2k0OgyAQBlBXvf9Fe4cuGlMXivhTZoT3ku6IkvlGJZRpAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABG9359f4xnzn6Zv37o2zLzvaxLY2qvQT41mdVkXhpDbi0y2uoT7408WmZQenfoh1hXan/lW7I1Xi/E2FsPRtAL7WWsecY59S5jzTPOqXdnan5XTlvrB9r7Z92PXNsaMV6G+meYw+gyZJBhDsTn4LuQR6scSvtIxIvOIfr+/ERmoQ9yyfLfE/FaZCP3Z1k7b3J2H9Kz35+j+4X0q/bZ1gdj2DtfwljWzpsxpjl7PYAeAAAAAAAAAAAAAAAAAAAAAAAAAAAAgOf7AOs9aV4=
   </data>
  </layer>
  <objectgroup color="#008000" id="7" name="zones">
@@ -57,9 +57,11 @@
   <object id="56" name="2" type="zone" x="816" y="1456" width="16" height="16"/>
   <object id="57" name="2" type="zone" x="720" y="1408" width="16" height="16"/>
   <object id="58" name="2" type="zone" x="768" y="1344" width="16" height="16"/>
+  <object id="59" name="3" type="zone" x="1168" y="1392" width="16" height="16"/>
  </objectgroup>
- <objectgroup color="#ffff00" id="8" name="markers">
+ <objectgroup color="#ffff00" id="8" name="markers" visible="0">
   <object id="32" name="entrance" type="marker" x="752" y="1584" width="16" height="16"/>
+  <object id="60" name="treasure1" type="marker" x="1168" y="1392" width="16" height="16"/>
  </objectgroup>
  <objectgroup color="#0000ff" id="9" name="bounds" visible="0">
   <object id="45" name="bounds" type="bounds" x="1648" y="512" width="304" height="320">

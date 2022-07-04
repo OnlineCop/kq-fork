@@ -1306,6 +1306,7 @@ s_erow erows[NUM_ETROWS] = {
     { 30, 34, 100, { 69, 69, 0, 0, 0 } },       { 30, 34, 0, { 69, 70, 69, 0, 0 } },
 
     { 31, 33, 50, { 68, 68, 68, 0, 0 } },       { 31, 33, 100, { 59, 59, 59, 0, 0 } },
+    { 31, 33, 0, { 103, 0, 0, 0, 0 } },
 
     { 32, 33, 25, { 89, 90, 80, 0, 0 } },       { 32, 33, 50, { 80, 81, 80, 0, 0 } },
     { 32, 34, 75, { 81, 82, 88, 0, 0 } },       { 32, 34, 100, { 81, 82, 83, 0, 0 } },
@@ -1430,7 +1431,9 @@ s_encounter battles[NUM_BATTLES] = {
     { 0, 255, 25, 39, 99, "hm.s3m", "back10.png" }, // 77 malks mountain pass
 
     { 0, 255, 25, 40, 99, "hm.s3m", "back2.png" },  // 78 malks crystal cave
-    { 0, 255, 1, 40, 4, "hm.s3m", "back2.png" },    // 79 malks crystal cave boss
+    { 0, 255, 1, 40, 2, "hm.s3m", "back2.png" },    // 79 malks crystal cave boss
+
+    { 0, 255, 1, 31, 2, "hm.s3m", "back5.png" },    // 80 shrine  boss
 };
 
 // clang-format on

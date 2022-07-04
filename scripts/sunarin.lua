@@ -76,10 +76,10 @@ function zone_handler(zn)
       end
     end
   elseif (zn == 13) then
-    chest(159, I_OCEANPEARL, 2)
+    chest(159, I_WATERRING, 1)
     refresh()
   elseif (zn == 14) then
-    chest(160, I_REGENERATOR, 1)
+    chest(160, I_IRUNE, 1)
     refresh()
   elseif (zn == 15) then
     chest(161, I_SHIELD4, 1)

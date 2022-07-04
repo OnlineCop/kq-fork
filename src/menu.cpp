@@ -801,15 +801,11 @@ KFighter player2fighter(int who)
     {
         ++current_fighter.opal_power;
     }
-    if (plr.eqp[EQP_SHIELD] == I_SHIELD7)
+    if (plr.eqp[EQP_SHIELD] == I_SHIELD6)
     {
         ++current_fighter.opal_power;
     }
     if (plr.eqp[EQP_ARMOR] == I_ARMOR7)
-    {
-        ++current_fighter.opal_power;
-    }
-    if (plr.eqp[EQP_SPECIAL] == I_BAND3)
     {
         ++current_fighter.opal_power;
     }

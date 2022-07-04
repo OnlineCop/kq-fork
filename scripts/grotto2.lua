@@ -9,10 +9,11 @@
 function autoexec()
   refresh()
   all_found = true
-  if progress.tunnel ~= 0 then
+  if progress.tunnel > 0 and progress.tunnel < 4 then
     LOC_at_table()
     set_ent_active(8, 1)
     set_ent_active(9, 1)
+    LOC_create_tent()
   else
     for a = 0, 9, 1 do
       set_ent_active(a, 0)
@@ -25,37 +26,30 @@ function entity_handler(en)
   -- You are talking to other party members
   if (get_ent_id(en) == SENSAR) then
     bubble(en, _"Thinking of Malkaron's army makes me angry.")
-    -- bubble(en, _"I would be useful to you, since I can use Rage in battle.")
   elseif (get_ent_id(en) == SARINA) then
-    bubble(en, _"Let's go.")
-    -- bubble(en, _"In battle, I can attack multiple targets at once if I'm equipped with the right weapon.")
+    bubble(en, _"I'm tired of waiting. Let's go.")
   elseif (get_ent_id(en) == CORIN) then
-    -- bubble(en, _"I can infuse weapons with magic during battle.")
+    bubble(en, _"Do you really think Noslom has enough gold to pay all of us?")
   elseif (get_ent_id(en) == AJATHAR) then
-    -- bubble(en, _"I notice that chanting a prayer during battle can heal your party or dispells the undead monsters.")
     bubble(en, _"I've prepared for this moment.")
   elseif (get_ent_id(en) == CASANDRA) then
-    -- bubble(en, _"I can use my Boost ability to strengthen spells when I am attacking.")
-    bubble(en, _"It's time.")
+    bubble(en, _"Malkaron won't know what hits him.")
   elseif (get_ent_id(en) == TEMMIN) then
-    -- bubble(en, _"I am very protective of my team members and will take a beating in their place.")
-    bubble(en, _"It's time.")
+    bubble(en, _"It's time to make Malkaron pay for his crimes.")
   elseif (get_ent_id(en) == AYLA) then
-    bubble(en, _"It's time.")
-    -- bubble(en, _"I'm a thief by trade. You might be surprised what you can steal from enemies!")
+    bubble(en, _"I wonder if Malkaron has any good treasure.")
   elseif (get_ent_id(en) == NOSLOM) then
-    bubble(en, _"It's time.")
-    -- bubble(en, _"I have a very keen eye. Not even enemies can hide their weaknesses from me!")
+    bubble(en, _"Hmm not everything is adding up. I must be missing something.")
 
   elseif (en == 8) then
     if progress.tunnel < 2 then
       if (prompt(en, 2, 0, "Ready?",
       "  yes",
       "  no") == 0) then
-        if all_found == false then
-          bubble(HERO1, _"But what about the others?")
-          bubble(en, _"What about 'em? More reward for you.")
-        end
+        -- if all_found == false then
+        --   bubble(HERO1, _"But what about the others?")
+        --   bubble(en, _"What about 'em? More reward for you.")
+        -- end
         bubble(en, _"Ahh let me take a look at this seal...")
         bubble(en, _"...")
         move_entity(8, "ruins")
@@ -66,7 +60,6 @@ function entity_handler(en)
           bubble(en, _"Now it's time for you to go in there and do your hero duty and make sure there aren't any nasty surprises in there.")
             progress.tunnel = 2
             change_map("shrine", "entrance")
-            -- change_map("main", "underwater_w")
           end
         else
           bubble(en, _"Have you cleared the tunnel yet?")
@@ -75,6 +68,11 @@ function entity_handler(en)
         end
   elseif (en == 9) then
     bubble(en, _"I'm just here to carry Nostik's bags.")
+    
+    bubble(en, _"Would you like to change your party members?")
+    select_manor()
+    LOC_at_table()
+
   end
 end
 
@@ -133,11 +131,30 @@ function zone_handler(zn)
     chest(49, I_HELM1, 1)
     refresh()
 
+  elseif (zn == 6) then
+    if (prompt(255, 2, 0, _"Take a nap?",
+    _"  yes",
+    _"  no") == 0) then
+      do_inn_effects(1)
+    end
   end
 end
 
+function LOC_create_tent()
+  x, y = marker("tent")
+  set_mtile(x, y, 496)
+  set_mtile(x + 1, y, 497)
+  set_mtile(x, y - 1, 494)
+  set_mtile(x + 1, y - 1, 495)
+  set_obs(x, y, 1)
+  set_obs(x + 1, y, 1)
+  set_obs(x, y - 1, 1)
+  set_obs(x + 1, y - 1, 1)
+  set_zone(x, y, 6)
+  set_zone(x + 1, y, 6)
+end
 
--- Decide who should be sitting around the table
+-- Decide who should be standing around Nostik
 function LOC_at_table()
   local id, a
   for a = 0, 7 do
@@ -152,7 +169,7 @@ function LOC_at_table()
     if (id < 0) then
       -- Remove entity from the map
       set_ent_active(a, 0)
-      all_found = false
+      -- all_found = false
     else
       -- Place around the table
       set_ent_active(a, 1)

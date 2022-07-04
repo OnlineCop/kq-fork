@@ -19,6 +19,7 @@ end
 
 function refresh()
   showch("treasure1", 168)
+  showch("treasure2", 170)
 end
 
 
@@ -43,7 +44,11 @@ function zone_handler(zn)
     change_map("main", "malk_pass_e")
 
   elseif (zn == 3) then
-    chest(168, 0, 768)
+    chest(168, I_EDROPS, 2)
+    refresh()
+
+  elseif (zn == 4) then
+    chest(170, I_MPUP, 1)
     refresh()
   end
 end
