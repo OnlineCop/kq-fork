@@ -66,6 +66,16 @@ char debugging = 0;
 /*! Speed-up for slower machines */
 char slow_computer = 0;
 
+/* Enums */
+enum class eDisplayMode
+{
+    fullscreen,
+    window1x,
+    window2x,
+    window3x,
+    window4x
+};
+
 /*  Internal variables  */
 static void* sfx[KAudio::eSound::MAX_SAMPLES];
 
@@ -73,6 +83,7 @@ static void* sfx[KAudio::eSound::MAX_SAMPLES];
 static int load_samples();
 static int getavalue(const char*, int, int, int, bool, void (*)(int));
 static bool getakey(KPlayerInput::button&, const char*);
+static eDisplayMode prompt_display_mode();
 
 /*! \brief Play sound effects / music if adjusting it */
 static void sound_feedback(int val)
@@ -111,57 +122,57 @@ static void citem(int y, const char* caption, const char* value, eFontColor colo
  */
 void config_menu()
 {
-    size_t stop = 0, ptr = 0;
+    size_t ptr = 0;
     int p;
+    bool stop = false;
     eFontColor fontColor;
 
 #ifdef DEBUGMODE
-#define MENU_SIZE 18
-#else
 #define MENU_SIZE 17
+#else
+#define MENU_SIZE 16
 #endif
     static const char* dc[MENU_SIZE];
 
     /* Define rows with appropriate spacings for breaks between groups */
     int row[MENU_SIZE];
 
-    for (p = 0; p < 4; p++)
+    for (int p = 0; p < 3; p++)
     {
         row[p] = (p + 4) * 8; // (p * 8) + 32
     }
-    for (p = 4; p < 12; p++)
+    for (int p = 3; p < 11; p++)
     {
         row[p] = (p + 5) * 8; // (p * 8) + 40
     }
-    for (p = 12; p < 15; p++)
+    for (int p = 11; p < 14; p++)
     {
         row[p] = (p + 6) * 8; // (p * 8) + 48
     }
-    for (p = 15; p < MENU_SIZE; p++)
+    for (int p = 14; p < MENU_SIZE; p++)
     {
         row[p] = (p + 7) * 8; // (p * 8) + 56
     }
 
     /* Helper strings */
-    dc[0] = _("Display KQ in a window.");
-    dc[1] = _("Stretch to fit 640x480 resolution.");
-    dc[2] = _("Display the frame rate during play.");
-    dc[3] = _("Wait for vertical retrace.");
-    dc[4] = _("Key used to move up.");
-    dc[5] = _("Key used to move down.");
-    dc[6] = _("Key used to move left.");
-    dc[7] = _("Key used to move right.");
-    dc[8] = _("Key used to confirm action.");
-    dc[9] = _("Key used to cancel action.");
-    dc[10] = _("Key used to call character menu.");
-    dc[11] = _("Key used to call system menu.");
-    dc[12] = _("Toggle sound and music on/off.");
-    dc[13] = _("Overall sound volume (affects music).");
-    dc[14] = _("Music volume.");
-    dc[15] = _("Animation speed-ups for slow machines.");
-    dc[16] = _("Toggle how to allocate CPU usage.");
+    dc[0] = _("Set KQ's Display Mode.");
+    dc[1] = _("Display the frame rate during play.");
+    dc[2] = _("Wait for vertical retrace.");
+    dc[3] = _("Key used to move up.");
+    dc[4] = _("Key used to move down.");
+    dc[5] = _("Key used to move left.");
+    dc[6] = _("Key used to move right.");
+    dc[7] = _("Key used to confirm action.");
+    dc[8] = _("Key used to cancel action.");
+    dc[9] = _("Key used to call character menu.");
+    dc[10] = _("Key used to call system menu.");
+    dc[11] = _("Toggle sound and music on/off.");
+    dc[12] = _("Overall sound volume (affects music).");
+    dc[13] = _("Music volume.");
+    dc[14] = _("Animation speed-ups for slow machines.");
+    dc[15] = _("Toggle how to allocate CPU usage.");
 #ifdef DEBUGMODE
-    dc[17] = _("Things you can do only in DebugMode.");
+    dc[16] = _("Things you can do only in DebugMode.");
 #endif
 
     Config.push_config_state();
@@ -174,22 +185,21 @@ void config_menu()
         Draw.menubox(double_buffer, 88, 0, 16, 1, BLUE);
         Draw.print_font(double_buffer, 96, 8, _("KQ Configuration"), FGOLD);
         Draw.menubox(double_buffer, 32, 24, 30, MENU_SIZE + 3, BLUE);
-
-        citem(row[0], _("Windowed mode:"), windowed == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[1], _("Stretch Display:"), should_stretch_view ? _("YES") : _("NO"), FNORMAL);
-        citem(row[2], _("Show Frame Rate:"), show_frate ? _("YES") : _("NO"), FNORMAL);
-        citem(row[3], _("Wait for Retrace:"), wait_retrace == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[4], _("Up Key:"), kq_keyname(PlayerInput.up.scancode), FNORMAL);
-        citem(row[5], _("Down Key:"), kq_keyname(PlayerInput.down.scancode), FNORMAL);
-        citem(row[6], _("Left Key:"), kq_keyname(PlayerInput.left.scancode), FNORMAL);
-        citem(row[7], _("Right Key:"), kq_keyname(PlayerInput.right.scancode), FNORMAL);
-        citem(row[8], _("Confirm Key:"), kq_keyname(PlayerInput.balt.scancode), FNORMAL);
-        citem(row[9], _("Cancel Key:"), kq_keyname(PlayerInput.bctrl.scancode), FNORMAL);
-        citem(row[10], _("Menu Key:"), kq_keyname(PlayerInput.benter.scancode), FNORMAL);
-        citem(row[11], _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
+        const char* dmode;
+        citem(row[0], _("Display mode"), "", FNORMAL);
+        citem(row[1], _("Show Frame Rate:"), show_frate ? _("YES") : _("NO"), FNORMAL);
+        citem(row[2], _("Wait for Retrace:"), wait_retrace == 1 ? _("YES") : _("NO"), FNORMAL);
+        citem(row[3], _("Up Key:"), kq_keyname(PlayerInput.up.scancode), FNORMAL);
+        citem(row[4], _("Down Key:"), kq_keyname(PlayerInput.down.scancode), FNORMAL);
+        citem(row[5], _("Left Key:"), kq_keyname(PlayerInput.left.scancode), FNORMAL);
+        citem(row[6], _("Right Key:"), kq_keyname(PlayerInput.right.scancode), FNORMAL);
+        citem(row[7], _("Confirm Key:"), kq_keyname(PlayerInput.balt.scancode), FNORMAL);
+        citem(row[8], _("Cancel Key:"), kq_keyname(PlayerInput.bctrl.scancode), FNORMAL);
+        citem(row[9], _("Menu Key:"), kq_keyname(PlayerInput.benter.scancode), FNORMAL);
+        citem(row[10], _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
 
         // Show "ON" when either initializing or ready; its color will differ below.
-        citem(row[12], _("Sound System:"),
+        citem(row[11], _("Sound System:"),
               Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized ? _("ON") : _("OFF"), FNORMAL);
 
         fontColor = FNORMAL;
@@ -200,12 +210,12 @@ void config_menu()
         }
 
         sprintf(strbuf, "%3d%%", gsvol * 100 / 250);
-        citem(row[13], _("Sound Volume:"), strbuf, fontColor);
+        citem(row[12], _("Sound Volume:"), strbuf, fontColor);
 
         sprintf(strbuf, "%3d%%", gmvol * 100 / 250);
-        citem(row[14], _("Music Volume:"), strbuf, fontColor);
+        citem(row[13], _("Music Volume:"), strbuf, fontColor);
 
-        citem(row[15], _("Slow Computer:"), slow_computer ? _("YES") : _("NO"), FNORMAL);
+        citem(row[14], _("Slow Computer:"), slow_computer ? _("YES") : _("NO"), FNORMAL);
 
         if (cpu_usage)
         {
@@ -215,31 +225,17 @@ void config_menu()
         {
             sprintf(strbuf, "yield_timeslice()");
         }
-        citem(row[16], _("CPU Usage:"), strbuf, FNORMAL);
+        citem(row[15], _("CPU Usage:"), strbuf, FNORMAL);
 
 #ifdef DEBUGMODE
         if (debugging)
         {
             sprintf(strbuf, "%d", debugging);
         }
-        citem(row[17], _("DebugMode Stuff:"), debugging ? strbuf : _("OFF"), FNORMAL);
+        citem(row[16], _("DebugMode Stuff:"), debugging ? strbuf : _("OFF"), FNORMAL);
 #endif
 
-        /* This affects the VISUAL placement of the arrow */
-        p = ptr;
-        if (ptr > 3)
-        {
-            p++;
-        }
-        if (ptr > 11)
-        {
-            p++;
-        }
-        if (ptr > 14)
-        {
-            p++;
-        }
-        draw_sprite(double_buffer, menuptr, 32, p * 8 + 32);
+        draw_sprite(double_buffer, menuptr, 32, row[ptr]);
 
         /* This is the bottom window, where the description goes */
         Draw.menubox(double_buffer, 0, 216, 38, 1, BLUE);
@@ -249,7 +245,7 @@ void config_menu()
         if (PlayerInput.up())
         {
             // "jump" over unusable options
-            if (ptr == 15 && Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+            if (ptr == 14 && Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
             {
                 ptr -= 2;
             }
@@ -266,7 +262,7 @@ void config_menu()
         if (PlayerInput.down())
         {
             // "jump" over unusable options
-            if (ptr == 12 && Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+            if (ptr == 11 && Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
             {
                 ptr += 2;
             }
@@ -285,81 +281,71 @@ void config_menu()
             switch (ptr)
             {
             case 0:
-                Draw.text_ex(B_TEXT, 255,
-                             _("Changing the display mode to or from windowed "
-                               "view could have serious ramifications. It is "
-                               "advised that you save first."));
-                if (windowed == 0)
+                switch (prompt_display_mode())
                 {
-                    sprintf(strbuf, _("Switch to windowed mode?"));
+                case eDisplayMode::fullscreen:
+                    windowed = false;
+                    break;
+                case eDisplayMode::window1x:
+                    windowed = true;
+                    window_width = eSize::SCREEN_W;
+                    window_height = eSize::SCREEN_H;
+                    break;
+                case eDisplayMode::window2x:
+                    windowed = true;
+                    window_width = eSize::SCREEN_W * 2;
+                    window_height = eSize::SCREEN_H * 2;
+                    break;
+                case eDisplayMode::window3x:
+                    windowed = true;
+                    window_width = eSize::SCREEN_W * 3;
+                    window_height = eSize::SCREEN_H * 3;
+                    break;
+                case eDisplayMode::window4x:
+                    windowed = true;
+                    window_width = eSize::SCREEN_W * 4;
+                    window_height = eSize::SCREEN_H * 4;
+                    break;
                 }
-                else
-                {
-                    sprintf(strbuf, _("Switch to full screen?"));
-                }
-                p = Draw.prompt(255, 2, B_TEXT, strbuf, _("  no"), _("  yes"), "");
-                if (p == 1)
-                {
-                    windowed = !windowed;
-                    Config.set_config_int(NULL, "windowed", windowed);
-                    set_graphics_mode();
-                }
+                set_graphics_mode();
+                Config.set_config_int(NULL, "windowed", windowed);
+                Config.set_config_int(nullptr, "window_width", window_width);
+                Config.set_config_int(nullptr, "window_height", window_height);
                 break;
             case 1:
-                Draw.text_ex(B_TEXT, 255,
-                             _("Changing the stretched view option could have "
-                               "serious ramifications. It is advised that you "
-                               "save your game before trying this."));
-                if (!should_stretch_view)
-                {
-                    sprintf(strbuf, _("Try to stretch the display?"));
-                }
-                else
-                {
-                    sprintf(strbuf, _("Switch to unstretched display?"));
-                }
-                p = Draw.prompt(255, 2, B_TEXT, strbuf, _("  no"), _("  yes"), "");
-                if (p == 1)
-                {
-                    should_stretch_view = !should_stretch_view;
-                    Config.set_config_int(NULL, "stretch_view", should_stretch_view);
-                    set_graphics_mode();
-                }
-                break;
-            case 2:
                 show_frate = !show_frate;
                 Config.set_config_int(NULL, "show_frate", show_frate);
                 break;
-            case 3:
+            case 2:
                 wait_retrace = !wait_retrace;
                 Config.set_config_int(NULL, "wait_retrace", wait_retrace);
                 break;
-            case 4:
+            case 3:
                 getakey(PlayerInput.up, "kup");
                 break;
-            case 5:
+            case 4:
                 getakey(PlayerInput.down, "kdown");
                 break;
-            case 6:
+            case 5:
                 getakey(PlayerInput.left, "kleft");
                 break;
-            case 7:
+            case 6:
                 getakey(PlayerInput.right, "kright");
                 break;
-            case 8:
+            case 7:
                 getakey(PlayerInput.balt, "kalt");
                 break;
-            case 9:
+            case 8:
                 getakey(PlayerInput.bctrl, "kctrl");
                 break;
-            case 10:
+            case 9:
                 getakey(PlayerInput.benter, "kenter");
                 break;
-            case 11:
+            case 10:
                 getakey(PlayerInput.besc, "kesc");
                 break;
 
-            case 12:
+            case 11:
                 if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     sound_init();
@@ -378,7 +364,7 @@ void config_menu()
                 Config.set_config_int(NULL, "is_sound",
                                       Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized);
                 break;
-            case 13:
+            case 12:
                 if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     p = getavalue(_("Sound Volume"), 0, 25, gsvol / 10, true, sound_feedback);
@@ -397,7 +383,7 @@ void config_menu()
                     play_effect(KAudio::eSound::SND_BAD, 128);
                 }
                 break;
-            case 14:
+            case 13:
                 if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     p = getavalue(_("Music Volume"), 0, 25, gmvol / 10, true, music_feedback);
@@ -415,12 +401,12 @@ void config_menu()
                     play_effect(KAudio::eSound::SND_BAD, 128);
                 }
                 break;
-            case 15:
+            case 14:
                 /* TT: toggle slow_computer */
                 slow_computer = !slow_computer;
                 Config.set_config_int(NULL, "slow_computer", slow_computer);
                 break;
-            case 16:
+            case 15:
                 /* TT: Adjust the CPU usage:yield_timeslice() or rest() */
                 cpu_usage++;
                 if (cpu_usage > 2)
@@ -429,7 +415,7 @@ void config_menu()
                 }
                 break;
 #ifdef DEBUGMODE
-            case 17:
+            case 16:
                 /* TT: Things we only have access to when we're in debug mode */
                 if (debugging < 4)
                 {
@@ -445,7 +431,7 @@ void config_menu()
         }
         if (PlayerInput.bctrl())
         {
-            stop = 1;
+            stop = true;
         }
     }
     Config.pop_config_state();
@@ -767,8 +753,13 @@ void play_effect(int efc, int panning)
  */
 void set_graphics_mode()
 {
-    Draw.set_window(SDL_CreateWindow("KQ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width,
-                                     window_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE));
+    int flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+    if (!windowed)
+    {
+        flags |= SDL_WINDOW_FULLSCREEN;
+    }
+    Draw.set_window(
+        SDL_CreateWindow("KQ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width, window_height, flags));
 }
 
 /*! \brief Show keys help
@@ -819,6 +810,9 @@ void sound_init()
     }
     switch (Audio.sound_initialized_and_ready)
     {
+    case KAudio::eSoundSystem::NotInitialized:
+        // (just to cover all cases and suppress a warning)
+        break;
     case KAudio::eSoundSystem::Initialize:
         Music.init_music();
         Audio.sound_initialized_and_ready = load_samples() ? KAudio::eSoundSystem::NotInitialized
@@ -848,5 +842,29 @@ void store_window_size()
         Config.set_config_int(nullptr, "window_width", new_width);
         Config.set_config_int(nullptr, "window_height", new_height);
         Config.pop_config_state();
+    }
+}
+
+/*! \brief Ask for window mode.
+ * @returns the selected mode
+ */
+eDisplayMode prompt_display_mode()
+{
+    const char* options[] = { _("Full screen"), _("Window 1x"), _("Window 2x"), _("Window 3x"), _("Window 4x") };
+    int choice = Draw.prompt_ex(255, _("Select display mode"), options, 5);
+    switch (choice)
+    {
+    case 0:
+        return eDisplayMode::fullscreen;
+    case 1:
+        return eDisplayMode::window1x;
+    case 2:
+        return eDisplayMode::window2x;
+    case 3:
+        return eDisplayMode::window3x;
+    case 4:
+        return eDisplayMode::window4x;
+    default:
+        return eDisplayMode::window1x; // can't happen
     }
 }

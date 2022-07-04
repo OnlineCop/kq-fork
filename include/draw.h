@@ -326,7 +326,7 @@ class KDraw
      * \author PH
      * \date 20030417
      *
-     * \param   who Which character is ASKING the question
+     * \param   who Which character is ASKING the question, or 255 if it's a 'general question'
      * \param   ptext The prompt test
      * \param   opt An array of options, null terminated
      * \param   n_opt The number of options

@@ -657,6 +657,7 @@ int KSaveGame::start_menu(bool skip_splash)
         /* New game init */
         Disk.load_game_from_file(kqres(eDirectories::DATA_DIR, "starting.xml").c_str());
     }
+    store_window_size();
     return stop - 1;
 }
 
