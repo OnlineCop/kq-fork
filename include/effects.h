@@ -21,9 +21,9 @@
 
 #pragma once
 
+#include "enums.h"
+#include <cstddef>
 #include <cstdint>
-
-enum eFont;
 
 class KEffects
 {

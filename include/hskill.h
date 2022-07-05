@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 
 int hero_skillcheck(size_t);

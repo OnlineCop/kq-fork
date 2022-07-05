@@ -25,6 +25,7 @@
  * \brief Enemy Skills header file
  */
 
+#include <cstddef>
 #include <cstdint>
 
 void combat_skill(size_t);
