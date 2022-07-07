@@ -864,15 +864,8 @@ bool KInventory::removeIndex(int ix, int quantity)
             it.quantity -= quantity;
             return true;
         }
-        else
-        {
-            return false;
-        }
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 void KInventory::normalize()
 {
