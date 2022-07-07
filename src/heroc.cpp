@@ -271,7 +271,10 @@ static void combat_draw_items(int pg)
             Draw.print_font(double_buffer, 224, a * 8 + 16, strbuf, k);
         }
     }
-    draw_sprite(double_buffer, pgb[pg], 238, 142);
+    if (pg < MAXPGB)
+    {
+        draw_sprite(double_buffer, pgb[pg], 238, 142);
+    }
 }
 
 /*! \brief Draw spell list
@@ -308,7 +311,10 @@ static void combat_draw_spell_menu(int c, int ptr, int pg)
         }
     }
     draw_sprite(double_buffer, menuptr, 80, ptr * 8 + 32);
-    draw_sprite(double_buffer, pgb[pg], 230, 126);
+    if (pg < MAXPGB)
+    {
+        draw_sprite(double_buffer, pgb[pg], 230, 126);
+    }
 }
 
 /*! \brief Use item

@@ -172,6 +172,12 @@ struct s_special_item
  */
 struct s_inventory
 {
+    s_inventory(int i, int q)
+        : item(i)
+        , quantity(q)
+    {
+    }
+    s_inventory() = default;
     unsigned short item;
     unsigned short quantity;
 };

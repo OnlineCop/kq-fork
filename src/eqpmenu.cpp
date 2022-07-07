@@ -40,8 +40,7 @@
 
 /* Globals  */
 static int tstats[13], tres[R_TOTAL_RES];
-static uint16_t t_inv[MAX_INV], sm;
-static size_t tot;
+static std::vector<uint16_t> t_inv;
 static char eqp_act;
 
 /* Internal functions */
@@ -60,26 +59,24 @@ static bool deequip(uint32_t, uint32_t);
  * This is used to calculate the difference in stats due to
  * (de)equipping a piece of equipment.
  *
- * \param   aa Character to process
- * \param   p2 Slot to consider changing
- * \param   ii New piece of equipment to compare/use
+ * \param   c Character to process
+ * \param   slot Slot to consider changing
+ * \param   item New piece of equipment to compare/use
  */
-static void calc_equippreview(uint32_t aa, uint32_t p2, int ii)
+static void calc_equippreview(uint32_t c, uint32_t slot, int item)
 {
-    int c, z;
-
-    c = party[pidx[aa]].eqp[p2];
-    party[pidx[aa]].eqp[p2] = ii;
+    int tmp = party[pidx[c]].eqp[slot];
+    party[pidx[c]].eqp[slot] = item;
     kmenu.update_equipstats();
-    for (z = 0; z < 13; z++)
+    for (int z = 0; z < 13; z++)
     {
-        tstats[z] = fighter[aa].stats[z];
+        tstats[z] = fighter[c].stats[z];
     }
-    for (z = 0; z < R_TOTAL_RES; z++)
+    for (int z = 0; z < R_TOTAL_RES; z++)
     {
-        tres[z] = fighter[aa].res[z];
+        tres[z] = fighter[c].res[z];
     }
-    party[pidx[aa]].eqp[p2] = c;
+    party[pidx[c]].eqp[slot] = tmp;
     kmenu.update_equipstats();
 }
 
@@ -94,18 +91,16 @@ static void calc_equippreview(uint32_t aa, uint32_t p2, int ii)
  */
 static void calc_possible_equip(int c, int slot)
 {
-    uint32_t k;
-
-    tot = 0;
-    for (k = 0; k < MAX_INV; k++)
+    t_inv.clear();
+    for (int k = 0; k < g_inv.size(); k++)
     {
+        auto [item, quantity] = g_inv[k];
         // Check if we have any items at all
-        if (g_inv[k].item > 0 && g_inv[k].quantity > 0)
+        if (item > 0 && quantity > 0)
         {
-            if (items[g_inv[k].item].type == slot && items[g_inv[k].item].eq[pidx[c]] != 0)
+            if (items[item].type == slot && items[item].eq[pidx[c]] != 0)
             {
-                t_inv[tot] = k;
-                tot++;
+                t_inv.push_back(k);
             }
         }
     }
@@ -120,8 +115,13 @@ static void calc_possible_equip(int c, int slot)
  */
 static void choose_equipment(int c, int slot)
 {
-    int stop = 0, yptr = 0, pptr = 0, sm = 0, ym = 15;
-
+    if (t_inv.empty())
+    {
+        play_effect(KAudio::eSound::SND_BAD, 128);
+        return;
+    }
+    int yptr = 0, pptr = 0;
+    bool stop = false;
     while (!stop)
     {
         Game.ProcessEvents();
@@ -129,40 +129,21 @@ static void choose_equipment(int c, int slot)
         Draw.drawmap();
         draw_equipmenu(c, 0);
         draw_equippable(c, slot, pptr);
-        if (tot == 0)
-        {
-            draw_equippreview(c, -1, 0);
-            play_effect(KAudio::eSound::SND_BAD, 128);
-            return;
-        }
         draw_equippreview(c, slot, g_inv[t_inv[pptr + yptr]].item);
         draw_sprite(double_buffer, menuptr, 12, yptr * 8 + 100);
         Draw.blit2screen();
-        if (tot < NUM_ITEMS_PER_PAGE)
-        {
-            sm = 0;
-            ym = tot - 1;
-        }
-        else
-        {
-            sm = tot - NUM_ITEMS_PER_PAGE;
-        }
 
         if (PlayerInput.down())
         {
-            if (yptr == 15)
+            if (yptr < (NUM_ITEMS_PER_PAGE - 1))
             {
-                pptr++;
-                if (pptr > sm)
-                {
-                    pptr = sm;
-                }
+                ++yptr;
             }
             else
             {
-                if (yptr < ym)
+                if (pptr + yptr < (t_inv.size() - 1))
                 {
-                    yptr++;
+                    ++pptr;
                 }
             }
             play_effect(KAudio::eSound::SND_CLICK, 128);
@@ -171,10 +152,9 @@ static void choose_equipment(int c, int slot)
         {
             if (yptr == 0)
             {
-                pptr--;
-                if (pptr < 0)
+                if (pptr > 0)
                 {
-                    pptr = 0;
+                    --pptr;
                 }
             }
             else
@@ -188,7 +168,7 @@ static void choose_equipment(int c, int slot)
             if (equip(pidx[c], t_inv[pptr + yptr]) == 1)
             {
                 play_effect(KAudio::eSound::SND_EQUIP, 128);
-                stop = 1;
+                stop = true;
             }
             else
             {
@@ -197,7 +177,7 @@ static void choose_equipment(int c, int slot)
         }
         if (PlayerInput.bctrl())
         {
-            stop = 1;
+            stop = true;
         }
     }
     return;
@@ -292,7 +272,7 @@ static void draw_equipmenu(int c, bool sel)
  *
  * \param   c Character to equip
  * \param   slot Which 'part of the body' to equip
- * \param   pptr Which page of the inventory to draw
+ * \param   pptr the index of the top line of the displayed items
  */
 static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
 {
@@ -302,41 +282,29 @@ static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
     }
     else
     {
-        tot = 0;
-    }
-    if (tot < NUM_ITEMS_PER_PAGE)
-    {
-        sm = (uint16_t)tot;
-    }
-    else
-    {
-        sm = NUM_ITEMS_PER_PAGE;
+        t_inv.clear();
     }
     Draw.menubox(double_buffer, 12, 92, 20, NUM_ITEMS_PER_PAGE, BLUE);
-    for (int k = 0; k < sm; k++)
+    auto eptr = std::min(uint32_t(t_inv.size()), pptr + NUM_ITEMS_PER_PAGE);
+    for (int k = 0, p = pptr; p < eptr; ++k, ++p)
     {
-        // j == item index #
-        int j = g_inv[t_inv[pptr + k]].item;
-        // z == number of items
-        int z = g_inv[t_inv[pptr + k]].quantity;
-        Draw.draw_icon(double_buffer, items[j].icon, 28, k * 8 + 100);
-        Draw.print_font(double_buffer, 36, k * 8 + 100, items[j].name, FNORMAL);
-        if (z > 1)
+        auto [id, quantity] = g_inv[t_inv[p]];
+        Draw.draw_icon(double_buffer, items[id].icon, 28, k * 8 + 100);
+        Draw.print_font(double_buffer, 36, k * 8 + 100, items[id].name, FNORMAL);
+        if (quantity > 1)
         {
-            sprintf(strbuf, "^%d", z);
+            sprintf(strbuf, "^%d", quantity);
             Draw.print_font(double_buffer, 164, k * 8 + 100, strbuf, FNORMAL);
         }
     }
+    // Draw up & down arrows if needed
     if (pptr > 0)
     {
         draw_sprite(double_buffer, upptr, 180, 98);
     }
-    if (tot > NUM_ITEMS_PER_PAGE)
+    if (t_inv.size() > pptr + NUM_ITEMS_PER_PAGE)
     {
-        if (pptr < tot - NUM_ITEMS_PER_PAGE)
-        {
-            draw_sprite(double_buffer, dnptr, 180, 206);
-        }
+        draw_sprite(double_buffer, dnptr, 180, 206);
     }
 }
 
@@ -416,11 +384,11 @@ static void draw_equippreview(int ch, int ptr, int pp)
  *
  * \param   c Character to process
  * \param   selected_item Item to add
- * \returns 1 if equip was successful, 0 otherwise
+ * \returns true if equip was successful, false otherwise
  */
 static bool equip(uint32_t c, uint32_t selected_item)
 {
-    if (selected_item >= MAX_INV)
+    if (selected_item >= g_inv.size())
     {
         return false;
     }
@@ -459,34 +427,11 @@ static bool equip(uint32_t c, uint32_t selected_item)
     }
     if (existing > 0)
     {
-        // Check if we have any items at all
-        bool got = g_inv[selected_item].item > 0 && g_inv[selected_item].quantity > 0;
-        // this first argument checks to see if there's one of given item
-        if (g_inv[selected_item].quantity == 1 && got)
-        {
-            // swap 1 for 1
-            party[c].eqp[slot] = item;
-            g_inv[selected_item].item = existing;
-            g_inv[selected_item].quantity = 1;
-            return true;
-        }
-        else
-        {
-            // otherwise try and move the existing item away
-            int z = check_inventory(existing, 1);
-            if (z != 0)
-            {
-                party[c].eqp[slot] = 0;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        g_inv.add(existing);
     }
     // Place in the slot
     party[c].eqp[slot] = item;
-    remove_item(selected_item, 1);
+    g_inv.removeIndex(selected_item);
     return true;
 }
 
@@ -671,7 +616,7 @@ static void optimize_equip(int c)
     maxx = 0;
     maxi = -1;
     calc_possible_equip(c, 0);
-    for (int a = 0; a < tot; a++)
+    for (int a = 0; a < t_inv.size(); a++)
     {
         int b = g_inv[t_inv[a]].item;
         int v = items[b].stats[eStat::Attack];
@@ -691,7 +636,7 @@ static void optimize_equip(int c)
         maxx = 0;
         maxi = -1;
         calc_possible_equip(c, z);
-        for (int a = 0; a < tot; a++)
+        for (int a = 0; a < t_inv.size(); a++)
         {
             int b = g_inv[t_inv[a]].item;
             int v = items[b].stats[eStat::Defense] + items[b].stats[eStat::MagicDefense];
@@ -710,7 +655,7 @@ static void optimize_equip(int c)
     maxx = 0;
     maxi = -1;
     calc_possible_equip(c, EQP_SPECIAL);
-    for (int a = 0; a < tot; a++)
+    for (int a = 0; a < t_inv.size(); a++)
     {
         int b = g_inv[t_inv[a]].item;
         int v = 0;

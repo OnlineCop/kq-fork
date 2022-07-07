@@ -418,7 +418,7 @@ static void draw_sideshot(int selected_item)
             }
         }
     }
-    for (inventory_index = 0; inventory_index < MAX_INV; inventory_index++)
+    for (inventory_index = 0; inventory_index < g_inv.size(); inventory_index++)
     {
         if (g_inv[inventory_index].item == selected_item)
         {
@@ -729,7 +729,7 @@ static void sell_menu()
                 Draw.print_font(double_buffer, 264, p * 8 + 32, strbuf, k);
             }
         }
-        s_inventory& inv = g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr];
+        auto inv = g_inv[inv_page * NUM_ITEMS_PER_PAGE + yptr];
         sp = items[inv.item].price * 50 / 100;
         if (items[inv.item].price > 0)
         {
@@ -754,7 +754,10 @@ static void sell_menu()
             }
         }
         draw_sprite(double_buffer, menuptr, 32, yptr * 8 + 32);
-        draw_sprite(double_buffer, pgb[inv_page], 278, 158);
+        if (inv_page < MAXPGB)
+        {
+            draw_sprite(double_buffer, pgb[inv_page], 278, 158);
+        }
         Draw.blit2screen();
 
         if (PlayerInput.down())
@@ -781,6 +784,7 @@ static void sell_menu()
             }
             play_effect(KAudio::eSound::SND_CLICK, 128);
         }
+        int last_page = g_inv.size() == 0 ? 0 : (g_inv.size() - 1) / NUM_ITEMS_PER_PAGE;
         if (PlayerInput.left())
         {
             if (inv_page > 0)
@@ -789,13 +793,13 @@ static void sell_menu()
             }
             else
             {
-                inv_page = MAX_INV / NUM_ITEMS_PER_PAGE - 1;
+                inv_page = last_page;
             }
             play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.right())
         {
-            if (inv_page < (MAX_INV / NUM_ITEMS_PER_PAGE - 1))
+            if (inv_page < last_page)
             {
                 inv_page++;
             }
