@@ -137,12 +137,14 @@ class KInventory
      * \param quantity the quantity to add
      */
     void add(int type, int quantity = 1);
+
     /*! \brief Remove from to the inventory
      * \param item the I_XXX id to remove
      * \param quantity the quantity to remove
      * \returns true if there was sufficient to remove the quantity requested
      */
     bool remove(int type, int quantity = 1);
+
     /*! \brief Remove from to the inventory
      * Note that if the inventory slot contains less than 'quantity',
      * the slot is emptied, but it doesn't remove items from any other
@@ -152,11 +154,13 @@ class KInventory
      * \returns true if there was sufficient to remove the quantity requested
      */
     bool removeIndex(int index, int quantity = 1);
+
     /*! \brief Set the inventory
      * Replace contents with the given items
      * \param new_items a vector of items
      */
     void setAll(Items&& new_items);
+
     /// Return by value or (0,0) if outside 0..size-1
     s_inventory operator[](int);
 
@@ -432,17 +436,20 @@ class KGame
      * \returns the amount of gold in team's coffer.
      */
     int SetGold(int amount);
+
     /*! Process the SDL events
      * Will update various things, e.g. key pressed, window state changes
      * Call this regularly.
      * @return true if ready for next frame
      */
     bool ProcessEvents();
+
     /** Get current game time.
      * this is the elapsed time in the game;
      * \return the time
      */
     KTime GetGameTime() const;
+
     /*! Set the current game time
      * This resets the clock, e.g. when a save-game is loaded
      * \param time the new time
@@ -463,10 +470,12 @@ class KGame
      * \returns char of last key pressed or 0 if none
      */
     int get_key();
+
     /*! Handle extra controls
      * This is for things like debugging
      */
     void extra_controls();
+
     /*! Wait for keyboard release.
      * Process events and don't return until all keys are released
      */
@@ -474,8 +483,10 @@ class KGame
 
   public:
     const std::string WORLD_MAP;
+
     /*! The number of frames per second */
     const int32_t KQ_TICKS;
+
     // Game time in ticks (should be enough for >2 years real time play)
     int game_time;
     bool want_console = false;
@@ -488,6 +499,7 @@ class KGame
 
     /** Gold pieces held by the player */
     int gp;
+
     /** Last key */
     int keyp;
 };
