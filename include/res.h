@@ -41,6 +41,7 @@
 #define NUM_ETROWS 165
 #define NUM_BATTLES 80
 #define NUM_LUP 20
+
 /*\}*/
 
 /*! \brief An item */

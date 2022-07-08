@@ -1259,6 +1259,7 @@ void KGame::reset_world()
 
     lua_user_init();
 }
+
 static int rgb_index(RGB& c)
 {
     int bestindex = 255, bestdist = INT_MAX;
@@ -1502,6 +1503,7 @@ void KGame::extra_controls()
     }
 #endif
 }
+
 void KGame::wait_released()
 {
     bool any = true;
@@ -1521,6 +1523,7 @@ void KGame::wait_released()
         }
     }
 }
+
 void KGame::wait_enter()
 {
     while (!PlayerInput.balt())
@@ -1733,10 +1736,12 @@ void KGame::SetGameTime(const KTime& t)
 {
     game_time = t.total_seconds() * KQ_TICKS;
 }
+
 KTime KGame::GetGameTime() const
 {
     return { game_time / KQ_TICKS };
 }
+
 int KGame::get_key()
 {
     int k = keyp >= 0 && keyp < 128 ? keyp : 0;

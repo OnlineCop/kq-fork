@@ -30,10 +30,12 @@
 COLOR_MAP* color_map = &cmap;
 extern PALETTE pal;
 static RGB current_palette[PAL_SIZE];
+
 void set_palette(RGB* clrs)
 {
     std::copy(clrs, clrs + PAL_SIZE, current_palette);
 }
+
 void set_palette_range(PALETTE src, int from, int to)
 {
     std::copy(src + from, src + to, current_palette + from);
@@ -43,7 +45,9 @@ void get_palette(RGB* clrs)
 {
     std::copy(current_palette, current_palette + PAL_SIZE, clrs);
 }
+
 #define ALIGNED(x) ((x) + alignof(char*) - 1) & ~(alignof(char*) - 1)
+
 Raster::Raster(uint16_t w, uint16_t h)
     : width(w)
     , height(h)

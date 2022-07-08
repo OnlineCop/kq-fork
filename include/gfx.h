@@ -48,10 +48,12 @@ class Raster
     void vline(int16_t x, int16_t y0, int16_t y1, uint8_t color);
     void fill(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t color);
     void fill(uint8_t colour);
+
     uint8_t& ptr(int16_t x, int16_t y)
     {
         return data[x + y * static_cast<size_t>(stride)];
     }
+
     const uint16_t width, height;
     const uint16_t stride;
     void to_rgba32(SDL_Rect* rc, SDL_PixelFormat* format, void* pixels, int stride);
@@ -135,6 +137,7 @@ inline void rect(Raster* r, int x1, int y1, int x2, int y2, int c)
 void textprintf(Raster*, void*, int, int, int, const char*, ...);
 
 void set_window_palette(SDL_Window* w);
+
 inline void fullblit(Raster* src, Raster* dest)
 {
     src->blitTo(dest);

@@ -37,14 +37,17 @@ template<class T, class Loader, class Deleter = std::default_delete<T>> class Ca
     using data_type = std::map<std::string, upointer>;
     using deleter_type = Deleter;
     using loader_type = Loader;
+
     Cache(const loader_type& l)
         : loader(l)
     {
     }
+
     Cache(loader_type&& l = loader_type {})
         : loader(std::move(l))
     {
     }
+
     pointer get(const std::string& key)
     {
         auto it = data.find(key);
@@ -56,6 +59,7 @@ template<class T, class Loader, class Deleter = std::default_delete<T>> class Ca
         }
         return it->second.get();
     }
+
     void clear()
     {
         data.clear();

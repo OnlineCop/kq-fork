@@ -29,9 +29,11 @@ KConfig Config;
 KConfig::KConfig()
 {
 }
+
 KConfig::~KConfig()
 {
 }
+
 int KConfig::get_config_int(const char* section, const char* key, int defl)
 {
     auto& data = section ? current.sections[section] : current.unnamed;

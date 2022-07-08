@@ -88,6 +88,7 @@ KFighter::KFighter()
     }
     img.reset();
 }
+
 bool KFighter::IsPoisoned() const
 {
     return (sts[S_POISON] > 0);

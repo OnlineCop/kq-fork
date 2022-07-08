@@ -66,18 +66,22 @@ class KTime
         : value(seconds)
     {
     }
+
     int hours() const
     {
         return value / 3600;
     }
+
     int minutes() const
     {
         return (value / 60) % 60;
     }
+
     int seconds() const
     {
         return value % 60;
     }
+
     int total_seconds() const
     {
         return value;
@@ -120,11 +124,13 @@ class KInventory
 {
   public:
     using Items = std::vector<s_inventory>;
+
     /// Get number of items in the inventory
     Items::size_type size() const
     {
         return inv.size();
     }
+
     // Manipulate functions
     /*! \brief Add to the inventory
      * \param item the I_XXX id to add
@@ -442,6 +448,7 @@ class KGame
      * \param time the new time
      */
     void SetGameTime(const KTime&);
+
     /*! \brief Check last key
      * \returns char of last key pressed or 0 if none
      */
@@ -449,6 +456,7 @@ class KGame
     {
         return keyp;
     }
+
     /*! \brief Return last key
      * This resets the key so subsequent calls to this and \sa check_key() will
      * return 0

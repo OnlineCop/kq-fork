@@ -80,6 +80,7 @@ uint32_t* begin(tmx_layer& l)
 {
     return l.data.get();
 }
+
 uint32_t* end(tmx_layer& l)
 {
     return l.data.get() + l.size;
@@ -256,6 +257,7 @@ KBounds KTiledMap::load_tmx_bounds(XMLElement const* el)
     }
     return bounds;
 }
+
 /** \brief Scan tree for a named TMX <layer>.
  *
  * \param root the root of the tree
@@ -358,6 +360,7 @@ tmx_layer KTiledMap::load_tmx_layer(XMLElement const* el)
     }
     return layer;
 }
+
 /** \brief Load up the zones
  * \param el the <objectgroup> element containing the zones
  * \returns a vector of zones
@@ -384,6 +387,7 @@ std::vector<KZone> KTiledMap::load_tmx_zones(XMLElement const* el)
     }
     return zones;
 }
+
 /** \brief Load up the entities.
  * \param el the objectgroup element containing the entities
  * \returns a vector of entities
@@ -585,6 +589,7 @@ tmx_map::tmx_map()
 }
 
 static const uint16_t SHADOW_OFFSET = 200;
+
 /*! \brief Make this map the current one.
  * Make this map the one in play by copying its information into the
  * global structures. This function is the 'bridge' between the
@@ -749,6 +754,7 @@ struct b64
             ++ptr;
         }
     }
+
     uint8_t operator()()
     {
         if (ptr)
@@ -778,28 +784,34 @@ struct b64
             return PAD;
         }
     }
+
     bool error() const
     {
         return errbit;
     }
+
     void seterror()
     {
         errbit = true;
     }
+
     operator bool() const
     {
         return ptr != nullptr;
     }
+
     static const char* validchars;
     static const uint8_t PAD = 0x40;
     static const uint8_t ERROR = 0xff;
     const char* ptr;
     bool errbit;
 };
+
 const char* b64::validchars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                               "abcdefghijklmnopqrstuvwxyz"
                               "0123456789"
                               "+/=";
+
 /// Return true if a byte is a valid 6-bit block.
 static bool valid(uint8_t v)
 {

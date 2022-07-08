@@ -830,6 +830,7 @@ void KInventory::add(int type, int quantity)
     inv.emplace_back(type, quantity);
     normalize();
 }
+
 bool KInventory::remove(int type, int quantity)
 {
     for (auto& it : inv)
@@ -854,6 +855,7 @@ bool KInventory::remove(int type, int quantity)
     }
     return quantity == 0;
 }
+
 bool KInventory::removeIndex(int ix, int quantity)
 {
     if (ix >= 0 && ix < inv.size())
@@ -867,6 +869,7 @@ bool KInventory::removeIndex(int ix, int quantity)
     }
     return false;
 }
+
 void KInventory::normalize()
 {
     for (auto i = std::begin(inv); i != std::end(inv);)
@@ -903,6 +906,7 @@ void KInventory::normalize()
         }
     }
 }
+
 void KInventory::setAll(KInventory::Items&& t)
 {
     inv = std::move(t);

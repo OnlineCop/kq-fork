@@ -177,6 +177,7 @@ struct s_inventory
         , quantity(q)
     {
     }
+
     s_inventory() = default;
     unsigned short item;
     unsigned short quantity;

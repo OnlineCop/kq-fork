@@ -27,6 +27,7 @@
 #include <vector>
 
 class KAnimSequence;
+
 class KAnimation
 {
   public:

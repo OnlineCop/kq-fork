@@ -45,6 +45,7 @@ struct Cell
     // number of steps to reach the target
     int steps;
 };
+
 using CellQueue = std::queue<Cell>;
 
 static int compose_path(const int*, uint32_t, uint32_t, char*, size_t);

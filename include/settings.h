@@ -44,6 +44,7 @@ class KConfig
         std::string filename;
         bool dirty = false;
     };
+
     std::stack<ConfigLevel> levels;
     ConfigLevel current;
 };

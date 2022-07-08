@@ -121,13 +121,16 @@ template<typename _InputIterator> bool range_is_default(_InputIterator first, _I
  * through child elements.
  */
 typedef std::pair<XMLElement*, const char*> xiterator;
+
 struct xiterable : public std::pair<XMLElement*, const char*>
 {
     using std::pair<XMLElement*, const char*>::pair;
+
     xiterator begin()
     {
         return xiterator(first->FirstChildElement(second), second);
     }
+
     xiterator end()
     {
         return xiterator(nullptr, second);

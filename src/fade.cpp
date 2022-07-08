@@ -87,6 +87,7 @@ void do_transition(eTransitionFade type, int param)
         break;
     }
 }
+
 /*!
  * \brief Make an interpolated palette.
  * The interpolation is 0..256, 0 means 100% of first palette, 256 means 100% of second palette. Indexes < from or >= to

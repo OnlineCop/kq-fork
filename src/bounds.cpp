@@ -71,6 +71,7 @@ bool KBounds::IsBound(size_t& outIndex, int left, int top, int right, int bottom
 
     return false; // not found
 }
+
 const KBound* KBounds::IsBound(int left, int top, int right, int bottom) const
 {
     size_t index;

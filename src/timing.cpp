@@ -37,10 +37,12 @@
 
 static SDL_TimerID timer_id = 0;
 static int watchdog;
+
 void reset_watchdog()
 {
     watchdog = 100;
 }
+
 static Uint32 timer_cb(Uint32 interval, void*)
 {
     SDL_Event event = { 0 };
@@ -49,6 +51,7 @@ static Uint32 timer_cb(Uint32 interval, void*)
     SDL_PushEvent(&event);
     return interval;
 }
+
 void start_timer(int fps)
 {
     if (fps <= 0 || fps > 100)
@@ -68,6 +71,7 @@ void start_timer(int fps)
         Game.program_death("Error setting up timer", SDL_GetError());
     }
 }
+
 void stop_timer()
 {
     if (timer_id == 0)
@@ -77,6 +81,7 @@ void stop_timer()
     SDL_RemoveTimer(timer_id);
     timer_id = 0;
 }
+
 void kq_wait(long dt)
 {
     auto finish_time = SDL_GetTicks() + dt;
