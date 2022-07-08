@@ -675,13 +675,14 @@ int KDisk::save_global_inventory_xml(XMLElement* node)
 {
     XMLDocument* doc = node->GetDocument();
     XMLElement* inventory = doc->NewElement(TAG_INVENTORY);
-    for (auto& item : g_inv)
+    for (int i = 0; i < g_inv.size(); ++i)
     {
-        if (item.quantity > 0)
+        auto [item, quantity] = g_inv[i];
+        if (quantity > 0)
         {
             XMLElement* item_elem = doc->NewElement(TAG_ITEM);
-            item_elem->SetAttribute("id", item.item);
-            item_elem->SetAttribute("quantity", item.quantity);
+            item_elem->SetAttribute("id", item);
+            item_elem->SetAttribute("quantity", quantity);
             inventory->InsertEndChild(item_elem);
         }
     }
@@ -691,22 +692,16 @@ int KDisk::save_global_inventory_xml(XMLElement* node)
 
 int KDisk::load_global_inventory_xml(XMLElement* node)
 {
-    for (auto& item : g_inv)
-    {
-        item.item = 0;
-        item.quantity = 0;
-    }
+    KInventory::Items tmp;
     XMLElement* inventory = node->FirstChildElement(TAG_INVENTORY);
     if (inventory)
     {
-        auto gptr = g_inv;
         for (auto item : children(inventory, TAG_ITEM))
         {
-            gptr->item = item->IntAttribute("id");
-            gptr->quantity = item->IntAttribute("quantity");
-            ++gptr;
+            tmp.emplace_back(item->IntAttribute("id"), item->IntAttribute("quantity"));
         }
     }
+    g_inv.setAll(std::move(tmp));
     return 0;
 }
 

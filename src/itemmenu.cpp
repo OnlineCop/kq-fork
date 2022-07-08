@@ -51,9 +51,37 @@ char item_act;
 /* Internal functions */
 static void draw_itemmenu(int, int, int);
 static void sort_items();
-static void join_items();
 static void camp_item_targetting(int);
 static void sort_inventory();
+
+static void camp_drop_item(int ptr, int pptr)
+{
+    /* Make sure the player really wants to drop the item specified.
+     */
+    while (true)
+    {
+        Game.ProcessEvents();
+        Game.do_check_animation();
+        Draw.drawmap();
+        draw_itemmenu(ptr, pptr, 0);
+        Draw.menubox(double_buffer, 72 + 0, 204, 20, 1, DARKBLUE);
+        Draw.print_font(double_buffer, 104, 212, _("Confirm/Cancel"), FNORMAL);
+        Draw.blit2screen();
+
+        if (PlayerInput.balt())
+        {
+            auto index = pptr * NUM_ITEMS_PER_PAGE + ptr;
+            // Drop ALL of the selected items
+            remove_item(index, g_inv[index].quantity);
+            return;
+        }
+        if (PlayerInput.bctrl())
+        {
+            // cancelled
+            return;
+        }
+    }
+}
 
 /*! \brief Process the item menu
  *
@@ -62,8 +90,8 @@ static void sort_inventory();
  */
 void camp_item_menu()
 {
-    int stop = 0, ptr = 0, pptr = 0, sel = 0;
-
+    int ptr = 0, pptr = 0, sel = 0;
+    bool stop = false;
     item_act = 0;
     play_effect(KAudio::eSound::SND_MENU, 128);
     while (!stop)
@@ -73,13 +101,12 @@ void camp_item_menu()
         Draw.drawmap();
         draw_itemmenu(ptr, pptr, sel);
         Draw.blit2screen();
-
         if (sel == 0)
         {
             if (PlayerInput.down())
             {
                 ptr++;
-                if (ptr > 15)
+                if (ptr >= NUM_ITEMS_PER_PAGE)
                 {
                     ptr = 0;
                 }
@@ -90,18 +117,20 @@ void camp_item_menu()
                 ptr--;
                 if (ptr < 0)
                 {
-                    ptr = 15;
+                    ptr = NUM_ITEMS_PER_PAGE - 1;
                 }
                 play_effect(KAudio::eSound::SND_CLICK, 128);
             }
         }
+        int last_page = (g_inv.size() - 1) / NUM_ITEMS_PER_PAGE;
+
         if (PlayerInput.right())
         {
             if (sel == 0)
             {
                 /* One of the 16 items in the list */
                 pptr++;
-                if (pptr > MAX_INV / 16 - 1)
+                if (pptr > last_page)
                 {
                     pptr = 0;
                 }
@@ -125,7 +154,7 @@ void camp_item_menu()
                 pptr--;
                 if (pptr < 0)
                 {
-                    pptr = MAX_INV / 16 - 1;
+                    pptr = last_page;
                 }
             }
             else
@@ -154,46 +183,20 @@ void camp_item_menu()
             }
             else
             {
-                if (g_inv[pptr * 16 + ptr].item > 0)
+                auto index = pptr * NUM_ITEMS_PER_PAGE + ptr;
+                if (g_inv[index].item > 0)
                 {
                     // Player's cursor was over the USE menu
                     if (item_act == 0)
                     {
-                        camp_item_targetting(pptr * 16 + ptr);
+                        camp_item_targetting(index);
                     }
-                    // Player's curor was over the DROP menu
+                    // Player's cursor was over the DROP menu
                     else
                     {
                         if (item_act == 2)
                         {
-                            int stop2 = 0;
-
-                            /* Make sure the player really wants to drop the item specified.
-                             */
-                            while (!stop2)
-                            {
-                                Game.ProcessEvents();
-                                Game.do_check_animation();
-                                Draw.drawmap();
-                                draw_itemmenu(ptr, pptr, sel);
-                                Draw.menubox(double_buffer, 72 + 0, 204, 20, 1, DARKBLUE);
-                                Draw.print_font(double_buffer, 104, 212, _("Confirm/Cancel"), FNORMAL);
-                                Draw.blit2screen();
-
-                                if (PlayerInput.balt())
-                                {
-                                    stop2 = 2;
-                                }
-                                if (PlayerInput.bctrl())
-                                {
-                                    stop2 = 1;
-                                }
-                            }
-                            if (stop2 == 2)
-                            {
-                                // Drop ALL of the selected items
-                                remove_item(pptr * 16 + ptr, g_inv[pptr * 16 + ptr].quantity);
-                            }
+                            camp_drop_item(ptr, pptr);
                         }
                     }
                 }
@@ -207,7 +210,7 @@ void camp_item_menu()
             }
             else
             {
-                stop = 1;
+                stop = true;
             }
         }
     }
@@ -263,46 +266,10 @@ static void camp_item_targetting(int pp)
     }
 }
 
-int check_inventory(size_t inventory_index, int item_quantity)
+int check_inventory(size_t item_id, int item_quantity)
 {
-    // v == "last empty inventory slot"
-    // d == "last inventory slot that will fit all of item_quantity into it"
-    int n, v = MAX_INV, d = MAX_INV;
-
-    for (n = MAX_INV - 1; n >= 0; n--)
-    {
-        // There is nothing in this item slot in our inventory
-        if (g_inv[n].item == 0)
-        {
-            v = n;
-        }
-        /* Check if this item index == inventory_index, and if it is,
-         * check if there is enough room in that slot to fit all of item_quantity.
-         */
-        if (g_inv[n].item == inventory_index && g_inv[n].quantity <= MAX_ITEMS - item_quantity)
-        {
-            d = n;
-        }
-    }
-    // Inventory is full!
-    if (v == MAX_INV && d == MAX_INV)
-    {
-        return 0;
-    }
-    // All of item_quantity can fit in this slot, so add them in
-    if (d < MAX_INV)
-    {
-        // This is redundant, but it is a good error-check
-        g_inv[d].item = (unsigned short)inventory_index;
-        // Add item_quantity to this item's quantity
-        g_inv[d].quantity += item_quantity;
-        return 1;
-    }
-    // Add item to new slot
-    g_inv[v].item = (unsigned short)inventory_index;
-    // Fill in item's quantity too
-    g_inv[v].quantity += item_quantity;
-    return 2;
+    g_inv.add(item_id, item_quantity);
+    return 1;
 }
 
 /*! \brief Display menu
@@ -315,12 +282,6 @@ int check_inventory(size_t inventory_index, int item_quantity)
  */
 static void draw_itemmenu(int ptr, int pg, int sl)
 {
-    eFontColor palette_color;
-    size_t item_name_length;
-    size_t item_index;
-    size_t k;
-    size_t item_quantity;
-
     Draw.menubox(double_buffer, 72, 12, 20, 1, BLUE);
     Draw.print_font(double_buffer, 140, 20, _("Items"), FGOLD);
     Draw.menubox(double_buffer, 72, 36, 20, 1, BLUE);
@@ -342,11 +303,10 @@ static void draw_itemmenu(int ptr, int pg, int sl)
         }
     }
     Draw.menubox(double_buffer, 72, 60, 20, 16, BLUE);
-    for (k = 0; k < 16; k++)
+    for (int k = 0; k < NUM_ITEMS_PER_PAGE; k++)
     {
-        // item_index == item index #
-        item_index = g_inv[pg * 16 + k].item;
-        item_quantity = g_inv[pg * 16 + k].quantity;
+        eFontColor palette_color;
+        auto [item_index, item_quantity] = g_inv[pg * NUM_ITEMS_PER_PAGE + k];
         Draw.draw_icon(double_buffer, items[item_index].icon, 88, k * 8 + 68);
         if (items[item_index].use >= USE_ANY_ONCE && items[item_index].use <= USE_CAMP_INF)
         {
@@ -370,11 +330,14 @@ static void draw_itemmenu(int ptr, int pg, int sl)
     Draw.menubox(double_buffer, 72, 204, 20, 1, BLUE);
     if (sl == 0)
     {
-        item_name_length = strlen(items[g_inv[pg * 16 + ptr].item].desc) * 4;
+        auto item_name_length = strlen(items[g_inv[pg * NUM_ITEMS_PER_PAGE + ptr].item].desc) * 4;
         Draw.print_font(double_buffer, 160 - item_name_length, 212, items[g_inv[pg * 16 + ptr].item].desc, FNORMAL);
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 68);
     }
-    draw_sprite(double_buffer, pgb[pg], 238, 194);
+    if (pg < MAXPGB)
+    {
+        draw_sprite(double_buffer, pgb[pg], 238, 194);
+    }
 }
 
 /*! \brief Perform item effects
@@ -797,49 +760,6 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
     return ITEM_EFFECT_SUCCESS_SINGLE;
 }
 
-/*! \brief Combine items quantities
- *
- * Join like items into groups of nine or less.
- */
-static void join_items()
-{
-    uint16_t t_inv[NUM_ITEMS + 1];
-    size_t inventory_index;
-
-    for (inventory_index = 0; inventory_index < NUM_ITEMS; inventory_index++)
-    {
-        t_inv[inventory_index] = 0;
-    }
-    for (inventory_index = 0; inventory_index < MAX_INV; inventory_index++)
-    {
-        /* foreach instance of item, put the quantity into inventory_index temp
-         * inventory then remove that item from the real inventory
-         */
-        t_inv[g_inv[inventory_index].item] += g_inv[inventory_index].quantity;
-        g_inv[inventory_index].item = 0;
-        g_inv[inventory_index].quantity = 0;
-    }
-    for (inventory_index = 1; inventory_index < NUM_ITEMS; inventory_index++)
-    {
-        // While there is something in the temp inventory
-        while (t_inv[inventory_index] > 0)
-        {
-            if (t_inv[inventory_index] > MAX_ITEMS)
-            {
-                // Portion out 9 items per slot
-                check_inventory(inventory_index, MAX_ITEMS);
-                t_inv[inventory_index] -= MAX_ITEMS;
-            }
-            else
-            {
-                // Portion out remaining items into another slot
-                check_inventory(inventory_index, t_inv[inventory_index]);
-                t_inv[inventory_index] = 0;
-            }
-        }
-    }
-}
-
 /*! \brief Remove item from inventory
  *
  * Remove an item from inventory and re-sort the list.
@@ -849,67 +769,7 @@ static void join_items()
  */
 void remove_item(size_t inventory_index, int qi)
 {
-    // Remove a certain quantity (qi) of this item
-    g_inv[inventory_index].quantity -= qi;
-
-    // Check to see if that was the last one in the slot
-    if (g_inv[inventory_index].quantity < 1)
-    {
-        g_inv[inventory_index].item = 0;
-        g_inv[inventory_index].quantity = 0;
-        // We don't have to sort if it's the last slot
-        if (inventory_index == MAX_INV - 1)
-        {
-            return;
-        }
-        // ...But we will if it's not
-        sort_inventory();
-    }
-}
-
-/*! \brief Re-arrange the items in our inventory
- *
- * This simply re-arranges the group inventory to remove blank rows.
- */
-static void sort_inventory()
-{
-    size_t old_inventory_index, new_inventory_index, stop;
-
-    for (old_inventory_index = 0; old_inventory_index < MAX_INV - 1; old_inventory_index++)
-    {
-        // This slot is empty
-        if (g_inv[old_inventory_index].item == 0)
-        {
-            new_inventory_index = old_inventory_index + 1;
-            stop = 0;
-            while (!stop)
-            {
-                // Check if there is something in the next slot
-                if (g_inv[new_inventory_index].item > 0)
-                {
-                    // Move the item in the next slot into this one
-                    g_inv[old_inventory_index].item = g_inv[new_inventory_index].item;
-                    // Move its quantity as well
-                    g_inv[old_inventory_index].quantity = g_inv[new_inventory_index].quantity;
-                    // Clear the next slot of items now
-                    g_inv[new_inventory_index].item = 0;
-                    // Clear if quantity as well
-                    g_inv[new_inventory_index].quantity = 0;
-                    // Break out of the "check the slot ahead" loop
-                    stop = 1;
-                }
-                // Since there's not, continue searching
-                else
-                {
-                    new_inventory_index++;
-                }
-                if (new_inventory_index > MAX_INV - 1)
-                {
-                    stop = 1;
-                }
-            }
-        }
-    }
+    g_inv.removeIndex(inventory_index, qi);
 }
 
 /*! \brief Sort the items in inventory
@@ -920,25 +780,21 @@ static void sort_inventory()
  */
 static void sort_items()
 {
-    s_inventory t_inv[MAX_INV];
+    KInventory::Items t_inv;
     static const int type_order[7] = { 6, 0, 1, 2, 3, 4, 5 };
-    int inventory_index = 0;
 
-    join_items();
     for (auto type : type_order)
     {
-        for (auto& inv : g_inv)
+        for (int inventory_index = 0; inventory_index < g_inv.size(); ++inventory_index)
         {
-            if (items[inv.item].type == type)
+            auto entry = g_inv[inventory_index];
+            if (items[entry.item].type == type)
             {
-                t_inv[inventory_index++] = inv;
+                t_inv.push_back(entry);
             }
         }
     }
-    for (int i = 0; i < inventory_index; ++i)
-    {
-        g_inv[i] = t_inv[i];
-    }
+    g_inv.setAll(std::move(t_inv));
 }
 
 /*! \brief Use up an item, if we have any
@@ -952,15 +808,103 @@ static void sort_items()
  */
 int useup_item(int item_id)
 {
-    size_t inventory_index;
+    return g_inv.remove(item_id) ? 1 : 0;
+}
 
-    for (inventory_index = 0; inventory_index < MAX_INV; ++inventory_index)
+// KInventory implementation
+
+s_inventory KInventory::operator[](int i)
+{
+    if (i >= 0 && i < inv.size())
     {
-        if (g_inv[inventory_index].item == item_id)
+        return inv.at(i);
+    }
+    else
+    {
+        return {};
+    }
+}
+
+void KInventory::add(int type, int quantity)
+{
+    inv.emplace_back(type, quantity);
+    normalize();
+}
+bool KInventory::remove(int type, int quantity)
+{
+    for (auto& it : inv)
+    {
+        if (it.item == type)
         {
-            remove_item(inventory_index, 1);
-            return 1;
+            if (it.quantity >= quantity)
+            {
+                it.quantity -= quantity;
+                quantity = 0;
+            }
+            else
+            {
+                quantity -= it.quantity;
+                it.quantity = 0;
+            }
+            if (quantity == 0)
+            {
+                break;
+            }
         }
     }
-    return 0;
+    return quantity == 0;
+}
+bool KInventory::removeIndex(int ix, int quantity)
+{
+    if (ix >= 0 && ix < inv.size())
+    {
+        auto& it = inv.at(ix);
+        if (it.quantity >= quantity)
+        {
+            it.quantity -= quantity;
+            return true;
+        }
+    }
+    return false;
+}
+void KInventory::normalize()
+{
+    for (auto i = std::begin(inv); i != std::end(inv);)
+    {
+        if (i->item == 0 || i->quantity == 0)
+        {
+            i = inv.erase(i);
+        }
+        else if (i->quantity < MAX_ITEMS)
+        {
+            // Maybe can join two elements
+            for (auto j = std::next(i); j != std::end(inv); ++j)
+            {
+                if (j->item == i->item)
+                {
+                    auto tot = i->quantity + j->quantity;
+                    i->quantity = std::min(tot, MAX_ITEMS);
+                    j->quantity = tot - i->quantity;
+                }
+            }
+            ++i;
+        }
+        else if (i->quantity > MAX_ITEMS)
+        {
+            // Need to split
+            i->quantity -= MAX_ITEMS;
+            i = inv.emplace(i, i->item, MAX_ITEMS);
+            ++i;
+        }
+        else
+        {
+            // OK, move on
+            ++i;
+        }
+    }
+}
+void KInventory::setAll(KInventory::Items&& t)
+{
+    inv = std::move(t);
+    normalize();
 }

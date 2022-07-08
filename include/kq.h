@@ -116,6 +116,49 @@ class KMap
     std::vector<int> zone_array;
 };
 
+class KInventory
+{
+  public:
+    using Items = std::vector<s_inventory>;
+    /// Get number of items in the inventory
+    Items::size_type size() const
+    {
+        return inv.size();
+    }
+    // Manipulate functions
+    /*! \brief Add to the inventory
+     * \param item the I_XXX id to add
+     * \param quantity the quantity to add
+     */
+    void add(int type, int quantity = 1);
+    /*! \brief Remove from to the inventory
+     * \param item the I_XXX id to remove
+     * \param quantity the quantity to remove
+     * \returns true if there was sufficient to remove the quantity requested
+     */
+    bool remove(int type, int quantity = 1);
+    /*! \brief Remove from to the inventory
+     * Note that if the inventory slot contains less than 'quantity',
+     * the slot is emptied, but it doesn't remove items from any other
+     * slots of the same type.
+     * \param index the index of the item in the inventory to remove
+     * \param quantity the quantity to remove
+     * \returns true if there was sufficient to remove the quantity requested
+     */
+    bool removeIndex(int index, int quantity = 1);
+    /*! \brief Set the inventory
+     * Replace contents with the given items
+     * \param new_items a vector of items
+     */
+    void setAll(Items&& new_items);
+    /// Return by value or (0,0) if outside 0..size-1
+    s_inventory operator[](int);
+
+  private:
+    void normalize();
+    std::vector<s_inventory> inv;
+};
+
 class KGame
 {
   public:
@@ -500,7 +543,7 @@ extern char attack_string[39];
 extern volatile int animation_count;
 extern COLOR_MAP cmap;
 extern uint8_t can_run, do_staff_effect, display_desc;
-extern s_inventory g_inv[MAX_INV];
+extern KInventory g_inv;
 extern s_special_item special_items[MAX_SPECIAL_ITEMS];
 extern short player_special_items[MAX_SPECIAL_ITEMS];
 

@@ -80,7 +80,7 @@ int steps = 0;
 /*! 23: various global bitmaps */
 Raster *double_buffer, *fx_buffer, *map_icons[MAX_TILES], *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse,
     *b_mp, *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES],
-    *pgb[9], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr,
+    *pgb[MAXPGB], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr,
     *shadow[MAX_SHADOWS], *kfonts;
 
 /*! Enemy animation frames */
@@ -194,7 +194,7 @@ uint8_t do_staff_effect = 0;
 uint8_t display_desc = 0;
 
 /*! Items in inventory.  */
-s_inventory g_inv[MAX_INV];
+KInventory g_inv;
 
 /*! An array to hold all of the special items and descriptions in the game */
 s_special_item special_items[MAX_SPECIAL_ITEMS];
@@ -588,7 +588,7 @@ void KGame::allocate_stuff()
     noway = alloc_bmp(16, 16, "noway");
     missbmp = alloc_bmp(20, 6, "missbmp");
 
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < MAXPGB; i++)
     {
         pgb[i] = alloc_bmp(9, 9, "pgb[x]");
     }

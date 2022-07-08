@@ -64,6 +64,7 @@ enum eShadow
 #define MAXEFRAMES 12 //!< Max number of animation frames per enemy
 #define MAX_ENTITIES_PER_MAP 50
 #define MAX_ENTITIES (MAX_ENTITIES_PER_MAP + PSIZE)
+#define MAXPGB 9
 #define ID_ENEMY 254
 #define ENT_FRAMES_PER_DIR 3
 
@@ -81,7 +82,6 @@ enum eShadow
 #define NO_STS_CHECK 9994
 #define CURE_CHECK 9993
 #define MAX_SHADOWS 12
-#define MAX_INV 64
 
 /* Maximum number of special items allowed in the world */
 #define MAX_SPECIAL_ITEMS 50
