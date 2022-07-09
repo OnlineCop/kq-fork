@@ -48,12 +48,16 @@ struct KBound
   public:
     /*! Left edge of the bounding box, in full tiles (such as entity.tilex) */
     int left;
+
     /*! Top edge of the bounding box, in full tiles (such as entity.tiley) */
     int top;
+
     /*! Right edge of the bounding box, in full tiles (such as entity.tilex) */
     int right;
+
     /*! Bottom edge of the bounding box, in full tiles (such as entity.tiley) */
     int bottom;
+
     /*! Index of the tile to draw everywhere BUT here */
     short btile;
 };
@@ -72,6 +76,7 @@ class KBounds
     KBounds()
     {
     }
+
     ~KBounds()
     {
     }
@@ -99,6 +104,7 @@ class KBounds
      * \returns true if the specified coordinate was found within a bounding area, else false.
      */
     bool IsBound(size_t& outIndex, int left, int top, int right, int bottom) const;
+
     /*! \brief Determine whether given coordinates are within any bounding boxes
      *
      * \param   left - Left edge of current bounding area

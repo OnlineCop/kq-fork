@@ -33,16 +33,26 @@
 #include "kq.h"
 
 #include <algorithm>
-#include <cstdio>
-#include <cstring>
+#include <cstdint>
+#include <memory>
+#include <queue>
+
+/// A cell under consideration
+struct Cell
+{
+    uint32_t x;
+    uint32_t y;
+    // number of steps to reach the target
+    int steps;
+};
+
+using CellQueue = std::queue<Cell>;
 
 static int compose_path(const int*, uint32_t, uint32_t, char*, size_t);
-static void copy_map(int*);
-static int minimize_path(const char*, char*, size_t);
-static int search_paths(uint32_t, int*, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
-                        uint32_t);
+static int minimize_path(const std::vector<char>&, char*, size_t);
+static void search_paths(int*, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
 
-enum ePathResult
+enum class ePathResult
 {
     Path_Success = 0,
     Path_NoneFound = 1,
@@ -50,10 +60,31 @@ enum ePathResult
     Path_MemoryOrSizeError = 3,
 };
 
+/* Consider what happens if direction 'c' comes after direction 'current' with
+ * repetition 'rep'. Either merge it or start a new direction.
+ */
+static std::string append(char& current, int& rep, char c)
+{
+    std::string result;
+    if (current != c)
+    {
+        // New direction, do we need to output the old?
+        if (rep > 0)
+        {
+            result = std::string { current } + std::to_string(rep);
+        }
+        current = c;
+        rep = 1;
+    }
+    else
+    {
+        // Same as current, merge it
+        ++rep;
+    }
+    return result;
+}
+
 /*! \brief Generates the solution path.
- *
- * The only way of doing this is walking the path backwards, minimizing and
- * turning it the way around.
  *
  * \param map [in]      The map with the paths.
  * \param target_x [in] Target x coordinate.
@@ -66,63 +97,81 @@ enum ePathResult
  *          1 The buffer was too small for the solution to be copied.
  *          2 There was no solution, or internal error.
  */
-static int compose_path(const int* map, uint32_t target_x, uint32_t target_y, char* buffer, size_t size)
+static int compose_path(const int* map, uint32_t x, uint32_t y, char* buffer, size_t size)
 {
-    uint32_t x = target_x;
-    uint32_t y = target_y;
     int value = map[Game.Map.Clamp(x, y)];
-    int index = value - 2;
-
-    char temp[1024] = { 0 };
-    memset(temp, '\0', sizeof(temp));
-
-    while (value > 1)
+    std::string result;
+    int repetition = 0;
+    char current_direction = 0;
+    if (value == INT_MAX)
+    {
+        // Still 'infinite' distance from the target, ie. there was no solution
+        return 2;
+    }
+    while (value > 0)
     {
         /*  move as many squares up as possible  */
-        while ((y > 0) && (map[Game.Map.Clamp(x, y - 1)] == (value - 1)) && (value > 1))
+        while ((y > 0) && (map[Game.Map.Clamp(x, y - 1)] == (value - 1)) && (value > 0))
         {
             value--;
             y--;
-            temp[index--] = 'D';
+            result += append(current_direction, repetition, 'U');
         }
 
         /*  move as many squares left as possible  */
-        while ((x > 0) && (map[Game.Map.Clamp(x - 1, y)] == (value - 1)) && (value > 1))
+        while ((x > 0) && (map[Game.Map.Clamp(x - 1, y)] == (value - 1)) && (value > 0))
         {
             value--;
             x--;
-            temp[index--] = 'R';
+            result += append(current_direction, repetition, 'L');
         }
 
         /*  move as many squares down as possible  */
-        while ((y < Game.Map.g_map.ysize - 1) && (map[Game.Map.Clamp(x, y + 1)] == (value - 1)) && (value > 1))
+        while ((y < Game.Map.g_map.ysize - 1) && (map[Game.Map.Clamp(x, y + 1)] == (value - 1)) && (value > 0))
         {
             value--;
             y++;
-            temp[index--] = 'U';
+            result += append(current_direction, repetition, 'D');
         }
 
         /*  move as many squares right as possible  */
-        while ((x < Game.Map.g_map.xsize - 1) && (map[Game.Map.Clamp(x + 1, y)] == (value - 1)) && (value > 1))
+        while ((x < Game.Map.g_map.xsize - 1) && (map[Game.Map.Clamp(x + 1, y)] == (value - 1)) && (value > 0))
         {
             value--;
             x++;
-            temp[index--] = 'L';
+            result += append(current_direction, repetition, 'R');
         }
     }
-
-    return (minimize_path(temp, buffer, size));
+    // Final call to flush out last direction
+    result += append(current_direction, repetition, 0);
+    // NOTE: in the future we might output a std::string directly
+    if (result.size() < size - 1)
+    {
+        // it fits, copy and null terminate
+        auto endp = std::copy(std::begin(result), std::end(result), buffer);
+        *endp = '\0';
+        return 0;
+    }
+    else
+    {
+        // doesn't fit
+        return 1;
+    }
 }
 
 /*! \brief Generates an internal map.
  *
  * The function generates a map setting to -1 any square that is blocked
  * by either an object or an entity.
+ * The values will eventually be the number of steps to get to the target
+ * so initially they are all set to INT_MAX (this acts as 'infinity')
+ * because we don't know yet.
  *
  * \param[in,out] map The map where the result will be copied.
  */
-static void copy_map(int* map)
+static std::unique_ptr<int[]> copy_map()
 {
+    auto map = std::unique_ptr<int[]>(new int[Game.Map.MapSize()]);
     // Set any tile to -1 when there's an obstacle or active (as in, visible on the map) entity there.
     for (size_t y = 0; y < Game.Map.g_map.ysize; y++)
     {
@@ -133,6 +182,10 @@ static void copy_map(int* map)
             {
                 map[index] = -1;
             }
+            else
+            {
+                map[index] = INT_MAX;
+            }
         }
     }
 
@@ -142,9 +195,11 @@ static void copy_map(int* map)
     {
         if (g_ent[entity_index].active)
         {
-            map[Game.Map.Clamp(g_ent[entity_index].tilex, g_ent[entity_index].tiley)] = -1;
+            size_t index = Game.Map.Clamp(g_ent[entity_index].tilex, g_ent[entity_index].tiley);
+            map[index] = -1;
         }
     }
+    return std::move(map);
 }
 
 /*! \brief Path search implementation for KQ
@@ -173,90 +228,27 @@ int find_path(size_t entity_id, uint32_t source_x, uint32_t source_y, uint32_t t
     {
         return 3;
     }
+    auto map = copy_map();
+    map[Game.Map.Clamp(source_x, source_y)] = INT_MAX;
+    search_paths(map.get(), target_x, target_y, 0, 0, Game.Map.g_map.xsize, Game.Map.g_map.ysize);
 
-    memset(buffer, '\0', size);
-
-    int* map = (int*)calloc(Game.Map.MapSize(), sizeof(int));
-    if (map == nullptr)
+    if (map[Game.Map.Clamp(source_x, source_y)] < INT_MAX)
     {
-        return 3;
-    }
-
-    copy_map(map);
-    uint32_t result = search_paths(entity_id, map, 1, source_x, source_y, target_x, target_y, 0, 0,
-                                   Game.Map.g_map.xsize, Game.Map.g_map.ysize);
-
-    if (result == 0)
-    {
-        result = compose_path(map, target_x, target_y, buffer, size);
+        return compose_path(map.get(), source_x, source_y, buffer, size);
     }
     else
     {
-        result = 1;
-    }
-
-    free(map);
-    return result;
-}
-
-/*! \brief Minimizes a path.
- *
- * Given a path like "RRRRDRRDLU", this functions generates "R4D1R2D1L1U1".
- *
- * \param source [in] The original string.
- * \param target [out]The buffer where the result will be stored.
- * \param size   [in] The result buffer size.
- *
- * \returns 0 if the solution was copied,
- *          1 if the buffer was too small for the solution to be copied.
- */
-static int minimize_path(const char* source, char* target, size_t size)
-{
-    size_t source_index = 0;
-    uint32_t repetition = 0;
-    char value;
-    char temp[16];
-    char buffer[512];
-
-    memset(buffer, '\0', sizeof(buffer));
-    while (source[source_index] != '\0')
-    {
-        value = source[source_index];
-
-        source_index++;
-        repetition = 1;
-        while ((source[source_index] == value) && (source[source_index] != '\0'))
-        {
-            source_index++;
-            repetition++;
-        }
-
-        /*  FIXME: check to see if the buffer is long enough?  */
-        snprintf(temp, sizeof(temp), "%c%u", value, repetition);
-        strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
-    }
-
-    if (strlen(buffer) < size)
-    {
-        strcpy(target, buffer);
-        return 0;
-    }
-    else
-    {
+        buffer[0] = '\0';
         return 1;
     }
 }
 
 /*! \brief Internal path search routine.
  *
- * This function uses recursivity to find the shortest path to the target
+ * This function finds the shortest path to the target
  * point. Once it returns 0, a path was successfully found.
  *
- * \param entity_id [in]     The ID of the entity moving around.
  * \param map [in,out] The map in where to write the paths.
- * \param step [in]    The current step in recursivity.
- * \param source_x [in] The x coordinate of the source point.
- * \param source_y [in] The y coordinate of the source point.
  * \param target_x [in] The x coordinate of the target point.
  * \param target_y [in] The y coordinate of the target point.
  * \param start_x [in] The minimum value of the x axis.
@@ -264,51 +256,40 @@ static int minimize_path(const char* source, char* target, size_t size)
  * \param limit_x [in] The maximum value of the x axis.
  * \param limit_y [in] The maximum value of the y axis.
  *
- * \returns 0 if a path was successfully found, otherwise non-zero to indicate
- * failure.
  */
-static int search_paths(uint32_t entity_id, int* map, uint32_t step, uint32_t source_x, uint32_t source_y,
-                        uint32_t target_x, uint32_t target_y, uint32_t start_x, uint32_t start_y, uint32_t limit_x,
-                        uint32_t limit_y)
+static void search_paths(int* map, uint32_t target_x, uint32_t target_y, uint32_t start_x, uint32_t start_y,
+                         uint32_t limit_x, uint32_t limit_y)
 {
-    int result = 1;
-
-    int index = source_y * limit_x + source_x;
-    int value = map[index];
-    if ((value != -1) && (value == 0 || value > (int)step) &&
-        (step == 1 || !EntityManager.entityat(source_x, source_y, entity_id)))
+    CellQueue queue;
+    queue.push({ target_x, target_y, 0 });
+    while (!queue.empty())
     {
-        map[index] = step;
-
-        if (source_x == target_x && source_y == target_y)
+        auto [x, y, steps] = queue.front();
+        auto index = Game.Map.Clamp(x, y);
+        int value = map[index];
+        if (value != -1 && value > steps)
         {
-            return 0;
-        }
+            map[index] = steps;
+            if (x > start_x)
+            {
+                queue.push({ x - 1, y, steps + 1 });
+            }
 
-        if (source_x > start_x)
-        {
-            result &= search_paths(entity_id, map, step + 1, source_x - 1, source_y, target_x, target_y, start_x,
-                                   start_y, limit_x, limit_y);
-        }
+            if (x < limit_x - 1)
+            {
+                queue.push({ x + 1, y, steps + 1 });
+            }
 
-        if (source_x < limit_x - 1)
-        {
-            result &= search_paths(entity_id, map, step + 1, source_x + 1, source_y, target_x, target_y, start_x,
-                                   start_y, limit_x, limit_y);
-        }
+            if (y > start_y)
+            {
+                queue.push({ x, y - 1, steps + 1 });
+            }
 
-        if (source_y > start_y)
-        {
-            result &= search_paths(entity_id, map, step + 1, source_x, source_y - 1, target_x, target_y, start_x,
-                                   start_y, limit_x, limit_y);
+            if (y < limit_y - 1)
+            {
+                queue.push({ x, y + 1, steps + 1 });
+            }
         }
-
-        if (source_y < limit_y - 1)
-        {
-            result &= search_paths(entity_id, map, step + 1, source_x, source_y + 1, target_x, target_y, start_x,
-                                   start_y, limit_x, limit_y);
-        }
+        queue.pop();
     }
-
-    return (result);
 }

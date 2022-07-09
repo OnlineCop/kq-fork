@@ -32,6 +32,7 @@ KPlayerInput::KPlayerInput()
     bhelp.scancode = SDL_SCANCODE_F1;
     bcheat.scancode = SDL_SCANCODE_F10;
 }
+
 // Helper functions
 
 static void kp(KPlayerInput::button& b, SDL_KeyboardEvent* evt)
@@ -66,4 +67,5 @@ void KPlayerInput::ProcessKeyboardEvent(SDL_KeyboardEvent* evt)
     kp(left, evt);
     kp(right, evt);
 }
+
 KPlayerInput PlayerInput;

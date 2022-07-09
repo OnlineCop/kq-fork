@@ -35,6 +35,7 @@ class KTmxAnimation
 
     /*! Base tile number to be altered */
     int tilenumber;
+
     struct animation_frame
     {
         /*! New tile value */
@@ -42,6 +43,7 @@ class KTmxAnimation
         /*! Delay in milliseconds before showing this tile */
         int delay;
     };
+
     /*! Sequence of animation frames */
     std::vector<animation_frame> frames;
 };

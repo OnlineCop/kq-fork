@@ -66,18 +66,22 @@ class KTime
         : value(seconds)
     {
     }
+
     int hours() const
     {
         return value / 3600;
     }
+
     int minutes() const
     {
         return (value / 60) % 60;
     }
+
     int seconds() const
     {
         return value % 60;
     }
+
     int total_seconds() const
     {
         return value;
@@ -114,6 +118,55 @@ class KMap
     std::vector<eObstacle> obstacle_array;
     std::vector<eShadow> shadow_array;
     std::vector<int> zone_array;
+};
+
+class KInventory
+{
+  public:
+    using Items = std::vector<s_inventory>;
+
+    /// Get number of items in the inventory
+    Items::size_type size() const
+    {
+        return inv.size();
+    }
+
+    // Manipulate functions
+    /*! \brief Add to the inventory
+     * \param item the I_XXX id to add
+     * \param quantity the quantity to add
+     */
+    void add(int type, int quantity = 1);
+
+    /*! \brief Remove from to the inventory
+     * \param item the I_XXX id to remove
+     * \param quantity the quantity to remove
+     * \returns true if there was sufficient to remove the quantity requested
+     */
+    bool remove(int type, int quantity = 1);
+
+    /*! \brief Remove from to the inventory
+     * Note that if the inventory slot contains less than 'quantity',
+     * the slot is emptied, but it doesn't remove items from any other
+     * slots of the same type.
+     * \param index the index of the item in the inventory to remove
+     * \param quantity the quantity to remove
+     * \returns true if there was sufficient to remove the quantity requested
+     */
+    bool removeIndex(int index, int quantity = 1);
+
+    /*! \brief Set the inventory
+     * Replace contents with the given items
+     * \param new_items a vector of items
+     */
+    void setAll(Items&& new_items);
+
+    /// Return by value or (0,0) if outside 0..size-1
+    s_inventory operator[](int);
+
+  private:
+    void normalize();
+    std::vector<s_inventory> inv;
 };
 
 class KGame
@@ -383,22 +436,26 @@ class KGame
      * \returns the amount of gold in team's coffer.
      */
     int SetGold(int amount);
+
     /*! Process the SDL events
      * Will update various things, e.g. key pressed, window state changes
      * Call this regularly.
      * @return true if ready for next frame
      */
     bool ProcessEvents();
+
     /** Get current game time.
      * this is the elapsed time in the game;
      * \return the time
      */
     KTime GetGameTime() const;
+
     /*! Set the current game time
      * This resets the clock, e.g. when a save-game is loaded
      * \param time the new time
      */
     void SetGameTime(const KTime&);
+
     /*! \brief Check last key
      * \returns char of last key pressed or 0 if none
      */
@@ -406,16 +463,19 @@ class KGame
     {
         return keyp;
     }
+
     /*! \brief Return last key
      * This resets the key so subsequent calls to this and \sa check_key() will
      * return 0
      * \returns char of last key pressed or 0 if none
      */
     int get_key();
+
     /*! Handle extra controls
      * This is for things like debugging
      */
     void extra_controls();
+
     /*! Wait for keyboard release.
      * Process events and don't return until all keys are released
      */
@@ -423,8 +483,10 @@ class KGame
 
   public:
     const std::string WORLD_MAP;
+
     /*! The number of frames per second */
     const int32_t KQ_TICKS;
+
     // Game time in ticks (should be enough for >2 years real time play)
     int game_time;
     bool want_console = false;
@@ -437,6 +499,7 @@ class KGame
 
     /** Gold pieces held by the player */
     int gp;
+
     /** Last key */
     int keyp;
 };
@@ -500,7 +563,7 @@ extern char attack_string[39];
 extern volatile int animation_count;
 extern COLOR_MAP cmap;
 extern uint8_t can_run, do_staff_effect, display_desc;
-extern s_inventory g_inv[MAX_INV];
+extern KInventory g_inv;
 extern s_special_item special_items[MAX_SPECIAL_ITEMS];
 extern short player_special_items[MAX_SPECIAL_ITEMS];
 

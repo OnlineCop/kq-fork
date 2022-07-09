@@ -217,6 +217,7 @@ void KMusic::set_volume(int sound_volume)
     Mix_Volume(-1, static_cast<int>(128.0f * dvol));
     Mix_VolumeMusic(static_cast<int>(dvol * mvol * float(MIX_MAX_VOLUME)));
 }
+
 KMusic Music;
 
 Mix_Music* Mix_MusicLoader::operator()(const std::string& music_name)

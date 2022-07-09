@@ -35,13 +35,16 @@ class KPlayerInput
             : scancode(sc)
         {
         }
+
         int scancode;
         bool down = false;
         bool pressed = false;
+
         bool isDown() const
         {
             return down;
         }
+
         bool operator()()
         {
             bool rc = pressed;
@@ -49,6 +52,7 @@ class KPlayerInput
             return rc;
         }
     };
+
     // Flags for determining keypresses and player movement.
 
     // Moves the cursor or player horizontally (right).

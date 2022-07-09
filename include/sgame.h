@@ -31,10 +31,12 @@ struct s_sgstats
     int num_characters;
     int gold;
     int time;
+
     struct _characters
     {
         int id, level, hp, mp;
     } characters[PSIZE];
+
     static s_sgstats get_current();
 };
 

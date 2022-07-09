@@ -489,6 +489,7 @@ fields[] = {
     { "say", 16 },    // Text bubble
     { "think", 17 },  // Thought bubble
 };
+
 // *INDENT-ON*
 
 /*

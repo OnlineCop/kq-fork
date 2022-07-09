@@ -46,6 +46,7 @@ class tmx_layer
         , data(new uint32_t[size])
     {
     }
+
     std::string name;
     const int width;
     const int height;

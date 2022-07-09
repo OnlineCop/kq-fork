@@ -475,6 +475,7 @@ void KSaveGame::show_sgstats(int saving)
         }
     }
 }
+
 static void show_splash_screen()
 {
     Raster* splash = get_cached_image("kqt.png");

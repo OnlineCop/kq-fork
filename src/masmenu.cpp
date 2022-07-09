@@ -119,7 +119,10 @@ static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
     Draw.menubox(double_buffer, 40, 204, 28, 1, BLUE);
     Draw.print_font(double_buffer, (160 - (strlen(magic[first_spell_index].desc) * 4)), 212,
                     magic[first_spell_index].desc, FNORMAL);
-    draw_sprite(double_buffer, pgb[spell_page], 230, 194);
+    if (spell_page < MAXPGB)
+    {
+        draw_sprite(double_buffer, pgb[spell_page], 230, 194);
+    }
 }
 
 /*! \brief Spell menu

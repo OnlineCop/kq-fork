@@ -54,18 +54,6 @@ enum eFontColor
     NUM_FONT_COLORS // always last
 };
 
-enum eFont // TODO: Can eFontColor and eFont be merged?
-{
-    FONT_WHITE = 0,
-    FONT_RED = 1,
-    FONT_YELLOW = 2,
-    FONT_GREEN = 3,
-    FONT_PURPLE = 4,
-    FONT_DECIDE = 5,
-
-    NUM_FONTS // always last
-};
-
 enum eBubbleStyle
 {
     B_TEXT = 0,
@@ -102,11 +90,13 @@ class KDraw
      * @param _window KQ's window
      */
     void set_window(SDL_Window* _window);
+
     /// Get the current window
     SDL_Window* get_window() const
     {
         return window;
     }
+
     /*! \brief Copies from the double buffer to the screen.
      *  Handles frame-rate display, stretching and vsync waiting.
      *
@@ -246,6 +236,7 @@ class KDraw
     {
         return index == FBIG ? 12 : 8;
     }
+
     /*! \brief Calculate text width
      * \param str a string
      * \param index font index
@@ -573,6 +564,7 @@ class KDraw
         M_NONSPACE,
         M_END
     };
+
     SDL_Window* window;      /// The target window.
     SDL_Renderer* renderer;  /// The window's renderer
     SDL_Texture* texture;    /// The target texture

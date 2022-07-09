@@ -32,10 +32,12 @@
 #include <string>
 
 typedef std::unique_ptr<Raster> BITMAP_PTR;
+
 struct RasterLoader
 {
     Raster* operator()(const std::string& keyname);
 };
+
 using image_cache = Cache<Raster, RasterLoader>;
 
 // At the moment there is one global cache;
@@ -198,6 +200,7 @@ Raster* get_cached_image(const std::string& name)
 {
     return global.get(name);
 }
+
 /*! \brief clear the global cache.
  */
 void clear_image_cache()
