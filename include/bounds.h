@@ -22,10 +22,7 @@
 #pragma once
 
 #include <cstdint>
-#include <memory>
 #include <vector>
-
-struct PACKFILE;
 
 /*! \file
  * \brief Contains functions specific to bounded areas
@@ -35,13 +32,10 @@ struct PACKFILE;
 
 /*! \brief Bounding area box
  *
- * A boundary is a viewable area on the map.
- * These are set up in the map editor to remove the need to call set_view
- * in the scripts. If the player is inside a bounding box' coordinate, then
- * the map will only redraw those tiles, else it will redraw everything on the
- * map.
- * \author TT
- * \date 20060710
+ * Defines a visible area surrounding the player, drawing 'btile' everywhere outside the range.
+ *
+ * These are set up in the map editor to remove the need to call set_view in the scripts. If the player is inside a
+ * bounding box' coordinate, then the map will only redraw those tiles, else it will redraw everything on the map.
  */
 struct KBound
 {
@@ -64,31 +58,22 @@ struct KBound
 
 /*! \brief Container holding array of bounds
  *
- * This contains an array of bounds, and the number of bounds, to simplify
- * passing around the size and elements separately.
- *
- * \author OC
- * \date 20101017
+ * This contains an array of bounds, and the number of bounds, to simplify passing around the size and elements
+ * separately.
  */
 class KBounds
 {
   public:
-    KBounds()
-    {
-    }
+    ~KBounds() = default;
+    KBounds() = default;
 
-    ~KBounds()
-    {
-    }
+    /*! Add a new bound to the map. */
+    void Add(KBound&& bound);
 
-    // Add a new bound to the map. Returns true on success, or false on failure.
-    bool Add(KBound&& bound);
-
-    // Return a pointer to the bound at the given @param index. If index is
-    // invalid, returns null.
+    /*! Returns a pointer to the bound at the given index, or null if index is invalid. */
     KBound* GetBound(size_t index);
 
-    size_t Size()
+    size_t Size() const
     {
         return m_bounds.size();
     }

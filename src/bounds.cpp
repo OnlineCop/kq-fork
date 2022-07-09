@@ -27,10 +27,9 @@
 
 #include "bounds.h"
 
-bool KBounds::Add(KBound&& bound)
+void KBounds::Add(KBound&& bound)
 {
     m_bounds.push_back(bound);
-    return true;
 }
 
 KBound* KBounds::GetBound(size_t index)
@@ -54,7 +53,7 @@ bool KBounds::IsBound(size_t& outIndex, int left, int top, int right, int bottom
         std::swap(top, bottom);
     }
 
-    for (size_t i = 0; i < m_bounds.size(); ++i)
+    for (size_t i = 0, ii = m_bounds.size(); i < ii; ++i)
     {
         auto& current_bound = m_bounds[i];
         if (left > current_bound.right || right < current_bound.left || top > current_bound.bottom ||
