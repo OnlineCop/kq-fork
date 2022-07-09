@@ -51,6 +51,7 @@ set(kq-fork_SRCS
 	src/effects.cpp
 	src/enemyc.cpp
 	src/entity.cpp
+	src/enums.cpp
 	src/eqpmenu.cpp
 	src/eskill.cpp
 	src/fade.cpp

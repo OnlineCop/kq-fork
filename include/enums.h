@@ -310,6 +310,24 @@ enum eEquipment
     NUM_EQUIPMENT // always last
 };
 
+/*! \brief Allow an eEquipment variable to increment and wrap:
+ *
+ *  Example:
+ *      auto eq = eEquipment::EQP_SPECIAL;
+ *      ++eq; // now equals eEquipment::NUM_EQUIPMENT
+ *      ++eq; // now equals eEquipment::EQP_WEAPON
+ */
+eEquipment& operator++(eEquipment& eq);
+
+/*! \brief Allow an eEquipment variable to decrement and wrap:
+ *
+ *  Example:
+ *      auto eq = eEquipment::EQP_WEAPON;
+ *      --eq; // now equals eEquipment::NUM_EQUIPMENT
+ *      --eq; // now equals eEquipment::EQP_SPECIAL
+ */
+eEquipment& operator--(eEquipment& eq);
+
 enum eFont // TODO: Can eFontColor and eFont be merged?
 {
     FONT_WHITE = 0,
