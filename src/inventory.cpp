@@ -26,7 +26,7 @@
 KInventory g_inv;
 
 /// Allow up to this many of an item before another slot is required.
-#define MAX_ITEMS 9
+constexpr unsigned short MAX_ITEMS = 9;
 
 void KInventory::add(int type, unsigned int quantity)
 {
