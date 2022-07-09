@@ -61,6 +61,7 @@ set(kq-fork_SRCS
 	src/imgcache.cpp
 	src/input.cpp
 	src/intrface.cpp
+	src/inventory.cpp
 	src/itemmenu.cpp
 	src/kq.cpp
 	src/magic.cpp

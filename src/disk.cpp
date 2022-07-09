@@ -29,8 +29,10 @@
 
 #include "disk.h"
 
+#include "inventory.h"
 #include "random.h"
 #include "shopmenu.h"
+
 #include <sys/stat.h>
 
 KDisk Disk;

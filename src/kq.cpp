@@ -193,9 +193,6 @@ uint8_t do_staff_effect = 0;
 /*! Is the map description is displayed on screen? */
 uint8_t display_desc = 0;
 
-/*! Items in inventory.  */
-KInventory g_inv;
-
 /*! An array to hold all of the special items and descriptions in the game */
 s_special_item special_items[MAX_SPECIAL_ITEMS];
 

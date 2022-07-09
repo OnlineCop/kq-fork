@@ -24,8 +24,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#define MAX_ITEMS 9
-
 enum eItemEffectResult
 {
     ITEM_EFFECT_INEFFECTIVE = 0,

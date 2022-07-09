@@ -33,6 +33,7 @@
 #include "draw.h"
 #include "gfx.h"
 #include "input.h"
+#include "inventory.h"
 #include "itemmenu.h"
 #include "kq.h"
 #include "menu.h"

@@ -41,6 +41,7 @@
 #include "hskill.h"
 #include "imgcache.h"
 #include "input.h"
+#include "inventory.h"
 #include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"

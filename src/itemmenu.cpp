@@ -33,6 +33,7 @@
 #include "effects.h"
 #include "gfx.h"
 #include "input.h"
+#include "inventory.h"
 #include "itemdefs.h"
 #include "kq.h"
 #include "magic.h"
@@ -775,8 +776,7 @@ void remove_item(size_t inventory_index, int qi)
 /*! \brief Sort the items in inventory
  *
  * This runs through all the items in your inventory and sorts them.
- * Sorting means grouping by type and putting the groups in the
- * order specified by 'tt' below.
+ * Sorting means grouping by type and putting the groups in the order specified below.
  */
 static void sort_items()
 {
@@ -809,106 +809,4 @@ static void sort_items()
 int useup_item(int item_id)
 {
     return g_inv.remove(item_id) ? 1 : 0;
-}
-
-// KInventory implementation
-
-s_inventory KInventory::operator[](int i)
-{
-    if (i >= 0 && i < inv.size())
-    {
-        return inv.at(i);
-    }
-    else
-    {
-        return {};
-    }
-}
-
-void KInventory::add(int type, int quantity)
-{
-    inv.emplace_back(type, quantity);
-    normalize();
-}
-
-bool KInventory::remove(int type, int quantity)
-{
-    for (auto& it : inv)
-    {
-        if (it.item == type)
-        {
-            if (it.quantity >= quantity)
-            {
-                it.quantity -= quantity;
-                quantity = 0;
-            }
-            else
-            {
-                quantity -= it.quantity;
-                it.quantity = 0;
-            }
-            if (quantity == 0)
-            {
-                break;
-            }
-        }
-    }
-    return quantity == 0;
-}
-
-bool KInventory::removeIndex(int ix, int quantity)
-{
-    if (ix >= 0 && ix < inv.size())
-    {
-        auto& it = inv.at(ix);
-        if (it.quantity >= quantity)
-        {
-            it.quantity -= quantity;
-            return true;
-        }
-    }
-    return false;
-}
-
-void KInventory::normalize()
-{
-    for (auto i = std::begin(inv); i != std::end(inv);)
-    {
-        if (i->item == 0 || i->quantity == 0)
-        {
-            i = inv.erase(i);
-        }
-        else if (i->quantity < MAX_ITEMS)
-        {
-            // Maybe can join two elements
-            for (auto j = std::next(i); j != std::end(inv); ++j)
-            {
-                if (j->item == i->item)
-                {
-                    auto tot = i->quantity + j->quantity;
-                    i->quantity = std::min(tot, MAX_ITEMS);
-                    j->quantity = tot - i->quantity;
-                }
-            }
-            ++i;
-        }
-        else if (i->quantity > MAX_ITEMS)
-        {
-            // Need to split
-            i->quantity -= MAX_ITEMS;
-            i = inv.emplace(i, i->item, MAX_ITEMS);
-            ++i;
-        }
-        else
-        {
-            // OK, move on
-            ++i;
-        }
-    }
-}
-
-void KInventory::setAll(KInventory::Items&& t)
-{
-    inv = std::move(t);
-    normalize();
 }
