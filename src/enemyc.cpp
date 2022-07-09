@@ -440,10 +440,12 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
             case M_QUICKEN:
                 aux = 0;
                 for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
+                {
                     if (fighter[fighter_index].IsAlive() && fighter[fighter_index].GetRemainingTime() != 2)
                     {
                         aux++;
                     }
+                }
                 if (aux > 0)
                 {
                     yes = 1;
@@ -480,10 +482,12 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
             case M_SLOW:
                 aux = 0;
                 for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+                {
                     if (fighter[fighter_index].IsAlive() && fighter[fighter_index].GetRemainingTime() != 1)
                     {
                         aux++;
                     }
+                }
                 if (aux > 0)
                 {
                     yes = 1;
@@ -492,10 +496,12 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
             case M_SLEEPALL:
                 aux = 0;
                 for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+                {
                     if (fighter[fighter_index].IsAlive() && fighter[fighter_index].IsAwake())
                     {
                         aux++;
                     }
+                }
                 if (aux > 0)
                 {
                     yes = 1;
@@ -504,11 +510,13 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
             case M_DIVINEGUARD:
                 aux = 0;
                 for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
+                {
                     if (fighter[fighter_index].IsAlive() && !fighter[fighter_index].IsShield() &&
                         !fighter[fighter_index].IsResist())
                     {
                         aux++;
                     }
+                }
                 if (aux > 0)
                 {
                     yes = 1;
@@ -517,10 +525,12 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
             case M_DOOM:
                 aux = 0;
                 for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+                {
                     if (fighter[fighter_index].IsAlive() && fighter[fighter_index].hp >= fighter[fighter_index].mhp / 3)
                     {
                         aux++;
                     }
+                }
                 if (aux > 0)
                 {
                     yes = 1;
