@@ -26,6 +26,7 @@
 #include "res.h"
 
 #include <cstdint>
+#include <map>
 #include <string>
 
 /*! \brief Player */
@@ -128,7 +129,7 @@ class KPlayer
     /*! eResistance: See R_* constants */
     char res[NUM_RES];
     /*! eEquipment: Weapons, armor, etc. equipped */
-    uint8_t eqp[NUM_EQUIPMENT];
+    std::map<eEquipment, uint16_t> eqp;
     /*! Known spells */
     uint8_t spells[NUM_SPELLS];
     /*! \brief Level up information

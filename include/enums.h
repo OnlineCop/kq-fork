@@ -298,7 +298,7 @@ enum eObstacle
     NUM_OBSTACLES // always last
 };
 
-enum eEquipment
+enum class eEquipment
 {
     EQP_WEAPON = 0,
     EQP_SHIELD = 1,

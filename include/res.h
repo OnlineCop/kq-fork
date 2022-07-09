@@ -57,8 +57,8 @@ struct s_item
     char desc[40];
     /*! Targetting type for combat items. See TGT_* constants in kq.h */
     uint8_t tgt;
-    /*! Relates to which slot (hand, etc.) this item goes into */
-    uint8_t type;
+    /*! Relates to which slot (hand, etc.) this item goes into; see eEquipment enum */
+    eEquipment type;
     /*! Usage mode  (see USE_* constants in kq.h) */
     uint8_t use;
     /*! What level this item is */

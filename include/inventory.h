@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include "enums.h"
 #include "structs.h"
 
 #include <vector>
@@ -29,6 +30,7 @@ class KInventory
 {
   public:
     ~KInventory() = default;
+    KInventory();
 
     using Items = std::vector<s_inventory>;
 
@@ -68,9 +70,19 @@ class KInventory
     /// Return by value or (0,0) if index outside 0..size-1
     s_inventory operator[](size_t index);
 
-  private:
+    /*! \brief Sort the inventory based on the order specified in list.
+     *
+     * \param list The order which eEquipment types should be sorted by.
+     */
+    void sort(const std::vector<eEquipment>& sort_order);
+
+    Items getItems(const eEquipment& type) const;
+
+  protected:
     void normalize();
-    std::vector<s_inventory> m_inventories;
+
+  private:
+    Items m_inventories;
 };
 
 inline KInventory::Items::size_type KInventory::size() const

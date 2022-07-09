@@ -557,7 +557,7 @@ void KMenu::status_screen(size_t fighter_index)
 {
     int stop = 0;
     int bc = 0;
-    uint32_t rect_fill_amount = 0, curr_fill, res_index, stats_y, equipment_index;
+    uint32_t rect_fill_amount = 0, curr_fill, res_index, stats_y;
     size_t pidx_index, stats_index;
 
     play_effect(KAudio::eSound::SND_MENU, 128);
@@ -665,12 +665,11 @@ void KMenu::status_screen(size_t fighter_index)
             }
         }
         Draw.menubox(double_buffer, 160, 160, 18, 6, BLUE);
-        for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
+        for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
         {
-            Draw.draw_icon(double_buffer, items[party[pidx_index].eqp[equipment_index]].icon, 168,
-                           equipment_index * 8 + 168);
-            Draw.print_font(double_buffer, 176, equipment_index * 8 + 168,
-                            items[party[pidx_index].eqp[equipment_index]].name, FNORMAL);
+            int icon_offset = static_cast<int>(eq);
+            Draw.draw_icon(double_buffer, items[party[pidx_index].eqp[eq]].icon, 168, icon_offset * 8 + 168);
+            Draw.print_font(double_buffer, 176, icon_offset * 8 + 168, items[party[pidx_index].eqp[eq]].name, FNORMAL);
         }
         Draw.blit2screen();
 
@@ -765,7 +764,7 @@ KFighter player2fighter(int who)
     }
 
     /* set weapon elemental power and imbuements for easy use in combat */
-    int weapon_index = plr.eqp[EQP_WEAPON];
+    uint16_t weapon_index = plr.eqp[eEquipment::EQP_WEAPON];
     current_fighter.welem = items[weapon_index].elem;
     if (items[weapon_index].use == USE_ATTACK)
     {
@@ -779,10 +778,12 @@ KFighter player2fighter(int who)
      * that can be imbued, so some item types get priority over
      * others... hence the need to run through each in this loop.
      */
-    for (int a = 0; a < 5; a++)
+    for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
     {
-        static const int z[5] = { EQP_SPECIAL, EQP_ARMOR, EQP_HELMET, EQP_SHIELD, EQP_HAND };
-        int current_equipment_slot = plr.eqp[z[a]];
+        static const eEquipment z[5] = { eEquipment::EQP_SPECIAL, eEquipment::EQP_ARMOR, eEquipment::EQP_HELMET,
+                                         eEquipment::EQP_SHIELD, eEquipment::EQP_HAND };
+        const size_t slot_index = static_cast<size_t>(eq);
+        uint16_t current_equipment_slot = plr.eqp[z[slot_index]];
         if (items[current_equipment_slot].use == USE_IMBUED)
         {
             for (int b = 0; b < 2; b++)
@@ -797,32 +798,22 @@ KFighter player2fighter(int who)
     }
 
     // Count the number of opal items you have
-    if (plr.eqp[EQP_HELMET] == I_HELM4)
+    if (plr.eqp[eEquipment::EQP_HELMET] == I_HELM4)
     {
         ++current_fighter.opal_power;
     }
-    if (plr.eqp[EQP_SHIELD] == I_SHIELD6)
+    if (plr.eqp[eEquipment::EQP_SHIELD] == I_SHIELD6)
     {
         ++current_fighter.opal_power;
     }
-    if (plr.eqp[EQP_ARMOR] == I_ARMOR7)
+    if (plr.eqp[eEquipment::EQP_ARMOR] == I_ARMOR7)
     {
         ++current_fighter.opal_power;
     }
-    if (plr.eqp[EQP_HAND] == I_BAND3)
+    if (plr.eqp[eEquipment::EQP_HAND] == I_BAND3)
     {
         ++current_fighter.opal_power;
     }
-
-    // for (int a = 0; a < 4; a++)
-    //{
-    //     static const int z[5] = { EQP_SPECIAL, EQP_ARMOR, EQP_HELMET, EQP_SHIELD };
-    //     int current_equipment_slot = plr.eqp[z[a]];
-    //     if (items[current_equipment_slot].use == USE_IMBUED)
-    //     {
-    //         ++current_fighter.opal_power;
-    //     }
-    // }
 
     /*
      * Any weapon used by Ajathar gains the power of White if
@@ -833,10 +824,10 @@ KFighter player2fighter(int who)
     {
         current_fighter.welem = R_WHITE + 1;
     }
-    for (int j = 0; j < NUM_EQUIPMENT; j++)
+    for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
     {
-        int a = plr.eqp[j];
-        if (j == 0)
+        int a = plr.eqp[eq];
+        if (eq == eEquipment::EQP_WEAPON)
         {
             if (a == 0)
             {
@@ -854,9 +845,8 @@ KFighter player2fighter(int who)
             {
                 current_fighter.bstat = 0;
             }
-            /* Set current weapon type. When the hero wields a weapon
-             * in combat, it will look like this.
-             * The colour comes from s_item::kol
+            /* Set current weapon type. When the hero wields a weapon in combat, it will look like this.
+             * The colour comes from s_item::kol.
              */
             current_fighter.current_weapon_type = items[a].icon;
             if (current_fighter.current_weapon_type == W_CHENDIGAL)
@@ -890,7 +880,7 @@ KFighter player2fighter(int who)
         current_fighter.res[R_AIR] += current_fighter.lvl / 4;
         current_fighter.res[R_WATER] += current_fighter.lvl / 4;
     }
-    if (plr.eqp[5] == I_AGRAN)
+    if (plr.eqp[eEquipment::EQP_SPECIAL] == I_AGRAN)
     {
         int a = 0;
         for (int j = 0; j < R_TOTAL_RES; j++)
@@ -925,7 +915,7 @@ KFighter player2fighter(int who)
             current_fighter.res[j] = 10;
         }
     }
-    if (plr.eqp[5] == I_MANALOCKET)
+    if (plr.eqp[eEquipment::EQP_SPECIAL] == I_MANALOCKET)
     {
         current_fighter.mrp = plr.mrp / 2;
     }

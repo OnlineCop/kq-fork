@@ -30,6 +30,7 @@
 
 #include "combat.h"
 #include "draw.h"
+#include "enums.h"
 #include "gfx.h"
 #include "imgcache.h"
 #include "magic.h"
@@ -475,7 +476,7 @@ void KEffects::fight_animation(size_t target_fighter_index, size_t fighter_index
 
     if (fighter_index < PSIZE)
     {
-        fighter_weapon_index = party[pidx[fighter_index]].eqp[EQP_WEAPON];
+        fighter_weapon_index = party[pidx[fighter_index]].eqp[eEquipment::EQP_WEAPON];
         magic_effect_index = items[fighter_weapon_index].eff;
     }
     else

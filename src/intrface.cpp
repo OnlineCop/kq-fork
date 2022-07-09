@@ -2042,9 +2042,9 @@ static int KQ_get_numchrs(lua_State* L)
 static int KQ_get_party_eqp(lua_State* L)
 {
     uint32_t a = (uint32_t)lua_tonumber(L, 1);
-    uint32_t b = (uint32_t)lua_tonumber(L, 2);
+    eEquipment b = (eEquipment)lua_tonumber(L, 2);
 
-    if (a < MAXCHRS && b < NUM_EQUIPMENT)
+    if (a < MAXCHRS && b < eEquipment::NUM_EQUIPMENT)
     {
         lua_pushnumber(L, party[a].eqp[b]);
     }
@@ -2862,22 +2862,30 @@ static int KQ_select_team(lua_State* L)
     return 1;
 }
 
+/*! \brief Equip a specific player.
+ *
+ * \param L::1 Party member index (0..7, or SENSAR..NOSLOM)
+ * \param L::2 eEquipment::EQP_WEAPON
+ * \param L::3 eEquipment::EQP_SHIELD
+ * \param L::4 eEquipment::EQP_HELMET
+ * \param L::5 eEquipment::EQP_ARMOR
+ * \param L::6 eEquipment::EQP_HAND
+ * \param L::7 eEquipment::EQP_SPECIAL
+ */
 static int KQ_set_all_equip(lua_State* L)
 {
     uint32_t a = (uint32_t)lua_tonumber(L, 1);
-    uint32_t b;
-    int c;
 
     if (a >= MAXCHRS)
     {
         return 0;
     }
-    for (b = 0; b < NUM_EQUIPMENT; b++)
+    for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
     {
-        c = (int)lua_tonumber(L, b + 2);
+        uint16_t c = lua_tonumber(L, static_cast<int>(eq) + 2);
         if (c >= 0)
         {
-            party[a].eqp[b] = c;
+            party[a].eqp[eq] = c;
         }
     }
     return 0;
@@ -3299,11 +3307,11 @@ static int KQ_set_obs(lua_State* L)
 static int KQ_set_party_eqp(lua_State* L)
 {
     uint32_t a = (uint32_t)lua_tonumber(L, 1);
-    uint32_t b = (uint32_t)lua_tonumber(L, 2);
+    eEquipment eq = static_cast<eEquipment>(lua_tonumber(L, 2));
 
-    if (a < MAXCHRS && b < NUM_EQUIPMENT)
+    if (a < MAXCHRS && eq < eEquipment::NUM_EQUIPMENT)
     {
-        party[a].eqp[b] = (int)lua_tonumber(L, 3);
+        party[a].eqp[eq] = static_cast<uint16_t>(lua_tonumber(L, 3));
     }
     return 0;
 }

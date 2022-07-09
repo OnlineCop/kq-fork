@@ -313,12 +313,12 @@ void draw_shopgold()
 static void draw_sideshot(int selected_item)
 {
     int wx, wy;
-    int cs[13];
-    uint32_t ownd = 0, equipped_items = 0, slot;
-    size_t pidx_index, equipment_index, stats_index, cs_index, spell_index, inventory_index;
+    int cs[eStat::NUM_STATS];
+    uint32_t equipped_items = 0;
+    eEquipment slot = eEquipment::NUM_EQUIPMENT;
 
     Draw.menubox(double_buffer, 80, 192, 18, 4, BLUE);
-    for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
+    for (size_t pidx_index = 0; pidx_index < numchrs; ++pidx_index)
     {
         wx = pidx_index * 72 + 88;
         wy = 200;
@@ -329,51 +329,52 @@ static void draw_sideshot(int selected_item)
         return;
     }
     slot = items[selected_item].type;
-    for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
+    for (size_t pidx_index = 0; pidx_index < numchrs; ++pidx_index)
     {
+        KPlayer& player = party[pidx[pidx_index]];
         wx = pidx_index * 72 + 88;
         wy = 200;
-        for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
+        for (eEquipment eq = eEquipment::EQP_WEAPON; eq < eEquipment::NUM_EQUIPMENT; ++eq)
         {
-            if (party[pidx[pidx_index]].eqp[equipment_index] == selected_item)
+            if (player.eqp[eq] == selected_item)
             {
-                equipped_items++;
+                ++equipped_items;
             }
         }
-        if (slot < 6)
+        if (slot < eEquipment::NUM_EQUIPMENT)
         {
-            if (party[pidx[pidx_index]].eqp[slot] > 0)
+            if (player.eqp[slot] > 0)
             {
-                for (stats_index = 0; stats_index < eStat::NUM_STATS; stats_index++)
+                for (size_t stats_index = 0; stats_index < eStat::NUM_STATS; ++stats_index)
                 {
-                    cs[stats_index] = items[selected_item].stats[stats_index] -
-                                      items[party[pidx[pidx_index]].eqp[slot]].stats[stats_index];
+                    cs[stats_index] = items[selected_item].stats[stats_index] - items[player.eqp[slot]].stats[stats_index];
                 }
             }
             else
             {
-                for (stats_index = 0; stats_index < eStat::NUM_STATS; stats_index++)
+                for (size_t stats_index = 0; stats_index < eStat::NUM_STATS; ++stats_index)
                 {
                     cs[stats_index] = items[selected_item].stats[stats_index];
                 }
             }
-            if (slot == 0)
+            if (slot == eEquipment::EQP_WEAPON)
             {
                 Draw.draw_icon(double_buffer, 3, wx + 16, wy);
                 Draw.print_font(double_buffer, wx + 16, wy + 8, "%", FNORMAL);
-                for (cs_index = 0; cs_index < 2; cs_index++)
+                for (size_t cs_index = 0; cs_index < 2; ++cs_index)
                 {
-                    if (cs[cs_index + 8] < 0)
+                    int cs_value = cs[cs_index + 8]; // eStat::Attack, eStat::Hit
+                    if (cs_value < 0)
                     {
-                        sprintf(strbuf, "%-4d", cs[cs_index + 8]);
+                        sprintf(strbuf, "%-4d", cs_value);
                         Draw.print_font(double_buffer, wx + 24, cs_index * 8 + wy, strbuf, FRED);
                     }
-                    else if (cs[cs_index + 8] > 0)
+                    else if (cs_value > 0)
                     {
-                        sprintf(strbuf, "+%-3d", cs[cs_index + 8]);
+                        sprintf(strbuf, "+%-3d", cs_value);
                         Draw.print_font(double_buffer, wx + 24, cs_index * 8 + wy, strbuf, FGREEN);
                     }
-                    else if (cs[cs_index + 8] == 0)
+                    else if (cs_value == 0)
                     {
                         Draw.print_font(double_buffer, wx + 24, cs_index * 8 + wy, "=", FNORMAL);
                     }
@@ -384,19 +385,20 @@ static void draw_sideshot(int selected_item)
                 Draw.draw_icon(double_buffer, 9, wx + 16, wy);
                 Draw.print_font(double_buffer, wx + 16, wy + 8, "%", FNORMAL);
                 Draw.draw_icon(double_buffer, 47, wx + 16, wy + 16);
-                for (cs_index = 0; cs_index < 3; cs_index++)
+                for (size_t cs_index = 0; cs_index < 3; ++cs_index)
                 {
-                    if (cs[cs_index + 10] < 0)
+                    int cs_value = cs[cs_index + 10]; // eStat::Defense, eStat::Evade, eStat::MagicDefense
+                    if (cs_value < 0)
                     {
-                        sprintf(strbuf, "%-4d", cs[cs_index + 10]);
+                        sprintf(strbuf, "%-4d", cs_value);
                         Draw.print_font(double_buffer, wx + 24, cs_index * 8 + wy, strbuf, FRED);
                     }
-                    else if (cs[cs_index + 10] > 0)
+                    else if (cs_value > 0)
                     {
-                        sprintf(strbuf, "+%-3d", cs[cs_index + 10]);
+                        sprintf(strbuf, "+%-3d", cs_value);
                         Draw.print_font(double_buffer, wx + 24, cs_index * 8 + wy, strbuf, FGREEN);
                     }
-                    else if (cs[cs_index + 10] == 0)
+                    else if (cs_value == 0)
                     {
                         Draw.print_font(double_buffer, wx + 24, cs_index * 8 + wy, "=", FNORMAL);
                     }
@@ -411,9 +413,9 @@ static void draw_sideshot(int selected_item)
         {
             if (items[selected_item].icon == W_SBOOK || items[selected_item].icon == W_ABOOK)
             {
-                for (spell_index = 0; spell_index < 60; spell_index++)
+                for (size_t spell_index = 0; spell_index < NUM_SPELLS; ++spell_index)
                 {
-                    if (party[pidx[pidx_index]].spells[spell_index] == items[selected_item].hnds)
+                    if (player.spells[spell_index] == items[selected_item].hnds)
                     {
                         draw_sprite(double_buffer, noway, wx, wy);
                     }
@@ -421,7 +423,9 @@ static void draw_sideshot(int selected_item)
             }
         }
     }
-    for (inventory_index = 0; inventory_index < g_inv.size(); inventory_index++)
+
+    uint32_t ownd = 0;
+    for (size_t inventory_index = 0; inventory_index < g_inv.size(); ++inventory_index)
     {
         if (g_inv[inventory_index].item == selected_item)
         {
@@ -430,7 +434,7 @@ static void draw_sideshot(int selected_item)
     }
     sprintf(strbuf, _("Own: %d"), ownd);
     Draw.print_font(double_buffer, 88, 224, strbuf, FNORMAL);
-    if (slot < 6)
+    if (slot < eEquipment::NUM_EQUIPMENT)
     {
         sprintf(strbuf, _("Eqp: %d"), equipped_items);
         Draw.print_font(double_buffer, 160, 224, strbuf, FNORMAL);

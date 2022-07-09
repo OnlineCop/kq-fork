@@ -816,7 +816,7 @@ void KEntityManager::process_entity(t_entity target_entity)
                     }
                     play_effect(21, 128);
                 }
-                if (player.eqp[EQP_SPECIAL] == I_REGENERATOR)
+                if (player.eqp[eEquipment::EQP_SPECIAL] == I_REGENERATOR)
                 {
                     if (player.hp < player.mhp)
                     {

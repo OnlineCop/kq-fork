@@ -21,12 +21,21 @@
 
 #include "inventory.h"
 
+#include "enums.h"
 #include "itemmenu.h"
+#include "res.h"
+
+#include <map>
 
 KInventory g_inv;
 
 /// Allow up to this many of an item before another slot is required.
 constexpr unsigned short MAX_ITEMS = 9;
+
+KInventory::KInventory()
+    : m_inventories {}
+{
+}
 
 void KInventory::add(int type, unsigned int quantity)
 {
@@ -71,6 +80,39 @@ bool KInventory::removeIndex(size_t ix, unsigned int quantity)
         }
     }
     return false;
+}
+
+void KInventory::sort(const std::vector<eEquipment>& sort_order)
+{
+    Items t_inv;
+    t_inv.reserve(m_inventories.size());
+
+    // g_inv[] may contain multiple "slots" of MAX_ITEMS items; to properly sort,
+    // combine those all into a single 
+
+    std::map<unsigned short, unsigned short> item_map;
+    for (auto&& type : sort_order)
+    {
+        for (const auto& entry : m_inventories)
+        {
+            if (items[entry.item].type == type)
+            {
+                t_inv.push_back(entry);
+            }
+        }
+    }
+
+    setAll(std::move(t_inv));
+}
+
+KInventory::Items KInventory::getItems(const eEquipment& type) const
+{
+    Items results;
+    for (const auto& inventory : m_inventories)
+    {
+        //if (inventory.item
+    }
+    return results;
 }
 
 void KInventory::normalize()

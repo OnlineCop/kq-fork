@@ -243,18 +243,26 @@ int KDisk::load_spells_xml(KPlayer* s, XMLElement* node)
 
 int KDisk::load_equipment_xml(KPlayer* s, XMLElement* node)
 {
-    std::fill(std::begin(s->eqp), std::end(s->eqp), 0);
+    s->eqp.clear();
+    for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
+    {
+        s->eqp[eq] = 0;
+    }
+
     XMLElement* eqp = node->FirstChildElement(TAG_EQUIPMENT);
-    if (eqp && !eqp->NoChildren())
+    if (eqp != nullptr && !eqp->NoChildren())
     {
         auto values = parse_list(eqp->FirstChild()->Value());
-        if (values.size() == NUM_EQUIPMENT)
+        if (values.size() == static_cast<size_t>(eEquipment::NUM_EQUIPMENT))
         {
-            copy(values.begin(), values.end(), s->eqp);
+            for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
+            {
+                s->eqp[eq] = values[static_cast<size_t>(eq)];
+            }
         }
         else
         {
-            TRACE("Wrong number of equipment, expected %d and got %zu", NUM_EQUIPMENT, values.size());
+            TRACE("Wrong number of equipment, expected %zu and got %zu", static_cast<size_t>(eEquipment::NUM_EQUIPMENT), values.size());
             Game.program_death("Error loading XML");
         }
     }
@@ -391,8 +399,14 @@ int KDisk::store_spells_xml(const KPlayer* s, XMLElement* node)
 
 int KDisk::store_equipment_xml(const KPlayer* s, XMLElement* node)
 {
-    auto startp = std::begin(s->eqp);
-    auto endp = std::end(s->eqp);
+    std::vector<int> eqp;
+    eqp.reserve(static_cast<size_t>(eEquipment::NUM_EQUIPMENT));
+    for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
+    {
+        eqp.push_back(s->eqp.at(eq));
+    }
+    auto startp = std::begin(eqp);
+    auto endp = std::end(eqp);
     if (!range_is_default(startp, endp))
     {
         XMLElement* elem = node->GetDocument()->NewElement(TAG_EQUIPMENT);

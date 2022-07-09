@@ -175,7 +175,7 @@ int available_spells(int who)
  */
 static int can_invoke_item(int t1)
 {
-    if (items[t1].type > 5)
+    if (items[t1].type == eEquipment::NUM_EQUIPMENT)
     {
         return 0;
     }
@@ -494,7 +494,7 @@ static int combat_item_menu(int whom)
 static int combat_item_usable(int itno)
 {
     // FIXME: What is this magic number '6'?
-    if (items[itno].type != 6 || items[itno].tgt == TGT_NONE)
+    if (items[itno].type != eEquipment::NUM_EQUIPMENT || items[itno].tgt == TGT_NONE)
     {
         return 0;
     }
@@ -657,16 +657,16 @@ static int combat_spell_targeting(int whom)
  */
 static void draw_invokable(int dud)
 {
-    int a, tt;
+    int tt;
     eFontColor grd;
 
     Draw.menubox(double_buffer, 72, 80, 20, 6, BLUE);
-    for (a = 0; a < NUM_EQUIPMENT; a++)
+    for (eEquipment a = eEquipment::EQP_WEAPON; a < eEquipment::NUM_EQUIPMENT; ++a)
     {
         tt = party[dud].eqp[a];
         grd = can_invoke_item(tt) ? FNORMAL : FDARK;
-        Draw.draw_icon(double_buffer, items[tt].icon, 88, a * 8 + 88);
-        Draw.print_font(double_buffer, 96, a * 8 + 88, items[tt].name, grd);
+        Draw.draw_icon(double_buffer, items[tt].icon, 88, static_cast<int>(a) * 8 + 88);
+        Draw.print_font(double_buffer, 96, static_cast<int>(a) * 8 + 88, items[tt].name, grd);
     }
 }
 
@@ -721,7 +721,6 @@ static int hero_attack(int whom)
 void hero_choose_action(size_t fighter_index)
 {
     int stop = 0, amy;
-    size_t equipment_index;
     size_t ca_index;
     uint32_t sptr = 1, ptr = 0, my = 0, tt, chi[9];
 
@@ -776,11 +775,11 @@ void hero_choose_action(size_t fighter_index)
             my++;
         }
         tt = 0;
-        for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
+        for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
         {
-            if (can_invoke_item(party[pidx[fighter_index]].eqp[equipment_index]))
+            if (can_invoke_item(party[pidx[fighter_index]].eqp[eq]))
             {
-                tt++;
+                ++tt;
             }
         }
         if (tt > 0)
@@ -983,7 +982,7 @@ void hero_init()
         // Attack stances, column 7 (0-based): weapon forward, striking
         blit(eb, cframes[fighter_index][7], fighter_x + 32, fighter_y, 0, 0, 32, 32);
 
-        unsigned int fighter_weapon_index = party[current_fighter_index].eqp[0];
+        unsigned int fighter_weapon_index = party[current_fighter_index].eqp[eEquipment::EQP_WEAPON];
 
         // If `kol` is non-zero, loop through all pixels in both of the Attack
         // stances bitmaps
@@ -1050,7 +1049,8 @@ void hero_init()
  */
 static int hero_invoke(int whom)
 {
-    int stop = 0, ptr = 0;
+    int stop = 0;
+    eEquipment ptr = eEquipment::EQP_WEAPON;
     int dud;
 
     fullblit(double_buffer, back);
@@ -1061,24 +1061,24 @@ static int hero_invoke(int whom)
         Game.do_check_animation();
         fullblit(back, double_buffer);
         draw_invokable(dud);
-        draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 88);
+        draw_sprite(double_buffer, menuptr, 72, static_cast<int>(ptr) * 8 + 88);
         Draw.blit2screen();
 
         if (PlayerInput.up())
         {
-            ptr--;
-            if (ptr < 0)
+            --ptr;
+            if (ptr == eEquipment::NUM_EQUIPMENT)
             {
-                ptr = 5;
+                --ptr;
             }
             play_effect(KAudio::eSound::SND_CLICK, 128);
         }
         if (PlayerInput.down())
         {
-            ptr++;
-            if (ptr > 5)
+            ++ptr;
+            if (ptr == eEquipment::NUM_EQUIPMENT)
             {
-                ptr = 0;
+                ++ptr;
             }
             play_effect(KAudio::eSound::SND_CLICK, 128);
         }

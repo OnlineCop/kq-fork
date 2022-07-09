@@ -82,7 +82,7 @@ int hero_skillcheck(size_t fighter_index)
         break;
 
     case SARINA:
-        weapon_index = items[party[pidx_index].eqp[0]].icon;
+        weapon_index = items[party[pidx_index].eqp[eEquipment::EQP_WEAPON]].icon;
         if (weapon_index != W_SWORD && weapon_index != W_AXE && weapon_index != W_KNIFE && weapon_index != W_CHENDIGAL)
         {
             return 0;

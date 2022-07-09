@@ -46,6 +46,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <map>
 
 char item_act;
 
@@ -354,6 +355,7 @@ static void draw_itemmenu(int ptr, int pg, int sl)
  */
 eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index, int ti)
 {
+    auto& whichFighter = party[pidx[fighter_index]];
     int tmp = 0, i, a, b, z, san = 0, sen = 0;
     size_t start_fighter_index = 0;
     size_t spell_index = 0;
@@ -655,7 +657,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
             return ITEM_EFFECT_INEFFECTIVE;
         }
         z = items[ti].bst; // eAttribute
-        party[pidx[fighter_index]].stats[z] += kqrandom->random_range_exclusive(1, 4) * 100;
+        whichFighter.stats[z] += kqrandom->random_range_exclusive(1, 4) * 100;
         play_effect(KAudio::eSound::SND_TWINKLE, 128);
         switch (z)
         {
@@ -682,7 +684,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         tmp = 0;
         for (spell_index = 0; spell_index < NUM_SPELLS - 1; spell_index++)
         {
-            if (party[pidx[fighter_index]].spells[spell_index] > 0)
+            if (whichFighter.spells[spell_index] > 0)
             {
                 tmp++;
             }
@@ -694,8 +696,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         tmp = 0;
         for (spell_index = 0; spell_index < NUM_SPELLS - 1; spell_index++)
         {
-            if (party[pidx[fighter_index]].spells[spell_index] == items[ti].hnds ||
-                party[pidx[fighter_index]].lvl < items[ti].ilvl)
+            if (whichFighter.spells[spell_index] == items[ti].hnds || whichFighter.lvl < items[ti].ilvl)
             {
                 tmp = 1;
             }
@@ -707,9 +708,9 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         tmp = items[ti].hnds;
         for (spell_index = 0; spell_index < NUM_SPELLS - 1; spell_index++)
         {
-            if (party[pidx[fighter_index]].spells[spell_index] == 0)
+            if (whichFighter.spells[spell_index] == 0)
             {
-                party[pidx[fighter_index]].spells[spell_index] = tmp;
+                whichFighter.spells[spell_index] = tmp;
                 spell_index = NUM_SPELLS - 1;
             }
         }
@@ -725,7 +726,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
             return ITEM_EFFECT_INEFFECTIVE;
         }
         i = kqrandom->random_range_exclusive(10, 21);
-        party[pidx[fighter_index]].mhp += i;
+        whichFighter.mhp += i;
         fighter[fighter_index].hp += i;
     }
     if (ti == I_MPUP)
@@ -735,7 +736,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
             return ITEM_EFFECT_INEFFECTIVE;
         }
         i = kqrandom->random_range_exclusive(10, 21);
-        party[pidx[fighter_index]].mmp += i;
+        whichFighter.mmp += i;
         fighter[fighter_index].mp += i;
     }
     if (ti == I_SSTONE)
@@ -780,21 +781,13 @@ void remove_item(size_t inventory_index, int qi)
  */
 static void sort_items()
 {
-    KInventory::Items t_inv;
-    static const int type_order[7] = { 6, 0, 1, 2, 3, 4, 5 };
+    // We include NUM_EQUIPMENT so we sort non-equippable items first.
+    static const std::vector<eEquipment> sort_order = { eEquipment::NUM_EQUIPMENT, eEquipment::EQP_WEAPON,
+                                                        eEquipment::EQP_SHIELD,    eEquipment::EQP_HELMET,
+                                                        eEquipment::EQP_ARMOR,     eEquipment::EQP_HAND,
+                                                        eEquipment::EQP_SPECIAL };
 
-    for (auto type : type_order)
-    {
-        for (int inventory_index = 0; inventory_index < g_inv.size(); ++inventory_index)
-        {
-            auto entry = g_inv[inventory_index];
-            if (items[entry.item].type == type)
-            {
-                t_inv.push_back(entry);
-            }
-        }
-    }
-    g_inv.setAll(std::move(t_inv));
+    g_inv.sort(sort_order);
 }
 
 /*! \brief Use up an item, if we have any
