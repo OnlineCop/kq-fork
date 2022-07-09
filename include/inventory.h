@@ -70,17 +70,17 @@ class KInventory
 
   private:
     void normalize();
-    std::vector<s_inventory> inv;
+    std::vector<s_inventory> m_inventories;
 };
 
 inline KInventory::Items::size_type KInventory::size() const
 {
-    return inv.size();
+    return m_inventories.size();
 }
 
 inline s_inventory KInventory::operator[](size_t index)
 {
-    return (index < inv.size()) ? inv.at(index) : s_inventory {};
+    return (index < m_inventories.size()) ? m_inventories.at(index) : s_inventory {};
 }
 
 extern KInventory g_inv;

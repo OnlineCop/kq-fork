@@ -30,13 +30,13 @@ constexpr unsigned short MAX_ITEMS = 9;
 
 void KInventory::add(int type, unsigned int quantity)
 {
-    inv.emplace_back(type, quantity);
+    m_inventories.emplace_back(type, quantity);
     normalize();
 }
 
 bool KInventory::remove(int type, unsigned int quantity)
 {
-    for (auto& it : inv)
+    for (auto& it : m_inventories)
     {
         if (it.item == type)
         {
@@ -61,9 +61,9 @@ bool KInventory::remove(int type, unsigned int quantity)
 
 bool KInventory::removeIndex(size_t ix, unsigned int quantity)
 {
-    if (ix < inv.size())
+    if (ix < m_inventories.size())
     {
-        auto& it = inv.at(ix);
+        auto& it = m_inventories.at(ix);
         if (it.quantity >= quantity)
         {
             it.quantity -= quantity;
@@ -75,16 +75,16 @@ bool KInventory::removeIndex(size_t ix, unsigned int quantity)
 
 void KInventory::normalize()
 {
-    for (auto i = std::begin(inv); i != std::end(inv);)
+    for (auto i = std::begin(m_inventories); i != std::end(m_inventories);)
     {
         if (i->item == 0 || i->quantity == 0)
         {
-            i = inv.erase(i);
+            i = m_inventories.erase(i);
         }
         else if (i->quantity < MAX_ITEMS)
         {
             // Maybe can join two elements
-            for (auto j = std::next(i); j != std::end(inv); ++j)
+            for (auto j = std::next(i); j != std::end(m_inventories); ++j)
             {
                 if (j->item == i->item)
                 {
@@ -99,7 +99,7 @@ void KInventory::normalize()
         {
             // Need to split
             i->quantity -= MAX_ITEMS;
-            i = inv.emplace(i, i->item, MAX_ITEMS);
+            i = m_inventories.emplace(i, i->item, MAX_ITEMS);
             ++i;
         }
         else
@@ -112,6 +112,6 @@ void KInventory::normalize()
 
 void KInventory::setAll(KInventory::Items&& t)
 {
-    inv = std::move(t);
+    m_inventories = std::move(t);
     normalize();
 }
