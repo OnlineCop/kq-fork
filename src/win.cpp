@@ -156,7 +156,11 @@ const std::string kqres(enum eDirectories dir, const std::string& file)
 {
     if (!init_path)
     {
-        user_dir = std::string(SDL_GetPrefPath("kq-fork", "kq"));
+        std::string save_folder = "kq";
+#ifdef KQ_SAVEDIR
+        save_folder = std::string { KQ_SAVEDIR };
+#endif
+        user_dir = std::string(SDL_GetPrefPath("kq-fork", save_folder.c_str()));
         /* Always try to make the directory, just to be sure. */
         if (::_mkdir(user_dir.c_str()) == -1)
         {
