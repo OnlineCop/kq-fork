@@ -710,11 +710,11 @@ void KDraw::draw_porttextbox(eBubbleStyle bstyle, int chr)
     a--;
     linexofs = a * 12;
 
-    menubox(double_buffer, 19, 172 - linexofs, 4, 4, BLUE);
-    menubox(double_buffer, 66, 196 - linexofs, party[chr].name.length(), 1, BLUE);
+    menubox(double_buffer, 19, 154 - linexofs, 4, 4, BLUE);
+    menubox(double_buffer, 66, 178 - linexofs, party[chr].name.length(), 1, BLUE);
 
-    draw_sprite(double_buffer, players[chr].portrait, 24, 177 - linexofs);
-    print_font(double_buffer, 74, 204 - linexofs, party[chr].name, FNORMAL);
+    draw_sprite(double_buffer, players[chr].portrait, 24, 159 - linexofs);
+    print_font(double_buffer, 74, 186 - linexofs, party[chr].name, FNORMAL);
 }
 
 void KDraw::drawmap()

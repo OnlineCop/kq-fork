@@ -248,6 +248,10 @@ function init_shops()
   shop_add_item(index, I_PCURING, 5, 40, 1)
   shop_add_item(index, I_B_FLAMEWALL, 5, 10)
   shop_add_item(index, I_B_DEATH, 5, 10)
+  shop_add_item(index, I_MACE3, 5, 10)
+  shop_add_item(index, I_HAMMER3, 5, 10)
+  shop_add_item(index, I_SWORD6, 5, 10)
+  shop_add_item(index, I_SPEAR3, 5, 10)
   -- shop_add_item(index, I_B_THUNDERSTORM, 5, 10)
 
 end

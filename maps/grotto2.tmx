@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="62" height="100" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="81">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="62" height="100" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="82">
  <properties>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="0"/>
@@ -31,7 +31,7 @@
   </data>
  </layer>
  <objectgroup color="#ff00ff" id="3" name="entities">
-  <object id="63" name="Entity 0" type="entity" gid="801" x="672" y="192" width="16" height="16">
+  <object id="1" name="Entity 0" type="entity" gid="801" x="672" y="192" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -57,7 +57,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="64" name="Entity 1" type="entity" gid="801" x="672" y="208" width="16" height="16">
+  <object id="2" name="Entity 1" type="entity" gid="801" x="672" y="208" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -83,7 +83,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="65" name="Entity 2" type="entity" gid="801" x="672" y="224" width="16" height="16">
+  <object id="3" name="Entity 2" type="entity" gid="801" x="672" y="224" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -109,7 +109,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="66" name="Entity 3" type="entity" gid="801" x="672" y="240" width="16" height="16">
+  <object id="4" name="Entity 3" type="entity" gid="801" x="672" y="240" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -135,7 +135,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="67" name="Entity 4" type="entity" gid="801" x="704" y="192" width="16" height="16">
+  <object id="5" name="Entity 4" type="entity" gid="801" x="704" y="192" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -161,7 +161,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="68" name="Entity 5" type="entity" gid="801" x="704" y="208" width="16" height="16">
+  <object id="6" name="Entity 5" type="entity" gid="801" x="704" y="208" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -187,7 +187,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="69" name="Entity 6" type="entity" gid="801" x="704" y="224" width="16" height="16">
+  <object id="7" name="Entity 6" type="entity" gid="801" x="704" y="224" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -213,7 +213,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="70" name="Entity 7" type="entity" gid="801" x="704" y="240" width="16" height="16">
+  <object id="8" name="Entity 7" type="entity" gid="801" x="704" y="240" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -239,7 +239,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="71" name="Entity 8" type="entity" gid="1269" x="688" y="176" width="16" height="16">
+  <object id="9" name="Entity 8" type="entity" gid="1269" x="688" y="176" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -265,7 +265,7 @@
     <property name="transl" value="0"/>
    </properties>
   </object>
-  <object id="72" name="Entity 9" type="entity" gid="969" x="656" y="192" width="16" height="16">
+  <object id="10" name="Entity 9" type="entity" gid="969" x="656" y="192" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
     <property name="atype" value="0"/>
@@ -320,6 +320,7 @@
   <object id="22" name="cancel" type="marker" x="320" y="368" width="16" height="16"/>
   <object id="23" name="treasure1" type="marker" x="272" y="832" width="16" height="16"/>
   <object id="24" name="treasure2" type="marker" x="288" y="752" width="16" height="16"/>
+  <object id="81" name="tent" type="marker" x="576" y="272" width="16" height="16"/>
  </objectgroup>
  <objectgroup color="#0000ff" id="9" name="bounds" visible="0"/>
 </map>

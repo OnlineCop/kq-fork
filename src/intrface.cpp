@@ -2960,7 +2960,7 @@ static int KQ_set_desc(lua_State* L)
 static int KQ_set_ent_active(lua_State* L)
 {
     int a = real_entity_num(L, 1);
-    auto b = lua_toboolean(L, 2);
+    int b = lua_tointeger(L, 2);
     g_ent[a].active = b;
 
     return 0;

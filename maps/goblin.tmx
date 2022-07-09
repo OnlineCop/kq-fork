@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.1" orientation="orthogonal" renderorder="right-down" width="97" height="57" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="49">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="97" height="57" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="49">
  <properties>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="0"/>
@@ -304,7 +304,7 @@
  </layer>
  <layer id="6" name="obstacles" width="97" height="57" opacity="0.5">
   <data encoding="base64" compression="zlib">
-   eJztmmGOAyEIhftrbrJz/yM2zcbEWMSHPtB0+JJNd2YsIIjCpK9XkiRJkiRJkjyTv2u3Bc/k4/fyJ10nvmh+zhj4g/g484GD5seRf3N/Wqf2Wc+HFr/Wsch4fIP6t/Wfxafa+f30mNQ+ae9r+5DVbz097fNI0DXguVYQvzPjsGoLE8s8kXEsOzS93uu33eMQ3Qxd2v2onB2t89EeguqQ8nl3rCWd2nxZ/hjZ5CFLm6O2/lH5FoqMe2ArWnuziDgP0VwYyWDY8eG0GHjJRHVpeT8bL4t+i11MO7xlWnRGx0CStasuipKt6dT6E+mTrR+R7WmDpIc9FpWnyTxh7UWdmRHM6NmRo9HUuebdn85wmj1spJ7UOz+t3/OKATpf77WJ9ohsfdY5efdEu+qi3TWpxYboft4yzsMWb6xx8JqzlIvRffLOM3hXT8rqBX4hF4ru0Zx/PQae9clsfdV7t8fkpPOALa/1XVStO8MpdVEtd0W2drZZZERz2vuiooO5dlt50lhpTGSdcGKOzuided+G+PvE9yY7YNQHMz0xUjM9idFatcix6POOA7rv7eyjWjtG99H5oLo8a5LT6qKebiT+kr/Y/Q17DZ7WH2g6kDOzZ5dHHBjUcspvK25hHlF98ki2JQbINfqM+R2rjDoG9/X9GxjvOqHnQ7QHGMnTnqO16ipFxn3p170YMG2JkGs5f8v/3jHQ5JxwHlh9xh7XO9896sKT66KI+mP0PKoet56/0XWph4yoPd8CO69ZzOpbOZ9Xdf8ilv4d3Tek8b3P5B/Jz8x9Ov2fJEmSJEnyDN64vk/U
+   eJztWtGOwzAI21P/5Pr/nzhNp0hVBgRSm0Qrlk67tplNIAlQ7fUqFAqFQqFQKBSeib9jtQXPxMfv7U+6LnBh+bliwIfHx7UfMLD8OPJvnU/3cfWZ5sOIX6+xqHh8w+vf3n8Rn1r5++kxufqkv2+dQ1G/aTr980x41wBzrXj8jozDXVuQiMzTMw5lh6XLXr/9GefRRmhZ97P27Gidj84Qr4a0n1fHWtLs85U2lnkGMLi0OWrPNC6ErY3jHNg62n9ZewGt4dkLIw6EHR94YsC2JYPTq2XVwbPxiuhH7ELaweaMaGbHQOJaVRdlcVuaVn8ifaL1PdxMGyQd9FgvX2b+m+HOypkZmNFZsUez0ddju815N3vQkHpS9v6Mfo8VA+982WvT6p+YetE5sXuiVXXR6po0YkN2Px8Zx7CFjWgcWHPW3gll2rQyB6/qSVG9wC/shaY9mvOvx4BZn8zWV9q7PSR2ygdovt53WbXuDHapi668d7it3BbhyMZu74uaBnLt9nzSWGlMZp2w4x6d0Z153+bx947vTVYAUR/M9MSemulJGK3VCE9Ejx0H77m3so/q7Rjd987Hq8WsSXarizRtT/wlf6H7G/Qa3K0/sDQ8OVOzixEHBK487bcVpzCPrD55xB2Jgefa+wz5nSjHNQbn8f0bGHadoPnQ2wOM+Kzn3lr1LhrHedjXWgyQtmTwRvJv+58dA4tnh3wQ9Rl6nJbfGXXhznVRRv0xep5Vj0fzb3ZdyuDIOvMjQO9rFGb17uTnu9q/iEj/7j03pPHaZ+Efkp+R53T5v1AoFAqFQuEZeANpmlAq
   </data>
  </layer>
  <objectgroup color="#008000" id="7" name="zones">

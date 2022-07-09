@@ -26,6 +26,13 @@ function zone_handler(zn)
     chest(166, I_B_FULLLIFE, 1)
   elseif (zn == 4) then
     chest(167, I_B_LUMINE, 1)
+  elseif (zn == 5) then
+    set_save(0)
+    set_sstone(0)
+  elseif (zn == 6) then
+    set_save(1)
+    set_sstone(1)
+  end
 
   -- elseif (zn > 1 and zn < 6) then
   --   handle_statue(zn)
@@ -42,5 +49,5 @@ function zone_handler(zn)
   --   end
   -- elseif (zn == 7) then
   --   change_map("tunnela", "entrance_w")
-  end
+  -- end
 end

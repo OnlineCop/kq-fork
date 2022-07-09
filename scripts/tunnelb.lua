@@ -16,7 +16,9 @@ end
 
 function zone_handler(zn)
   if (zn == 0) then
-    combat(69)
+    if progress.tunnel < 4 then
+      combat(69)
+    end
   elseif (zn == 1) then
     change_map("tunnela", "entrance_w")
   elseif (zn == 2) then
