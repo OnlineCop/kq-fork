@@ -665,11 +665,11 @@ void KMenu::status_screen(size_t fighter_index)
             }
         }
         Draw.menubox(double_buffer, 160, 160, 18, 6, BLUE);
-        for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
+        for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
         {
-            int icon_offset = static_cast<int>(eq);
-            Draw.draw_icon(double_buffer, items[party[pidx_index].eqp[eq]].icon, 168, icon_offset * 8 + 168);
-            Draw.print_font(double_buffer, 176, icon_offset * 8 + 168, items[party[pidx_index].eqp[eq]].name, FNORMAL);
+            int icon_offset = static_cast<int>(slot);
+            Draw.draw_icon(double_buffer, items[party[pidx_index].eqp[slot]].icon, 168, icon_offset * 8 + 168);
+            Draw.print_font(double_buffer, 176, icon_offset * 8 + 168, items[party[pidx_index].eqp[slot]].name, FNORMAL);
         }
         Draw.blit2screen();
 
@@ -778,11 +778,11 @@ KFighter player2fighter(int who)
      * that can be imbued, so some item types get priority over
      * others... hence the need to run through each in this loop.
      */
-    for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
+    for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
     {
         static const eEquipment z[5] = { eEquipment::EQP_SPECIAL, eEquipment::EQP_ARMOR, eEquipment::EQP_HELMET,
                                          eEquipment::EQP_SHIELD, eEquipment::EQP_HAND };
-        const size_t slot_index = static_cast<size_t>(eq);
+        const size_t slot_index = static_cast<size_t>(slot);
         uint16_t current_equipment_slot = plr.eqp[z[slot_index]];
         if (items[current_equipment_slot].use == USE_IMBUED)
         {
@@ -824,10 +824,10 @@ KFighter player2fighter(int who)
     {
         current_fighter.welem = R_WHITE + 1;
     }
-    for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
+    for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
     {
-        int a = plr.eqp[eq];
-        if (eq == eEquipment::EQP_WEAPON)
+        int a = plr.eqp[slot];
+        if (slot == eEquipment::EQP_WEAPON)
         {
             if (a == 0)
             {

@@ -334,7 +334,7 @@ static void draw_sideshot(int selected_item)
         KPlayer& player = party[pidx[pidx_index]];
         wx = pidx_index * 72 + 88;
         wy = 200;
-        for (eEquipment eq = eEquipment::EQP_WEAPON; eq < eEquipment::NUM_EQUIPMENT; ++eq)
+        for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
         {
             if (player.eqp[eq] == selected_item)
             {

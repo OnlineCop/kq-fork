@@ -2880,12 +2880,12 @@ static int KQ_set_all_equip(lua_State* L)
     {
         return 0;
     }
-    for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
+    for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
     {
-        uint16_t c = lua_tonumber(L, static_cast<int>(eq) + 2);
+        uint16_t c = lua_tonumber(L, static_cast<int>(slot) + 2);
         if (c >= 0)
         {
-            party[a].eqp[eq] = c;
+            party[a].eqp[slot] = c;
         }
     }
     return 0;

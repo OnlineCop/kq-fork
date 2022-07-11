@@ -661,12 +661,12 @@ static void draw_invokable(int dud)
     eFontColor grd;
 
     Draw.menubox(double_buffer, 72, 80, 20, 6, BLUE);
-    for (eEquipment a = eEquipment::EQP_WEAPON; a < eEquipment::NUM_EQUIPMENT; ++a)
+    for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
     {
-        tt = party[dud].eqp[a];
+        tt = party[dud].eqp[slot];
         grd = can_invoke_item(tt) ? FNORMAL : FDARK;
-        Draw.draw_icon(double_buffer, items[tt].icon, 88, static_cast<int>(a) * 8 + 88);
-        Draw.print_font(double_buffer, 96, static_cast<int>(a) * 8 + 88, items[tt].name, grd);
+        Draw.draw_icon(double_buffer, items[tt].icon, 88, static_cast<int>(slot) * 8 + 88);
+        Draw.print_font(double_buffer, 96, static_cast<int>(slot) * 8 + 88, items[tt].name, grd);
     }
 }
 
@@ -775,9 +775,9 @@ void hero_choose_action(size_t fighter_index)
             my++;
         }
         tt = 0;
-        for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
+        for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
         {
-            if (can_invoke_item(party[pidx[fighter_index]].eqp[eq]))
+            if (can_invoke_item(party[pidx[fighter_index]].eqp[slot]))
             {
                 ++tt;
             }

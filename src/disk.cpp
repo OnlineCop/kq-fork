@@ -244,9 +244,9 @@ int KDisk::load_spells_xml(KPlayer* s, XMLElement* node)
 int KDisk::load_equipment_xml(KPlayer* s, XMLElement* node)
 {
     s->eqp.clear();
-    for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
+    for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
     {
-        s->eqp[eq] = 0;
+        s->eqp[slot] = 0;
     }
 
     XMLElement* eqp = node->FirstChildElement(TAG_EQUIPMENT);
@@ -255,9 +255,9 @@ int KDisk::load_equipment_xml(KPlayer* s, XMLElement* node)
         auto values = parse_list(eqp->FirstChild()->Value());
         if (values.size() == static_cast<size_t>(eEquipment::NUM_EQUIPMENT))
         {
-            for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
+            for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
             {
-                s->eqp[eq] = values[static_cast<size_t>(eq)];
+                s->eqp[slot] = values[static_cast<size_t>(slot)];
             }
         }
         else
@@ -401,9 +401,9 @@ int KDisk::store_equipment_xml(const KPlayer* s, XMLElement* node)
 {
     std::vector<int> eqp;
     eqp.reserve(static_cast<size_t>(eEquipment::NUM_EQUIPMENT));
-    for (eEquipment eq = eEquipment::EQP_WEAPON; eq != eEquipment::NUM_EQUIPMENT; ++eq)
+    for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
     {
-        eqp.push_back(s->eqp.at(eq));
+        eqp.push_back(s->eqp.at(slot));
     }
     auto startp = std::begin(eqp);
     auto endp = std::end(eqp);

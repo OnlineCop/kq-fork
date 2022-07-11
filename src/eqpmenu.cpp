@@ -272,10 +272,10 @@ static void draw_equipmenu(int c, bool sel)
     Draw.print_font(double_buffer, 28, 60, _("Body:"), FGOLD);
     Draw.print_font(double_buffer, 28, 68, _("Arms:"), FGOLD);
     Draw.print_font(double_buffer, 28, 76, _("Other:"), FGOLD);
-    for (eEquipment eq = eEquipment::EQP_WEAPON; eq < eEquipment::NUM_EQUIPMENT; ++eq)
+    for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
     {
-        int j = party[l].eqp[eq];
-        const int k = static_cast<int>(eq);
+        int j = party[l].eqp[slot];
+        const int k = static_cast<int>(slot);
         Draw.draw_icon(double_buffer, items[j].icon, 84, k * 8 + 36);
         Draw.print_font(double_buffer, 92, k * 8 + 36, items[j].name, FNORMAL);
     }
@@ -560,7 +560,7 @@ void equip_menu(uint32_t c)
 
                 {
                     bool all_ok = true;
-                    for (eEquipment slot = eEquipment::EQP_WEAPON; slot < eEquipment::NUM_EQUIPMENT; ++slot)
+                    for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
                     {
                         if (party[pidx[c]].eqp[slot] > 0)
                         {
@@ -627,7 +627,7 @@ static void optimize_equip(int c)
 {
     int maxx, maxi;
     // First, de-equip all slots
-    for (eEquipment slot = eEquipment::EQP_WEAPON; slot < eEquipment::NUM_EQUIPMENT; ++slot)
+    for (eEquipment slot = eEquipment::EQP_WEAPON; slot != eEquipment::NUM_EQUIPMENT; ++slot)
     {
         if (party[pidx[c]].eqp[slot] > 0)
         {
@@ -655,12 +655,12 @@ static void optimize_equip(int c)
     {
         equip(pidx[c], t_inv[maxi]);
     }
-    // Equip Hand2, Head, Body, Arms
-    for (eEquipment eq = eEquipment::EQP_SHIELD; eq < eEquipment::EQP_SPECIAL; ++eq)
+    // Equip Hand2, Head, Body, Arms (skip Hand1: EQP_WEAPON)
+    for (eEquipment slot = eEquipment::EQP_SHIELD; slot != eEquipment::EQP_SPECIAL; ++slot)
     {
         maxx = 0;
         maxi = -1;
-        calc_possible_equip(c, eq);
+        calc_possible_equip(c, slot);
         for (int a = 0; a < t_inv.size(); a++)
         {
             int b = g_inv[t_inv[a]].item;
