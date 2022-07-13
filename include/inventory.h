@@ -34,32 +34,37 @@ class KInventory
 
     using Items = std::vector<s_inventory>;
 
+    /// Return by value or (0,0) if index outside 0..size-1
+    s_inventory operator[](size_t index);
+
     /// Get number of items in the inventory
     Items::size_type size() const;
 
     // Manipulate functions
-    /*! \brief Add to the inventory
+    /*! \brief Add to the inventory.
+     *
      * \param item the I_XXX id to add
      * \param quantity the quantity to add
      */
-    void add(int type, unsigned int quantity = 1);
+    void add(s_inventory::item_t type, s_inventory::quantity_t quantity = 1);
 
-    /*! \brief Remove from to the inventory
+    /*! \brief Remove from the inventory.
+     *
      * \param item the I_XXX id to remove
      * \param quantity the quantity to remove
      * \returns true if there was sufficient to remove the quantity requested
      */
-    bool remove(int type, unsigned int quantity = 1);
+    bool remove(s_inventory::item_t type, s_inventory::quantity_t quantity = 1);
 
-    /*! \brief Remove from to the inventory
-     * Note that if the inventory slot contains less than 'quantity',
-     * the slot is emptied, but it doesn't remove items from any other
-     * slots of the same type.
+    /*! \brief Remove from the inventory.
+     *
+     * Note that if the inventory slot contains less than 'quantity', the slot is emptied, but it doesn't remove items from any other slots of the same type.
+     *
      * \param index the index of the item in the inventory to remove
      * \param quantity the quantity to remove
      * \returns true if there was sufficient to remove the quantity requested
      */
-    bool removeIndex(size_t index, unsigned int quantity = 1);
+    bool removeIndex(size_t index, s_inventory::quantity_t quantity = 1);
 
     /*! \brief Set the inventory
      * Replace contents with the given items
@@ -67,15 +72,17 @@ class KInventory
      */
     void setAll(Items&& new_items);
 
-    /// Return by value or (0,0) if index outside 0..size-1
-    s_inventory operator[](size_t index);
-
     /*! \brief Sort the inventory based on the order specified in list.
      *
      * \param list The order which eEquipment types should be sorted by.
      */
     void sort(const std::vector<eEquipment>& sort_order);
 
+    /*! \brief Get a normalized list of inventory.
+     *
+     * \param type Type of items to return: INV_WEAPON, INV_SPECIAL, etc.
+     * \return Vector of only those type of items.
+     */
     Items getItems(const eEquipment& type) const;
 
   protected:
@@ -85,14 +92,14 @@ class KInventory
     Items m_inventories;
 };
 
-inline KInventory::Items::size_type KInventory::size() const
-{
-    return m_inventories.size();
-}
-
 inline s_inventory KInventory::operator[](size_t index)
 {
     return (index < m_inventories.size()) ? m_inventories.at(index) : s_inventory {};
+}
+
+inline KInventory::Items::size_type KInventory::size() const
+{
+    return m_inventories.size();
 }
 
 extern KInventory g_inv;

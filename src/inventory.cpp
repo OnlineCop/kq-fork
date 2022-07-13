@@ -30,20 +30,20 @@
 KInventory g_inv;
 
 /// Allow up to this many of an item before another slot is required.
-constexpr unsigned short MAX_ITEMS = 9;
+constexpr s_inventory::quantity_t MAX_ITEMS = 9;
 
 KInventory::KInventory()
     : m_inventories {}
 {
 }
 
-void KInventory::add(int type, unsigned int quantity)
+void KInventory::add(s_inventory::item_t type, s_inventory::quantity_t quantity)
 {
     m_inventories.emplace_back(type, quantity);
     normalize();
 }
 
-bool KInventory::remove(int type, unsigned int quantity)
+bool KInventory::remove(s_inventory::item_t type, s_inventory::quantity_t quantity)
 {
     for (auto& it : m_inventories)
     {
@@ -68,7 +68,7 @@ bool KInventory::remove(int type, unsigned int quantity)
     return quantity == 0;
 }
 
-bool KInventory::removeIndex(size_t ix, unsigned int quantity)
+bool KInventory::removeIndex(size_t ix, s_inventory::quantity_t quantity)
 {
     if (ix < m_inventories.size())
     {
@@ -130,7 +130,7 @@ void KInventory::normalize()
             {
                 if (j->item == i->item)
                 {
-                    unsigned short tot = i->quantity + j->quantity;
+                    s_inventory::quantity_t tot = i->quantity + j->quantity;
                     i->quantity = std::min(tot, MAX_ITEMS);
                     j->quantity = tot - i->quantity;
                 }
