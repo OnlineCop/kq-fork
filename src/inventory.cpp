@@ -65,6 +65,7 @@ bool KInventory::remove(s_inventory::item_t type, s_inventory::quantity_t quanti
             }
         }
     }
+    normalize();
     return quantity == 0;
 }
 
@@ -76,6 +77,7 @@ bool KInventory::removeIndex(size_t ix, s_inventory::quantity_t quantity)
         if (it.quantity >= quantity)
         {
             it.quantity -= quantity;
+            normalize();
             return true;
         }
     }
@@ -117,37 +119,37 @@ KInventory::Items KInventory::getItems(const eEquipment& type) const
 
 void KInventory::normalize()
 {
-    for (auto i = std::begin(m_inventories); i != std::end(m_inventories);)
+    for (auto it = m_inventories.begin(); it != m_inventories.end();)
     {
-        if (i->item == 0 || i->quantity == 0)
+        if (it->item == 0 || it->quantity == 0)
         {
-            i = m_inventories.erase(i);
+            it = m_inventories.erase(it);
         }
-        else if (i->quantity < MAX_ITEMS)
+        else if (it->quantity < MAX_ITEMS)
         {
             // Maybe can join two elements
-            for (auto j = std::next(i); j != std::end(m_inventories); ++j)
+            for (auto itNext = std::next(it); itNext != m_inventories.end(); ++itNext)
             {
-                if (j->item == i->item)
+                if (itNext->item == it->item)
                 {
-                    s_inventory::quantity_t tot = i->quantity + j->quantity;
-                    i->quantity = std::min(tot, MAX_ITEMS);
-                    j->quantity = tot - i->quantity;
+                    s_inventory::quantity_t tot = it->quantity + itNext->quantity;
+                    it->quantity = std::min(tot, MAX_ITEMS);
+                    itNext->quantity = tot - it->quantity;
                 }
             }
-            ++i;
+            ++it;
         }
-        else if (i->quantity > MAX_ITEMS)
+        else if (it->quantity > MAX_ITEMS)
         {
             // Need to split
-            i->quantity -= MAX_ITEMS;
-            i = m_inventories.emplace(i, i->item, MAX_ITEMS);
-            ++i;
+            it->quantity -= MAX_ITEMS;
+            it = m_inventories.emplace(it, it->item, MAX_ITEMS);
+            ++it;
         }
         else
         {
             // OK, move on
-            ++i;
+            ++it;
         }
     }
 }
