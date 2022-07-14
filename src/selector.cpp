@@ -479,7 +479,7 @@ static void party_remove(ePIDX id)
  * \sa camp_item_targetting()
  *
  * \param   csa - Mode (TGT_ALLY_ONE, TGT_ALLY_ONEALL, TGT_ALLY_ALL or TGT_NONE)
- * \param   icn - Icon to draw (see also kdraw.draw_icon() in draw.c)
+ * \param   icn - Icon to draw: see also KDraw::draw_icon()
  * \param   msg - Prompt message
  * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled or
  *          SEL_ALL_ALLIES if 'all' was selected (by pressing L or R)
