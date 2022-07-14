@@ -142,12 +142,11 @@ class KDraw
 
     /*! \brief Draw small icon
      *
-     * Just a helper function... reduces the number of places that 'sicons'
-     * has to be referenced.
+     * Just a helper function... reduces the number of places that 'sicons' has to be referenced.
      * Icons are 8x8 sub-bitmaps of sicons, representing items (sword, etc.)
      *
      * \param   where Bitmap to draw to
-     * \param   ino Icon to draw
+     * \param   ino Icon to draw: usually corresponds to s_item::icon, s_special_item::icon, or s_spell::icon.
      * \param   icx x-coord
      * \param   icy y-coord
      */

@@ -438,16 +438,21 @@ void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target
         {
             if (is_active(fighter_index))
             {
+                // Animation effect X position: centered on the fighter sprite's horizontal position.
                 dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) - (eff[effect_index].xsize / 2);
+                // Determine where to position the animation effect's Y offset.
                 switch (eff[effect_index].orient)
                 {
                 case 0:
+                    // Align the spell with the top of the fighter sprite.
                     dy = fighter[fighter_index].cy + fighter[fighter_index].cl - eff[effect_index].ysize;
                     break;
                 case 1:
+                    // Align the spell with the vertical center of the fighter sprite.
                     dy = fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - (eff[effect_index].ysize / 2);
                     break;
                 case 2:
+                    // Align the spell with the bottom of the fighter sprite.
                     dy = fighter[fighter_index].cy + eff[effect_index].ysize;
                     break;
                 }

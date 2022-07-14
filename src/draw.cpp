@@ -862,8 +862,8 @@ int KDraw::is_forestsquare(int fx, int fy)
 
 void KDraw::menubox(Raster* where, int x, int y, int width, int height, int color)
 {
-    const int FontWidth = 8;  // MagicNumber: Font width it 8
-    const int FontHeight = 8; // MagicNumber: Font height it 8
+    const int FontWidth = 8;  // MagicNumber: Font width is 8
+    const int FontHeight = 8; // MagicNumber: Font height is 8
     draw_kq_box(where, x, y, x + width * FontWidth + TILE_W, y + height * FontHeight + TILE_H, color, B_TEXT);
 }
 

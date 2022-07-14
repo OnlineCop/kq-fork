@@ -88,18 +88,18 @@ class KEffects
 
     /*! \brief Draw spell sprite
      *
-     * Draw the spell sprite as it affects one or all allies or enemies. There is one special
-     * var (part of the effect structure) called orient, which affects the y-axis:
-     * - A value of 0 says align the spell with the top of the fighter sprite.
-     * - A value of 1 says center the spell.
-     * - A value of 2 says align the spell with the bottom of the fighter sprite.
+     * Draw the spell sprite as it affects one or all allies or enemies.
+     * s_effect::orient affects the y-axis:
+     * - eOrientation::AlignTop [0] says align the spell with the top of the fighter sprite.
+     * - eOrientation::AlignMiddle [1] says center the spell.
+     * - eOrientation::AlignBottom [2] says align the spell with the bottom of the fighter sprite.
      *
      * The x alignment is always centered.
      *
      * \sa s_effect
      * \param   target_fighter_index Target
      * \param   multiple_target Multiple target flag
-     * \param   effect_index Effect (which spell is being cast)
+     * \param   effect_index Effect index within eff[] (which spell is being cast, range [0..NUM_EFFECTS-1]).
      * \param   shows Show the spell cast
      */
     void draw_spellsprite(size_t target_fighter_index, int multiple_target, size_t effect_index, int shows);

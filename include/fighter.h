@@ -208,21 +208,28 @@ class KFighter
     uint8_t ai[8];
     uint8_t aip[8];
     uint8_t atrack[8];
+
     /*! \brief Spell number, associated with M_* spells, used within s_spell magic[] array. */
     uint32_t csmem;
+
     /*! \brief Spell target: who is going to be affected by the spell; can be set to -1 */
     int ctmem;
+
     /*! \brief Current Weapon Type
-     * The shape of the currently held weapon (sword, dagger, axe etc) \sa hero_init()
+     * The shape of the currently held weapon (sword, dagger, axe etc.), using only values
+     * from [eWeapon::W_NO_WEAPON..eWeapon::W_STAFF] ([0..8])
      */
     uint32_t current_weapon_type;
+
     /*! \brief eResistance: Which Element type (sick, fire, water, etc.) */
     int welem;
+
     /*! \brief UNLiving (undead), like zombies, skeletons, etc. */
     int unl;
     int aux;
     int bonus;
     int bstat;
+
     /*! \brief Magic use rate (0-100) */
     int mrp;
     int imb_s;

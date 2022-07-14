@@ -472,7 +472,11 @@ extern Raster *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFR
 /*! Enemy animation frames */
 extern Raster* eframes[MAXE][MAXEFRAMES];
 
-extern Raster *pgb[9], *sfonts[5], *bord[8];
+extern Raster *sfonts[5], *bord[8];
+
+/*! Those 9 little yellow page indicators that show on the edges of item menus to show which page the player is on. */
+extern Raster* pgb[MAXPGB];
+
 extern Raster *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr;
 extern Raster* shadow[MAX_SHADOWS];
 

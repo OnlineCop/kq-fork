@@ -958,6 +958,26 @@ void hero_init()
         }
         unsigned int current_fighter_index = pidx[fighter_index];
 
+        // For each of the 7 (NUM_FIGHTERS) avatars, there are 6 frames laid out horizontally starting
+        // at x=0, with SENSAR at y=0 and NOSLOM at y=224. These poses are:
+        //
+        // eFighterStance::StanceDefault: facing enemy (see only the fighter's back)
+        // eFighterStance::StanceRunning: facing screen (see only the fighter's front)
+        // eFighterStance::StanceCasting: arms out (casting spell)
+        // eFighterStance::StanceDead: lying on back
+        // eFighterStance::StanceVictory: facing screen (cheering at end of a battle)
+        // eFighterStance::StanceBlocking: Facing away from the screen (pushed back from enemy attack)
+        //
+        // Then, for each avatar, there are 2 columns laid out side-by-side vertically for poses holding
+        // weapons, with eWeapon::W_NO_WEAPON at y=0 and eWeapon::W_STAFF for y=256.
+        //
+        // The left column shows the avatar raising the weapon behind the head, ready to strike, while
+        // the right column shows the weapon in a "hitting" pose and position.
+        //
+        // SENSAR's left column starts at x=192 and right column starts at x=224,
+        // SARINA's left column starts at x=256 and right column starts at x=288,
+        // ...
+        // NOSLOM's left column starts at x=640 and right column starts at x=672.
         unsigned int fighter_x = current_fighter_index * 64 + 192;
         unsigned int fighter_y = current_fighter_index * 32;
 
@@ -984,14 +1004,14 @@ void hero_init()
 
         unsigned int fighter_weapon_index = party[current_fighter_index].eqp[eEquipment::EQP_WEAPON];
 
-        // If `kol` is non-zero, loop through all pixels in both of the Attack
-        // stances bitmaps
+        // If `kol` is non-zero, loop through all pixels in both of the Attack stances bitmaps
         // and find the light-green color in the `pal` color palette.
-        // - Value "168" corresponds to entry value {27, 54, 27, 0}
-        // - Value "175" corresponds to entry value {53, 63, 53, 0}
-        // Swap out those "green" colors and replace them with the `kol` colors that
-        // match the
-        // colors that the weapons should actually be instead.
+        //
+        // pal[168] == RGB{ 27, 54, 27, 0 }, #6CD86C (lime)
+        // pal[175] == RGB{ 53, 63, 53, 0 }, #D4FCD4 (light lime)
+        //
+        // Swap out those "green" colors and replace them with the `kol` colors that match the colors that the weapons
+        // should actually be instead.
         if (fighter[fighter_index].current_weapon_type != W_NO_WEAPON && items[fighter_weapon_index].kol > 0)
         {
             for (int current_line = 0; current_line < cframes[fighter_index][0]->height; current_line++)

@@ -90,7 +90,8 @@ void KInventory::sort(const std::vector<eEquipment>& sort_order)
     t_inv.reserve(m_inventories.size());
 
     // g_inv[] may contain multiple "slots" of MAX_ITEMS items; to properly sort,
-    // combine those all into a single 
+    // combine those all into a single bucket, sort those, and then normalize
+    // them back out to the MAX_ITEMS lists.
 
     std::map<unsigned short, unsigned short> item_map;
     for (auto&& type : sort_order)

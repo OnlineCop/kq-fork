@@ -154,11 +154,25 @@ enum eCombatSkill
     NUM_COMBAT_SKILLS // always last
 };
 
-/*! \name Runes/Resistances */
-/* These are what your strengths and weaknesses to certain elements and
- * elemental attacks. This can be a negative value (lots of damage), 0
- * (neutral), or a positive value (very little damage).
- * See KFighter.res[] as well as s_spell.elem.
+/*! Resistances to elemental damage or modifiers.
+ *
+ * Fighters may have a natural strength or weakness to certain elemental attacks.
+ *
+ * When a fighter is attacked with an elemental weapon/spell AND the fighter's resistance
+ * to that elemantal (see KFighter::res[]):
+ *  - is negative: they take extra damage
+ *  - is near zero: they take normal/neutral damage
+ *  - is positive: they take less damage
+ *
+ * Weapons may have an elemental aspect (see s_item::elem), such as an Ice Blade having elem=R_ICE.
+ *  - A fighter with HIGH resistance to that element will take less damage than if an identical
+ *    weapon without the elemental modifier were used.
+ *
+ * Items may have an elemental aspect (also s_item::elem), such as a Rune of Earth having elem=R_EARTH.
+ *  - Using an elemental item in battle typically consumes that item after use, but is usually the
+ *    equivalent of attacking using an elemental-empowered weapon.
+ *
+ * Spells may have an elemental aspect (see s_spell::elem), such as Whirlwind with elem=R_AIR.
  */
 enum eResistance
 {
