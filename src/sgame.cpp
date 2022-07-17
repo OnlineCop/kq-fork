@@ -559,7 +559,6 @@ int KSaveGame::start_menu(bool skip_splash)
     }
 #endif
     Game.reset_world();
-
     /* Draw menu and handle menu selection */
     while (!stop)
     {
@@ -648,10 +647,11 @@ int KSaveGame::start_menu(bool skip_splash)
             else if (ptr == 3) /* Exit */
             {
                 Game.klog(_("Then exit you shall!"));
-                return 2;
+                stop = 3;
             }
         }
     }
+    store_window_size();
     if (stop == 2)
     {
         /* New game init */
@@ -674,7 +674,6 @@ int KSaveGame::system_menu()
     int stop = 0, ptr = 0;
     char save_str[10];
     eFontColor text_color = FNORMAL;
-
     strcpy(save_str, _("Save  "));
 
     if (cansave == 0)
@@ -688,6 +687,8 @@ int KSaveGame::system_menu()
         }
 #endif /* KQ_CHEATS */
     }
+
+    store_window_size();
 
     while (!stop)
     {

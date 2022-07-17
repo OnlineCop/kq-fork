@@ -62,7 +62,12 @@ void set_graphics_mode();
 void sound_init();
 void free_samples();
 void play_effect(int, int);
-
+/*! \brief Store the Window's (width, height)
+ * If the new values differ from the previous, they will be written out to
+ * the settings file.
+ * For this reason it shouldn't be called from a tight loop / time critical code
+ */
+void store_window_size();
 extern char debugging;
 extern char slow_computer;
 const char* kq_keyname(int);

@@ -42,6 +42,7 @@
 #include "kq.h"
 
 #include "animation.h"
+#include "config.h"
 #include "console.h"
 #include "credits.h"
 #include "disk.h"
@@ -145,6 +146,7 @@ uint8_t skip_intro = 0;
 /*! Graphics mode settings */
 uint8_t wait_retrace = 1, windowed = 1, cpu_usage = 1;
 bool should_stretch_view = true;
+int window_width = -1, window_height = -1;
 
 /*! Current sequence position of animated tiles */
 uint16_t tilex[MAX_TILES];

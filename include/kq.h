@@ -502,6 +502,8 @@ class KGame
 
     /** Last key */
     int keyp;
+    int window_width = -1;
+    int window_height = -1;
 };
 
 /*! View positions in pixels, (such as entity.x, not entity.tilex) */
@@ -552,6 +554,7 @@ extern bool bDoesViewportFollowPlayer;
 extern const uint8_t kq_version;
 extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, cpu_usage;
 extern bool should_stretch_view;
+extern int window_width, window_height;
 extern uint16_t tilex[MAX_TILES], adelay[MAX_ANIM];
 extern char *strbuf, *savedir;
 extern s_heroinfo players[MAXCHRS];

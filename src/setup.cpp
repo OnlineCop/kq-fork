@@ -667,6 +667,11 @@ void parse_setup()
     PlayerInput.balt.scancode = Config.get_config_int(NULL, "kalt", SDL_SCANCODE_LALT);
     PlayerInput.bctrl.scancode = Config.get_config_int(NULL, "kctrl", SDL_SCANCODE_LCTRL);
     PlayerInput.benter.scancode = Config.get_config_int(NULL, "kenter", SDL_SCANCODE_RETURN);
+
+    window_width =
+        Config.get_config_int(nullptr, "window_width", should_stretch_view ? eSize::SCALED_SCREEN_W : eSize::SCREEN_W);
+    window_height =
+        Config.get_config_int(nullptr, "window_height", should_stretch_view ? eSize::SCALED_SCREEN_H : eSize::SCREEN_H);
     Config.pop_config_state();
 }
 
@@ -762,15 +767,8 @@ void play_effect(int efc, int panning)
  */
 void set_graphics_mode()
 {
-    int w = eSize::SCALED_SCREEN_W;
-    int h = eSize::SCALED_SCREEN_H;
-    if (!should_stretch_view)
-    {
-        w = eSize::SCREEN_W;
-        h = eSize::SCREEN_H;
-    }
-    Draw.set_window(SDL_CreateWindow("KQ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h,
-                                     SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE));
+    Draw.set_window(SDL_CreateWindow("KQ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width,
+                                     window_height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE));
 }
 
 /*! \brief Show keys help
@@ -833,5 +831,22 @@ void sound_init()
         Music.free_samples();
         Audio.sound_initialized_and_ready = KAudio::eSoundSystem::NotInitialized;
         break;
+    }
+}
+
+void store_window_size()
+{
+    int new_width;
+    int new_height;
+    auto window = Draw.get_window();
+    SDL_GetWindowSize(window, &new_width, &new_height);
+    if (window_width != new_width && window_height != new_height)
+    {
+        // Need to store it
+        Config.push_config_state();
+        Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str());
+        Config.set_config_int(nullptr, "window_width", new_width);
+        Config.set_config_int(nullptr, "window_height", new_height);
+        Config.pop_config_state();
     }
 }

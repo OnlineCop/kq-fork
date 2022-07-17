@@ -571,11 +571,10 @@ class KDraw
         M_NONSPACE,
         M_END
     };
-
-    SDL_Window* window;      /// The target window.
-    SDL_Renderer* renderer;  /// The window's renderer
-    SDL_Texture* texture;    /// The target texture
-    SDL_PixelFormat* format; /// The format of the texture
+    SDL_Window* window;      ///< The target window.
+    SDL_Renderer* renderer;  ///< The window's renderer
+    SDL_Texture* texture;    ///< The target texture
+    SDL_PixelFormat* format; ///< The format of the texture
     int btile;
 };
 
