@@ -42,7 +42,6 @@
 #include "kq.h"
 
 #include "animation.h"
-#include "config.h"
 #include "console.h"
 #include "credits.h"
 #include "disk.h"
