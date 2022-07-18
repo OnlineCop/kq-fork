@@ -96,6 +96,13 @@ class KDraw
     {
         return window;
     }
+    /*! \brief Resize window.
+     * \param w the new width
+     * \param h the new height
+     * \param windowed true to go to windowed mode,
+     * false to go to full screen.
+     */
+    void resize_window(int w, int h, bool windowed);
 
     /*! \brief Copies from the double buffer to the screen.
      *  Handles frame-rate display, stretching and vsync waiting.
@@ -319,7 +326,7 @@ class KDraw
      * \author PH
      * \date 20030417
      *
-     * \param   who Which character is ASKING the question
+     * \param   who Which character is ASKING the question, or 255 if it's a 'general question'
      * \param   ptext The prompt test
      * \param   opt An array of options, null terminated
      * \param   n_opt The number of options
@@ -564,11 +571,10 @@ class KDraw
         M_NONSPACE,
         M_END
     };
-
-    SDL_Window* window;      /// The target window.
-    SDL_Renderer* renderer;  /// The window's renderer
-    SDL_Texture* texture;    /// The target texture
-    SDL_PixelFormat* format; /// The format of the texture
+    SDL_Window* window;      ///< The target window.
+    SDL_Renderer* renderer;  ///< The window's renderer
+    SDL_Texture* texture;    ///< The target texture
+    SDL_PixelFormat* format; ///< The format of the texture
     int btile;
 };
 

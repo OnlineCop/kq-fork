@@ -53,7 +53,14 @@ using namespace eSize;
  * Messages to the player can be up to 4 rows of text (at a time).
  */
 char msgbuf[MSG_ROWS][MSG_COLS];
-int gbx, gby, gbbx, gbby, gbbw, gbbh, gbbs;
+// Position of speaking entity for speech bubbles in pixels
+int gbx, gby;
+// text box position in pixels
+int gbbx, gbby;
+// text box size in chars
+int gbbw, gbbh;
+// leading space in chars
+int gbbs;
 eBubbleStemStyle bubble_stem_style;
 uint8_t BLUE = 2, DARKBLUE = 0, DARKRED = 4;
 
@@ -101,10 +108,15 @@ void KDraw::set_window(SDL_Window* _window)
     {
         SDL_FreeFormat(format);
     }
+    if (window)
+    {
+        SDL_DestroyWindow(window);
+    }
     window = _window;
     Uint32 pix = SDL_GetWindowPixelFormat(window);
     // Take the first renderer we can get
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+    SDL_RenderSetLogicalSize(renderer, SCREEN_W, SCREEN_H);
     texture = SDL_CreateTexture(renderer, pix, SDL_TEXTUREACCESS_STREAMING, SCREEN_W, SCREEN_H);
     format = SDL_AllocFormat(pix);
 }
@@ -142,6 +154,8 @@ void KDraw::blit2screen()
     SDL_Rect src { 0, 0, SCREEN_W, SCREEN_H };
     double_buffer->to_rgba32(&src, format, pixels, pitch);
     SDL_UnlockTexture(texture);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
     rc = SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     if (rc < 0)
     {
@@ -670,22 +684,19 @@ void KDraw::draw_stsicon(Raster* where, int cc, int who, eSpellType spellType, i
 
 void KDraw::draw_textbox(eBubbleStyle bstyle)
 {
-    int wid, hgt, a;
-    Raster* stem;
-
-    wid = gbbw * 8 + 16;
-    hgt = gbbh * 12 + 16;
+    int wid = gbbw * 8 + 16;
+    int hgt = gbbh * 12 + 16;
 
     draw_kq_box(double_buffer, gbbx, gbby, gbbx + wid, gbby + hgt, BLUE, bstyle);
     if (bubble_stem_style != STEM_UNDEFINED)
     {
         /* select the correct stem-thingy that comes out of the speech bubble */
-        stem = bub[bubble_stem_style + (bstyle == B_THOUGHT ? NUM_BUBBLE_STEMS : 0)];
+        auto stem = bub[bubble_stem_style + (bstyle == B_THOUGHT ? NUM_BUBBLE_STEMS : 0)];
         /* and draw it */
         draw_sprite(double_buffer, stem, gbx, gby);
     }
 
-    for (a = 0; a < gbbh; a++)
+    for (int a = 0; a < gbbh; a++)
     {
         print_font(double_buffer, gbbx + 8, a * 12 + gbby + 8, msgbuf[a], FBIG);
     }
@@ -1230,10 +1241,9 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
         else
         {
             /* do prompt and options */
-            int a;
 
             /* calc the size of the prompt box */
-            for (a = 0; a < 4; a++)
+            for (int a = 0; a < 4; a++)
             {
                 int len = strlen(msgbuf[a]);
 
@@ -1241,7 +1251,7 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                 if (len > 0)
                 {
                     gbbh = a + 1;
-                    if ((signed int)len > gbbw)
+                    if (len > gbbw)
                     {
                         gbbw = len;
                     }
@@ -1250,6 +1260,7 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
             /* calc the size of the options box */
             for (i = 0; i < n_opt; ++i)
             {
+                // Remove leading whitespace
                 while (isspace(*opt[i]))
                 {
                     ++opt[i];
@@ -1261,17 +1272,26 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                     winwidth = w;
                 }
             }
-            winheight = n_opt > 4 ? 4 : n_opt;
-            winx = (SCREEN_W - winwidth * 8) / 2;
+            winheight = std::max(n_opt, 4);
+            winx = (SCREEN_W - winwidth * 8 - 8) / 2;
             winy = (SCREEN_H - 10) - winheight * 12;
-            running = 1;
+            running = true;
             while (running)
             {
                 Game.ProcessEvents();
                 Game.do_check_animation();
                 drawmap();
-                /* Draw the prompt text */
-                set_textpos(who);
+                if (who < MAX_ENTITIES)
+                {
+                    set_textpos(who);
+                }
+                else
+                {
+                    /* Draw the prompt text, needs to sit centred above the options */
+                    gbbx = (SCREEN_W - gbbw * 8 - 16) / 2;
+                    gbby = winy - gbbh * 12 - 16 - 5;
+                    bubble_stem_style = STEM_UNDEFINED;
+                }
                 draw_textbox(B_TEXT);
                 /* Draw the  options text */
                 draw_kq_box(double_buffer, winx - 5, winy - 5, winx + winwidth * 8 + 13, winy + winheight * 12 + 5,
@@ -1612,3 +1632,12 @@ int KDraw::text_length(eFontColor, const char* s)
 {
     return 8 * strlen(s);
 }
+
+void KDraw::resize_window(int w, int h, bool win)
+{
+    SDL_SetWindowFullscreen(window, win ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+    if (!win) {
+	SDL_SetWindowSize(window, w, h);
+    }
+}
+
