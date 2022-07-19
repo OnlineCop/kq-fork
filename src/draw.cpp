@@ -1272,7 +1272,7 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                     winwidth = w;
                 }
             }
-            winheight = std::max(n_opt, 4);
+            winheight = std::min(n_opt, 4);
             winx = (SCREEN_W - winwidth * 8 - 8) / 2;
             winy = (SCREEN_H - 10) - winheight * 12;
             running = true;
