@@ -30,117 +30,113 @@
 #include "gettext.h"
 #include "gfx.h"
 
-using eSize::SCREEN_H;
-using eSize::SCREEN_W;
+#include <string>
+#include <vector>
 
 #define _(s) gettext(s)
 
-/*! \brief An S-shaped curve.
- *
- * Returns values from an 'ease' curve, generally 3*x^2 - 2*x^3,
- * but clamped to 0..NUM_EASE_VALUES (inclusive).
- *
- * \param   x Where to evaluate the function.
- * \returns Clamped integer value between 0 and NUM_EASE_VALUES, inclusive.
- */
-static int ease(int x);
-
-/*! Array of strings */
-static const char* credits[] = { "Josh Bolduc",
-                                 "(C) 2001 DoubleEdge Software",
-                                 "(C) 2002-2021 KQ Lives Team",
-                                 "http://kqlives.sourceforge.net/",
-                                 "Peter Hull",
-                                 "TeamTerradactyl",
-                                 "Chris Barry",
-                                 "Eduardo Dudaskank",
-                                 "Troy D Patterson",
-                                 "Master Goodbytes",
-                                 "Rey Brujo",
-                                 "Matthew Leverton",
-                                 "Sam Hocevar",
-                                 "Günther Brammer",
-                                 "WinterKnight",
-                                 "Edgar Alberto Molina",
-                                 "Steven Fullmer (OnlineCop)",
-                                 "Z9484",
-                                 NULL };
-
-static const int NUM_EASE_VALUES = 32;
-
-static const char** cc = NULL;
-static short int ease_table[NUM_EASE_VALUES];
-static Raster* wk = nullptr;
+std::vector<std::string> credits { "Josh Bolduc",
+                                   "(C) 2001 DoubleEdge Software",
+                                   "(C) 2002-2022 KQ Lives Team",
+                                   "https://kqlives.sourceforge.net/",
+                                   "https://github.com/OnlineCop/kq-fork",
+                                   "Peter Hull",
+                                   "TeamTerradactyl",
+                                   "Chris Barry",
+                                   "Eduardo Dudaskank",
+                                   "Troy D Patterson",
+                                   "Master Goodbytes",
+                                   "Rey Brujo",
+                                   "Matthew Leverton",
+                                   "Sam Hocevar",
+                                   "Günther Brammer",
+                                   "WinterKnight",
+                                   "Edgar Alberto Molina",
+                                   "Steven Fullmer (OnlineCop)",
+                                   "Z9484" };
 
 static volatile uint32_t ticks = UINT32_MAX;
 
-void allocate_credits()
+KCredits Credits;
+
+KCredits::KCredits()
+    : num_ease_values { 32 }
+    , ease_table(num_ease_values, 0)
+    , wk { nullptr }
+    , cc { credits.begin() }
+{
+}
+
+const int FontWidth = 8;
+
+void KCredits::allocate_credits()
 {
     if (wk == nullptr)
     {
         unsigned int tlen = 0;
-
         // Determine the longest text in the credits.
-        for (auto credits_current_line = credits; *credits_current_line; ++credits_current_line)
+        for (const auto& credits_current_line : credits)
         {
-            size_t current_line_length = strlen(*credits_current_line);
+            const size_t current_line_length = credits_current_line.size();
             if (current_line_length > tlen)
             {
                 tlen = current_line_length;
             }
         }
-        wk = new Raster(8 * tlen, NUM_EASE_VALUES * 2);
+        wk = std::make_unique<Raster>(tlen * FontWidth, num_ease_values * 2);
 
-        // Pre-generate the ease_table values, so they don't have
-        // to be calculated on the fly at runtime. All calculations
-        // are integer division.
-        for (int ease_index = 0; ease_index < NUM_EASE_VALUES; ++ease_index)
+        ease_table.assign(num_ease_values, 0);
+
+        // Pre-generate the ease_table values, so they don't have to be calculated on the fly at runtime.
+        // All calculations are integer division.
+        const int numEaseValuesSquared = num_ease_values * num_ease_values;
+        for (int ease_index = 0; ease_index < num_ease_values; ++ease_index)
         {
-            ease_table[ease_index] = short(ease_index * ease_index * (3 * NUM_EASE_VALUES - 2 * ease_index) /
-                                           NUM_EASE_VALUES / NUM_EASE_VALUES);
+            ease_table[ease_index] =
+                ease_index * ease_index * (3 * num_ease_values - 2 * ease_index) / numEaseValuesSquared;
         }
     }
-    cc = credits;
+    cc = credits.begin();
 }
 
-void deallocate_credits()
+void KCredits::deallocate_credits()
 {
-    delete (wk);
-    wk = NULL;
+    wk.reset(nullptr);
 }
 
-void display_credits(Raster* double_buffer)
+void KCredits::display_credits(Raster* double_buffer, int ease_speed)
 {
     static const uint32_t max_ticks = 640;
-
     static const char* pressf1 = _("Press F1 for help");
+
     if (ticks > max_ticks)
     {
-        clear_bitmap(wk);
-        Draw.print_font(wk, (wk->width - 8 * strlen(*cc)) / 2, 42, *cc, FNORMAL);
+        clear_bitmap(wk.get());
+
+        Draw.print_font(wk.get(), (wk->width - cc->size() * FontWidth) / 2, 42, *cc, eFontColor::FNORMAL);
 
         /* After each 'max_ticks' number of ticks, increment the current line of
          * credits displayed, looping back to the beginning as needed.
          */
-        if (*(++cc) == NULL)
+        if (++cc == credits.end())
         {
-            cc = credits;
+            cc = credits.begin();
         }
-        Draw.print_font(wk, (wk->width - 8 * strlen(*cc)) / 2, 10, *cc, FNORMAL);
+        Draw.print_font(wk.get(), (wk->width - cc->size() * FontWidth) / 2, 10, *cc, eFontColor::FNORMAL);
         ticks = 0;
     }
     else
     {
-        ++ticks;
+        ticks += std::max(1, ease_speed);
     }
 
-    int ease_amount = (max_ticks / 2) - ticks;
+    int ease_amount = 320 - ticks;
     int x0 = (320 - wk->width) / 2;
     for (int i = 0; i < wk->width; ++i)
     {
-        blit(wk, double_buffer, i, ease(i + ease_amount), i + x0, SCREEN_H - 55, 1, 32);
+        blit(wk.get(), double_buffer, i, ease(i + ease_amount), i + x0, eSize::SCREEN_H - 55, 1, 32);
     }
-    Draw.print_font(double_buffer, (SCREEN_W - 8 * strlen(pressf1)) / 2, SCREEN_H - 30, pressf1, FNORMAL);
+    Draw.print_font(double_buffer, (eSize::SCREEN_W - strlen(pressf1) * FontWidth) / 2, eSize::SCREEN_H - 30, pressf1, FNORMAL);
 #ifdef KQ_CHEATS
     /* Put an un-ignorable cheat message; this should stop
      * PH releasing versions with cheat mode compiled in ;)
@@ -154,15 +150,15 @@ void display_credits(Raster* double_buffer)
 #endif
 }
 
-static int ease(int x)
+int KCredits::ease(int x)
 {
     if (x <= 0)
     {
         return 0;
     }
-    else if (x >= NUM_EASE_VALUES)
+    else if (x >= num_ease_values)
     {
-        return NUM_EASE_VALUES;
+        return num_ease_values;
     }
     else
     {

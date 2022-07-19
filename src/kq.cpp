@@ -663,7 +663,7 @@ void KGame::allocate_stuff()
 #ifdef DEBUGMODE
     alloc_bmp(0, 0, nullptr);
 #endif
-    allocate_credits();
+    Credits.allocate_credits();
 }
 
 void KGame::calc_viewport()
@@ -930,7 +930,7 @@ void KGame::deallocate_stuff()
         Music.shutdown_music();
         Music.free_samples();
     }
-    deallocate_credits();
+    Credits.deallocate_credits();
     clear_image_cache();
 
 #ifdef DEBUGMODE

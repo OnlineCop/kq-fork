@@ -21,16 +21,47 @@
 
 #pragma once
 
+#include <memory>
+#include <string>
+#include <vector>
+
 class Raster;
 
-/*! \brief Allocate memory for credits display. */
-void allocate_credits();
+class KCredits
+{
+  public:
+    ~KCredits() = default;
+    KCredits();
 
-/*! \brief Deallocate memory. */
-void deallocate_credits();
+    /*! \brief Allocate memory for credits display. */
+    void allocate_credits();
 
-/*! \brief Display credits (call in a loop).
- *
- * \param double_buffer Where to render onto.
- */
-void display_credits(Raster* double_buffer);
+    /*! \brief Deallocate memory. */
+    void deallocate_credits();
+
+    /*! \brief Display credits (call in a loop).
+     *
+     * \param double_buffer Buffer to draw onto.
+     * \param ease_speed How quickly the lines ease in and out.
+     */
+    void display_credits(Raster* double_buffer, int ease_speed = 1);
+
+  protected:
+    /*! \brief An S-shaped curve.
+     *
+     * Returns values from an 'ease' curve, generally 3*x^2 - 2*x^3,
+     * but clamped to [0..num_ease_values] (inclusive).
+     *
+     * \param   x Where to evaluate the function.
+     * \returns Clamped integer value in range [0..num_ease_values].
+     */
+    int ease(int x);
+
+  private:
+    int num_ease_values;
+    std::vector<int> ease_table;
+    std::unique_ptr<Raster> wk;
+    std::vector<std::string>::iterator cc;
+};
+
+extern KCredits Credits;
