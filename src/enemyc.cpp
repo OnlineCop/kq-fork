@@ -48,7 +48,7 @@ KEnemy Enemy;
  * Within a row, the column order is:
  *
  * -# Name
- * -# ignored (index number)
+ * -# index (ignored)
  * -# x-coord of image (in the datafile)
  * -# y-coord of image
  * -# width of image
@@ -64,8 +64,10 @@ KEnemy Enemy;
  * -# steal_item_common Steal Item Common
  * -# steal_item_rare Steal Item Rare
  * -# stat[0] (eStat::Strength)
- *    stat[1] (eStat::Agility) and stat[2] (eStat::Vitality) are set to 0 and not saved to allstat.mon
- * -# stat[3] (eStat::Intellect) AND stat[4] (eStat::Sagacity) both set to the same value
+ *    stat[1] (eStat::Agility) - not saved to allstat.mon: set to 0
+ *    stat[2] (eStat::Vitality) - not saved to allstat.mon: set to 0
+ * -# stat[3] (eStat::Intellect)
+ *    stat[4] (eStat::Sagacity) - not saved to allstat.mon: set to stat[3] (eStat::Intellect)
  * -# stat[5] (eStat::Speed)
  * -# stat[6] (eStat::Aura)
  * -# stat[7] (eStat::Spirit)
@@ -74,7 +76,8 @@ KEnemy Enemy;
  * -# stat[10] (eStat::Defense)
  * -# stat[11] (eStat::Evade)
  * -# stat[12] (eStat::MagicDefense)
- * -# bonus (bstat set to 0)
+ * -# bonus
+ *    bstat - not saved to allstat.mon: set to 0
  * -# current_weapon_type (current weapon type)
  * -# welem Weapon elemental power
  * -# unl Undead Level (defense against Undead attacks)
@@ -613,33 +616,35 @@ void KEnemy::LoadEnemies(const std::string& fullPath, Raster* enemy_gfx)
     std::ifstream infile(fullPath.c_str());
     if (infile.fail())
     {
-        Game.program_death(_("Could not load 1st enemy datafile!"));
+        Game.program_death(_("Could not load 1st enemy datafile!"), fullPath);
     }
     std::string line;
 
     // Loop through for every monster in allstat.mon
     while (std::getline(infile, line))
     {
-        int tmp;
-        int imagefile_x_coord, imagefile_y_coord;
+        if (line.empty() || line[0] == '#')
+        {
+            // Ignore empty lines, or lines starting with "#" so we can allow comments.
+            continue;
+        }
         std::istringstream iss(line);
 
         KFighter fighter_loaded_from_disk;
 
         // Enemy name
-        iss >> strbuf;
-        fighter_loaded_from_disk.name = strbuf;
+        iss >> fighter_loaded_from_disk.name;
 
-        // Index number (ignored; automatically generated)
-        iss >> tmp;
-        if (tmp == 61)
-        {
-            printf("");
-        }
+        // Enemy index (ignored)
+        int index = 0;
+        iss >> index;
 
         // x-coord of image in datafile
+        int imagefile_x_coord = 0;
         iss >> imagefile_x_coord;
+
         // y-coord of image in datafile
+        int imagefile_y_coord = 0;
         iss >> imagefile_y_coord;
 
         // Image width
@@ -707,7 +712,7 @@ void KEnemy::LoadEnemies(const std::string& fullPath, Raster* enemy_gfx)
         iss >> fighter_loaded_from_disk.imb[1];
 
         // If the staff is under effect we assume Malkaron has a full set of opal armor
-        if (do_staff_effect && tmp == 65)
+        if (do_staff_effect && fighter_loaded_from_disk.name == "Malkaron")
         {
             fighter_loaded_from_disk.opal_power = 4;
         }
@@ -719,51 +724,57 @@ void KEnemy::LoadEnemies(const std::string& fullPath, Raster* enemy_gfx)
 
 void KEnemy::LoadEnemyStats(const std::string& fullFilename)
 {
-    int tmp;
     std::ifstream infile(fullFilename.c_str());
     if (infile.fail())
     {
-        Game.program_death(_("Could not load 2nd enemy datafile!"));
+        Game.program_death(_("Could not load 2nd enemy datafile!"), fullFilename);
     }
 
     size_t current_enemy = 0;
     std::string line;
     while (std::getline(infile, line))
     {
+        if (line.empty() || line[0] == '#')
+        {
+            // Ignore empty lines, or lines starting with "#" so we can allow comments.
+            continue;
+        }
+        if (current_enemy >= m_enemy_fighters.size())
+        {
+            std::string error = "LoadEnemyStats() tried to read in more enemies than LoadEnemies() provided.";
+            Game.program_death(error, fullFilename);
+        }
+
         KFighter& fighter_loaded_from_disk = m_enemy_fighters[current_enemy];
         std::istringstream iss(line);
 
-        iss >> strbuf;
+        // Enemy name (ignored)
+        std::string name;
+        iss >> name;
 
-        // Some index: ignored
-        iss >> tmp;
-        if (tmp == 60)
-        {
-            printf("");
-        }
+        // Enemy index (ignored)
+        int index;
+        iss >> index;
 
         // Each of the 16 RES (resistances)
-        for (size_t i = 0; i < R_TOTAL_RES; i++)
+        for (auto& val : fighter_loaded_from_disk.res)
         {
-            int tempval;
-            iss >> tempval;
-            fighter_loaded_from_disk.res[i] = tempval;
+            iss >> val;
         }
         // Each of the 8 AI
-        for (size_t i = 0; i < 8; i++)
+        for (auto& val : fighter_loaded_from_disk.ai)
         {
-            int tempval;
-            iss >> tempval;
-            fighter_loaded_from_disk.ai[i] = tempval;
+            iss >> val;
         }
         // Each of the 8 AIP
-        for (size_t i = 0; i < 8; i++)
+        for (auto& val : fighter_loaded_from_disk.aip)
         {
-            int tempval;
-            iss >> tempval;
-            fighter_loaded_from_disk.aip[i] = tempval;
-            // iss >> fighter_loaded_from_disk.aip[i];
-            fighter_loaded_from_disk.atrack[i] = 0;
+            iss >> val;
+        }
+
+        for (auto& val : fighter_loaded_from_disk.atrack)
+        {
+            val = 0;
         }
         fighter_loaded_from_disk.hp = fighter_loaded_from_disk.mhp;
         fighter_loaded_from_disk.mp = fighter_loaded_from_disk.mmp;
@@ -791,20 +802,6 @@ void KEnemy::LoadEnemyStats(const std::string& fullFilename)
     }
 }
 
-/*
-KFighter* KEnemy::MakeEnemyFighter(size_t who, KFighter *NewEnemyFighter)
-{
-    if (m_enemy_fighters && who < m_num_enemies)
-    {
-        memcpy(NewEnemyFighter, m_enemy_fighters[who], sizeof(KFighter));
-        return NewEnemyFighter;
-    }
-    else
-    {
-        return NULL;
-    }
-}
-*/
 bool KEnemy::MakeEnemyFighter(const size_t who, KFighter& en)
 {
     if (who < m_enemy_fighters.size())
