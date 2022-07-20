@@ -777,13 +777,18 @@ static bool item_comp(const s_inventory& a, const s_inventory& b)
     static const int type_seq[] = { 2, 3, 4, 5, 6, 7, 1 };
     // Sort first according to item type using the group order above
     auto diff = type_seq[items[a.item].type] - type_seq[items[b.item].type];
-    if (diff < 0) {
-	return true;
-    } else if (diff > 0) {
-	return false;
-    } else {
-	// If the same, sort by item index.
-	return a.item < b.item;
+    if (diff < 0)
+    {
+        return true;
+    }
+    else if (diff > 0)
+    {
+        return false;
+    }
+    else
+    {
+        // If the same, sort by item index.
+        return a.item < b.item;
     }
 }
 /*! \brief Sort the items in inventory
@@ -795,8 +800,9 @@ static bool item_comp(const s_inventory& a, const s_inventory& b)
 static void sort_items()
 {
     KInventory::Items t_inv;
-    for (int inventory_index = 0; inventory_index < g_inv.size(); ++inventory_index) {
-	t_inv.push_back(g_inv[inventory_index]);
+    for (int inventory_index = 0; inventory_index < g_inv.size(); ++inventory_index)
+    {
+        t_inv.push_back(g_inv[inventory_index]);
     }
     std::sort(std::begin(t_inv), std::end(t_inv), item_comp);
     g_inv.setAll(std::move(t_inv));
