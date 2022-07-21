@@ -586,7 +586,6 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
         return 0;
     }
     tgt = fighter[caster_fighter_index].ctmem;
-    end_fighter_index = 1;
     start_fighter_index = tgt;
     if (magic[spell_number].tgt >= TGT_ALLY_ONE && magic[spell_number].tgt <= TGT_ALLY_ALL)
     {
@@ -710,6 +709,13 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
                 Effects.display_amount(tgt, FONT_YELLOW, 0);
                 adjust_hp(tgt, Combat.GetHealthAdjust(tgt));
             }
+        }
+    }
+    else if (spell_number == M_DOOM || spell_number == M_DEATH) {
+        Effects.display_amount(start_fighter_index, FONT_DECIDE, tall);
+        for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
+        {
+            adjust_hp(fighter_index, Combat.GetHealthAdjust(fighter_index));
         }
     }
     else
