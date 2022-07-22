@@ -22,10 +22,16 @@
 #pragma once
 
 /*! \file
- * \brief Enemy Skills header file
+ * \brief Enemy Skills header file.
  */
 
 #include <cstddef>
 #include <cstdint>
 
+/*! \brief Process each enemy skill.
+ *
+ * Process each enemy skill by index number.
+ *
+ * \param   fighter_index Index of attacker in fighter[] array.
+ */
 void combat_skill(size_t fighter_index);
