@@ -20,12 +20,9 @@
 */
 
 /*! \file
- * \brief Equipment menu stuff
- * \author JB
- * \date ????????
+ * \brief Equipment menu stuff.
  *
- * This file contains code to handle the equipment menu
- * including dropping and optimizing the items carried.
+ * This file contains code to handle the equipment menu including dropping and optimizing the items carried.
  */
 
 #include "eqpmenu.h"
@@ -44,25 +41,106 @@ static std::vector<uint16_t> t_inv;
 static char eqp_act;
 
 /* Internal functions */
+
+/*! \brief Draw the equipment menu.
+ *
+ * This is simply a function to display the equip menu screen.
+ *
+ * It's kept separate from the equip_menu routine for the sake of code cleanliness... better late than never :P
+ *
+ * \param   c Index of character to equip.
+ * \param   sel If sel==1, show the full range of options (Equip, Optimize, Remove, Empty).
+ *          Otherwise just show Equip if eqp_act is 0 or Remove if it is 2
+ *          (this is when you're selecting the item to Equip/Remove).
+ */
 static void draw_equipmenu(int c, bool sel);
+
+/*! \brief Draw list of items that can be used to equip this slot.
+ *
+ * This displays the list of items that the character posesses.
+ *
+ * However, items that the character can't equip in the slot specified, are greyed out.
+ *
+ * \param   c Character to equip.
+ * \param   slot Which 'part of the body' to equip.
+ * \param   pptr The index of the top line of the displayed items.
+ */
 static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr);
+
+/*! \brief List equipment that can go in a slot.
+ *
+ * Create a list of equipment that can be equipped in a particular slot for a particular hero.
+ *
+ * Write list into t_inv[], length tot.
+ *
+ * \param   c Character to equip.
+ * \param   slot Which body part to equip.
+ */
 static void calc_possible_equip(int c, int slot);
+
+/*! \brief Calculate optimum equipment.
+ *
+ * This calculates what equipment is optimum for a particular hero.
+ *
+ * The weapon that does the most damage is chosen and the armor with the best combination of defense+magic_defense is
+ * chosen.
+ *
+ * As for a relic, the one that offers the greatest overall bonus to stats is selected.
+ *
+ * \param   c Which character to operate on.
+ */
 static void optimize_equip(int c);
+
+/*! \brief Handle selecting an equipment item.
+ *
+ * After choosing an equipment slot, select an item to equip.
+ *
+ * \param   c Character to equip.
+ * \param   slot Which part of the body to process in range [0..NUM_EQUIPMENT-1].
+ */
 static void choose_equipment(int c, int slot);
+
+/*! \brief Show the effect on stats if this piece were selected.
+ *
+ * This is used to calculate the difference in stats due to (de)equipping a piece of equipment.
+ *
+ * \param   c Character to process.
+ * \param   slot Slot to consider changing.
+ * \param   item New piece of equipment to compare/use.
+ */
 static void calc_equippreview(uint32_t c, uint32_t slot, int item);
+
+/*! \brief Display changed stats.
+ *
+ * This displays the results of the above function so that players can tell how a piece of equipment will affect their
+ * stats.
+ *
+ * \param   ch Character to process.
+ * \param   ptr Slot to change, or <0 to switch to new stats.
+ * \param   pp New item to use.
+ */
 static void draw_equippreview(int ch, int ptr, int pp);
+
+/*! \brief Change a character's equipment.
+ *
+ * Do the actual equip.  Of course, it will de-equip anything that is currently in the specified slot.
+ *
+ * \param   c Character to process.
+ * \param   selected_item Item to add.
+ * \returns True if equip was successful, false otherwise.
+ */
 static bool equip(uint32_t c, uint32_t selected_item);
+
+/*! \brief Check whether item can be de-equipped, then do it.
+ *
+ * This makes sure you have room to de-equip before it actually does anything.
+ *
+ * \param   c Character to process.
+ * \param   ptr Slot to de-equip.
+ * \returns 0 if unsuccessful, 1 if successful.
+ */
 static bool deequip(uint32_t c, uint32_t ptr);
 
-/*! \brief Show the effect on stats if this piece were selected
- *
- * This is used to calculate the difference in stats due to
- * (de)equipping a piece of equipment.
- *
- * \param   c Character to process
- * \param   slot Slot to consider changing
- * \param   item New piece of equipment to compare/use
- */
 static void calc_equippreview(uint32_t c, uint32_t slot, int item)
 {
     int tmp = party[pidx[c]].eqp[slot];
@@ -80,15 +158,6 @@ static void calc_equippreview(uint32_t c, uint32_t slot, int item)
     kmenu.update_equipstats();
 }
 
-/*! \brief List equipment that can go in a slot
- *
- * Create a list of equipment that can be equipped in a particular
- * slot for a particular hero.
- * Write list into t_inv[], length tot.
- *
- * \param   c Character to equip
- * \param   slot Which body part to equip
- */
 static void calc_possible_equip(int c, int slot)
 {
     t_inv.clear();
@@ -106,13 +175,6 @@ static void calc_possible_equip(int c, int slot)
     }
 }
 
-/*! \brief Handle selecting an equipment item
- *
- * After choosing an equipment slot, select an item to equip
- *
- * \param   c Character to equip
- * \param   slot Which part of the body to process
- */
 static void choose_equipment(int c, int slot)
 {
     if (t_inv.empty())
@@ -183,15 +245,6 @@ static void choose_equipment(int c, int slot)
     return;
 }
 
-/*! \brief Check if item can be de-equipped, then do it.
- *
- * Hmm... this is hard to describe :)  The functions makes sure you have
- * room to de-equip before it actual does anything.
- *
- * \param   c Character to process
- * \param   ptr Slot to de-equip
- * \returns 0 if unsuccessful, 1 if successful
- */
 static bool deequip(uint32_t c, uint32_t ptr)
 {
     if (ptr >= NUM_EQUIPMENT)
@@ -211,18 +264,6 @@ static bool deequip(uint32_t c, uint32_t ptr)
     }
 }
 
-/*! \brief Draw the equipment menu
- *
- * This is simply a function to display the equip menu screen.
- * It's kept separate from the equip_menu routine for the sake
- * of code cleanliness... better late than never :P
- *
- * \param   c Index of character to equip
- * \param   sel If sel==1, show the full range of options (Equip, Optimize,
- *              Remove, Empty)
- *              Otherwise just show Equip if eqp_act is 0 or Remove if it is 2.
- *              (This is when you're selecting the item to Equip/Remove)
- */
 static void draw_equipmenu(int c, bool sel)
 {
     int l = pidx[c];
@@ -264,16 +305,6 @@ static void draw_equipmenu(int c, bool sel)
     }
 }
 
-/*! \brief Draw list of items that can be used to equip this slot
- *
- * This displays the list of items that the character posesses.
- * However, items that the character can't equip in the slot
- * specified, are greyed out.
- *
- * \param   c Character to equip
- * \param   slot Which 'part of the body' to equip
- * \param   pptr the index of the top line of the displayed items
- */
 static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
 {
     if (slot < NUM_EQUIPMENT)
@@ -308,16 +339,6 @@ static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
     }
 }
 
-/*! \brief Display changed stats
- *
- * This displays the results of the above function so that
- * players can tell how a piece of equipment will affect
- * their stats.
- *
- * \param   ch Character to process
- * \param   ptr Slot to change, or <0 to switch to new stats
- * \param   pp New item to use
- */
 static void draw_equippreview(int ch, int ptr, int pp)
 {
     if (ptr >= 0)
@@ -377,15 +398,6 @@ static void draw_equippreview(int ch, int ptr, int pp)
     }
 }
 
-/*! \brief Change a character's equipment
- *
- * Do the actual equip.  Of course, it will de-equip anything that
- * is currently in the specified slot.
- *
- * \param   c Character to process
- * \param   selected_item Item to add
- * \returns true if equip was successful, false otherwise
- */
 static bool equip(uint32_t c, uint32_t selected_item)
 {
     if (selected_item >= g_inv.size())
@@ -435,12 +447,6 @@ static bool equip(uint32_t c, uint32_t selected_item)
     return true;
 }
 
-/*! \brief Handle equip menu
- *
- * Draw the equip menu stuff and let the user select an equip slot.
- *
- * \param   c Character to process
- */
 void equip_menu(uint32_t c)
 {
     int yptr = 0;
@@ -588,16 +594,6 @@ void equip_menu(uint32_t c)
     }
 }
 
-/*! \brief Calculate optimum equipment
- *
- * This calculates what equipment is optimum for a particular hero.
- * The weapon that does the most damage is chosen and the armor with
- * the best combination of defense+magic_defense is chosen.  As for a
- * relic, the one that offers the greatest overall bonus to stats is
- * selected.
- *
- * \param   c Which character to operate on
- */
 static void optimize_equip(int c)
 {
     int maxx, maxi;

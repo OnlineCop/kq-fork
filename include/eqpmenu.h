@@ -23,4 +23,10 @@
 
 #include <cstdint>
 
+/*! \brief Handle equip menu.
+ *
+ * Draw the equip menu stuff and let the user select an equip slot.
+ *
+ * \param   c Character index in pidx[] (party) and fighter[] (battle) arrays.
+ */
 void equip_menu(uint32_t c);
