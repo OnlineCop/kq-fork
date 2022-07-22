@@ -22,16 +22,12 @@
 #pragma once
 
 /*! \file
- * \brief Moves most of the #defines into one location
+ * \brief Moves most of the #defines into one location.
  *
- * This file should not contain any local header #includes, so it can be safe
- * to include from any source/header.
- * \author OC
- * \date 20100221
+ * This file should not contain any local header #includes, so it can be safe to include from any source/header.
  */
 
-// OC: I plan to move these into enums instead of #define's since those are
-// easier for a lot of IDEs to interpret.
+// OC: I plan to move these into enums instead of #define's since those are easier for a lot of IDEs to interpret.
 
 enum eMenu
 {
@@ -92,8 +88,9 @@ enum eShadow
 #define SIZE_SAVE_SPELL 50
 #define SIZE_TREASURE 1000
 
-/*! \name Stats of characters */
-/*  These are the stats when you check your characters stats (on the left)
+/*! \name Stats of characters.
+ *
+ * These are the stats when you check your characters stats (on the left).
  */
 enum eStat
 {
@@ -154,11 +151,25 @@ enum eCombatSkill
     NUM_COMBAT_SKILLS // always last
 };
 
-/*! \name Runes/Resistances */
-/* These are what your strengths and weaknesses to certain elements and
- * elemental attacks. This can be a negative value (lots of damage), 0
- * (neutral), or a positive value (very little damage).
- * See KFighter.res[] as well as s_spell.elem.
+/*! Resistance types: what a fighter is particularly strong or weak against.
+ *
+ * Fighters may have a natural strength or weakness to certain elemental attacks.
+ *
+ * When a fighter is attacked with an elemental weapon/item/spell AND the fighter's resistance
+ * to that effect (see KFighter::res[]) is...
+ *  - negative: they take extra damage
+ *  - near zero: they take normal/neutral damage
+ *  - positive: they take less damage
+ *
+ * Weapons may have an elemental aspect (see s_item::elem), such as Thor's Hammer having elem=R_THUNDER.
+ *  - A fighter with HIGH resistance to that element will take less damage than if an identical
+ *    weapon without the elemental modifier were used.
+ *
+ * Items may have an elemental aspect (also s_item::elem), such as a Rune of Earth having elem=R_EARTH.
+ *  - Using an elemental item in battle typically consumes that item after use, but is usually the
+ *    equivalent of attacking using an elemental-imbued weapon.
+ *
+ * Spells may have an elemental aspect (see s_spell::elem), such as Whirlwind with elem=R_AIR.
  */
 enum eResistance
 {
@@ -230,7 +241,8 @@ enum eWeapon
     NUM_WEAPONS // always last
 };
 
-/*! \name Use modes
+/*! \name Use modes.
+ *
  * Specify how an item can be used.
  */
 enum eItemUse
