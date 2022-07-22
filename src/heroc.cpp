@@ -20,15 +20,12 @@
 */
 
 /*! \file
- * \brief   Hero combat
- * \author  Josh Bolduc
- * \date    ????????
+ * \brief Hero combat.
  *
- * Stuff relating to hero's special combat skills
+ * Stuff relating to hero's special combat skills.
  *
- * \todo PH Make sure we understand the two methods of referring to a
- *          hero - either as an index in the pidx array or an index in
- *          the party array
+ * \todo PH Make sure we understand the two methods of referring to a hero: either as an index in the pidx[] array or an
+ * index in the party[] array.
  */
 
 #include "heroc.h"
@@ -67,30 +64,127 @@ int can_use_item = 1;
 char sk_names[MAXCHRS][7];
 
 /* Internal functions */
+
+/*! \brief Select a target for the hero to attack.
+ *
+ * \param   whom Index of party member in fighter[] array attacking.
+ * \returns 1 if hero is able to attack the target, or 0 if hero can't attack.
+ */
 static int hero_attack(int whom);
+
+/*! \brief Display a list of the hero's items for use in combat.
+ *
+ * \param   pg The item list's current page.
+ */
 static void combat_draw_items(int pg);
+
+/*! \brief Choose combat item.
+ *
+ * This is the menu used to display the hero's items in combat and to allow him/her to select one.
+ * The player then selects the target and the action is performed.
+ *
+ * \param   whom Index of character who is doing the choosing.
+ * \returns 0 if cancelled, 1 if item was chosen.
+ */
 static int combat_item_menu(int whom);
+
+/*! \brief Can the specified item be used in combat?
+ *
+ * \param   itno Index of item in items[] array to check.
+ * \returns 1 item can be used, otherwise 0
+ */
 static int combat_item_usable(int itno);
+
+/*! \brief Use item.
+ *
+ * Use the selected item and show the effects.
+ *
+ * \param   ss Index of character attacking, or PSIZE if an enemy is attacking.
+ * \param   t1 Item in items[] array to use.
+ * \param   tg Target fighter's index in fighter[] array.
+ * \returns 1 if anything happened, 0 otherwise.
+ */
 static int combat_item(int ss, int t1, int tg);
+
+/*! \brief Draw equipment list.
+ *
+ * Draw the character's list of equipment.
+ *
+ * \param   dud Index in party[] array of party member to draw.
+ */
 static void draw_invokable(int dud);
+
+/*! \brief Determine whether the specified item is invokable.
+ *
+ * \param   t1 Index in items[] array of item to check.
+ * \returns 1 if item can be invoked, 0 otherwise.
+ */
 static int can_invoke_item(int t1);
+
+/*! \brief Display and choose item.
+ *
+ * Displays the characters list of equipment and which ones are invokable.
+ * The player may then choose one (if any) to invoke.
+ *
+ * \param   whom Index in pidx[] array of character.
+ * \returns 1 if item was selected, 0 if cancelled
+ */
 static int hero_invoke(int whom);
+
+/*! \brief Invoke hero item.
+ *
+ * Invoke the specified item according to target.
+ * Calls select_hero() or select_enemy() as required.
+ *
+ * \note Includes fix for bug (SF.net) "#858657 Iron Rod Multiple Target Fizzle"
+ *       aka (Debian) "#224521 Multitargeting with iron rod crashes"
+ *       submitted by Sam Hocevar
+ *
+ * \param   attacker_fighter_index Index of target in Hero's party.
+ * \param   item_index Item in items[] array that is being invoked.
+ * \returns 1 if item was successfully used, 0 otherwise.
+ */
 static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index);
+
+/*! \brief Can heroes run?
+ *
+ * Check whether or not the heroes can run, and then display
+ * the little running-away sequence.
+ */
 static void hero_run();
+
+/*! \brief Draw spell list.
+ *
+ * Draw the list of spells that the character can use in combat.
+ *
+ * \param   c Character id in pidx[] and fighter[] arrays.
+ * \param   ptr The current line of the menu pointer.
+ * \param   pg The current page in the spell list.
+ */
 static void combat_draw_spell_menu(int c, int ptr, int pg);
+
+/*! \brief Check spell targeting.
+ *
+ * Perform the necessary checking to determine target selection for the
+ * particular character's spell.
+ *
+ * \param   whom Character ID in fighter[] array.
+ * \returns -1 if the spell has no targeting,
+ *          0 if cancelled
+ *          1 if target selected
+ */
 static int combat_spell_targeting(int whom);
+
+/*! \brief Check whether spell is castable.
+ *
+ * Perform the necessary checking to determine if a spell can be cast in combat and if the MP exists to do so.
+ *
+ * \param   spell_caster Character id in fighter[] and pidx[] arrays.
+ * \param   spell_number Spell id in KPlayer::spells[] array.
+ * \returns 1 if spell can be cast, 0 if not.
+ */
 static int combat_castable(int spell_caster, int spell_number);
 
-/*! \brief Auto-choose options for confused player
- *
- * Chooses actions for the character when s/he is charmed/confused.  This is
- * pretty much the same as the enemy_charmaction function and I really should
- * incorporate them into one.
- *
- * \todo    Incorporate enemy_charmaction
- *
- * \param   who Index of player (see constants in progress.h)
- */
 void auto_herochooseact(int who)
 {
     int eact;
@@ -123,14 +217,6 @@ void auto_herochooseact(int who)
     Combat.SetEtherEffectActive(who, false);
 }
 
-/*! \brief Count available spells
- *
- * This checks a fighter's list of spells to see if there
- * are any for her/him to cast.
- *
- * \param   who Index of Hero in your party
- * \returns the number of available spells
- */
 int available_spells(int who)
 {
     int a, b, e, l, numsp = 0;
@@ -165,13 +251,6 @@ int available_spells(int who)
     return numsp;
 }
 
-/*! \brief Is item invokable
- *
- * Tells us whether or not a specified item is invokable.
- *
- * \param   t1 Index of item
- * \returns 1 if item can be invoked, 0 otherwise
- */
 static int can_invoke_item(int t1)
 {
     if (items[t1].type > 5)
@@ -185,15 +264,6 @@ static int can_invoke_item(int t1)
     return 1;
 }
 
-/*! \brief Check spell is castable
- *
- * Perform the necessary checking to determine if a spell can be
- * cast in combat and if the mp exists to do so.
- *
- * \param   spell_caster Character id
- * \param   spell_number Spell id
- * \returns 1 if spell can be cast, 0 if not
- */
 static int combat_castable(int spell_caster, int spell_number)
 {
     int b, c = 0;
@@ -237,12 +307,6 @@ static int combat_castable(int spell_caster, int spell_number)
     return 0;
 }
 
-/*! \brief Display item list
- *
- * This displays a list of the heroes items for use in combat.
- *
- * \param   pg The item list's current page
- */
 static void combat_draw_items(int pg)
 {
     int a, b, c;
@@ -277,14 +341,6 @@ static void combat_draw_items(int pg)
     }
 }
 
-/*! \brief Draw spell list
- *
- * Draw the list of spells that the character can use in combat.
- *
- * \param   c Character id
- * \param   ptr The current line of the menu pointer
- * \param   pg The current page in the spell list
- */
 static void combat_draw_spell_menu(int c, int ptr, int pg)
 {
     int z, j, b;
@@ -317,15 +373,6 @@ static void combat_draw_spell_menu(int c, int ptr, int pg)
     }
 }
 
-/*! \brief Use item
- *
- * Use the selected item and show the effects.
- *
- * \param   ss Index of character attacking or PSIZE if an enemy is attacking
- * \param   t1 Item to use
- * \param   tg Index of target
- * \returns 1 if anything happened, 0 otherwise
- */
 static int combat_item(int ss, int t1, int tg)
 {
     int a, b, r, st = tg, tt = 0, tl = 0;
@@ -382,15 +429,6 @@ static int combat_item(int ss, int t1, int tg)
     return 1;
 }
 
-/*! \brief Choose combat item
- *
- * This is the menu used to display the hero's items in combat and to allow
- * him/her to select one.  The player then selects the target and the action
- * is performed.
- *
- * \param   whom Index of character who is doing the choosing
- * \returns 0 if cancelled, 1 if item was chosen
- */
 static int combat_item_menu(int whom)
 {
     int z, stop = 0, ptr = 0, pptr = 0;
@@ -483,13 +521,6 @@ static int combat_item_menu(int whom)
     return stop - 1;
 }
 
-/*! \brief Can item be used in combat
- *
- * This tells us whether or not the specified item is usable in combat.
- *
- * \param   itno Index of item
- * \returns 1 item can be used, otherwise 0
- */
 static int combat_item_usable(int itno)
 {
     // FIXME: What is this magic number '6'?
@@ -504,13 +535,6 @@ static int combat_item_usable(int itno)
     return 1;
 }
 
-/*! \brief Choose spell
- *
- * Draw the character's spell list and then choose a spell.
- *
- * \param   c Character id
- * \returns 0 if cancelled or 1 if something happened
- */
 int combat_spell_menu(int c)
 {
     int ptr = 0, pgno = 0, stop = 0;
@@ -595,16 +619,6 @@ int combat_spell_menu(int c)
     return 0;
 }
 
-/*! \brief Check spell targetting
- *
- * Perform the necessary checking to determine target selection for the
- * particular character's spell.
- *
- * \param   whom Character id
- * \returns -1 if the spell has no targetting,
- *          0 if cancelled
- *          1 if target selected
- */
 static int combat_spell_targeting(int whom)
 {
     int a, tg;
@@ -648,12 +662,6 @@ static int combat_spell_targeting(int whom)
     return 1;
 }
 
-/*! \brief Draw equipment list
- *
- * Draw the character's list of equipment.
- *
- * \param   dud Index of party member to draw
- */
 static void draw_invokable(int dud)
 {
     int a, tt;
@@ -669,13 +677,6 @@ static void draw_invokable(int dud)
     }
 }
 
-/*! \brief Select target for hero
- *
- * Select a target for the hero to attack.
- *
- * \param   whom Index of player (see constants in progress.h)
- * \returns index of target
- */
 static int hero_attack(int whom)
 {
     int tgt;
@@ -710,13 +711,6 @@ static int hero_attack(int whom)
     return 1;
 }
 
-/*! \brief Show menu for action selection
- *
- * Give the player a menu for a specific character and
- * allow him/her to choose an action.
- *
- * \param   fighter_index Index of player (see constants in progress.h)
- */
 void hero_choose_action(size_t fighter_index)
 {
     int stop = 0, amy;
@@ -926,23 +920,6 @@ void hero_choose_action(size_t fighter_index)
     }
 }
 
-/*! \brief Set up heroes for combat
- *
- * This sets up the heroes' fighter vars and frames.
- * The frames are:
- * - Facing away
- * - Facing towards
- * - Arms out
- * - Dead
- * - Victory
- * - Arms forward
- *
- * Then an array to the right where each character is wielding
- * some different luminous green weapons.
- * These colours are replaced by the 'true' weapon colours as
- * determined by s_item::kol .
- * The shape is chosen by s_fighter::current_weapon_type
- */
 void hero_init()
 {
     kmenu.update_equipstats();
@@ -1041,14 +1018,6 @@ void hero_init()
     }
 }
 
-/*! \brief Display and choose item
- *
- * Displays the characters list of equipment and which ones are invokable.
- * The player may then choose one (if any) to invoke.
- *
- * \param   whom Index of character
- * \returns 1 if item was selected, 0 if cancelled
- */
 static int hero_invoke(int whom)
 {
     int stop = 0, ptr = 0;
@@ -1105,18 +1074,6 @@ static int hero_invoke(int whom)
     return stop - 1;
 }
 
-/*! \brief Invoke hero item
- *
- * Invoke the specified item according to target.
- * Calls select_hero or select_enemy as required.
- * \note Includes fix for bug (SF.net) "#858657 Iron Rod Multiple Target Fizzle"
- *       aka (Debian) "#224521 Multitargeting with iron rod crashes"
- *       submitted by Sam Hocevar
- *
- * \param   attacker_fighter_index Index of target in Hero's party
- * \param   item_index Item that is being invoked
- * \returns 1 if item was successfully used, 0 otherwise
- */
 static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
 {
     ePIDX defender_fighter_index;
@@ -1180,11 +1137,6 @@ static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index)
     return 1;
 }
 
-/*! \brief Can heroes run?
- *
- * Check whether or not the heroes can run, and then display
- * the little running-away sequence.
- */
 static void hero_run()
 {
     int num_living_party_members = 0, num_living_enemies = 0;
