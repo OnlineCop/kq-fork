@@ -22,9 +22,7 @@
 #pragma once
 
 /*! \file
- * \brief Structures common to mapedit and the game (s_map and s_entity)
- * \author PH
- * \date 20030805
+ * \brief Structures common to mapedit and the game (s_map and s_entity).
  */
 
 #include "bounds.h"
@@ -52,55 +50,55 @@ enum eMapMode
     NUM_MAPMODES // always last
 };
 
-/*! \brief Map definition
+/*! \brief Map definition.
  *
  * This is the structure of each map on disk.
  */
 struct s_map
 {
-    /*! Not used in code. */
+    /*! Unused. */
     signed char map_no;
-    /*! Non-zero if zone 0 triggers an event */
+    /*! Non-zero if zone 0 triggers an event. */
     uint8_t zero_zone;
-    /*! Draw order for layers, plus parallax settings (see eMapMode) */
+    /*! Draw order for layers, plus parallax settings (see eMapMode). */
     uint8_t map_mode;
-    /*! Non-zero if Save is allowed in this map */
+    /*! Non-zero if Save is allowed in this map. */
     uint8_t can_save;
-    /*! Which tile-set to use */
+    /*! Which tile-set to use. */
     uint8_t tileset;
-    /*! Non-zero if sunstone works on this map */
+    /*! Non-zero if sunstone works on this map. */
     uint8_t use_sstone;
-    /*! Non-zero if Warp is allowed in this map */
+    /*! Non-zero if Warp is allowed in this map. */
     uint8_t can_warp;
-    /*! Currently unused */
+    /*! Unused. */
     uint8_t extra_byte;
-    /*! Map width in tiles (pixels / TILE_W) */
+    /*! Map width in tiles (pixels / TILE_W). */
     uint32_t xsize;
-    /*! Map height in tiles (pixels / TILE_H) */
+    /*! Map height in tiles (pixels / TILE_H). */
     uint32_t ysize;
-    /*! Parallax multiplier */
+    /*! Parallax multiplier. */
     int32_t pmult;
-    /*! Parallax divider */
+    /*! Parallax divider. */
     int32_t pdiv;
-    /*! Default start x-coord */
+    /*! Default start x-coord. */
     int32_t stx;
-    /*! Default start y-coord */
+    /*! Default start y-coord. */
     int32_t sty;
-    /*! x-coord where warp spell takes you to (see special_spells()) */
+    /*! x-coord where warp spell takes you to (see special_spells()). */
     int32_t warpx;
-    /*! y-coord where warp spell takes you to (see special_spells()) */
+    /*! y-coord where warp spell takes you to (see special_spells()). */
     int32_t warpy;
-    /*! Internal revision number for the map file */
+    /*! Internal revision number for the map file. */
     int revision;
-    /*! Not used */
+    /*! Unused. */
     int extra_sdword2;
-    /*! Base file name for map song */
+    /*! Base file name for map song. */
     std::string song_file;
-    /*! Map name (shown when map first appears) */
+    /*! Map name (shown when map first appears). */
     std::string map_desc;
-    /*! Marker array */
+    /*! Marker array. */
     KMarkers markers;
-    /*! Bound array and bound size */
+    /*! Bound array and bound size. */
     KBounds bounds;
     Raster* map_tiles;
     Raster* misc_tiles;
