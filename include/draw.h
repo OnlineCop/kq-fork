@@ -249,7 +249,7 @@ class KDraw
      * \param index font index
      * \returns width in pixels
      */
-    int text_length(eFontColor index, const char* str);
+    int text_length(eFontColor index, const char* s);
 
     /*! \brief Display number
      *

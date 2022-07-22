@@ -21,5 +21,5 @@
 
 #pragma once
 
-int hero_skillcheck(int);
-void infusion(int, int);
+int hero_skillcheck(size_t fighter_index);
+void infusion(int c, int sn);

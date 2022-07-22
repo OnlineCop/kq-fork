@@ -21,7 +21,7 @@
 
 #pragma once
 
-int learn_new_spells(int);
-void camp_spell_menu(int);
+int learn_new_spells(int who);
+void camp_spell_menu(int c);
 
 extern int close_menu;

@@ -47,8 +47,8 @@ void camp_item_menu();
  *            already had some of that item
  * \returns 2 if we put the item in a brand-new slot
  */
-int check_inventory(size_t inventory_index, int item_quantity);
+int check_inventory(size_t item_id, int item_quantity);
 
-eItemEffectResult item_effects(size_t, size_t, int);
-void remove_item(size_t, int);
-int useup_item(int);
+eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index, int ti);
+void remove_item(size_t inventory_index, int qi);
+int useup_item(int item_id);

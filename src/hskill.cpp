@@ -50,8 +50,8 @@
 #include <memory>
 
 /* Internal function */
-static void infusion(int, int);
-void reveal(int);
+static void infusion(int c, int sn);
+void reveal(int tgt);
 
 /*! \brief Is hero's special skill available?
  *

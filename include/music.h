@@ -31,15 +31,15 @@ class KMusic
     void poll_music();
 
     void set_music_volume(int volume);
-    void set_volume(int volume);
+    void set_volume(int sound_volume);
 
     void play_music(const std::string& music_name, long position);
     void pause_music();
     void resume_music();
     void stop_music();
-    void* get_sample(const std::string&);
-    void play_effect(int, int);
-    void play_sample(void*, int, int, int, int);
+    void* get_sample(const std::string& s);
+    void play_effect(int /*unused*/, int /*unused*/);
+    void play_sample(void* chunk, int /*unused*/, int /*unused*/, int /*unused*/, int /*unused*/);
     void free_samples();
 
   private:

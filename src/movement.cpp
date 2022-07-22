@@ -48,9 +48,10 @@ struct Cell
 
 using CellQueue = std::queue<Cell>;
 
-static int compose_path(const int*, uint32_t, uint32_t, char*, size_t);
-static int minimize_path(const std::vector<char>&, char*, size_t);
-static void search_paths(int*, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
+static int compose_path(const int* map, uint32_t x, uint32_t y, char* buffer, size_t size);
+static int minimize_path(const std::vector<char>& /*unused*/, char* /*unused*/, size_t /*unused*/);
+static void search_paths(int* map, uint32_t target_x, uint32_t target_y, uint32_t start_x, uint32_t start_y,
+                         uint32_t limit_x, uint32_t limit_y);
 
 enum class ePathResult
 {

@@ -56,7 +56,7 @@ class KDisk
      */
     int load_stats_only(const char* filename, s_sgstats& stats);
     /*! Helper function: does a file exist? */
-    bool exists(const char*);
+    bool exists(const char* filename);
 
   private:
     /** Convert a comma-separated list of ints into a vector.

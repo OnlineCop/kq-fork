@@ -1628,7 +1628,7 @@ void KDraw::porttext_ex(eBubbleStyle fmt, int who, const char* s)
     }
 }
 
-int KDraw::text_length(eFontColor, const char* s)
+int KDraw::text_length(eFontColor/* index*/, const char* s)
 {
     return 8 * strlen(s);
 }

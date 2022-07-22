@@ -27,10 +27,10 @@
 #include <cstdint>
 
 int select_player();
-ePIDX select_any_player(eTarget, unsigned int, const char*);
-ePIDX select_hero(size_t, eTarget, bool);
-ePIDX select_enemy(size_t, eTarget);
-int auto_select_hero(int, int);
-int auto_select_enemy(int, int);
-int select_party(ePIDX*, size_t, size_t);
+ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg);
+ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_select_dead);
+ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target);
+int auto_select_hero(int whom, int csts);
+int auto_select_enemy(int whom, int csts);
+int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max);
 void party_newlead();

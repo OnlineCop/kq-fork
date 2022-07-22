@@ -103,32 +103,33 @@ enum EMagic
 class KMagic
 {
   public:
-    int combat_spell(size_t, int);
-    int cast_spell(size_t, int);
-    void cast_imbued_spell(size_t, int, int, int);
+    int combat_spell(size_t caster_fighter_index, int is_item);
+    int cast_spell(size_t caster_fighter_index, int is_item);
+    void cast_imbued_spell(size_t fighter_index, int target_item, int sag_int_value, int tgt);
     void special_damage_oneall_enemies(size_t caster_index, int spell_dmg, int rune_type, size_t target_index,
                                        bool bSplitAmongTargets);
-    int res_adjust(size_t, size_t, int);
-    int res_throw(int, int);
-    int non_dmg_save(int, int);
-    int mp_needed(size_t, int);
-    void adjust_hp(size_t, int);
-    void adjust_mp(size_t, int);
-    int do_shell_check(int, int);
-    int do_shield_check(int, int);
-    KFighter status_adjust(size_t fighterIndex);
+    int res_adjust(size_t target_fighter_index, size_t rune_index, int amt);
+    int res_throw(int tgt, int rs);
+    int non_dmg_save(int tgt, int per);
+    int mp_needed(size_t fighter_index, int spell_number);
+    void adjust_hp(size_t fighter_index, int amt);
+    void adjust_mp(size_t fighter_index, int amt);
+    int do_shell_check(int tgt, int amt);
+    int do_shield_check(int tgt, int amt);
+    KFighter status_adjust(size_t fighter_index);
 
   private:
-    void beffect_all_enemies(size_t, size_t);
-    void beffect_one_enemy(size_t, size_t, size_t);
-    void cure_oneall_allies(size_t, int, size_t);
-    void damage_all_enemies(size_t, size_t);
-    void damage_oneall_enemies(size_t, int, size_t);
-    void geffect_all_allies(size_t, size_t);
-    void geffect_one_ally(size_t, size_t);
-    void heal_one_ally(size_t, size_t, size_t);
-    void special_spells(size_t, size_t);
-    void spell_damage(size_t, int, size_t, size_t);
+    void beffect_all_enemies(size_t caster_fighter_index, size_t spell_number);
+    void beffect_one_enemy(size_t caster_fighter_index, size_t target_fighter_index, size_t spell_number);
+    void cure_oneall_allies(size_t caster_fighter_index, int tgt, size_t spell_number);
+    void damage_all_enemies(size_t caster_fighter_index, size_t spell_number);
+    void damage_oneall_enemies(size_t caster_fighter_index, int tgt, size_t spell_number);
+    void geffect_all_allies(size_t caster_fighter_index, size_t spell_number);
+    void geffect_one_ally(size_t target_fighter_index, size_t spell_number);
+    void heal_one_ally(size_t caster_fighter_index, size_t target_fighter_index, size_t spell_number);
+    void special_spells(size_t caster_fighter_index, size_t spell_number);
+    void spell_damage(size_t caster_fighter_index, int spell_number, size_t start_fighter_index,
+                      size_t end_fighter_index);
 };
 
 extern KMagic Magic;

@@ -56,8 +56,8 @@ enum eMiniMenu
 };
 
 /*  Internal functions  */
-static int can_attack(int);
-static eMiniMenu mini_menu(int mask);
+static int can_attack(int tgt);
+static eMiniMenu mini_menu(int omask);
 static void party_add(ePIDX id, int lead);
 static void party_remove(ePIDX id);
 

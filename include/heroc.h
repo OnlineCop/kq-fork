@@ -49,8 +49,8 @@ enum ePIDX
 
 extern int can_use_item; /* intrface.c */
 
-void hero_init();                /*  combat.c  */
-void hero_choose_action(size_t); /*  combat.c  */
-void auto_herochooseact(int);    /*  combat.c  */
-int available_spells(int);       /*  hskill.c  */
-int combat_spell_menu(int);      /*  hskill.c  */
+void hero_init();
+void hero_choose_action(size_t fighter_index);
+void auto_herochooseact(int who);
+int available_spells(int who);
+int combat_spell_menu(int c);

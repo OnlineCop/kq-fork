@@ -23,4 +23,4 @@
 
 #include <cstdint>
 
-void equip_menu(uint32_t);
+void equip_menu(uint32_t c);

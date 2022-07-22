@@ -26,10 +26,10 @@
 #define NUMSHOPS 50
 #define SHOPITEMS 12
 
-void do_inn_effects(int);
+void do_inn_effects(int do_delay);
 void draw_shopgold();
-void inn(const char*, uint32_t, int);
-int shop(int);
+void inn(const char* iname, uint32_t gold_per_character, int pay);
+int shop(int shop_num);
 
 struct s_shop
 {

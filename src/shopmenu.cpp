@@ -63,12 +63,12 @@ static uint32_t num_shop_items;
 static uint8_t shop_no;
 
 /*  internal functions  */
-static void draw_sideshot(int);
+static void draw_sideshot(int selected_item);
 static void buy_menu();
-static void buy_item(int, int);
+static void buy_item(int how_many, int item_no);
 static void sell_menu();
-static void sell_howmany(int, size_t);
-static void sell_item(int, int);
+static void sell_howmany(int item_no, size_t inv_page);
+static void sell_item(int itno, int qty_being_sold);
 
 /*! \brief Actually purchase the item
  *

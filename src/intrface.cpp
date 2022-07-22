@@ -85,8 +85,8 @@ static const char* filereader(lua_State* L, void* data, size_t* size);
 static const char* stringreader(lua_State* L, void* data, size_t* size);
 static void init_markers(lua_State* L);
 static void init_obj(lua_State* L);
-int lua_dofile(lua_State*, const char*);
-static int real_entity_num(lua_State*, int);
+int lua_dofile(lua_State* L, const char* filename);
+static int real_entity_num(lua_State* L, int pos);
 
 // void remove_special_item (int index);
 
@@ -272,12 +272,12 @@ static int KQ_party_setter(lua_State* L);
 static int KQ_traceback(lua_State* L);
 #endif
 
-static void set_btile(int, int, int);
-static void set_mtile(int, int, int);
-static void set_ftile(int, int, int);
-static void set_zone(int, int, int);
-static void set_obs(int, int, int);
-static void set_shadow(int, int, int);
+static void set_btile(int x, int y, int value);
+static void set_mtile(int x, int y, int value);
+static void set_ftile(int x, int y, int value);
+static void set_zone(int x, int y, int value);
+static void set_obs(int x, int y, int value);
+static void set_shadow(int x, int y, int value);
 
 /* The 'luaL_Reg' struct is defined as:
  * struct luaL_Reg
@@ -845,7 +845,7 @@ struct readerbuf_t
  * \param data a pointer to a readerbuf_t structure
  * \param size [out] the number of bytes read
  */
-static const char* filereader(lua_State*, void* data, size_t* size)
+static const char* filereader(lua_State* /*L*/, void* data, size_t* size)
 {
     auto r = reinterpret_cast<readerbuf_t*>(data);
     *size = fread(r->buffer, sizeof(char), sizeof(r->buffer), r->in);
@@ -860,7 +860,7 @@ static const char* filereader(lua_State*, void* data, size_t* size)
  * \param f a pointer to a pointer to the string
  * \param size [out] the number of bytes in the string
  */
-static const char* stringreader(lua_State*, void* data, size_t* size)
+static const char* stringreader(lua_State* /*L*/, void* data, size_t* size)
 {
     char** f = reinterpret_cast<char**>(data);
     char* ans = *f;

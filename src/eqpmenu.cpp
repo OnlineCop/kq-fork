@@ -44,15 +44,15 @@ static std::vector<uint16_t> t_inv;
 static char eqp_act;
 
 /* Internal functions */
-static void draw_equipmenu(int, bool);
-static void draw_equippable(uint32_t, uint32_t, uint32_t);
-static void calc_possible_equip(int, int);
-static void optimize_equip(int);
-static void choose_equipment(int, int);
-static void calc_equippreview(uint32_t, uint32_t, int);
-static void draw_equippreview(int, int, int);
-static bool equip(uint32_t, uint32_t);
-static bool deequip(uint32_t, uint32_t);
+static void draw_equipmenu(int c, bool sel);
+static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr);
+static void calc_possible_equip(int c, int slot);
+static void optimize_equip(int c);
+static void choose_equipment(int c, int slot);
+static void calc_equippreview(uint32_t c, uint32_t slot, int item);
+static void draw_equippreview(int ch, int ptr, int pp);
+static bool equip(uint32_t c, uint32_t selected_item);
+static bool deequip(uint32_t c, uint32_t ptr);
 
 /*! \brief Show the effect on stats if this piece were selected
  *

@@ -28,4 +28,4 @@
 #include <cstddef>
 #include <cstdint>
 
-void combat_skill(size_t);
+void combat_skill(size_t fighter_index);

@@ -450,7 +450,7 @@ class KGame
      * This resets the clock, e.g. when a save-game is loaded
      * \param time the new time
      */
-    void SetGameTime(const KTime&);
+    void SetGameTime(const KTime& time);
 
     /*! \brief Check last key
      * \returns char of last key pressed or 0 if none

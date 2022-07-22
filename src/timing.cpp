@@ -43,7 +43,7 @@ void reset_watchdog()
     watchdog = 100;
 }
 
-static Uint32 timer_cb(Uint32 interval, void*)
+static Uint32 timer_cb(Uint32 interval, void* /*unused*/)
 {
     SDL_Event event = { 0 };
     assert(--watchdog > 0);

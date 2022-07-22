@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-KFighter player2fighter(int);
+KFighter player2fighter(int who);
 
 /* These are hints/reminders about the game - e.g:
  * - Something you have been told by an important character
@@ -63,20 +63,20 @@ class KMenu
     KMenu();
 
     void add_questinfo(const std::string& key, const std::string& text);
-    void draw_mainmenu(int);
+    void draw_mainmenu(int swho);
     void draw_playerstat(Raster* where, int player_index_in_party, int dx, int dy);
-    bool give_xp(int, int, int);
+    bool give_xp(int pl, int the_xp, int ls);
     void menu();
     void revert_equipstats();
     void spec_items();
     void update_equipstats();
 
   private:
-    bool check_xp(int, int);
+    bool check_xp(int pl, int ls);
     void clear_quests();
-    void level_up(int);
+    void level_up(int pr);
     void display_quest_window();
-    void status_screen(size_t);
+    void status_screen(size_t fighter_index);
     std::vector<KQuestItem> quest_list;
 };
 

@@ -61,7 +61,7 @@ void show_help();
 void set_graphics_mode();
 void sound_init();
 void free_samples();
-void play_effect(int, int);
+void play_effect(int efc, int panning);
 /*! \brief Store the Window's (width, height)
  * If the new values differ from the previous, they will be written out to
  * the settings file.
@@ -70,4 +70,4 @@ void play_effect(int, int);
 void store_window_size();
 extern char debugging;
 extern char slow_computer;
-const char* kq_keyname(int);
+const char* kq_keyname(int scancode);

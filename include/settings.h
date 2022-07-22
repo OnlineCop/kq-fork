@@ -30,7 +30,7 @@ class KConfig
   public:
     KConfig();
     ~KConfig();
-    void set_config_file(const char*);
+    void set_config_file(const char* filename);
     void set_config_int(const char* section, const char* key, int value);
     int get_config_int(const char* section, const char* key, int defl);
     void push_config_state();

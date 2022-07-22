@@ -30,9 +30,9 @@ struct RGB
 typedef RGB PALETTE[PAL_SIZE];
 extern PALETTE black_palette;
 
-void get_palette(RGB*);
-void set_palette(RGB*);
-void set_palette_range(RGB*, int, int);
+void get_palette(RGB* clrs);
+void set_palette(RGB* clrs);
+void set_palette_range(RGB* src, int from, int to);
 
 struct COLOR_MAP
 {
@@ -44,7 +44,7 @@ inline int makecol(int r, int g, int b)
     return ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
 }
 
-void fade_interpolate(RGB*, RGB*, RGB*, int, int, int);
+void fade_interpolate(RGB* a, RGB* b, RGB* dest, int pos, int from, int to);
 
 enum eDrawMode
 {
@@ -52,6 +52,6 @@ enum eDrawMode
     DRAW_MODE_TRANS = 1,
 };
 
-inline void drawing_mode(int, void*, int, int)
+inline void drawing_mode(int, void*, int /*unused*/, int /*unused*/)
 {
 }

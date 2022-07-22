@@ -24,4 +24,5 @@
 #include <cstdint>
 #include <cstdlib>
 
-int find_path(size_t, uint32_t, uint32_t, uint32_t, uint32_t, char*, uint32_t);
+int find_path(size_t entity_id, uint32_t source_x, uint32_t source_y, uint32_t target_x, uint32_t target_y,
+              char* buffer, uint32_t size);

@@ -81,9 +81,10 @@ static void* sfx[KAudio::eSound::MAX_SAMPLES];
 
 /*  Internal functions  */
 static int load_samples();
-static int getavalue(const char*, int, int, int, bool, void (*)(int));
-static bool getakey(KPlayerInput::button&, const char*);
+static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void (*fb)(int));
+static bool getakey(KPlayerInput::button& b, const char* cfg);
 static eDisplayMode prompt_display_mode();
+static void citem(int y, const char* caption, const char* value, eFontColor color);
 
 /*! \brief Play sound effects / music if adjusting it */
 static void sound_feedback(int val)

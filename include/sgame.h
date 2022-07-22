@@ -47,15 +47,15 @@ class KSaveGame
 {
   public:
     void load_sgstats();
-    int start_menu(bool);
+    int start_menu(bool skip_splash);
     int system_menu();
 
   protected:
-    void show_sgstats(int);
+    void show_sgstats(int saving);
     int save_game();
     int load_game();
     void delete_game();
-    int saveload(int);
+    int saveload(int am_saving);
     int confirm_action();
 
   protected:

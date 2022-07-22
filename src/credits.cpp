@@ -38,7 +38,7 @@ using eSize::SCREEN_W;
 
 #define _(s) gettext(s)
 
-static int ease(int);
+static int ease(int x);
 
 /*! Array of strings */
 static const char* credits[] = { "Josh Bolduc",

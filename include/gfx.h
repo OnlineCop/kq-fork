@@ -134,7 +134,7 @@ inline void rect(Raster* r, int x1, int y1, int x2, int y2, int c)
     r->hline(x1, x2, y2, c);
 }
 
-void textprintf(Raster*, void*, int, int, int, const char*, ...);
+void textprintf(Raster*, void*, int, int, int, const char* fmt, ...);
 
 void set_window_palette(SDL_Window* w);
 

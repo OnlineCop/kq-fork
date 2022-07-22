@@ -61,12 +61,12 @@ class KCombat
   public:
     KCombat();
 
-    int combat(int);
+    int combat(int bno);
     void battle_render(signed int plyr, size_t hl, int SelectAll);
-    void draw_fighter(size_t, size_t);
-    int fight(size_t, size_t, int);
-    void multi_fight(size_t);
-    void fkill(size_t);
+    void draw_fighter(size_t fighter_index, size_t dcur);
+    int fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk);
+    void multi_fight(size_t attack_fighter_index);
+    void fkill(size_t fighter_index);
 
     void AdjustHealth(size_t fighterIndex, int amount);
     int GetHealthAdjust(size_t fighterIndex) const;
@@ -100,7 +100,7 @@ class KCombat
   protected:
     eAttackResult attack_result(int ar, int dr);
     int check_end();
-    void do_action(size_t);
+    void do_action(size_t fighter_index);
     int do_combat(const std::string& bg, const std::string& mus, int is_rnd);
     void do_round();
     void enemies_win();

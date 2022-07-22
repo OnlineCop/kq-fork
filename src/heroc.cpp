@@ -67,19 +67,19 @@ int can_use_item = 1;
 char sk_names[MAXCHRS][7];
 
 /* Internal functions */
-static int hero_attack(int);
-static void combat_draw_items(int);
-static int combat_item_menu(int);
-static int combat_item_usable(int);
-static int combat_item(int, int, int);
-static void draw_invokable(int);
-static int can_invoke_item(int);
-static int hero_invoke(int);
-static int hero_invokeitem(size_t, size_t);
+static int hero_attack(int whom);
+static void combat_draw_items(int pg);
+static int combat_item_menu(int whom);
+static int combat_item_usable(int itno);
+static int combat_item(int ss, int t1, int tg);
+static void draw_invokable(int dud);
+static int can_invoke_item(int t1);
+static int hero_invoke(int whom);
+static int hero_invokeitem(size_t attacker_fighter_index, size_t item_index);
 static void hero_run();
-static void combat_draw_spell_menu(int, int, int);
-static int combat_spell_targeting(int);
-static int combat_castable(int, int);
+static void combat_draw_spell_menu(int c, int ptr, int pg);
+static int combat_spell_targeting(int whom);
+static int combat_castable(int spell_caster, int spell_number);
 
 /*! \brief Auto-choose options for confused player
  *
