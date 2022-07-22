@@ -41,8 +41,7 @@ struct RasterLoader
 using image_cache = Cache<Raster, RasterLoader>;
 
 // At the moment there is one global cache;
-// in the future multiple caches could be created
-// and destroyed.
+// in the future multiple caches could be created and destroyed.
 static image_cache global;
 
 static int palindex(uint8_t* ptr)
@@ -84,12 +83,14 @@ static int palindex(uint8_t* ptr)
 
 // For libpng 1.6 and above there's a high-level image loader
 #ifdef PNG_SIMPLIFIED_READ_SUPPORTED
-/*! \brief Load a bitmap from a file
+/*! \brief Load a bitmap from a file.
+ *
  * Allocate space for and load a bitmap in PNG format.
  * Assumed that we're running in 8bpp mode using KQ's palette.
- * Returns null if not found or error while loading
- * \param path the filename
- * \returns the bitmap
+ * Returns null if not found or error while loading.
+ *
+ * \param   path The filename.
+ * \returns The bitmap.
  */
 static Raster* bmp_from_png(const std::string& path)
 {
@@ -169,11 +170,13 @@ static Raster* bmp_from_png(const std::string& path)
 #endif
 
 /*! \brief Get or load an image.
+ *
  * Return the image from the cache or load it.
  * The returned Raster is owned by the cache so do not delete it.
  * It's program_death if the image can't be loaded.
- * \param name the file base name
- * \returns the bitmap
+ *
+ * \param   name The file base name.
+ * \returns The bitmap.
  */
 Raster* RasterLoader::operator()(const std::string& name)
 {
@@ -192,17 +195,11 @@ Raster* RasterLoader::operator()(const std::string& name)
     return bmp;
 }
 
-/*! \brief get image from the global cache
- * \param name the name of the image file
- * \returns a bitmap
- */
 Raster* get_cached_image(const std::string& name)
 {
     return global.get(name);
 }
 
-/*! \brief clear the global cache.
- */
 void clear_image_cache()
 {
     global.clear();

@@ -70,6 +70,15 @@ template<class T, class Loader, class Deleter = std::default_delete<T>> class Ca
     loader_type loader;
     deleter_type deleter;
 };
+
 class Raster;
+
+/*! \brief Get image from the global cache.
+ *
+ * \param   name Name of the image file.
+ * \returns A bitmap.
+ */
 Raster* get_cached_image(const std::string& name);
+
+/*! \brief Clear the global cache. */
 void clear_image_cache();
