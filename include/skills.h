@@ -21,5 +21,20 @@
 
 #pragma once
 
+/*! \brief Is hero's special skill available?
+ *
+ * Check whether the hero can use his/her special skill at this point in combat.
+ *
+ * \param   fighter_index Hero to check in pidx[] (party) and fighter[] (battle) arrays.
+ * \returns 1 if skill is available, 0 otherwise
+ */
 int hero_skillcheck(size_t fighter_index);
+
+/*! \brief Do infusion skill.
+ *
+ * This function is only used for Corin when he uses his Infuse ability.
+ *
+ * \param   c Fighter index in fighter[] array.
+ * \param   sn Thing to infuse, in range [EMagic::M_CURE1..EMagic::M_XSURGE].
+ */
 void infusion(int c, int sn);

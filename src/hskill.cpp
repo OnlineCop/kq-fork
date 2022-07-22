@@ -20,10 +20,7 @@
 */
 
 /*! \file
- * \brief Hero skills
- *
- * \author JB
- * \date ????????
+ * \brief Hero skills.
  */
 
 #include "hskill.h"
@@ -50,17 +47,22 @@
 #include <memory>
 
 /* Internal function */
+
+/*! \brief Infuse the caster's attack with an elemental spell effect.
+ *
+ * Infuses the attacker with whatever was stored in KFighter::csmem.
+ *
+ * \param   c Caster index in fighter[] array.
+ * \param   sn Spell in range [0..NUM_SPELLS-1].
+ */
 static void infusion(int c, int sn);
+
+/*! \brief Display a target fighter's elemental resistances.
+ *
+ * \param tgt Target index in fighter[] array.
+ */
 void reveal(int tgt);
 
-/*! \brief Is hero's special skill available?
- *
- * Check if the hero can use his/her special
- * skill at this point in combat.
- *
- * \param   fighter_index Hero to check (index into pidx[])
- * \returns 1 if skill is available, 0 otherwise
- */
 int hero_skillcheck(size_t fighter_index)
 {
     size_t weapon_index = 0;
@@ -210,14 +212,6 @@ int hero_skillcheck(size_t fighter_index)
     return 0;
 }
 
-/*! \brief Do infusion skill
- *
- * This function is only used for Corin when he
- * uses his Infuse ability.
- *
- * \param   c Hero (index in fighter[] array)
- * \param   sn Thing to infuse
- */
 static void infusion(int c, int sn)
 {
     size_t j;
@@ -491,14 +485,6 @@ void reveal(int tgt)
     Game.wait_enter();
 }
 
-/*! \brief Activate the special skill
- *
- * This function activates the special skill for a hero,
- * including targetting etc. if required.
- *
- * \param   attack_fighter_index Hero to process
- * \returns 1 if the skill was used, otherwise 0
- */
 int skill_use(size_t attack_fighter_index)
 {
     int tgt, found_item, a, b, c, p, cts, tx, ty, next_target = 0, nn[NUM_FIGHTERS];
