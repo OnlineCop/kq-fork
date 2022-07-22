@@ -20,10 +20,7 @@
 */
 
 /*! \file
- * \brief Effects and animations
- *
- * \author JB
- * \date ???????
+ * \brief Effects and animations.
  */
 
 #include "effects.h"
