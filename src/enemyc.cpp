@@ -20,10 +20,7 @@
 */
 
 /*! \file
- * \brief Enemy combat
- *
- * \author JB
- * \date ??????
+ * \brief Enemy combat.
  */
 
 #include "enemyc.h"
@@ -48,7 +45,7 @@ KEnemy Enemy;
  * Within a row, the column order is:
  *
  * -# Name
- * -# ignored (index number)
+ * -# index (ignored)
  * -# x-coord of image (in the datafile)
  * -# y-coord of image
  * -# width of image
@@ -64,8 +61,10 @@ KEnemy Enemy;
  * -# steal_item_common Steal Item Common
  * -# steal_item_rare Steal Item Rare
  * -# stat[0] (eStat::Strength)
- *    stat[1] (eStat::Agility) and stat[2] (eStat::Vitality) are set to 0 and not saved to allstat.mon
- * -# stat[3] (eStat::Intellect) AND stat[4] (eStat::Sagacity) both set to the same value
+ *    stat[1] (eStat::Agility) - not saved to allstat.mon: set to 0
+ *    stat[2] (eStat::Vitality) - not saved to allstat.mon: set to 0
+ * -# stat[3] (eStat::Intellect)
+ *    stat[4] (eStat::Sagacity) - not saved to allstat.mon: set to stat[3] (eStat::Intellect)
  * -# stat[5] (eStat::Speed)
  * -# stat[6] (eStat::Aura)
  * -# stat[7] (eStat::Spirit)
@@ -74,7 +73,8 @@ KEnemy Enemy;
  * -# stat[10] (eStat::Defense)
  * -# stat[11] (eStat::Evade)
  * -# stat[12] (eStat::MagicDefense)
- * -# bonus (bstat set to 0)
+ * -# bonus
+ *    bstat - not saved to allstat.mon: set to 0
  * -# current_weapon_type (current weapon type)
  * -# welem Weapon elemental power
  * -# unl Undead Level (defense against Undead attacks)
@@ -630,7 +630,7 @@ void KEnemy::LoadEnemies(const std::string& fullPath, Raster* enemy_gfx)
         iss >> strbuf;
         fighter_loaded_from_disk.name = strbuf;
 
-        // Index number (ignored; automatically generated)
+        // Enemy index (ignored)
         iss >> tmp;
         if (tmp == 61)
         {
@@ -733,9 +733,10 @@ void KEnemy::LoadEnemyStats(const std::string& fullFilename)
         KFighter& fighter_loaded_from_disk = m_enemy_fighters[current_enemy];
         std::istringstream iss(line);
 
+        // Enemy name (ignored)
         iss >> strbuf;
 
-        // Some index: ignored
+        // Enemy index (ignored)
         iss >> tmp;
         if (tmp == 60)
         {
@@ -791,20 +792,6 @@ void KEnemy::LoadEnemyStats(const std::string& fullFilename)
     }
 }
 
-/*
-KFighter* KEnemy::MakeEnemyFighter(size_t who, KFighter *NewEnemyFighter)
-{
-    if (m_enemy_fighters && who < m_num_enemies)
-    {
-        memcpy(NewEnemyFighter, m_enemy_fighters[who], sizeof(KFighter));
-        return NewEnemyFighter;
-    }
-    else
-    {
-        return NULL;
-    }
-}
-*/
 bool KEnemy::MakeEnemyFighter(const size_t who, KFighter& en)
 {
     if (who < m_enemy_fighters.size())
