@@ -20,10 +20,10 @@
 */
 
 /*! \file
- * \brief In-game music routines
+ * \brief In-game music routines.
  *
  * Handles playing and pausing music in the game.
- * Interfaces to SDL2_Mixer
+ * Interfaces to SDL2_Mixer.
  */
 
 #include "music.h"
@@ -67,11 +67,6 @@ static Cache<Mix_Chunk, Mix_ChunkLoader, Mix_ChunkDeleter> sample_cache;
 static Cache<Mix_Music, Mix_MusicLoader, Mix_MusicDeleter> music_cache;
 static Mix_Music* music = nullptr;
 
-/*! \brief Initiate music player (SDL2_Mixer)
- *
- * Initializes the music players. Must be called before any other
- * music function. Needs to be shutdown when finished.
- */
 void KMusic::init_music()
 {
     int rc = Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 1024);
@@ -81,22 +76,12 @@ void KMusic::init_music()
     }
 }
 
-/*! \brief Clean up and shut down music  (SDL2_Mixer)
- *
- * Performs any cleanup needed. Must be called before the program exits.
- */
 void KMusic::shutdown_music()
 {
     music_cache.clear();
     Mix_CloseAudio();
 }
 
-/*! \brief Set the music volume (SDL2_Mixer)
- *
- * Sets the volume of the currently playing music.
- *
- * \param   volume 0 (silent) to 250 (loudest)
- */
 void KMusic::set_music_volume(int volume)
 {
     if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
@@ -107,27 +92,11 @@ void KMusic::set_music_volume(int volume)
     Mix_VolumeMusic(static_cast<int>(dvol * mvol * float(MIX_MAX_VOLUME)));
 }
 
-/*! \brief Poll the music  (SDL2_Mixer)
- *
- * Does whatever is needed to ensure the music keeps playing.
- * It's safe to call this too much, but shouldn't be called inside a timer.
- */
 void KMusic::poll_music()
 {
     // No-op for SDL_mixer
 }
 
-/*! \brief Play a specific song (SDL2_Mixer)
- *
- * This will stop any currently played song, and then play
- * the requested song.  Based on the extension given, the appropriate player
- * is called.
- * NOTE: position is not implemented but it is currently only ever called
- * with value 0 anyway.
- *
- * \param   music_name The relative filename of the song to be played
- * \param   position The position of the file to begin at
- */
 void KMusic::play_music(const std::string& music_name, long)
 {
     if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
@@ -146,12 +115,6 @@ void KMusic::play_music(const std::string& music_name, long)
     Mix_PlayMusic(music_cache.get(music_name), -1);
 }
 
-/*! \brief Stop the music  (SDL2_Mixer))
- *
- * Stops any music being played. To start playing more music, you
- * must call play_music(), as the current music player will no longer
- * be available and the song unloaded from memory.
- */
 void KMusic::stop_music()
 {
     if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
@@ -162,12 +125,6 @@ void KMusic::stop_music()
     music = nullptr;
 }
 
-/*! \brief Pauses the current music file  (SDL2_Mixer))
- *
- * Pauses the currently playing music file. It may be resumed
- * by calling resume_music(). Pausing the music file may be used
- * to nest music (such as during a battle).
- */
 void KMusic::pause_music()
 {
     if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
@@ -177,11 +134,6 @@ void KMusic::pause_music()
     Mix_PauseMusic();
 }
 
-/*! \brief Resume paused music  (SDL2_Mixer))
- *
- * Resumes the most recently paused music file. If a call to
- * play_music() was made in between, that file will be stopped.
- */
 void KMusic::resume_music()
 {
     if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
@@ -204,9 +156,6 @@ void KMusic::play_sample(void* chunk, int /*unused*/, int /*unused*/, int /*unus
     Mix_PlayChannel(-1, reinterpret_cast<Mix_Chunk*>(chunk), 0);
 }
 
-/* \brief Set overall sound volume.
- * \param   volume 0 (silent) to 250 (loudest)
- */
 void KMusic::set_volume(int sound_volume)
 {
     if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
