@@ -30,10 +30,36 @@ class KConsole
     ~KConsole() = default;
     KConsole();
 
+    /*! \brief Initialize the console state.
+     *
+     * Set up the global state ready for using the console.
+     *
+     * \param   num_lines Number of lines console should draw.
+     * \param   num_columns Width of console on screen.
+     */
     void init(size_t num_lines, size_t num_columns);
 
+    /*! \brief Show the current console.
+     *
+     * Display the current state of the console on the double buffer.
+     * This includes a horizontal line.
+     * The console takes up 320x120 pixels.
+     */
     void display();
+
+    /*! \brief Enter console mode.
+     *
+     * Run the console. Does not return until the console is closed.
+     */
     void run();
+
+    /*! \brief Display a line on the console.
+     *
+     * This displays a line of text, scrolling up all the other lines.
+     * No wrapping is performed.
+     *
+     * \param   l The text to display.
+     */
     void scroll(const std::string& l);
 
   protected:
