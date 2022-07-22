@@ -20,12 +20,9 @@
 */
 
 /*! \file
- * \brief Specifics for Windows
+ * \brief Specifics for Windows.
  *
- * \author PH
- * \date 20030723
- *
- * This includes any bits which are specific for Windows platforms
+ * This includes any bits which are specific for Windows platforms.
  */
 
 #define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers (Windows.h must be included before any
@@ -75,17 +72,15 @@ static std::string join(const std::string& path1, const std::string& path2)
     Game.program_death("Error processing file paths");
 }
 
-/*! \brief Returns the full path for this file
+/*! \brief Returns the full path for this file.
  *
- * This function first checks if the file can be found in the user's
- * directory. If it can not, it checks the relevant game directory
- * (data, music, lib, etc)
+ * This function first checks if the file can be found in the user's directory.
+ * If it can not, it checks the relevant game directory (data, music, lib, etc).
  *
- * \param str1 The first part of the path (i.e. the install dir,
- *             for example "/usr/local/share/kq/")
- * \param str2 The second part of the string (eg. "maps")
- * \param file The filename
- * \returns the combined path
+ * \param   str1 The first part of the path (i.e. the install dir, for example "/usr/local/share/kq/").
+ * \param   str2 The second part of the string (eg. "maps").
+ * \param   file The filename.
+ * \returns The combined path.
  */
 static std::string get_resource_file_path(const std::string& str1, const std::string& str2, const std::string& file)
 {
@@ -99,20 +94,20 @@ static std::string get_resource_file_path(const std::string& str1, const std::st
     return ans;
 }
 
-/*! \brief Returns the full path for this lua file
+/*! \brief Returns the full path for this lua file.
  *
- * This function first checks if the lua file can be found in the user's
- * directory. If it can not, it checks the relevant game directory
- * (scripts). For each directory, it first checks for a lob
- * file, and then it checks for a lua file. This function is similar to
- * get_resource_file_path, but takes special considerations for lua files.
- * Whereas get_resource_file_path takes the full filename (eg. "main.map"),
- * this function takes the filename without extension (eg "main").
+ * This function first checks if the lua file can be found in the user's directory.
+ * If it can not, it checks the relevant game directory (scripts).
  *
- * \param str1 The first part of the string
- *             (the install path, eg. "/usr/local/lib/kq")
- * \param file The filename
- * \returns the combined path
+ * For each directory, it first checks for a lob file, and then it checks for a lua file.
+ * This function is similar to get_resource_file_path(), but takes special considerations for lua files.
+ *
+ * Whereas get_resource_file_path() takes the full filename (eg. "main.map"), this function takes the filename without
+ * extension (eg "main").
+ *
+ * \param   str1 The first part of the string (the install path, eg. "/usr/local/lib/kq").
+ * \param   file The filename.
+ * \returns The combined path.
  */
 static std::string get_lua_file_path(const std::string& str1, const std::string& file)
 {

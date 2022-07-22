@@ -22,9 +22,7 @@
 #pragma once
 
 /*! \file
- * \brief Platform-specific interfaces, prototypes, and #defines
- * \author OC
- * \date 20100221
+ * \brief Platform-specific interfaces, prototypes, and #defines.
  */
 
 #include <string>
@@ -39,7 +37,13 @@ enum class eDirectories
     SETTINGS_DIR = 5,
 };
 
-/* Get the directory for application data (music, gfx, etc.)
-   or user data (screenshots, prefs, saved games)
+/*! \brief Get the directory for application data or user data.
+ *
+ * Application data: music, gfx, etc.
+ * User data: screenshots, prefs, saved games.
+ *
+ * \param   dir Which directory to search.
+ * \param   file File to find.
+ * \returns Name of the resource.
  */
 const std::string kqres(enum eDirectories dir, const std::string& file);
