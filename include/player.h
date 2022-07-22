@@ -28,7 +28,7 @@
 #include <cstdint>
 #include <string>
 
-/*! \brief Player */
+/*! \brief Player. */
 class KPlayer
 {
     friend class KDisk;
@@ -131,11 +131,13 @@ class KPlayer
     uint8_t eqp[NUM_EQUIPMENT];
     /*! Known spells */
     uint8_t spells[NUM_SPELLS];
-    /*! \brief Level up information
-     * * Item 0, 1 - used to calculate the XP you need for the next level
-     * * Item 2 - Boost to your HP/MHP
-     * * Item 3 - Boost to your MP/MMP
-     * * Items 4..16 - Actually used by player2fighter to adjust your base stats to the level you're on.
+
+    /*! \brief Level up information.
+     *
+     * - Item 0, 1: Used to calculate the XP you need for the next level.
+     * - Item 2: Boost to your HP/MHP.
+     * - Item 3: Boost to your MP/MMP.
+     * - Items 4..16: Actually used by player2fighter() to adjust your base stats to the level you're on.
      */
     unsigned short lup[NUM_LUP];
 
