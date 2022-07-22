@@ -32,6 +32,15 @@ extern PALETTE black_palette;
 
 void get_palette(RGB* clrs);
 void set_palette(RGB* clrs);
+
+/*! \brief Set the palette range for 'current_palette' from the source palette.
+ *
+ * This copies to the 'current_palette' palette.
+ *
+ * \param   src Palette source to copy from.
+ * \param   from Offset to copy from.
+ * \param   to Offset to copy to.
+ */
 void set_palette_range(RGB* src, int from, int to);
 
 struct COLOR_MAP
