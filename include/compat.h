@@ -44,6 +44,21 @@ inline int makecol(int r, int g, int b)
     return ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
 }
 
+/*! \brief Make an interpolated palette.
+ *
+ * The interpolation is 0..256:
+ *  0 means 100% of first palette
+ *  256 means 100% of second palette
+ *
+ * Indexes < 'from' or >= 'to' will be unchanged in dest.
+ *
+ * \param   a First palette.
+ * \param   b Second palette.
+ * \param   dest Output palette.
+ * \param   pos Interpolation within range [0..256].
+ * \param   from First index to interpolate (inclusive).
+ * \param   to Last index to interpolate (exclusive).
+ */
 void fade_interpolate(RGB* a, RGB* b, RGB* dest, int pos, int from, int to);
 
 enum eDrawMode

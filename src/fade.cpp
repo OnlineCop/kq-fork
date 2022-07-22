@@ -20,10 +20,7 @@
 */
 
 /*! \file
- * \brief Palette fading routines
- *
- * \author ML
- * \date October 2002
+ * \brief Palette fading routines.
  */
 
 #include "fade.h"
@@ -36,20 +33,18 @@
 #include <algorithm>
 #include <cstring>
 
-/*! \brief Fade between sub-ranges of two palettes
+/*! \brief Fade between sub-ranges of two palettes.
  *
- *  Fades from source to dest, at the specified speed (1 is the slowest, 64
- *  is instantaneous). Only affects colors between 'from' and 'to' (inclusive,
- *  pass 0 and 255 to fade the entire palette).
- *  Calls poll_music() to ensure the song keeps playing smoothly.
- *  Based on the Allegro function of the same name.
+ * Fades from source to dest, at the specified speed (1 is the slowest, 64 is instantaneous).
+ * Only affects colors between 'from' and 'to' (inclusive, pass 0 and 255 to fade the entire palette).
+ * Calls poll_music() to ensure the song keeps playing smoothly.
+ * Based on the Allegro function of the same name.
  *
- * \param   source Palette to fade from
- * \param   dest Palette to fade to
- * \param   speed How fast to fade (1..64)
- * \param   from Starting palette index (0..255)
- * \param   to Ending palette index (0..255)
- * \date    20040731 PH added check for out-of-range speed
+ * \param   source Palette to fade from.
+ * \param   dest Palette to fade to.
+ * \param   speed How fast to fade, in range [1..64].
+ * \param   from Starting palette index in range [0..255].
+ * \param   to Ending palette index in range [0..255].
  */
 static void _fade_from_range(PALETTE source, PALETTE dest, uint32_t speed, int from = 0, int to = PAL_SIZE - 1)
 {
@@ -88,12 +83,6 @@ void do_transition(eTransitionFade type, int param)
     }
 }
 
-/*!
- * \brief Make an interpolated palette.
- * The interpolation is 0..256, 0 means 100% of first palette, 256 means 100% of second palette. Indexes < from or >= to
- * will be unchanged in dest. \param a first palette \param b second palette \param dest output palette \param pos
- * interpolation \param first first index to interpolate \param to last+1 index to interpolate
- */
 void fade_interpolate(PALETTE a, PALETTE b, PALETTE dest, int pos, int from, int to)
 {
     for (int i = from; i < to; ++i)
