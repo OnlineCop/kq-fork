@@ -20,11 +20,9 @@
 */
 
 /*! \file
- * \brief Combat mode
+ * \brief Combat mode.
  *
  * This is the main file where combat is initiated.
- * \author JB
- * \date ????????
  */
 
 #include "combat.h"
@@ -52,19 +50,6 @@ KCombat::KCombat()
 {
 }
 
-/*! \brief Attack all enemies at once
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated
- *
- * This does the actual attack calculation. The damage done to the target is kept in the health_adjust[] array.
- *
- * \param   ar Attacker
- * \param   dr Defender
- * \returns ATTACK_MISS if attack was a miss,
- *          ATTACK_SUCCESS if attack was successful,
- *          ATTACK_CRITICAL if attack was a critical hit.
- */
 eAttackResult KCombat::attack_result(int ar, int dr)
 {
     int c;
@@ -308,12 +293,6 @@ eAttackResult KCombat::attack_result(int ar, int dr)
     return crit_hit == 1 ? eAttackResult::ATTACK_CRITICAL : eAttackResult::ATTACK_SUCCESS;
 }
 
-/*! \brief Draw the battle screen.
- *
- * \param   plyr Player: -1 means "no one is selected" (roll_initiative()), else index of fighter
- * \param   hl Highlighted
- * \param   SelectAll Select all
- */
 void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
 {
     size_t current_fighter_index = 0;
@@ -443,16 +422,6 @@ void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
     }
 }
 
-/*! \brief Check if all heroes/enemies dead.
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated
- *
- * Just check to see if all the enemies or heroes are dead.
- *
- * \returns 1 if the battle ended (either the heroes or the enemies won),
- *          0 otherwise.
- */
 int KCombat::check_end()
 {
     size_t fighter_index;
@@ -494,16 +463,6 @@ int KCombat::check_end()
     return 0;
 }
 
-/*! \brief Main combat function
- *
- * The big one... I say that because the game is mostly combat :p
- * First, check to see if a random encounter has occured. The check is skipped
- * if it's a scripted battle.  Then call all the helper and setup functions
- * and start the combat by calling do_round.
- *
- * \param   bno Combat identifier (index into battles[])
- * \returns 0 if no combat, 1 otherwise
- */
 int KCombat::combat(int bno)
 {
     int hero_level;
@@ -589,13 +548,6 @@ int KCombat::combat(int bno)
     return do_combat(battles[bno].backimg, battles[bno].bmusic, battles[bno].eidx == 99);
 }
 
-/*! \brief Choose an action
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated
- *
- * Choose a fighter action.
- */
 void KCombat::do_action(size_t fighter_index)
 {
     size_t imb_index;
@@ -659,13 +611,6 @@ void KCombat::do_action(size_t fighter_index)
     }
 }
 
-/*! \brief Really do combat once fighters have been initialized.
- *
- * \param   bg Background image
- * \param   mus Music
- * \param   is_rnd If !=0 then this is a random combat
- * \returns 1 if battle occurred
- */
 int KCombat::do_combat(const std::string& bg, const std::string& mus, int is_rnd)
 {
     int zoom_step;
@@ -740,15 +685,6 @@ int KCombat::do_combat(const std::string& bg, const std::string& mus, int is_rnd
     return (1);
 }
 
-/*! \brief Battle gauge, action controls
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated 20020914 - 16:16 (RB)
- *
- * This function controls the battle gauges and calls for action
- * when necessary. This is also where things like poison, sleep,
- * and what-not are checked.
- */
 void KCombat::do_round()
 {
     size_t a;
@@ -924,17 +860,6 @@ void KCombat::do_round()
     }
 }
 
-/*! \brief Display one fighter on the screen
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated 20020914 - 16:37 (RB)
- * \date Updated 20031009 PH (put fr-> instead of fighter[fighter_index]. every
- * time)
- *
- * Display a single fighter on the screen. Checks for dead and
- * stone, and if the fighter is selected. Also displays 'Vision'
- * spell information.
- */
 void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
 {
     static const int AUGMENT_STRONGEST = 20;
@@ -1003,14 +928,6 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
     }
 }
 
-/*! \brief Enemies defeated the player
- * \author Josh Bolduc
- * \date created ????????
- * \date updated
- *
- * Play some sad music and set the dead flag so that the game
- * will return to the main menu.
- */
 void KCombat::enemies_win()
 {
     Music.play_music(music_defeat, 0);
@@ -1027,19 +944,6 @@ void KCombat::enemies_win()
     alldead = 1;
 }
 
-/*! \brief Main fighting routine
- *
- * I don't really need to describe this :p
- *
- * \author Josh Bolduc
- * \date created ????????
- * \date updated
-
- * \param   attack_fighter_index Attacker ID
- * \param   defend_fighter_index Defender ID
- * \param   sk If non-zero, override the attacker's stats.
- * \returns 1 if damage done, 0 otherwise
- */
 int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)
 {
     int tx = -1;
@@ -1178,15 +1082,6 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
     return 0;
 }
 
-/*! \brief Kill a fighter
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated 20020917 (PH) -- added cheat mode
- *
- * Do what it takes to put a fighter out of commission.
- *
- * \param   fighter_index The one who will die
- */
 void KCombat::fkill(size_t fighter_index)
 {
 #ifdef KQ_CHEATS
@@ -1340,13 +1235,6 @@ uint8_t KCombat::GetMonsterSurprisesPartyValue() const
     return monsters_surprise_heroes;
 }
 
-/*! \brief Player defeated the enemies
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated
- *
- * Distribute the booty!
- */
 void KCombat::heroes_win()
 {
     int tgp = 0;
@@ -1520,13 +1408,6 @@ void KCombat::heroes_win()
     }
 }
 
-/*! \brief Initiate fighter structs and initial vars
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated
- *
- * Pre-combat setup of fighter structures and initial vars.
- */
 void KCombat::init_fighters()
 {
     for (size_t fighter_index = 0; fighter_index < NUM_FIGHTERS; fighter_index++)
@@ -1549,18 +1430,6 @@ void KCombat::init_fighters()
     }
 }
 
-/*! \brief Attack all enemies at once
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated
- *
- * This is different than fight in that all enemies are attacked
- * simultaneously, once. As a note, the attackers stats are
- * always over-ridden in this function. As well, critical hits
- * are possible, but the screen doesn't flash.
- *
- * \param   attack_fighter_index Attacker
- */
 void KCombat::multi_fight(size_t attack_fighter_index)
 {
     size_t fighter_index;
@@ -1689,13 +1558,6 @@ void KCombat::multi_fight(size_t attack_fighter_index)
     }
 }
 
-/*! \brief Choose who attacks first, speeds, etc.
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated
- *
- * Set up surprise vars, speeds, act vars, etc.
- */
 void KCombat::roll_initiative()
 {
     size_t j;
@@ -1774,13 +1636,6 @@ void KCombat::roll_initiative()
     }
 }
 
-/*! \brief Fighter on-screen locations in battle
- * \author Josh Bolduc
- * \date Created ????????
- * \date Updated
- *
- * Calculate where the fighters should be drawn.
- */
 void KCombat::snap_togrid()
 {
     size_t fighter_index;
