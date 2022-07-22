@@ -29,7 +29,7 @@
 
 class Raster;
 
-/*! \brief Fighter
+/*! \brief Fighter.
  *
  * s_player is transformed into a KFighter during combat.
  * See enemy_init() for more information on the fields.
@@ -151,80 +151,119 @@ class KFighter
 
     uint8_t GetStatValueBySpellType(eSpellType spellType);
 
-    /*! \brief Name */
+    /*! \brief Name. */
     std::string name;
-    /*! \brief eXperience Points */
+    /*! \brief Experience Points. */
     int xp;
-    /*! \brief Gold Points */
+    /*! \brief Gold Points. */
     int gp;
-    /*! \brief LeVeL */
+    /*! \brief LeVeL. */
     int lvl;
-    /*! \brief x-coord of image in datafile */
+    /*! \brief X-coord of image in datafile. */
     int cx;
-    /*! \brief y-coord of image in datafile */
+    /*! \brief Y-coord of image in datafile. */
     int cy;
-    /*! \brief width in datafile */
+    /*! \brief Width in datafile. */
     int cw;
-    /*! \brief height in datafile */
+    /*! \brief Height in datafile. */
     int cl;
-    /*! \brief Hit Points */
+    /*! \brief Hit Points. */
     int hp;
-    /*! \brief Max Hit Points */
+    /*! \brief Max Hit Points. */
     int mhp;
-    /*! \brief Magic Points */
+    /*! \brief Magic Points. */
     int mp;
-    /*! \brief Max Magic Points */
+    /*! \brief Max Magic Points. */
     int mmp;
-    /*! \brief Defeat Item Probability
-     * Probability in % that the enemy will yield an item when defeated.
-     */
+    /*! \brief Defeat Item Probability: Probability in % that the enemy will yield an item when defeated. */
     int dip;
-    /*! \brief Defeat Item Common
-     * If the enemy yields an item, you will get this item 95% of the time.
-     */
+    /*! \brief Defeat Item Common: If the enemy yields an item, you will get this item 95% of the time. */
     int defeat_item_common;
-    /*! \brief Defeat Item Rare
-     * If the enemy yields an item, you will get this item 5% of the time.
-     */
+    /*! \brief Defeat Item Rare: If the enemy yields an item, you will get this item 5% of the time. */
     int defeat_item_rare;
-    /*! \brief Steal Item Common
-     * If Ayla steals something, she will get this item 95% of the time.
-     */
+    /*! \brief Steal Item Common: If Ayla steals something, she will get this item 95% of the time. */
     int steal_item_common;
-    /*! \brief Steal Item Rare
-     * If Ayla steals something, she will get this item 5% of the time.
-     */
+    /*! \brief Steal Item Rare: If Ayla steals something, she will get this item 5% of the time. */
     int steal_item_rare;
-    /*! \brief See A_* constants in enums.h */
+    /*! \brief See A_* constants in enums.h. */
     int stats[eStat::NUM_STATS];
-    /*! \brief eResistance: See R_* constants */
+    /*! \brief Resistance to various elemental effects.
+     *
+     * Array contains an entry for each R_* type listed in the eResistance enum.
+     *
+     * Negative resistance means the fighter is affected more by the element (up to -10),
+     * while positive resistance means it is affected less (around +10) to almost not at all
+     * (close to +20).
+     *
+     * Values around 0 mean the elemental effects do not sway the attack amount either way.
+     */
     int8_t res[NUM_RES];
-    /*! \brief Direction character's sprite faces */
+    /*! \brief Direction character's sprite faces. */
     uint8_t facing;
-    /*! \brief Battle sprite to display (standing, casting, attacking) */
+    /*! \brief Battle sprite to display (standing, casting, attacking). */
     uint8_t aframe;
     uint8_t crit;
     uint8_t defend;
+
+    /*!
+     * When the value is 1..99 (technically eMagic::M_CURE1..eMagic::M_XSURGE), call
+     * KEnemy::SpellCheck() and, if the enemy "has" that spell, it can try to cast it.
+     *
+     * When the value is 100..253, call KEnemy::SkillCheck() and, after subtracting 100,
+     * if the skill is 1..153, then:
+     *  - if skill==5:
+     *    - set "atrack" to 1 if either: 1 party member; OR 2 party members and either one is dead
+     *  - then: if fighter's "atrack" is non-zero, do nothing, else:
+     *    - if skill is one of: 1, 2, 3, 6, 7, 12, 14, then:
+     *      - target only one of the party members
+     *    - else:
+     *      - target all of the party members
+     *  - then:
+     *    - call combat_skill(), which takes 'ai - 100' to determine the attack to use:
+     *      - 1: "Venomous Bite"
+     *      - 2: "Double Slash"
+     *      - ...
+     *      - 20: "Entangle"
+     *      - 21: "Fire Bite" (commented out)
+     */
     uint8_t ai[8];
     uint8_t aip[8];
     uint8_t atrack[8];
-    /*! \brief Spell number, associated with M_* spells, used within s_spell magic[] array. */
+
+    /*! \brief Spell number, associated with M_* spells, used within s_spell magic[] array.
+     *
+     * Must be a value [0..sizeof(KFighter::ai)-1].
+     */
     uint32_t csmem;
-    /*! \brief Spell target: who is going to be affected by the spell; can be set to -1 */
+
+    /*! \brief Spell target: who is going to be affected by the spell; can be set to TGT_CASTER (-1) to target self. */
     int ctmem;
-    /*! \brief Current Weapon Type
-     * The shape of the currently held weapon (sword, dagger, axe etc) \sa hero_init()
+
+    /*! \brief Current Weapon Type.
+     *
+     * See eWeapon enum; this also determines what the little icon displays next to its name
+     * in a menu; \sa hero_init().
+     *
+     * Often gets its icon from s_item::icon.
      */
     uint32_t current_weapon_type;
-    /*! \brief eResistance: Which Element type (sick, fire, water, etc.) */
+
+    /*! \brief Elemental effect this fighter's main attack (physical attack, not spell) is imbued with.
+     *
+     * \sa eResistance enum
+     */
     int welem;
+
     /*! \brief UNLiving (undead), like zombies, skeletons, etc. */
     int unl;
+
     int aux;
     int bonus;
     int bstat;
-    /*! \brief Magic use rate (0-100) */
+
+    /*! \brief Magic use rate (0-100). */
     int mrp;
+
     int imb_s;
     int imb_a;
     int imb[2];
