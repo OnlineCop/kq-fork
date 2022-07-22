@@ -20,7 +20,7 @@
 */
 
 /*! \file
- * \brief Entity management functions
+ * \brief Entity management functions.
  */
 
 #include "entity.h"
