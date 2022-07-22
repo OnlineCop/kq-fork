@@ -20,11 +20,9 @@
 */
 
 /*! \file
- * \brief Timing handler functions
- * \author ML
- * \date 20102002
+ * \brief Timing handler functions.
  *
- * Looks after keeping the music playing whilst the game is 'paused'
+ * Looks after keeping the music playing whilst the game is 'paused'.
  */
 
 #include "timing.h"

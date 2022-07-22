@@ -23,12 +23,14 @@
 
 void kq_wait(long ms);
 int limit_frame_rate(int fps);
-/*!
- * \brief Start the main timer
- * This just posts an SDL_USEREVENT at the required interval
- * \param fps rate in frames per second
+
+/*! \brief Start the main timer.
+ *
+ * This just posts an SDL_USEREVENT at the required interval.
+ *
+ * \param   fps Rate in frames per second.
  */
 void start_timer(int fps);
-/*! \brief Stop the main timer
- */
+
+/*! \brief Stop the main timer. */
 void stop_timer();
