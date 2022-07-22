@@ -20,17 +20,9 @@
 */
 
 /*! \file
- * \brief Interface functions
- * \author JB, PH
- * \date Created ????????
- * \date Updated 20021125 -- Added extra functions
- * \date Updated 20030308 -- Added object interface
- * \date Updated 20051220 -- Change to Lua 5
- * \date Updated 20070809 -- Console stuff
+ * \brief Interface functions.
  *
- * This file implements the interface between
- * the C code and the Lua scripts.
- *
+ * This file implements the interface between the C code and the Lua scripts.
  */
 
 #include "intrface.h"
@@ -81,11 +73,68 @@ extern "C" {
 
 /* Internal functions */
 static void fieldsort();
+
+/*! \brief Read file chunk.
+ *
+ * Read in a piece of a file for the Lua system to compile.
+ *
+ * \param   L The Lua state (ignored).
+ * \param   data A pointer to a readerbuf_t structure.
+ * \param[out] size The number of bytes read.
+ */
 static const char* filereader(lua_State* L, void* data, size_t* size);
+
+/*! \brief Read string chunk.
+ *
+ * Read in a complete string for the Lua system to compile.
+ *
+ * \param   L The Lua state (ignored).
+ * \param   f A pointer to a pointer to the string.
+ * \param[out] size The number of bytes in the string.
+ */
 static const char* stringreader(lua_State* L, void* data, size_t* size);
+
+/*! \brief Initialize marker support.
+ *
+ * Add a table containing all the markers.
+ *
+ * \param   L The Lua state.
+ */
 static void init_markers(lua_State* L);
+
+/*! \brief Initialize the object interface for heroes and entities.
+ *
+ * This registers a new tag type for the heroes and adds the __index method to it.
+ * It then creates global variables for all heroes with their names as defined (Sensar etc.).
+ * Then it sets the 'player[]' global (all heroes) and the 'party[]' global (all heroes currently in play).
+ * Finally it sets the 'entity[]' array.
+ *
+ * \param   L The Lua state object.
+ */
 static void init_obj(lua_State* L);
+
+/*! \brief Read in a complete file.
+ *
+ * Read in a lua/lob file and execute it.
+ * Executing means defining all the functions etc. listed within it.
+ *
+ * Note that lua files still have to be "prepared" if they use any ITEM constants.
+ *
+ * \param   L The Lua state.
+ * \param   filename The full path of the file to read.
+ * \returns 0 on success, 1 on error.
+ */
 int lua_dofile(lua_State* L, const char* filename);
+
+/*! \brief Process HERO1 and HERO2 pseudo-entity numbers.
+ *
+ * Calculate what's the real entity number, given an enemy number or HERO1 or HERO2.
+ * It will decode an object (e.g. entity[0] or party[0]).
+ *
+ * \param   L Lua state.
+ * \param   pos Position on the lua stack.
+ * \returns Real entity number.
+ */
 static int real_entity_num(lua_State* L, int pos);
 
 // void remove_special_item (int index);
@@ -461,7 +510,7 @@ static const struct luaL_Reg lrs[] = {
     { NULL, NULL } /* Must always be the LAST entry */
 };
 
-/*! \brief Maps a text field name to an identifier */
+/*! \brief Maps a text field name to an identifier. */
 static struct s_field
 {
     const char* name;
@@ -515,10 +564,10 @@ static char marker_name[255];
 
 static enum { NOT_CHANGING, CHANGE_TO_COORDS, CHANGE_TO_MARKER } changing_map;
 
-/*! \brief Check to change the map
+/*! \brief Check to change the map.
  *
- * Check to see if we can change the map.  Does nothing if we are already in
- * the process of changing the map.
+ * Check to see if we can change the map.
+ * Does nothing if we are already in the process of changing the map.
  */
 static int KQ_check_map_change()
 {
@@ -543,13 +592,6 @@ static int KQ_check_map_change()
     return 0;
 }
 
-/*! \brief Run initial code
- *
- * Calls the function autoexec() which should contain some initial start-up
- * routines for this map.  This occurs while the map is faded out.  This code
- * should NOT call any graphical functions because this causes KQ to lock.
- * Instead, use postexec().
- */
 void do_autoexec()
 {
     int oldtop = lua_gettop(theL);
@@ -566,13 +608,6 @@ void do_autoexec()
     KQ_check_map_change();
 }
 
-/*! \brief Trigger entity action
- *
- * Run the lua function entity_handler(int) to take action based on the entity
- * that the hero has just approached and pressed ALT.
- *
- * \param   en_num Entity number
- */
 void do_entity(int en_num)
 {
     int oldtop = lua_gettop(theL);
@@ -593,12 +628,6 @@ void do_entity(int en_num)
 
 #ifdef KQ_CHEATS
 
-/*! \brief Load cheat code
- *
- * Load the contents of scripts/cheat.lob, usually in response to F10 being
- * pressed.  This can contain any scripting code, in the function cheat().
- * The cheat can be used repeatedly.
- */
 void do_luacheat()
 {
     int oldtop;
@@ -629,14 +658,6 @@ void do_luacheat()
 }
 #endif
 
-/*! \brief Initialize scripting engine
- *
- * Initialize the Lua scripting engine by loading from a file. A new VM is
- * created each time.
- *
- * \param   fname Base name of script; xxxxx loads script scripts/xxxxx.lob
- * \param   global non-zero to load global.lob. 0 to not load global.lob
- */
 void do_luainit(const char* fname, int global)
 {
     int oldtop;
@@ -682,10 +703,6 @@ void do_luainit(const char* fname, int global)
     changing_map = NOT_CHANGING;
 }
 
-/*! \brief Kill the lua VM
- *
- * Close the Lua virtual machine.
- */
 void do_luakill()
 {
     Game.reset_timer_events();
@@ -696,11 +713,6 @@ void do_luakill()
     }
 }
 
-/*! \brief Run initial graphical code
- *
- * This function is called after the map is faded back in.  It's possible to
- * show speech, move entities, etc. here.
- */
 void do_postexec()
 {
     int oldtop = lua_gettop(theL);
@@ -717,11 +729,6 @@ void do_postexec()
     KQ_check_map_change();
 }
 
-/*! \brief Get quest info items from script
- *
- * When user opens the Quest menu, the actual quest data is imported from Lua.
- * The get_quest_info() function returns its quests via a callback to add_quest_item().
- */
 void do_importquests()
 {
     int oldtop = lua_gettop(theL);
@@ -734,12 +741,6 @@ void do_importquests()
     lua_settop(theL, oldtop);
 }
 
-/*! \brief trigger time events
- *
- * Call the named function. This is called
- * when an event is triggered.
- * \param funcname the name of the function to call
- */
 void do_timefunc(const char* funcname)
 {
     int oldtop = lua_gettop(theL);
@@ -770,14 +771,6 @@ void do_timefunc(const char* funcname)
     KQ_check_map_change();
 }
 
-/*! \brief Trigger zone action
- *
- * Run the Lua function zone_handler(int) to take action based on the zone
- * that the hero has just stepped on.  This function is not called for zone 0,
- * unless the map property zero_zone is non-zero.
- *
- * \param   zn_num Zone number
- */
 void do_zone(int zn_num)
 {
     int oldtop = lua_gettop(theL);
@@ -796,14 +789,6 @@ void do_zone(int zn_num)
     KQ_check_map_change();
 }
 
-/*! \brief Initialize world specific variables
- *
- * This function is called on a new game, or when loading a game.
- * It calls lua_user_init in init.lua. Generally, this will set the names,
- * items, etc of all shops in the game, and the special items, and other
- * world-specific stuff. It does not have any arguments, or
- * return any values.
- */
 void lua_user_init()
 {
     do_luakill();
@@ -820,11 +805,9 @@ static int fieldcmp(const void* pa, const void* pb)
     return (strcmp(a->name, b->name));
 }
 
-/*! \brief Sort field array
+/*! \brief Sort field array.
  *
- * This uses qsort to sort the fields, ready for bsearch to search them
- * \author PH
- * \date Created 20030407
+ * This uses qsort to sort the fields, ready for bsearch to search them.
  */
 static void fieldsort()
 {
@@ -837,14 +820,6 @@ struct readerbuf_t
     char buffer[1024];
 };
 
-/*! \brief Read file chunk
- *
- * Read in a piece of a file for the Lua system to compile
- *
- * \param L the Lua state (ignored)
- * \param data a pointer to a readerbuf_t structure
- * \param size [out] the number of bytes read
- */
 static const char* filereader(lua_State* /*L*/, void* data, size_t* size)
 {
     auto r = reinterpret_cast<readerbuf_t*>(data);
@@ -852,14 +827,6 @@ static const char* filereader(lua_State* /*L*/, void* data, size_t* size)
     return r->buffer;
 }
 
-/*! \brief Read string chunk
- *
- * Read in a complete string  for the Lua system to compile
- *
- * \param L the Lua state (ignored)
- * \param f a pointer to a pointer to the string
- * \param size [out] the number of bytes in the string
- */
 static const char* stringreader(lua_State* /*L*/, void* data, size_t* size)
 {
     char** f = reinterpret_cast<char**>(data);
@@ -877,18 +844,13 @@ static const char* stringreader(lua_State* /*L*/, void* data, size_t* size)
     return ans;
 }
 
-/*! \brief Find a marker
+/*! \brief Find a named marker on the current map.
  *
- * Find the named marker on the current map.
  * Optionally throw a Lua error if it does not exist.
- * \author  PH
- * \date    Created 20060414
- * \date    20060502 PH added check for name == NULL
  *
- * \param   name - the name of the marker to search for
- * \param   required - if true throw an error if the marker isn't found
- *
- * \returns pointer to marker or nullptr if name not found
+ * \param   name The name of the marker to search for.
+ * \param   required If true, throw an error if the marker isn't found.
+ * \returns Pointer to marker or NULL if name not found.
  */
 static const KMarker* KQ_find_marker(std::string name, bool required)
 {
@@ -916,10 +878,10 @@ static const KMarker* KQ_find_marker(std::string name, bool required)
 
 /*! \brief Get the field number from a name.
  *
- * Note that the field list MUST be sorted first
- * \author PH 20030309
- * \param   n The field name
- * \returns the index, or -1 if not found
+ * Note that the field list MUST be sorted first.
+ *
+ * \param   n The field name.
+ * \returns The index, or -1 if not found.
  */
 static int get_field(const char* n)
 {
@@ -931,12 +893,6 @@ static int get_field(const char* n)
     return (ans ? ans->id : -1);
 }
 
-/*! \brief Initialize marker support
- *
- * Add a table containing all the markers
- * \author PH
- * \date 20050130
- */
 static void init_markers(lua_State* L)
 {
     lua_newtable(L);
@@ -959,16 +915,6 @@ static void init_markers(lua_State* L)
     lua_setglobal(L, "markers");
 }
 
-/*! \brief Initialize the object interface for heroes and entities
- *
- * This registers a new tag type for the heroes and adds the __index method
- * to it. It then creates global variables for all heroes with their names as
- * defined (Sensar etc.). Then it sets the 'player[]' global (all heroes) and
- * the 'party[]' global (all heroes currently in play). Finally it sets the
- * 'entity[]' array.
- *
- * \param   L The Lua state object
- */
 static void init_obj(lua_State* L)
 {
     size_t i = 0;
@@ -1135,17 +1081,17 @@ static int KQ_add_timer(lua_State* L)
     return 1;
 }
 
-/*! \brief Do a battle
+/*! \brief Do a battle.
  *
  * Usage: battle (bg_name, mus_name, encounter, encounter, ...);
- * bg_name: name of background tile
- * mus_name: name of music track
- * encounter: list of encounters
+ *  bg_name: name of background tile
+ *  mus_name: name of music track
+ *  encounter: list of encounters
  *
  * Format of encounter: {prob, lvl; monster, monster, ...}
- * prob: probability this will occur
- * lvl: level of this battle
- * monster: name of a monster
+ *  prob: probability this will occur
+ *  lvl: level of this battle
+ *  monster: name of a monster
  * \note Not implemented yet!
  */
 static int KQ_battle(lua_State* L)
@@ -1188,9 +1134,9 @@ static int KQ_calc_viewport(lua_State* /*L*/)
     return 0;
 }
 
-/*!\brief Change to a different map
- * \date Updated 20060709 TT: Now you can enter offsets from the marker's
- *       x and y coordinates to give more flexibility in movement
+/*!\brief Change to a different map.
+ *
+ * You can enter offsets from the marker's x and y coordinates to give more flexibility in movement.
  */
 static int KQ_change_map(lua_State* L)
 {
@@ -1215,9 +1161,9 @@ static int KQ_change_map(lua_State* L)
     return 0;
 }
 
-/*! \brief Object interface for party
+/*! \brief Object interface for party.
  *
- * This implements the __index meta-method
+ * This implements the __index meta-method.
  */
 static int KQ_char_getter(lua_State* L)
 {
@@ -1336,11 +1282,12 @@ static int KQ_char_getter(lua_State* L)
     return 1;
 }
 
-/*! \brief Object interface for character
+/*! \brief Object interface for character.
  *
- * This implements the __newindex meta method
- * for either a party member, a player or an entity
- * \param L the lua state. See lua docs for the __newindex protocol
+ * This implements the __newindex meta method for either a party member, a player or an entity.
+ * See lua docs for the __newindex protocol.
+ *
+ * \param   L The lua state.
  */
 static int KQ_char_setter(lua_State* L)
 {
@@ -1570,18 +1517,16 @@ static int KQ_copy_ent(lua_State* L)
     return 0;
 }
 
-/*! \brief Copy tile block
- * \author PH
- * \date Created 20021125
+/*! \brief Copy tile block.
  *
  * Copies a region of the map (all layers).
- * Invocation: copy_tile_all(source_x, source_y, dest_x, dest_y, width,
- *                           height)
+ * Invocation: copy_tile_all(source_x, source_y, dest_x, dest_y, width, height)
  * These params are meant to be similar to the allegro blit() function.
  *
- * \param   L::1 The Lua VM
- * \returns 0 (no values returned to Lua)
  * \bug     No error checking is done. Uses direct access to the struct s_map.
+ *
+ * \param   L::1 The Lua VM.
+ * \returns 0 (no values returned to Lua).
  */
 static int KQ_copy_tile_all(lua_State* L)
 {
@@ -1816,13 +1761,13 @@ static int KQ_get_autoparty(lua_State* L)
     return 1;
 }
 
-/*! \brief Return index of bounding area if player is inside it
+/*! \brief Return index of bounding area if player is inside it.
  *
- * This will scan through all the bounding areas on the map and return the
- * index of the one that the player is standing in:
+ * This will scan through all the bounding areas on the map and return the index of the one that the player is standing
+ * in.
  *
- * \param   L::1 - index of Entity (on the map)
- * \returns -1 if nothing found, else index of box: [0..bounds.size)
+ * \param   L::1 Index of Entity (on the map).
+ * \returns -1 if nothing found, else index of box: [0..bounds.size-1].
  */
 static int KQ_get_bounds(lua_State* L)
 {
@@ -1933,12 +1878,12 @@ static int KQ_get_ent_speed(lua_State* L)
     return 1;
 }
 
-/*! \brief Return both x/y coords together
+/*! \brief Get the entity's x and y tile coordinates.
  *
  * This can be called within scripts like this:
  *   local x, y = get_ent_tile(HERO1)
  *
- * \param   L::1 - Index of entity
+ * \param   L::1 Index of entity.
  */
 static int KQ_get_ent_tile(lua_State* L)
 {
@@ -1979,10 +1924,10 @@ static int KQ_get_gp(lua_State* L)
     return 1;
 }
 
-/*! \brief Get the x-coord of marker
+/*! \brief Get the x-coord of marker.
  *
- * \param   L ::1 Marker name
- * \returns x-coord of marker
+ * \param   L::1 Marker name.
+ * \returns Only the x-coord of marker.
  */
 static int KQ_get_marker_tilex(lua_State* L)
 {
@@ -1999,10 +1944,10 @@ static int KQ_get_marker_tilex(lua_State* L)
     return 1;
 }
 
-/*! \brief Get the y-coord of marker
+/*! \brief Get the y-coord of marker.
  *
- * \param   L ::1 Marker name
- * \returns y-coord of marker
+ * \param   L::1 Marker name.
+ * \returns Only the y-coord of marker.
  */
 static int KQ_get_marker_tiley(lua_State* L)
 {
@@ -2031,13 +1976,11 @@ static int KQ_get_numchrs(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's equipment (unused)
+/*! \brief Get party member's equipment (unused).
  *
- * This gets the person's current equipment
- *
- * \param   L::1 Which person to check
- * \param   L::2 Which equipment slot
- * \returns person's equipment
+ * \param   L::1 Which party member to check.
+ * \param   L::2 Which equipment slot.
+ * \returns Party member's equipment in the specified slot.
  */
 static int KQ_get_party_eqp(lua_State* L)
 {
@@ -2051,12 +1994,10 @@ static int KQ_get_party_eqp(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's HP
+/*! \brief Get the party member's current HP.
  *
- * This gets the person's current hit points
- *
- * \param   L::1 Which person's HP to check
- * \returns person's HP
+ * \param   L::1 Which party member's HP to check.
+ * \returns Party member's HP.
  */
 static int KQ_get_party_hp(lua_State* L)
 {
@@ -2069,12 +2010,10 @@ static int KQ_get_party_hp(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's level
+/*! \brief Get the party member's current level.
  *
- * This gets the person's current level
- *
- * \param   L::1 Which person's level to check
- * \returns person's level
+ * \param   L::1 Which party member's level to check.
+ * \returns Party member's level.
  */
 static int KQ_get_party_lvl(lua_State* L)
 {
@@ -2087,12 +2026,10 @@ static int KQ_get_party_lvl(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's MHP
+/*! \brief Get the party member's max hit points (MHP).
  *
- * This gets the person's maximum hit points
- *
- * \param   L::1 Which person's MHP to check
- * \returns person's MHP
+ * \param   L::1 Which party member's MHP to check.
+ * \returns Party member's MHP.
  */
 static int KQ_get_party_mhp(lua_State* L)
 {
@@ -2105,12 +2042,10 @@ static int KQ_get_party_mhp(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's MMP
+/*! \brief Get the party member's max magic points (MMP).
  *
- * This gets the person's maximum magic points
- *
- * \param   L::1 Which person's MMP to check
- * \returns person's MMP
+ * \param   L::1 Which party member's MMP to check.
+ * \returns Party member's MMP.
  */
 static int KQ_get_party_mmp(lua_State* L)
 {
@@ -2123,12 +2058,10 @@ static int KQ_get_party_mmp(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's MP
+/*! \brief Get the party member's current MP.
  *
- * This gets the person's current magic points
- *
- * \param   L::1 Which person's mp to check
- * \returns person's MP
+ * \param   L::1 Which party member's MP to check.
+ * \returns Party member's MP.
  */
 static int KQ_get_party_mp(lua_State* L)
 {
@@ -2141,12 +2074,10 @@ static int KQ_get_party_mp(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's mrp
+/*! \brief Get the party member's mrp.
  *
- * This gets the person's current mrp
- *
- * \param   L::1 Which person's mrp to check
- * \returns person's mrp
+ * \param   L::1 Which party member's mrp to check.
+ * \returns Party member's mrp.
  */
 static int KQ_get_party_mrp(lua_State* L)
 {
@@ -2159,12 +2090,10 @@ static int KQ_get_party_mrp(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's name
+/*! \brief Get the party member's name.
  *
- * This gets the name of one of the people in the party
- *
- * \param   L::1 Which party member to evaluate
- * \returns person's name
+ * \param   L::1 Which party member to evaluate.
+ * \returns Party member's name.
  */
 static int KQ_get_party_name(lua_State* L)
 {
@@ -2177,12 +2106,12 @@ static int KQ_get_party_name(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's needed experience
+/*! \brief Get party member's needed experience.
  *
- * This gets the experience still needed to get a level-up for a person
+ * This gets the experience still needed to get a level-up for a party member.
  *
- * \param   L::1 Which person's EXP to evaluate
- * \returns 0 when done
+ * \param   L::1 Which party member's EXP to evaluate.
+ * \returns 0 when done.
  */
 static int KQ_get_party_next(lua_State* L)
 {
@@ -2195,13 +2124,11 @@ static int KQ_get_party_next(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's res
+/*! \brief Get party member's resistance.
  *
- * This gets the person's resistance
- *
- * \param   L::1 Which person to check
- * \param   L::2 Which res to check
- * \returns person's res
+ * \param   L::1 Which party member to check.
+ * \param   L::2 Which res to check.
+ * \returns Party member's res.
  */
 static int KQ_get_party_res(lua_State* L)
 {
@@ -2215,13 +2142,11 @@ static int KQ_get_party_res(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's stats
+/*! \brief Get the party member's stats.
  *
- * This gets the person's stats
- *
- * \param   L::1 Which person to check
- * \param   L::2 Which stat to check
- * \returns person's stats
+ * \param   L::1 Which party member to check.
+ * \param   L::2 Which stat to check.
+ * \returns Party member's stats.
  */
 static int KQ_get_party_stats(lua_State* L)
 {
@@ -2235,12 +2160,10 @@ static int KQ_get_party_stats(lua_State* L)
     return 1;
 }
 
-/*! \brief Get person's experience
+/*! \brief Get the party member's experience.
  *
- * This gets the selected player's experience
- *
- * \param   L::1 Which person's EXP to get
- * \returns person's experience
+ * \param   L::1 Which party member's EXP to get.
+ * \returns Party member's experience.
  */
 static int KQ_get_party_xp(lua_State* L)
 {
@@ -2253,12 +2176,10 @@ static int KQ_get_party_xp(lua_State* L)
     return 1;
 }
 
-/*! \brief Get player ID
+/*! \brief Get player ID.
  *
- * This just gets the player's ID
- *
- * \param   L::1 Which character inquired about
- * \returns character's ID
+ * \param   L::1 Which character inquired about.
+ * \returns Character's ID.
  */
 static int KQ_get_pidx(lua_State* L)
 {
@@ -2268,12 +2189,10 @@ static int KQ_get_pidx(lua_State* L)
     return 1;
 }
 
-/*! \brief Get player progress
+/*! \brief Get the player's game progress.
  *
- * This just gets the player's progress through the game
- *
- * \param   L::1 Which Progress to evaluate
- * \returns the value of the Progress
+ * \param   L::1 Which Progress to evaluate.
+ * \returns The value of the Progress.
  */
 static int KQ_get_progress(lua_State* L)
 {
@@ -2328,12 +2247,12 @@ static int KQ_get_vy(lua_State* L)
     return 1;
 }
 
-/*! \brief Get translation for a message
+/*! \brief Get translation for a message.
  *
- * Usually called by the alias _.
+ * Usually called by the _() alias for gettext().
  *
- * \param   L::1 The original english message
- * \returns the translation for the current language
+ * \param   L::1 The original english message.
+ * \returns The translation for the current language.
  */
 static int KQ_gettext(lua_State* L)
 {
@@ -2371,9 +2290,8 @@ static int KQ_inn(lua_State* L)
 
 /*! \brief Is the argument a table or not?
  *
- * \param L::1 any Lua type
- * \returns 1 if it was a table, nil otherwise
- * \author PH
+ * \param   L::1 Any Lua type.
+ * \returns 1 If it was a table, NIL otherwise.
  */
 static int KQ_istable(lua_State* L)
 {
@@ -2416,14 +2334,12 @@ static int KQ_log(lua_State* L)
     return 0;
 }
 
-/*! \brief Get marker coordinates
+/*! \brief Get marker coordinates.
  *
- * \param L ::1 Marker name
- * \param L ::2 Offset of marker's x-coordinate
- * \param L ::3 Offset of marker's y-coordinate
- * \returns x,y coordinates if marker exists, otherwise nil
- * \date updated 20060630 -- Added extra functions
- *
+ * \param   L::1 Marker name.
+ * \param   L::2 Offset of marker's x-coordinate.
+ * \param   L::3 Offset of marker's y-coordinate.
+ * \returns Marker's x and y coordinates if found, else NIL.
  */
 static int KQ_marker(lua_State* L)
 {
@@ -2449,11 +2365,11 @@ static int KQ_mbox(lua_State* L)
     return 0;
 }
 
-/*! \brief Move the camera
+/*! \brief Move the camera.
  *
- * \param   L::1 x-coord to move the camera
- * \param   L::2 y-coord to move the camera
- * \param   L::3 time between each camera step
+ * \param   L::1 x-coord to move the camera.
+ * \param   L::2 y-coord to move the camera.
+ * \param   L::3 time between each camera step.
  */
 static int KQ_move_camera(lua_State* L)
 {
@@ -2482,19 +2398,19 @@ static int KQ_move_camera(lua_State* L)
     return 0;
 }
 
-/*! \brief Automatically find a path for the entity to take
+/*! \brief Automatically find a path for the entity to take.
  *
- * \param L::1 Index of entity to move
- * \param L::2 x-coord to go to
- * \param L::3 y-coord to go to
- * \param L::4 Kill entity after move is complete
- *             0 - Keep entity alive
- *             1 - Kill (remove) entity
+ * \param   L::1 Index of entity to move.
+ * \param   L::2 Tile x-coord to go to.
+ * \param   L::3 Tile y-coord to go to.
+ * \param   L::4 Kill (remove) entity from map after move is complete.
+ *             0 - Keep entity alive.
+ *             1 - Kill (remove) entity.
  *        Or:
- * \param L::2 Marker name to go to
- * \param L::3 Kill entity after move is complete
- *             0 - Keep entity alive
- *             1 - Kill (remove) entity
+ * \param   L::2 Marker name to go to.
+ * \param   L::3 Kill (remove) entity after move is complete.
+ *             0 - Keep entity alive.
+ *             1 - Kill (remove) entity.
  */
 static int KQ_move_entity(lua_State* L)
 {
@@ -2532,19 +2448,14 @@ static int KQ_move_entity(lua_State* L)
     return 0;
 }
 
-/*! \brief Show message on the screen
+/*! \brief Show message on the screen.
  *
- * Show a brief message for a set period of time, or
- * until ALT/action is pressed.
+ * Show a brief message for a set period of time, or until ALT/action is pressed.
  *
- * \param   L::1 String message to show
- * \param   L::2 Icon number or 255 for none (icons are displayed, for
- *               instance, when items are procured)
- * \param   L::3 Delay time (see kq_wait()) , or 0 for indefinite
+ * \param   L::1 String message to show.
+ * \param   L::2 Icon number or 255 for none (icons are displayed, for instance, when items are procured).
+ * \param   L::3 Delay time (see kq_wait()), or 0 for indefinite.
  * \returns 0 (no value returned)
- *
- * 20040308 PH added code to default missing L::2 parameter to 255 (instead of
- * 0)
  */
 static int KQ_msg(lua_State* L)
 {
@@ -2650,17 +2561,14 @@ static int KQ_pnum(lua_State* L)
     return 0;
 }
 
-/*! \brief Implement Lua prompt dialog
+/*! \brief Implement Lua prompt dialog.
  *
  * This is an interface from the old-style prompt to the new prompt_ex.
- * In the old style you could specify talk prompts or thought prompts,
- * and specify the number of options (n). The prompt would consist of (L-n)
- * text lines and n options, where L is the number of _non-blank_ lines,
- * up to 4.
  *
- * \date 20030506
- * \author PH
- * \bug Long strings will overflow the buffer
+ * In the old style you could specify talk prompts or thought prompts, and specify the number of options (n).
+ * The prompt would consist of (L-n) text lines and n options, where L is the number of _non-blank_ lines, up to 4.
+ *
+ * \bug Long strings will overflow the buffer.
  */
 static int KQ_prompt(lua_State* L)
 {
@@ -2812,7 +2720,7 @@ static int KQ_rest(lua_State* L)
     return 0;
 }
 
-/*! \brief Update the screen */
+/*! \brief Update the screen. */
 static int KQ_screen_dump(lua_State* L)
 {
     (void)L;
@@ -2820,14 +2728,15 @@ static int KQ_screen_dump(lua_State* L)
     return 0;
 }
 
-/*! \brief Select your team
+/*! \brief Select your team.
  *
- * Allow the player to modify the party
- * by selecting/changing some of the heroes.
+ * Allow the player to modify the party by selecting/changing some of the heroes.
  * \sa select_party()
- * \param L::1 Table containing IDs of heroes who might join the team
- * \returns Table containing heroes that weren't selected.
- * \author PH
+ *
+ * Pushes a table of heroes not selected onto the Lua state.
+ *
+ * \param   L::1 Table containing IDs of heroes who might join the team.
+ * \returns 1 (hero table containing heroes that weren't selected).
  */
 static int KQ_select_team(lua_State* L)
 {
@@ -2912,15 +2821,16 @@ static int KQ_set_background(lua_State* L)
     return 0;
 }
 
-/*! Set background tile
+/*! \brief Set background tile.
  *
- * Set the value of the background tile
- * \param L ::1 x-coord   \n
- *          ::2 y-coord   \n
- *          ::3 New value \n
- *          Or:           \n
- *          ::1 marker    \n
- *          ::2 New value
+ * Set the value of the background tile.
+ *
+ * \param   L::1 x-coord.
+ * \param   L::2 y-coord.
+ * \param   L::3 New tile value.
+ *        Or:
+ * \param   L::1 Marker.
+ * \param   L::2 New tile value.
  * \returns 0 (Nothing returned)
  */
 static int KQ_set_btile(lua_State* L)
@@ -3070,15 +2980,15 @@ static int KQ_set_ent_speed(lua_State* L)
     return 0;
 }
 
-/*! \brief Make entity go to a certain point
+/*! \brief Make entity go to a certain point.
  *
- * Enter target move mode. (MM_TARGET) Entity
- * will try and go to the specified point.
- * You still need to call wait_entity after this.
+ * Enter target move mode (MM_TARGET).
+ * Entity will try and go to the specified point.
+ * You still need to call wait_entity() after this.
  *
- * \param   L::1 entity to set
- * \param   L::2 x-coord (tile) to go to
- * \param   L::3 y-coord
+ * \param   L::1 Entity to set.
+ * \param   L::2 Tile's x-coord to go to.
+ * \param   L::3 Tile's y-coord to go to.
  */
 static int KQ_set_ent_target(lua_State* L)
 {
@@ -3127,16 +3037,15 @@ static int KQ_set_foreground(lua_State* L)
     return 0;
 }
 
-/*! Set foreground tile
+/*! \brief Set the value of a foreground tile.
  *
- * Set the value of the foreground tile
- * \param L ::1 x-coord   \n
- *          ::2 y-coord   \n
- *          ::3 New value \n
- *          Or:           \n
- *          ::1 marker    \n
- *          ::2 New value
- * \returns 0 (Nothing returned)
+ * \param   L::1 Tile's x-coord.
+ *          L::2 Tile's y-coord.
+ *          L::3 Foreground tile's new value.
+ *        Or:
+ *          L::1 Marker.
+ *          L::2 Foreground tile's new value.
+ * \returns 0 (Nothing returned).
  */
 static int KQ_set_ftile(lua_State* L)
 {
@@ -3187,9 +3096,9 @@ static int KQ_set_map_mode(lua_State* L)
 
 /* Change marker position, or if not found, create a new one at specified coords
  *
- * \param   L ::1 name to set marker to \n
- *            ::2 x-coord of marker     \n
- *            ::3 y-coord of marker     \n
+ * \param   L::1 Marker's name.
+ *          L::2 Marker's x-coord.
+ *          L::3 Marker's y-coord.
  */
 static int KQ_set_marker(lua_State* L)
 {
@@ -3211,12 +3120,12 @@ static int KQ_set_midground(lua_State* L)
 /*! Set middle tile
  *
  * Set the value of the middle tile layer
- * \param L ::1 x-coord   \n
- *          ::2 y-coord   \n
- *          ::3 New value \n
- *          Or:           \n
- *          ::1 marker    \n
- *          ::2 New value
+ * \param   L::1 Tile's x-coord.
+ *          L::2 Tile's y-coord.
+ *          L::3 New value.
+ *        Or:
+ *          L::1 Marker.
+ *          L::2 New value.
  * \returns 0 (Nothing returned)
  */
 static int KQ_set_mtile(lua_State* L)
@@ -3253,15 +3162,16 @@ static int KQ_set_noe(lua_State* L)
     return 0;
 }
 
-/*! Set obstruction
+/*! Set obstruction.
  *
- * Set the value of the obstruction
- * \param L ::1 x-coord   \n
- *          ::2 y-coord   \n
- *          ::3 New value \n
- *          Or:           \n
- *          ::1 marker    \n
- *          ::2 New value
+ * Set the value of the obstruction.
+ *
+ * \param   L::1 Tile's x-coord.
+ *          L::2 Tile's y-coord.
+ *          L::3 New value.
+ *        Or:
+ *          L::1 Marker.
+ *          L::2 New value.
  * \returns 0 (Nothing returned)
  */
 static int KQ_set_obs(lua_State* L)
@@ -3287,13 +3197,11 @@ static int KQ_set_obs(lua_State* L)
     return 0;
 }
 
-/*! \brief Set person's equipment (unused)
+/*! \brief Set party member's equipment (unused).
  *
- * This sets the person's current equipment
- *
- * \param   L::1 Which person to check
- * \param   L::2 Which equipment slot
- * \param   L::3 Equipment to set in slot L::2
+ * \param   L::1 Which party member to check.
+ * \param   L::2 Which equipment slot.
+ * \param   L::3 Equipment to set in slot L::2.
  * \returns 0 when done
  */
 static int KQ_set_party_eqp(lua_State* L)
@@ -3308,12 +3216,10 @@ static int KQ_set_party_eqp(lua_State* L)
     return 0;
 }
 
-/*! \brief Set person's HP
+/*! \brief Set party member's HP.
  *
- * This sets the person's current hit points
- *
- * \param   L::1 Which person's level to set
- * \param   L::2 Amount of HP to set to L::1
+ * \param   L::1 Which party member's HP to set.
+ * \param   L::2 Amount of HP to set to.
  * \returns 0 when done
  */
 static int KQ_set_party_hp(lua_State* L)
@@ -3327,12 +3233,10 @@ static int KQ_set_party_hp(lua_State* L)
     return 0;
 }
 
-/*! \brief Set person's level
+/*! \brief Set party member's level.
  *
- * This sets the person's current level
- *
- * \param   L::1 Which person's level to check
- * \param   L::2 Which level to set L::1 to
+ * \param   L::1 Which party member's level to check.
+ * \param   L::2 Which level to set L::1 to.
  * \returns 0 when done
  */
 static int KQ_set_party_lvl(lua_State* L)
@@ -3346,12 +3250,10 @@ static int KQ_set_party_lvl(lua_State* L)
     return 0;
 }
 
-/*! \brief Set person's level
+/*! \brief Set party member's maximum hit points (MHP).
  *
- * This sets the person's maximum hit points
- *
- * \param   L::1 Which person's MHP to set
- * \param   L::2 Amount of MHP to set to L::1
+ * \param   L::1 Which party member's MHP to set.
+ * \param   L::2 Amount of MHP to set to L::1.
  * \returns 0 when done
  */
 static int KQ_set_party_mhp(lua_State* L)
@@ -3365,12 +3267,10 @@ static int KQ_set_party_mhp(lua_State* L)
     return 0;
 }
 
-/*! \brief Set person's MMP
+/*! \brief Set party member's maximum magic points (MMP).
  *
- * This sets the person's maximum magic points
- *
- * \param   L::1 Which person's MMP to set
- * \param   L::2 Amont of MMP to set to L::1
+ * \param   L::1 Which party member's MMP to set.
+ * \param   L::2 Amont of MMP to set to L::1.
  * \returns 0 when done
  */
 static int KQ_set_party_mmp(lua_State* L)
@@ -3384,12 +3284,10 @@ static int KQ_set_party_mmp(lua_State* L)
     return 0;
 }
 
-/*! \brief Set person's MP
+/*! \brief Set party member's MP.
  *
- * This sets the person's current magic points
- *
- * \param   L::1 Which person's MP to set
- * \param   L::2 Amount of MP to set to L::1
+ * \param   L::1 Which party member's MP to set.
+ * \param   L::2 Amount of MP to set to L::1.
  * \returns 0 when done
  */
 static int KQ_set_party_mp(lua_State* L)
@@ -3403,12 +3301,10 @@ static int KQ_set_party_mp(lua_State* L)
     return 0;
 }
 
-/*! \brief Set person's mrp
+/*! \brief Set party member's mrp.
  *
- * This sets the person's current mrp
- *
- * \param   L::1 Which person's mrp to set
- * \param   L::2 Amount of mrp to set to L::1
+ * \param   L::1 Which party member's mrp to set.
+ * \param   L::2 Amount of mrp to set to L::1.
  * \returns 0 when done
  */
 static int KQ_set_party_mrp(lua_State* L)
@@ -3422,12 +3318,12 @@ static int KQ_set_party_mrp(lua_State* L)
     return 0;
 }
 
-/*! \brief Set person's needed experience
+/*! \brief Set party member's needed experience.
  *
- * This sets the experience still needed to get a level-up for a person
+ * This sets the experience still needed to get a level-up for a party member.
  *
- * \param   L::1 Which person's EXP to evaluate
- * \param   L::2 Amount of EXP to set
+ * \param   L::1 Which party member's EXP to evaluate.
+ * \param   L::2 Amount of EXP to set.
  * \returns 0 when done
  */
 static int KQ_set_party_next(lua_State* L)
@@ -3441,13 +3337,11 @@ static int KQ_set_party_next(lua_State* L)
     return 0;
 }
 
-/*! \brief Set person's res
+/*! \brief Set party member's resistance.
  *
- * This sets the person's resistance
- *
- * \param   L::1 Which person's res to set
- * \param   L::2 Which res to set
- * \param   L::3 Value to set to res
+ * \param   L::1 Which party member's res to set.
+ * \param   L::2 Which res to set.
+ * \param   L::3 Value to set to res.
  */
 static int KQ_set_party_res(lua_State* L)
 {
@@ -3461,13 +3355,11 @@ static int KQ_set_party_res(lua_State* L)
     return 0;
 }
 
-/*! \brief Set person's stats (unused)
+/*! \brief Set party member's stats (unused).
  *
- * This sets the person's stats
- *
- * \param   L::1 Which person to check
- * \param   L::2 Which stats id to evaluate
- * \param   L::3 Value to stick in L::2
+ * \param   L::1 Which party member to check.
+ * \param   L::2 Which stats id to evaluate.
+ * \param   L::3 Value to set in L::2.
  * \returns 0 when done
  */
 static int KQ_set_party_stats(lua_State* L)
@@ -3482,12 +3374,10 @@ static int KQ_set_party_stats(lua_State* L)
     return 0;
 }
 
-/*! \brief Set person's experience
+/*! \brief Set party member's experience.
  *
- * This sets the selected player's experience
- *
- * \param   L::1 Which person's EXP to set
- * \param   L::2 Amount of EXP to set
+ * \param   L::1 Which party member's EXP to set.
+ * \param   L::2 Amount of EXP to set.
  * \returns 0 when done
  */
 static int KQ_set_party_xp(lua_State* L)
@@ -3501,12 +3391,10 @@ static int KQ_set_party_xp(lua_State* L)
     return 0;
 }
 
-/*! \brief Set player progress
+/*! \brief Set player player's progress through the game.
  *
- * This just sets the player's progress through the game
- *
- * \param   L::1 The index of the Progress to evaluate
- * \param   L::2 The value of L::1
+ * \param   L::1 The index of the Progress to evaluate.
+ * \param   L::2 The value of L::1.
  * \returns 0 when done
  */
 static int KQ_set_progress(lua_State* L)
@@ -3566,15 +3454,14 @@ static int KQ_set_save(lua_State* L)
     return 0;
 }
 
-/*! Set shadow number at location
+/*! Set the shadow number for a specific tile.
  *
- * Set the value of the shadow
- * \param L ::1 x-coord   \n
- *          ::2 y-coord   \n
- *          ::3 New value \n
- *          Or:           \n
- *          ::1 marker    \n
- *          ::2 New value
+ * \param   L::1 Tile's x-coord.
+ *          L::2 Tile's y-coord.
+ *          L::3 New value.
+ *        Or:
+ *          L::1 Marker.
+ *          L::2 New value.
  * \returns 0 (Nothing returned)
  */
 static int KQ_set_shadow(lua_State* L)
@@ -3698,16 +3585,15 @@ static int KQ_set_can_use_item(lua_State* L)
     return 0;
 }
 
-/*! Set zone number at location
+/*! Set the zone value for a tile.
  *
- * Set the value of the zone
- * \param L ::1 x-coord   \n
- *          ::2 y-coord   \n
- *          ::3 New value \n
- *          Or:           \n
- *          ::1 marker    \n
- *          ::2 New value
- * \returns 0 (Nothing returned)
+ * \param   L::1 Tile's x-coord.
+ *          L::2 Tile's y-coord.
+ *          L::3 New value.
+ *        Or:
+ *          L::1 Marker.
+ *          L::2 New value.
+ * \returns 0 (Nothing returned).
  */
 static int KQ_set_zone(lua_State* L)
 {
@@ -3760,11 +3646,12 @@ static int KQ_shop(lua_State* L)
     return 0;
 }
 
-/*! \brief Create a shop from within a LUA script
+/*! \brief Create a shop from within a LUA script.
  *
- * Create a named shop (no items are added in this function)
- * \param L ::1 Shop name
- *          ::2 Shop index
+ * Create a named shop (no items are added in this function).
+ *
+ * \param   L::1 Shop name.
+ *          L::2 Shop index.
  * \returns 0 (nothing returned)
  */
 static int KQ_shop_create(lua_State* L)
@@ -3835,21 +3722,17 @@ static int KQ_portthought_ex(lua_State* L)
     return 0;
 }
 
-/*! Show stack trace
+/*! Show stack trace.
  *
- * This is called internally, after an error; its purpose is to show
- * the stack of functions leading up to the faulting one
+ * This is called internally, after an error; its purpose is to show the stack of functions leading up to the faulting
+ * one.
  *
- * Each line shows Stack level, source-code line, function type and function
- * name.
+ * Each line shows Stack level, source-code line, function type and function name.
  *
- * Without DEBUGMODE, this function cannot output a stack trace. It only shows
- * an error message on the game screen.
+ * Without DEBUGMODE, this function cannot output a stack trace. It only shows an error message on the game screen.
  *
- * \param L Lua state
- * \returns 0 (No value)
- * \author PH
- * \date 20060401
+ * \param   L Lua state.
+ * \returns 1, although I'm not sure what was set.
  */
 static int KQ_traceback(lua_State* theL)
 {
@@ -3923,20 +3806,18 @@ static int KQ_wait_for_entity(lua_State* L)
     return 0;
 }
 
-/*! \brief Warp to another part of the map
+/*! \brief Warp to another part of the map.
  *
- * Move the heroes to another part of the map, in
- * one transition, e.g when going through a door
- * \param L ::1 x-coord to go to \n
- *          ::2 y-coord to go to \n
- *          ::3 speed of the transition, defaults to '8' \n
- *          alternatively, \n
- *          ::1 marker  to go to \n
- *          ::2 speed of the transition, defaults to '8'
- * \author JB
- * \date ???
- * \date 20040731 PH Added default for speed
- * \date 20060317 PH Can now specify marker for location
+ * Move the heroes to another part of the map, in one transition, e.g when going through a door.
+ *
+ * \param   L::1 x-coord to go to.
+ * \param   L::2 y-coord to go to.
+ * \param   L::3 Speed of the transition, defaults to '8'.
+ *
+ * Alternatively:
+ *
+ * \param   L::1 Marker to go to.
+ * \param   L::2 Speed of the transition, defaults to '8'.
  */
 static int KQ_warp(lua_State* L)
 {
@@ -3970,19 +3851,6 @@ static int KQ_warp(lua_State* L)
     return 0;
 }
 
-/*! \brief Read in a complete file
- *
- * Read in a lua/lob file and execute it. Executing means
- * defining all the functions etc listed within
- * it.
- *
- * Note that lua files still have to be "prepared"
- * if they use any ITEM constants.
- *
- * \param L the Lua state
- * \param filename the full path of the file to read
- * \return 0 on success, 1 on error
- */
 int lua_dofile(lua_State* L, const char* filename)
 {
     auto r = std::make_unique<readerbuf_t>();
@@ -4012,13 +3880,13 @@ int lua_dofile(lua_State* L, const char* filename)
     return 0;
 }
 
-/*! \brief Obey a command typed in from the console
+/*! \brief Obey a command typed in from the console.
  *
  * Take the given string and execute it.
- * Prints out any returned values to the console
+ * Prints out any returned values to the console.
  *
- * \param L the Lua state
- * \param cmd the string to execute
+ * \param   L The Lua state.
+ * \param   cmd The string to execute.
  */
 static int kq_dostring(lua_State* L, const char* cmd)
 {
@@ -4073,13 +3941,6 @@ static int kq_dostring(lua_State* L, const char* cmd)
     return 0;
 }
 
-/*! \brief Obey a command typed in from the console
- *
- * Take the given string and execute it.
- * Prints out any returned values to the console
- *
- * \param cmd the string to execute
- */
 void do_console_command(const std::string& cmd)
 {
     if (theL != nullptr)
@@ -4092,11 +3953,12 @@ void do_console_command(const std::string& cmd)
     }
 }
 
-/*! \brief Print text to the console
+/*! \brief Print text to the console.
  *
- * Prints out the arg
+ * Prints out the arg.
  *
- * \param L Lua state
+ * \param   L The Lua state.
+ * \returns 0 (nothing pushed onto Lua state).
  */
 int KQ_print(lua_State* L)
 {
@@ -4104,12 +3966,12 @@ int KQ_print(lua_State* L)
     return 0;
 }
 
-/*! \brief Get party array
+/*! \brief Get party array.
  *
- * Implement the getting of character objects from the party
- * array.
- * \param L::1 which party member (0..numchrs-1)
- * \returns hero object
+ * Implement the getting of character objects from the party array.
+ *
+ * \param   L::1 which party member in range [0..numchrs-1].
+ * \returns Hero object.
  */
 static int KQ_party_getter(lua_State* L)
 {
@@ -4127,13 +3989,14 @@ static int KQ_party_getter(lua_State* L)
     return 1;
 }
 
-/*! \brief Set party array
+/*! \brief Set party array.
  *
  * Implement setting the character objects in the party array.
  * Set an element to nil to remove the relevant hero from the party.
- * \param L::1 which party member (0..PSIZE-1)
- * \param L::2 hero object
- * \returns 0 (no values returned)
+ *
+ * \param   L::1 Which party member [0..PSIZE-1].
+ * \param   L::2 Hero object.
+ * \returns 0 (nothing pushed onto Lua state).
  */
 static int KQ_party_setter(lua_State* L)
 {
@@ -4196,12 +4059,22 @@ static int KQ_party_setter(lua_State* L)
 }
 
 /*! \brief Create a bitmap sprite.
- * Loads a bitmap from disk and (optionally) makes a
- * sub-image from it.
- * Call as make_sprite(filename, [x, y, width, height]).
- * If dimensions are omitted it means the whole bitmap.
- * \param L Lua state
- * \returns 1 (the bitmap table object)
+ *
+ * Loads a bitmap from disk and (optionally) makes a sub-image from it.
+ * If dimensions are omitted, it means the whole bitmap.
+ *
+ * Call as:
+ *  make_sprite(filename, [x, y, width, height]).
+ *
+ * Expects either 1 or 5 parameters, else NIL is pushed to the Lua state.
+ * Otherwise, a new Lua table is created with the bitmap and dimensions.
+ *
+ * \param   L::1 Filename to load.
+ * \param   L::2 x Coord of sub-image.
+ * \param   L::3 y Coord of sub-image.
+ * \param   L::4 width Width of sub-image.
+ * \param   L::5 height Height of sub-image.
+ * \returns 1 (either NIL or the bitmap table object were pushed onto the Lua state).
  */
 static int KQ_make_sprite(lua_State* L)
 {
@@ -4252,6 +4125,16 @@ static int KQ_make_sprite(lua_State* L)
     return 1;
 }
 
+/*! \brief Load a bitmap table from the Lua state and render it.
+ *
+ * Call as:
+ *  drawsprite(bitmap, x, y)
+ *
+ * \param   L::1 Bitmap table.
+ * \param   L::2 x Screen x pixel coordinate to draw to.
+ * \param   L::2 y Screen y pixel coordinate to draw to.
+ * \returns 0 (nothing pushed onto Lua state).
+ */
 static int KQ_drawsprite(lua_State* L)
 {
     if (lua_istable(L, 1))
@@ -4288,18 +4171,6 @@ static int KQ_drawsprite(lua_State* L)
     return 0;
 }
 
-/*! \brief Process HERO1 and HERO2 pseudo-entity numbers
- *
- * Calculate what's the real entity number,
- * given an enemy number or HERO1 or HERO2
- *
- * 20040911 PH modified so now it will decode an object (e.g. entity[0] or
- * party[0])
- *
- * \param   L Lua state
- * \param   pos position on the lua stack
- * \returns real entity number
- */
 static int real_entity_num(lua_State* L, int pos)
 {
     if (lua_isnumber(L, pos))
