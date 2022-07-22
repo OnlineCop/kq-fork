@@ -20,11 +20,9 @@
 */
 
 /*! \file
- * \brief Functions to load/save to disk
+ * \brief Functions to load/save to disk.
  *
- * These functions are endian independent
- * \author PH
- * \date 20030629
+ * These functions are endian independent.
  */
 
 #include "disk.h"
@@ -38,10 +36,11 @@ KDisk Disk;
 using tinyxml2::XMLDocument;
 using tinyxml2::XMLElement;
 
-/** Generate a comma-separated list from a range specified by two iterators
- * \param begin the start of the range (inclusive)
- * \param end the end of the range (exclusive)
- * \returns a new comma-separated list
+/*! \brief Generate a comma-separated list from a range specified by two iterators.
+ *
+ * \param   begin The start of the range (inclusive).
+ * \param   end The end of the range (exclusive).
+ * \returns A new comma-separated list.
  */
 template<typename _InputIterator> static std::string make_list(_InputIterator begin, _InputIterator end)
 {
@@ -62,7 +61,7 @@ template<typename _InputIterator> static std::string make_list(_InputIterator be
     return ans;
 }
 
-/* Insert a list of things into the content of an element */
+/*! \brief Insert a list of things into the content of an element. */
 template<typename _InputIterator>
 static XMLElement* value_list(XMLElement* elem, _InputIterator begin, _InputIterator end)
 {
@@ -72,9 +71,13 @@ static XMLElement* value_list(XMLElement* elem, _InputIterator begin, _InputIter
     return elem;
 }
 
-/** Trim a range.
+/*! \brief Trim a range.
+ *
  * Shorten the given range to exclude any zero elements at the end.
- * \returns a new 'end' iterator
+ *
+ * \param   begin Where to begin iterating from (inclusive).
+ * \param   end Where to end iterating to (exclusive).
+ * \returns A new 'end' iterator.
  */
 template<typename _InputIterator> _InputIterator trim_range(_InputIterator begin, _InputIterator end)
 {
@@ -94,9 +97,13 @@ template<typename _InputIterator> _InputIterator trim_range(_InputIterator begin
     return begin;
 }
 
-/*! Check if a range is all default.
- * Scan a range, return true if all the elements are
- * the same as their 'default' values (e.g. 0 for integers)
+/*! \brief Check whether a range is all default.
+ *
+ * Scan a range, return whether all the elements are the same as their 'default' values (e.g. 0 for integers).
+ *
+ * \param   first Where to begin iterating from (inclusive).
+ * \param   last Where to end iterating to (exclusive).
+ * \returns False if any value is non-default; true otherwise.
  */
 template<typename _InputIterator> bool range_is_default(_InputIterator first, _InputIterator last)
 {
@@ -116,9 +123,9 @@ template<typename _InputIterator> bool range_is_default(_InputIterator first, _I
     return true;
 }
 
-/*! Iteration helper class.
- * Allows use of C++11's range-based for syntax to iterate
- * through child elements.
+/*! \brief Iteration helper class.
+ *
+ * Allows use of C++11's range-based for syntax to iterate through child elements.
  */
 typedef std::pair<XMLElement*, const char*> xiterator;
 
@@ -373,7 +380,6 @@ static XMLElement* addprop(XMLElement* parent, const char* name, const std::stri
     return addprop(parent, name, value.c_str());
 }
 
-/** Store spell info or nothing if all spells are 'zero' */
 int KDisk::store_spells_xml(const KPlayer* s, XMLElement* node)
 {
     auto startp = std::begin(s->spells);
@@ -452,8 +458,6 @@ static const std::map<std::string, ePIDX> id_lookup = { { "sensar", SENSAR },   
                                                         { "casandra", CASANDRA }, { "temmin", TEMMIN },
                                                         { "ayla", AYLA },         { "noslom", NOSLOM } };
 
-/** Store player inside a node that you supply.
- */
 int KDisk::save_player_xml(const KPlayer* s, XMLElement* node)
 {
     XMLDocument* doc = node->GetDocument();
