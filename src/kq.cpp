@@ -20,23 +20,16 @@
 */
 
 /*! \file
- * \brief Main file for KQ
+ * \brief Main file for KQ.
  *
- * \author JB
- * \date ????????
+ * This file includes the main() function, most of the global variables, and some other stuff, for example, controls,
+ * some initialization and timing.
  *
- * This file includes the main() function,
- * most of the global variables, and some other stuff,
- * for example, controls, some initialization and
- * timing.
+ * \note 23: I don't know if we're going to do anything to lessen the number of globals, but I tried to lay them out as
+ * attractively as possible until we figure out what all of them are for. Plus I tried to keep everything below 80
+ * characters a line, and labels what few variables struck me as obvious.
  *
- * \note 23: I don't know if we're going to do anything to lessen the number of
- * globals, but I tried to lay them out as attractively as possible until we
- * figure out what all of them are for. Plus I tried to keep everything below
- * 80 characters a line, and labels what few variables struck me as obvious
- *
- * Thanks due to Edge <hardedged@excite.com> and Caz Jones for BeOS joystick
- * fixes
+ * Thanks due to Edge <hardedged@excite.com> and Caz Jones for BeOS joystick fixes.
  */
 
 #include "kq.h"
@@ -230,7 +223,7 @@ int no_monsters = 0;
 int every_hit_999 = 0;
 #endif
 
-/*! \brief Timer Event structure
+/*! \brief Timer Event structure.
  *
  * Holds the information relating to a forthcoming event
  */
@@ -295,18 +288,18 @@ s_progress progresses[SIZE_PROGRESS] = {
 
 /*! \mainpage KQ - The Classic Computer Role-Playing Game
  *
- * Take the part of one of eight mighty heroes as you search for the
- * Staff of Xenarum.  Visit over twenty different locations, fight a
- * multitude of evil monsters, wield deadly weapons and cast powerful
- * spells. On your quest, you will find out how the Oracle knows
- * everything, who killed the former master of the Embers guild, why
- * no-one trusts the old man in the manor, and what exactly is
- * terrorizing the poor Denorians.
+ * Take the part of one of eight mighty heroes as you search for the Staff of Xenarum.
+ *
+ * Visit over twenty different locations, fight a multitude of evil monsters, wield deadly weapons and cast powerful
+ * spells.
+ *
+ * On your quest, you will find out how the Oracle knows everything, who killed the former master of the Embers guild,
+ * why no-one trusts the old man in the manor, and what exactly is terrorizing the poor Denorians.
  *
  * KQ is licensed under the GPL.
  */
 
-/*! \brief Main function
+/*! \brief Main function.
  *
  * Well, this one is pretty obvious.
  */
