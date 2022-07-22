@@ -1636,8 +1636,9 @@ int KDraw::text_length(eFontColor, const char* s)
 void KDraw::resize_window(int w, int h, bool win)
 {
     SDL_SetWindowFullscreen(window, win ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
-    if (!win) {
-	SDL_SetWindowSize(window, w, h);
+    if (!win)
+    {
+        SDL_SetWindowSize(window, w, h);
     }
 }
 
