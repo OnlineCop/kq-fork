@@ -998,27 +998,29 @@ void hero_init()
             {
                 for (int current_pixel = 0; current_pixel < cframes[fighter_index][0]->width; current_pixel++)
                 {
-                    if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 168)    // pal[168] == RGB{ 27, 54, 27, 0 }, lime (#6CD86C)
+                    // pal[168] == RGB{ 27, 54, 27, 0 }, lime (#6CD86C)
+                    // pal[175] == RGB{ 53, 63, 53, 0 }, light lime (#D4FCD4)
+                    if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 168)
                     {
                         cframes[fighter_index][6]->setpixel(current_pixel, current_line,
                                                             items[fighter_weapon_index].kol);
                     }
                     else
                     {
-                        if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 175)    // pal[175] == RGB{ 53, 63, 53, 0 }, light lime (#D4FCD4)
+                        if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 175)
                         {
                             cframes[fighter_index][6]->setpixel(current_pixel, current_line,
                                                                 items[fighter_weapon_index].kol + 4);
                         }
                     }
-                    if (cframes[fighter_index][7]->getpixel(current_pixel, current_line) == 168)    // pal[168] == RGB{ 27, 54, 27, 0 }, lime (#6CD86C)
+                    if (cframes[fighter_index][7]->getpixel(current_pixel, current_line) == 168)
                     {
                         cframes[fighter_index][7]->setpixel(current_pixel, current_line,
                                                             items[fighter_weapon_index].kol);
                     }
                     else
                     {
-                        if (cframes[fighter_index][7]->getpixel(current_pixel, current_line) == 175)    // pal[175] == RGB{ 53, 63, 53, 0 }, light lime (#D4FCD4)
+                        if (cframes[fighter_index][7]->getpixel(current_pixel, current_line) == 175)
                         {
                             cframes[fighter_index][7]->setpixel(current_pixel, current_line,
                                                                 items[fighter_weapon_index].kol + 4);

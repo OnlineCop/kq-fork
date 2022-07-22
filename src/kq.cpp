@@ -1390,12 +1390,17 @@ void KGame::startup()
         for (int16_t sfont_x = 0; sfont_x < 60; sfont_x++)
         {
             // Recolor each 'white' pixel found within sfonts[0] for each of the other fonts.
-            if (sfonts[0]->getpixel(sfont_x, sfont_y) == 15)    // pal[15]  == RGB{ 63, 63, 63, 0 }, white
+            // pal[15]  == RGB{ 63, 63, 63, 0 }, white
+            // pal[22]  == RGB{ 55, 0, 0, 0 }, red (#CD0000)
+            // pal[105] == RGB{ 54, 54, 0, 0 }, yellow (#D8D800)
+            // pal[39]  == RGB{ 0, 39, 0, 0 }, green (#009C00)
+            // pal[8]   == RGB{ 33, 33, 33, 0 }, grey (#848484)
+            if (sfonts[0]->getpixel(sfont_x, sfont_y) == 15)
             {
-                sfonts[1]->setpixel(sfont_x, sfont_y, 22);      // pal[22]  == RGB{ 55, 0, 0, 0 }, red (#CD0000)
-                sfonts[2]->setpixel(sfont_x, sfont_y, 105);     // pal[105] == RGB{ 54, 54, 0, 0 }, yellow (#D8D800)
-                sfonts[3]->setpixel(sfont_x, sfont_y, 39);      // pal[39]  == RGB{ 0, 39, 0, 0 }, green (#009C00)
-                sfonts[4]->setpixel(sfont_x, sfont_y, 8);       // pal[8]   == RGB{ 33, 33, 33, 0 }, grey (#848484)
+                sfonts[1]->setpixel(sfont_x, sfont_y, 22);
+                sfonts[2]->setpixel(sfont_x, sfont_y, 105);
+                sfonts[3]->setpixel(sfont_x, sfont_y, 39);
+                sfonts[4]->setpixel(sfont_x, sfont_y, 8);
             }
         }
     }
