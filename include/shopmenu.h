@@ -26,9 +26,39 @@
 #define NUMSHOPS 50
 #define SHOPITEMS 12
 
+/*! \brief Restore characters according to Inn effects.
+ *
+ * This is separate so that these effects can be done from anywhere.
+ *
+ * \param   do_delay Whether or not to wait during the darkness...
+ */
 void do_inn_effects(int do_delay);
+
+/*! \brief Display amount of gold.
+ *
+ * Display the party's funds.
+ */
 void draw_shopgold();
+
+/*! \brief Handle Inn functions.
+ *
+ * This is simply used for staying at the inn.
+ * Remember, it costs more money to stay if your characters require healing or resurrection.
+ *
+ * \param   iname Name of Inn.
+ * \param   gold_per_character Gold per character (base price).
+ * \param   pay If 0, staying is free.
+ */
 void inn(const char* iname, uint32_t gold_per_character, int pay);
+
+/*! \brief Main entry point to shop functions.
+ *
+ * The initial shop dialog.
+ * This calculates item quantities and then just asks if we're buying or selling.
+ *
+ * \param   shop_num Index of this shop.
+ * \returns 1 if shop is empty (no items to sell), 0 otherwise.
+ */
 int shop(int shop_num);
 
 struct s_shop
