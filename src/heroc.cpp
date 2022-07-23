@@ -674,7 +674,7 @@ static void draw_invokable(int dud)
  * Select a target for the hero to attack.
  *
  * \param   whom Index of player (see constants in progress.h)
- * \returns index of target
+ * \returns 1 if an attack was made, otherwise 0
  */
 static int hero_attack(int whom)
 {

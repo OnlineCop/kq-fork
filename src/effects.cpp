@@ -470,19 +470,22 @@ void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target
 
 void KEffects::fight_animation(size_t target_fighter_index, size_t fighter_index, int multiple_target)
 {
-    size_t magic_effect_index;
-    size_t fighter_weapon_index;
+    size_t effect_index;
 
     if (fighter_index < PSIZE)
     {
-        fighter_weapon_index = party[pidx[fighter_index]].eqp[EQP_WEAPON];
-        magic_effect_index = items[fighter_weapon_index].eff;
+        size_t fighter_weapon_index = party[pidx[fighter_index]].eqp[EQP_WEAPON];
+        effect_index = items[fighter_weapon_index].eff;
     }
     else
     {
-        magic_effect_index = fighter[fighter_index].current_weapon_type;
+        effect_index = fighter[fighter_index].current_weapon_type;
     }
-    Effects.draw_attacksprite(target_fighter_index, multiple_target, magic_effect_index, 1);
+    // If effect_index == 0 the player is attacking with no weapon
+    // and there is no animation effect for that.
+    if (effect_index > 0) { 
+        Effects.draw_attacksprite(target_fighter_index, multiple_target, effect_index, 1);
+    }
 }
 
 bool KEffects::is_active(size_t fighter_index)
