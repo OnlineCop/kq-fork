@@ -74,7 +74,7 @@ class KCombat
      * \param   hl Highlighted.
      * \param   SelectAll Select all.
      */
-    void battle_render(signed int plyr, size_t hl, int SelectAll);
+    void battle_render(int32_t plyr, size_t hl, int SelectAll);
 
     /*! \brief Display one fighter on the screen.
      *

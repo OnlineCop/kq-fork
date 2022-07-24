@@ -440,10 +440,12 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
             case M_QUICKEN:
                 aux = 0;
                 for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
+                {
                     if (fighter[fighter_index].IsAlive() && fighter[fighter_index].GetRemainingTime() != 2)
                     {
                         aux++;
                     }
+                }
                 if (aux > 0)
                 {
                     yes = 1;
@@ -480,10 +482,12 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
             case M_SLOW:
                 aux = 0;
                 for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+                {
                     if (fighter[fighter_index].IsAlive() && fighter[fighter_index].GetRemainingTime() != 1)
                     {
                         aux++;
                     }
+                }
                 if (aux > 0)
                 {
                     yes = 1;
@@ -492,10 +496,12 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
             case M_SLEEPALL:
                 aux = 0;
                 for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+                {
                     if (fighter[fighter_index].IsAlive() && fighter[fighter_index].IsAwake())
                     {
                         aux++;
                     }
+                }
                 if (aux > 0)
                 {
                     yes = 1;
@@ -504,11 +510,13 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
             case M_DIVINEGUARD:
                 aux = 0;
                 for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
+                {
                     if (fighter[fighter_index].IsAlive() && !fighter[fighter_index].IsShield() &&
                         !fighter[fighter_index].IsResist())
                     {
                         aux++;
                     }
+                }
                 if (aux > 0)
                 {
                     yes = 1;
@@ -517,10 +525,12 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
             case M_DOOM:
                 aux = 0;
                 for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
+                {
                     if (fighter[fighter_index].IsAlive() && fighter[fighter_index].hp >= fighter[fighter_index].mhp / 3)
                     {
                         aux++;
                     }
+                }
                 if (aux > 0)
                 {
                     yes = 1;
@@ -613,33 +623,35 @@ void KEnemy::LoadEnemies(const std::string& fullPath, Raster* enemy_gfx)
     std::ifstream infile(fullPath.c_str());
     if (infile.fail())
     {
-        Game.program_death(_("Could not load 1st enemy datafile!"));
+        Game.program_death(_("Could not load 1st enemy datafile!"), fullPath);
     }
     std::string line;
 
     // Loop through for every monster in allstat.mon
     while (std::getline(infile, line))
     {
-        int tmp;
-        int imagefile_x_coord, imagefile_y_coord;
+        if (line.empty() || line[0] == '#')
+        {
+            // Ignore empty lines, or lines starting with "#" so we can allow comments.
+            continue;
+        }
         std::istringstream iss(line);
 
         KFighter fighter_loaded_from_disk;
 
         // Enemy name
-        iss >> strbuf;
-        fighter_loaded_from_disk.name = strbuf;
+        iss >> fighter_loaded_from_disk.name;
 
         // Enemy index (ignored)
-        iss >> tmp;
-        if (tmp == 61)
-        {
-            printf("");
-        }
+        int index = 0;
+        iss >> index;
 
         // x-coord of image in datafile
+        int imagefile_x_coord = 0;
         iss >> imagefile_x_coord;
+
         // y-coord of image in datafile
+        int imagefile_y_coord = 0;
         iss >> imagefile_y_coord;
 
         // Image width
@@ -707,7 +719,7 @@ void KEnemy::LoadEnemies(const std::string& fullPath, Raster* enemy_gfx)
         iss >> fighter_loaded_from_disk.imb[1];
 
         // If the staff is under effect we assume Malkaron has a full set of opal armor
-        if (do_staff_effect && tmp == 65)
+        if (do_staff_effect && fighter_loaded_from_disk.name == "Malkaron")
         {
             fighter_loaded_from_disk.opal_power = 4;
         }
@@ -719,52 +731,57 @@ void KEnemy::LoadEnemies(const std::string& fullPath, Raster* enemy_gfx)
 
 void KEnemy::LoadEnemyStats(const std::string& fullFilename)
 {
-    int tmp;
     std::ifstream infile(fullFilename.c_str());
     if (infile.fail())
     {
-        Game.program_death(_("Could not load 2nd enemy datafile!"));
+        Game.program_death(_("Could not load 2nd enemy datafile!"), fullFilename);
     }
 
     size_t current_enemy = 0;
     std::string line;
     while (std::getline(infile, line))
     {
+        if (line.empty() || line[0] == '#')
+        {
+            // Ignore empty lines, or lines starting with "#" so we can allow comments.
+            continue;
+        }
+        if (current_enemy >= m_enemy_fighters.size())
+        {
+            std::string error = "LoadEnemyStats() tried to read in more enemies than LoadEnemies() provided.";
+            Game.program_death(error, fullFilename);
+        }
+
         KFighter& fighter_loaded_from_disk = m_enemy_fighters[current_enemy];
         std::istringstream iss(line);
 
         // Enemy name (ignored)
-        iss >> strbuf;
+        std::string name;
+        iss >> name;
 
         // Enemy index (ignored)
-        iss >> tmp;
-        if (tmp == 60)
-        {
-            printf("");
-        }
+        int index;
+        iss >> index;
 
         // Each of the 16 RES (resistances)
-        for (size_t i = 0; i < R_TOTAL_RES; i++)
+        for (auto& val : fighter_loaded_from_disk.res)
         {
-            int tempval;
-            iss >> tempval;
-            fighter_loaded_from_disk.res[i] = tempval;
+            iss >> val;
         }
         // Each of the 8 AI
-        for (size_t i = 0; i < 8; i++)
+        for (auto& val : fighter_loaded_from_disk.ai)
         {
-            int tempval;
-            iss >> tempval;
-            fighter_loaded_from_disk.ai[i] = tempval;
+            iss >> val;
         }
         // Each of the 8 AIP
-        for (size_t i = 0; i < 8; i++)
+        for (auto& val : fighter_loaded_from_disk.aip)
         {
-            int tempval;
-            iss >> tempval;
-            fighter_loaded_from_disk.aip[i] = tempval;
-            // iss >> fighter_loaded_from_disk.aip[i];
-            fighter_loaded_from_disk.atrack[i] = 0;
+            iss >> val;
+        }
+
+        for (auto& val : fighter_loaded_from_disk.atrack)
+        {
+            val = 0;
         }
         fighter_loaded_from_disk.hp = fighter_loaded_from_disk.mhp;
         fighter_loaded_from_disk.mp = fighter_loaded_from_disk.mmp;

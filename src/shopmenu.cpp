@@ -419,10 +419,12 @@ static void draw_sideshot(int selected_item)
             if (items[selected_item].icon == W_SBOOK || items[selected_item].icon == W_ABOOK)
             {
                 for (spell_index = 0; spell_index < 60; spell_index++)
+                {
                     if (party[pidx[pidx_index]].spells[spell_index] == items[selected_item].hnds)
                     {
                         draw_sprite(double_buffer, noway, wx, wy);
                     }
+                }
             }
         }
     }

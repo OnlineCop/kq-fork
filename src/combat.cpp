@@ -293,7 +293,7 @@ eAttackResult KCombat::attack_result(int ar, int dr)
     return crit_hit == 1 ? eAttackResult::ATTACK_CRITICAL : eAttackResult::ATTACK_SUCCESS;
 }
 
-void KCombat::battle_render(signed int plyr, size_t hl, int SelectAll)
+void KCombat::battle_render(int32_t plyr, size_t hl, int SelectAll)
 {
     size_t current_fighter_index = 0;
     static int curw = 0;
