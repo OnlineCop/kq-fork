@@ -483,7 +483,8 @@ void KEffects::fight_animation(size_t target_fighter_index, size_t fighter_index
     }
     // If effect_index == 0 the player is attacking with no weapon
     // and there is no animation effect for that.
-    if (effect_index > 0) { 
+    if (effect_index > 0)
+    {
         Effects.draw_attacksprite(target_fighter_index, multiple_target, effect_index, 1);
     }
 }
