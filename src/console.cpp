@@ -31,7 +31,7 @@
 #include <cassert>
 
 /*! \file
- * \brief Lua console for debugging
+ * \brief Lua console for debugging.
  * \author PH
  * \date 20070723
  */
@@ -57,11 +57,6 @@ KConsole::KConsole()
 {
 }
 
-/*! \brief Initialize the console state
- *
- * Set up the global state ready for using the console
- * \author PH
- */
 void KConsole::init(size_t num_lines, size_t num_columns)
 {
     this->inputline.clear();
@@ -72,13 +67,6 @@ void KConsole::init(size_t num_lines, size_t num_columns)
     this->lines.assign(num_lines, "");
 }
 
-/*! \brief Show the current console
- *
- * Display the current state of the console on the double
- * buffer. This includes a horizontal line. The console takes
- * up 320x120 pixels.
- * \author PH
- */
 void KConsole::display()
 {
     static const int max_y = 120;
@@ -113,21 +101,12 @@ void KConsole::display()
     }
 }
 
-/*! \brief Display a line on the console
- *
- * This displays a line of text, scrolling up all the other lines. No wrapping is performed.
- * \param l the text to display
- */
 void KConsole::scroll(const std::string& l)
 {
     lines.pop_front();
     lines.push_back(l);
 }
 
-/* \brief Enter console mode
- *
- * Run the console. Does not return until the console is closed.
- */
 void KConsole::run()
 {
     static const std::string get { "return progress." };
