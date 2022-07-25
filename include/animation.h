@@ -32,7 +32,7 @@ class KAnimation
 {
   public:
     void check_animation(int millis, uint16_t* tilex);
-    void add_animation(const KTmxAnimation&);
+    void add_animation(const KTmxAnimation& base);
     void clear_animations();
 
   private:

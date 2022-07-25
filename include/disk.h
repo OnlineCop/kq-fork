@@ -41,30 +41,39 @@
 class KDisk
 {
   public:
-    /** Load everything from a file */
+    /*! \brief Load everything from a file. */
     int load_game_from_file(const char* filename);
 
-    /** Save everything into a file. */
+    /*! \brief Save everything into a file. */
     int save_game_to_file(const char* filename);
 
     int save_fighters_to_file(const char* filename, KFighter* fighters, int count);
 
-    /*! Load an XML file but only to get the stats out of it.
-     * \param filename the file name
-     * \param stats where to put the stats
-     * \returns 0 if OK, otherwise 1
+    /*! \brief Load an XML file but only to get the stats out of it.
+     *
+     * \param   filename The file name.
+     * \param   stats Where to put the stats.
+     * \returns 0 if OK, otherwise 1.
      */
     int load_stats_only(const char* filename, s_sgstats& stats);
-    /*! Helper function: does a file exist? */
-    bool exists(const char*);
+
+    /*! \brief Helper function: does a file exist?
+     *
+     * \param   filename File to search for.
+     * \returns True if file exists in the file system.
+     */
+    bool exists(const char* filename);
 
   private:
-    /** Convert a comma-separated list of ints into a vector.
-     * Supplied string can be null or empty (giving an empty list)
-     * \param str a string containing the list
-     * \returns the numbers in a vector
+    /*! \brief Convert a comma-separated list of ints into a vector.
+     *
+     * Supplied string can be null or empty (giving an empty list).
+     *
+     * \param   str A string containing the list.
+     * \returns The numbers in a vector.
      */
     std::vector<int> parse_list(const char* str);
+
     int load_spelltypes_xml(KPlayer* s, tinyxml2::XMLElement* node);
     int load_resistances_xml(KPlayer* s, tinyxml2::XMLElement* node);
     int load_spells_xml(KPlayer* s, tinyxml2::XMLElement* node);
@@ -73,31 +82,33 @@ class KDisk
     int load_core_properties_xml(KPlayer* s, tinyxml2::XMLElement* node);
     int load_lup_xml(KPlayer* s, tinyxml2::XMLElement* node);
 
-    /** Store spell info or nothing if all spells are 'zero' */
+    /*! \brief Store spell info or nothing if all spells are 'zero'. */
     int store_spells_xml(const KPlayer* s, tinyxml2::XMLElement* node);
     int store_equipment_xml(const KPlayer* s, tinyxml2::XMLElement* node);
     int store_spelltypes_xml(const KPlayer* s, tinyxml2::XMLElement* node);
     int store_resistances_xml(const KPlayer* s, tinyxml2::XMLElement* node);
     int store_stats_xml(const KPlayer* s, tinyxml2::XMLElement* node);
     int store_lup_xml(const KPlayer* s, tinyxml2::XMLElement* node);
-    /** Store player inside a node that you supply. */
+    /*! \brief Store player inside a node that you supply. */
     int save_player_xml(const KPlayer* s, tinyxml2::XMLElement* node);
 
-    /** Get player (hero) data from an XML node.
-     * @param s the structure to write to
-     * @param node a node within an XML document.
-     * @returns 0 if OK otherwise -1
+    /*! \brief Get player (hero) data from an XML node.
+     *
+     * \param   s The structure to write to.
+     * \param   node A node within an XML document.
+     * \returns 0 if OK otherwise -1.
      */
     int load_s_player_xml(KPlayer* s, tinyxml2::XMLElement* node);
     int load_players_xml(tinyxml2::XMLElement* root);
 
-    /** Save all hero data into an XML node.
-     * \param heroes array of all heroes
-     * \param node a node to save into
-     * \returns 0 if error otherwise 1
+    /*! \brief Save all hero data into an XML node.
+     *
+     * \param   heroes Array of all heroes.
+     * \param   node A node to save into.
+     * \returns 0 if error otherwise 1.
      */
     int save_players_xml(tinyxml2::XMLElement* node);
-    /** Helper functions for various chunks of data that need saving or loading */
+    /*! \brief Helper functions for various chunks of data that need saving or loading. */
     int save_treasures_xml(tinyxml2::XMLElement* node);
     int load_treasures_xml(tinyxml2::XMLElement* node);
     int save_progress_xml(tinyxml2::XMLElement* node);
@@ -116,10 +127,10 @@ class KDisk
     void printprop(tinyxml2::XMLPrinter& out, const std::string& name, const std::string& value);
     int save_s_fighter(tinyxml2::XMLPrinter& out, const KFighter& f);
 
-    /** Load everything from a node */
+    /*! \brief Load everything from a node. */
     int load_game_xml(tinyxml2::XMLElement* node);
 
-    /** Save everything into a node */
+    /*! \brief Save everything into a node. */
     int save_game_xml(tinyxml2::XMLElement* node);
 
   protected:

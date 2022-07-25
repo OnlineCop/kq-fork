@@ -20,10 +20,7 @@
 */
 
 /*! \file
- * \brief Various hero and enemy selectors
- *
- * \author Josh Bolduc
- * \date ????????
+ * \brief Various hero and enemy selectors.
  */
 #include "selector.h"
 
@@ -56,28 +53,38 @@ enum eMiniMenu
 };
 
 /*  Internal functions  */
-static int can_attack(int);
-static eMiniMenu mini_menu(int mask);
+
+/*! \brief Check whether attacker is able to attack.
+ *
+ * Just checks the status of a fighter for purposes of targeting.
+ *
+ * \param   tgt Index into fighter array.
+ * \returns 0 if fighter is dead or has HP<1 or MHP<1, otherwise 1.
+ */
+static int can_attack(int tgt);
+
+/*! \brief Select the action of a new member wanting to join your party.
+ *
+ * Choose whether a party member will join, leave, or join and lead the current party.
+ *
+ * \param   omask Where the current selection curser is.
+ * \returns Player's selection.
+ */
+static eMiniMenu mini_menu(int omask);
+
+/*! \brief Player chose the new person to join the party.
+ *
+ * \param   id Index of character.
+ * \param   lead Whether they will lead the party or follow.
+ */
 static void party_add(ePIDX id, int lead);
+
+/*! \brief Player chose the person to remove from the party.
+ *
+ * \param   id Index of character.
+ */
 static void party_remove(ePIDX id);
 
-/*! \brief  Select an enemy automatically
- * \author  Josh Bolduc
- *
- * Automatically select an enemy.
- * Used in: enemyc.c and heroc.c
- *
- * \param   whom Particular enemy.  If csts !=NO_STS_CHECK then it is 75%
- *               likely to return 'whom'
- * \param   csts Only select characters whose .sts[csts]==0
- *               or special case if csts==S_BLESS then GetRemainingBless()<3
- *               or special case if csts==S_STRENGTH then GetRemainingStrength()<2
- *               or select only where HP<75% of MHP if csts==CURE_CHECK
- *               or select any if csts==NO_STS_CHECK
- *               (Never selects a dead enemy)
- * \returns enemy index (PSIZE..PSIZE+num_enemies-1) or PIDX_UNDEFINED if no
- * enemy found
- */
 int auto_select_enemy(int whom, int csts)
 {
     unsigned int i, number_enemies = 0;
@@ -190,17 +197,6 @@ int auto_select_enemy(int whom, int csts)
     return tmpd[kqrandom->random_range_exclusive(0, number_enemies)];
 }
 
-/*! \brief  Select a party member automatically
- * \author  Josh Bolduc
- *
- * Automatically select a hero.
- * Used in: enemyc.c and heroc.c
- *
- * \param   whom Person doing the action
- * \param   csts Only select characters whose .sts[csts] ==0 or select any
- *               if csts ==NO_STS_CHECK
- * \returns index of hero (0..numchrs-1) or PIDX_UNDEFINED if hero can't attack
- */
 int auto_select_hero(int whom, int csts)
 {
     unsigned int cntr = 0;
@@ -280,14 +276,6 @@ int auto_select_hero(int whom, int csts)
     return cntr == 0 ? PIDX_UNDEFINED : tmpd[kqrandom->random_range_exclusive(0, cntr)];
 }
 
-/*! \brief  Check if attacker is able to attack
- * \author  Josh Bolduc
- *
- * Just checks the status of a fighter for purposes of targetting.
- *
- * \param   tgt Index into fighter array
- * \returns 0 if fighter is dead or has HP<1 or MHP<1, otherwise 1
- */
 static int can_attack(int tgt)
 {
     if (fighter[tgt].mhp < 1 || fighter[tgt].hp < 1 || fighter[tgt].IsDead())
@@ -297,14 +285,6 @@ static int can_attack(int tgt)
     return 1;
 }
 
-/*! \brief  Select the action of a new member wanting to join your party
- *
- * Choose whether a party member will join, leave, or joins and lead the
- * current party.
- *
- * \param   omask - Where the current selection curser is
- * \returns player's selection
- */
 static eMiniMenu mini_menu(int omask)
 {
     static uint32_t mini_menu_x = 162;
@@ -398,11 +378,6 @@ static eMiniMenu mini_menu(int omask)
     }
 }
 
-/*! \brief Player chose the new person to join the party
- *
- * \param   id - Index of character
- * \param   lead - Whether or not they will lead the party or follow
- */
 static void party_add(ePIDX id, int lead)
 {
     KQEntity* t;
@@ -432,8 +407,6 @@ static void party_add(ePIDX id, int lead)
     }
 }
 
-/*! \brief Select the second party member to lead the group
- */
 void party_newlead()
 {
     // Shift all IDs to the right; shift last ID to the front.
@@ -447,10 +420,6 @@ void party_newlead()
     }
 }
 
-/*! \brief Player chose the person to remove from the party
- *
- * \param   id - Index of character
- */
 static void party_remove(ePIDX id)
 {
     for (size_t pidx_index = 0; pidx_index < numchrs; ++pidx_index)
@@ -467,23 +436,6 @@ static void party_remove(ePIDX id)
     }
 }
 
-/*! \brief Select player or players
- *
- * This is used to select a recipient or recipients for items/spells.
- * Used in itemmenu.c and masmenu.c.
- *
- * If targetting mode is TGT_NONE, just show the player but don't allow
- * any change in selection.
- *
- * \sa kdraw.draw_icon()
- * \sa camp_item_targetting()
- *
- * \param   csa - Mode (TGT_ALLY_ONE, TGT_ALLY_ONEALL, TGT_ALLY_ALL or TGT_NONE)
- * \param   icn - Icon to draw (see also kdraw.draw_icon() in draw.c)
- * \param   msg - Prompt message
- * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled or
- *          SEL_ALL_ALLIES if 'all' was selected (by pressing L or R)
- */
 ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
 {
     uint32_t ptr = 0;
@@ -565,24 +517,6 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
     return (select_all ? SEL_ALL_ALLIES : (ePIDX)ptr);
 }
 
-/*! \brief  Choose a target
- * \author  Josh Bolduc
- *
- * Choose a target.  This is used for all combat enemy target selection,
- * whether selected one or all enemies this is the function to use.
- *
- * Multi specifies what we can select:
- *   TGT_ENEMY_ONE indicates that we can select one target only.
- *   TGT_ENEMY_ONEALL indicates that we can select one target or all.
- *   TGT_ENEMY_ALL indicates that we can only select all enemies.
- * Used in: heroc.c hskill.c
- *
- * \param   attack_fighter_index Attacker (person doing the action)
- * \param   multi_target Target(s)
- * \returns enemy index (PSIZE..PSIZE+num_enemies-1) or PIDX_UNDEFINED if
- * cancelled
- *          or SEL_ALL_ENEMIES if 'all' was selected (by pressing U or D)
- */
 ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
 {
     if (!(multi_target == TGT_ENEMY_ONE || multi_target == TGT_ENEMY_ONEALL || multi_target == TGT_ENEMY_ALL))
@@ -673,18 +607,6 @@ ePIDX select_enemy(size_t attack_fighter_index, eTarget multi_target)
     }
 }
 
-/* \brief Select a hero or heroes
- *
- * This is used for selecting an allied target.
- * The multi parameter works the same here as it does for select_target above.
- * Used in heroc.c
- *
- * \param   target_fighter_index - person that is doing the action ??
- * \param   multi_target - mode (TGT_ALLY_ONE, TGT_ALLY_ONEALL, TGT_ALLY_ALL)
- * \param   can_select_dead - non-zero allows you to select a dead character
- * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled
- *          or SEL_ALL_ALLIES if 'all' was selected (by pressing U or D)
- */
 ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_select_dead)
 {
     if (!(multi_target == TGT_ALLY_ALL || multi_target == TGT_ALLY_ONE || multi_target == TGT_ALLY_ONEALL))
@@ -775,19 +697,6 @@ ePIDX select_hero(size_t target_fighter_index, eTarget multi_target, bool can_se
     }
 }
 
-/*! \brief Select your party
- *
- * This allows you to select the heroes in your party,
- * taking a list of available characters.
- * If there are two heroes active, you can select
- * which one is going to be the leader.
- * \author PH
- * \date 20030603
- * \param   avail[] Array of 'available' heroes
- * \param   n_avail Number of entries in avail
- * \param   numchrs_max The maximum number of heroes allowed in the party
- * \returns 1 if the party changed, 0 if cancelled
- */
 int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
 {
     constexpr auto BTN_EXIT = MAXCHRS + PSIZE;
@@ -1001,13 +910,6 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
     return 0;
 }
 
-/*! \brief Select player from main menu
- *
- * This is used to select a player from the main menu.
- * Used in menu.c
- *
- * \returns index of player (0..numchrs-1) or PIDX_UNDEFINED if cancelled
- */
 int select_player()
 {
     uint32_t stop = 0, ptr;

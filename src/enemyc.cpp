@@ -20,10 +20,7 @@
 */
 
 /*! \file
- * \brief Enemy combat
- *
- * \author JB
- * \date ??????
+ * \brief Enemy combat.
  */
 
 #include "enemyc.h"

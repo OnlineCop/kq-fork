@@ -45,34 +45,18 @@
 KMenu kmenu;
 
 /*! \file
- * \brief Main menu functions
- *
- * \author JB
- * \date ??????
+ * \brief Main menu functions.
  */
 
 KMenu::KMenu()
 {
 }
 
-/*! \brief Add a new quest into the list
- *
- * \param key The title of the item
- * \param text The text to display to the player regarding this quest
- */
 void KMenu::add_questinfo(const std::string& key, const std::string& text)
 {
     quest_list.push_back({ key, text });
 }
 
-/*! \brief Check for level-ups
- *
- * Checks for level ups.
- *
- * \param   pl - Player
- * \param   ls - Learned new spell
- * \returns true if new spell learned, false otherwise
- */
 bool KMenu::check_xp(int pl, int ls)
 {
     int stp = 0;
@@ -105,11 +89,6 @@ bool KMenu::check_xp(int pl, int ls)
     return z;
 }
 
-/*! \brief Draws the main menu
- *
- * Draw the menu when the player hits ENTER
- * 20040911 PH Added an extra line in the menu for "Quest Info"
- */
 void KMenu::draw_mainmenu(int swho)
 {
     size_t fighter_index;
@@ -145,14 +124,6 @@ void KMenu::draw_mainmenu(int swho)
     }
 }
 
-/*! \brief Draw player's stats
- *
- * Draw the terse stats of a single player.
- * \param   where Bitmap to draw onto
- * \param   player_index_in_party Player (index in party array) to show info for
- * \param   dx left-most x-coord of stats view
- * \param   dy top-most y-coord of stats view
- */
 void KMenu::draw_playerstat(Raster* where, int player_index_in_party, int dx, int dy)
 {
     int j;
@@ -180,39 +151,17 @@ void KMenu::draw_playerstat(Raster* where, int player_index_in_party, int dx, in
     Draw.print_font(where, dx + 144 - j, dy + 32, strbuf, FNORMAL);
 }
 
-/*! \brief Add experience to stats
- *
- * Yep.
- *
- * \param   pl Player
- * \param   the_xp Amount of experience to give
- * \param   ls Learned new spell (always 1?)
- * \returns whether or not player raised levels
- */
 bool KMenu::give_xp(int pl, int the_xp, int ls)
 {
     party[pl].xp += the_xp;
     return check_xp(pl, ls);
 }
 
-/*! \brief Remove all items
- *
- * Remove all items from the array
- * \sa ILIST
- * \author PH
- * \date 20050429
- */
 void KMenu::clear_quests()
 {
     quest_list.clear();
 }
 
-/*! \brief Levels up player
- *
- * Performs a level-up.
- *
- * \param   pr - Person leveling up
- */
 void KMenu::level_up(int pr)
 {
     int a, b = 0;
@@ -238,10 +187,6 @@ void KMenu::level_up(int pr)
     party[pr].mmp += b;
 }
 
-/*! \brief Main menu
- *
- * Main menu that calls all the other little menus :)
- */
 void KMenu::menu()
 {
     int stop = 0, ptr = 0, z = -1;
@@ -328,9 +273,6 @@ void KMenu::menu()
     }
 }
 
-/*! \brief Do the Quest Info menu
- *  Show the current list of quest information items
- */
 void KMenu::display_quest_window()
 {
     // Show up to this number of quest entries in the menu.
@@ -431,10 +373,6 @@ void KMenu::display_quest_window()
     }
 }
 
-/*! \brief Converts fighter-->character
- *
- * This converts from fighter to player structure.  Used when leaving combat.
- */
 void KMenu::revert_equipstats()
 {
     const size_t end_fighter_index = (numchrs > PSIZE) ? PSIZE : numchrs;
@@ -477,13 +415,6 @@ void KMenu::revert_equipstats()
     }
 }
 
-/*! \brief Show special items
- *
- * List any special items that the party has.
- *
- * WK: This function would be more appropriate in a script, such as global.lua.
- * This function is preventing me from completely removing progress.h
- */
 void KMenu::spec_items()
 {
     int a, num_items = 0, stop = 0, ptr = 0;
@@ -548,11 +479,6 @@ void KMenu::spec_items()
     }
 }
 
-/*! \brief Draw a player's status screen
- *
- * Draw the verbose stats of a single player.
- * \param   fighter_index - Character to draw (index in pidx array)
- */
 void KMenu::status_screen(size_t fighter_index)
 {
     int stop = 0;
@@ -694,11 +620,6 @@ void KMenu::status_screen(size_t fighter_index)
     }
 }
 
-/*! \brief Copy party-->fighter structure
- *
- * Just used to convert all characters in party from party structure
- * to fighter structure.
- */
 void KMenu::update_equipstats()
 {
     size_t fighter_index;
@@ -709,14 +630,6 @@ void KMenu::update_equipstats()
     }
 }
 
-/* \brief Convert character-->fighter structure
- *
- * This function converts from the party structure to fighter structure.
- * This is used for combat and for menu functions.
- *
- * \param   who - Index of player to convert
- * \returns current_fighter (fighter structure) which uses KFighter's move semantics.
- */
 KFighter player2fighter(int who)
 {
     KFighter current_fighter;

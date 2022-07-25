@@ -28,20 +28,16 @@
 struct PACKFILE;
 
 /*! \file
- * \brief Contains functions specific to bounded areas
- * \author TT
- * \date 20060720
+ * \brief Contains functions specific to bounded areas.
  */
 
-/*! \brief Bounding area box
+/*! \brief Bounding area box.
  *
  * A boundary is a viewable area on the map.
- * These are set up in the map editor to remove the need to call set_view
- * in the scripts. If the player is inside a bounding box' coordinate, then
- * the map will only redraw those tiles, else it will redraw everything on the
- * map.
- * \author TT
- * \date 20060710
+ *
+ * These are set up in the map editor to remove the need to call set_view in the scripts.
+ * If the player is inside a bounding box' coordinate, then the map will only redraw those tiles, else it will redraw
+ * everything on the map.
  */
 struct KBound
 {
@@ -62,13 +58,10 @@ struct KBound
     short btile;
 };
 
-/*! \brief Container holding array of bounds
+/*! \brief Container holding array of bounds.
  *
- * This contains an array of bounds, and the number of bounds, to simplify
- * passing around the size and elements separately.
- *
- * \author OC
- * \date 20101017
+ * This contains an array of bounds, and the number of bounds, to simplify passing around the size and elements
+ * separately.
  */
 class KBounds
 {
@@ -81,11 +74,18 @@ class KBounds
     {
     }
 
-    // Add a new bound to the map. Returns true on success, or false on failure.
+    /*! \brief Add a new bound to the map.
+     *
+     * \param   bound New bound to add to the map.
+     * \returns True on success, or false if bound could not be added.
+     */
     bool Add(KBound&& bound);
 
-    // Return a pointer to the bound at the given @param index. If index is
-    // invalid, returns null.
+    /*! \brief Return a pointer to the bound at the given index.
+     *
+     * \param   index Index within m_bounds[] array of the desired bound.
+     * \returns Pointer to the specified bound, or NULL on error.
+     */
     KBound* GetBound(size_t index);
 
     size_t Size()
@@ -93,26 +93,24 @@ class KBounds
         return m_bounds.size();
     }
 
-    /*! \brief Determine whether given coordinates are within any bounding boxes
+    /*! \brief Determine whether given coordinates are within any bounding boxes.
      *
-     * \param   outIndex - Index of found bounding area
-     * \param   left - Left edge of current bounding area
-     * \param   top - Top edge of current bounding area
-     * \param   right - Right edge of current bounding area
-     * \param   bottom - Bottom edge of current bounding area
-     *
-     * \returns true if the specified coordinate was found within a bounding area, else false.
+     * \param   outIndex Index of found bounding area.
+     * \param   left Left edge of current bounding area.
+     * \param   top Top edge of current bounding area.
+     * \param   right Right edge of current bounding area.
+     * \param   bottom Bottom edge of current bounding area.
+     * \returns True if the specified coordinate was found within a bounding area, else false.
      */
     bool IsBound(size_t& outIndex, int left, int top, int right, int bottom) const;
 
-    /*! \brief Determine whether given coordinates are within any bounding boxes
+    /*! \brief Determine whether given coordinates are within any bounding boxes.
      *
-     * \param   left - Left edge of current bounding area
-     * \param   top - Top edge of current bounding area
-     * \param   right - Right edge of current bounding area
-     * \param   bottom - Bottom edge of current bounding area
-     *
-     * \returns pointer to bounds or null
+     * \param   left Left edge of current bounding area.
+     * \param   top Top edge of current bounding area.
+     * \param   right Right edge of current bounding area.
+     * \param   bottom Bottom edge of current bounding area.
+     * \returns Pointer to bounds or NULL if not within any bounding box.
      */
     const KBound* IsBound(int left, int top, int right, int bottom) const;
 

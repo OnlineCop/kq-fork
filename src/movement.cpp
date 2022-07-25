@@ -20,13 +20,9 @@
 */
 
 /*! \file
- * \brief NPC movement routines
+ * \brief NPC movement routines.
  *
- * Set of functions to allow NPCs move to a certain spot without having
- * to tell the directions.
- *
- * \author RB
- * \date March 2005
+ * Set of functions to allow NPCs move to a certain spot without having to tell them directions.
  */
 
 #include "movement.h"
@@ -48,9 +44,39 @@ struct Cell
 
 using CellQueue = std::queue<Cell>;
 
-static int compose_path(const int*, uint32_t, uint32_t, char*, size_t);
-static int minimize_path(const std::vector<char>&, char*, size_t);
-static void search_paths(int*, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
+/*! \brief Generates the solution path.
+ *
+ * \param[in] map The map with the paths.
+ * \param[in] target_x Target x coordinate.
+ * \param[in] target_y Target y coordinate.
+ * \param[out] buffer Buffer to store the solution.
+ * \param[in] size Size of the solution buffer.
+ * \returns If the solution was copied.
+ *          0 The solution was copied.
+ *          1 The buffer was too small for the solution to be copied.
+ *          2 There was no solution, or internal error.
+ */
+static int compose_path(const int* map, uint32_t x, uint32_t y, char* buffer, size_t size);
+
+/*! \brief Unused. */
+static int minimize_path(const std::vector<char>& /*unused*/, char* /*unused*/, size_t /*unused*/);
+
+/*! \brief Internal path search routine.
+ *
+ * This function finds the shortest path to the target point.
+ * Once it returns 0, a path was successfully found.
+ *
+ * \param[in,out] map The map in where to write the paths.
+ * \param[in] target_x The x coordinate of the target point.
+ * \param[in] target_y The y coordinate of the target point.
+ * \param[in] start_x The minimum value of the x axis.
+ * \param[in] start_y The minimum value of the y axis.
+ * \param[in] limit_x The maximum value of the x axis.
+ * \param[in] limit_y The maximum value of the y axis.
+ *
+ */
+static void search_paths(int* map, uint32_t target_x, uint32_t target_y, uint32_t start_x, uint32_t start_y,
+                         uint32_t limit_x, uint32_t limit_y);
 
 enum class ePathResult
 {
@@ -84,19 +110,6 @@ static std::string append(char& current, int& rep, char c)
     return result;
 }
 
-/*! \brief Generates the solution path.
- *
- * \param map [in]      The map with the paths.
- * \param target_x [in] Target x coordinate.
- * \param target_y [in] Target y coordinate.
- * \param buffer [out]  Buffer to store the solution.
- * \param size [in]     Size of the solution buffer.
- *
- * \returns If the solution was copied.
- *          0 The solution was copied.
- *          1 The buffer was too small for the solution to be copied.
- *          2 There was no solution, or internal error.
- */
 static int compose_path(const int* map, uint32_t x, uint32_t y, char* buffer, size_t size)
 {
     int value = map[Game.Map.Clamp(x, y)];
@@ -110,7 +123,7 @@ static int compose_path(const int* map, uint32_t x, uint32_t y, char* buffer, si
     }
     while (value > 0)
     {
-        /*  move as many squares up as possible  */
+        /* Move as many squares up as possible. */
         while ((y > 0) && (map[Game.Map.Clamp(x, y - 1)] == (value - 1)) && (value > 0))
         {
             value--;
@@ -118,7 +131,7 @@ static int compose_path(const int* map, uint32_t x, uint32_t y, char* buffer, si
             result += append(current_direction, repetition, 'U');
         }
 
-        /*  move as many squares left as possible  */
+        /* Move as many squares left as possible. */
         while ((x > 0) && (map[Game.Map.Clamp(x - 1, y)] == (value - 1)) && (value > 0))
         {
             value--;
@@ -126,7 +139,7 @@ static int compose_path(const int* map, uint32_t x, uint32_t y, char* buffer, si
             result += append(current_direction, repetition, 'L');
         }
 
-        /*  move as many squares down as possible  */
+        /* Move as many squares down as possible. */
         while ((y < Game.Map.g_map.ysize - 1) && (map[Game.Map.Clamp(x, y + 1)] == (value - 1)) && (value > 0))
         {
             value--;
@@ -134,7 +147,7 @@ static int compose_path(const int* map, uint32_t x, uint32_t y, char* buffer, si
             result += append(current_direction, repetition, 'D');
         }
 
-        /*  move as many squares right as possible  */
+        /* Move as many squares right as possible. */
         while ((x < Game.Map.g_map.xsize - 1) && (map[Game.Map.Clamp(x + 1, y)] == (value - 1)) && (value > 0))
         {
             value--;
@@ -161,11 +174,10 @@ static int compose_path(const int* map, uint32_t x, uint32_t y, char* buffer, si
 
 /*! \brief Generates an internal map.
  *
- * The function generates a map setting to -1 any square that is blocked
- * by either an object or an entity.
- * The values will eventually be the number of steps to get to the target
- * so initially they are all set to INT_MAX (this acts as 'infinity')
- * because we don't know yet.
+ * The function generates a map setting to -1 any square that is blocked by either an object or an entity.
+ *
+ * The values will eventually be the number of steps to get to the target, so initially they are all set to INT_MAX
+ * (this acts as 'infinity') because we don't know yet.
  *
  * \param[in,out] map The map where the result will be copied.
  */
@@ -202,25 +214,6 @@ static std::unique_ptr<int[]> copy_map()
     return std::move(map);
 }
 
-/*! \brief Path search implementation for KQ
- *
- * Call this function to calculate the shortest path between a given
- * NPC and a target point.
- *
- * \param entity_id [in] The ID of the entity moving around.
- * \param source_x [in]  The x coordinate of the source point.
- * \param source_y [in]  The y coordinate of the source point.
- * \param target_x [in]  The x coordinate of the target point.
- * \param target_y [in]  The y coordinate of the target point.
- * \param buffer [out]   A buffer where the result will be stored.
- * \param size [in]      The size of the result buffer.
- *
- * \returns Whether it could or not find the path.
- *          0 Success,
- *          1 No path found,
- *          2 Path found but result buffer too small to hold the answer.
- *          3 Misc error.
- */
 int find_path(size_t entity_id, uint32_t source_x, uint32_t source_y, uint32_t target_x, uint32_t target_y,
               char* buffer, uint32_t size)
 {
@@ -243,20 +236,6 @@ int find_path(size_t entity_id, uint32_t source_x, uint32_t source_y, uint32_t t
     }
 }
 
-/*! \brief Internal path search routine.
- *
- * This function finds the shortest path to the target
- * point. Once it returns 0, a path was successfully found.
- *
- * \param map [in,out] The map in where to write the paths.
- * \param target_x [in] The x coordinate of the target point.
- * \param target_y [in] The y coordinate of the target point.
- * \param start_x [in] The minimum value of the x axis.
- * \param start_y [in] The minimum value of the y axis.
- * \param limit_x [in] The maximum value of the x axis.
- * \param limit_y [in] The maximum value of the y axis.
- *
- */
 static void search_paths(int* map, uint32_t target_x, uint32_t target_y, uint32_t start_x, uint32_t start_y,
                          uint32_t limit_x, uint32_t limit_y)
 {

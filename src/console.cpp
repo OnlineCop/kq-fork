@@ -32,8 +32,6 @@
 
 /*! \file
  * \brief Lua console for debugging.
- * \author PH
- * \date 20070723
  */
 
 enum eRunConsoleKeys

@@ -20,9 +20,7 @@
 */
 
 /*! \file
- * \brief Bounding areas
- * \author TT
- * \date 20060720
+ * \brief Bounding areas.
  */
 
 #include "bounds.h"

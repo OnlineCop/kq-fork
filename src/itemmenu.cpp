@@ -20,10 +20,7 @@
 */
 
 /*! \file
- * \brief Item menu code
- *
- * \author JB
- * \date ????????
+ * \brief Item menu code.
  */
 
 #include "itemmenu.h"
@@ -49,9 +46,33 @@
 char item_act;
 
 /* Internal functions */
-static void draw_itemmenu(int, int, int);
+
+/*! \brief Display menu.
+ *
+ * Displays the party's list of items.
+ *
+ * \param   ptr Location of the cursor.
+ * \param   pg Item menu page number.
+ * \param   sl 1 if selecting an action, 0 if selecting an item to use/drop.
+ */
+static void draw_itemmenu(int ptr, int pg, int sl);
+
+/*! \brief Sort the items in inventory.
+ *
+ * This runs through all the items in your inventory and sorts them.
+ * Sorting means grouping by type and putting the groups in the order specified by 'tt' below.
+ */
 static void sort_items();
-static void camp_item_targetting(int);
+
+/*! \brief Use item on selected target.
+ *
+ * Do target selection for using an item and then use it.
+ *
+ * \param   pp Item index in g_inv[] array.
+ */
+static void camp_item_targetting(int pp);
+
+/*! \brief Unused. */
 static void sort_inventory();
 
 static void camp_drop_item(int ptr, int pptr)
@@ -83,11 +104,6 @@ static void camp_drop_item(int ptr, int pptr)
     }
 }
 
-/*! \brief Process the item menu
- *
- * This screen displays the list of items that the character has, then
- * waits for the player to select one.
- */
 void camp_item_menu()
 {
     int ptr = 0, pptr = 0, sel = 0;
@@ -216,12 +232,6 @@ void camp_item_menu()
     }
 }
 
-/*! \brief Use item on selected target
- *
- * Do target selection for using an item and then use it.
- *
- * \param   pp Item index
- */
 static void camp_item_targetting(int pp)
 {
     int t1 = g_inv[pp].item;
@@ -272,14 +282,6 @@ int check_inventory(size_t item_id, int item_quantity)
     return 1;
 }
 
-/*! \brief Display menu
- *
- * This displays the party's list of items.
- *
- * \param   ptr Location of the cursor
- * \param   pg Item menu page number
- * \param   sl 1 if selecting an action, 0 if selecting an item to use/drop
- */
 static void draw_itemmenu(int ptr, int pg, int sl)
 {
     Draw.menubox(double_buffer, 72, 12, 20, 1, BLUE);
@@ -340,17 +342,6 @@ static void draw_itemmenu(int ptr, int pg, int sl)
     }
 }
 
-/*! \brief Perform item effects
- *
- * Perform item effects.  This is kind of clunky, but it works.
- *
- * \param   attack_fighter_index Index of attacker
- * \param   fighter_index  Index of item to use
- * \param   ti Index of target(s)
- * \returns ITEM_EFFECT_INEFFECTIVE if ineffective (cannot use item)
- * \returns ITEM_EFFECT_SUCCESS_SINGLE if success (1 target)
- * \returns ITEM_EFFECT_SUCCESS_MULTIPLE if success (multiple targets)
- */
 eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index, int ti)
 {
     int tmp = 0, i, a, b, z, san = 0, sen = 0;
@@ -760,18 +751,12 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
     return ITEM_EFFECT_SUCCESS_SINGLE;
 }
 
-/*! \brief Remove item from inventory
- *
- * Remove an item from inventory and re-sort the list.
- *
- * \param   inventory_index Index of item to remove
- * \param   qi Quantity of item
- */
 void remove_item(size_t inventory_index, int qi)
 {
     g_inv.removeIndex(inventory_index, qi);
 }
-// Sort helper: return true if a should come before b
+
+// Sort helper: return true if a should come before b.
 static bool item_comp(const s_inventory& a, const s_inventory& b)
 {
     static const int type_seq[] = { 2, 3, 4, 5, 6, 7, 1 };
@@ -791,12 +776,7 @@ static bool item_comp(const s_inventory& a, const s_inventory& b)
         return a.item < b.item;
     }
 }
-/*! \brief Sort the items in inventory
- *
- * This runs through all the items in your inventory and sorts them.
- * Sorting means grouping by type and putting the groups in the
- * order specified by 'tt' below.
- */
+
 static void sort_items()
 {
     KInventory::Items t_inv;
@@ -808,15 +788,6 @@ static void sort_items()
     g_inv.setAll(std::move(t_inv));
 }
 
-/*! \brief Use up an item, if we have any
- * \author PH
- * \date 20030102
- *
- * Go through the inventory; if there is one or more of an item, remove it.
- *
- * \param   item_id The identifier (I_* constant) of the item.
- * \returns 1 if we had it, 0 otherwise
- */
 int useup_item(int item_id)
 {
     return g_inv.remove(item_id) ? 1 : 0;

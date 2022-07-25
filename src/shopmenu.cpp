@@ -20,10 +20,7 @@
 */
 
 /*! \file
- * \brief Handles shops
- *
- * \author JB
- * \date ????????
+ * \brief Handles shops.
  */
 
 #include "shopmenu.h"
@@ -46,11 +43,9 @@
 #include <cstdio>
 #include <cstring>
 
-/* Winter Knight: I'm making it so shops are declared in scripts, rather than
-in the code. It is part of my "separate the engine and the data" campaign. */
-
-/* highest valid shops[] index + 1. Equals number of shops declared if indexes
-    are declared in order. */
+/* Highest valid shops[] index + 1.
+ * Equals number of shops declared if indexes are declared in order.
+ */
 uint16_t num_shops = 0;
 
 s_shop shops[NUMSHOPS]; /* Initialized by init.lua:init_shop() */
@@ -59,26 +54,63 @@ s_shop shops[NUMSHOPS]; /* Initialized by init.lua:init_shop() */
 static uint32_t num_shop_items;
 
 /*  internal variables  */
-/*! \brief Current shop index */
+/*! \brief Current shop index. */
 static uint8_t shop_no;
 
 /*  internal functions  */
-static void draw_sideshot(int);
-static void buy_menu();
-static void buy_item(int, int);
-static void sell_menu();
-static void sell_howmany(int, size_t);
-static void sell_item(int, int);
 
-/*! \brief Actually purchase the item
+/*! \brief Show status info.
  *
- * This is used after selecting an item, from the above
- * menu, to determine who to give it to.  Then it gives
- * it to them and deducts the cash.
+ * Well, it used to be on the side, but now it's on the bottom.
  *
- * \param   how_many Quantity
- * \param   item_no Index of item
+ * This displays the characters and whether or not they are able to use/equip
+ * what is being looked at, and how it would improve their stats (if applicable).
+ *
+ * \param   selected_item Item being looked at.
  */
+static void draw_sideshot(int selected_item);
+
+/*! \brief Show items to buy.
+ *
+ * Show the player a list of items which can be bought,
+ * and wait for him/her to choose something or exit.
+ */
+static void buy_menu();
+
+/*! \brief Actually purchase the item.
+ *
+ * This is used after selecting an item to determine who to give it to.
+ * It deducts the money after it gives it to that party member.
+ *
+ * \param   how_many Quantity to purchase.
+ * \param   item_no Index of item in s_shop::items[] and s_shop::items_current[] arrays.
+ */
+static void buy_item(int how_many, int item_no);
+
+/*! \brief Show items that can be sold.
+ *
+ * Display a list of items that are in inventory and ask which item or items to sell.
+ */
+static void sell_menu();
+
+/*! \brief Ask player the quantity to sell.
+ *
+ * Prompt the player how many of the current item to sell.
+ *
+ * \param   item_no Index of item in inventory.
+ * \param   inv_page Page of the inventory.
+ */
+static void sell_howmany(int item_no, size_t inv_page);
+
+/*! \brief Actually sell item.
+ *
+ * Confirm the price of the sale with the player, and then complete the transaction.
+ *
+ * \param   itno Index of item.
+ * \param   qty_being_sold Quantity being sold.
+ */
+static void sell_item(int itno, int qty_being_sold);
+
 static void buy_item(int how_many, int item_no)
 {
     int z = 0, l, stop = 0, cost;
@@ -122,11 +154,6 @@ static void buy_item(int how_many, int item_no)
     return;
 }
 
-/*! \brief Show items to buy
- *
- * Show the player a list of items which can be bought
- * and wait for him/her to choose something or exit.
- */
 static void buy_menu()
 {
     bool stop = false;
@@ -250,12 +277,6 @@ static void buy_menu()
     }
 }
 
-/*! \brief Restore characters according to Inn effects.
- *
- * This is separate so that these effects can be done from anywhere.
- *
- * \param   do_delay Whether or not to wait during the darkness...
- */
 void do_inn_effects(int do_delay)
 {
     size_t pidx_index, party_index;
@@ -288,10 +309,6 @@ void do_inn_effects(int do_delay)
     Music.resume_music();
 }
 
-/*! \brief Display amount of gold
- *
- * Display the party's funds.
- */
 void draw_shopgold()
 {
     Draw.menubox(double_buffer, 248, 208, 7, 2, BLUE);
@@ -300,15 +317,6 @@ void draw_shopgold()
     Draw.print_font(double_buffer, 312 - (strlen(strbuf) * 8), 224, strbuf, FNORMAL);
 }
 
-/*! \brief Show status info
- *
- * Well, it used to be on the side, but now it's on the bottom.
- * This displays the characters and whether or not they are
- * able to use/equip what is being looked at, and how it would
- * improve their stats (if applicable).
- *
- * \param   selected_item Item being looked at.
- */
 static void draw_sideshot(int selected_item)
 {
     int wx, wy;
@@ -436,16 +444,6 @@ static void draw_sideshot(int selected_item)
     }
 }
 
-/*! \brief Handle Inn functions
- *
- * This is simply used for staying at the inn.  Remember
- * it costs more money to stay if your characters require
- * healing or resurrection.
- *
- * \param   iname Name of Inn
- * \param   gold_per_character Gold per character (base price)
- * \param   pay If 0, staying is free.
- */
 void inn(const char* iname, uint32_t gold_per_character, int pay)
 {
     int b, my = 0, stop = 0;
@@ -560,14 +558,6 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
     }
 }
 
-/*! \brief Ask player the quantity to sell
- *
- * Inquire as to what quantity of the current item, the
- * character wishes to sell.
- *
- * \param   item_no Index of item in inventory
- * \param   inv_page Page of the inventory
- */
 static void sell_howmany(int item_no, size_t inv_page)
 {
     int l, max_items, prc, my = 1, stop;
@@ -641,14 +631,6 @@ static void sell_howmany(int item_no, size_t inv_page)
     }
 }
 
-/*! \brief Actually sell item
- *
- * Confirm the price of the sale with the player, and then
- * complete the transaction.
- *
- * \param   itno Index of item
- * \param   qty_being_sold Quantity being sold
- */
 static void sell_item(int itno, int qty_being_sold)
 {
     int l, stop = 0, sp, a;
@@ -686,11 +668,6 @@ static void sell_item(int itno, int qty_being_sold)
     }
 }
 
-/*! \brief Show items that can be sold
- *
- * Display a list of items that are in inventory and ask which
- * item or items to sell.
- */
 static void sell_menu()
 {
     size_t yptr = 0, stop = 0;
@@ -826,14 +803,6 @@ static void sell_menu()
     }
 }
 
-/*! \brief Main entry point to shop functions
- *
- * The initial shop dialog.  This function calculates item quantities
- * and then just asks if we're buying or selling.
- *
- * \param   shop_num Index of this shop
- * \returns 1 if shop has no items, 0 otherwise
- */
 int shop(int shop_num)
 {
     int ptr = 0;

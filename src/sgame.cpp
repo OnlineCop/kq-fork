@@ -20,16 +20,11 @@
 */
 
 /*! \file
- * \brief Save and Load game
- * \author JB
- * \date ????????
+ * \brief Save and Load game.
  *
  * Support for saving and loading games.
  * Also includes the main menu and the system menu
  * (usually accessible by pressing ESC).
- *
- * \todo PH Do we _really_ want things like controls and screen
- *          mode to be saved/loaded ?
  */
 
 #include "sgame.h"
@@ -61,9 +56,6 @@
 #include <cstring>
 #include <memory>
 
-/*! Get the save-game stats that apply to the current state.
- * \returns a structure containing the stats;
- */
 s_sgstats s_sgstats::get_current()
 {
     s_sgstats stats;
@@ -84,13 +76,6 @@ s_sgstats s_sgstats::get_current()
 
 /*! \brief No game-wide globals in this file. */
 
-/*! \brief Confirm save
- *
- * If the save slot selected already has a saved game in it, confirm that we
- * want to overwrite it.
- *
- * \returns 0 if cancelled, 1 if confirmed
- */
 int KSaveGame::confirm_action()
 {
     int stop = 0;
@@ -121,13 +106,11 @@ int KSaveGame::confirm_action()
     return 0;
 }
 
-/*! \brief Confirm that the player really wants to quit
+/*! \brief Confirm that the player really wants to quit.
  *
  * Ask the player if she/he wants to quit, yes or no.
- * \date 20050119
- * \author PH
  *
- * \returns 1=quit 0=don't quit
+ * \returns 1 if Yes (quit) selected, 0 if No (continue playing) selected.
  */
 static int confirm_quit()
 {
@@ -141,10 +124,6 @@ static int confirm_quit()
     return ans == 0 ? 1 : 0;
 }
 
-/*! \brief Delete game
- *
- * You guessed it... delete the game.
- */
 void KSaveGame::delete_game()
 {
     int stop = 0;
@@ -180,13 +159,6 @@ void KSaveGame::delete_game()
     }
 }
 
-/*! \brief Load game
- *
- * Uh-huh.
- * PH 20030805 Made endian-safe
- * PH 20030914 Now ignores keyboard settings etc in the save file
- * \returns 1 if load succeeded, 0 otherwise
- */
 int KSaveGame::load_game()
 {
     sprintf(strbuf, "sg%d.xml", save_ptr);
@@ -199,12 +171,6 @@ int KSaveGame::load_game()
     return 1;
 }
 
-/*! \brief Load mini stats
- *
- * This loads the mini stats for each saved game.
- * These mini stats are just for displaying info about the save game on the
- * save/load game screen.
- */
 void KSaveGame::load_sgstats()
 {
     for (int sg = 0; sg < NUMSG; ++sg)
@@ -221,12 +187,6 @@ void KSaveGame::load_sgstats()
     }
 }
 
-/*! \brief Save game
- *
- * You guessed it... save the game.
- *
- * \returns 0 if save failed, 1 if success
- */
 int KSaveGame::save_game()
 {
     sprintf(strbuf, "sg%d.xml", save_ptr);
@@ -238,14 +198,6 @@ int KSaveGame::save_game()
     return rc;
 }
 
-/*! \brief Save/Load menu
- *
- * This is the actual save/load menu.  The only parameter to
- * the function indicates whether we are saving or loading.
- *
- * \param   am_saving 0 if loading, 1 if saving
- * \returns 0 if an error occurred or save/load cancelled
- */
 int KSaveGame::saveload(int am_saving)
 {
     int stop = 0;
@@ -366,13 +318,6 @@ int KSaveGame::saveload(int am_saving)
     return stop - 1;
 }
 
-/*! \brief Display saved game statistics
- *
- * This is the routine that displays the information about
- * each saved game for the save/load screen.
- *
- * \param   saving 0 if loading, 1 if saving.
- */
 void KSaveGame::show_sgstats(int saving)
 {
     int a, sg, hx, hy, b;
@@ -509,15 +454,6 @@ static void show_splash_screen()
     do_transition(eTransitionFade::TO_WHITE, 1);
 }
 
-/*! \brief Main menu screen
- *
- * This is the main menu... just display the opening and then the menu and
- * then wait for input.  Also handles loading a saved game, and the config menu.
- *
- * \param   c false if the splash (the bit with the staff and the eight heroes)
- *            should be displayed.
- * \returns 1 if new game, 0 if continuing, 2 if exit
- */
 int KSaveGame::start_menu(bool skip_splash)
 {
     int stop = 0, ptr = 0, redraw = 1;
@@ -661,15 +597,6 @@ int KSaveGame::start_menu(bool skip_splash)
     return stop - 1;
 }
 
-/*! \brief Display system menu
- *
- * This is the system menu that is invoked from within the game.
- * From here you can save, load, configure a couple of options or
- * exit the game altogether.
- * \date 20040229 PH added 'Save anytime' facility when cheat mode is ON
- *
- * \returns 0 if cancelled or nothing happened, 1 otherwise
- */
 int KSaveGame::system_menu()
 {
     int stop = 0, ptr = 0;

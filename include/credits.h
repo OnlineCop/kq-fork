@@ -23,11 +23,14 @@
 
 class Raster;
 
-/*! Allocate memory for credits display */
+/*! \brief Allocate memory for credits display. */
 void allocate_credits();
 
-/*! Deallocate memory */
+/*! \brief Deallocate memory. */
 void deallocate_credits();
 
-/*! Display credits (call in a loop) */
-void display_credits(Raster*);
+/*! \brief Display credits (call in a loop).
+ *
+ * \param double_buffer Where to render onto.
+ */
+void display_credits(Raster* double_buffer);

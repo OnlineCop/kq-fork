@@ -34,8 +34,8 @@ class KConsole
      *
      * Set up the global state ready for using the console.
      *
-     * \param num_lines Number of lines console should draw.
-     * \param num_columns Width of console on screen.
+     * \param   num_lines Number of lines console should draw.
+     * \param   num_columns Width of console on screen.
      */
     void init(size_t num_lines, size_t num_columns);
 
@@ -47,7 +47,7 @@ class KConsole
      */
     void display();
 
-    /* \brief Enter console mode.
+    /*! \brief Enter console mode.
      *
      * Run the console. Does not return until the console is closed.
      */
@@ -58,7 +58,7 @@ class KConsole
      * This displays a line of text, scrolling up all the other lines.
      * No wrapping is performed.
      *
-     * \param l the text to display
+     * \param   l The text to display.
      */
     void scroll(const std::string& l);
 

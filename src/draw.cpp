@@ -20,9 +20,7 @@
 */
 
 /*! \file
- * \brief Character and Map drawing
- * \author JB
- * \date ????????
+ * \brief Character and Map drawing.
  *
  * Includes functions to draw characters, text and maps.
  * Also some colour manipulation.
@@ -49,7 +47,9 @@ using namespace eSize;
 /* Globals */
 #define MSG_ROWS 4
 #define MSG_COLS 36
+
 /*! \brief A 4-row buffer to contain text to display to the player.
+ *
  * Messages to the player can be up to 4 rows of text (at a time).
  */
 char msgbuf[MSG_ROWS][MSG_COLS];
@@ -64,12 +64,11 @@ int gbbs;
 eBubbleStemStyle bubble_stem_style;
 uint8_t BLUE = 2, DARKBLUE = 0, DARKRED = 4;
 
-/*! \brief glyph look up table
+/*! \brief Glyph look-up table.
  *
- * maps unicode char to glyph index for characters > 128.
- * { unicode, glyph }
- * n.b. must be sorted in order of unicode char
- * and terminated by {0, 0}
+ * Maps unicode char to glyph index for characters > 128.
+ *  { unicode, glyph }
+ * n.b. Must be sorted in order of unicode char and terminated by {0, 0}.
  */
 static uint32_t glyph_lookup[][2] = {
     { 0x00c9, 'E' - 32 }, /* E-acute */
@@ -947,7 +946,6 @@ void KDraw::message(const char* inMessage, int icn, int delay)
     delete[] unsplit_string;
 }
 
-// Origin: http://stackoverflow.com/a/3418285/801098
 void KDraw::replaceAll(std::string& str, const std::string& from, const std::string& to)
 {
     if (from.empty())
@@ -962,9 +960,6 @@ void KDraw::replaceAll(std::string& str, const std::string& from, const std::str
     }
 }
 
-/** This only handles extremely simple strings; you CAN break it if you try hard enough:
- *    "$$0" or "\\$0" or "\$0" or "$-1", etc.
- */
 std::string KDraw::parse_string(const std::string& the_string)
 {
     if (the_string.find('$', 0) == std::string::npos)
@@ -1301,8 +1296,9 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                     print_font(double_buffer, winx + 8, winy + i * 12, opt[i + topopt], FBIG);
                 }
                 draw_sprite(double_buffer, menuptr, winx + 8 - menuptr->width, (curopt - topopt) * 12 + winy + 4);
-                /* Draw the 'up' and 'down' markers if there are more options than will
-                 * fit in the window */
+                /* Draw the 'up' and 'down' markers if there are more options
+                 * than will fit in the window.
+                 */
                 if (topopt > 0)
                 {
                     draw_sprite(double_buffer, upptr, winx, winy - 8);
@@ -1628,7 +1624,7 @@ void KDraw::porttext_ex(eBubbleStyle fmt, int who, const char* s)
     }
 }
 
-int KDraw::text_length(eFontColor, const char* s)
+int KDraw::text_length(eFontColor /* index*/, const char* s)
 {
     return 8 * strlen(s);
 }
@@ -1636,8 +1632,8 @@ int KDraw::text_length(eFontColor, const char* s)
 void KDraw::resize_window(int w, int h, bool win)
 {
     SDL_SetWindowFullscreen(window, win ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
-    if (!win) {
-	SDL_SetWindowSize(window, w, h);
+    if (!win)
+    {
+        SDL_SetWindowSize(window, w, h);
     }
 }
-

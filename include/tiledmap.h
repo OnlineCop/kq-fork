@@ -58,7 +58,10 @@ class tmx_map
 {
   public:
     tmx_map();
+    // Name of the map
     std::string name;
+
+    // Map number (unused).
     int map_no;
 
     // Non-zero if zone 0 triggers an event
@@ -135,15 +138,16 @@ class tmx_map
     std::vector<tmx_layer> layers;
 
     /*! \brief Make this map the current one.
-     * Make this map the one in play by copying its information into the
-     * global structures. This function is the 'bridge' between the
-     * TMX loader and the original KQ code.
+     *
+     * Make this map the one in play by copying its information into the global structures.
+     * This function is the 'bridge' between the TMX loader and the original KQ code.
      */
     void set_current();
 
     /*! \brief Get the tileset within this map's structure with the given name.
-     * \param name Tileset name to search for.
-     * \return Specified tileset.
+     *
+     * \param   name Tileset name to search for.
+     * \returns Specified tileset.
      * \throws If tileset with given name cannot be found.
      */
     const KTmxTileset& find_tileset(const std::string& name) const;
@@ -152,19 +156,100 @@ class tmx_map
 class KTiledMap
 {
   public:
-    void load_tmx(const std::string&);
+    /*! \brief Load a TMX format map from disk.
+     *
+     * Make it the current map for the game.
+     *
+     * \param   name The filename.
+     */
+    void load_tmx(const std::string& name);
 
   private:
+    /*! \brief Load the TMX map from the XML information.
+     *
+     * \param   root XML Node to draw data from.
+     * \returns The map loaded from the file.
+     */
     tmx_map load_tmx_map(tinyxml2::XMLElement const* root);
-    tinyxml2::XMLElement const* find_tmx_element(tinyxml2::XMLElement const*, const char*, const char*);
-    KBounds load_tmx_bounds(tinyxml2::XMLElement const*);
-    KMarkers load_tmx_markers(tinyxml2::XMLElement const*);
-    std::vector<KZone> load_tmx_zones(tinyxml2::XMLElement const*);
+
+    /*! \brief Scan tree for a named TMX <layer>.
+     *
+     * \param   root The root of the tree.
+     * \param   type The element tag.
+     * \param   name The value of the 'name' attribute.
+     * \returns The found element or NULL.
+     */
+    tinyxml2::XMLElement const* find_tmx_element(tinyxml2::XMLElement const* root, const char* type, const char* name);
+
+    /*! \brief Load an array of bounding boxes from a TMX <objectgroup>.
+     *
+     * Note that tile-size of 16x16 is assumed here.
+     *
+     * \param   el The object group.
+     * \returns A collection of objects.
+     */
+    KBounds load_tmx_bounds(tinyxml2::XMLElement const* el);
+
+    /*! \brief Load an array of markers from a TMX <objectgroup>.
+     *
+     * Note that tile-size of 16x16 is assumed here.
+     *
+     * \param   el The object group.
+     * \returns A collection of objects.
+     */
+    KMarkers load_tmx_markers(tinyxml2::XMLElement const* el);
+
+    /*! \brief Load up the zones.
+     *
+     * \param   el The <objectgroup> element containing the zones.
+     * \returns A vector of zones.
+     */
+    std::vector<KZone> load_tmx_zones(tinyxml2::XMLElement const* el);
+
+    /*! \brief Fetch tile indices from a layer.
+     *
+     * The numbers are GIDs as stored in the TMX file.
+     *
+     * \param   el The layer element.
+     * \returns The raw data.
+     */
     tmx_layer load_tmx_layer(tinyxml2::XMLElement const* el);
-    std::vector<KQEntity> load_tmx_entities(tinyxml2::XMLElement const*);
-    KTmxTileset load_tmx_tileset(tinyxml2::XMLElement const*);
+
+    /*! \brief Load up the entities.
+     *
+     * \param   el The objectgroup element containing the entities.
+     * \returns A vector of entities.
+     */
+    std::vector<KQEntity> load_tmx_entities(tinyxml2::XMLElement const* el);
+
+    /*! \brief Load a tileset.
+     *
+     * This can be from a standalone file or embedded in a map.
+     *
+     * \param   el The <tileset> element.
+     * \returns The tileset.
+     */
+    KTmxTileset load_tmx_tileset(tinyxml2::XMLElement const* el);
+
     tinyxml2::XMLElement const* find_objectgroup(tinyxml2::XMLElement const* root, const char* name);
-    std::vector<uint8_t> b64decode(const char*);
+
+    /*! \brief Decode BASE64.
+     *
+     * Convert a string of characters into a vector of bytes.
+     * If there is an error, returns an empty vector.
+     *
+     * \param   text The input characters.
+     * \returns The converted bytes.
+     */
+    std::vector<uint8_t> b64decode(const char* text);
+
+    /*! \brief Uncompress a sequence of bytes.
+     *
+     * Uses the zlib to uncompress.
+     *
+     * \param   data The input compressed data.
+     * \returns The uncompressed data.
+     */
     std::vector<uint8_t> uncompress(const std::vector<uint8_t>& data);
 };
 

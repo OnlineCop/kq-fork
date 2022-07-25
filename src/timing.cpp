@@ -20,11 +20,9 @@
 */
 
 /*! \file
- * \brief Timing handler functions
- * \author ML
- * \date 20102002
+ * \brief Timing handler functions.
  *
- * Looks after keeping the music playing whilst the game is 'paused'
+ * Looks after keeping the music playing whilst the game is 'paused'.
  */
 
 #include "timing.h"
@@ -43,7 +41,7 @@ void reset_watchdog()
     watchdog = 100;
 }
 
-static Uint32 timer_cb(Uint32 interval, void*)
+static Uint32 timer_cb(Uint32 interval, void* /*unused*/)
 {
     SDL_Event event = { 0 };
     assert(--watchdog > 0);

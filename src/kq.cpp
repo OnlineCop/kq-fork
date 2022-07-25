@@ -20,23 +20,16 @@
 */
 
 /*! \file
- * \brief Main file for KQ
+ * \brief Main file for KQ.
  *
- * \author JB
- * \date ????????
+ * This file includes the main() function, most of the global variables, and some other stuff, for example, controls,
+ * some initialization and timing.
  *
- * This file includes the main() function,
- * most of the global variables, and some other stuff,
- * for example, controls, some initialization and
- * timing.
+ * \note 23: I don't know if we're going to do anything to lessen the number of globals, but I tried to lay them out as
+ * attractively as possible until we figure out what all of them are for. Plus I tried to keep everything below 80
+ * characters a line, and labels what few variables struck me as obvious.
  *
- * \note 23: I don't know if we're going to do anything to lessen the number of
- * globals, but I tried to lay them out as attractively as possible until we
- * figure out what all of them are for. Plus I tried to keep everything below
- * 80 characters a line, and labels what few variables struck me as obvious
- *
- * Thanks due to Edge <hardedged@excite.com> and Caz Jones for BeOS joystick
- * fixes
+ * Thanks due to Edge <hardedged@excite.com> and Caz Jones for BeOS joystick fixes.
  */
 
 #include "kq.h"
@@ -230,7 +223,7 @@ int no_monsters = 0;
 int every_hit_999 = 0;
 #endif
 
-/*! \brief Timer Event structure
+/*! \brief Timer Event structure.
  *
  * Holds the information relating to a forthcoming event
  */
@@ -295,18 +288,18 @@ s_progress progresses[SIZE_PROGRESS] = {
 
 /*! \mainpage KQ - The Classic Computer Role-Playing Game
  *
- * Take the part of one of eight mighty heroes as you search for the
- * Staff of Xenarum.  Visit over twenty different locations, fight a
- * multitude of evil monsters, wield deadly weapons and cast powerful
- * spells. On your quest, you will find out how the Oracle knows
- * everything, who killed the former master of the Embers guild, why
- * no-one trusts the old man in the manor, and what exactly is
- * terrorizing the poor Denorians.
+ * Take the part of one of eight mighty heroes as you search for the Staff of Xenarum.
+ *
+ * Visit over twenty different locations, fight a multitude of evil monsters, wield deadly weapons and cast powerful
+ * spells.
+ *
+ * On your quest, you will find out how the Oracle knows everything, who killed the former master of the Embers guild,
+ * why no-one trusts the old man in the manor, and what exactly is terrorizing the poor Denorians.
  *
  * KQ is licensed under the GPL.
  */
 
-/*! \brief Main function
+/*! \brief Main function.
  *
  * Well, this one is pretty obvious.
  */
@@ -1390,12 +1383,17 @@ void KGame::startup()
         for (int16_t sfont_x = 0; sfont_x < 60; sfont_x++)
         {
             // Recolor each 'white' pixel found within sfonts[0] for each of the other fonts.
-            if (sfonts[0]->getpixel(sfont_x, sfont_y) == 15)    // pal[15]  == RGB{ 63, 63, 63, 0 }, white
+            // pal[15]  == RGB{ 63, 63, 63, 0 }, white
+            // pal[22]  == RGB{ 55, 0, 0, 0 }, red (#CD0000)
+            // pal[105] == RGB{ 54, 54, 0, 0 }, yellow (#D8D800)
+            // pal[39]  == RGB{ 0, 39, 0, 0 }, green (#009C00)
+            // pal[8]   == RGB{ 33, 33, 33, 0 }, grey (#848484)
+            if (sfonts[0]->getpixel(sfont_x, sfont_y) == 15)
             {
-                sfonts[1]->setpixel(sfont_x, sfont_y, 22);      // pal[22]  == RGB{ 55, 0, 0, 0 }, red (#CD0000)
-                sfonts[2]->setpixel(sfont_x, sfont_y, 105);     // pal[105] == RGB{ 54, 54, 0, 0 }, yellow (#D8D800)
-                sfonts[3]->setpixel(sfont_x, sfont_y, 39);      // pal[39]  == RGB{ 0, 39, 0, 0 }, green (#009C00)
-                sfonts[4]->setpixel(sfont_x, sfont_y, 8);       // pal[8]   == RGB{ 33, 33, 33, 0 }, grey (#848484)
+                sfonts[1]->setpixel(sfont_x, sfont_y, 22);
+                sfonts[2]->setpixel(sfont_x, sfont_y, 105);
+                sfonts[3]->setpixel(sfont_x, sfont_y, 39);
+                sfonts[4]->setpixel(sfont_x, sfont_y, 8);
             }
         }
     }

@@ -86,10 +86,6 @@ uint32_t* end(tmx_layer& l)
     return l.data.get() + l.size;
 }
 
-/** \brief Load a TMX format map from disk.
- * Make it the current map for the game
- * \param name the filename
- */
 void KTiledMap::load_tmx(const std::string& name)
 {
     XMLDocument tmx;
@@ -219,12 +215,6 @@ tmx_map KTiledMap::load_tmx_map(XMLElement const* root)
     return smap;
 }
 
-/** \brief Load an array of bounding boxes from a TMX <objectgroup>.
- *
- * Note that tile-size of 16x16 is assumed here.
- * \param el the object group
- * \returns a collection of objects
- */
 KBounds KTiledMap::load_tmx_bounds(XMLElement const* el)
 {
     KBounds bounds;
@@ -258,13 +248,6 @@ KBounds KTiledMap::load_tmx_bounds(XMLElement const* el)
     return bounds;
 }
 
-/** \brief Scan tree for a named TMX <layer>.
- *
- * \param root the root of the tree
- * \param type the element tag
- * \param name the value of the 'name' attribute
- * \returns the found element or NULL
- */
 XMLElement const* KTiledMap::find_tmx_element(XMLElement const* root, const char* type, const char* name)
 {
     for (auto i = root->FirstChildElement(type); i; i = i->NextSiblingElement(type))
@@ -277,12 +260,6 @@ XMLElement const* KTiledMap::find_tmx_element(XMLElement const* root, const char
     return nullptr;
 }
 
-/** \brief Load an array of markers from a TMX <objectgroup>.
- *
- * Note that tile-size of 16x16 is assumed here.
- * \param el the object group
- * \returns a collection of objects
- */
 KMarkers KTiledMap::load_tmx_markers(XMLElement const* el)
 {
     KMarkers markers;
@@ -300,11 +277,6 @@ KMarkers KTiledMap::load_tmx_markers(XMLElement const* el)
     return markers;
 }
 
-/** \brief Fetch tile indices from a layer.
- * The numbers are GIDs as stored in the TMX file.
- * \param el the layer element
- * \returns the raw data
- */
 tmx_layer KTiledMap::load_tmx_layer(XMLElement const* el)
 {
     auto h = el->IntAttribute("height");
@@ -361,10 +333,6 @@ tmx_layer KTiledMap::load_tmx_layer(XMLElement const* el)
     return layer;
 }
 
-/** \brief Load up the zones
- * \param el the <objectgroup> element containing the zones
- * \returns a vector of zones
- */
 std::vector<KZone> KTiledMap::load_tmx_zones(XMLElement const* el)
 {
     std::vector<KZone> zones;
@@ -388,10 +356,6 @@ std::vector<KZone> KTiledMap::load_tmx_zones(XMLElement const* el)
     return zones;
 }
 
-/** \brief Load up the entities.
- * \param el the objectgroup element containing the entities
- * \returns a vector of entities
- */
 std::vector<KQEntity> KTiledMap::load_tmx_entities(XMLElement const* el)
 {
     std::vector<KQEntity> entities;
@@ -501,11 +465,6 @@ std::vector<KQEntity> KTiledMap::load_tmx_entities(XMLElement const* el)
     return entities;
 }
 
-/** \brief Load a tileset.
- * This can be from a standalone file or embedded in a map.
- * \param el the <tileset> element
- * \returns the tileset
- */
 KTmxTileset KTiledMap::load_tmx_tileset(XMLElement const* el)
 {
     KTmxTileset tileset;
@@ -590,11 +549,6 @@ tmx_map::tmx_map()
 
 static const uint16_t SHADOW_OFFSET = 200;
 
-/*! \brief Make this map the current one.
- * Make this map the one in play by copying its information into the
- * global structures. This function is the 'bridge' between the
- * TMX loader and the original KQ code.
- */
 void tmx_map::set_current()
 {
     // general map properties
@@ -734,14 +688,13 @@ const KTmxTileset& tmx_map::find_tileset(const std::string& name) const
 }
 
 /*! \brief BASE64 scanner.
- * This iterates through some BASE64 characters, returning
- * each 6-bit segment in turn.
- * If it gets an '=' character it returns PAD.
- * It ignores whitespace.
- * Any other characters return ERROR and set the
- * error bit.
- * When it reaches the end of the string it returns
- * PAD forever
+ *
+ * This iterates through some BASE64 characters, returning each 6-bit segment in turn.
+ * - If it gets an '=' character it returns PAD.
+ * - It ignores whitespace.
+ * - Any other characters return ERROR and set the error bit.
+ *
+ * When it reaches the end of the string it returns PAD forever.
  */
 struct b64
 {
@@ -818,12 +771,6 @@ static bool valid(uint8_t v)
     return v < b64::PAD;
 }
 
-/*! \brief Decode BASE64.
- * Convert a string of characters into a vector of bytes.
- * If there is an error, returns an empty vector.
- * \param text the input characters
- * \returns the converted bytes
- */
 std::vector<uint8_t> KTiledMap::b64decode(const char* text)
 {
     std::vector<uint8_t> data;
@@ -878,11 +825,6 @@ std::vector<uint8_t> KTiledMap::b64decode(const char* text)
     }
 }
 
-/*! \brief Uncompress a sequence of bytes.
- * Uses the zlib to uncompress.
- * \param data the input compressed data
- * \returns the uncompressed data
- */
 std::vector<uint8_t> KTiledMap::uncompress(const std::vector<uint8_t>& data)
 {
     z_stream stream;

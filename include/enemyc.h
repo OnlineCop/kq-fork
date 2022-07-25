@@ -35,164 +35,163 @@ class KEnemy
   public:
     KEnemy();
 
-    /*! \brief Enemy initialization
+    /*! \brief Enemy initialization.
      *
-     * This is the main enemy initialization routine.  This function sets up
-     * the enemy types and then loads each one in.  It also calls a helper
-     * function or two to complete the process.
+     * This is the main enemy initialization routine.
+     * This sets up the enemy types and then loads each one in.
+     * It also calls a helper function or two to complete the process.
      *
-     * The encounter table consists of several 'sub-tables', grouped by
-     * encounter number. Each row is one possible battle.
+     * The encounter table consists of several 'sub-tables', grouped by encounter number.
+     * Each row is one possible battle.
      * Fills in the cf[] array of enemies to load.
      *
      * \param   encounterTableRow Encounter number in the Encounter table.
      * \param   etid If =99, select a random row with that encounter number, otherwise select row etid.
-     * \returns number of random encounter
+     * \returns Number of random encounter in erows[] array.
      */
     int SelectEncounter(uint8_t encounterTableRow, uint8_t etid);
 
-    /*! \brief Initialize enemy & sprites for combat
+    /*! \brief Initialize enemy & sprites for combat.
      *
-     * If required, load the all the enemies, then
-     * init the ones that are going into battle, by calling make_enemy() and
+     * If required, load the all the enemies, then init the ones that are going into battle, by calling make_enemy() and
      * copying the graphics sprites into cframes[] and tcframes[].
-     * Looks at the cf[] array to see which enemies to do.
      *
+     * Looks at the cf[] array to see which enemies to do.
      */
     void Init();
 
-    /*! \brief Choose action for enemy
+    /*! \brief Choose action for enemy.
      *
-     * There is the beginning of some intelligence to this... however, the
-     * magic checking and skill checking functions aren't very smart yet :)
+     * There is the beginning of some intelligence to this... however, the magic checking and skill checking functions
+     * aren't very smart yet :)
+     *
      * \todo PH would be good to have this script-enabled.
      *
-     * \param   fighter_index Target action will be performed on
+     * \param   fighter_index Target action will be performed on.
      */
     void ChooseAction(size_t fighter_index);
 
-    /*! \brief Action for confused enemy
+    /*! \brief Action for confused enemy.
      *
-     * Enemy actions are chosen differently if they are confused.  Confused
-     * fighters either attack the enemy, an ally, or do nothing.  Confused
-     * fighters never use spells or items.
+     * Enemy actions are chosen differently if they are confused.
      *
+     * Confused fighters either attack the enemy, an ally, or do nothing.
+     * Confused fighters never use spells or items.
      * \sa auto_herochooseact()
-     * \param   fighter_index Target
+     *
+     * \param   fighter_index Target index in fighter[] array.
      */
     void CharmAction(size_t fighter_index);
 
   private:
-    /*! \brief Melee attack
+    /*! \brief Melee attack.
      *
-     * Do an enemy melee attack.  Enemies only defend if they are in critical
-     * status.  This could use a little more smarts, so that more-intelligent
-     * enemies would know to hit spellcasters or injured heroes first, and so
-     * that berserk-type enemies don't defend.  The hero selection is done in
-     * a different function, but it all starts here.
+     * Do an enemy melee attack.  Enemies only defend if they are in critical status.
      *
-     * \param   target_fighter_index Target
+     * This could use a little more smarts, so that more-intelligent enemies would know to hit spellcasters or injured
+     * heroes first, and so that berserk-type enemies don't defend.
+     *
+     * The hero selection is done in a different function, but it all starts here.
+     *
+     * \param   target_fighter_index Target index in fighters[] array.
      */
     void Attack(size_t target_fighter_index);
 
-    /*! \brief Check if enemy can cast this spell
+    /*! \brief Check whether enemy can cast this spell.
      *
-     * This function is fairly specific in that it will only
-     * return 1 if the enemy has the spell in its list of spells,
+     * This function is fairly specific in that it will only return 1 if the enemy has the spell in its list of spells,
      * is not mute, and has enough mp to cast the spell.
      *
-     * \param   target_fighter_index Which enemy
-     * \param   spell_to_cast Spell to cast
-     * \returns true if spell can be cast, false otherwise
+     * \param   target_fighter_index Which enemy.
+     * \param   spell_to_cast Spell to cast.
+     * \returns True if spell can be cast, false otherwise.
      */
     bool CanCast(size_t target_fighter_index, size_t spell_to_cast);
 
-    /*! \brief Use cure spell
+    /*! \brief Use cure spell.
      *
      * If the caster has a cure/drain spell, use it to cure itself.
      *
-     * \param   w Caster
+     * \param   w Caster index within fighter[] array.
      */
     void CureCheck(int w);
 
-    /*! \brief Check skills
+    /*! \brief Check skills.
      *
-     * Very simple... see if the skill that was selected can be used.
+     * Very simple... see whether the skill that was selected can be used.
      *
-     * \param   w Enemy index
-     * \param   ws Enemy skill index
+     * \param   w Enemy index.
+     * \param   ws Enemy skill index.
      */
     void SkillCheck(int w, int ws);
 
-    /*! \brief Check selected spell
+    /*! \brief Check selected spell.
      *
-     * This function looks at the enemy's selected spell and tries to
-     * determine whether to bother casting it or not.
+     * This function looks at the enemy's selected spell and tries to determine whether to bother casting it or not.
      *
-     * \param   attack_fighter_index Caster
-     * \param   defend_fighter_index Target
+     * \param   attack_fighter_index Caster index in fighter[] index.
+     * \param   defend_fighter_index Target index in fighter[] index.
      */
     void SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index);
 
-    /*! \brief Check status
+    /*! \brief Check status.
      *
-     * Checks a passed status condition to see if anybody is affected by it and
-     * determines whether it should be cast or not
+     * Checks a passed status condition to see whether anybody is affected by it and determines whether it should be
+     * cast or not.
      *
-     * \param   ws Which stat to consider
-     * \param   s Starting target for multiple targets
+     * \param   whichSpellType Spell stat index within sts[] array to consider,
+     *          in range [0..eSpellType::NUM_SPELL_TYPES-1].
+     * \param   s If PSIZE, target enemies, else target party.
      */
     int StatsCheck(eSpellType whichSpellType, int s);
 
-    /*! \brief Prepare an enemy for battle
+    /*! \brief Prepare an enemy for battle.
      *
      * Fills out a supplied KFighter structure with the default, starting values for an enemy.
      *
-     * \param   who The numeric id of the enemy to make
-     * \param   en Pointer to an KFighter instance to initialize
-     * \returns the value of en, for convenience, or NULL if an error occurred.
-     * \sa make_enemy_by_name()
+     * \param   who The numeric id of the enemy to make.
+     * \param   en Pointer to an KFighter instance to initialize.
+     * \returns The value of en, for convenience, or NULL if an error occurred.
      */
     bool MakeEnemyFighter(size_t who, KFighter& en);
 
-    /*! \brief Set up skill targets
+    /*! \brief Set up skill targets.
      *
      * This is just for aiding in skill setup... choosing skill targets.
      *
-     * \param   whom Caster
-     * \param   sn Which skill
-     * \returns 1 for success, 0 otherwise
+     * \param   whom Caster index in fighter[] array.
+     * \param   sn Which skill in KFighter::ai[] array.
+     * \returns 1 for success, 0 otherwise.
      */
     int SkillSetup(int whom, int sn);
 
-    /*! \brief Helper for casting
+    /*! \brief Helper for casting.
      *
-     * This is just a helper function for setting up the casting of a spell
-     * by an enemy.
+     * This is just a helper function for setting up the casting of a spell by an enemy.
      *
-     * \param   whom Caster
-     * \param   z Which spell will be cast
-     * \returns 0 if spell ineffective, 1 otherwise
+     * \param   whom Caster index in fighter[] array.
+     * \param   z Which spell in magic[] array that will be cast.
+     * \returns 0 if spell ineffective, 1 otherwise.
      */
     int SpellSetup(int whom, int z);
 
-    /*! \brief Load all enemies from disk
+    /*! \brief Load all enemies from disk.
      *
      * Loads up enemies from the *.mon files and fills the enemies[] array.
      */
     void LoadEnemies();
 
-    /*! \brief Unload the data loaded by load_enemies()
+    /*! \brief Unload the data loaded by load_enemies().
      *
      * JB would have said 'duh' here! Not much explanation required.
      */
     void UnloadEnemies();
 
   protected:
-    /*! \brief Array of enemy 'fighters'  */
+    /*! \brief Array of enemy 'fighters'. */
     std::vector<KFighter> m_enemy_fighters;
 
-    /*! Index related to enemies in an encounter */
+    /*! \brief Index related to enemies in an encounter. */
     int cf[NUM_FIGHTERS];
 
     void LoadEnemies(const std::string& fullPath, Raster* enemy_gfx);

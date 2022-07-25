@@ -38,32 +38,55 @@
 #include <cstring>
 
 /*! \file
- * \brief Menus for spells
+ * \brief Menus for spells.
  *
- * Menu functions for grimoire (spell book)
- * and functions for learning new spells.
- * \author JB
- * \date ????????
+ * Menu functions for grimoire (spell book) and functions for learning new spells.
  */
 
 /*  Global variables  */
 int close_menu;
 
 /*  Internal functions  */
-static int need_spell(size_t, size_t);
-static void camp_draw_spell_menu(size_t, size_t, size_t);
-static void camp_spell_targeting(size_t, size_t);
-static int camp_castable(int, int);
 
-/*! \brief Check if spell is castable
+/*! \brief Does target need spell?
  *
- * Perform the necessary checking to determine if a spell can be
- * cast while camping and if the mp exists to do so.
+ * Does the target even need the spell that's been selected?
  *
- * \param   who Index of caster
- * \param   sno Spell number
- * \returns 1 if spell was cast, 0 otherwise
+ * \param   target_fighter_index Index in pidx[] and party[] arrays of target.
+ * \param   spell_number Index of spell in range [eMagic::M_CURE1..eMagic::M_XSURGE].
+ * \returns 0 if spell failed, 1 if success
  */
+static int need_spell(size_t target_fighter_index, size_t spell_number);
+
+/*! \brief Draw spell menu.
+ *
+ * Draw the current character's grimoire contents.
+ *
+ * \param   caster_fighter_index Index in pidx[] array of caster.
+ * \param   spell_page Page in KPlayer::spells[] array that spell is found on.
+ * \param   spell_page_cursor Cursor on current page.
+ */
+static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page, size_t spell_page_cursor);
+
+/*! \brief Select the target(s).
+ *
+ * Select any necessary targets and prepare the spell.
+ *
+ * \param   caster_fighter_index Index of spell caster.
+ * \param   spell_number Spell number.
+ */
+static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_number);
+
+/*! \brief Check whether spell is castable.
+ *
+ * Perform the necessary checking to determine if a spell can be cast while camping, and if the mp exists to do so.
+ *
+ * \param   who Index of caster.
+ * \param   sno Spell number.
+ * \returns 1 if spell was cast, 0 otherwise.
+ */
+static int camp_castable(int who, int sno);
+
 static int camp_castable(int who, int sno)
 {
     if (sno == M_VISION || (sno == M_WARP && Game.Map.g_map.can_warp == 0))
@@ -80,14 +103,6 @@ static int camp_castable(int who, int sno)
     return 0;
 }
 
-/*! \brief Draw spell menu
- *
- * Draw the current character's grimoire contents.
- *
- * \param   caster_fighter_index Index of caster
- * \param   spell_page Page that spell is found on
- * \param   spell_page_cursor Cursor on current page
- */
 static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page, size_t spell_page_cursor)
 {
     eFontColor text_color;
@@ -125,13 +140,6 @@ static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
     }
 }
 
-/*! \brief Spell menu
- *
- * Display the magic spell menu and allow the player to
- * arrange or cast spells.
- *
- * \param   c Index of caster
- */
 void camp_spell_menu(int c)
 {
     int a, b = 0, smove = 0, stop = 0, tsn;
@@ -257,13 +265,6 @@ void camp_spell_menu(int c)
     }
 }
 
-/*! \brief Select the target(s)
- *
- * Select any necessary targets and prepare the spell.
- *
- * \param   caster_fighter_index Index of spell caster
- * \param   spell_number Spell number
- */
 static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_number)
 {
     int tg = 0;
@@ -334,15 +335,6 @@ static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_numbe
     }
 }
 
-/*! \brief Character learned new spells?
- *
- * This function is called by level_up() and checks to see
- * if the character has learned any new spells (that s/he did
- * not already know).
- *
- * \param   who Character's index
- * \returns 0 if no spell learned, else spell(s) learned
- */
 int learn_new_spells(int who)
 {
     int a, p, i, nog, g = 0;
@@ -394,14 +386,6 @@ int learn_new_spells(int who)
     return g;
 }
 
-/*! \brief Does target need spell?
- *
- * Does the target even need the spell that's been selected?
- *
- * \param   target_fighter_index Target
- * \param   spell_number Index of spell
- * \returns 0 if spell failed, 1 if success
- */
 static int need_spell(size_t target_fighter_index, size_t spell_number)
 {
     size_t figher_index, victim_figher_index = 0;

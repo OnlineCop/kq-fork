@@ -28,11 +28,11 @@ enum class eTransitionFade
     TO_WHITE
 };
 
-/*! \brief Perform one of a range of palette transitions
+/*! \brief Perform one of a range of palette transitions.
  *
- * Fade to black, white or to the game palette (pal)
+ * Fade to black, white or to the game palette (pal).
  *
- * \param   type Any of IN, OUT, TO_WHITE
- * \param   speed Speed of transition 1..64
+ * \param   type Any of IN, OUT, TO_WHITE.
+ * \param   speed Speed of transition [1..64].
  */
 void do_transition(eTransitionFade type, int speed);

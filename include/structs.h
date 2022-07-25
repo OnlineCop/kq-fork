@@ -22,13 +22,13 @@
 #pragma once
 
 /*! \file
- * \brief Structures common to mapedit and the game (s_map and s_entity)
- * \note All structs in this file should be considered PODs: Plain Old Data.
- * They cannot have C++ constructors, memory management, etc. so they can
- * serialize to/from raw Lua objects.
+ * \brief Structures common to mapedit and the game (s_map and s_entity).
  *
- * If you want to convert these C structs into C++ structs/classes, move
- * them out of this file.
+ * \note All structs in this file should be considered PODs: Plain Old Data.
+ *
+ * They cannot have C++ constructors, memory management, etc. so they can serialize to/from raw Lua objects.
+ *
+ * If you want to convert these C structs into C++ structs/classes, move them out of this file.
  */
 
 #include "enums.h"
@@ -37,91 +37,93 @@
 
 class Raster;
 
-/*! \brief Entity
+/*! \brief Entity POD struct (POD: Plain Old Data).
  *
- * Contains info on an entity's appearance, position and behaviour */
+ * Contains info on an entity's appearance, position and behaviour.
+ *
+ * This struct is memcpy()'d from/to, so it may not contain C++ objects
+ * (like std::string), constructors, or destructors.
+ */
 struct KQEntity
 {
-    /*! Entity's identity (what s/he looks like) */
+    /*! Entity's identity (what s/he looks like). */
     uint8_t chrx;
-    /*! x-coord on map */
+    /*! x-coord on map. */
     uint16_t x;
-    /*! y-coord on map */
+    /*! y-coord on map. */
     uint16_t y;
-    /*! x-coord tile that entity is standing on */
+    /*! x-coord tile that entity is standing on. */
     uint16_t tilex;
-    /*! y-coord tile that entity is standing on */
+    /*! y-coord tile that entity is standing on. */
     uint16_t tiley;
-    /*! Entity type (fighter, enemy, normal) */
+    /*! Entity type (fighter, enemy, normal). */
     uint8_t eid;
-    /*! "Alive" or not */
+    /*! "Alive" or not. */
     uint8_t active;
-    /*! Direction */
+    /*! Direction. */
     uint8_t facing;
-    /*! In the middle of a move */
+    /*! In the middle of a move. */
     uint8_t moving;
-    /*! How far along the move entity is, in pixels; 0 (not moving, or finished moving) up to 15 (TILE_W - 1) */
+    /*! How far along the move entity is, in pixels; 0 (not moving, or finished moving) up to 15 (TILE_W - 1). */
     uint8_t movcnt;
-    /*! Counter for determining animation frame */
+    /*! Counter for determining animation frame. */
     uint8_t framectr;
-    /*! Stand, wander, script or chasing */
+    /*! Stand, wander, script or chasing. */
     uint8_t movemode;
-    /*! Determine if affected by obstacles or not */
+    /*! Determine if affected by obstacles or not. */
     uint8_t obsmode;
-    /*! Movement delay (between steps) */
+    /*! Movement delay (between steps). */
     uint8_t delay;
-    /*! Counter for movement delay */
+    /*! Counter for movement delay. */
     uint8_t delayctr;
-    /*! How hyperactive the entity is */
+    /*! How hyperactive the entity is. */
     uint8_t speed;
-    /*! UNUSED */
+    /*! Unused. */
     uint8_t scount;
-    /*! Scripted commands (eCommands in entity.h) */
+    /*! Scripted commands (eCommands in entity.h). */
     uint8_t cmd;
-    /*! Index within script parser */
+    /*! Index within script parser. */
     uint8_t sidx;
-    /*! Used with random numbers to detect when an entity should chase the player */
+    /*! Used with random numbers to detect when an entity should chase the player. */
     uint8_t extra;
-    /*! Entity is following another */
+    /*! Entity is following another. */
     uint8_t chasing;
-    /*! Number of times we need to repeat 'cmd' */
+    /*! Number of times we need to repeat 'cmd'. */
     signed int cmdnum;
-    /*! UNUSED */
+    /*! Unused. */
     uint8_t atype;
-    /*! Snaps back to direction previously facing */
+    /*! Snaps back to direction previously facing. */
     uint8_t snapback;
-    /*! Look at player when talked to */
+    /*! Look at player when talked to. */
     uint8_t facehero;
-    /*! Entity is see-through or not */
+    /*! Entity is see-through or not. */
     uint8_t transl;
-    /*! Movement/action script (pacing, etc.) */
+    /*! Movement/action script (pacing, etc.). */
     char script[60];
-    /*! Scripted x-coord the ent is moving to */
+    /*! Scripted x-coord the ent is moving to. */
     uint16_t target_x;
-    /*! Scripted y-coord the ent is moving to */
+    /*! Scripted y-coord the ent is moving to. */
     uint16_t target_y;
 };
 
-/*! \brief Animation specifier
+/*! \brief Animation specifier.
  *
- * Marks a block of tiles that are interchanged to give
- * an animation effect. Used in check_animation()
+ * Marks a block of tiles that are interchanged to give an animation effect.
+ * Used in check_animation().
  */
 struct s_anim
 {
-    /*! First tile in sequence  */
+    /*! First tile in sequence. */
     uint16_t start;
-    /*! Last tile in sequence */
+    /*! Last tile in sequence (inclusive). */
     uint16_t end;
-    /*! Frames to wait between tile changes */
+    /*! Frames to wait between tile changes. */
     uint16_t delay;
 };
 
-/*! \brief Tileset definition
+/*! \brief Tileset definition.
  *
  * This encapulates a tile set: graphics and animation.
- * \author PH
- * \date 20031222
  */
 struct s_tileset
 {
@@ -129,36 +131,36 @@ struct s_tileset
     s_anim tanim[MAX_ANIM];
 };
 
-/*! \brief Progress Dump
+/*! \brief Progress Dump.
  *
- * Contains the names of all the P_* progress constants
+ * Contains the names of all the P_* progress constants.
  */
 struct s_progress
 {
-    /*! Number of current progress */
+    /*! Number of current progress. */
     uint32_t num_progress;
-    /*! Name of current progress */
+    /*! Name of current progress. */
     char name[18];
 };
 
-/*! \brief Hero information
+/*! \brief Hero information.
  *
  * This holds static or constant information about a hero.
- * the intention is to cut down on some of those globals.
+ * The intention is to cut down on some of those globals.
  */
 struct s_heroinfo
 {
-    /*! The hero's portrait for the stats screen */
+    /*! The hero's portrait for the stats screen. */
     Raster* portrait;
-    /*! Frames for movement */
+    /*! Frames for movement. */
     Raster* frames[MAXFRAMES];
-    /*! Frames for combat */
+    /*! Frames for combat. */
     Raster* cframes[MAXCFRAMES];
 };
 
-/*! \brief Special Items
+/*! \brief Special Items.
  *
- * Contains a list of the special items in the player's party (Opal Armor et al)
+ * Contains a list of the special items in the player's party (Opal Armor et al).
  */
 struct s_special_item
 {
@@ -167,7 +169,8 @@ struct s_special_item
     short icon;
 };
 
-/*! \brief Inventory
+/*! \brief Inventory.
+ *
  * An item ID and the quantity of that thing in the inventory.
  */
 struct s_inventory

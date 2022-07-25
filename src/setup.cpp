@@ -20,11 +20,7 @@
 */
 
 /*! \file
- * \brief Setup and menu code
- *
- * \author JB
- * \date ??????
- * \remark Updated  ML Oct-2002
+ * \brief Setup and menu code.
  */
 
 #include "setup.h"
@@ -80,12 +76,65 @@ enum class eDisplayMode
 static void* sfx[KAudio::eSound::MAX_SAMPLES];
 
 /*  Internal functions  */
+
+/*! \brief Load sample files.
+ *
+ * Load the list of samples from the data file.
+ *
+ * \returns 0 on success, 1 on failure.
+ */
 static int load_samples();
-static int getavalue(const char*, int, int, int, bool, void (*)(int));
-static bool getakey(KPlayerInput::button&, const char*);
+
+/*! \brief Get value for option.
+ *
+ * Display a bar and allow the user to adjust between fixed limits.
+ * You can specify a feedback function with the signature
+ *      void (*fb)(int)
+ * which is called whenever the value changes.
+ *
+ * \param   capt Caption text.
+ * \param   minu Minimum value of option.
+ * \param   maxu Maximum vlaue of option in range [0..40].
+ * \param   cv Current value (initial value).
+ * \param   sp Show percent. If sp is true, show as a percentage of maxu.
+ * \param   fb Feedback function (or NULL for no feedback).
+ * \returns The new value for option, or -1 if cancelled.
+ */
+static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void (*fb)(int));
+
+/*! \brief Process keypresses when mapping new keys.
+ *
+ * This helper function grabs whatever key is being pressed, stores it and saves
+ * it to the config file.
+ *
+ * \param   b The control to be changed.
+ * \param   cfg The configuration key name.
+ * \returns True if a new code was received and stored, false otherwise.
+ */
+static bool getakey(KPlayerInput::button& b, const char* cfg);
+
+/*! \brief Ask for window mode.
+ *
+ * \returns The selected mode.
+ */
 static eDisplayMode prompt_display_mode();
 
-/*! \brief Play sound effects / music if adjusting it */
+/*! \brief Draw a setting and its title.
+ *
+ * Helper function for the config menu.
+ * The setting title is drawn, then its value right-aligned.
+ *
+ * \param   y Y-coord of line.
+ * \param   caption Title of the setting (e.g. "Windowed mode:").
+ * \param   value The setting (e.g. "Yes").
+ * \param   color The foreground colour of the text.
+ */
+static void citem(int y, const char* caption, const char* value, eFontColor color);
+
+/*! \brief Play sound effects / music if adjusting it.
+ *
+ * \param val Volume to set set to.
+ */
 static void sound_feedback(int val)
 {
     Music.set_volume(val * 10);
@@ -97,29 +146,12 @@ static void music_feedback(int val)
     Music.set_music_volume(val * 10);
 }
 
-/*! \brief Draw a setting and its title
- *
- * Helper function for the config menu.
- * The setting title is drawn, then its value right-aligned.
- * \author PH
- * \date 20030527
- * \param   y y-coord of line
- * \param   caption Title of the setting (e.g. "Windowed mode:")
- * \param   value The setting (e.g. "Yes")
- * \param   color The foreground colour of the text
- */
 static void citem(int y, const char* caption, const char* value, eFontColor color)
 {
     Draw.print_font(double_buffer, 48, y, caption, color);
     Draw.print_font(double_buffer, SCREEN_H - 8 * strlen(value), y, value, color);
 }
 
-/*! \brief Display configuration menu
- *
- * This is the config menu that is called from the system
- * menu.  Here you can adjust the music or sound volume, or
- * the speed that the battle gauge moves at.
- */
 void config_menu()
 {
     size_t ptr = 0;
@@ -134,7 +166,7 @@ void config_menu()
 #endif
     static const char* dc[MENU_SIZE];
 
-    /* Define rows with appropriate spacings for breaks between groups */
+    /* Define rows with appropriate spacings for breaks between groups. */
     int row[MENU_SIZE];
 
     for (int p = 0; p < 3; p++)
@@ -203,7 +235,6 @@ void config_menu()
               Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized ? _("ON") : _("OFF"), FNORMAL);
 
         fontColor = FNORMAL;
-        /* TT: This needs to check for ==0 because 1 means sound init */
         if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
         {
             fontColor = FDARK;
@@ -237,7 +268,7 @@ void config_menu()
 
         draw_sprite(double_buffer, menuptr, 32, row[ptr]);
 
-        /* This is the bottom window, where the description goes */
+        /* This is the bottom window, where the description goes. */
         Draw.menubox(double_buffer, 0, 216, 38, 1, BLUE);
         Draw.print_font(double_buffer, 8, 224, dc[ptr], FNORMAL);
         Draw.blit2screen();
@@ -373,12 +404,12 @@ void config_menu()
                         gsvol = p * 10;
                     }
 
-                    /* make sure to set it no matter what */
+                    /* Make sure to set it, no matter what. */
                     Music.set_volume(gsvol);
                     Config.set_config_int(NULL, "gsvol", gsvol);
                 }
                 else
-                /* Not as daft as it seems, SND_BAD also wobbles the screen */
+                /* Not as daft as it seems, SND_BAD also wobbles the screen. */
                 {
                     play_effect(KAudio::eSound::SND_BAD, 128);
                 }
@@ -392,7 +423,7 @@ void config_menu()
                         gmvol = p * 10;
                     }
 
-                    /* make sure to set it no matter what */
+                    /* Make sure to set it, no matter what. */
                     Music.set_music_volume(gmvol);
                     Config.set_config_int(NULL, "gmvol", gmvol);
                 }
@@ -402,12 +433,12 @@ void config_menu()
                 }
                 break;
             case 14:
-                /* TT: toggle slow_computer */
+                /* This reduces the number of frames in some battle animations. */
                 slow_computer = !slow_computer;
                 Config.set_config_int(NULL, "slow_computer", slow_computer);
                 break;
             case 15:
-                /* TT: Adjust the CPU usage:yield_timeslice() or rest() */
+                /* TT: Adjust the CPU usage:yield_timeslice() or rest(). */
                 cpu_usage++;
                 if (cpu_usage > 2)
                 {
@@ -416,7 +447,7 @@ void config_menu()
                 break;
 #ifdef DEBUGMODE
             case 16:
-                /* TT: Things we only have access to when we're in debug mode */
+                /* TT: Things we only have access to when we're in debug mode. */
                 if (debugging < 4)
                 {
                     debugging++;
@@ -437,14 +468,6 @@ void config_menu()
     Config.pop_config_state();
 }
 
-/*! \brief Process keypresses when mapping new keys
- *
- * This helper function grabs whatever key is being pressed, stores it and saves
- * it to the config file.
- * \param b The control to be changed
- * \param cfg the configuration key name
- * \returns the true if a new code was received and stored, false otherwise
- */
 static bool getakey(KPlayerInput::button& b, const char* cfg)
 {
     Draw.menubox(double_buffer, 108, 108, 11, 1, DARKBLUE);
@@ -481,21 +504,6 @@ static bool getakey(KPlayerInput::button& b, const char* cfg)
     return false;
 }
 
-/*! \brief Get value for option
- *
- * Display a bar and allow the user to adjust between fixed limits.
- * You can specify a feedback function with the signature
- * void (*fb)(int)
- * which is called whenever the value changes.
- *
- * \param   capt Caption
- * \param   minu Minimum value of option
- * \param   maxu Maximum vlaue of option
- * \param   cv Current value (initial value)
- * \param   sp Show percent. If sp is true, show as a percentage of maxu
- * \param   fb Feedback function (or NULL for no feedback)
- * \returns the new value for option, or -1 if cancelled.
- */
 static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void (*fb)(int))
 {
     if (maxu <= 0 || maxu >= 40)
@@ -571,17 +579,6 @@ const char* kq_keyname(int scancode)
     return SDL_GetKeyName(kc);
 }
 
-/*! \brief Load sample files
- * \author JB
- * \date ????????
- *
- * Load the list of samples from the data file.
- *
- * \remark Updated : 20020914 - 05:20 (RB)
- * \remark ML 2002-09-22: altered this so it returns an error on failure
- *
- * \returns 0 on success, 1 on failure.
- */
 static int load_samples()
 {
     static const char* sndfiles[KAudio::eSound::MAX_SAMPLES] = {
@@ -610,11 +607,6 @@ static int load_samples()
     return 0;
 }
 
-/*! \brief Parse setup file
- *
- * \date 20030831
- * \author PH
- */
 void parse_setup()
 {
     const std::string cfg = kqres(eDirectories::SETTINGS_DIR, "kq.cfg");
@@ -661,16 +653,6 @@ void parse_setup()
     Config.pop_config_state();
 }
 
-/*! \brief Play sample effect
- *
- * Play an effect... if possible/necessary.  If the effect to
- * be played is the 'bad-move' effect, than do something visually
- * so that even if sound is off you know you did something bad :)
- * PH added explode effect.
- *
- * \param   efc Effect to play (index in sfx[])
- * \param   panning Left/right pan - see Allegro's play_sample()
- */
 void play_effect(int efc, int panning)
 {
     static const int bx[8] = { -1, 0, 1, 0, -1, 0, 1, 0 };
@@ -746,11 +728,6 @@ void play_effect(int efc, int panning)
     }
 }
 
-/*! \brief Set mode
- *
- * Set the graphics mode, taking into account the Windowed and Stretched
- * settings.
- */
 void set_graphics_mode()
 {
     int flags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
@@ -762,11 +739,6 @@ void set_graphics_mode()
         SDL_CreateWindow("KQ", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, window_width, window_height, flags));
 }
 
-/*! \brief Show keys help
- * Show a screen with the keys listed, and other helpful info
- * \author PH
- * \date 20030527
- */
 void show_help()
 {
     Draw.menubox(double_buffer, 116, 0, 9, 1, BLUE);
@@ -789,18 +761,6 @@ void show_help()
     } while (!PlayerInput.balt() && !PlayerInput.bctrl());
 }
 
-/*! \brief Initialize or shutdown sound system
- *
- * If sound_initialized_and_ready == eSoundSystem::Initialize on entry,
- * then we want to initialize the sound system.
- * - sound_initialized_and_ready will be set either to:
- *   eSoundSystem::NotInitialized (failure) or
- *   eSoundSystem::Ready (success)
- *
- * If sound_initialized_and_ready == eSoundSystem::Ready on entry,
- * then we want to shut down the sound system.
- * - sound_initialized_and_ready will be set to: eSoundSystem::NotInitialized
- */
 void sound_init()
 {
     if (!Audio.sound_system_avail)
@@ -845,9 +805,6 @@ void store_window_size()
     }
 }
 
-/*! \brief Ask for window mode.
- * @returns the selected mode
- */
 eDisplayMode prompt_display_mode()
 {
     const char* options[] = { _("Full screen"), _("Window 1x"), _("Window 2x"), _("Window 3x"), _("Window 4x") };

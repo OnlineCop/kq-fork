@@ -26,20 +26,92 @@
 class KMusic
 {
   public:
+    /*! \brief Initiate music player (SDL2_Mixer).
+     *
+     * Initializes the music players.
+     * Must be called before any other music function. Needs to be shutdown when finished.
+     */
     void init_music();
+
+    /*! \brief Clean up and shut down music (SDL2_Mixer).
+     *
+     * Performs any cleanup needed. Must be called before the program exits.
+     */
     void shutdown_music();
+
+    /*! \brief Poll the music (SDL2_Mixer).
+     *
+     * Does whatever is needed to ensure the music keeps playing.
+     * It's safe to call this too much, but shouldn't be called inside a timer.
+     */
     void poll_music();
 
+    /*! \brief Set the music volume (SDL2_Mixer).
+     *
+     * Sets the volume of the currently playing music.
+     *
+     * \param   volume 0 (silent) to 250 (loudest).
+     */
     void set_music_volume(int volume);
-    void set_volume(int volume);
 
+    /*! \brief Set overall sound volume.
+     *
+     * \param   sound_volume 0 (silent) to 250 (loudest).
+     */
+    void set_volume(int sound_volume);
+
+    /*! \brief Play a specific song (SDL2_Mixer).
+     *
+     * This will stop any currently played song, and then play the requested song.
+     * Based on the extension given, the appropriate player is called.
+     *
+     * \note position is not implemented but it is currently only ever called with value 0 anyway.
+     *
+     * \param   music_name The relative filename of the song to be played.
+     * \param   position The position of the file to begin at.
+     */
     void play_music(const std::string& music_name, long position);
+
+    /*! \brief Pauses the current music file (SDL2_Mixer).
+     *
+     * Pauses the currently playing music file. It may be resumed
+     * by calling resume_music(). Pausing the music file may be used
+     * to nest music (such as during a battle).
+     */
     void pause_music();
+
+    /*! \brief Resume paused music (SDL2_Mixer).
+     *
+     * Resumes the most recently paused music file. If a call to
+     * play_music() was made in between, that file will be stopped.
+     */
     void resume_music();
+
+    /*! \brief Stop the music (SDL2_Mixer).
+     *
+     * Stops any music being played. To start playing more music, you
+     * must call play_music(), as the current music player will no longer
+     * be available and the song unloaded from memory.
+     */
     void stop_music();
-    void* get_sample(const std::string&);
-    void play_effect(int, int);
-    void play_sample(void*, int, int, int, int);
+
+    /*! \brief Get the sound sample with the given name.
+     *
+     * \param   s Name of the sample.
+     * \returns Specified sample data.
+     */
+    void* get_sample(const std::string& s);
+
+    /*! \brief Unused. */
+    void play_effect(int /*unused*/, int /*unused*/);
+
+    /*! \brief Play the provided Mix_Chunk sample.
+     *
+     * \param   chunk Mix_Chunk sample data to play.
+     */
+    void play_sample(void* chunk, int /*unused*/, int /*unused*/, int /*unused*/, int /*unused*/);
+
+    /*! \brief Clear the sample cache. */
     void free_samples();
 
   private:

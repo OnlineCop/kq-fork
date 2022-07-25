@@ -126,14 +126,14 @@ PALETTE pal = {
  * 7: `ilvl`: What level this item is.
  * 8: `hnds`: Used to index into the ::magic[] array.
  * 9: `bst`:
- * 10: `elem`: For runes, what element will it affect (see rs parameter of res_adjust() ).
+ * 10: `elem`: For runes, what element will it affect (see rune_index parameter of res_adjust() ).
  * 11: `imb`: What spell is cast when you "use" this item in combat.
  * 12: `eff`:
  * 13: `bon`:
  * 14: `price`: Default price of this item.
  * 15: `eq[8]`: Who can equip this item (see ePIDX enum in heroc.h).
  * 16: `stats[13]`: Stat bonuses for equipping this item. See eStat enum.
- * 17: `res[16]`: Resistances. See eResistance enum.
+ * 17: `res[16]`: Elemental effect modifier for each eResistance::R_TOTAL_RES types available.
  */
 s_item items[NUM_ITEMS] = {
     { "", 0, 0, "",
@@ -1103,11 +1103,20 @@ s_item items[NUM_ITEMS] = {
  *   Clvl { Sensar, Sarina, Corin, Ajathar, Casandra, Temmin, Ayla, Noslom }
  * }
  *
- * 0: "Name" is what the player sees either in the list of spells, or when the spell is being cast.
- * 1: Icon is the index for the picture that is on the side of the list of spells (the spell group).
- * 2: "Description" is a very basic description of the type of spell.
- * 3: Stat is either 0 or 1.
- * 13: Clvl is the minimum level at which this party member may learn a particular spell (or 0 for never).
+ * 0: `name[14]`: Spell name, either in a list of spells or when a spell is being cast.
+ * 1: `icon`: Icon ID (matches icon found in misc.png) for the 8x8 picture that is on the side of the list of spells.
+ * 2: `desc[26]`: Short explanation of what a spell does.
+ * 3: `stat`: KFighter::stats index offset (usually added to eStat::STAT_AURA [6] or eStat::STAT_INTELLECT [3]). Either '0' or '1'.
+ * 4: `mpc`: MP required to cast the spell; multiplied by a KFighter::mrp (magic usage rate [0..100]).
+ * 5: `use`: eItemUse enum (usually eItemUse::USE_ANY_INF [2], eItemUse::USE_CAMP_INF [4], or eItemUse::USE_COMBAT_INF [6]).
+ * 6: `tgt`: eTarget enum, indicating who the spell may effect: a single ally/enemy, or all allies/enemies.
+ * 7: `dmg`: Minimum amount that a spell will harm (or heal) for.
+ * 8: `bon`: A KFighter::stats bonus multiplier.
+ * 9: `hit`: Chance [0%..100%] that the spell will hit the target.
+ * 10: `elem`: Elemental effect this spell uses, 1-based (0: "none", 1: eResistance::R_EARTH, 2: eResistance::R_BLACK, etc.).
+ * 11: `dlvl`: Unused
+ * 12: `eff`: Special effect animation displayed during battles: Index within s_effect eff[] array (should be in range [0..NUM_EFFECTS-1]).
+ * 13: `clvl[8]`: is the minimum level at which this party member may learn a particular spell (or 0 for never).
  */
 s_spell magic[NUM_SPELLS] = {
     { "", 0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } },
@@ -1173,6 +1182,17 @@ s_spell magic[NUM_SPELLS] = {
     { "X-Surge", 49, "Non-elemental attack", 0, 75, 6, 5, 200, 500, 0, 16, 45, 45, { 0, 0, 0, 0, 45, 0, 0, 0 } },
 };
 
+/*! \brief Special effect data, such as when a weapon, spell, or rune causes an element effect.
+ *
+ * 0: `numf`: Number of frames within the sprite.
+ * 1: `xsize`: Width of each animation frame.
+ * 2: `ysize`: Height of each animation frame.
+ * 3: `orient`: Align the animation to the top, middle, or bottom of the fighter.
+ * 4: `delay`: Time to wait between frame transitions.
+ * 5: `kolor`: Relates to the nth color entry within the PALETTE pal.
+ * 6: `snd`: Sound that is played when effect is used
+ * 7: `ename[16]`: Sprite filename.
+ */
 s_effect eff[NUM_EFFECTS] = {
     { 0, 0, 0, 0, 0, 0, 0, "_" },                   //  0
     { 3, 24, 24, 1, 50, 0, 10, "aaxe.png" },        //  1
@@ -1228,13 +1248,12 @@ s_effect eff[NUM_EFFECTS] = {
     { 11, 32, 32, 1, 120, 6, 7, "generic.png" },    // 51
 };
 
-/* Format: {tnum, lvl, per, idx[5]}
- * tnum:    Encounter number in the Encounter table
- * lvl:     Level of monsters
- * per:     When random encounters are specified, this is the cumulative
- * percentage that this one will be selected
- * idx[5]:  There can be up to 5 enemies per battle; index of each enemy (index
- * starts at 1; 0 means NO enemy)
+/*! \brief Battle encounters.
+ *
+ * 0: `tnum`: Encounter number in the Encounter table.
+ * 1: `lvl`: Level of monsters.
+ * 2: `per`: When random encounters are specified, this is the cumulative percentage that this one will be selected.
+ * 3: `idx[5]`: There can be up to 5 enemies per battle; 2-based index of each enemy (0 means NO enemy).
  */
 s_erow erows[NUM_ETROWS] = {
     { 0, 2, 20, { 3, 3, 0, 0, 0 } },            { 0, 1, 40, { 3, 0, 0, 0, 0 } },

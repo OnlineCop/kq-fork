@@ -30,9 +30,18 @@ struct RGB
 typedef RGB PALETTE[PAL_SIZE];
 extern PALETTE black_palette;
 
-void get_palette(RGB*);
-void set_palette(RGB*);
-void set_palette_range(RGB*, int, int);
+void get_palette(RGB* clrs);
+void set_palette(RGB* clrs);
+
+/*! \brief Set the palette range for 'current_palette' from the source palette.
+ *
+ * This copies to the 'current_palette' palette.
+ *
+ * \param   src Palette source to copy from.
+ * \param   from Offset to copy from.
+ * \param   to Offset to copy to.
+ */
+void set_palette_range(RGB* src, int from, int to);
 
 struct COLOR_MAP
 {
@@ -44,7 +53,22 @@ inline int makecol(int r, int g, int b)
     return ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
 }
 
-void fade_interpolate(RGB*, RGB*, RGB*, int, int, int);
+/*! \brief Make an interpolated palette.
+ *
+ * The interpolation is 0..256:
+ *  0 means 100% of first palette
+ *  256 means 100% of second palette
+ *
+ * Indexes < 'from' or >= 'to' will be unchanged in dest.
+ *
+ * \param   a First palette.
+ * \param   b Second palette.
+ * \param   dest Output palette.
+ * \param   pos Interpolation within range [0..256].
+ * \param   from First index to interpolate (inclusive).
+ * \param   to Last index to interpolate (exclusive).
+ */
+void fade_interpolate(RGB* a, RGB* b, RGB* dest, int pos, int from, int to);
 
 enum eDrawMode
 {
@@ -52,6 +76,6 @@ enum eDrawMode
     DRAW_MODE_TRANS = 1,
 };
 
-inline void drawing_mode(int, void*, int, int)
+inline void drawing_mode(int, void*, int /*unused*/, int /*unused*/)
 {
 }

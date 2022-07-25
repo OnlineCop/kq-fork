@@ -24,5 +24,20 @@
 #include <cstddef>
 #include <cstdint>
 
-int hero_skillcheck(size_t);
-int skill_use(size_t);
+/*! \brief Is hero's special skill available?
+ *
+ * Check whether the hero can use his/her special skill at this point in combat.
+ *
+ * \param   fighter_index Hero to check in pidx[] (party) and fighter[] (battle) arrays.
+ * \returns 1 if skill is available, 0 otherwise
+ */
+int hero_skillcheck(size_t fighter_index);
+
+/*! \brief Activate the special skill.
+ *
+ * Activates the special skill for a hero, including targeting etc. if required.
+ *
+ * \param   attack_fighter_index Hero to process in pidx[] (party) and fighter[] (battle) arrays.
+ * \returns 1 if the skill was used, otherwise 0.
+ */
+int skill_use(size_t attack_fighter_index);

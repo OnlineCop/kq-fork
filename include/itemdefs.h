@@ -22,12 +22,10 @@
 #pragma once
 
 /*! \file
- * \brief Defines for all items
- * \author JB
- * \date ??????
+ * \brief Defines for all items.
  */
 
-/* The description for these items are in src\res.c */
+/*! \note The description for these items are in src/res.c. */
 
 #define I_NOITEM 0           /* Emtpy */
 #define I_MACE1 1            /* Mace */

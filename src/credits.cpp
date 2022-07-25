@@ -20,10 +20,7 @@
 */
 
 /*! \file
- * \brief Stuff relating to credits display:
- *        The original authors, new team etc are name-checked
- * \author PH
- * \date 20030526
+ * \brief Stuff relating to credits display: The original authors, new team etc are name-checked.
  */
 
 #include "credits.h"
@@ -38,7 +35,15 @@ using eSize::SCREEN_W;
 
 #define _(s) gettext(s)
 
-static int ease(int);
+/*! \brief An S-shaped curve.
+ *
+ * Returns values from an 'ease' curve, generally 3*x^2 - 2*x^3,
+ * but clamped to 0..NUM_EASE_VALUES (inclusive).
+ *
+ * \param   x Where to evaluate the function.
+ * \returns Clamped integer value between 0 and NUM_EASE_VALUES, inclusive.
+ */
+static int ease(int x);
 
 /*! Array of strings */
 static const char* credits[] = { "Josh Bolduc",
@@ -149,14 +154,6 @@ void display_credits(Raster* double_buffer)
 #endif
 }
 
-/*! \brief An S-shaped curve
- *
- * Returns values from an 'ease' curve, generally 3*x^2 - 2*x^3,
- * but clamped to 0..NUM_EASE_VALUES (inclusive).
- *
- * \param   x Where to evaluate the function
- * \returns Clamped integer value between 0 and NUM_EASE_VALUES, inclusive.
- */
 static int ease(int x)
 {
     if (x <= 0)

@@ -20,11 +20,9 @@
 */
 
 /*! \file
- * \brief Combat mode
+ * \brief Combat mode.
  *
  * This is the main file where combat is initiated.
- * \author JB
- * \date ????????
  */
 
 #include "combat.h"

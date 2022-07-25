@@ -20,9 +20,7 @@
 */
 
 /*! \file
- * \brief Markers
- * \author OC
- * \date 20100222
+ * \brief Markers are named coordinates within a map.
  */
 
 #include "markers.h"

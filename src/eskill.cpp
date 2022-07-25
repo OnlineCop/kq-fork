@@ -39,15 +39,9 @@
 #include <cstring>
 
 /*! \file
- * \brief Enemy skills
+ * \brief Enemy skills.
  */
 
-/*! \brief Process each enemy skill
- *
- * Just a function to process each enemy skill by index number.
- *
- * \param   fighter_index Index of attacker
- */
 void combat_skill(size_t fighter_index)
 {
     int sk = fighter[fighter_index].ai[fighter[fighter_index].csmem] - 100;
