@@ -67,8 +67,12 @@ s_sgstats s_sgstats::get_current()
         auto& chr = stats.characters[i];
         chr.id = pidx[i];
         auto& pp = party[chr.id];
-        chr.hp = pp.mhp > 0 ? pp.hp * 100 / pp.mhp : 0;
-        chr.mp = pp.mmp > 0 ? pp.mp * 100 / pp.mmp : 0;
+	if (pp.IsDead()) {
+	  chr.hp = 0;
+	} else {
+	  chr.hp = pp.mhp > 0 ? pp.hp * 100 / pp.mhp : 0;
+	}
+	chr.mp = pp.mmp > 0 ? pp.mp * 100 / pp.mmp : 0;
         chr.level = pp.lvl;
     }
     return stats;
@@ -396,21 +400,26 @@ void KSaveGame::show_sgstats(int saving)
                 for (a = 0; a < stats.num_characters; a++)
                 {
                     auto& chr = stats.characters[a];
+		    bool dead = chr.hp == 0;
                     hx = a * 72 + 84;
                     hy = pointer_offset + 12;
-                    draw_sprite(double_buffer, frames[chr.id][1], hx, hy + 4);
-                    sprintf(strbuf, _("L: %02d"), chr.level);
-                    Draw.print_font(double_buffer, hx + 16, hy, strbuf, FNORMAL);
-                    Draw.print_font(double_buffer, hx + 16, hy + 8, _("H:"), FNORMAL);
-                    Draw.print_font(double_buffer, hx + 16, hy + 16, _("M:"), FNORMAL);
-                    rectfill(double_buffer, hx + 33, hy + 9, hx + 65, hy + 15, 2);
-                    rectfill(double_buffer, hx + 32, hy + 8, hx + 64, hy + 14, 35);
-                    rectfill(double_buffer, hx + 33, hy + 17, hx + 65, hy + 23, 2);
-                    rectfill(double_buffer, hx + 32, hy + 16, hx + 64, hy + 22, 19);
-                    b = chr.hp * 32 / 100;
-                    rectfill(double_buffer, hx + 32, hy + 9, hx + 32 + b, hy + 13, 41);
-                    b = chr.mp * 32 / 100;
-                    rectfill(double_buffer, hx + 32, hy + 17, hx + 32 + b, hy + 21, 25);
+		    sprintf(strbuf, _("L: %02d"), chr.level);
+		    Draw.print_font(double_buffer, hx + 16, hy, strbuf, FNORMAL);
+		    Draw.print_font(double_buffer, hx + 16, hy + 8, _("H:"), FNORMAL);
+		    Draw.print_font(double_buffer, hx + 16, hy + 16, _("M:"), FNORMAL);
+		    if (dead) {
+		      draw_trans_sprite(double_buffer, frames[chr.id][1], hx, hy + 4);
+		    } else {
+		      draw_sprite(double_buffer, frames[chr.id][1], hx, hy + 4);
+		      rectfill(double_buffer, hx + 33, hy + 9, hx + 65, hy + 15, 2);
+		      rectfill(double_buffer, hx + 32, hy + 8, hx + 64, hy + 14, 35);
+		      rectfill(double_buffer, hx + 33, hy + 17, hx + 65, hy + 23, 2);
+		      rectfill(double_buffer, hx + 32, hy + 16, hx + 64, hy + 22, 19);
+		      b = chr.hp * 32 / 100;
+		      rectfill(double_buffer, hx + 32, hy + 9, hx + 32 + b, hy + 13, 41);
+		      b = chr.mp * 32 / 100;
+		      rectfill(double_buffer, hx + 32, hy + 17, hx + 32 + b, hy + 21, 25);
+		    }
                 }
                 sprintf(strbuf, _("T %u:%02u"), stats.time / 60, stats.time % 60);
                 Draw.print_font(double_buffer, 236, pointer_offset + 12, strbuf, FNORMAL);
