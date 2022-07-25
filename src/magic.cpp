@@ -652,9 +652,11 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
             }
         }
     }
-    else if (spell_number == M_DOOM || spell_number == M_DEATH) {
+    else if (spell_number == M_DOOM || spell_number == M_DEATH)
+    {
         Effects.display_amount(start_fighter_index, FONT_DECIDE, tall);
-        for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
+        for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index;
+             fighter_index++)
         {
             adjust_hp(fighter_index, Combat.GetHealthAdjust(fighter_index));
         }
