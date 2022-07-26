@@ -526,7 +526,9 @@ int KSaveGame::start_menu(bool skip_splash)
             draw_sprite(double_buffer, menuptr, 112, ptr * 8 + 124);
             redraw = 0;
         }
-        display_credits(double_buffer);
+
+        const int ease_speed = 4; // Larger value == faster, albeit not as smooth.
+        Credits.display_credits(double_buffer, ease_speed);
         Draw.blit2screen();
         if (PlayerInput.bhelp())
         {
