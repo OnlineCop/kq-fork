@@ -143,7 +143,8 @@ void KCredits::display_credits(Raster* double_buffer, int ease_speed)
     {
         blit(wk.get(), double_buffer, i, ease(i + ease_amount), i + x0, eSize::SCREEN_H - 55, 1, 32);
     }
-    Draw.print_font(double_buffer, (eSize::SCREEN_W - strlen(pressf1) * FontWidth) / 2, eSize::SCREEN_H - 30, pressf1, FNORMAL);
+    Draw.print_font(double_buffer, (eSize::SCREEN_W - strlen(pressf1) * FontWidth) / 2, eSize::SCREEN_H - 30, pressf1,
+                    FNORMAL);
 #ifdef KQ_CHEATS
     /* Put an un-ignorable cheat message; this should stop
      * PH releasing versions with cheat mode compiled in ;)
