@@ -324,9 +324,9 @@ int main(int argc, char* argv[])
         }
     }
 
+    kqrandom = new KQRandom();
     Game.startup();
     game_on = 1;
-    kqrandom = new KQRandom();
     /* While KQ is running (playing or at startup menu) */
     while (game_on)
     {

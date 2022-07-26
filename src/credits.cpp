@@ -29,6 +29,7 @@
 #include "draw.h"
 #include "gettext.h"
 #include "gfx.h"
+#include "random.h"
 
 #include <string>
 #include <vector>
@@ -71,6 +72,12 @@ const int FontWidth = 8;
 
 void KCredits::allocate_credits()
 {
+    // Randomize the credits from item 5 to the end.
+    for (int i = 6, ii = credits.size(); i < ii; ++i)
+    {
+        int index = kqrandom->random_range_exclusive(i, ii);
+        std::swap(credits[i - 1], credits[index]);
+    }
     if (wk == nullptr)
     {
         unsigned int tlen = 0;
