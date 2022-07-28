@@ -211,7 +211,7 @@ static void buy_menu()
             if (max > 0)
             {
                 sprintf(strbuf, "%d", cost);
-                Draw.print_font(double_buffer, 248 - (strlen(strbuf) * 8), shop_item_index * 8 + 32, strbuf,
+                Draw.print_font(double_buffer, 248 - (strbuf.size() * 8), shop_item_index * 8 + 32, strbuf,
                                 font_color);
             }
             else
@@ -314,7 +314,7 @@ void draw_shopgold()
     Draw.menubox(double_buffer, 248, 208, 7, 2, BLUE);
     Draw.print_font(double_buffer, 256, 216, _("Gold:"), FGOLD);
     sprintf(strbuf, "%d", Game.GetGold());
-    Draw.print_font(double_buffer, 312 - (strlen(strbuf) * 8), 224, strbuf, FNORMAL);
+    Draw.print_font(double_buffer, 312 - (strbuf.size() * 8), 224, strbuf, FNORMAL);
 }
 
 static void draw_sideshot(int selected_item)
@@ -492,12 +492,12 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
         Draw.menubox(double_buffer, 152 - (strlen(iname) * 4), 0, strlen(iname), 1, BLUE);
         Draw.print_font(double_buffer, 160 - (strlen(iname) * 4), 8, iname, FGOLD);
         sprintf(strbuf, _("The cost is %u gp for the night."), total_gold_cost);
-        Draw.menubox(double_buffer, 152 - (strlen(strbuf) * 4), 48, strlen(strbuf), 1, BLUE);
-        Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 56, strbuf, FNORMAL);
+        Draw.menubox(double_buffer, 152 - (strbuf.size() * 4), 48, strbuf.size(), 1, BLUE);
+        Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 56, strbuf, FNORMAL);
         Draw.menubox(double_buffer, 248, 168, 7, 2, BLUE);
         Draw.print_font(double_buffer, 256, 176, _("Gold:"), FGOLD);
         sprintf(strbuf, "%d", Game.GetGold());
-        Draw.print_font(double_buffer, 312 - (strlen(strbuf) * 8), 184, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, 312 - (strbuf.size() * 8), 184, strbuf, FNORMAL);
         if ((uint32_t)Game.GetGold() >= total_gold_cost)
         {
             Draw.menubox(double_buffer, 52, 96, 25, 2, BLUE);
@@ -576,7 +576,7 @@ static void sell_howmany(int item_no, size_t inv_page)
     {
         Draw.menubox(double_buffer, 32, 168, 30, 1, DARKBLUE);
         sprintf(strbuf, _("Sell for %d gp?"), prc * 50 / 100);
-        Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 176, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 176, strbuf, FNORMAL);
         sell_item(inv_page * NUM_ITEMS_PER_PAGE + item_no, 1);
         stop = 1;
     }
@@ -591,7 +591,7 @@ static void sell_howmany(int item_no, size_t inv_page)
         Draw.draw_icon(double_buffer, items[l].icon, 48, item_no * 8 + 32);
         Draw.print_font(double_buffer, 56, item_no * 8 + 32, items[l].name, FNORMAL);
         sprintf(strbuf, _("%d of %d"), my, max_items);
-        Draw.print_font(double_buffer, 280 - (strlen(strbuf) * 8), item_no * 8 + 32, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, 280 - (strbuf.size() * 8), item_no * 8 + 32, strbuf, FNORMAL);
         Draw.blit2screen();
 
         if (PlayerInput.up() || PlayerInput.right())
@@ -620,7 +620,7 @@ static void sell_howmany(int item_no, size_t inv_page)
         {
             Draw.menubox(double_buffer, 32, 168, 30, 1, DARKBLUE);
             sprintf(strbuf, _("Sell for %d gp?"), (prc * 50 / 100) * my);
-            Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 176, strbuf, FNORMAL);
+            Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 176, strbuf, FNORMAL);
             sell_item(inv_page * NUM_ITEMS_PER_PAGE + item_no, my);
             stop = 1;
         }
@@ -716,13 +716,13 @@ static void sell_menu()
             {
                 // Check if there is more than one item
                 sprintf(strbuf, _("%d gp for each one."), sp);
-                Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 176, strbuf, FNORMAL);
+                Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 176, strbuf, FNORMAL);
             }
             else
             {
                 // There is only one of this item
                 sprintf(strbuf, _("That's worth %d gp."), sp);
-                Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 176, strbuf, FNORMAL);
+                Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 176, strbuf, FNORMAL);
             }
         }
         else

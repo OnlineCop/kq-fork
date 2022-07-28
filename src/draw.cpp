@@ -123,7 +123,7 @@ void KDraw::set_window(SDL_Window* _window)
 void KDraw::blit2screen()
 {
     static int frame_count = 0;
-    static char fbuf[16] = "---";
+    static std::string fbuf = "---";
     static Uint32 start_time = 0;
     if (show_frate)
     {

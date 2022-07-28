@@ -165,13 +165,13 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
                     }
                     if (Combat.GetHealthAdjust(fighter_index) == NODISPLAY)
                     {
-                        sprintf(strbuf, "_");
+                        strbuf = "_";
                     }
                     else
                     {
                         sprintf(strbuf, "%d", abs(Combat.GetHealthAdjust(fighter_index)));
                     }
-                    string_length = strlen(strbuf) * 3;
+                    string_length = strbuf.size() * 3;
                     eFont new_font_color = font_color;
                     if (font_color == FONT_DECIDE)
                     {

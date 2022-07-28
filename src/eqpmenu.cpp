@@ -368,17 +368,17 @@ static void draw_equippreview(int ch, int ptr, int pp)
         int c1 = fighter[ch].stats[z];
         int c2 = tstats[z];
         sprintf(strbuf, "%d", c1);
-        Draw.print_font(double_buffer, 252 - (strlen(strbuf) * 8), z * 8 + 100, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, 252 - (strbuf.size() * 8), z * 8 + 100, strbuf, FNORMAL);
         Draw.print_font(double_buffer, 260, z * 8 + 100, ">", FNORMAL);
         if (ptr >= 0)
         {
             sprintf(strbuf, "%d", c2);
             if (c1 < c2)
-                Draw.print_font(double_buffer, 300 - (strlen(strbuf) * 8), z * 8 + 100, strbuf, FGREEN);
+                Draw.print_font(double_buffer, 300 - (strbuf.size() * 8), z * 8 + 100, strbuf, FGREEN);
             if (c2 < c1)
-                Draw.print_font(double_buffer, 300 - (strlen(strbuf) * 8), z * 8 + 100, strbuf, FRED);
+                Draw.print_font(double_buffer, 300 - (strbuf.size() * 8), z * 8 + 100, strbuf, FRED);
             if (c1 == c2)
-                Draw.print_font(double_buffer, 300 - (strlen(strbuf) * 8), z * 8 + 100, strbuf, FNORMAL);
+                Draw.print_font(double_buffer, 300 - (strbuf.size() * 8), z * 8 + 100, strbuf, FNORMAL);
         }
     }
     Draw.menubox(double_buffer, 188, 212, 13, 1, BLUE);

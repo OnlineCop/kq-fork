@@ -936,8 +936,8 @@ void KCombat::enemies_win()
     Draw.blit2screen();
     kq_wait(1000);
     sprintf(strbuf, _("%s was defeated!"), party[pidx[0]].name.c_str());
-    Draw.menubox(double_buffer, 152 - (strlen(strbuf) * 4), 48, strlen(strbuf), 1, BLUE);
-    Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 56, strbuf, FNORMAL);
+    Draw.menubox(double_buffer, 152 - (strbuf.size() * 4), 48, strbuf.size(), 1, BLUE);
+    Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 56, strbuf, FNORMAL);
     Draw.blit2screen();
     Game.wait_enter();
     do_transition(eTransitionFade::OUT, 4);
@@ -1293,8 +1293,8 @@ void KCombat::heroes_win()
         sprintf(strbuf, _("Gained %d xp."), txp);
     }
 
-    Draw.menubox(double_buffer, 152 - (strlen(strbuf) * 4), 8, strlen(strbuf), 1, BLUE);
-    Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 16, strbuf, FNORMAL);
+    Draw.menubox(double_buffer, 152 - (strbuf.size() * 4), 8, strbuf.size(), 1, BLUE);
+    Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 16, strbuf, FNORMAL);
     Draw.blit2screen();
     fullblit(double_buffer, back);
     for (fighter_index = 0; fighter_index < num_enemies; fighter_index++)
@@ -1322,9 +1322,9 @@ void KCombat::heroes_win()
                 if (check_inventory(found_item, 1) != 0)
                 {
                     sprintf(strbuf, _("%s found!"), items[found_item].name);
-                    Draw.menubox(double_buffer, 148 - (strlen(strbuf) * 4), nr * 24 + 48, strlen(strbuf) + 1, 1, BLUE);
-                    Draw.draw_icon(double_buffer, items[found_item].icon, 156 - (strlen(strbuf) * 4), nr * 24 + 56);
-                    Draw.print_font(double_buffer, 164 - (strlen(strbuf) * 4), nr * 24 + 56, strbuf, FNORMAL);
+                    Draw.menubox(double_buffer, 148 - (strbuf.size() * 4), nr * 24 + 48, strbuf.size() + 1, 1, BLUE);
+                    Draw.draw_icon(double_buffer, items[found_item].icon, 156 - (strbuf.size() * 4), nr * 24 + 56);
+                    Draw.print_font(double_buffer, 164 - (strbuf.size() * 4), nr * 24 + 56, strbuf, FNORMAL);
                     nr++;
                 }
             }

@@ -241,12 +241,13 @@ void config_menu()
         }
 
         sprintf(strbuf, "%3d%%", gsvol * 100 / 250);
-        citem(row[12], _("Sound Volume:"), strbuf, fontColor);
+        citem(row[12], _("Sound Volume:"), strbuf.c_str(), fontColor);
 
         sprintf(strbuf, "%3d%%", gmvol * 100 / 250);
-        citem(row[13], _("Music Volume:"), strbuf, fontColor);
+        citem(row[13], _("Music Volume:"), strbuf.c_str(), fontColor);
 
-        citem(row[14], _("Slow Computer:"), slow_computer ? _("YES") : _("NO"), FNORMAL);
+        strbuf = slow_computer ? _("YES") : _("NO");
+        citem(row[14], _("Slow Computer:"), strbuf.c_str(), FNORMAL);
 
         if (cpu_usage)
         {
@@ -254,16 +255,20 @@ void config_menu()
         }
         else
         {
-            sprintf(strbuf, "yield_timeslice()");
+            strbuf = "yield_timeslice()";
         }
-        citem(row[15], _("CPU Usage:"), strbuf, FNORMAL);
+        citem(row[15], _("CPU Usage:"), strbuf.c_str(), FNORMAL);
 
 #ifdef DEBUGMODE
         if (debugging)
         {
             sprintf(strbuf, "%d", debugging);
         }
-        citem(row[16], _("DebugMode Stuff:"), debugging ? strbuf : _("OFF"), FNORMAL);
+        else
+        {
+            strbuf = _("OFF");
+        }
+        citem(row[16], _("DebugMode Stuff:"), strbuf.c_str(), FNORMAL);
 #endif
 
         draw_sprite(double_buffer, menuptr, 32, row[ptr]);
@@ -525,7 +530,6 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
             rectfill(double_buffer, a * 8 + b + 1, 117, a * 8 + b + 7, 123, 50);
             rectfill(double_buffer, a * 8 + b, 116, a * 8 + b + 6, 122, 21);
         }
-        char strbuf[10];
         if (sp)
         {
             sprintf(strbuf, "%d%%", cv * 100 / maxu);
@@ -534,7 +538,7 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
         {
             sprintf(strbuf, "%d", cv);
         }
-        Draw.print_font(double_buffer, 160 - (strlen(strbuf) * 4), 124, strbuf, FGOLD);
+        Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 124, strbuf, FGOLD);
         Draw.blit2screen();
 
         if (PlayerInput.left())

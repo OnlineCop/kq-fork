@@ -128,7 +128,7 @@ static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
             Draw.draw_icon(double_buffer, magic[spell_index].icon, 96, current_spell * 8 + 100);
             Draw.print_font(double_buffer, 104, current_spell * 8 + 100, magic[spell_index].name, text_color);
             sprintf(strbuf, "%d", Magic.mp_needed(caster_fighter_index, spell_index));
-            Draw.print_font(double_buffer, 232 - (strlen(strbuf) * 8), current_spell * 8 + 100, strbuf, text_color);
+            Draw.print_font(double_buffer, 232 - (strbuf.size() * 8), current_spell * 8 + 100, strbuf, text_color);
         }
     }
     Draw.menubox(double_buffer, 40, 204, 28, 1, BLUE);
@@ -369,7 +369,7 @@ int learn_new_spells(int who)
                 if (in_combat == 1)
                 {
                     sprintf(strbuf, _("%s learned %s"), party[who].name.c_str(), magic[a].name);
-                    size_t strbuf_len = strlen(strbuf);
+                    size_t strbuf_len = strbuf.size();
                     fullblit(back, double_buffer);
                     Draw.menubox(double_buffer, 148 - (strbuf_len * 4), 152, strbuf_len + 1, 1, BLUE);
                     Draw.draw_icon(double_buffer, magic[a].icon, 156 - (strbuf_len * 4), 160);

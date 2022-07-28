@@ -182,9 +182,8 @@ void KSaveGame::load_sgstats()
 {
     for (int sg = 0; sg < NUMSG; ++sg)
     {
-        char buf[32];
-        sprintf(buf, "sg%u.xml", sg);
-        std::string path = kqres(eDirectories::SAVE_DIR, std::string(buf));
+        sprintf(strbuf, "sg%u.xml", sg);
+        std::string path = kqres(eDirectories::SAVE_DIR, strbuf);
         s_sgstats& stats = savegame[sg];
         if (Disk.exists(path.c_str()) && (Disk.load_stats_only(path.c_str(), stats) != 0))
         {

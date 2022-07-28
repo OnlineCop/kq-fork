@@ -44,6 +44,7 @@
 #include "maps.h"
 #include "player.h"
 #include "structs.h"
+#include "utilities.h"
 
 #include <cstdint>
 #include <string>
@@ -572,7 +573,8 @@ extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, cpu_usage
 extern bool should_stretch_view;
 extern int window_width, window_height;
 extern uint16_t tilex[MAX_TILES], adelay[MAX_ANIM];
-extern char *strbuf, *savedir;
+extern std::string strbuf;
+extern char *savedir;
 extern s_heroinfo players[MAXCHRS];
 extern KFighter fighter[NUM_FIGHTERS];
 extern KFighter tempa, tempd;
