@@ -362,7 +362,7 @@ static void combat_draw_spell_menu(int c, int ptr, int pg)
             }
             b = Magic.mp_needed(c, z);
             sprintf(strbuf, "%d", b);
-            Draw.print_font(double_buffer, 222 - (strlen(strbuf) * 8), j * 8 + 32, strbuf, FNORMAL);
+            Draw.print_font(double_buffer, 222 - (strbuf.size() * 8), j * 8 + 32, strbuf, FNORMAL);
             draw_sprite(double_buffer, b_mp, 222, j * 8 + 32);
         }
     }
@@ -1231,11 +1231,11 @@ static void hero_run()
     }
     else
     {
-        sprintf(strbuf, _("Escaped!"));
+        strbuf = _("Escaped!");
     }
 
     static const int FontWidth = 8;
-    int text_center = strlen(strbuf) * (FontWidth / 2);
+    int text_center = strbuf.size() * (FontWidth / 2);
 
     /* TT: slow_computer addition for speed-ups */
     int time_to_show_running_animation = (slow_computer ? 4 : 20);
@@ -1247,7 +1247,7 @@ static void hero_run()
              running_animation_count++)
         {
             clear_bitmap(double_buffer);
-            Draw.menubox(double_buffer, 152 - text_center, 32, strlen(strbuf), 1, BLUE);
+            Draw.menubox(double_buffer, 152 - text_center, 32, strbuf.size(), 1, BLUE);
             Draw.print_font(double_buffer, 160 - text_center, 40, strbuf, FNORMAL);
             for (size_t fighter_index = 0; fighter_index < numchrs; fighter_index++)
             {

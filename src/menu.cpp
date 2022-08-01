@@ -111,9 +111,9 @@ void KMenu::draw_mainmenu(int swho)
     /* PH: print time as h:mm */
     auto gt = Game.GetGameTime();
     sprintf(strbuf, "%d:%02d", gt.hours(), gt.minutes());
-    Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8), 144, strbuf, FNORMAL);
+    Draw.print_font(double_buffer, 268 - (strbuf.size() * 8), 144, strbuf, FNORMAL);
     sprintf(strbuf, "%d", Game.GetGold());
-    Draw.print_font(double_buffer, 268 - (strlen(strbuf) * 8), 172, strbuf, FNORMAL);
+    Draw.print_font(double_buffer, 268 - (strbuf.size() * 8), 172, strbuf, FNORMAL);
     if (swho != -1)
     {
         Draw.menubox(double_buffer, 44, swho * 64 + 64, 18, 6, DARKBLUE);
@@ -132,22 +132,22 @@ void KMenu::draw_playerstat(Raster* where, int player_index_in_party, int dx, in
     Draw.draw_stsicon(where, 0, player_index_in_party, eSpellType::S_MALISON, dx + 48, dy + 8);
     Draw.print_font(where, dx + 48, dy + 16, _("LV"), FGOLD);
     sprintf(strbuf, "%d", party[player_index_in_party].lvl);
-    Draw.print_font(where, dx + 104 - (strlen(strbuf) * 8), dy + 16, strbuf, FNORMAL);
+    Draw.print_font(where, dx + 104 - (strbuf.size() * 8), dy + 16, strbuf, FNORMAL);
     Draw.print_font(where, dx + 48, dy + 24, _("HP"), FGOLD);
     Draw.print_font(where, dx + 104, dy + 24, "/", FNORMAL);
     sprintf(strbuf, "%d", party[player_index_in_party].hp);
-    j = strlen(strbuf) * 8;
+    j = strbuf.size() * 8;
     Draw.print_font(where, dx + 104 - j, dy + 24, strbuf, FNORMAL);
     sprintf(strbuf, "%d", party[player_index_in_party].mhp);
-    j = strlen(strbuf) * 8;
+    j = strbuf.size() * 8;
     Draw.print_font(where, dx + 144 - j, dy + 24, strbuf, FNORMAL);
     Draw.print_font(where, dx + 48, dy + 32, _("MP"), FGOLD);
     Draw.print_font(where, dx + 104, dy + 32, "/", FNORMAL);
     sprintf(strbuf, "%d", party[player_index_in_party].mp);
-    j = strlen(strbuf) * 8;
+    j = strbuf.size() * 8;
     Draw.print_font(where, dx + 104 - j, dy + 32, strbuf, FNORMAL);
     sprintf(strbuf, "%d", party[player_index_in_party].mmp);
-    j = strlen(strbuf) * 8;
+    j = strbuf.size() * 8;
     Draw.print_font(where, dx + 144 - j, dy + 32, strbuf, FNORMAL);
 }
 
@@ -504,7 +504,7 @@ void KMenu::status_screen(size_t fighter_index)
         Draw.menubox(double_buffer, 0, 72, 18, 17, BLUE);
         Draw.print_font(double_buffer, 8, 80, _("Exp:"), FGOLD);
         sprintf(strbuf, "%d", party[pidx_index].xp);
-        Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8), 80, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, 152 - (strbuf.size() * 8), 80, strbuf, FNORMAL);
         Draw.print_font(double_buffer, 8, 88, _("Next:"), FGOLD);
         // TT: Does this mean we can only level up to 50?
         if (party[pidx_index].lvl < 50)
@@ -515,7 +515,7 @@ void KMenu::status_screen(size_t fighter_index)
         {
             sprintf(strbuf, "%d", 0);
         }
-        Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8), 88, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, 152 - (strbuf.size() * 8), 88, strbuf, FNORMAL);
         Draw.print_font(double_buffer, 8, 104, _("Strength"), FGOLD);
         Draw.print_font(double_buffer, 8, 112, _("Agility"), FGOLD);
         Draw.print_font(double_buffer, 8, 120, _("Vitality"), FGOLD);
@@ -541,7 +541,7 @@ void KMenu::status_screen(size_t fighter_index)
             }
             Draw.print_font(double_buffer, 96, stats_y, "$", FGOLD);
             sprintf(strbuf, "%d", fighter[fighter_index].stats[stats_index]);
-            Draw.print_font(double_buffer, 152 - (strlen(strbuf) * 8), stats_y, strbuf, FNORMAL);
+            Draw.print_font(double_buffer, 152 - (strbuf.size() * 8), stats_y, strbuf, FNORMAL);
         }
 
         Draw.menubox(double_buffer, 160, 16, 18, 16, BLUE);

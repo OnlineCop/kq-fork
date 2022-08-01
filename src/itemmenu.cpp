@@ -705,7 +705,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         }
         sprintf(strbuf, _("%s learned!"), magic[tmp].name);
         play_effect(KAudio::eSound::SND_TWINKLE, 128);
-        Draw.message(strbuf, magic[tmp].icon, 0);
+        Draw.message(strbuf.c_str(), magic[tmp].icon, 0);
         return ITEM_EFFECT_SUCCESS_MULTIPLE;
     }
     if (ti == I_HPUP)

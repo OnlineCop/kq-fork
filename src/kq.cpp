@@ -148,7 +148,7 @@ uint16_t tilex[MAX_TILES];
 uint16_t adelay[MAX_ANIM];
 
 /*! Temporary buffer for string operations (used everywhere!) */
-char* strbuf = NULL;
+std::string strbuf;
 
 /*! Initial character data
  *
@@ -920,10 +920,6 @@ void KGame::deallocate_stuff()
     Map.zone_array.clear();
     Map.shadow_array.clear();
     Map.obstacle_array.clear();
-    if (strbuf)
-    {
-        free(strbuf);
-    }
 
     if (Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized)
     {
@@ -1290,9 +1286,6 @@ void KGame::startup()
     SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 #endif
 
-    /* Buffers to allocate */
-    strbuf = (char*)malloc(4096);
-
     map_seg = b_seg = f_seg = NULL;
     Map.zone_array.clear();
     Map.shadow_array.clear();
@@ -1479,7 +1472,7 @@ void KGame::extra_controls()
     auto key = SDL_GetKeyboardState(nullptr);
     if (key[SDL_SCANCODE_X] && key[SDL_SCANCODE_LALT])
     {
-        sprintf(strbuf, _("Program terminated: user pressed Alt+X"));
+        strbuf = _("Program terminated: user pressed Alt+X");
         program_death(strbuf);
     }
 #ifdef DEBUGMODE

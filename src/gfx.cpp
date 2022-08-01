@@ -307,12 +307,3 @@ void Raster::to_rgba32(SDL_Rect* src, SDL_PixelFormat* format, void* pixels, int
         }
     }
 }
-
-void textprintf(Raster*, void*, int, int, int, const char* fmt, ...)
-{
-    char buffer[1024];
-    va_list args;
-    va_start(args, fmt);
-    vsprintf(buffer, fmt, args);
-    va_end(args);
-}

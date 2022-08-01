@@ -869,7 +869,7 @@ static const KMarker* KQ_find_marker(std::string name, bool required)
     {
         /* Error, marker name not found */
         sprintf(strbuf, _("Marker \"%s\" not found."), name.c_str());
-        lua_pushstring(theL, strbuf);
+        lua_pushstring(theL, strbuf.c_str());
         lua_error(theL);
         /* never returns here... */
     }
@@ -1428,7 +1428,7 @@ static int KQ_chest(lua_State* L)
         Game.AddGold(item_quantity);
         sprintf(strbuf, _("Found %d gp!"), item_quantity);
         play_effect(KAudio::eSound::SND_MONEY, 128);
-        Draw.message(strbuf, 255, 0);
+        Draw.message(strbuf.c_str(), 255, 0);
         if (treasure_index > -1)
         {
             treasure[treasure_index] = 1;
@@ -1476,7 +1476,7 @@ static int KQ_chest(lua_State* L)
             sprintf(strbuf, _("%s ^%d procured!"), items[inventory_index].name, (int)item_quantity);
         }
         play_effect(KAudio::eSound::SND_UNEQUIP, 128);
-        Draw.message(strbuf, items[inventory_index].icon, 0);
+        Draw.message(strbuf.c_str(), items[inventory_index].icon, 0);
         if (treasure_index > -1)
         {
             treasure[treasure_index] = 1;
@@ -1491,7 +1491,7 @@ static int KQ_chest(lua_State* L)
     {
         sprintf(strbuf, _("%s ^%d not taken!"), items[inventory_index].name, (int)item_quantity);
     }
-    Draw.message(strbuf, items[inventory_index].icon, 0);
+    Draw.message(strbuf.c_str(), items[inventory_index].icon, 0);
     return 0;
 }
 
