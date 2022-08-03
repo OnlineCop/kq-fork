@@ -30,7 +30,16 @@ struct RGB
 typedef RGB PALETTE[PAL_SIZE];
 extern PALETTE black_palette;
 
+/*! \brief Duplicate the current palette into \p clrs.
+ *
+ * \param[out] clrs Where to copy current palette to.
+ */
 void get_palette(RGB* clrs);
+
+/*! \brief Duplicate the given palette into the current palette.
+ *
+ * \param[in] clrs Where to copy current palette from.
+ */
 void set_palette(RGB* clrs);
 
 /*! \brief Set the palette range for 'current_palette' from the source palette.

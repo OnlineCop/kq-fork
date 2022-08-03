@@ -67,7 +67,7 @@ class KEnemy
      *
      * \todo PH would be good to have this script-enabled.
      *
-     * \param   fighter_index Target action will be performed on.
+     * \param   fighter_index Target index in fighter[] array from [PSIZE..PSIZE+num_enemies-1] that action will be performed on.
      */
     void ChooseAction(size_t fighter_index);
 
@@ -79,7 +79,7 @@ class KEnemy
      * Confused fighters never use spells or items.
      * \sa auto_herochooseact()
      *
-     * \param   fighter_index Target index in fighter[] array.
+     * \param   fighter_index Target index in fighter[] array from [PSIZE..PSIZE+num_enemies-1].
      */
     void CharmAction(size_t fighter_index);
 
@@ -120,8 +120,8 @@ class KEnemy
      *
      * Very simple... see whether the skill that was selected can be used.
      *
-     * \param   w Enemy index.
-     * \param   ws Enemy skill index.
+     * \param   w Enemy index in fighter[] array.
+     * \param   ws Which skill in ai[] array to check, in range [0..7].
      */
     void SkillCheck(int w, int ws);
 
@@ -194,8 +194,21 @@ class KEnemy
     /*! \brief Index related to enemies in an encounter. */
     int cf[NUM_FIGHTERS];
 
+    /*! \brief Load enemy data from disk.
+     *
+     * Reads in each line of "allstat.mon" and creates a new KFighter object to append to m_enemy_fighters.
+     *
+     * \param   fullPath Path to file to load from.
+     * \param   enemy_gfx Bitmap to allocate memory in.
+     */
     void LoadEnemies(const std::string& fullPath, Raster* enemy_gfx);
 
+    /*! \brief Load enemy stats from disk.
+     *
+     * Reads in each line of "resabil.mon" and assigns values to corresponding m_enemy_fighters.
+     *
+     * \param   path_resabil Path to file to load from.
+     */
     void LoadEnemyStats(const std::string& path_resabil);
 };
 

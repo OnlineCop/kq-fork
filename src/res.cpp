@@ -1253,7 +1253,7 @@ s_effect eff[NUM_EFFECTS] = {
  * 0: `tnum`: Encounter number in the Encounter table.
  * 1: `lvl`: Level of monsters.
  * 2: `per`: When random encounters are specified, this is the cumulative percentage that this one will be selected.
- * 3: `idx[5]`: There can be up to 5 enemies per battle; 2-based index of each enemy (0 means NO enemy).
+ * 3: `idx[5]`: There can be up to 5 enemies per battle; 1-based index of each enemy (0 means NO enemy).
  */
 s_erow erows[NUM_ETROWS] = {
     { 0, 2, 20, { 3, 3, 0, 0, 0 } },            { 0, 1, 40, { 3, 0, 0, 0, 0 } },

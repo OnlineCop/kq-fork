@@ -185,8 +185,9 @@ class KFighter
     int steal_item_common;
     /*! \brief Steal Item Rare: If Ayla steals something, she will get this item 5% of the time. */
     int steal_item_rare;
-    /*! \brief See A_* constants in enums.h. */
+    /*! \brief See eStat enum. */
     int stats[eStat::NUM_STATS];
+
     /*! \brief Resistance to various elemental effects.
      *
      * Array contains an entry for each R_* type listed in the eResistance enum.
@@ -198,45 +199,121 @@ class KFighter
      * Values around 0 mean the elemental effects do not sway the attack amount either way.
      */
     int8_t res[NUM_RES];
-    /*! \brief Direction character's sprite faces. */
+
+    /*! \brief Direction character's sprite faces; see eDirection enum. */
     uint8_t facing;
+
     /*! \brief Battle sprite to display (standing, casting, attacking). */
     uint8_t aframe;
     uint8_t crit;
     uint8_t defend;
 
-    /*!
-     * When the value is 1..99 (technically eMagic::M_CURE1..eMagic::M_XSURGE), call
-     * KEnemy::SpellCheck() and, if the enemy "has" that spell, it can try to cast it.
+    /*! \brief Enemy's available combat abilities, ranging from spells to physical attacks.
      *
-     * When the value is 100..253, call KEnemy::SkillCheck() and, after subtracting 100,
-     * if the skill is 1..153, then:
-     *  - if skill==5:
-     *    - set "atrack" to 1 if either: 1 party member; OR 2 party members and either one is dead
-     *  - then: if fighter's "atrack" is non-zero, do nothing, else:
-     *    - if skill is one of: 1, 2, 3, 6, 7, 12, 14, then:
-     *      - target only one of the party members
+     * When the value is [1..99] (technically [eMagic::M_CURE1..eMagic::M_XSURGE] but with space
+     * for more spells), call KEnemy::SpellCheck() and, if the enemy "has" that spell, it can try
+     * to cast it.
+     * - When an enemy's HP is low enough, KEnemy::CureCheck() is used to determine whether ANY of
+     *   the fighter's ai[] values equals one of the healing spells (M_CURE1..M_CURE4).
+     *   - If true, the enemy will try to prioritize healing itself over using an offensive attack.
+     *   - If false, the enemy will attempt one of its other ai[] skills.
+     *
+     * When the value is [100..253], call KEnemy::SkillCheck() and, after subtracting 100, if the
+     * skill is [1..153]:
+     *  1: if the enemy has the "Sweep" skill (value '5' in combat_skill()):
+     *    - Set the enemy's KFighter::atrack[] to 1 if the player has only 1 living party member
+     *      (either 1 person in player's party, or 2 in party with either party member dead).
+     *  2: if KFighter::atrack[] is non-zero, do nothing; otherwise:
+     *    - if skill is one of: 1, 2, 3, 6, 7, 12, 14 (see combat_skill() for their meaning), then:
+     *      - force the attack to target only one of the party members
+     *        TODO: Get rid of these hard-coded values: separate the "target-one" vs. "target-all"
+     *              determination somehow.
      *    - else:
-     *      - target all of the party members
-     *  - then:
-     *    - call combat_skill(), which takes 'ai - 100' to determine the attack to use:
+     *      - target all living party members
+     *  3: call combat_skill(), which takes 'ai - 100' to determine the attack to use:
      *      - 1: "Venomous Bite"
      *      - 2: "Double Slash"
      *      - ...
      *      - 20: "Entangle"
-     *      - 21: "Fire Bite" (commented out)
+     *      - 21: "Fire Bite" (code for this has been commented out)
+     *      - 22..153 have not been implemented
+     *
+     * Value 254 does not appear to be used in code OR resabil.mon.
+     *
+     * Value 255 is used in the last non-zero ai[] column of resabil.mon.
      */
     uint8_t ai[8];
+
+    /*! \brief Percent chance of corresponding AI[] entry being used.
+     *
+     * Each non-zero entry within ai[] has a corresponding aip[] percentage of being selected
+     * during battle.
+     *
+     * Example:
+     *    Trayor (enemy index 45):
+     *      ai[8]  = {8, 102, 114, 27, 35, 31, 54, 255}
+     *      aip[8] = {0, 15,  30,  45, 60, 75, 90, 100}
+     *
+     *  1: If Trayor's HP is low enough, KEnemy::CureCheck() checks all ai[8] values to determine
+     *     if ANY of them can be used to cure itself.
+     *  2: Since ai[0] (value '8' == M_CURE2) is its strongest available healing spell:
+     *     - If Trayor is able to cast the spell (not muted, has enough MP, etc.), it will do so,
+     *       ENDING its turn.
+     *     - If Trayor CAN'T cast the spell, continue to the remaining logic:
+     *  3: Use 'random_value = random_range_exclusive(0, 100)' to choose a random value [0..99].
+     *    3a: There is a 0% chance (aip[0] == '0') that Trayor will select ability "M_CURE2":
+     *        (it's a 0% chance because 'random_value' cannot be < '0')
+     *    3b-g: There is a 15% chance that Trayor will select one of the following abilities:
+     *        (it's a 15% chance because aip[1..6] is '15' more than aip[0..5])
+     *        "Double Slash" physical attack (ai[1] == '102'), so '102-100==2' in combat_skill()
+     *        "Stunning Strike" physical attack (ai[2] == '114'), so '114-100==14' in combat_skill()
+     *        "Divine Guard" spell (ai[3] == '27'), so M_DIVINEGUARD in KEnemy::SpellCheck()
+     *        "Blind" spell (ai[4] == '25'), so M_BLIND in KEnemy::SpellCheck()
+     *        "Lumin" spell (ai[5] == '31'), so M_LUMINE in KEnemy::SpellCheck()
+     *        "Blizzard" spell (ai[6] == '54'), so M_BLIZZARD in KEnemy::SpellCheck()
+     *    3h: There is a 10% chance ('100-90==10') that Trayor will do a normal attack.
+     */
     uint8_t aip[8];
+
+    /*! \brief Attacker combat ability something-or-other.
+     *
+     * When the fighter is in the player's party (fighter[0..PSIZE-1]):
+     *  - it appears that only atrack[0..2] are used when the fighter is CASANDRA:
+     *    - atrack[0] is used for KFighter::stats[eStat::Aura]
+     *    - atrack[1] is used for KFighter::stats[eStat::Spirit]
+     *    - atrack[2] is used for KFighter::mrp
+     *  - it does not appear to use atrack[3..7].
+     *
+     * When the fighter is an enemy (fighter[PSIZE..num_fighters]):
+     *  - combat_skill() uses the value of KFighter::csmem as the KFighter::atrack[] index.
+     *  - KEnemy::CharmAction() decrements value stored in atrack[0..4] until they're 0, unless the
+     *    fighter is Ether'ed or dead.
+     *  - KEnemy::ChooseAction() decrements value stored in atrack[0..7] until they're 0, unless
+     *    the fighter is Ether'ed or dead.
+     *  - KEnemy::SkillCheck() sets atrack[0..7] to 1 if the enemy wants to use "Sweep" on the
+     *    party but there is only 1 living party member.
+     */
     uint8_t atrack[8];
 
     /*! \brief Spell number, associated with M_* spells, used within s_spell magic[] array.
      *
-     * Must be a value [0..sizeof(KFighter::ai)-1].
+     * This is used as an array index within the following arrays:
+     *  - magic[] in range [0..NUM_SPELLS-1]
+     *  - items[] in range [0..NUM_ITEMS-1]
+     *  - KFighter::ai[] in range [0..7]
+     *  - KFighter::atrack[] in range [0..7]
      */
     uint32_t csmem;
 
-    /*! \brief Spell target: who is going to be affected by the spell; can be set to TGT_CASTER (-1) to target self. */
+    /*! \brief Combat target(s): who the attack or spell will affect (may be multiple targets).
+     *
+     * Can be one of these ePIDX enum values:
+     *  - ePIDX::PIDX_UNDEFINED/eTarget::TGT_CASTER [-1] (target self, i.e. spell caster)
+     *  - [0..PSIZE-1] (target a party member)
+     *  - [PSIZE..num_fighters] (target an enemy)
+     *  - ePIDX::SEL_ALL_ALLIES [9] (target all party members)
+     *  - ePIDX::SEL_ALL_ENEMIES [10] (target all enemy members)
+     */
     int ctmem;
 
     /*! \brief Current Weapon Type.
@@ -248,9 +325,9 @@ class KFighter
      */
     uint32_t current_weapon_type;
 
-    /*! \brief Elemental effect this fighter's main attack (physical attack, not spell) is imbued with.
+    /*! \brief Elemental effect this fighter's main physical attack is imbued with.
      *
-     * \sa eResistance enum
+     * See eResistance enum.
      */
     int welem;
 
@@ -264,9 +341,41 @@ class KFighter
     /*! \brief Magic use rate (0-100). */
     int mrp;
 
+    /*! \brief Weapon's imbued spell (see s_item::imb).
+     *
+     * When s_item::use == USE_ATTACK:
+     *  - KFighter::imb_s = items[weapon_index].imb
+     * Otherwise:
+     *  - KFighter::imb_s = 0
+     *
+     * This value is used in KCombat::fight(), along with a 1:5 random roll chance, to call
+     * KMagic::cast_imbued_spell() as the 'target_item' param, which gets assigned to
+     * KFighter::csmem.
+     */
     int imb_s;
+
+    /*! \brief Weapon's imbued attack stat (see s_item::stats[eStat::Attack] value) for SAG/INT.
+     *
+     * When s_item::use == USE_ATTACK:
+     *  - KFighter::imb_a = items[weapon_index].stats[eStat::Attack]
+     * Otherwise:
+     *  - KFighter::imb_a = 0
+     *
+     * This value is used in KMagic::cast_imbued_spell() as the 'sag_int_value' param,
+     * which sets both these values to KFighter::imb_a:
+     *  - fighter[fighter_index].stats[eStat::Intellect] = sag_int_value;
+     *  - fighter[fighter_index].stats[eStat::Sagacity] = sag_int_value;
+     */
     int imb_a;
+
+    /*! \brief Fighter can have up to 2 imbued weapons.
+     *
+     * These values are used in KCombat::do_action() and KCombat::roll_initiative() to call
+     * KMagic::cast_imbued_spell() as the 'target_item' param, which gets assigned to
+     * KFighter::csmem.
+     */
     int imb[2];
+
     std::shared_ptr<Raster> img;
     int opal_power;
 

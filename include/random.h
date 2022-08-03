@@ -32,11 +32,11 @@ class KQRandom
     /*! \brief Initialize the random generator. */
     KQRandom();
 
-    /*! \brief Get random integer: [min_inclusive, max_exclusive).
+    /*! \brief Get random integer: [min_inclusive, max_exclusive-1].
      *
      *  \param   min_inclusive Lowest number (included).
      *  \param   max_exclusive Highest number (not included).
-     *  \returns new random greater between min (inclusive) and max (exclusive).
+     *  \returns New random greater between min (inclusive) and max (exclusive).
      */
     int random_range_exclusive(int min_inclusive, int max_exclusive);
 
@@ -44,7 +44,7 @@ class KQRandom
      *
      *  \param   min_inclusive Lowest number (included).
      *  \param   max_inclusive Highest number (included).
-     *  \returns new random greater between min (inclusive) and max (inclusive).
+     *  \returns New random greater between min (inclusive) and max (inclusive).
      */
     int random_range_inclusive(int min_inclusive, int max_inclusive);
 
@@ -52,7 +52,7 @@ class KQRandom
      *
      *  You can store this state, and restore it later to resume the random sequence where it left off.
      *
-     *  \returns the state
+     *  \returns The state.
      */
     std::string kq_get_random_state();
 
@@ -60,7 +60,7 @@ class KQRandom
      *
      *  Call this with a string returned from kq_random_state.
      *
-     *  \param   new_state A string.
+     *  \param   new_state A string to feed into 'engine'.
      */
     void kq_set_random_state(const std::string& new_state);
 

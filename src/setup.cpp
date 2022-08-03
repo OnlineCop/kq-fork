@@ -659,9 +659,13 @@ void parse_setup()
 
 void play_effect(int efc, int panning)
 {
+    // Used to shake the screen: x and y offsets.
     static const int bx[8] = { -1, 0, 1, 0, -1, 0, 1, 0 };
     static const int by[8] = { -1, 0, 1, 0, 1, 0, -1, 0 };
+
+    // Intensity that the screen shakes during SND_EXPLODE.
     static const int sc[] = { 1, 2, 3, 5, 3, 3, 3, 2, 1 };
+
     void* samp = nullptr;
     PALETTE whiteout, old;
 

@@ -71,7 +71,7 @@ void hero_init();
  *
  * Give the player a menu for a specific character and allow him/her to choose an action.
  *
- * \param   fighter_index Index of player in fighter[] array.
+ * \param   fighter_index Index of player in fighter[] array, in range [0..PSIZE-1].
  */
 void hero_choose_action(size_t fighter_index);
 
@@ -79,7 +79,7 @@ void hero_choose_action(size_t fighter_index);
  *
  * Chooses actions for the character when s/he is charmed/confused.
  *
- * \param   who Index of player in fighter[] array.
+ * \param   who Index of player in fighter[] array, in range [0..PSIZE-1].
  */
 void auto_herochooseact(int who);
 
