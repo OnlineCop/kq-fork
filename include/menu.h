@@ -162,6 +162,15 @@ class KMenu
     void status_screen(size_t fighter_index);
 
     std::vector<KQuestItem> quest_list;
+    /*! \brief Lay out some text
+     * Splits the given text at word boundaries so no line is longer
+     * than the given layout width.
+     *
+     * \param text a line of text
+     * \param layout_width the width in characters
+     * \returns the text split into lines
+     */
+    std::vector<std::string> layout(const std::string& text, int layout_width);
 };
 
 extern KMenu kmenu;

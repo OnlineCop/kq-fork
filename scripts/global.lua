@@ -543,13 +543,11 @@ end
 
 
 function get_quest_info()
-   if LOC_add_quest_item then
-      LOC_add_quest_item()
+   if LOC_get_quest_info then
+      LOC_get_quest_info()
    end
-
-   add_quest_item(_"About...", _"This doesn't do much yet")
-   add_quest_item(_"Test1",    _"Some test info")
-   add_quest_item(_"Sensar",   _"He rages!")
+   -- Add global quest items here:
+   -- add_quest_item("key", "text")
 end
 
 
