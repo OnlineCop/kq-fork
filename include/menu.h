@@ -44,7 +44,7 @@ KFighter player2fighter(int who);
  *
  * ... anything, really!
  */
-struct KQuestItem
+struct s_questitem
 {
     /*! The identifying title */
     std::string key;
@@ -151,7 +151,7 @@ class KMenu
      */
     void status_screen(size_t fighter_index);
 
-    std::vector<KQuestItem> quest_list;
+    std::vector<s_questitem> quest_list;
     /*! \brief Lay out some text
      * Splits the given text at word boundaries so no line is longer
      * than the given layout width.
