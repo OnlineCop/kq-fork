@@ -46,16 +46,6 @@ KFighter player2fighter(int who);
  */
 struct KQuestItem
 {
-    KQuestItem()
-    {
-    }
-
-    KQuestItem(const std::string& inKey, const std::string& inText)
-        : key(inKey)
-        , text(inText)
-    {
-    }
-
     /*! The identifying title */
     std::string key;
     /*! The actual info */
