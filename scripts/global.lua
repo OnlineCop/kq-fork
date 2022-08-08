@@ -133,7 +133,8 @@ local quest_list = {
   'goblin_monk',
   'trident',
   'tunnel',
-  'crystal'
+  'crystal',
+  'malkletter'
 }
 
 

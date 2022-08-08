@@ -17,6 +17,10 @@
 -- manorparty[0-7]: Which recruits have joined your party
 --   (0)..(8) Whether this character has been recruited into your party
 --
+-- malkletter: Status of reading letter from "M"
+--  (0) The bedroom door is locked
+--  (1) Ayla has unpicked the lock
+--  (2) You have read the letter at least once
 --
 -- Details:
 --
@@ -67,7 +71,7 @@ function autoexec()
   elseif progress.manor == 3 then
     -- You have recruited at least 1 other party member
     LOC_at_table()
-    
+
     if progress.talkoldman < 3 then
       -- Put Nostik to bed (he is old and feeble)
       place_ent(8, "bed")
@@ -77,6 +81,9 @@ function autoexec()
     for a = 0, 9, 1 do
       set_ent_active(a, 0)
     end
+  end
+  if progress.malkletter > 0 then
+     LOC_openbedroom()
   end
 end
 
@@ -172,6 +179,14 @@ function zone_handler(zn)
   -- Doors, duh
   elseif (zn == 4) then
     bubble(HERO1, _"Locked.")
+
+  elseif (zn == 8) then
+     -- the locked door at (20,36)
+     LOC_bedroom_door()
+
+  -- Letter from "M" on Nostik's desk
+  elseif (zn == 9) then
+     LOC_malkletter()
 
   -- Bookshelves
   elseif (zn == 5) then
@@ -402,4 +417,45 @@ function LOC_talk_butler(en)
   bubble(en, _"Hopefully, it will give you a chance to buy some better weapons and armour.")
   bubble(HERO1, _"Well, thank you for the information.")
   progress.manor = 2
+end
+
+function LOC_malkletter()
+   if progress.malkletter == 1 then
+      bubble(HERO1, "It's a letter addressed to Nostik!")
+      bubble(HERO1, "\"I trust this letter finds you well. I urge you to follow the plan. They must suspect nothing until the very end. --M\"")
+      bubble(HERO1, "\"M\"? Who could that be?")
+      progress.malkletter = 2
+   else
+      bubble(HERO1, _"It's a letter from someone calling themselves \"M\"")
+   end
+end
+
+function LOC_bedroom_door()
+   if progress.malkletter == 0 then
+      local unlock = nil
+      if party[0] == Ayla then
+	 bubble(HERO1, "A locked door won't stop ME!")
+	 unlock = true
+      elseif party[1] == Ayla then
+	 bubble(HERO1, _"It's locked")
+	 bubble(HERO2, _"A child could pick that. Move aside!")
+	 unlock = true
+      else
+	 bubble(HERO1, _"Locked.");
+      end
+      if unlock then
+	 progress.malkletter = 1
+	 sfx(25)
+	 LOC_openbedroom()
+      end
+   else
+   end
+end
+
+-- open the bedroom door which is locked/shut by default
+function LOC_openbedroom()
+   set_obs(20, 36, 0)
+   set_ftile(20, 36, 518)
+   set_btile(20, 37, 780)
+   set_zone(20, 36, 0)
 end
