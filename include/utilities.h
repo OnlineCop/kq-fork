@@ -38,22 +38,32 @@
  * \param[out] dest String to write final output to.
  * \param[in] format Text containing "%..." style notation to expand.
  * \param[in] args... Zero or more arguments to pass into snprintf().
+ * \returns On success: number of bytes written, not including terminating null character;
+ * on failure: snprintf()'s error code.
  */
-template<typename... Args> void sprintf(std::string& dest, const std::string& format, Args... args)
+template<typename... Args> int sprintf(std::string& dest, const std::string& format, Args... args)
 {
-    // This calls snprintf() twice: the first time with NULL for the first parameter
-    // to get the size of the buffer needed to fit all the text into.
+    // This calls snprintf() twice: the first time with NULL for its 'buffer' parameter and 0 as
+    // its 'buf_size' parameter, to determine the size of the buffer needed to fit all the text.
+
+    int size_s = std::snprintf(nullptr, 0, format.c_str(), args...);
+    if (size_s < 0)
+    {
+        dest.clear();
+        // Return snprintf's error code. See online documentation for these values.
+        return size_s;
+    }
 
     // +1 at end for '\0'.
-    int size_s = std::snprintf(nullptr, 0, format.c_str(), args...) + 1;
-    if (size_s <= 0)
-    {
-        throw std::runtime_error("Error during formatting.");
-    }
-    auto size = static_cast<size_t>(size_s);
+    auto size = static_cast<size_t>(size_s + 1);
+
+    // Smart pointer to auto-clean memory, even if exception is thrown.
     std::unique_ptr<char[]> buf(new char[size]);
     std::snprintf(buf.get(), size, format.c_str(), args...);
 
     // -1 at end to remove the '\0'.
     dest = std::string(buf.get(), buf.get() + size - 1);
+
+    // Number of bytes actually written, excluding terminating '\0'.
+    return size_s;
 }
