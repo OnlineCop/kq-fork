@@ -74,7 +74,8 @@ struct s_item
      * See item_effects()
      */
     uint8_t bst;
-    /*! For runes, what element will it affect (see rs parameter of res_adjust() ) */
+    /*! For runes, what element will it affect; see eResistance.
+     */
     uint8_t elem;
     /*! imbued - What spell is cast when you "use" this item in combat */
     uint8_t imb;
@@ -104,11 +105,14 @@ struct s_spell
     uint8_t stat;
     uint8_t mpc;
     uint8_t use;
+    /*! Which party members or enemies the spell will target; see eTarget enum. */
     uint8_t tgt;
     int dmg;
     /*! Bonus for */
     int bon;
     int hit;
+    /*! For spells, what element will it affect; see eResistance.
+     */
     uint8_t elem;
     uint8_t dlvl;
     uint8_t eff;

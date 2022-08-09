@@ -44,9 +44,35 @@ class Raster
     void maskedBlitTo(Raster* target, int16_t dest_x, int16_t dest_y);
     void setpixel(int16_t x, int16_t y, uint8_t color);
     uint8_t getpixel(int16_t x, int16_t y);
+
+    /*! \brief Draw a horizontal line on the bitmap.
+     *
+     * \param   x0 Left of line (inclusive).
+     * \param   x1 Right of line (inclusive).
+     * \param   y Vertical offset.
+     * \param   color Color index within pal[] array, in range [0..PAL_SIZE-1].
+     */
     void hline(int16_t x0, int16_t x1, int16_t y, uint8_t color);
+
+    /*! \brief Draw a vertical line on the bitmap.
+     *
+     * \param   x Horizontal offset.
+     * \param   y0 Top of line (inclusive).
+     * \param   y1 Bottom of line (inclusive).
+     * \param   color Color index within pal[] array, in range [0..PAL_SIZE-1].
+     */
     void vline(int16_t x, int16_t y0, int16_t y1, uint8_t color);
+
+    /*! \brief Fill a section of the bitmap with the desired color.
+     *
+     * \param   x Left edge.
+     * \param   y Top edge.
+     * \param   w Number of pixels to fill horizontally.
+     * \param   h Number of pixels to fill vertically.
+     * \param   color Color index within pal[] array, in range [0..PAL_SIZE-1].
+     */
     void fill(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t color);
+
     void fill(uint8_t colour);
 
     uint8_t& ptr(int16_t x, int16_t y)

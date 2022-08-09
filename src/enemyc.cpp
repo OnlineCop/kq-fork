@@ -196,18 +196,22 @@ void KEnemy::CharmAction(size_t fighter_index)
             fighter[fighter_index].atrack[a]--;
         }
     }
+
     a = kqrandom->random_range_exclusive(0, 4);
+    // 1:4 chance to unset Ether effect.
     if (a == 0)
     {
         Combat.SetEtherEffectActive(fighter_index, false);
         return;
     }
+    // 1:4 chance to target 1st party member.
     if (a == 1)
     {
         fighter[fighter_index].ctmem = 0;
         Attack(fighter_index);
         return;
     }
+    // 2:4 chance to target 2nd party member.
     fighter[fighter_index].ctmem = 1;
     Attack(fighter_index);
 }
@@ -359,6 +363,7 @@ void KEnemy::SkillCheck(int w, int ws)
 
     if (sk >= 1 && sk <= 153)
     {
+        // Defined as "Sweep" in combat_skill().
         if (sk == 5)
         {
             if (numchrs == 1)
@@ -891,6 +896,14 @@ int KEnemy::SkillSetup(int whom, int sn)
     int sk = fighter[whom].ai[sn] - 100;
 
     fighter[whom].csmem = sn;
+    // combat_skill() defines these values as:
+    //  1: "Venomous Bite"
+    //  2: "Double Slash"
+    //  3: "Chill Touch"
+    //  6: "ParaClaw"
+    //  7: "Dragon Bite"
+    //  12: "Petrifying Bite"
+    //  14: "Stunning Strike"
     if (sk == 1 || sk == 2 || sk == 3 || sk == 6 || sk == 7 || sk == 12 || sk == 14)
     {
         fighter[whom].ctmem = auto_select_hero(whom, NO_STS_CHECK);

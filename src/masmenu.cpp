@@ -73,7 +73,7 @@ static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
  * Select any necessary targets and prepare the spell.
  *
  * \param   caster_fighter_index Index of spell caster.
- * \param   spell_number Spell number.
+ * \param   spell_number Spell number in range [0..NUM_SPELLS-1].
  */
 static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_number);
 
