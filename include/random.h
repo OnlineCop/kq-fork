@@ -36,7 +36,7 @@ class KQRandom
      *
      *  \param   min_inclusive Lowest number (included).
      *  \param   max_exclusive Highest number (not included).
-     *  \returns New random greater between min (inclusive) and max (exclusive).
+     *  \returns Random number between min (inclusive) and max (exclusive).
      */
     int random_range_exclusive(int min_inclusive, int max_exclusive);
 
@@ -44,7 +44,7 @@ class KQRandom
      *
      *  \param   min_inclusive Lowest number (included).
      *  \param   max_inclusive Highest number (included).
-     *  \returns New random greater between min (inclusive) and max (inclusive).
+     *  \returns Random number between min (inclusive) and max (inclusive).
      */
     int random_range_inclusive(int min_inclusive, int max_inclusive);
 
