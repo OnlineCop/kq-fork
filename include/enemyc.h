@@ -177,15 +177,15 @@ class KEnemy
 
     /*! \brief Load all enemies from disk.
      *
-     * Loads up enemies from the *.mon files and fills the enemies[] array.
+     * Loads enemies from allstat.mon into m_enemy_fighters.
      */
     void LoadEnemies();
 
-    /*! \brief Unload the data loaded by load_enemies().
+    /*! \brief Save all enemies to disk.
      *
-     * JB would have said 'duh' here! Not much explanation required.
+     * Saves all enemies in m_enemy_fighters to allstat.mon.
      */
-    void UnloadEnemies();
+    void SaveEnemies();
 
   protected:
     /*! \brief Array of enemy 'fighters'. */
@@ -203,13 +203,14 @@ class KEnemy
      */
     void LoadEnemies(const std::string& fullPath, Raster* enemy_gfx);
 
-    /*! \brief Load enemy stats from disk.
+    /*! \brief Save enemy data from disk.
      *
-     * Reads in each line of "resabil.mon" and assigns values to corresponding m_enemy_fighters.
+     * Writes a new line for each fighter into "allstat.mon".
      *
-     * \param   path_resabil Path to file to load from.
+     * \param   fullPath Path to file to save to.
+     * \param   fighters Fighter data to write to the file.
      */
-    void LoadEnemyStats(const std::string& path_resabil);
+    void SaveEnemies(const std::string& fullPath, const std::vector<KFighter>& fighters);
 };
 
 extern KEnemy Enemy;

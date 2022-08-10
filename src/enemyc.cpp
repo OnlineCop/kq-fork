@@ -620,7 +620,6 @@ void KEnemy::LoadEnemies()
     }
 
     LoadEnemies(kqres(eDirectories::DATA_DIR, "allstat.mon"), enemy_gfx);
-    LoadEnemyStats(kqres(eDirectories::DATA_DIR, "resabil.mon"));
 }
 
 void KEnemy::LoadEnemies(const std::string& fullPath, Raster* enemy_gfx)
@@ -628,10 +627,11 @@ void KEnemy::LoadEnemies(const std::string& fullPath, Raster* enemy_gfx)
     std::ifstream infile(fullPath.c_str());
     if (infile.fail())
     {
-        Game.program_death(_("Could not load 1st enemy datafile!"), fullPath);
+        sprintf(strbuf, _("Could not load datafile \"%s\"!"), fullPath.c_str());
+        Game.program_death(strbuf);
     }
-    std::string line;
 
+    std::string line;
     // Loop through for every monster in allstat.mon
     while (std::getline(infile, line))
     {
@@ -642,176 +642,43 @@ void KEnemy::LoadEnemies(const std::string& fullPath, Raster* enemy_gfx)
         }
         std::istringstream iss(line);
 
-        KFighter fighter_loaded_from_disk;
+        KFighter fighter;
+        iss >> fighter;
 
-        // Enemy name
-        iss >> fighter_loaded_from_disk.name;
-
-        // Enemy index (ignored)
-        int index = 0;
-        iss >> index;
-
-        // x-coord of image in datafile
-        int imagefile_x_coord = 0;
-        iss >> imagefile_x_coord;
-
-        // y-coord of image in datafile
-        int imagefile_y_coord = 0;
-        iss >> imagefile_y_coord;
-
-        // Image width
-        iss >> fighter_loaded_from_disk.cw;
-        // Image length (height)
-        iss >> fighter_loaded_from_disk.cl;
-
-        // Experience points earned
-        iss >> fighter_loaded_from_disk.xp;
-        // Gold received
-        iss >> fighter_loaded_from_disk.gp;
-        // Level
-        iss >> fighter_loaded_from_disk.lvl;
-        // Max HP
-        iss >> fighter_loaded_from_disk.mhp;
-        // Max MP
-        iss >> fighter_loaded_from_disk.mmp;
-        // Defeat Item Probability: chance of finding any items after defeat
-        iss >> fighter_loaded_from_disk.dip;
-        // Defeat Item Common: item found commonly of the time
-        iss >> fighter_loaded_from_disk.defeat_item_common;
-        // Defeat Item Rare: item found rarely
-        iss >> fighter_loaded_from_disk.defeat_item_rare;
-        // Steal Item Common: item found commonly from stealing
-        iss >> fighter_loaded_from_disk.steal_item_common;
-        // Steal Item Rare: item found rarely when stealing
-        iss >> fighter_loaded_from_disk.steal_item_rare;
-        // Enemy's strength (agility & vitality set to zero)
-        iss >> fighter_loaded_from_disk.stats[eStat::Strength];
-        fighter_loaded_from_disk.stats[eStat::Agility] = 0;
-        fighter_loaded_from_disk.stats[eStat::Vitality] = 0;
-        // Intelligence & Sagacity (both the same)
-        iss >> fighter_loaded_from_disk.stats[eStat::Intellect];
-        fighter_loaded_from_disk.stats[eStat::Sagacity] = fighter_loaded_from_disk.stats[eStat::Intellect];
-        // Defense against: Speed, Spirit, Attack, Hit, Defense, Evade, Magic (in that order)
-        iss >> fighter_loaded_from_disk.stats[eStat::Speed];
-        iss >> fighter_loaded_from_disk.stats[eStat::Aura];
-        iss >> fighter_loaded_from_disk.stats[eStat::Spirit];
-        iss >> fighter_loaded_from_disk.stats[eStat::Attack];
-        iss >> fighter_loaded_from_disk.stats[eStat::Hit];
-        iss >> fighter_loaded_from_disk.stats[eStat::Defense];
-        iss >> fighter_loaded_from_disk.stats[eStat::Evade];
-        iss >> fighter_loaded_from_disk.stats[eStat::MagicDefense];
-        // Bonus
-        iss >> fighter_loaded_from_disk.bonus;
-        fighter_loaded_from_disk.bstat = 0;
-        // Current weapon type
-        iss >> fighter_loaded_from_disk.current_weapon_type;
-        // Weapon elemental type
-        iss >> fighter_loaded_from_disk.welem;
-        // Undead Level (defense against Undead attacks)
-        iss >> fighter_loaded_from_disk.unl;
-        // Critical attacks
-        iss >> fighter_loaded_from_disk.crit;
-        // Temp Sag & Int for Imbued
-        iss >> fighter_loaded_from_disk.imb_s;
-        // Imbued stat type (Spd, Spi, Att, Hit, Def, Evd, Mag)
-        iss >> fighter_loaded_from_disk.imb_a;
-
-        fighter_loaded_from_disk.img =
-            std::make_shared<Raster>(fighter_loaded_from_disk.cw, fighter_loaded_from_disk.cl);
-        enemy_gfx->blitTo(fighter_loaded_from_disk.img.get(), imagefile_x_coord, imagefile_y_coord, 0, 0,
-                          fighter_loaded_from_disk.cw, fighter_loaded_from_disk.cl);
-        iss >> fighter_loaded_from_disk.imb[0];
-        iss >> fighter_loaded_from_disk.imb[1];
+        fighter.img = std::make_shared<Raster>(fighter.cw, fighter.cl);
+        enemy_gfx->blitTo(fighter.img.get(), fighter.cx, fighter.cy, 0, 0, fighter.cw, fighter.cl);
 
         // If the staff is under effect we assume Malkaron has a full set of opal armor
-        if (do_staff_effect && fighter_loaded_from_disk.name == "Malkaron")
+        if (do_staff_effect && fighter.name == "Malkaron")
         {
-            fighter_loaded_from_disk.opal_power = 4;
+            fighter.opal_power = 4;
         }
 
-        m_enemy_fighters.push_back(fighter_loaded_from_disk);
+        m_enemy_fighters.push_back(std::move(fighter));
     }
     infile.close();
 }
 
-void KEnemy::LoadEnemyStats(const std::string& fullFilename)
+void KEnemy::SaveEnemies()
 {
-    std::ifstream infile(fullFilename.c_str());
-    if (infile.fail())
+    SaveEnemies(kqres(eDirectories::DATA_DIR, "allstat.mon"), m_enemy_fighters);
+}
+
+void KEnemy::SaveEnemies(const std::string& fullPath, const std::vector<KFighter>& fighters)
+{
+    std::ofstream outfile(fullPath);
+    if (outfile.fail())
     {
-        Game.program_death(_("Could not load 2nd enemy datafile!"), fullFilename);
+        sprintf(strbuf, _("Could not save to datafile \"%s\"!"), fullPath.c_str());
+        Game.program_death(strbuf);
     }
 
-    size_t current_enemy = 0;
-    std::string line;
-    while (std::getline(infile, line))
+    for (auto&& fighter : fighters)
     {
-        if (line.empty() || line[0] == '#')
-        {
-            // Ignore empty lines, or lines starting with "#" so we can allow comments.
-            continue;
-        }
-        if (current_enemy >= m_enemy_fighters.size())
-        {
-            std::string error = "LoadEnemyStats() tried to read in more enemies than LoadEnemies() provided.";
-            Game.program_death(error, fullFilename);
-        }
-
-        KFighter& fighter_loaded_from_disk = m_enemy_fighters[current_enemy];
-        std::istringstream iss(line);
-
-        // Enemy name (ignored)
-        std::string name;
-        iss >> name;
-
-        // Enemy index (ignored)
-        int index;
-        iss >> index;
-
-        // Each of the 16 RES (resistances)
-        for (auto& val : fighter_loaded_from_disk.res)
-        {
-            iss >> val;
-        }
-        // Each of the 8 AI
-        for (auto& val : fighter_loaded_from_disk.ai)
-        {
-            iss >> val;
-        }
-        // Each of the 8 AIP
-        for (auto& val : fighter_loaded_from_disk.aip)
-        {
-            iss >> val;
-        }
-
-        for (auto& val : fighter_loaded_from_disk.atrack)
-        {
-            val = 0;
-        }
-        fighter_loaded_from_disk.hp = fighter_loaded_from_disk.mhp;
-        fighter_loaded_from_disk.mp = fighter_loaded_from_disk.mmp;
-        fighter_loaded_from_disk.SetPoisoned(0);
-        fighter_loaded_from_disk.SetBlind(0);
-        fighter_loaded_from_disk.SetCharmed(0);
-        fighter_loaded_from_disk.SetStopped(0);
-        fighter_loaded_from_disk.SetStone(0);
-        fighter_loaded_from_disk.SetMute(0);
-        fighter_loaded_from_disk.SetSleep(0);
-        fighter_loaded_from_disk.SetDead(0);
-        fighter_loaded_from_disk.SetMalison(0);
-        fighter_loaded_from_disk.SetResist(0);
-        fighter_loaded_from_disk.SetTime(0);
-        fighter_loaded_from_disk.SetShield(0);
-        fighter_loaded_from_disk.SetBless(0);
-        fighter_loaded_from_disk.SetStrength(0);
-        fighter_loaded_from_disk.SetEther(0);
-        fighter_loaded_from_disk.SetTrueshot(0);
-        fighter_loaded_from_disk.SetRegen(0);
-        fighter_loaded_from_disk.SetInfuse(0);
-        fighter_loaded_from_disk.aux = 0;
-        fighter_loaded_from_disk.mrp = 100;
-        ++current_enemy;
+        outfile << fighter << "\n";
     }
+
+    outfile.close();
 }
 
 bool KEnemy::MakeEnemyFighter(const size_t who, KFighter& en)
@@ -907,7 +774,7 @@ int KEnemy::SkillSetup(int whom, int sn)
     if (sk == 1 || sk == 2 || sk == 3 || sk == 6 || sk == 7 || sk == 12 || sk == 14)
     {
         fighter[whom].ctmem = auto_select_hero(whom, NO_STS_CHECK);
-        if (fighter[whom].ctmem == -1)
+        if (fighter[whom].ctmem == PIDX_UNDEFINED)
         {
             return 0;
         }
@@ -1018,13 +885,5 @@ int KEnemy::SpellSetup(int whom, int z)
     else
     {
         return 1;
-    }
-}
-
-void KEnemy::UnloadEnemies()
-{
-    if (!m_enemy_fighters.empty())
-    {
-        m_enemy_fighters.clear();
     }
 }

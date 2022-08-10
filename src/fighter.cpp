@@ -21,72 +21,53 @@
 
 #include "fighter.h"
 
+#include "utilities.h"
+
 KFighter Fighter;
 
 KFighter::KFighter()
-    : name { "" }
-    , xp { 0 }
-    , gp { 0 }
-    , lvl { 0 }
-    , cx { 0 }
-    , cy { 0 }
-    , cw { 0 }
-    , cl { 0 }
-    , hp { 0 }
-    , mhp { 0 }
-    , mp { 0 }
-    , mmp { 0 }
-    , dip { 0 }
-    , defeat_item_common { 0 }
-    , defeat_item_rare { 0 }
-    , steal_item_common { 0 }
-    , steal_item_rare { 0 }
-    , facing { 0 }
-    , aframe { 0 }
-    , crit { 0 }
-    , defend { 0 }
-    , csmem { 0 }
-    , ctmem { 0 }
-    , current_weapon_type { 0 }
-    , welem { 0 }
-    , unl { 0 }
-    , aux { 0 }
-    , bonus { 0 }
-    , bstat { 0 }
-    , mrp { 0 }
-    , imb_s { 0 }
-    , imb_a { 0 }
-    , opal_power { 0 }
+    : name {}
+    , xp {}
+    , gp {}
+    , lvl {}
+    , cx {}
+    , cy {}
+    , cw {}
+    , cl {}
+    , hp {}
+    , mhp {}
+    , mp {}
+    , mmp {}
+    , dip {}
+    , defeat_item_common {}
+    , defeat_item_rare {}
+    , steal_item_common {}
+    , steal_item_rare {}
+    , stats {}
+    , res {}
+    , facing {}
+    , aframe {}
+    , crit {}
+    , defend {}
+    , ai {}
+    , aip {}
+    , atrack {}
+    , csmem {}
+    , ctmem {}
+    , current_weapon_type {}
+    , welem {}
+    , unl {}
+    , aux {}
+    , bonus {}
+    , bstat {}
+    , mrp {}
+    , imb_s {}
+    , imb_a {}
+    , imb {}
+    , img { nullptr }
+    , opal_power {}
+    , sts {}
 {
-    for (int& stat : stats)
-    {
-        stat = 0;
-    }
-    for (int8_t& re : res)
-    {
-        re = 0;
-    }
-    for (unsigned char& i : ai)
-    {
-        i = 0;
-    }
-    for (unsigned char& i : aip)
-    {
-        i = 0;
-    }
-    for (unsigned char& i : atrack)
-    {
-        i = 0;
-    }
-    for (int& i : imb)
-    {
-        i = 0;
-    }
-    for (unsigned char& st : sts)
-    {
-        st = 0;
-    }
-    img.reset();
 }
 
 bool KFighter::IsPoisoned() const
@@ -592,4 +573,138 @@ uint8_t KFighter::GetStatValueBySpellType(eSpellType spellType)
         return sts[spellType];
     }
     return 0;
+}
+
+std::istream& operator>>(std::istream& is, KFighter& out_fighter)
+{
+    // Exit early if the input stream has problems.
+    if (!is)
+    {
+        out_fighter = KFighter();
+        return is;
+    }
+
+    // Starting with a default-constructed object avoids having to reset values NOT read in below.
+    KFighter fighter;
+
+    is >> fighter.name;
+
+    // NOTE: cx and cy are only temp values used to blit the enemy graphics onto 'img',
+    // and get overwritten throughout gameplay.
+    read(is, fighter.cx);
+    read(is, fighter.cy);
+    read(is, fighter.cw);
+    read(is, fighter.cl);
+
+    read(is, fighter.xp);
+    read(is, fighter.gp);
+    read(is, fighter.lvl);
+    read(is, fighter.mhp);
+    read(is, fighter.mmp);
+
+    read(is, fighter.dip);
+    read(is, fighter.defeat_item_common);
+    read(is, fighter.defeat_item_rare);
+    read(is, fighter.steal_item_common);
+    read(is, fighter.steal_item_rare);
+
+    read(is, fighter.stats[eStat::Strength]);
+    read(is, fighter.stats[eStat::Intellect]);
+    read(is, fighter.stats[eStat::Speed]);
+    read(is, fighter.stats[eStat::Aura]);
+    read(is, fighter.stats[eStat::Spirit]);
+    read(is, fighter.stats[eStat::Attack]);
+    read(is, fighter.stats[eStat::Hit]);
+    read(is, fighter.stats[eStat::Defense]);
+    read(is, fighter.stats[eStat::Evade]);
+    read(is, fighter.stats[eStat::MagicDefense]);
+
+    read(is, fighter.bonus);
+    read(is, fighter.current_weapon_type);
+    read(is, fighter.welem);
+    read(is, fighter.unl);
+    read(is, fighter.crit);
+
+    read(is, fighter.imb_s);
+    read(is, fighter.imb_a);
+
+    // Read in the various arrays.
+    read_array(is, fighter.imb);
+    read_array(is, fighter.res);
+    read_array(is, fighter.ai);
+    read_array(is, fighter.aip);
+
+    if (is)
+    {
+        fighter.stats[eStat::Sagacity] = fighter.stats[eStat::Intellect];
+        fighter.hp = fighter.mhp;
+        fighter.mp = fighter.mmp;
+        fighter.mrp = 100;
+        out_fighter = std::move(fighter);
+    }
+    else
+    {
+        out_fighter = KFighter();
+    }
+
+    return is;
+}
+
+std::ostream& operator<<(std::ostream& os, const KFighter& fighter)
+{
+    // Exit early if the output stream has problems.
+    if (!os)
+    {
+        return os;
+    }
+
+    write(os, fighter.name, "");
+
+    // NOTE: These datafile x/y coordinates might have been modified during
+    // gameplay, so might differ from the values originally read in!
+    write(os, fighter.cx);
+    write(os, fighter.cy);
+
+    write(os, fighter.cw);
+    write(os, fighter.cl);
+
+    write(os, fighter.xp);
+    write(os, fighter.gp);
+    write(os, fighter.lvl);
+    write(os, fighter.mhp);
+    write(os, fighter.mmp);
+
+    write(os, fighter.dip);
+    write(os, fighter.defeat_item_common);
+    write(os, fighter.defeat_item_rare);
+    write(os, fighter.steal_item_common);
+    write(os, fighter.steal_item_rare);
+
+    // Most (but not all) stats
+    write(os, fighter.stats[eStat::Strength]);
+    write(os, fighter.stats[eStat::Intellect]);
+    write(os, fighter.stats[eStat::Speed]);
+    write(os, fighter.stats[eStat::Aura]);
+    write(os, fighter.stats[eStat::Spirit]);
+    write(os, fighter.stats[eStat::Attack]);
+    write(os, fighter.stats[eStat::Hit]);
+    write(os, fighter.stats[eStat::Defense]);
+    write(os, fighter.stats[eStat::Evade]);
+    write(os, fighter.stats[eStat::MagicDefense]);
+
+    write(os, fighter.bonus);
+    write(os, fighter.current_weapon_type);
+    write(os, fighter.welem);
+    write(os, fighter.unl);
+    write(os, fighter.crit);
+
+    write(os, fighter.imb_s);
+    write(os, fighter.imb_a);
+
+    write_array(os, fighter.imb);
+    write_array(os, fighter.res);
+    write_array(os, fighter.ai);
+    write_array(os, fighter.aip);
+
+    return os;
 }
