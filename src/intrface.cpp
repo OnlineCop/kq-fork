@@ -1561,7 +1561,7 @@ static int KQ_copy_tile_all(lua_State* L)
 static int KQ_dark_mbox(lua_State* L)
 {
     Draw.menubox(double_buffer, (int)lua_tonumber(L, 1), (int)lua_tonumber(L, 2), (int)lua_tonumber(L, 3),
-                 (int)lua_tonumber(L, 4), DARKBLUE);
+                 (int)lua_tonumber(L, 4), eBoxFill::DARK);
     return 0;
 }
 
@@ -2324,7 +2324,7 @@ static int KQ_krnd(lua_State* L)
 static int KQ_light_mbox(lua_State* L)
 {
     Draw.menubox(double_buffer, (int)lua_tonumber(L, 1), (int)lua_tonumber(L, 2), (int)lua_tonumber(L, 3),
-                 (int)lua_tonumber(L, 4), DARKRED);
+                 (int)lua_tonumber(L, 4), eBoxFill::LIGHT);
     return 0;
 }
 
@@ -2361,7 +2361,7 @@ static int KQ_marker(lua_State* L)
 static int KQ_mbox(lua_State* L)
 {
     Draw.menubox(double_buffer, (int)lua_tonumber(L, 1), (int)lua_tonumber(L, 2), (int)lua_tonumber(L, 3),
-                 (int)lua_tonumber(L, 4), BLUE);
+                 (int)lua_tonumber(L, 4), eBoxFill::TRANSPARENT);
     return 0;
 }
 

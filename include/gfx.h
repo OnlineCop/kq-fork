@@ -73,6 +73,16 @@ class Raster
      */
     void fill(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t color);
 
+    /*! \brief Fill a section of the bitmap with the desired color in transparent mode.
+     *
+     * \param   x Left edge.
+     * \param   y Top edge.
+     * \param   w Number of pixels to fill horizontally.
+     * \param   h Number of pixels to fill vertically.
+     * \param   color Color index within pal[] array, in range [0..PAL_SIZE-1].
+     */
+    void fill_trans(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t color);
+
     void fill(uint8_t colour);
 
     uint8_t& ptr(int16_t x, int16_t y)
@@ -114,6 +124,10 @@ inline void draw_sprite(Raster* dest, Raster* src, int x, int y)
 inline void rectfill(Raster* dest, int x1, int y1, int x2, int y2, int c)
 {
     dest->fill(x1, y1, x2 - x1, y2 - y1, c);
+}
+inline void rectfill_trans(Raster* dest, int x1, int y1, int x2, int y2, int c)
+{
+    dest->fill_trans(x1, y1, x2 - x1, y2 - y1, c);
 }
 
 inline void vline(Raster* dest, uint16_t x, uint16_t y0, uint16_t y1, uint8_t color)

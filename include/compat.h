@@ -84,7 +84,3 @@ enum eDrawMode
     DRAW_MODE_SOLID = 0,
     DRAW_MODE_TRANS = 1,
 };
-
-inline void drawing_mode(int, void*, int /*unused*/, int /*unused*/)
-{
-}

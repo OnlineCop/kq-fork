@@ -267,10 +267,10 @@ static bool deequip(uint32_t c, uint32_t ptr)
 static void draw_equipmenu(int c, bool sel)
 {
     int l = pidx[c];
-    Draw.menubox(double_buffer, 12, 4, 35, 1, BLUE);
+    Draw.menubox(double_buffer, 12, 4, 35, 1, eBoxFill::TRANSPARENT);
     if (sel)
     {
-        Draw.menubox(double_buffer, eqp_act * 72 + 12, 4, 8, 1, DARKBLUE);
+        Draw.menubox(double_buffer, eqp_act * 72 + 12, 4, 8, 1, eBoxFill::DARK);
         Draw.print_font(double_buffer, 32, 12, _("Equip"), FGOLD);
         Draw.print_font(double_buffer, 92, 12, _("Optimize"), FGOLD);
         Draw.print_font(double_buffer, 172, 12, _("Remove"), FGOLD);
@@ -287,8 +287,8 @@ static void draw_equipmenu(int c, bool sel)
             Draw.print_font(double_buffer, 136, 12, _("Remove"), FGOLD);
         }
     }
-    Draw.menubox(double_buffer, 12, 28, 25, 6, BLUE);
-    Draw.menubox(double_buffer, 228, 28, 8, 6, BLUE);
+    Draw.menubox(double_buffer, 12, 28, 25, 6, eBoxFill::TRANSPARENT);
+    Draw.menubox(double_buffer, 228, 28, 8, 6, eBoxFill::TRANSPARENT);
     draw_sprite(double_buffer, players[l].portrait, 248, 36);
     Draw.print_font(double_buffer, 268 - (party[l].name.length() * 4), 76, party[l].name, FNORMAL);
     Draw.print_font(double_buffer, 28, 36, _("Hand1:"), FGOLD);
@@ -315,7 +315,7 @@ static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
     {
         t_inv.clear();
     }
-    Draw.menubox(double_buffer, 12, 92, 20, NUM_ITEMS_PER_PAGE, BLUE);
+    Draw.menubox(double_buffer, 12, 92, 20, NUM_ITEMS_PER_PAGE, eBoxFill::TRANSPARENT);
     auto eptr = std::min(uint32_t(t_inv.size()), pptr + NUM_ITEMS_PER_PAGE);
     for (int k = 0, p = pptr; p < eptr; ++k, ++p)
     {
@@ -349,7 +349,7 @@ static void draw_equippreview(int ch, int ptr, int pp)
     {
         kmenu.update_equipstats();
     }
-    Draw.menubox(double_buffer, 188, 92, 13, 13, BLUE);
+    Draw.menubox(double_buffer, 188, 92, 13, 13, eBoxFill::TRANSPARENT);
     Draw.print_font(double_buffer, 196, 100, _("Str:"), FNORMAL);
     Draw.print_font(double_buffer, 196, 108, _("Agi:"), FNORMAL);
     Draw.print_font(double_buffer, 196, 116, _("Vit:"), FNORMAL);
@@ -381,7 +381,7 @@ static void draw_equippreview(int ch, int ptr, int pp)
                 Draw.print_font(double_buffer, 300 - (strbuf.size() * 8), z * 8 + 100, strbuf, FNORMAL);
         }
     }
-    Draw.menubox(double_buffer, 188, 212, 13, 1, BLUE);
+    Draw.menubox(double_buffer, 188, 212, 13, 1, eBoxFill::TRANSPARENT);
     if (ptr >= 0)
     {
         int c1 = 0;

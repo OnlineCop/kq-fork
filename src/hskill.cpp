@@ -429,7 +429,7 @@ void reveal(int tgt)
     char resistance;
 
     do_transition(eTransitionFade::OUT, 4);
-    Draw.menubox(double_buffer, 84, 56, 17, 13, BLUE);
+    Draw.menubox(double_buffer, 84, 56, 17, 13, eBoxFill::TRANSPARENT);
     sprintf(strbuf, _("Name: %s"), fighter[tgt].name.c_str());
     Draw.print_font(double_buffer, 92, 64, strbuf, FNORMAL);
     sprintf(strbuf, _("Level: %d"), fighter[tgt].lvl);

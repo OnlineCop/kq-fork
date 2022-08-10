@@ -93,7 +93,7 @@ int KSaveGame::confirm_action()
         return 1;
     }
     fullblit(double_buffer, back);
-    Draw.menubox(double_buffer, 128, pointer_offset + 12, 14, 1, DARKBLUE);
+    Draw.menubox(double_buffer, 128, pointer_offset + 12, 14, 1, eBoxFill::DARK);
     Draw.print_font(double_buffer, 136, pointer_offset + 20, _("Confirm/Cancel"), FNORMAL);
     Draw.blit2screen();
     fullblit(back, double_buffer);
@@ -141,7 +141,7 @@ void KSaveGame::delete_game()
     remove_result = remove(kqres(eDirectories::SAVE_DIR, strbuf).c_str());
     if (remove_result == 0)
     {
-        Draw.menubox(double_buffer, 128, pointer_offset + 12, 12, 1, DARKBLUE);
+        Draw.menubox(double_buffer, 128, pointer_offset + 12, 12, 1, eBoxFill::DARK);
         Draw.print_font(double_buffer, 136, pointer_offset + 20, _("File Deleted"), FNORMAL);
 
         s_sgstats& stats = savegame[save_ptr];
@@ -151,7 +151,7 @@ void KSaveGame::delete_game()
     }
     else
     {
-        Draw.menubox(double_buffer, 128, pointer_offset + 12, 16, 1, DARKBLUE);
+        Draw.menubox(double_buffer, 128, pointer_offset + 12, 16, 1, eBoxFill::DARK);
         Draw.print_font(double_buffer, 136, pointer_offset + 20, _("File Not Deleted"), FNORMAL);
     }
     Draw.blit2screen();
@@ -351,17 +351,17 @@ void KSaveGame::show_sgstats(int saving)
     pointer_offset = (save_ptr - top_pointer) * 48;
     if (saving == 0)
     {
-        Draw.menubox(double_buffer, 0, pointer_offset + 12, 7, 1, BLUE);
+        Draw.menubox(double_buffer, 0, pointer_offset + 12, 7, 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 8, pointer_offset + 20, _("Loading"), FGOLD);
     }
     else if (saving == 1)
     {
-        Draw.menubox(double_buffer, 8, pointer_offset + 12, 6, 1, BLUE);
+        Draw.menubox(double_buffer, 8, pointer_offset + 12, 6, 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 16, pointer_offset + 20, _("Saving"), FGOLD);
     }
     else if (saving == 2 || saving == 3)
     {
-        Draw.menubox(double_buffer, 8, pointer_offset + 12, 6, 1, BLUE);
+        Draw.menubox(double_buffer, 8, pointer_offset + 12, 6, 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 16, pointer_offset + 20, _("Delete"), FRED);
     }
 
@@ -380,11 +380,11 @@ void KSaveGame::show_sgstats(int saving)
         pointer_offset = (sg - top_pointer) * 48;
         if (sg == save_ptr)
         {
-            Draw.menubox(double_buffer, 72, pointer_offset, 29, 4, DARKBLUE);
+            Draw.menubox(double_buffer, 72, pointer_offset, 29, 4, eBoxFill::DARK);
         }
         else
         {
-            Draw.menubox(double_buffer, 72, pointer_offset, 29, 4, BLUE);
+            Draw.menubox(double_buffer, 72, pointer_offset, 29, 4, eBoxFill::TRANSPARENT);
         }
 
         if (savegame[sg].num_characters == -1)
@@ -517,7 +517,7 @@ int KSaveGame::start_menu(bool skip_splash)
         {
             clear_bitmap(double_buffer);
             masked_blit(title, double_buffer, 0, 0, 0, 0, eSize::SCREEN_W, 124);
-            Draw.menubox(double_buffer, 112, 116, 10, 4, BLUE);
+            Draw.menubox(double_buffer, 112, 116, 10, 4, eBoxFill::TRANSPARENT);
             Draw.print_font(double_buffer, 128, 124, _("Continue"), FNORMAL);
             Draw.print_font(double_buffer, 128, 132, _("New Game"), FNORMAL);
             Draw.print_font(double_buffer, 136, 140, _("Config"), FNORMAL);
@@ -639,7 +639,7 @@ int KSaveGame::system_menu()
         Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, 0, 0, 8, 4, BLUE);
+        Draw.menubox(double_buffer, 0, 0, 8, 4, eBoxFill::TRANSPARENT);
 
         Draw.print_font(double_buffer, 16, 8, save_str, text_color);
         Draw.print_font(double_buffer, 16, 16, _("Load"), FNORMAL);

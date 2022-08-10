@@ -214,9 +214,9 @@ void config_menu()
         Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, 88, 0, 16, 1, BLUE);
+        Draw.menubox(double_buffer, 88, 0, 16, 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 96, 8, _("KQ Configuration"), FGOLD);
-        Draw.menubox(double_buffer, 32, 24, 30, MENU_SIZE + 3, BLUE);
+        Draw.menubox(double_buffer, 32, 24, 30, MENU_SIZE + 3, eBoxFill::TRANSPARENT);
         const char* dmode;
         citem(row[0], _("Display mode"), "", FNORMAL);
         citem(row[1], _("Show Frame Rate:"), show_frate ? _("YES") : _("NO"), FNORMAL);
@@ -274,7 +274,7 @@ void config_menu()
         draw_sprite(double_buffer, menuptr, 32, row[ptr]);
 
         /* This is the bottom window, where the description goes. */
-        Draw.menubox(double_buffer, 0, 216, 38, 1, BLUE);
+        Draw.menubox(double_buffer, 0, 216, 38, 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 8, 224, dc[ptr], FNORMAL);
         Draw.blit2screen();
 
@@ -475,7 +475,7 @@ void config_menu()
 
 static bool getakey(KPlayerInput::button& b, const char* cfg)
 {
-    Draw.menubox(double_buffer, 108, 108, 11, 1, DARKBLUE);
+    Draw.menubox(double_buffer, 108, 108, 11, 1, eBoxFill::DARK);
     Draw.print_font(double_buffer, 116, 116, _("Press a key"), FNORMAL);
     Draw.blit2screen();
 
@@ -520,7 +520,7 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
     {
         Game.ProcessEvents();
         Game.do_check_animation();
-        Draw.menubox(double_buffer, 148 - (maxu * 4), 100, maxu + 1, 3, DARKBLUE);
+        Draw.menubox(double_buffer, 148 - (maxu * 4), 100, maxu + 1, 3, eBoxFill::DARK);
         Draw.print_font(double_buffer, 160 - (strlen(capt) * 4), 108, capt, FGOLD);
         Draw.print_font(double_buffer, 152 - (maxu * 4), 116, "<", FNORMAL);
         Draw.print_font(double_buffer, 160 + (maxu * 4), 116, ">", FNORMAL);
@@ -749,10 +749,10 @@ void set_graphics_mode()
 
 void show_help()
 {
-    Draw.menubox(double_buffer, 116, 0, 9, 1, BLUE);
+    Draw.menubox(double_buffer, 116, 0, 9, 1, eBoxFill::TRANSPARENT);
     Draw.print_font(double_buffer, 132, 8, _("KQ Help"), FGOLD);
-    Draw.menubox(double_buffer, 32, 32, 30, 20, BLUE);
-    Draw.menubox(double_buffer, 0, 216, 38, 1, BLUE);
+    Draw.menubox(double_buffer, 32, 32, 30, 20, eBoxFill::TRANSPARENT);
+    Draw.menubox(double_buffer, 0, 216, 38, 1, eBoxFill::TRANSPARENT);
     Draw.print_font(double_buffer, 16, 224, _("Press CONFIRM to exit this screen"), FNORMAL);
     citem(72, _("Up Key:"), kq_keyname(PlayerInput.up.scancode), FNORMAL);
     citem(80, _("Down Key:"), kq_keyname(PlayerInput.down.scancode), FNORMAL);

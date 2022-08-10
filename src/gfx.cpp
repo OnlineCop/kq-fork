@@ -204,6 +204,18 @@ void Raster::fill(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t color)
         }
     }
 }
+void Raster::fill_trans(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t color)
+{
+    for (auto i = 0; i < w; ++i)
+    {
+        for (auto j = 0; j < h; ++j)
+        {
+            auto pre = getpixel(x + i, y + j);
+
+            setpixel(x + i, y + j, color_map->data[pre][color]);
+        }
+    }
+}
 
 void Raster::fill(uint8_t color)
 {

@@ -570,21 +570,22 @@ void KDraw::draw_icon(Raster* where, int ino, int icx, int icy)
     masked_blit(sicons, where, 0, ino * 8, icx, icy, 8, 8);
 }
 
-void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, eBubbleStyle bstyle)
+void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, eBoxFill bg, eBubbleStyle bstyle)
 {
-    int a;
-
     /* Draw a maybe-translucent background */
-    if (bg == BLUE)
+    switch (bg)
     {
-        drawing_mode(eDrawMode::DRAW_MODE_TRANS, NULL, 0, 0);
+    case eBoxFill::TRANSPARENT:
+        rectfill_trans(where, x1 + 2, y1 + 2, x2 - 3, y2 - 3, DTRANS);
+        break;
+    case eBoxFill::DARK:
+        rectfill(where, x1 + 2, y1 + 2, x2 - 3, y2 - 3, DBLUE);
+        break;
+    case eBoxFill::LIGHT:
+        rectfill(where, x1 + 2, y1 + 2, x2 - 3, y2 - 3, DRED);
+        break;
     }
-    else
-    {
-        bg = (bg == DARKBLUE) ? DBLUE : DRED;
-    }
-    rectfill(where, x1 + 2, y1 + 2, x2 - 3, y2 - 3, bg);
-    drawing_mode(eDrawMode::DRAW_MODE_SOLID, NULL, 0, 0);
+
     /* Now the border */
     switch (bstyle)
     {
@@ -595,13 +596,13 @@ void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, e
 
     case B_THOUGHT:
         /* top and bottom */
-        for (a = x1 + 8; a < x2 - 8; a += 8)
+        for (int a = x1 + 8; a < x2 - 8; a += 8)
         {
             draw_sprite(where, bord[1], a, y1);
             draw_sprite(where, bord[6], a, y2 - 8);
         }
         /* sides */
-        for (a = y1 + 8; a < y2 - 8; a += 12)
+        for (int a = y1 + 8; a < y2 - 8; a += 12)
         {
             draw_sprite(where, bord[3], x1, a);
             draw_sprite(where, bord[4], x2 - 8, a);
@@ -686,7 +687,7 @@ void KDraw::draw_textbox(eBubbleStyle bstyle)
     int wid = gbbw * 8 + 16;
     int hgt = gbbh * 12 + 16;
 
-    draw_kq_box(double_buffer, gbbx, gbby, gbbx + wid, gbby + hgt, BLUE, bstyle);
+    draw_kq_box(double_buffer, gbbx, gbby, gbbx + wid, gbby + hgt, eBoxFill::TRANSPARENT, bstyle);
     if (bubble_stem_style != STEM_UNDEFINED)
     {
         /* select the correct stem-thingy that comes out of the speech bubble */
@@ -710,7 +711,7 @@ void KDraw::draw_porttextbox(eBubbleStyle bstyle, int chr)
     hgt = gbbh * 12 + 16;
     chr = chr - PSIZE;
 
-    draw_kq_box(double_buffer, gbbx, gbby, gbbx + wid, gbby + hgt, BLUE, bstyle);
+    draw_kq_box(double_buffer, gbbx, gbby, gbbx + wid, gbby + hgt, eBoxFill::TRANSPARENT, bstyle);
 
     for (a = 0; a < gbbh; a++)
     {
@@ -720,8 +721,8 @@ void KDraw::draw_porttextbox(eBubbleStyle bstyle, int chr)
     a--;
     linexofs = a * 12;
 
-    menubox(double_buffer, 19, 154 - linexofs, 4, 4, BLUE);
-    menubox(double_buffer, 66, 178 - linexofs, party[chr].name.length(), 1, BLUE);
+    menubox(double_buffer, 19, 154 - linexofs, 4, 4, eBoxFill::TRANSPARENT);
+    menubox(double_buffer, 66, 178 - linexofs, party[chr].name.length(), 1, eBoxFill::TRANSPARENT);
 
     draw_sprite(double_buffer, players[chr].portrait, 24, 159 - linexofs);
     print_font(double_buffer, 74, 186 - linexofs, party[chr].name, FNORMAL);
@@ -791,7 +792,7 @@ void KDraw::drawmap()
     if (display_desc == 1)
     {
         menubox(double_buffer, 152 - (Game.Map.g_map.map_desc.length() * 4), 8, Game.Map.g_map.map_desc.length(), 1,
-                BLUE);
+                eBoxFill::TRANSPARENT);
         print_font(double_buffer, 160 - (Game.Map.g_map.map_desc.length() * 4), 16, Game.Map.g_map.map_desc.c_str(),
                    FNORMAL);
     }
@@ -870,7 +871,7 @@ int KDraw::is_forestsquare(int fx, int fy)
     }
 }
 
-void KDraw::menubox(Raster* where, int x, int y, int width, int height, int color)
+void KDraw::menubox(Raster* where, int x, int y, int width, int height, eBoxFill color)
 {
     const int FontWidth = 8;  // MagicNumber: Font width it 8
     const int FontHeight = 8; // MagicNumber: Font height it 8
@@ -916,12 +917,12 @@ void KDraw::message(const char* inMessage, int icn, int delay)
         if (icn == 255)
         {
             /* No icon */
-            menubox(double_buffer, 152 - (max_len * 4), 108, max_len, num_lines, DARKBLUE);
+            menubox(double_buffer, 152 - (max_len * 4), 108, max_len, num_lines, eBoxFill::DARK);
         }
         else
         {
             /* There is an icon; make the box a little bit bigger to the left */
-            menubox(double_buffer, 144 - (max_len * 4), 108, max_len + 1, num_lines, DARKBLUE);
+            menubox(double_buffer, 144 - (max_len * 4), 108, max_len + 1, num_lines, eBoxFill::DARK);
             draw_icon(double_buffer, icn, 152 - (max_len * 4), 116);
         }
 
@@ -1290,7 +1291,7 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
                 draw_textbox(B_TEXT);
                 /* Draw the  options text */
                 draw_kq_box(double_buffer, winx - 5, winy - 5, winx + winwidth * 8 + 13, winy + winheight * 12 + 5,
-                            BLUE, B_TEXT);
+                            eBoxFill::TRANSPARENT, B_TEXT);
                 for (i = 0; i < winheight; ++i)
                 {
                     print_font(double_buffer, winx + 8, winy + i * 12, opt[i + topopt], FBIG);

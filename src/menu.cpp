@@ -96,10 +96,10 @@ void KMenu::draw_mainmenu(int swho)
     for (fighter_index = 0; fighter_index < PSIZE; fighter_index++)
     {
         Draw.menubox(double_buffer, 44, fighter_index * 64 + 64, 18, 6,
-                     (size_t)swho == fighter_index ? DARKBLUE : BLUE);
+                     (size_t)swho == fighter_index ? eBoxFill::DARK : eBoxFill::TRANSPARENT);
     }
-    Draw.menubox(double_buffer, 204, 64, 7, 6, BLUE);
-    Draw.menubox(double_buffer, 204, 128, 7, 6, BLUE);
+    Draw.menubox(double_buffer, 204, 64, 7, 6, eBoxFill::TRANSPARENT);
+    Draw.menubox(double_buffer, 204, 128, 7, 6, eBoxFill::TRANSPARENT);
     Draw.print_font(double_buffer, 220, 72, _("Items"), FGOLD);
     Draw.print_font(double_buffer, 220, 80, _("Magic"), FGOLD);
     Draw.print_font(double_buffer, 220, 88, _("Equip"), FGOLD);
@@ -116,7 +116,7 @@ void KMenu::draw_mainmenu(int swho)
     Draw.print_font(double_buffer, 268 - (strbuf.size() * 8), 172, strbuf, FNORMAL);
     if (swho != -1)
     {
-        Draw.menubox(double_buffer, 44, swho * 64 + 64, 18, 6, DARKBLUE);
+        Draw.menubox(double_buffer, 44, swho * 64 + 64, 18, 6, eBoxFill::DARK);
     }
     for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
     {
@@ -315,7 +315,7 @@ void KMenu::display_quest_window()
 
         int base = currentQuestSelected - currentQuestSelected % VisibleQuestEntries;
         Draw.menubox(double_buffer, MenuboxLeftOffset, UpperMenuboxTopOffset, MenuboxWidth, (int)VisibleQuestEntries,
-                     BLUE);
+                     eBoxFill::TRANSPARENT);
         for (size_t someRandomIndex = 0; someRandomIndex < VisibleQuestEntries; ++someRandomIndex)
         {
             if (someRandomIndex + base < quest_list.size())
@@ -329,7 +329,7 @@ void KMenu::display_quest_window()
         draw_sprite(double_buffer, menuptr, MenuboxLeftOffset,
                     UpperMenuboxTopOffset + FontHeightFNORMAL * (currentQuestSelected - base + 1));
 
-        Draw.menubox(double_buffer, MenuboxLeftOffset, LowerMenuboxTopOffset, MenuboxWidth, 3, BLUE);
+        Draw.menubox(double_buffer, MenuboxLeftOffset, LowerMenuboxTopOffset, MenuboxWidth, 3, eBoxFill::TRANSPARENT);
         if (currentQuestSelected < quest_list.size())
         {
             Draw.print_font(double_buffer, MenuboxLeftOffset + 1 * FontWidthFNORMAL,
@@ -443,9 +443,9 @@ void KMenu::spec_items()
         Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, 72, 12, 20, 1, BLUE);
+        Draw.menubox(double_buffer, 72, 12, 20, 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 108, 20, _("Special Items"), FGOLD);
-        Draw.menubox(double_buffer, 72, 36, 20, 19, BLUE);
+        Draw.menubox(double_buffer, 72, 36, 20, 19, eBoxFill::TRANSPARENT);
         for (a = 0; a < num_items; a++)
         {
             Draw.draw_icon(double_buffer, special_items[list_item_which[a]].icon, 88, a * 8 + 44);
@@ -456,7 +456,7 @@ void KMenu::spec_items()
                 Draw.print_font(double_buffer, 224, a * 8 + 44, strbuf, FNORMAL);
             }
         }
-        Draw.menubox(double_buffer, 72, 204, 20, 1, BLUE);
+        Draw.menubox(double_buffer, 72, 204, 20, 1, eBoxFill::TRANSPARENT);
         a = strlen(special_items[list_item_which[ptr]].description) * 4;
         Draw.print_font(double_buffer, 160 - a, 212, special_items[list_item_which[ptr]].description, FNORMAL);
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 44);
@@ -497,11 +497,11 @@ void KMenu::status_screen(size_t fighter_index)
         Draw.drawmap();
 
         // Box around top-left square
-        Draw.menubox(double_buffer, 0, 16, 18, 5, BLUE);
+        Draw.menubox(double_buffer, 0, 16, 18, 5, eBoxFill::TRANSPARENT);
         draw_playerstat(double_buffer, pidx_index, 8, 24);
 
         // Box around bottom-left square
-        Draw.menubox(double_buffer, 0, 72, 18, 17, BLUE);
+        Draw.menubox(double_buffer, 0, 72, 18, 17, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 8, 80, _("Exp:"), FGOLD);
         sprintf(strbuf, "%d", party[pidx_index].xp);
         Draw.print_font(double_buffer, 152 - (strbuf.size() * 8), 80, strbuf, FNORMAL);
@@ -544,7 +544,7 @@ void KMenu::status_screen(size_t fighter_index)
             Draw.print_font(double_buffer, 152 - (strbuf.size() * 8), stats_y, strbuf, FNORMAL);
         }
 
-        Draw.menubox(double_buffer, 160, 16, 18, 16, BLUE);
+        Draw.menubox(double_buffer, 160, 16, 18, 16, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 168, 24, _("Earth"), FNORMAL);
         Draw.print_font(double_buffer, 168, 32, _("Black"), FNORMAL);
         Draw.print_font(double_buffer, 168, 40, _("Fire"), FNORMAL);
@@ -590,7 +590,7 @@ void KMenu::status_screen(size_t fighter_index)
                 }
             }
         }
-        Draw.menubox(double_buffer, 160, 160, 18, 6, BLUE);
+        Draw.menubox(double_buffer, 160, 160, 18, 6, eBoxFill::TRANSPARENT);
         for (equipment_index = 0; equipment_index < NUM_EQUIPMENT; equipment_index++)
         {
             Draw.draw_icon(double_buffer, items[party[pidx_index].eqp[equipment_index]].icon, 168,
