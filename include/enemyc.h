@@ -67,7 +67,7 @@ class KEnemy
      *
      * \todo PH would be good to have this script-enabled.
      *
-     * \param   fighter_index Target index in fighter[] array from [PSIZE..PSIZE+num_enemies-1] that action will be performed on.
+     * \param   fighter_index Target index in fighter[] array from [PSIZE..PSIZE+num_enemies-1] to perform action on.
      */
     void ChooseAction(size_t fighter_index);
 
