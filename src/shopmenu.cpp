@@ -127,7 +127,7 @@ static void buy_item(int how_many, int item_no)
         Game.ProcessEvents();
         Game.do_check_animation();
         blit(back, double_buffer, 0, 0, 0, 192, eSize::SCREEN_W, 48);
-        Draw.menubox(double_buffer, 32, 168, 30, 1, DARKBLUE);
+        Draw.menubox(double_buffer, 32, 168, 30, 1, eBoxFill::DARK);
         Draw.print_font(double_buffer, 104, 176, _("Confirm/Cancel"), FNORMAL);
         draw_sideshot(shops[shop_no].items[item_no]);
         Draw.blit2screen();
@@ -182,14 +182,14 @@ static void buy_menu()
         Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, 152 - (shop_name.length() * 4), 0, shop_name.length(), 1, BLUE);
+        Draw.menubox(double_buffer, 152 - (shop_name.length() * 4), 0, shop_name.length(), 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 160 - (shop_name.length() * 4), 8, shop_name.c_str(), FGOLD);
 
-        Draw.menubox(double_buffer, 0, 208, 7, 2, BLUE);
+        Draw.menubox(double_buffer, 0, 208, 7, 2, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 24, 220, _("Buy"), FGOLD);
 
-        Draw.menubox(double_buffer, 32, 24, 30, 16, BLUE);
-        Draw.menubox(double_buffer, 32, 168, 30, 1, BLUE);
+        Draw.menubox(double_buffer, 32, 24, 30, 16, eBoxFill::TRANSPARENT);
+        Draw.menubox(double_buffer, 32, 168, 30, 1, eBoxFill::TRANSPARENT);
         draw_shopgold();
         for (unsigned int shop_item_index = 0; shop_item_index < num_shop_items; shop_item_index++)
         {
@@ -311,7 +311,7 @@ void do_inn_effects(int do_delay)
 
 void draw_shopgold()
 {
-    Draw.menubox(double_buffer, 248, 208, 7, 2, BLUE);
+    Draw.menubox(double_buffer, 248, 208, 7, 2, eBoxFill::TRANSPARENT);
     Draw.print_font(double_buffer, 256, 216, _("Gold:"), FGOLD);
     sprintf(strbuf, "%d", Game.GetGold());
     Draw.print_font(double_buffer, 312 - (strbuf.size() * 8), 224, strbuf, FNORMAL);
@@ -324,7 +324,7 @@ static void draw_sideshot(int selected_item)
     uint32_t ownd = 0, equipped_items = 0, slot;
     size_t pidx_index, equipment_index, stats_index, cs_index, spell_index, inventory_index;
 
-    Draw.menubox(double_buffer, 80, 192, 18, 4, BLUE);
+    Draw.menubox(double_buffer, 80, 192, 18, 4, eBoxFill::TRANSPARENT);
     for (pidx_index = 0; pidx_index < numchrs; pidx_index++)
     {
         wx = pidx_index * 72 + 88;
@@ -459,7 +459,7 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
         return;
     }
     Draw.drawmap();
-    Draw.menubox(double_buffer, 152 - (strlen(iname) * 4), 0, strlen(iname), 1, BLUE);
+    Draw.menubox(double_buffer, 152 - (strlen(iname) * 4), 0, strlen(iname), 1, eBoxFill::TRANSPARENT);
     Draw.print_font(double_buffer, 160 - (strlen(iname) * 4), 8, iname, FGOLD);
     total_gold_cost = gold_per_character;
     for (party_index = 0; party_index < numchrs; party_index++)
@@ -489,30 +489,30 @@ void inn(const char* iname, uint32_t gold_per_character, int pay)
         Game.do_check_animation();
         Draw.drawmap();
 
-        Draw.menubox(double_buffer, 152 - (strlen(iname) * 4), 0, strlen(iname), 1, BLUE);
+        Draw.menubox(double_buffer, 152 - (strlen(iname) * 4), 0, strlen(iname), 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 160 - (strlen(iname) * 4), 8, iname, FGOLD);
         sprintf(strbuf, _("The cost is %u gp for the night."), total_gold_cost);
-        Draw.menubox(double_buffer, 152 - (strbuf.size() * 4), 48, strbuf.size(), 1, BLUE);
+        Draw.menubox(double_buffer, 152 - (strbuf.size() * 4), 48, strbuf.size(), 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 56, strbuf, FNORMAL);
-        Draw.menubox(double_buffer, 248, 168, 7, 2, BLUE);
+        Draw.menubox(double_buffer, 248, 168, 7, 2, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 256, 176, _("Gold:"), FGOLD);
         sprintf(strbuf, "%d", Game.GetGold());
         Draw.print_font(double_buffer, 312 - (strbuf.size() * 8), 184, strbuf, FNORMAL);
         if ((uint32_t)Game.GetGold() >= total_gold_cost)
         {
-            Draw.menubox(double_buffer, 52, 96, 25, 2, BLUE);
+            Draw.menubox(double_buffer, 52, 96, 25, 2, eBoxFill::TRANSPARENT);
             Draw.print_font(double_buffer, 60, 108, _("Do you wish to stay?"), FNORMAL);
         }
         else
         {
-            Draw.menubox(double_buffer, 32, 96, 30, 2, BLUE);
+            Draw.menubox(double_buffer, 32, 96, 30, 2, eBoxFill::TRANSPARENT);
             Draw.print_font(double_buffer, 40, 108, _("You can't afford to stay here."), FNORMAL);
             Draw.blit2screen();
             Game.wait_enter();
             return;
         }
 
-        Draw.menubox(double_buffer, 220, 96, 4, 2, DARKBLUE);
+        Draw.menubox(double_buffer, 220, 96, 4, 2, eBoxFill::DARK);
         Draw.print_font(double_buffer, 236, 104, _("yes"), FNORMAL);
         Draw.print_font(double_buffer, 236, 112, _("no"), FNORMAL);
         draw_sprite(double_buffer, menuptr, 220, my * 8 + 104);
@@ -574,7 +574,7 @@ static void sell_howmany(int item_no, size_t inv_page)
     max_items = g_inv[inv_page * NUM_ITEMS_PER_PAGE + item_no].quantity;
     if (max_items == 1)
     {
-        Draw.menubox(double_buffer, 32, 168, 30, 1, DARKBLUE);
+        Draw.menubox(double_buffer, 32, 168, 30, 1, eBoxFill::DARK);
         sprintf(strbuf, _("Sell for %d gp?"), prc * 50 / 100);
         Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 176, strbuf, FNORMAL);
         sell_item(inv_page * NUM_ITEMS_PER_PAGE + item_no, 1);
@@ -585,9 +585,9 @@ static void sell_howmany(int item_no, size_t inv_page)
         Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, 32, 168, 30, 1, DARKBLUE);
+        Draw.menubox(double_buffer, 32, 168, 30, 1, eBoxFill::DARK);
         Draw.print_font(double_buffer, 124, 176, _("How many?"), FNORMAL);
-        Draw.menubox(double_buffer, 32, item_no * 8 + 24, 30, 1, DARKBLUE);
+        Draw.menubox(double_buffer, 32, item_no * 8 + 24, 30, 1, eBoxFill::DARK);
         Draw.draw_icon(double_buffer, items[l].icon, 48, item_no * 8 + 32);
         Draw.print_font(double_buffer, 56, item_no * 8 + 32, items[l].name, FNORMAL);
         sprintf(strbuf, _("%d of %d"), my, max_items);
@@ -618,7 +618,7 @@ static void sell_howmany(int item_no, size_t inv_page)
         }
         if (PlayerInput.balt())
         {
-            Draw.menubox(double_buffer, 32, 168, 30, 1, DARKBLUE);
+            Draw.menubox(double_buffer, 32, 168, 30, 1, eBoxFill::DARK);
             sprintf(strbuf, _("Sell for %d gp?"), (prc * 50 / 100) * my);
             Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 176, strbuf, FNORMAL);
             sell_item(inv_page * NUM_ITEMS_PER_PAGE + item_no, my);
@@ -637,7 +637,7 @@ static void sell_item(int itno, int qty_being_sold)
 
     l = g_inv[itno].item;
     sp = (items[l].price * 50 / 100) * qty_being_sold;
-    Draw.menubox(double_buffer, 96, 192, 14, 1, DARKBLUE);
+    Draw.menubox(double_buffer, 96, 192, 14, 1, eBoxFill::DARK);
     Draw.print_font(double_buffer, 104, 200, _("Confirm/Cancel"), FNORMAL);
     Draw.blit2screen();
     while (!stop)
@@ -680,12 +680,12 @@ static void sell_menu()
         Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, 152 - (shop_name.length() * 4), 0, shop_name.length(), 1, BLUE);
+        Draw.menubox(double_buffer, 152 - (shop_name.length() * 4), 0, shop_name.length(), 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 160 - (shop_name.length() * 4), 8, shop_name.c_str(), FGOLD);
-        Draw.menubox(double_buffer, 0, 208, 7, 2, BLUE);
+        Draw.menubox(double_buffer, 0, 208, 7, 2, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 20, 220, _("Sell"), FGOLD);
-        Draw.menubox(double_buffer, 32, 24, 30, 16, BLUE);
-        Draw.menubox(double_buffer, 32, 168, 30, 1, BLUE);
+        Draw.menubox(double_buffer, 32, 24, 30, 16, eBoxFill::TRANSPARENT);
+        Draw.menubox(double_buffer, 32, 168, 30, 1, eBoxFill::TRANSPARENT);
         draw_shopgold();
         for (p = 0; p < NUM_ITEMS_PER_PAGE; p++)
         {
@@ -845,10 +845,10 @@ int shop(int shop_num)
         Game.ProcessEvents();
         Game.do_check_animation();
         Draw.drawmap();
-        Draw.menubox(double_buffer, 152 - (shop_name.length() * 4), 0, shop_name.length(), 1, BLUE);
+        Draw.menubox(double_buffer, 152 - (shop_name.length() * 4), 0, shop_name.length(), 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 160 - (shop_name.length() * 4), 8, shop_name.c_str(), FGOLD);
-        Draw.menubox(double_buffer, 32, 24, 30, 1, BLUE);
-        Draw.menubox(double_buffer, ptr * 80 + 32, 24, 10, 1, DARKBLUE);
+        Draw.menubox(double_buffer, 32, 24, 30, 1, eBoxFill::TRANSPARENT);
+        Draw.menubox(double_buffer, ptr * 80 + 32, 24, 10, 1, eBoxFill::DARK);
         Draw.print_font(double_buffer, 68, 32, _("Buy"), FGOLD);
         Draw.print_font(double_buffer, 144, 32, _("Sell"), FGOLD);
         Draw.print_font(double_buffer, 224, 32, _("Exit"), FGOLD);

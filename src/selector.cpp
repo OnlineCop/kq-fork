@@ -318,7 +318,7 @@ static eMiniMenu mini_menu(int omask)
     {
         Game.ProcessEvents();
         Game.do_check_animation();
-        Draw.menubox(double_buffer, mini_menu_x - 13, mini_menu_y - 8, 6, 3, DARKBLUE);
+        Draw.menubox(double_buffer, mini_menu_x - 13, mini_menu_y - 8, 6, 3, eBoxFill::DARK);
         Draw.print_font(double_buffer, mini_menu_x, mini_menu_y, _("Join"), (omask & MM_JOIN) ? FNORMAL : FDARK);
         Draw.print_font(double_buffer, mini_menu_x, mini_menu_y + 8, _("Leave"), (omask & MM_LEAVE) ? FNORMAL : FDARK);
         Draw.print_font(double_buffer, mini_menu_x, mini_menu_y + 16, _("Lead"), (omask & MM_LEAD) ? FNORMAL : FDARK);
@@ -450,13 +450,13 @@ ePIDX select_any_player(eTarget csa, unsigned int icn, const char* msg)
         Draw.drawmap();
         if (csa != TGT_NONE)
         {
-            Draw.menubox(double_buffer, 152 - ((strlen(msg) + 1) * 4), 8, strlen(msg) + 1, 1, BLUE);
+            Draw.menubox(double_buffer, 152 - ((strlen(msg) + 1) * 4), 8, strlen(msg) + 1, 1, eBoxFill::TRANSPARENT);
             Draw.draw_icon(double_buffer, icn, 160 - ((strlen(msg) + 1) * 4), 16);
             Draw.print_font(double_buffer, 168 - ((strlen(msg) + 1) * 4), 16, msg, FNORMAL);
         }
         for (unsigned int k = 0; k < numchrs; k++)
         {
-            Draw.menubox(double_buffer, 80, k * 56 + shy, 18, 5, BLUE);
+            Draw.menubox(double_buffer, 80, k * 56 + shy, 18, 5, eBoxFill::TRANSPARENT);
             kmenu.draw_playerstat(double_buffer, pidx[k], 88, k * 56 + shy + 8);
             // Draw the pointer
             if (select_all || k == ptr)
@@ -731,7 +731,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
         }
     }
 
-    Draw.menubox(double_buffer, 16, 24, 34, 12, BLUE);
+    Draw.menubox(double_buffer, 16, 24, 34, 12, eBoxFill::TRANSPARENT);
     Draw.print_font(double_buffer, 24, 32, _("Available:"), FGOLD);
     Draw.print_font(double_buffer, 24, 80, _("In party:"), FGOLD);
     while (running)
@@ -744,7 +744,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
         for (fighter_index = 0; fighter_index < n_avail; ++fighter_index)
         {
             x = (eSize::SCREEN_W - 32 * n_avail) / 2 + 32 * fighter_index;
-            Draw.menubox(double_buffer, x, y, 2, 2, (fighter_index == cur ? DARKRED : DARKBLUE));
+            Draw.menubox(double_buffer, x, y, 2, 2, (fighter_index == cur ? eBoxFill::LIGHT : eBoxFill::DARK));
             if (avail[fighter_index] != PIDX_UNDEFINED)
             {
                 draw_sprite(double_buffer, frames[avail[fighter_index]][0], x + 8, y + 8);
@@ -755,7 +755,8 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
         y = 88;
         for (fighter_index = 0; fighter_index < PSIZE; ++fighter_index)
         {
-            Draw.menubox(double_buffer, x, y, 2, 2, (cur == MAXCHRS + fighter_index ? DARKRED : DARKBLUE));
+            Draw.menubox(double_buffer, x, y, 2, 2,
+                         (cur == MAXCHRS + fighter_index ? eBoxFill::LIGHT : eBoxFill::DARK));
             if (fighter_index < numchrs && pidx[fighter_index] != PIDX_UNDEFINED)
             {
                 draw_sprite(double_buffer, frames[pidx[fighter_index]][0], x + 8, y + 8);
@@ -763,7 +764,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
             x += 40;
         }
         /* Draw the 'Exit' button */
-        Draw.menubox(double_buffer, x, y, 4, 1, (cur == PSIZE + MAXCHRS ? DARKRED : DARKBLUE));
+        Draw.menubox(double_buffer, x, y, 4, 1, (cur == PSIZE + MAXCHRS ? eBoxFill::LIGHT : eBoxFill::DARK));
         Draw.print_font(double_buffer, x + 8, y + 8, _("Exit"), FNORMAL);
         /* See which hero is selected and draw his/her stats */
         if (cur < n_avail)
@@ -778,7 +779,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
         {
             hero = PIDX_UNDEFINED;
         }
-        Draw.menubox(double_buffer, 92, 152, 18, 5, DARKBLUE);
+        Draw.menubox(double_buffer, 92, 152, 18, 5, eBoxFill::DARK);
         if (hero != PIDX_UNDEFINED)
         {
             kmenu.draw_playerstat(double_buffer, hero, 100, 160);

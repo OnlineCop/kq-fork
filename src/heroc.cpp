@@ -312,7 +312,7 @@ static void combat_draw_items(int pg)
     int a, b, c;
     eFontColor k;
 
-    Draw.menubox(double_buffer, 72, 8, 20, 16, BLUE);
+    Draw.menubox(double_buffer, 72, 8, 20, 16, eBoxFill::TRANSPARENT);
     for (a = 0; a < 16; a++)
     {
         // b == item index #
@@ -345,7 +345,7 @@ static void combat_draw_spell_menu(int c, int ptr, int pg)
 {
     int z, j, b;
 
-    Draw.menubox(double_buffer, 80, 24, 18, 12, BLUE);
+    Draw.menubox(double_buffer, 80, 24, 18, 12, eBoxFill::TRANSPARENT);
     for (j = 0; j < NUM_SPELLS_PER_PAGE; j++)
     {
         z = party[pidx[c]].spells[pg * NUM_SPELLS_PER_PAGE + j];
@@ -442,7 +442,7 @@ static int combat_item_menu(int whom)
         combat_draw_items(pptr);
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 16);
         /* put description of selected item */
-        Draw.menubox(double_buffer, 72, 152, 20, 1, BLUE);
+        Draw.menubox(double_buffer, 72, 152, 20, 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16].item].desc, FNORMAL);
         Draw.blit2screen();
 
@@ -667,7 +667,7 @@ static void draw_invokable(int dud)
     int a, tt;
     eFontColor grd;
 
-    Draw.menubox(double_buffer, 72, 80, 20, 6, BLUE);
+    Draw.menubox(double_buffer, 72, 80, 20, 6, eBoxFill::TRANSPARENT);
     for (a = 0; a < NUM_EQUIPMENT; a++)
     {
         tt = party[dud].eqp[a];
@@ -790,7 +790,7 @@ void hero_choose_action(size_t fighter_index)
         {
             amy = 184;
         }
-        Draw.menubox(double_buffer, 120, amy, 8, my, BLUE);
+        Draw.menubox(double_buffer, 120, amy, 8, my, eBoxFill::TRANSPARENT);
         for (ca_index = 0; ca_index < my; ca_index++)
         {
             Draw.print_font(double_buffer, 136, ca_index * 8 + amy + 8, ca[ca_index], FNORMAL);
@@ -801,12 +801,12 @@ void hero_choose_action(size_t fighter_index)
         }
         if (sptr == 0)
         {
-            Draw.menubox(double_buffer, 64, amy, 6, 1, BLUE);
+            Draw.menubox(double_buffer, 64, amy, 6, 1, eBoxFill::TRANSPARENT);
             Draw.print_font(double_buffer, 72, amy + 8, _("Defend"), FNORMAL);
         }
         if (sptr == 2)
         {
-            Draw.menubox(double_buffer, 192, amy, 3, 1, BLUE);
+            Draw.menubox(double_buffer, 192, amy, 3, 1, eBoxFill::TRANSPARENT);
             Draw.print_font(double_buffer, 200, amy + 8, _("Run"), FNORMAL);
         }
         Draw.blit2screen();
@@ -1219,7 +1219,7 @@ static void hero_run()
     }
     else
     {
-        Draw.menubox(double_buffer, 84, 32, 17, 1, BLUE);
+        Draw.menubox(double_buffer, 84, 32, 17, 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 92, 40, _("Could not escape!"), FNORMAL);
         Draw.blit2screen();
         Game.wait_enter();
@@ -1247,7 +1247,7 @@ static void hero_run()
              running_animation_count++)
         {
             clear_bitmap(double_buffer);
-            Draw.menubox(double_buffer, 152 - text_center, 32, strbuf.size(), 1, BLUE);
+            Draw.menubox(double_buffer, 152 - text_center, 32, strbuf.size(), 1, eBoxFill::TRANSPARENT);
             Draw.print_font(double_buffer, 160 - text_center, 40, strbuf, FNORMAL);
             for (size_t fighter_index = 0; fighter_index < numchrs; fighter_index++)
             {

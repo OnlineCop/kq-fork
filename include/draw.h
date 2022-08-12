@@ -38,6 +38,7 @@ constexpr uint8_t GREY1 = 4;  // pal[4]:  { 16, 16, 16, 0 }
 constexpr uint8_t GREY2 = 8;  // pal[8]:  { 33, 33, 33, 0 }
 constexpr uint8_t GREY3 = 13; // pal[13]: { 55, 55, 55, 0 }
 constexpr uint8_t WHITE = 15; // pal[15]: { 63, 63, 63, 0 }
+constexpr uint8_t DTRANS = 2; // pal[2]:  { 8, 8, 8, 0 }
 constexpr uint8_t DBLUE = 3;  // pal[3]:  { 12, 12, 12, 0 }
 constexpr uint8_t DRED = 6;   // pal[6]:  { 24, 24, 24, 0 }
 
@@ -76,6 +77,13 @@ enum eBubbleStemStyle
     STEM_TOP_LEFT = 3,
 
     NUM_BUBBLE_STEMS // always last
+};
+
+enum class eBoxFill
+{
+    TRANSPARENT,
+    DARK,
+    LIGHT
 };
 
 /*  draw global functions  */
@@ -213,16 +221,15 @@ class KDraw
 
     /*! \brief Draw menu box.
      *
-     * This is kinda hacked because of translucency, but it works. DARKBLUE draws a non-translucent box.
      *
      * \param   where Bitmap to draw to.
      * \param   x X coord.
      * \param   y Y coord.
      * \param   width Width.
      * \param   height Height.
-     * \param   color Colour (see note above).
+     * \param   color Fill color
      */
-    void menubox(Raster* where, int x, int y, int width, int height, int color);
+    void menubox(Raster* where, int x, int y, int width, int height, eBoxFill color);
 
     /*! \brief Display string.
      *
@@ -441,10 +448,10 @@ class KDraw
      * \param   y1 Top edge.
      * \param   x2 Right edge (inclusive).
      * \param   y2 Bottom edge (inclusive).
-     * \param   bg Colour/style of background.
+     * \param   bg background fill.
      * \param   bstyle Style of border.
      */
-    void draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, int bg, eBubbleStyle bstyle);
+    void draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, eBoxFill bg, eBubbleStyle bstyle);
 
     /*! \brief Draw middle layer.
      *

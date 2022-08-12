@@ -85,7 +85,7 @@ static void camp_drop_item(int ptr, int pptr)
         Game.do_check_animation();
         Draw.drawmap();
         draw_itemmenu(ptr, pptr, 0);
-        Draw.menubox(double_buffer, 72 + 0, 204, 20, 1, DARKBLUE);
+        Draw.menubox(double_buffer, 72 + 0, 204, 20, 1, eBoxFill::DARK);
         Draw.print_font(double_buffer, 104, 212, _("Confirm/Cancel"), FNORMAL);
         Draw.blit2screen();
 
@@ -284,12 +284,12 @@ int check_inventory(size_t item_id, int item_quantity)
 
 static void draw_itemmenu(int ptr, int pg, int sl)
 {
-    Draw.menubox(double_buffer, 72, 12, 20, 1, BLUE);
+    Draw.menubox(double_buffer, 72, 12, 20, 1, eBoxFill::TRANSPARENT);
     Draw.print_font(double_buffer, 140, 20, _("Items"), FGOLD);
-    Draw.menubox(double_buffer, 72, 36, 20, 1, BLUE);
+    Draw.menubox(double_buffer, 72, 36, 20, 1, eBoxFill::TRANSPARENT);
     if (sl == 1)
     {
-        Draw.menubox(double_buffer, item_act * 56 + 72, 36, 6, 1, DARKBLUE);
+        Draw.menubox(double_buffer, item_act * 56 + 72, 36, 6, 1, eBoxFill::DARK);
         Draw.print_font(double_buffer, 92, 44, _("Use"), FGOLD);
         Draw.print_font(double_buffer, 144, 44, _("Sort   Drop"), FGOLD);
     }
@@ -304,7 +304,7 @@ static void draw_itemmenu(int ptr, int pg, int sl)
             Draw.print_font(double_buffer, 144, 44, _("Drop"), FGOLD);
         }
     }
-    Draw.menubox(double_buffer, 72, 60, 20, 16, BLUE);
+    Draw.menubox(double_buffer, 72, 60, 20, 16, eBoxFill::TRANSPARENT);
     for (int k = 0; k < NUM_ITEMS_PER_PAGE; k++)
     {
         eFontColor palette_color;
@@ -329,7 +329,7 @@ static void draw_itemmenu(int ptr, int pg, int sl)
             Draw.print_font(double_buffer, 224, k * 8 + 68, strbuf, palette_color);
         }
     }
-    Draw.menubox(double_buffer, 72, 204, 20, 1, BLUE);
+    Draw.menubox(double_buffer, 72, 204, 20, 1, eBoxFill::TRANSPARENT);
     if (sl == 0)
     {
         auto item_name_length = strlen(items[g_inv[pg * NUM_ITEMS_PER_PAGE + ptr].item].desc) * 4;

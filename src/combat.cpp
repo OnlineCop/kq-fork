@@ -326,7 +326,7 @@ void KCombat::battle_render(int32_t plyr, size_t hl, int SelectAll)
                                            : fighter[current_fighter_index].cy - 32);
 
             Draw.menubox(double_buffer, center_aligned_text - 8, top_aligned_text,
-                         fighter[current_fighter_index].name.length(), 1, BLUE);
+                         fighter[current_fighter_index].name.length(), 1, eBoxFill::TRANSPARENT);
             Draw.print_font(double_buffer, center_aligned_text, top_aligned_text + 8,
                             fighter[current_fighter_index].name, FNORMAL);
         }
@@ -347,7 +347,7 @@ void KCombat::battle_render(int32_t plyr, size_t hl, int SelectAll)
             draw_fighter(fighter_index, 0);
         }
 
-        Draw.menubox(double_buffer, menubox_align_x, 184, 11, 5, BLUE);
+        Draw.menubox(double_buffer, menubox_align_x, 184, 11, 5, eBoxFill::TRANSPARENT);
         if (fighter[fighter_index].IsAlive())
         {
             int right_edge = bspeed[fighter_index] * 88 / ROUND_MAX;
@@ -417,7 +417,7 @@ void KCombat::battle_render(int32_t plyr, size_t hl, int SelectAll)
     if (display_attack_string == 1)
     {
         size_t ctext_length = strlen(attack_string) * 4;
-        Draw.menubox(double_buffer, 152 - ctext_length, 8, strlen(attack_string), 1, BLUE);
+        Draw.menubox(double_buffer, 152 - ctext_length, 8, strlen(attack_string), 1, eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, 160 - ctext_length, 16, attack_string, FNORMAL);
     }
 }
@@ -936,7 +936,7 @@ void KCombat::enemies_win()
     Draw.blit2screen();
     kq_wait(1000);
     sprintf(strbuf, _("%s was defeated!"), party[pidx[0]].name.c_str());
-    Draw.menubox(double_buffer, 152 - (strbuf.size() * 4), 48, strbuf.size(), 1, BLUE);
+    Draw.menubox(double_buffer, 152 - (strbuf.size() * 4), 48, strbuf.size(), 1, eBoxFill::TRANSPARENT);
     Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 56, strbuf, FNORMAL);
     Draw.blit2screen();
     Game.wait_enter();
@@ -1293,7 +1293,7 @@ void KCombat::heroes_win()
         sprintf(strbuf, _("Gained %d xp."), txp);
     }
 
-    Draw.menubox(double_buffer, 152 - (strbuf.size() * 4), 8, strbuf.size(), 1, BLUE);
+    Draw.menubox(double_buffer, 152 - (strbuf.size() * 4), 8, strbuf.size(), 1, eBoxFill::TRANSPARENT);
     Draw.print_font(double_buffer, 160 - (strbuf.size() * 4), 16, strbuf, FNORMAL);
     Draw.blit2screen();
     fullblit(double_buffer, back);
@@ -1322,7 +1322,8 @@ void KCombat::heroes_win()
                 if (check_inventory(found_item, 1) != 0)
                 {
                     sprintf(strbuf, _("%s found!"), items[found_item].name);
-                    Draw.menubox(double_buffer, 148 - (strbuf.size() * 4), nr * 24 + 48, strbuf.size() + 1, 1, BLUE);
+                    Draw.menubox(double_buffer, 148 - (strbuf.size() * 4), nr * 24 + 48, strbuf.size() + 1, 1,
+                                 eBoxFill::TRANSPARENT);
                     Draw.draw_icon(double_buffer, items[found_item].icon, 156 - (strbuf.size() * 4), nr * 24 + 56);
                     Draw.print_font(double_buffer, 164 - (strbuf.size() * 4), nr * 24 + 56, strbuf, FNORMAL);
                     nr++;
@@ -1347,7 +1348,7 @@ void KCombat::heroes_win()
             t1 = player2fighter(pidx[pidx_index]);
             if (kmenu.give_xp(pidx[pidx_index], txp, 0))
             {
-                Draw.menubox(double_buffer, b, 40, 18, 9, BLUE);
+                Draw.menubox(double_buffer, b, 40, 18, 9, eBoxFill::TRANSPARENT);
                 t2 = player2fighter(pidx[pidx_index]);
                 Draw.print_font(double_buffer, b + 8, 48, _("Level up!"), FGOLD);
                 Draw.print_font(double_buffer, b + 8, 56, _("Max HP"), FNORMAL);
@@ -1385,7 +1386,7 @@ void KCombat::heroes_win()
             }
             else
             {
-                Draw.menubox(double_buffer, b, 104, 18, 1, BLUE);
+                Draw.menubox(double_buffer, b, 104, 18, 1, eBoxFill::TRANSPARENT);
             }
 
             sprintf(strbuf, _("Next level %7d"), party[pidx[pidx_index]].next - party[pidx[pidx_index]].xp);
