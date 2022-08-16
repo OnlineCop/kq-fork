@@ -293,7 +293,7 @@ static std::string::const_iterator next_break(std::string::const_iterator begin,
                                               int width)
 {
     auto it = begin;
-    auto prev = std::min(end, std::next(begin, width));
+    auto prev = std::distance(it,  end) > width ? std::next(it, width) : end;
     while (true)
     {
         if (breakpoint(it, end))
