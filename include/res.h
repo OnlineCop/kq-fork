@@ -53,7 +53,7 @@ struct s_item
     /*! Colour to draw?? See hero_init() */
     uint8_t kol;
     /*! Short description of the item (around 40 characters). */
-    std::string desc;
+    std::string item_desc;
     /*! Targetting type for combat items. See TGT_* constants in kq.h */
     uint8_t tgt;
     /*! Relates to which slot (hand, etc.) this item goes into */

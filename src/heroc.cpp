@@ -443,7 +443,7 @@ static int combat_item_menu(int whom)
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 16);
         /* put description of selected item */
         Draw.menubox(double_buffer, 72, 152, 20, 1, eBoxFill::TRANSPARENT);
-        Draw.print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16].item].desc, FNORMAL);
+        Draw.print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16].item].item_desc, FNORMAL);
         Draw.blit2screen();
 
         if (PlayerInput.up())

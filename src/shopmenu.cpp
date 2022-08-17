@@ -220,7 +220,8 @@ static void buy_menu()
         }
 
         unsigned short item_no = shops[shop_no].items[yptr];
-        Draw.print_font(double_buffer, 160 - (items[item_no].desc.size() * 4), 176, items[item_no].desc, FNORMAL);
+        Draw.print_font(double_buffer, 160 - (items[item_no].item_desc.size() * 4), 176, items[item_no].item_desc,
+                        FNORMAL);
         draw_sideshot(item_no);
         draw_sprite(double_buffer, menuptr, 32, yptr * 8 + 32);
         Draw.blit2screen();
