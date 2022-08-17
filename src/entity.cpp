@@ -33,6 +33,7 @@
 #include "menu.h"
 #include "random.h"
 #include "setup.h"
+#include <algorithm>
 
 using namespace eSize;
 

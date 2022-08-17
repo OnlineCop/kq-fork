@@ -29,6 +29,7 @@
 #include "kq.h"
 
 #include <algorithm>
+#include <climits>
 #include <cstdint>
 #include <memory>
 #include <queue>

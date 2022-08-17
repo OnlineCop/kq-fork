@@ -40,6 +40,7 @@
 #include "setup.h"
 #include "skills.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 
