@@ -35,6 +35,8 @@
 
 enum EMagic
 {
+    M_NONE = 0,
+
     M_CURE1 = 1,
     M_HOLD = 2,
     M_SHIELD = 3,
@@ -95,6 +97,8 @@ enum EMagic
     M_EARTHQUAKE = 58,
     M_PLAGUE = 59,
     M_XSURGE = 60,
+
+    M_TOTAL // always last
 };
 
 /*! non-combat spell states */
