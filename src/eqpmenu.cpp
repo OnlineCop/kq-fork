@@ -301,7 +301,7 @@ static void draw_equipmenu(int c, bool sel)
     {
         int j = party[l].eqp[k];
         Draw.draw_icon(double_buffer, items[j].icon, 84, k * 8 + 36);
-        Draw.print_font(double_buffer, 92, k * 8 + 36, items[j].name, FNORMAL);
+        Draw.print_font(double_buffer, 92, k * 8 + 36, items[j].item_name, FNORMAL);
     }
 }
 
@@ -321,7 +321,7 @@ static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
     {
         auto [id, quantity] = g_inv[t_inv[p]];
         Draw.draw_icon(double_buffer, items[id].icon, 28, k * 8 + 100);
-        Draw.print_font(double_buffer, 36, k * 8 + 100, items[id].name, FNORMAL);
+        Draw.print_font(double_buffer, 36, k * 8 + 100, items[id].item_name, FNORMAL);
         if (quantity > 1)
         {
             sprintf(strbuf, "^%d", quantity);

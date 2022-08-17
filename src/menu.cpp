@@ -596,7 +596,7 @@ void KMenu::status_screen(size_t fighter_index)
             Draw.draw_icon(double_buffer, items[party[pidx_index].eqp[equipment_index]].icon, 168,
                            equipment_index * 8 + 168);
             Draw.print_font(double_buffer, 176, equipment_index * 8 + 168,
-                            items[party[pidx_index].eqp[equipment_index]].name, FNORMAL);
+                            items[party[pidx_index].eqp[equipment_index]].item_name, FNORMAL);
         }
         Draw.blit2screen();
 

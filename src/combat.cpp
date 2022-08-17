@@ -1321,7 +1321,7 @@ void KCombat::heroes_win()
             {
                 if (check_inventory(found_item, 1) != 0)
                 {
-                    sprintf(strbuf, _("%s found!"), items[found_item].name);
+                    sprintf(strbuf, _("%s found!"), items[found_item].item_name);
                     Draw.menubox(double_buffer, 148 - (strbuf.size() * 4), nr * 24 + 48, strbuf.size() + 1, 1,
                                  eBoxFill::TRANSPARENT);
                     Draw.draw_icon(double_buffer, items[found_item].icon, 156 - (strbuf.size() * 4), nr * 24 + 56);

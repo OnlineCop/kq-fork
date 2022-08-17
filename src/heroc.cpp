@@ -328,7 +328,7 @@ static void combat_draw_items(int pg)
         {
             k = FDARK;
         }
-        Draw.print_font(double_buffer, 96, a * 8 + 16, items[b].name, k);
+        Draw.print_font(double_buffer, 96, a * 8 + 16, items[b].item_name, k);
         if (c > 1)
         {
             sprintf(strbuf, "^%d", c);
@@ -382,7 +382,7 @@ static int combat_item(int ss, int t1, int tg)
     {
         return 0;
     }
-    strcpy(attack_string, items[t1].name.c_str());
+    strcpy(attack_string, items[t1].item_name.c_str());
     display_attack_string = 1;
     r = item_effects(ss, tg, t1);
     display_attack_string = 0;
@@ -673,7 +673,7 @@ static void draw_invokable(int dud)
         tt = party[dud].eqp[a];
         grd = can_invoke_item(tt) ? FNORMAL : FDARK;
         Draw.draw_icon(double_buffer, items[tt].icon, 88, a * 8 + 88);
-        Draw.print_font(double_buffer, 96, a * 8 + 88, items[tt].name, grd);
+        Draw.print_font(double_buffer, 96, a * 8 + 88, items[tt].item_name, grd);
     }
 }
 

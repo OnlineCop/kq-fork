@@ -47,7 +47,7 @@
 struct s_item
 {
     /*! Item's short name (around 16 characters). */
-    std::string name;
+    std::string item_name;
     /*! Small icon */
     uint8_t icon;
     /*! Colour to draw?? See hero_init() */

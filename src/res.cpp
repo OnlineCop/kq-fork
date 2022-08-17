@@ -106,7 +106,7 @@ PALETTE pal = {
     { 42, 63, 63, 0 },  { 46, 63, 63, 0 },   { 50, 63, 63, 0 }, { 63, 63, 63, 0 }
 };
 
-/* 0: `name`: Item name.
+/* 0: `item_name`: Item name.
  * 1: `icon`: Icon ID (matches icon found in misc.png).
  * 2: `kol`: Recolor value from PALETTE `pal` table. Replaces the two colors found in
  *    USBAT with the color specified by this index value (if this index value > 0).
