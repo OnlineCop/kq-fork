@@ -35,6 +35,6 @@ int hero_skillcheck(size_t fighter_index);
  * This function is only used for Corin when he uses his Infuse ability.
  *
  * \param   c Fighter index in fighter[] array.
- * \param   sn Thing to infuse, in range [EMagic::M_CURE1..EMagic::M_XSURGE].
+ * \param   sn Thing to infuse, in range [eMagic::M_CURE1..eMagic::M_XSURGE].
  */
 void infusion(int c, int sn);

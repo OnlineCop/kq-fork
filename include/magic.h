@@ -33,7 +33,7 @@
 
 #include <cstdint>
 
-enum EMagic
+enum eMagic
 {
     M_NONE = 0,
 
