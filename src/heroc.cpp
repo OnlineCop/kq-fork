@@ -382,7 +382,7 @@ static int combat_item(int ss, int t1, int tg)
     {
         return 0;
     }
-    strcpy(attack_string, items[t1].name);
+    strcpy(attack_string, items[t1].name.c_str());
     display_attack_string = 1;
     r = item_effects(ss, tg, t1);
     display_attack_string = 0;

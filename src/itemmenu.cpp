@@ -247,7 +247,7 @@ static void camp_item_targetting(int pp)
     while (1)
     {
         kmenu.update_equipstats();
-        ePIDX tg = select_any_player((eTarget)items[t1].tgt, items[t1].icon, items[t1].name);
+        ePIDX tg = select_any_player((eTarget)items[t1].tgt, items[t1].icon, items[t1].name.c_str());
         if (tg != PIDX_UNDEFINED)
         {
             eItemEffectResult z = item_effects(0, tg, t1);
@@ -333,7 +333,7 @@ static void draw_itemmenu(int ptr, int pg, int sl)
     Draw.menubox(double_buffer, 72, 204, 20, 1, eBoxFill::TRANSPARENT);
     if (sl == 0)
     {
-        auto item_name_length = strlen(items[g_inv[pg * NUM_ITEMS_PER_PAGE + ptr].item].desc) * 4;
+        auto item_name_length = items[g_inv[pg * NUM_ITEMS_PER_PAGE + ptr].item].desc.size() * 4;
         Draw.print_font(double_buffer, 160 - item_name_length, 212, items[g_inv[pg * 16 + ptr].item].desc, FNORMAL);
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 68);
     }

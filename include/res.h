@@ -26,6 +26,7 @@
 #include "heroc.h"
 
 #include <cstdint>
+#include <string>
 
 /*! \file
  * \brief Definitions of resource types.
@@ -45,14 +46,14 @@
 /*! \brief An item. */
 struct s_item
 {
-    /*! Name of the item (16 chars plus '\0') */
-    char name[17];
+    /*! Item's short name (around 16 characters). */
+    std::string name;
     /*! Small icon */
     uint8_t icon;
     /*! Colour to draw?? See hero_init() */
     uint8_t kol;
-    /*! One line description */
-    char desc[40];
+    /*! Short description of the item (around 40 characters). */
+    std::string desc;
     /*! Targetting type for combat items. See TGT_* constants in kq.h */
     uint8_t tgt;
     /*! Relates to which slot (hand, etc.) this item goes into */
