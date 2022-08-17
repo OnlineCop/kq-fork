@@ -26,6 +26,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 class Raster;
 struct SDL_Window;
@@ -369,6 +370,16 @@ class KDraw
      * \returns Target or a new bitmap.
      */
     Raster* copy_bitmap(Raster* target, Raster* source);
+
+    /*! \brief Lay out some text
+     * Splits the given text at word boundaries so no line is longer
+     * than the given layout width.
+     *
+     * \param text a line of text
+     * \param layout_width the width in characters
+     * \returns the text split into lines
+     */
+    std::vector<std::string> layout(const std::string& text, int layout_width);
 
   private:
     /*! \brief Draw border box.

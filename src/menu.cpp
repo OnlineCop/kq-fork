@@ -273,61 +273,6 @@ void KMenu::menu()
         }
     }
 }
-static bool breakpoint(std::string::const_iterator it, std::string::const_iterator end)
-{
-    return it == end || isspace(*it);
-}
-static std::string::const_iterator cut(std::string::const_iterator from, std::string::const_iterator end)
-{
-    while (from < end)
-    {
-        if (!isspace(*from))
-        {
-            return from;
-        }
-        ++from;
-    }
-    return end;
-}
-static std::string::const_iterator next_break(std::string::const_iterator begin, std::string::const_iterator end,
-                                              int width)
-{
-    auto it = begin;
-    auto prev = std::distance(it,  end) > width ? std::next(it, width) : end;
-    while (true)
-    {
-        if (breakpoint(it, end))
-        {
-            if (std::distance(begin, it) > width)
-            {
-                return prev;
-            }
-            else if (it == end)
-            {
-                return end;
-            }
-            else
-            {
-                prev = it;
-            }
-        }
-        ++it;
-    }
-}
-
-std::vector<std::string> KMenu::layout(const std::string& text, int layout_width)
-{
-    std::vector<std::string> lines;
-    auto end = text.end();
-    auto it = text.begin();
-    while (it != end)
-    {
-        auto brk = next_break(it, end, layout_width);
-        lines.emplace_back(it, brk);
-        it = cut(brk, end);
-    }
-    return lines;
-}
 
 void KMenu::display_quest_window()
 {
@@ -392,7 +337,7 @@ void KMenu::display_quest_window()
             if (current.empty())
             {
                 // Lay this one out if we haven't already
-                current = layout(quest_list[currentQuestSelected].text, ItemTextWidth);
+                current = Draw.layout(quest_list[currentQuestSelected].text, ItemTextWidth);
             }
             int y = MenuboxTopOffset;
             int lastIndex = std::min(textTopIndex + VisibleQuestEntries, (int)current.size());

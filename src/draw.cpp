@@ -1638,3 +1638,59 @@ void KDraw::resize_window(int w, int h, bool win)
         SDL_SetWindowSize(window, w, h);
     }
 }
+
+static bool breakpoint(std::string::const_iterator it, std::string::const_iterator end)
+{
+    return it == end || isspace(*it);
+}
+static std::string::const_iterator cut(std::string::const_iterator from, std::string::const_iterator end)
+{
+    while (from < end)
+    {
+        if (!isspace(*from))
+        {
+            return from;
+        }
+        ++from;
+    }
+    return end;
+}
+static std::string::const_iterator next_break(std::string::const_iterator begin, std::string::const_iterator end,
+                                              int width)
+{
+    auto it = begin;
+    auto prev = std::distance(it,  end) > width ? std::next(it, width) : end;
+    while (true)
+    {
+        if (breakpoint(it, end))
+        {
+            if (std::distance(begin, it) > width)
+            {
+                return prev;
+            }
+            else if (it == end)
+            {
+                return end;
+            }
+            else
+            {
+                prev = it;
+            }
+        }
+        ++it;
+    }
+}
+
+std::vector<std::string> KDraw::layout(const std::string& text, int layout_width)
+{
+    std::vector<std::string> lines;
+    auto end = text.end();
+    auto it = text.begin();
+    while (it != end)
+    {
+        auto brk = next_break(it, end, layout_width);
+        lines.emplace_back(it, brk);
+        it = cut(brk, end);
+    }
+    return lines;
+}
