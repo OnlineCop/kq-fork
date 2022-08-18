@@ -227,14 +227,14 @@ static void infusion(int c, int sn)
         ftr.res[R_EARTH] += 5;
         ftr.stats[eStat::Defense] += 15;
         ftr.stats[eStat::MagicDefense] += 10;
-        ftr.weapon_elemental_effect = 0;
+        ftr.weapon_elemental_effect = eResistance::R_EARTH;
         break;
 
     case M_EARTHQUAKE:
         ftr.res[R_EARTH] += 10;
         ftr.stats[eStat::Defense] += 30;
         ftr.stats[eStat::MagicDefense] += 20;
-        ftr.weapon_elemental_effect = 0;
+        ftr.weapon_elemental_effect = eResistance::R_EARTH;
         break;
 
         /* Increase resistance to Dark attacks */
@@ -243,14 +243,14 @@ static void infusion(int c, int sn)
         ftr.res[R_BLACK] += 8;
         ftr.res[R_WHITE] -= 4;
         ftr.stats[eStat::Aura] += 20;
-        ftr.weapon_elemental_effect = 1;
+        ftr.weapon_elemental_effect = eResistance::R_BLACK;
         break;
 
     case M_NEGATIS:
         ftr.res[R_BLACK] += 16;
         ftr.res[R_WHITE] -= 8;
         ftr.stats[eStat::Aura] += 40;
-        ftr.weapon_elemental_effect = 1;
+        ftr.weapon_elemental_effect = eResistance::R_BLACK;
         break;
 
         /* Increase resistance to Fire attacks */
@@ -261,7 +261,7 @@ static void infusion(int c, int sn)
         ftr.res[R_ICE]--;
         ftr.stats[eStat::Attack] += 10;
         ftr.stats[eStat::Hit] += 10;
-        ftr.weapon_elemental_effect = 2;
+        ftr.weapon_elemental_effect = eResistance::R_FIRE;
         break;
 
     case M_FIREBLAST:
@@ -270,7 +270,7 @@ static void infusion(int c, int sn)
         ftr.res[R_ICE] -= 2;
         ftr.stats[eStat::Attack] += 20;
         ftr.stats[eStat::Hit] += 20;
-        ftr.weapon_elemental_effect = 2;
+        ftr.weapon_elemental_effect = eResistance::R_FIRE;
         break;
 
     case M_FLAMEWALL:
@@ -279,26 +279,26 @@ static void infusion(int c, int sn)
         ftr.res[R_ICE] -= 4;
         ftr.stats[eStat::Attack] += 40;
         ftr.stats[eStat::Hit] += 40;
-        ftr.weapon_elemental_effect = 2;
+        ftr.weapon_elemental_effect = eResistance::R_FIRE;
         break;
 
         /* Increase resistance to Thunder attacks */
     case M_SHOCK:
         ftr.res[R_THUNDER] += 3;
         ftr.stats[eStat::Evade] += 10;
-        ftr.weapon_elemental_effect = 3;
+        ftr.weapon_elemental_effect = eResistance::R_THUNDER;
         break;
 
     case M_LIGHTNING:
         ftr.res[R_THUNDER] += 6;
         ftr.stats[eStat::Evade] += 25;
-        ftr.weapon_elemental_effect = 3;
+        ftr.weapon_elemental_effect = eResistance::R_THUNDER;
         break;
 
     case M_THUNDERSTORM:
         ftr.res[R_THUNDER] += 12;
         ftr.stats[eStat::Evade] += 50;
-        ftr.weapon_elemental_effect = 3;
+        ftr.weapon_elemental_effect = eResistance::R_THUNDER;
         break;
 
         /* Increase resistance to Air attacks */
@@ -306,14 +306,14 @@ static void infusion(int c, int sn)
         ftr.res[R_AIR] += 5;
         ftr.stats[eStat::Evade] += 15;
         ftr.stats[eStat::Speed] += 10;
-        ftr.weapon_elemental_effect = 4;
+        ftr.weapon_elemental_effect = eResistance::R_AIR;
         break;
 
     case M_TORNADO:
         ftr.res[R_AIR] += 10;
         ftr.stats[eStat::Evade] += 30;
         ftr.stats[eStat::Speed] += 20;
-        ftr.weapon_elemental_effect = 4;
+        ftr.weapon_elemental_effect = eResistance::R_AIR;
         break;
 
         /* Increase resistance to Light attacks */
@@ -322,14 +322,14 @@ static void infusion(int c, int sn)
         ftr.res[R_WHITE] += 5;
         ftr.res[R_BLACK] -= 2;
         ftr.stats[eStat::Spirit] += 10;
-        ftr.weapon_elemental_effect = 5;
+        ftr.weapon_elemental_effect = eResistance::R_WHITE;
         break;
 
     case M_LUMINE:
         ftr.res[R_WHITE] += 10;
         ftr.res[R_BLACK] -= 5;
         ftr.stats[eStat::Spirit] += 25;
-        ftr.weapon_elemental_effect = 5;
+        ftr.weapon_elemental_effect = eResistance::R_WHITE;
         break;
 
         /* Increase resistance to Water attacks */
@@ -345,7 +345,7 @@ static void infusion(int c, int sn)
                 ftr.res[j] = 10;
             }
         }
-        ftr.weapon_elemental_effect = 6;
+        ftr.weapon_elemental_effect = eResistance::R_WATER;
         break;
 
     case M_TSUNAMI:
@@ -359,7 +359,7 @@ static void infusion(int c, int sn)
                 ftr.res[j] = 10;
             }
         }
-        ftr.weapon_elemental_effect = 6;
+        ftr.weapon_elemental_effect = eResistance::R_WATER;
         break;
 
         /* Increase resistance to Ice & Water attacks */
@@ -369,7 +369,7 @@ static void infusion(int c, int sn)
         ftr.res[R_WATER] += 4;
         ftr.res[R_FIRE] -= 5;
         ftr.stats[eStat::Defense] += 10;
-        ftr.weapon_elemental_effect = 7;
+        ftr.weapon_elemental_effect = eResistance::R_ICE;
         break;
 
     case M_BLIZZARD:
@@ -377,7 +377,7 @@ static void infusion(int c, int sn)
         ftr.res[R_WATER] += 8;
         ftr.res[R_FIRE] -= 10;
         ftr.stats[eStat::Defense] += 25;
-        ftr.weapon_elemental_effect = 7;
+        ftr.weapon_elemental_effect = eResistance::R_ICE;
         break;
 
         /* Increase resistance to Poison attacks */
@@ -390,7 +390,7 @@ static void infusion(int c, int sn)
         }
         ftr.hp += j;
         ftr.mhp += j;
-        ftr.weapon_elemental_effect = 8;
+        ftr.weapon_elemental_effect = eResistance::R_POISON;
         break;
 
     case M_VIRUS:
@@ -402,7 +402,7 @@ static void infusion(int c, int sn)
         }
         ftr.hp += j;
         ftr.mhp += j;
-        ftr.weapon_elemental_effect = 8;
+        ftr.weapon_elemental_effect = eResistance::R_POISON;
         break;
 
     case M_PLAGUE:
@@ -410,7 +410,7 @@ static void infusion(int c, int sn)
         j = std::min(ftr.mhp * 4 / 10, 80);
         ftr.hp += j;
         ftr.mhp += j;
-        ftr.weapon_elemental_effect = 8;
+        ftr.weapon_elemental_effect = eResistance::R_POISON;
         break;
     }
 

@@ -742,9 +742,9 @@ KFighter player2fighter(int who)
      * it has no other power to begin with (the "weapon_elemental_effect" property
      * is 1-based: value of 0 means "no imbue".
      */
-    if (who == AJATHAR && current_fighter.weapon_elemental_effect == 0)
+    if (who == AJATHAR && current_fighter.weapon_elemental_effect == eResistance::R_TOTAL_RES)
     {
-        current_fighter.weapon_elemental_effect = R_WHITE + 1;
+        current_fighter.weapon_elemental_effect = eResistance::R_WHITE;
     }
     for (int j = 0; j < NUM_EQUIPMENT; j++)
     {

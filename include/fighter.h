@@ -332,7 +332,7 @@ class KFighter
      *
      * See eResistance enum.
      */
-    int weapon_elemental_effect;
+    uint8_t weapon_elemental_effect;
 
     /*! \brief UNLiving (undead), like zombies, skeletons, etc. */
     int unl;

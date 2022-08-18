@@ -473,6 +473,7 @@ void KEnemy::SpellCheck(size_t attack_fighter_index, size_t defend_fighter_index
             case M_STONE:
             case M_SILENCE:
             case M_SLEEP: {
+                // FIXME: Uh... what is this '-8' doing?
                 size_t spellTypeInt = magic[cs].spell_elemental_effect - 8;
                 if (spellTypeInt < eSpellType::NUM_SPELL_TYPES)
                 {
@@ -812,6 +813,7 @@ int KEnemy::SpellSetup(int whom, int z)
     case M_SLEEP:
     case M_CONFUSE:
     case M_STONE:
+        // FIXME: Uh... what is this '-8' doing?
         zst = magic[z].spell_elemental_effect - 8;
         break;
     case M_NAUSEA:

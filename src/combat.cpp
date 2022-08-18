@@ -171,7 +171,7 @@ eAttackResult KCombat::attack_result(int ar, int dr)
             base = 1;
         }
 
-        c = tempa.weapon_elemental_effect - 1;
+        c = tempa.weapon_elemental_effect;
         if ((c >= R_EARTH) && (c <= R_ICE))
         {
             base = Magic.res_adjust(dr, c, base);
