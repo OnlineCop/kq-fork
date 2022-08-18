@@ -1638,33 +1638,64 @@ void KDraw::resize_window(int w, int h, bool win)
         SDL_SetWindowSize(window, w, h);
     }
 }
-
+/**
+ * Test for a breakpoint.
+ *
+ * A break point is either a white space character or the end of the string.
+ * \param it The position to test.
+ * \param end The end of the string.
+ * \returns true if this is a break point
+ */
 static bool breakpoint(std::string::const_iterator it, std::string::const_iterator end)
 {
     return it == end || isspace(*it);
 }
-static std::string::const_iterator cut(std::string::const_iterator from, std::string::const_iterator end)
+/**
+ * Find the first non-space character.
+ *
+ * Returns the position of the first non-space character after the given position,
+ * or the end of the string if it has nothing but space characters in it.
+ * \param it The position to start.
+ * \param end The end of the string.
+ * \returns the position.
+ */
+static std::string::const_iterator cut(std::string::const_iterator it, std::string::const_iterator end)
 {
-    while (from < end)
+    while (it < end)
     {
-        if (!isspace(*from))
+        if (!isspace(*it))
         {
-            return from;
+            return it;
         }
-        ++from;
+        ++it;
     }
     return end;
 }
+
+/**
+ * Find location of next line break
+ * Starting at the given point, move forward to find a break which will be
+ * either the end of the string, the space following the last word that would
+ * fit in the given width, or a manual break indicated by a LF.
+ * \param begin The starting point of the line.
+ * \param end The end of the text.
+ * \param width The max length of a line.
+ * \returns the position of the break as described above.
+ */
 static std::string::const_iterator next_break(std::string::const_iterator begin, std::string::const_iterator end,
                                               int width)
 {
     auto it = begin;
-    auto prev = std::distance(it,  end) > width ? std::next(it, width) : end;
+    auto prev = std::distance(it, end) > width ? std::next(it, width) : end;
     while (true)
     {
         if (breakpoint(it, end))
         {
-            if (std::distance(begin, it) > width)
+            if (*it == '\n')
+            {
+                return it;
+            }
+            else if (std::distance(begin, it) > width)
             {
                 return prev;
             }
