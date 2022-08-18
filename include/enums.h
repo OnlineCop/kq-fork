@@ -238,6 +238,19 @@ enum eWeapon
 
     W_EXPLOSIVE = 30,
 
+    // 31..39 are empty in misc.png
+    W_INSIGHT = 40,
+    W_TRAVEL = 41,
+    W_BLACK_SPLAT = 42,
+    W_DRAIN = 43,
+    W_AIR_AND_WATER = 44,
+
+    W_CURATIVE = 45,
+    W_RESTORATIVE = 46,
+    W_OOMPH = 47,
+    W_PREVENTATIVE = 48,
+    W_ELEMENTAL = 49,
+
     NUM_WEAPONS // always last
 };
 
