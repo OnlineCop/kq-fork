@@ -679,7 +679,7 @@ KFighter player2fighter(int who)
 
     /* set weapon elemental power and imbuements for easy use in combat */
     int weapon_index = plr.eqp[EQP_WEAPON];
-    current_fighter.welem = items[weapon_index].item_elemental_effect;
+    current_fighter.weapon_elemental_effect = items[weapon_index].item_elemental_effect;
     if (items[weapon_index].use == USE_ATTACK)
     {
         current_fighter.imb_s = items[weapon_index].imb;
@@ -739,12 +739,12 @@ KFighter player2fighter(int who)
 
     /*
      * Any weapon used by Ajathar gains the power of White if
-     * it has no other power to begin with (the "welem" property
+     * it has no other power to begin with (the "weapon_elemental_effect" property
      * is 1-based: value of 0 means "no imbue".
      */
-    if (who == AJATHAR && current_fighter.welem == 0)
+    if (who == AJATHAR && current_fighter.weapon_elemental_effect == 0)
     {
-        current_fighter.welem = R_WHITE + 1;
+        current_fighter.weapon_elemental_effect = R_WHITE + 1;
     }
     for (int j = 0; j < NUM_EQUIPMENT; j++)
     {

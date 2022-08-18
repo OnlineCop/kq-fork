@@ -55,7 +55,7 @@ KFighter::KFighter()
     , csmem {}
     , ctmem {}
     , current_weapon_type {}
-    , welem {}
+    , weapon_elemental_effect {}
     , unl {}
     , aux {}
     , bonus {}
@@ -621,7 +621,7 @@ std::istream& operator>>(std::istream& is, KFighter& out_fighter)
 
     read(is, fighter.bonus);
     read(is, fighter.current_weapon_type);
-    read(is, fighter.welem);
+    read(is, fighter.weapon_elemental_effect);
     read(is, fighter.unl);
     read(is, fighter.crit);
 
@@ -694,7 +694,7 @@ std::ostream& operator<<(std::ostream& os, const KFighter& fighter)
 
     write(os, fighter.bonus);
     write(os, fighter.current_weapon_type);
-    write(os, fighter.welem);
+    write(os, fighter.weapon_elemental_effect);
     write(os, fighter.unl);
     write(os, fighter.crit);
 

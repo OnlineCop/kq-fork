@@ -76,7 +76,7 @@ KEnemy Enemy;
  * -# bonus
  *    bstat - not saved to allstat.mon: set to 0
  * -# current_weapon_type (current weapon type)
- * -# welem Weapon elemental power
+ * -# weapon_elemental_effect Weapon elemental power
  * -# unl Undead Level (defense against Undead attacks)
  * -# crit (?)
  * -# imb_s Item for imbued spell

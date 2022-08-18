@@ -62,13 +62,11 @@ eAttackResult KCombat::attack_result(int ar, int dr)
     int dmg; /* extra */
     int attacker_attack;
     int attacker_hit;
-    size_t attacker_weapon_element;
     int defender_defense;
     int defender_evade;
 
     attacker_attack = tempa.stats[eStat::Attack];
     attacker_hit = tempa.stats[eStat::Hit];
-    attacker_weapon_element = tempa.welem;
     defender_defense = tempd.stats[eStat::Defense];
     defender_evade = tempd.stats[eStat::Evade];
 
@@ -173,7 +171,7 @@ eAttackResult KCombat::attack_result(int ar, int dr)
             base = 1;
         }
 
-        c = attacker_weapon_element - 1;
+        c = tempa.weapon_elemental_effect - 1;
         if ((c >= R_EARTH) && (c <= R_ICE))
         {
             base = Magic.res_adjust(dr, c, base);

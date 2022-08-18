@@ -966,7 +966,7 @@ int KDisk::save_s_fighter(tinyxml2::XMLPrinter& out, const KFighter& f)
     printprop(out, "csmem", f.csmem);
     printprop(out, "ctmem", f.ctmem);
     printprop(out, "current-weapon-type", f.current_weapon_type);
-    printprop(out, "welem", f.welem);
+    printprop(out, "welem", f.weapon_elemental_effect);
     printprop(out, "unl", f.unl);
     printprop(out, "aux", f.aux);
     printprop(out, "bonus", f.bonus);

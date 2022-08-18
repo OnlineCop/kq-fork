@@ -58,7 +58,7 @@ void combat_skill(size_t fighter_index)
     case 1:
         strcpy(attack_string, _("Venomous Bite"));
         display_attack_string = 1;
-        tempa.welem = R_POISON + 1;
+        tempa.weapon_elemental_effect = R_POISON + 1;
         Combat.fight(fighter_index, tgt, 1);
         display_attack_string = 0;
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
@@ -111,7 +111,7 @@ void combat_skill(size_t fighter_index)
     case 6:
         strcpy(attack_string, _("ParaClaw"));
         display_attack_string = 1;
-        tempa.welem = R_PARALYZE + 1;
+        tempa.weapon_elemental_effect = R_PARALYZE + 1;
         Combat.fight(fighter_index, tgt, 1);
         display_attack_string = 0;
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
@@ -121,7 +121,7 @@ void combat_skill(size_t fighter_index)
         display_attack_string = 1;
         tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack] * 15 / 10;
         tempa.stats[eStat::Hit] = tempa.stats[eStat::Hit] * 9 / 10;
-        tempa.welem = 0;
+        tempa.weapon_elemental_effect = 0;
         Combat.fight(fighter_index, tgt, 1);
         display_attack_string = 0;
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
@@ -243,7 +243,7 @@ void combat_skill(size_t fighter_index)
         display_attack_string = 1;
         tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack];
         tempa.stats[eStat::Hit] = tempa.stats[eStat::Hit] * 8 / 10;
-        tempa.welem = R_PETRIFY + 1;
+        tempa.weapon_elemental_effect = R_PETRIFY + 1;
         Combat.fight(fighter_index, tgt, 1);
         display_attack_string = 0;
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
@@ -369,7 +369,7 @@ void combat_skill(size_t fighter_index)
     //  // This move causes corruption for some reason
     //     strcpy(attack_string, _("Fire Bite"));
     //     display_attack_string = 1;
-    //     tempa.welem = R_FIRE + 1;
+    //     tempa.weapon_elemental_effect = R_FIRE + 1;
     //     Combat.fight(fighter_index, tgt, 1);
     //     display_attack_string = 0;
     //     fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
