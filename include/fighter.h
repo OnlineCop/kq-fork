@@ -339,7 +339,7 @@ class KFighter
 
     int aux;
     int bonus;
-    int bstat;
+    int bstat; // eStat::Strength or eStat::Agility
 
     /*! \brief Magic use rate (0-100). */
     int mrp;

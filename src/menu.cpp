@@ -759,13 +759,14 @@ KFighter player2fighter(int who)
             {
                 current_fighter.bonus = items[a].bon;
             }
-            if (items[a].icon == 1 || items[a].icon == 3 || items[a].icon == 21)
+            if (items[a].icon == eWeapon::W_MACE || items[a].icon == eWeapon::W_SWORD ||
+                items[a].icon == eWeapon::W_RING)
             {
-                current_fighter.bstat = 1;
+                current_fighter.bstat = eStat::Agility;
             }
             else
             {
-                current_fighter.bstat = 0;
+                current_fighter.bstat = eStat::Strength;
             }
             /* Set current weapon type. When the hero wields a weapon
              * in combat, it will look like this.
