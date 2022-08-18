@@ -114,9 +114,16 @@ struct s_spell
     int hit;
     /*! For spells, what element will it affect; see eResistance.
      */
-    uint8_t elem;
+    uint8_t spell_elemental_effect;
+
+    // Unused
     uint8_t dlvl;
+
+    /*! Visual effect index when spell is cast (or when an item is used); index within eff[] array,
+     *  range [0..NUM_EFFECTS-1].
+     */
     uint8_t eff;
+
     int clvl[8];
 };
 

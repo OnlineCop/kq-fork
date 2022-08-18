@@ -161,15 +161,14 @@ enum eCombatSkill
  *  - near zero: they take normal/neutral damage
  *  - positive: they take less damage
  *
- * Weapons may have an elemental aspect (see s_item::elem), such as Thor's Hammer having elem=R_THUNDER.
- *  - A fighter with HIGH resistance to that element will take less damage than if an identical
- *    weapon without the elemental modifier were used.
+ * Weapons (such as Thor's Hammer) and items (such as Rune of Earth) may have have an elemental
+ * aspect (see s_item::item_elemental_effect), R_THUNDER or R_EARTH, respectively.
+ *  - Weapons with an elemental modifier can usually be used like an item during battle, and some
+ *    may inflict more damage to enemies who are weak against that particular effect.
+ *  - Items (like Runes) are usually consumed after use; there may be some special exceptions for
+ *    more powerful/rare items.
  *
- * Items may have an elemental aspect (also s_item::elem), such as a Rune of Earth having elem=R_EARTH.
- *  - Using an elemental item in battle typically consumes that item after use, but is usually the
- *    equivalent of attacking using an elemental-imbued weapon.
- *
- * Spells may have an elemental aspect (see s_spell::elem), such as Whirlwind with elem=R_AIR.
+ * Spells (such as Whirlwind) may have an elemental aspect (see s_spell::spell_elemental_effect), such as R_AIR.
  */
 enum eResistance
 {

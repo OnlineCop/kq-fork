@@ -97,8 +97,8 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
         for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index;
              fighter_index++)
         {
-            if (res_throw(fighter_index, magic[spell_number].elem) == 0 && non_dmg_save(fighter_index, sp_hit) == 0 &&
-                !fighter[fighter_index].IsStone())
+            if (res_throw(fighter_index, magic[spell_number].spell_elemental_effect) == 0 &&
+                non_dmg_save(fighter_index, sp_hit) == 0 && !fighter[fighter_index].IsStone())
             {
                 if (fighter[fighter_index].GetRemainingTime() == 2)
                 {
@@ -150,8 +150,9 @@ void KMagic::beffect_all_enemies(size_t caster_fighter_index, size_t spell_numbe
         for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index;
              fighter_index++)
         {
-            if (res_throw(fighter_index, magic[spell_number].elem) == 0 && non_dmg_save(fighter_index, sp_hit) == 0 &&
-                fighter[fighter_index].IsAwake() && !fighter[fighter_index].IsStone())
+            if (res_throw(fighter_index, magic[spell_number].spell_elemental_effect) == 0 &&
+                non_dmg_save(fighter_index, sp_hit) == 0 && fighter[fighter_index].IsAwake() &&
+                !fighter[fighter_index].IsStone())
             {
                 fighter[fighter_index].SetSleep(kqrandom->random_range_exclusive(4, 6));
                 Combat.AdjustHealth(fighter_index, NODISPLAY);
@@ -175,7 +176,7 @@ void KMagic::beffect_one_enemy(size_t caster_fighter_index, size_t target_fighte
         Combat.SetAttackMissed(target_fighter_index);
         return;
     }
-    if (res_throw(target_fighter_index, magic[spell_number].elem) == 1)
+    if (res_throw(target_fighter_index, magic[spell_number].spell_elemental_effect) == 1)
     {
         Combat.SetAttackMissed(target_fighter_index);
         return;
@@ -1458,7 +1459,7 @@ void KMagic::spell_damage(size_t caster_fighter_index, int spell_number, size_t 
     {
         return;
     }
-    rt = magic[spell_number].elem;
+    rt = magic[spell_number].spell_elemental_effect;
     ad = magic[spell_number].dmg + (fighter[caster_fighter_index].stats[eStat::Intellect + magic[spell_number].stat] *
                                     magic[spell_number].bon / 100);
     if (ad < DMG_RND_MIN * 5)

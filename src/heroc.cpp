@@ -222,7 +222,7 @@ int available_spells(int who)
     int a, b, e, l, numsp = 0;
 
     l = pidx[who];
-    for (a = 0; a < 60; a++)
+    for (size_t a = 0; a < eMagic::M_TOTAL; ++a)
     {
         b = party[l].spells[a];
         if (b > 0)
@@ -232,7 +232,7 @@ int available_spells(int who)
                 if (l == CORIN && fighter[who].aux == 2)
                 {
                     e = Magic.mp_needed(who, b);
-                    if (fighter[who].mp >= e && magic[b].elem < 9)
+                    if (fighter[who].mp >= e && magic[b].spell_elemental_effect < eResistance::R_BLIND)
                     {
                         numsp++;
                     }
@@ -290,7 +290,7 @@ static int combat_castable(int spell_caster, int spell_number)
         if (pidx[spell_caster] == CORIN && fighter[c].aux == 2)
         {
             c = Magic.mp_needed(spell_caster, b);
-            if (fighter[spell_caster].mp >= c && magic[b].elem < R_BLIND)
+            if (fighter[spell_caster].mp >= c && magic[b].spell_elemental_effect < eResistance::R_BLIND)
             {
                 return 1;
             }
