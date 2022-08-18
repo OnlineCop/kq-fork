@@ -555,7 +555,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
             Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
         }
         break;
-    case I_RRUNE:
+    case I_RRUNE: // Rune of Recovery
         tmp = 0;
         for (fighter_index = attack_fighter_index; fighter_index < attack_fighter_index + san; fighter_index++)
         {
@@ -594,10 +594,10 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
             }
         }
         break;
-    case I_ERUNE:
-    case I_FRUNE:
-    case I_WRUNE:
-    case I_IRUNE:
+    case I_WRUNE: // Rune of Air ('W' == 'wind'?)
+    case I_ERUNE: // Rune of Earth
+    case I_FRUNE: // Rune of Fire
+    case I_IRUNE: // Rune of Water ('I' == ???)
         if (in_combat == 0)
         {
             return ITEM_EFFECT_INEFFECTIVE;
@@ -646,7 +646,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         {
             return ITEM_EFFECT_INEFFECTIVE;
         }
-        z = items[ti].bst; // eAttribute
+        z = items[ti].seed_stat; // eStat
         party[pidx[fighter_index]].stats[z] += kqrandom->random_range_exclusive(1, 4) * 100;
         play_effect(KAudio::eSound::SND_TWINKLE, 128);
         switch (z)

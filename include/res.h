@@ -74,7 +74,7 @@ struct s_item
      *
      * See item_effects()
      */
-    uint8_t bst;
+    uint8_t seed_stat;
     /*! For runes, what element will it affect; see eResistance.
      */
     uint8_t item_elemental_effect;

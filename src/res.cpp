@@ -125,7 +125,7 @@ PALETTE pal = {
  * 6: `use`: Usage mode. See USE_* constants in kq.h.
  * 7: `ilvl`: What level this item is.
  * 8: `hnds`: Used to index into the ::magic[] array.
- * 9: `bst`:
+ * 9: `seed_stat`:
  * 10: `elem`: For runes, what element will it affect (see rune_index parameter of res_adjust() ).
  * 11: `imb`: What spell is cast when you "use" this item in combat.
  * 12: `eff`:
