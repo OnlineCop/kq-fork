@@ -300,6 +300,7 @@ void KMenu::display_quest_window()
     const int ItemTextWidth = 20;
     const int MenuboxTopOffset = TitleTopOffset + 3 * FontHeightFNORMAL; // Top of the upper menubox
     const int MenuboxLeftOffset = 20;
+    const int TextUpDownOffset = MenuboxLeftOffset + (MenuboxWidth + ItemTextWidth + 2) * FontWidthFNORMAL;
 
     int currentQuestSelected = 0;
     // The currently selected info, laid out in lines
@@ -412,12 +413,12 @@ void KMenu::display_quest_window()
             // Draw up & down indicators if there is more text that way
             if (textTopIndex > 0)
             {
-                draw_sprite(double_buffer, upptr, MenuboxLeftOffset + (MenuboxWidth + ItemTextWidth) * FontWidthFNORMAL,
+                draw_sprite(double_buffer, upptr, TextUpDownOffset,
                             MenuboxTopOffset);
             }
             if (textTopIndex + VisibleQuestEntries < current.size())
             {
-                draw_sprite(double_buffer, dnptr, MenuboxLeftOffset + (MenuboxWidth + ItemTextWidth) * FontWidthFNORMAL,
+                draw_sprite(double_buffer, dnptr, TextUpDownOffset,
                             MenuboxTopOffset + FontHeightFNORMAL * (1 + VisibleQuestEntries));
             }
             int newTextTopIndex = textTopIndex;
