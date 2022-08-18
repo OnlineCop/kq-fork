@@ -335,6 +335,17 @@ enum eEquipment
     NUM_EQUIPMENT // always last
 };
 
+// Used for s_item::hnds, values can be either eWeaponRestrict or eMagic:
+//  - eWeaponRestrict: when the item is any type of weapon, shield, etc., whether the item occupies
+//    one or both hands (eWeapon::W_SPEAR and eWeapon::W_STAFF are usually always 2-handed).
+//  - eMagic: when the item is a spell book (eWeapon::W_SBOOK or eWeapon::W_ABOOK), the value
+//    is the index within the spells[] array.
+enum eWeaponRestrict
+{
+    HAND_SINGLE = 0, // Weapon is single-handed; player may also wield a shield
+    HAND_DOUBLE = 1, // Weapon is double-handed; player may not also have a shield
+};
+
 enum eFont // TODO: Can eFontColor and eFont be merged?
 {
     FONT_WHITE = 0,

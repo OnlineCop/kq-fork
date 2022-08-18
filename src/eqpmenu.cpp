@@ -424,7 +424,7 @@ static bool equip(uint32_t c, uint32_t selected_item)
     if (slot == EQP_SHIELD)
     {
         // Can't equip a shield if holding a two-handed weapon
-        if (party[c].eqp[EQP_WEAPON] > 0 && items[party[c].eqp[EQP_WEAPON]].hnds == 1)
+        if (party[c].eqp[EQP_WEAPON] > 0 && items[party[c].eqp[EQP_WEAPON]].hnds == eWeaponRestrict::HAND_DOUBLE)
         {
             return false;
         }
@@ -432,7 +432,7 @@ static bool equip(uint32_t c, uint32_t selected_item)
     else if (slot == EQP_WEAPON)
     {
         // Can't equip a two-handed weapon if holding a shield
-        if (party[c].eqp[EQP_SHIELD] > 0 && items[item].hnds == 1)
+        if (party[c].eqp[EQP_SHIELD] > 0 && items[item].hnds == eWeaponRestrict::HAND_DOUBLE)
         {
             return false;
         }
