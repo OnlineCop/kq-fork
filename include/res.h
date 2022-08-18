@@ -77,7 +77,7 @@ struct s_item
     uint8_t bst;
     /*! For runes, what element will it affect; see eResistance.
      */
-    uint8_t elem;
+    uint8_t item_elemental_effect;
     /*! imbued - What spell is cast when you "use" this item in combat */
     uint8_t imb;
     /*! Effect ?? */

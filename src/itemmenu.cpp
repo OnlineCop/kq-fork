@@ -602,7 +602,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         {
             return ITEM_EFFECT_INEFFECTIVE;
         }
-        tmp = items[ti].elem;
+        tmp = items[ti].item_elemental_effect;
         for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + sen; fighter_index++)
         {
             if (fighter[fighter_index].IsAlive() && fighter[fighter_index].mhp > 0)

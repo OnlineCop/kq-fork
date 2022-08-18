@@ -679,7 +679,7 @@ KFighter player2fighter(int who)
 
     /* set weapon elemental power and imbuements for easy use in combat */
     int weapon_index = plr.eqp[EQP_WEAPON];
-    current_fighter.welem = items[weapon_index].elem;
+    current_fighter.welem = items[weapon_index].item_elemental_effect;
     if (items[weapon_index].use == USE_ATTACK)
     {
         current_fighter.imb_s = items[weapon_index].imb;
