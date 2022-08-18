@@ -592,69 +592,81 @@ static int KQ_check_map_change()
     return 0;
 }
 
-void do_autoexec()
+/* Call a named global function with an optional int arg.
+   If it is not defined, do nothing.
+   If DEBUGMODE is defined, call it in a protected context and
+   provide a stack trace if there's an error.
+   Otherwise call it and die if there's an error.
+   Returns true if the function was defined, false otherwise.
+   NOTE: the templated function looks like it would accept any
+   number of args but anything apart from a single integer
+   will cause a compile error at lua_pushinteger().
+*/
+template<typename... Args> static bool call_global(const char* funcname, Args... args)
 {
     int oldtop = lua_gettop(theL);
-
+    bool status;
 #ifdef DEBUGMODE
     lua_pushcfunction(theL, KQ_traceback);
-    lua_getglobal(theL, "autoexec");
-    lua_pcall(theL, 0, 0, oldtop + 1);
-#else
-    lua_getglobal(theL, "autoexec");
-    lua_call(theL, 0, 0);
 #endif
+    lua_getglobal(theL, funcname);
+    if (lua_isnil(theL, -1))
+    {
+        // the function was not defined
+        status = false;
+    }
+    else
+    {
+        if constexpr (sizeof...(args) > 0)
+        {
+            lua_pushinteger(theL, args...);
+        }
+#ifdef DEBUGMODE
+        // protected call - KQ_traceback shows error message if there is one.
+        lua_pcall(theL, sizeof...(args), 0, oldtop + 1);
+#else
+        // Unprotected call - lua will abort with an error message
+        lua_call(theL, sizeof...(args), 0);
+#endif
+        status = true;
+    }
     lua_settop(theL, oldtop);
-    KQ_check_map_change();
+    return status;
+}
+
+void do_autoexec()
+{
+    if (call_global("autoexec"))
+    {
+        KQ_check_map_change();
+    }
 }
 
 void do_entity(int en_num)
 {
-    int oldtop = lua_gettop(theL);
-
-#ifdef DEBUGMODE
-    lua_pushcfunction(theL, KQ_traceback);
-    lua_getglobal(theL, "entity_handler");
-    lua_pushnumber(theL, en_num - PSIZE);
-    lua_pcall(theL, 1, 0, oldtop + 1);
-#else
-    lua_getglobal(theL, "entity_handler");
-    lua_pushnumber(theL, en_num - PSIZE);
-    lua_call(theL, 1, 0);
-#endif
-    lua_settop(theL, oldtop);
-    KQ_check_map_change();
+    if (call_global("entity_handler", en_num - PSIZE))
+    {
+        KQ_check_map_change();
+    }
 }
 
 #ifdef KQ_CHEATS
 
 void do_luacheat()
 {
-    int oldtop;
-    std::string cheatfile;
-
     /* kqres might return null if the cheat file doesn't exist.
      * in that case, just do a no-op.
      */
-    cheatfile = kqres(eDirectories::SCRIPT_DIR, "cheat");
-    if (cheatfile.empty())
+    std::string cheatfile = kqres(eDirectories::SCRIPT_DIR, "cheat");
+    if (!cheatfile.empty())
     {
-        return;
+        lua_dofile(theL, cheatfile.c_str());
+        if (call_global("cheat"))
+        {
+            KQ_check_map_change();
+            Draw.message(_("Cheating complete."), 255, 50);
+        }
     }
-    oldtop = lua_gettop(theL);
-#ifdef DEBUGMODE
-    lua_pushcfunction(theL, KQ_traceback);
-#endif
-    lua_dofile(theL, cheatfile.c_str());
-    lua_getglobal(theL, "cheat");
-#ifdef DEBUGMODE
-    lua_pcall(theL, 0, 0, oldtop + 1);
-#else
-    lua_call(theL, 0, 0);
-#endif
-    lua_settop(theL, oldtop);
-    KQ_check_map_change();
-    Draw.message(_("Cheating complete."), 255, 50);
 }
 #endif
 
@@ -709,92 +721,43 @@ void do_luakill()
     if (theL)
     {
         lua_close(theL);
-        theL = NULL;
+        theL = nullptr;
     }
 }
-
 void do_postexec()
 {
-    int oldtop = lua_gettop(theL);
-
-#ifdef DEBUGMODE
-    lua_pushcfunction(theL, KQ_traceback);
-    lua_getglobal(theL, "postexec");
-    lua_pcall(theL, 0, 0, oldtop + 1);
-#else
-    lua_getglobal(theL, "postexec");
-    lua_call(theL, 0, 0);
-#endif
-    lua_settop(theL, oldtop);
-    KQ_check_map_change();
+    if (call_global("postexec"))
+    {
+        KQ_check_map_change();
+    }
 }
 
 void do_importquests()
 {
-    int oldtop = lua_gettop(theL);
-
-    lua_getglobal(theL, "get_quest_info");
-    if (!lua_isnil(theL, -1))
-    {
-        lua_call(theL, 0, 0);
-    }
-    lua_settop(theL, oldtop);
+    call_global("get_quest_info");
 }
 
 void do_timefunc(const char* funcname)
 {
-    int oldtop = lua_gettop(theL);
-
-#ifdef DEBUGMODE
-    lua_pushcfunction(theL, KQ_traceback);
-    lua_getglobal(theL, funcname);
-    if (!lua_isnil(theL, -1))
+    if (call_global(funcname))
     {
-        lua_pcall(theL, 1, 0, oldtop + 1);
+        KQ_check_map_change();
     }
-    else
-    {
-        lua_pop(theL, 1);
-    }
-#else
-    lua_getglobal(theL, funcname);
-    if (!lua_isnil(theL, -1))
-    {
-        lua_call(theL, 1, 0);
-    }
-    else
-    {
-        lua_pop(theL, 1);
-    }
-#endif
-    lua_settop(theL, oldtop);
-    KQ_check_map_change();
 }
 
 void do_zone(int zn_num)
 {
-    int oldtop = lua_gettop(theL);
-
-#ifdef DEBUGMODE
-    lua_pushcfunction(theL, KQ_traceback);
-    lua_getglobal(theL, "zone_handler");
-    lua_pushnumber(theL, zn_num);
-    lua_pcall(theL, 1, 0, oldtop + 1);
-#else
-    lua_getglobal(theL, "zone_handler");
-    lua_pushnumber(theL, zn_num);
-    lua_call(theL, 1, 0);
-#endif
-    lua_settop(theL, oldtop);
-    KQ_check_map_change();
+    if (call_global("zone_handler", zn_num))
+    {
+        KQ_check_map_change();
+    }
 }
 
 void lua_user_init()
 {
     do_luakill();
     do_luainit("init", 1);
-    lua_getglobal(theL, "lua_user_init");
-    lua_call(theL, 0, 0);
+    call_global("lua_user_init");
 }
 
 static int fieldcmp(const void* pa, const void* pb)

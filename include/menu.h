@@ -44,18 +44,8 @@ KFighter player2fighter(int who);
  *
  * ... anything, really!
  */
-struct KQuestItem
+struct s_questitem
 {
-    KQuestItem()
-    {
-    }
-
-    KQuestItem(const std::string& inKey, const std::string& inText)
-        : key(inKey)
-        , text(inText)
-    {
-    }
-
     /*! The identifying title */
     std::string key;
     /*! The actual info */
@@ -161,7 +151,7 @@ class KMenu
      */
     void status_screen(size_t fighter_index);
 
-    std::vector<KQuestItem> quest_list;
+    std::vector<s_questitem> quest_list;
 };
 
 extern KMenu kmenu;

@@ -40,7 +40,8 @@
 #include "setup.h"
 #include "structs.h"
 
-#include <cstdio>
+#include <algorithm>
+#include <cctype>
 
 KMenu kmenu;
 
@@ -276,7 +277,7 @@ void KMenu::menu()
 void KMenu::display_quest_window()
 {
     // Show up to this number of quest entries in the menu.
-    const size_t VisibleQuestEntries = 10;
+    constexpr int VisibleQuestEntries = 10;
 
     /* Call into the script */
     clear_quests();
@@ -292,21 +293,23 @@ void KMenu::display_quest_window()
         return;
     }
 
-    // quest_list.size() will always be > 0 (the method exits before this point if ==0)
-    //   1..10 entries: roundedUpNumEntries == 1,
-    //   2..20 entries: roundedUpNumEntries == 2, etc.
-    const size_t roundedUpNumEntries = ((quest_list.size() - 1) / VisibleQuestEntries + 1) * VisibleQuestEntries;
+    const int TitleTopOffset = 60;
+    const int FontWidthFNORMAL = Draw.text_length(FNORMAL, " ");
+    const int FontHeightFNORMAL = Draw.font_height(FNORMAL);
+    const int MenuboxWidth = 12;
+    const int ItemTextWidth = 20;
+    const int MenuboxTopOffset = TitleTopOffset + 3 * FontHeightFNORMAL; // Top of the upper menubox
+    const int MenuboxLeftOffset = 20;
+    const int TextUpDownOffset = MenuboxLeftOffset + (MenuboxWidth + ItemTextWidth + 2) * FontWidthFNORMAL;
 
-    const int FontWidthFNORMAL = 8;  // MagicNumber: FNORMAL font width is 8
-    const int FontHeightFNORMAL = 8; // MagicNumber: FNORMAL font height is 8
-    const int MenuboxWidth = 18;
-    const int UpperMenuboxTopOffset = 92; // Top of the upper menubox
-    const int LowerMenuboxTopOffset =
-        UpperMenuboxTopOffset + (VisibleQuestEntries + 2) * FontHeightFNORMAL; // Top of the lower menubox
-    const int MenuboxLeftOffset = 88;
-
-    size_t currentQuestSelected = 0;
-    while (true)
+    int currentQuestSelected = 0;
+    // The currently selected info, laid out in lines
+    std::vector<std::string> current;
+    // focus = 1 for the list of items or 2 for the lines of the current item
+    int focus = 1;
+    bool stop = false;
+    int textTopIndex = 0;
+    while (!stop)
     {
         Game.ProcessEvents();
         Game.do_check_animation();
@@ -314,62 +317,138 @@ void KMenu::display_quest_window()
         Draw.drawmap();
 
         int base = currentQuestSelected - currentQuestSelected % VisibleQuestEntries;
-        Draw.menubox(double_buffer, MenuboxLeftOffset, UpperMenuboxTopOffset, MenuboxWidth, (int)VisibleQuestEntries,
-                     eBoxFill::TRANSPARENT);
-        for (size_t someRandomIndex = 0; someRandomIndex < VisibleQuestEntries; ++someRandomIndex)
+        Draw.menubox(double_buffer, MenuboxLeftOffset, TitleTopOffset, MenuboxWidth + ItemTextWidth + 2, 1, eBoxFill::TRANSPARENT);
+        Draw.print_font(double_buffer, MenuboxLeftOffset + 2 * FontWidthFNORMAL, TitleTopOffset + FontHeightFNORMAL,
+                        _("Quest Diary"), FGOLD);
+        Draw.menubox(double_buffer, MenuboxLeftOffset, MenuboxTopOffset, MenuboxWidth, VisibleQuestEntries, eBoxFill::TRANSPARENT);
+        Draw.menubox(double_buffer, MenuboxLeftOffset + (2 + MenuboxWidth) * FontWidthFNORMAL, MenuboxTopOffset,
+                     ItemTextWidth, VisibleQuestEntries, eBoxFill::TRANSPARENT);
+        for (auto index = 0; index < VisibleQuestEntries; ++index)
         {
-            if (someRandomIndex + base < quest_list.size())
+            if (index + base < quest_list.size())
             {
                 Draw.print_font(double_buffer, MenuboxLeftOffset + 2 * FontWidthFNORMAL,
-                                UpperMenuboxTopOffset + FontHeightFNORMAL * (someRandomIndex + 1),
-                                quest_list[someRandomIndex + base].key.c_str(), FNORMAL);
+                                MenuboxTopOffset + FontHeightFNORMAL * (index + 1),
+                                quest_list[index + base].key.c_str(), FNORMAL);
             }
         }
-        // Show the pointer beside the selected entry
-        draw_sprite(double_buffer, menuptr, MenuboxLeftOffset,
-                    UpperMenuboxTopOffset + FontHeightFNORMAL * (currentQuestSelected - base + 1));
 
-        Draw.menubox(double_buffer, MenuboxLeftOffset, LowerMenuboxTopOffset, MenuboxWidth, 3, eBoxFill::TRANSPARENT);
         if (currentQuestSelected < quest_list.size())
         {
-            Draw.print_font(double_buffer, MenuboxLeftOffset + 1 * FontWidthFNORMAL,
-                            LowerMenuboxTopOffset + 1 * FontHeightFNORMAL,
-                            quest_list[currentQuestSelected].text.c_str(), FNORMAL);
+            if (current.empty())
+            {
+                // Lay this one out if we haven't already
+                current = Draw.layout(quest_list[currentQuestSelected].text, ItemTextWidth);
+            }
+            int y = MenuboxTopOffset;
+            int lastIndex = std::min(textTopIndex + VisibleQuestEntries, (int)current.size());
+            for (int index = textTopIndex; index < lastIndex; ++index)
+            {
+                const auto& line = current[index];
+                y += FontHeightFNORMAL;
+                Draw.print_font(double_buffer, MenuboxLeftOffset + (3 + MenuboxWidth) * FontWidthFNORMAL, y,
+                                line.c_str(), FNORMAL);
+            }
         }
-        Draw.blit2screen();
+        switch (focus)
+        {
+        case 1: {
+            // Show the pointer beside the selected entry
+            draw_sprite(double_buffer, menuptr, MenuboxLeftOffset,
+                        MenuboxTopOffset + FontHeightFNORMAL * (currentQuestSelected - base + 1));
 
-        // Players can be holding UP and DOWN at the same time: don't give one precedence over another.
-        int newSelectedQuest = currentQuestSelected;
-        if (PlayerInput.up())
-        {
-            newSelectedQuest--;
-        }
-        if (PlayerInput.down())
-        {
-            newSelectedQuest++;
-        }
-        if (PlayerInput.left())
-        {
-            newSelectedQuest -= (int)VisibleQuestEntries;
-        }
-        if (PlayerInput.right())
-        {
-            newSelectedQuest += (int)VisibleQuestEntries;
-        }
+            // Draw up & down indicators if there are more items that way
+            if (base > 0)
+            {
+                draw_sprite(double_buffer, upptr, MenuboxLeftOffset + MenuboxWidth * FontWidthFNORMAL,
+                            MenuboxTopOffset);
+            }
+            if (base + VisibleQuestEntries < quest_list.size())
+            {
+                draw_sprite(double_buffer, dnptr, MenuboxLeftOffset + MenuboxWidth * FontWidthFNORMAL,
+                            MenuboxTopOffset + FontHeightFNORMAL * (1 + VisibleQuestEntries));
+            }
 
-        // If player pressed any of the inputs, newSelectedQuest will have changed.
-        if (newSelectedQuest != (int)currentQuestSelected)
-        {
-            play_effect(KAudio::eSound::SND_CLICK, 128);
+            // Players can be holding UP and DOWN at the same time: don't give one precedence over another.
+            int newSelectedQuest = currentQuestSelected;
+            if (PlayerInput.up())
+            {
+                newSelectedQuest--;
+            }
+            if (PlayerInput.down())
+            {
+                newSelectedQuest++;
+            }
+            if (PlayerInput.left())
+            {
+                newSelectedQuest -= VisibleQuestEntries;
+            }
+            if (PlayerInput.right())
+            {
+                newSelectedQuest += VisibleQuestEntries;
+            }
+
+            // If player pressed any of the inputs, newSelectedQuest will have changed.
+            newSelectedQuest = std::clamp(newSelectedQuest, 0, (int)quest_list.size() - 1);
+
+            if (newSelectedQuest != currentQuestSelected)
+            {
+                play_effect(KAudio::eSound::SND_CLICK, 128);
+                currentQuestSelected = newSelectedQuest;
+                current.clear();
+                textTopIndex = 0;
+            }
+
+            if (PlayerInput.balt())
+            {
+                focus = 2;
+            }
+            if (PlayerInput.bctrl())
+            {
+                stop = true;
+            }
         }
+        break;
+        case 2: {
+            // Draw up & down indicators if there is more text that way
+            if (textTopIndex > 0)
+            {
+                draw_sprite(double_buffer, upptr, TextUpDownOffset,
+                            MenuboxTopOffset);
+            }
+            if (textTopIndex + VisibleQuestEntries < current.size())
+            {
+                draw_sprite(double_buffer, dnptr, TextUpDownOffset,
+                            MenuboxTopOffset + FontHeightFNORMAL * (1 + VisibleQuestEntries));
+            }
+            int newTextTopIndex = textTopIndex;
+            if (PlayerInput.up())
+            {
+                newTextTopIndex--;
+            }
+            if (PlayerInput.down())
+            {
+                newTextTopIndex++;
+            }
 
-        // Positive modulus: Keep the selected quest
-        currentQuestSelected = (newSelectedQuest % roundedUpNumEntries + roundedUpNumEntries) % roundedUpNumEntries;
+            // If player pressed up or down, newTextTopIndex will have changed.
+            textTopIndex = std::clamp(newTextTopIndex, 0, (int)current.size() - 1);
 
-        if (PlayerInput.balt() || PlayerInput.bctrl())
-        {
+            if (PlayerInput.balt())
+            {
+                play_effect(KAudio::eSound::SND_BAD, 128);
+            }
+            if (PlayerInput.bctrl())
+            {
+                focus = 1;
+            }
+        }
+        break;
+        default: /* Can't happen */
+            stop = true;
             break;
         }
+        Draw.blit2screen();
     }
 }
 

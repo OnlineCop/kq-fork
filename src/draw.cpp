@@ -1638,3 +1638,90 @@ void KDraw::resize_window(int w, int h, bool win)
         SDL_SetWindowSize(window, w, h);
     }
 }
+/**
+ * Test for a breakpoint.
+ *
+ * A break point is either a white space character or the end of the string.
+ * \param it The position to test.
+ * \param end The end of the string.
+ * \returns true if this is a break point
+ */
+static bool breakpoint(std::string::const_iterator it, std::string::const_iterator end)
+{
+    return it == end || isspace(*it);
+}
+/**
+ * Find the first non-space character.
+ *
+ * Returns the position of the first non-space character after the given position,
+ * or the end of the string if it has nothing but space characters in it.
+ * \param it The position to start.
+ * \param end The end of the string.
+ * \returns the position.
+ */
+static std::string::const_iterator cut(std::string::const_iterator it, std::string::const_iterator end)
+{
+    while (it < end)
+    {
+        if (!isspace(*it))
+        {
+            return it;
+        }
+        ++it;
+    }
+    return end;
+}
+
+/**
+ * Find location of next line break
+ * Starting at the given point, move forward to find a break which will be
+ * either the end of the string, the space following the last word that would
+ * fit in the given width, or a manual break indicated by a LF.
+ * \param begin The starting point of the line.
+ * \param end The end of the text.
+ * \param width The max length of a line.
+ * \returns the position of the break as described above.
+ */
+static std::string::const_iterator next_break(std::string::const_iterator begin, std::string::const_iterator end,
+                                              int width)
+{
+    auto it = begin;
+    auto prev = std::distance(it, end) > width ? std::next(it, width) : end;
+    while (true)
+    {
+        if (breakpoint(it, end))
+        {
+            if (*it == '\n')
+            {
+                return it;
+            }
+            else if (std::distance(begin, it) > width)
+            {
+                return prev;
+            }
+            else if (it == end)
+            {
+                return end;
+            }
+            else
+            {
+                prev = it;
+            }
+        }
+        ++it;
+    }
+}
+
+std::vector<std::string> KDraw::layout(const std::string& text, int layout_width)
+{
+    std::vector<std::string> lines;
+    auto end = text.end();
+    auto it = text.begin();
+    while (it != end)
+    {
+        auto brk = next_break(it, end, layout_width);
+        lines.emplace_back(it, brk);
+        it = cut(brk, end);
+    }
+    return lines;
+}
