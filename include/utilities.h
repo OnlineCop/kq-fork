@@ -27,12 +27,14 @@
 
 #include <cstdint>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
 /*! \brief Provide a std::string version of sprintf().
  *
  * Allow printf-style formats (such as "%s", "%d", etc.) for std::string types.
+ * If snprintf() returns an error, clear/empty 'dest'.
  *
  * Adapted from https://stackoverflow.com/a/26221725.
  *
@@ -42,12 +44,12 @@
  * \returns On success: number of bytes written, not including terminating null character;
  * on failure: snprintf()'s error code.
  */
-template<typename... Args> int sprintf(std::string& dest, const std::string& format, Args... args)
+template<typename... Args> constexpr int sprintf(std::string& dest, const std::string& format, Args... args)
 {
     // This calls snprintf() twice: the first time with NULL for its 'buffer' parameter and 0 as
     // its 'buf_size' parameter, to determine the size of the buffer needed to fit all the text.
 
-    int size_s = std::snprintf(nullptr, 0, format.c_str(), args...);
+    int size_s = std::snprintf(nullptr, 0, format.c_str(), std::forward<Args>(args)...);
     if (size_s < 0)
     {
         dest.clear();
@@ -55,18 +57,10 @@ template<typename... Args> int sprintf(std::string& dest, const std::string& for
         return size_s;
     }
 
-    // +1 at end for '\0'.
-    auto size = static_cast<size_t>(size_s + 1);
+    dest.resize(size_s);
 
-    // Smart pointer to auto-clean memory, even if exception is thrown.
-    std::unique_ptr<char[]> buf(new char[size]);
-    std::snprintf(buf.get(), size, format.c_str(), args...);
-
-    // -1 at end to remove the '\0'.
-    dest = std::string(buf.get(), buf.get() + size - 1);
-
-    // Number of bytes actually written, excluding terminating '\0'.
-    return size_s;
+    // size_s + 1 for '\0'
+    return std::snprintf(dest.data(), size_s + 1, format.c_str(), std::forward<Args>(args)...);
 }
 
 /*! \brief Read a value from a text input stream.
