@@ -55,7 +55,7 @@ KFighter::KFighter()
     , csmem {}
     , ctmem {}
     , current_weapon_type {}
-    , weapon_elemental_effect { eResistance::R_TOTAL_RES }
+    , weapon_elemental_effect { eResistance::R_NONE }
     , unl {}
     , aux {}
     , bonus {}

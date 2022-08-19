@@ -121,7 +121,7 @@ void combat_skill(size_t fighter_index)
         display_attack_string = 1;
         tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack] * 15 / 10;
         tempa.stats[eStat::Hit] = tempa.stats[eStat::Hit] * 9 / 10;
-        tempa.weapon_elemental_effect = eResistance::R_TOTAL_RES; // no elemental effect
+        tempa.weapon_elemental_effect = eResistance::R_NONE; // no elemental effect
         Combat.fight(fighter_index, tgt, 1);
         display_attack_string = 0;
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;

@@ -189,7 +189,8 @@ enum eResistance
     R_SLEEP = 14,
     R_TIME = 15,
 
-    R_TOTAL_RES // always last
+    R_TOTAL_RES,
+    R_NONE = R_TOTAL_RES // no elemental effect
 };
 
 /*! \name Weapons */

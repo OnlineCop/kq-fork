@@ -117,7 +117,7 @@ PALETTE pal = {
  * 7: `ilvl`: [0..50]
  * 8: `hnds`: eMagic/eWeaponRestrict: For spells: [0..eMagic::M_TOTAL-1]; for weapons: 0 or 1
  * 9: `seed_stat`: eStat: [0..eStat::NUM_STATS-1] (only used for seeds)
- * 10: `item_elemental_effect`: eResistance: [0..eResistance::R_TOTAL_RES] (currently 1-based)
+ * 10: `item_elemental_effect`: eResistance: [0..eResistance::R_TOTAL_RES]
  * 11: `imb`: eMagic [0..eMagic::M_TOTAL-1]
  * 12: `eff`: [0..NUM_EFFECTS-1]
  * 13: `bon`: [0..]
@@ -1097,14 +1097,17 @@ s_item items[NUM_ITEMS] = {
  * 0: `name[14]`: Spell name, either in a list of spells or when a spell is being cast.
  * 1: `icon`: eWeapon: [0..eWeapon::NUM_WEAPONS-1]
  * 2: `desc[26]`: Short explanation of what a spell does.
- * 3: `stat`: '0' or '1': KFighter::stats index offset (usually added to eStat::STAT_AURA [6] or eStat::STAT_INTELLECT [3]).
+ * 3: `stat`: '0' or '1': KFighter::stats index offset (usually added to eStat::STAT_AURA [6] or 
+ *    eStat::STAT_INTELLECT [3]).
  * 4: `mpc`: MP required to cast the spell; multiplied by a KFighter::mrp (magic usage rate [0..100]).
- * 5: `use`: eItemUse enum (usually eItemUse::USE_ANY_INF [2], eItemUse::USE_CAMP_INF [4], or eItemUse::USE_COMBAT_INF [6]).
+ * 5: `use`: eItemUse enum (usually eItemUse::USE_ANY_INF [2], eItemUse::USE_CAMP_INF [4], or
+ *    eItemUse::USE_COMBAT_INF [6]).
  * 6: `tgt`: eTarget enum, indicating who the spell may effect: a single ally/enemy, or all allies/enemies.
  * 7: `dmg`: [0..999]: Minimum amount that a spell will harm (or heal) for.
  * 8: `bon`: [0..]: A KFighter::stats bonus multiplier.
  * 9: `hit`: [0..100]: Chance [0%..100%] that the spell will hit the target.
- * 10: `spell_elemental_effect`: [0..eResistance::R_TOTAL_RES-1]: Elemental effect this spell uses, 1-based (0: "none", 1: eResistance::R_EARTH, 2: eResistance::R_BLACK, etc.).
+ * 10: `spell_elemental_effect`: [0..eResistance::R_TOTAL_RES-1]: Elemental effect this spell uses,
+ *     0-based (0: R_EARTH, 1: R_BLACK, ..., 16: R_NONE).
  * 11: `dlvl`: Unused
  * 12: `eff`: [0..NUM_EFFECTS-1]
  * 13: `clvl[8]`: is the minimum level at which this party member may learn a particular spell (or 0 for never).

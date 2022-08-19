@@ -728,11 +728,11 @@ KFighter player2fighter(int who)
     }
 
     /*
-     * Any weapon used by Ajathar gains the power of White if it has no other power to begin with; the
-     * "weapon_elemental_effect" property is 0-based: value of 0 means "R_EARTH" and 16 (or R_TOTAL_RES)
-     * means "no imbue".
+     * Any weapon used by Ajathar gains the elemental effect of White if it has no other power to
+     * begin with; the "weapon_elemental_effect" property is 0-based: value of 0 means "R_EARTH"
+     * and 16 (or R_NONE) means "no elemental effect".
      */
-    if (who == AJATHAR && current_fighter.weapon_elemental_effect == eResistance::R_TOTAL_RES)
+    if (who == AJATHAR && current_fighter.weapon_elemental_effect == eResistance::R_NONE)
     {
         current_fighter.weapon_elemental_effect = eResistance::R_WHITE;
     }
