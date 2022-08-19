@@ -727,20 +727,10 @@ KFighter player2fighter(int who)
         ++current_fighter.opal_power;
     }
 
-    // for (int a = 0; a < 4; a++)
-    //{
-    //     static const int z[5] = { EQP_SPECIAL, EQP_ARMOR, EQP_HELMET, EQP_SHIELD };
-    //     int current_equipment_slot = plr.eqp[z[a]];
-    //     if (items[current_equipment_slot].use == USE_IMBUED)
-    //     {
-    //         ++current_fighter.opal_power;
-    //     }
-    // }
-
     /*
-     * Any weapon used by Ajathar gains the power of White if
-     * it has no other power to begin with (the "weapon_elemental_effect" property
-     * is 1-based: value of 0 means "no imbue".
+     * Any weapon used by Ajathar gains the power of White if it has no other power to begin with; the
+     * "weapon_elemental_effect" property is 0-based: value of 0 means "R_EARTH" and 16 (or R_TOTAL_RES)
+     * means "no imbue".
      */
     if (who == AJATHAR && current_fighter.weapon_elemental_effect == eResistance::R_TOTAL_RES)
     {
