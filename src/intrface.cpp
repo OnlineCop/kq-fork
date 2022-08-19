@@ -1469,11 +1469,11 @@ static int KQ_chest(lua_State* L)
     {
         if (item_quantity == 1)
         {
-            sprintf(strbuf, _("%s procured!"), items[inventory_index].item_name);
+            sprintf(strbuf, _("%s procured!"), items[inventory_index].item_name.c_str());
         }
         else
         {
-            sprintf(strbuf, _("%s ^%d procured!"), items[inventory_index].item_name, (int)item_quantity);
+            sprintf(strbuf, _("%s ^%d procured!"), items[inventory_index].item_name.c_str(), (int)item_quantity);
         }
         play_effect(KAudio::eSound::SND_UNEQUIP, 128);
         Draw.message(strbuf.c_str(), items[inventory_index].icon, 0);
@@ -1485,11 +1485,11 @@ static int KQ_chest(lua_State* L)
     }
     if (item_quantity == 1)
     {
-        sprintf(strbuf, _("%s not taken!"), items[inventory_index].item_name);
+        sprintf(strbuf, _("%s not taken!"), items[inventory_index].item_name.c_str());
     }
     else
     {
-        sprintf(strbuf, _("%s ^%d not taken!"), items[inventory_index].item_name, (int)item_quantity);
+        sprintf(strbuf, _("%s ^%d not taken!"), items[inventory_index].item_name.c_str(), (int)item_quantity);
     }
     Draw.message(strbuf.c_str(), items[inventory_index].icon, 0);
     return 0;
