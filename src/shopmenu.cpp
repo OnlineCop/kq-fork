@@ -202,7 +202,7 @@ static void buy_menu()
             Draw.draw_icon(double_buffer, items[item_index].icon, 48, shop_item_index * 8 + 32);
             int cost = max * items[item_index].price;
             eFontColor font_color = cost <= Game.GetGold() ? FNORMAL : FDARK;
-            Draw.print_font(double_buffer, 56, shop_item_index * 8 + 32, items[item_index].name, font_color);
+            Draw.print_font(double_buffer, 56, shop_item_index * 8 + 32, items[item_index].item_name, font_color);
             if (max > 1)
             {
                 sprintf(strbuf, "(%u)", max);
@@ -211,8 +211,7 @@ static void buy_menu()
             if (max > 0)
             {
                 sprintf(strbuf, "%d", cost);
-                Draw.print_font(double_buffer, 248 - (strbuf.size() * 8), shop_item_index * 8 + 32, strbuf,
-                                font_color);
+                Draw.print_font(double_buffer, 248 - (strbuf.size() * 8), shop_item_index * 8 + 32, strbuf, font_color);
             }
             else
             {
@@ -221,7 +220,8 @@ static void buy_menu()
         }
 
         unsigned short item_no = shops[shop_no].items[yptr];
-        Draw.print_font(double_buffer, 160 - (strlen(items[item_no].desc) * 4), 176, items[item_no].desc, FNORMAL);
+        Draw.print_font(double_buffer, 160 - (items[item_no].item_desc.size() * 4), 176, items[item_no].item_desc,
+                        FNORMAL);
         draw_sideshot(item_no);
         draw_sprite(double_buffer, menuptr, 32, yptr * 8 + 32);
         Draw.blit2screen();
@@ -589,7 +589,7 @@ static void sell_howmany(int item_no, size_t inv_page)
         Draw.print_font(double_buffer, 124, 176, _("How many?"), FNORMAL);
         Draw.menubox(double_buffer, 32, item_no * 8 + 24, 30, 1, eBoxFill::DARK);
         Draw.draw_icon(double_buffer, items[l].icon, 48, item_no * 8 + 32);
-        Draw.print_font(double_buffer, 56, item_no * 8 + 32, items[l].name, FNORMAL);
+        Draw.print_font(double_buffer, 56, item_no * 8 + 32, items[l].item_name, FNORMAL);
         sprintf(strbuf, _("%d of %d"), my, max_items);
         Draw.print_font(double_buffer, 280 - (strbuf.size() * 8), item_no * 8 + 32, strbuf, FNORMAL);
         Draw.blit2screen();
@@ -699,7 +699,7 @@ static void sell_menu()
                 k = FNORMAL;
             }
             Draw.draw_icon(double_buffer, items[inventory_item_index].icon, 48, p * 8 + 32);
-            Draw.print_font(double_buffer, 56, p * 8 + 32, items[inventory_item_index].name, k);
+            Draw.print_font(double_buffer, 56, p * 8 + 32, items[inventory_item_index].item_name, k);
             // Check if quantity of this item > 1
             if (g_inv[inv_page * NUM_ITEMS_PER_PAGE + p].quantity > 1)
             {

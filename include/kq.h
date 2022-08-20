@@ -574,7 +574,6 @@ extern bool should_stretch_view;
 extern int window_width, window_height;
 extern uint16_t tilex[MAX_TILES], adelay[MAX_ANIM];
 extern std::string strbuf;
-extern char *savedir;
 extern s_heroinfo players[MAXCHRS];
 extern KFighter fighter[NUM_FIGHTERS];
 extern KFighter tempa, tempd;

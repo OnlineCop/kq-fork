@@ -26,6 +26,7 @@
 #include "heroc.h"
 
 #include <cstdint>
+#include <string>
 
 /*! \file
  * \brief Definitions of resource types.
@@ -45,51 +46,110 @@
 /*! \brief An item. */
 struct s_item
 {
-    /*! Name of the item (16 chars plus '\0') */
-    char name[17];
-    /*! Small icon */
+    /*! Item's short name (around 16 characters). */
+    std::string item_name;
+
+    /*! Index of small icon next to weapon name, in range [0..eWeapon::NUM_WEAPONS-1]. */
     uint8_t icon;
-    /*! Colour to draw?? See hero_init() */
+
+    /*! When non-zero, recolor index value within pal[] array.
+     *
+     * Replaces the two colors found in USBAT with the color specified by this index value.
+     *  - Value "168" corresponds to entry value {27, 54, 27, 0}
+     *  - Value "175" corresponds to entry value {53, 63, 53, 0}
+     *
+     * If the replacement index is 8 (such as the "Mace"), pal[8] is {33, 33, 33, 0}, or mid-gray.
+     *
+     * Therefore, when the Mace renders on-screen during battle, instead of green, it will render
+     * mid-gray on the outside of the mace, and {51, 51, 51, 0} inside (as that is the "index + 4"
+     * entry).
+     *
+     * If the replacement index is 244 (Frozen Star), pal[244] is {15, 30, 30, 0} for the outside
+     * edge of the weapon and {27, 54, 54, 0} for the inside. This makes the weapon appear more
+     * "cyan" in color.
+     */
     uint8_t kol;
-    /*! One line description */
-    char desc[40];
-    /*! Targetting type for combat items. See TGT_* constants in kq.h */
+
+    /*! Short description of the item (around 40 characters). */
+    std::string item_desc;
+
+    /*! Targeting type for combat items; see eTarget enum. */
     uint8_t tgt;
-    /*! Relates to which slot (hand, etc.) this item goes into */
+
+    /*! Relates to which slot (hand, head, etc.) this item goes into; see eEquipment enum. */
     uint8_t type;
-    /*! Usage mode  (see USE_* constants in kq.h) */
+
+    /*! When the item may be used, whether it's consumed on use, etc.; see eItemUse enum. */
     uint8_t use;
-    /*! What level this item is */
+
+    /*! Item's level (some items, like spell books, cannot be learned before this level). */
     uint8_t ilvl;
-    /*! This is used to index into the ::magic[] array */
+
+    /*! Which "hands" this spell is cast from, or weapon is wielded in.
+     *
+     * For spells (when `icon` is eWeapon::W_SBOOK or wWeapon::W_ABOOK), it is the index within
+     * the magic[] array; see eMagic enum.
+     *
+     * For weapons (when `icon` is eWeapon::W_SPEAR or eWeapon::W_STAFF), '0' means the weapon is
+     * single-handed; '1' means the weapon is 2-handed, forbidding the player from simulteneously
+     * equipping a Shield.
+     */
     uint8_t hnds;
 
-    /*! For seeds, determines what attribute is affected.
+    /*! Only used when item is a Seed (items[I_STRSEED..I_WISSEED]), determines what attribute is
+     *  affected; see eStat enum:
      * - 0 Strength
      * - 1 Agility
      * - 2 Vitality
      * - 3 Intellect
      * - 4 Wisdom
-     *
-     * See item_effects()
      */
-    uint8_t bst;
-    /*! For runes, what element will it affect; see eResistance.
+    uint8_t seed_stat;
+
+    /*! Primary (for Runes) or secondary (for weapons) elemental effect the item may cause.
+     *  Most often used in conjunction with KMagic::res_adjust() within res[] array;
+     *  see eResistance enum.
      */
-    uint8_t elem;
-    /*! imbued - What spell is cast when you "use" this item in combat */
+    uint8_t item_elemental_effect;
+
+    /*! Which spell is cast when you "use" an imbued item during battle: index within magic[]
+     *  array; see eMagic enum.
+     */
     uint8_t imb;
-    /*! Effect ?? */
+
+    /*! Visual effect index when item is used (or when a spell is cast); index within eff[] array,
+     *  range [0..NUM_EFFECTS-1].
+     */
     uint8_t eff;
-    /*! Bonus ?? */
+
+    /*! Bonus stat multiplier when this item is equipped.
+     *  KFighter::bstat is set to eStat::Strength if the item is one of:
+     *      eWeapon::W_MACE, eWeapon::W_SWORD, or eWeapon::W_RING
+     *  KFighter::bstat is set to eStat::Agility otherwise.
+     * Then KFighter::stats[KFighter::bstat] is multiplied by this item's bonus multiplier to
+     * determine the attack amount.
+     */
     int bon;
-    /*! Default price of this item, in gp */
+
+    /*! GP required to purchase this from a store. */
     int price;
-    /*! Who can equip this item. See ePIDX enum in heroc.h. */
+
+    /*! Whether party members can equip this item (0: they cannot, 1: they can); see ePIDX enum. */
     uint8_t eq[MAXCHRS];
-    /*! Stat bonuses for equipping this item. See eStat enum. */
+
+    /*! How equipping/using a particular item will increase/decrease various stat types; see eStat enum.
+     *
+     * Notable exceptions are that stats[eStat::Attack] is used to determine how much to restore to
+     * the player:
+     *  - I_MHERB, I_SALVE, I_PCURING: KFighter::hp
+     *  - I_OSEED, I_EDROPS: KFighter::mp
+     *  - I_RRUNE: KFighter::hp (based on KFighter::lvl)
+     *  - I_WRUNE, I_ERUNE, I_FRUNE, I_IRUNE: KFighter::res[] to respective elemental effects
+     *  - I_TP100S, KFighter::hp
+     */
     int stats[NUM_STATS];
-    /*! Resistances. See eResistance enum. */
+
+    /*! Elemental Resistances. See eResistance enum. */
     char item_resistance[R_TOTAL_RES];
 };
 
@@ -113,9 +173,16 @@ struct s_spell
     int hit;
     /*! For spells, what element will it affect; see eResistance.
      */
-    uint8_t elem;
+    uint8_t spell_elemental_effect;
+
+    // Unused
     uint8_t dlvl;
+
+    /*! Visual effect index when spell is cast (or when an item is used); index within eff[] array,
+     *  range [0..NUM_EFFECTS-1].
+     */
     uint8_t eff;
+
     int clvl[8];
 };
 

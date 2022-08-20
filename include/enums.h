@@ -161,15 +161,14 @@ enum eCombatSkill
  *  - near zero: they take normal/neutral damage
  *  - positive: they take less damage
  *
- * Weapons may have an elemental aspect (see s_item::elem), such as Thor's Hammer having elem=R_THUNDER.
- *  - A fighter with HIGH resistance to that element will take less damage than if an identical
- *    weapon without the elemental modifier were used.
+ * Weapons (such as Thor's Hammer) and items (such as Rune of Earth) may have have an elemental
+ * aspect (see s_item::item_elemental_effect), R_THUNDER or R_EARTH, respectively.
+ *  - Weapons with an elemental modifier can usually be used like an item during battle, and some
+ *    may inflict more damage to enemies who are weak against that particular effect.
+ *  - Items (like Runes) are usually consumed after use; there may be some special exceptions for
+ *    more powerful/rare items.
  *
- * Items may have an elemental aspect (also s_item::elem), such as a Rune of Earth having elem=R_EARTH.
- *  - Using an elemental item in battle typically consumes that item after use, but is usually the
- *    equivalent of attacking using an elemental-imbued weapon.
- *
- * Spells may have an elemental aspect (see s_spell::elem), such as Whirlwind with elem=R_AIR.
+ * Spells (such as Whirlwind) may have an elemental aspect (see s_spell::spell_elemental_effect), such as R_AIR.
  */
 enum eResistance
 {
@@ -190,7 +189,8 @@ enum eResistance
     R_SLEEP = 14,
     R_TIME = 15,
 
-    R_TOTAL_RES // always last
+    R_TOTAL_RES,
+    R_NONE = R_TOTAL_RES // no elemental effect
 };
 
 /*! \name Weapons */
@@ -237,6 +237,19 @@ enum eWeapon
     W_CHENDIGAL = 29,
 
     W_EXPLOSIVE = 30,
+
+    // 31..39 are empty in misc.png
+    W_INSIGHT = 40,
+    W_TRAVEL = 41,
+    W_BLACK_SPLAT = 42,
+    W_DRAIN = 43,
+    W_AIR_AND_WATER = 44,
+
+    W_CURATIVE = 45,
+    W_RESTORATIVE = 46,
+    W_OOMPH = 47,
+    W_PREVENTATIVE = 48,
+    W_ELEMENTAL = 49,
 
     NUM_WEAPONS // always last
 };
@@ -320,6 +333,17 @@ enum eEquipment
     EQP_SPECIAL = 5,
 
     NUM_EQUIPMENT // always last
+};
+
+// Used for s_item::hnds, values can be either eWeaponRestrict or eMagic:
+//  - eWeaponRestrict: when the item is any type of weapon, shield, etc., whether the item occupies
+//    one or both hands (eWeapon::W_SPEAR and eWeapon::W_STAFF are usually always 2-handed).
+//  - eMagic: when the item is a spell book (eWeapon::W_SBOOK or eWeapon::W_ABOOK), the value
+//    is the index within the spells[] array.
+enum eWeaponRestrict
+{
+    HAND_SINGLE = 0, // Weapon is single-handed; player may also wield a shield
+    HAND_DOUBLE = 1, // Weapon is double-handed; player may not also have a shield
 };
 
 enum eFont // TODO: Can eFontColor and eFont be merged?

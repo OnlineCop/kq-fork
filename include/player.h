@@ -129,7 +129,7 @@ class KPlayer
     char res[NUM_RES];
     /*! eEquipment: Weapons, armor, etc. equipped */
     uint8_t eqp[NUM_EQUIPMENT];
-    /*! Known spells */
+    /*! Known spells (are these only ever used as 'bool'?) */
     uint8_t spells[NUM_SPELLS];
 
     /*! \brief Level up information.

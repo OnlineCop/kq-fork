@@ -301,7 +301,7 @@ static void draw_equipmenu(int c, bool sel)
     {
         int j = party[l].eqp[k];
         Draw.draw_icon(double_buffer, items[j].icon, 84, k * 8 + 36);
-        Draw.print_font(double_buffer, 92, k * 8 + 36, items[j].name, FNORMAL);
+        Draw.print_font(double_buffer, 92, k * 8 + 36, items[j].item_name, FNORMAL);
     }
 }
 
@@ -321,7 +321,7 @@ static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
     {
         auto [id, quantity] = g_inv[t_inv[p]];
         Draw.draw_icon(double_buffer, items[id].icon, 28, k * 8 + 100);
-        Draw.print_font(double_buffer, 36, k * 8 + 100, items[id].name, FNORMAL);
+        Draw.print_font(double_buffer, 36, k * 8 + 100, items[id].item_name, FNORMAL);
         if (quantity > 1)
         {
             sprintf(strbuf, "^%d", quantity);
@@ -424,7 +424,7 @@ static bool equip(uint32_t c, uint32_t selected_item)
     if (slot == EQP_SHIELD)
     {
         // Can't equip a shield if holding a two-handed weapon
-        if (party[c].eqp[EQP_WEAPON] > 0 && items[party[c].eqp[EQP_WEAPON]].hnds == 1)
+        if (party[c].eqp[EQP_WEAPON] > 0 && items[party[c].eqp[EQP_WEAPON]].hnds == eWeaponRestrict::HAND_DOUBLE)
         {
             return false;
         }
@@ -432,7 +432,7 @@ static bool equip(uint32_t c, uint32_t selected_item)
     else if (slot == EQP_WEAPON)
     {
         // Can't equip a two-handed weapon if holding a shield
-        if (party[c].eqp[EQP_SHIELD] > 0 && items[item].hnds == 1)
+        if (party[c].eqp[EQP_SHIELD] > 0 && items[item].hnds == eWeaponRestrict::HAND_DOUBLE)
         {
             return false;
         }

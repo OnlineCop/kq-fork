@@ -20,6 +20,7 @@
 */
 
 #include "res.h"
+
 #include "kq.h"
 
 // clang-format off
@@ -106,34 +107,24 @@ PALETTE pal = {
     { 42, 63, 63, 0 },  { 46, 63, 63, 0 },   { 50, 63, 63, 0 }, { 63, 63, 63, 0 }
 };
 
-/* 0: `name`: Item name.
- * 1: `icon`: Icon ID (matches icon found in misc.png).
- * 2: `kol`: Recolor value from PALETTE `pal` table. Replaces the two colors found in
- *    USBAT with the color specified by this index value (if this index value > 0).
- *    - Value "168" corresponds to entry value {27, 54, 27, 0}
- *    - Value "175" corresponds to entry value {53, 63, 53, 0}
- *   If the replacement index is 8 (such as the "Mace"), the 8th entry in `pal` is
- *   {33, 33, 33, 0}, or mid-gray. Therefore, when the Mace renders on-screen during
- *   battle, instead of green, it will render mid-gray on the outside of the mace,
- *   and {51, 51, 51, 0} inside (as that is the "index + 4" entry).
- *   If the replacement index is 244 (Frozen Star), the entry is {15, 30, 30, 0}
- *   for the outside edge of the weapon and {27, 54, 54, 0} for the inside. This makes
- *   the weapon appear more "cyan" in color.
- * 3: `desc`: Longer description of the item.
- * 4: `tgt`: Targeting type for combat items. See TGT_* constants in kq.h.
- * 5: `type`: Relates to which slot (hand, head, etc.) this item goes into.
- * 6: `use`: Usage mode. See USE_* constants in kq.h.
- * 7: `ilvl`: What level this item is.
- * 8: `hnds`: Used to index into the ::magic[] array.
- * 9: `bst`:
- * 10: `elem`: For runes, what element will it affect (see rune_index parameter of res_adjust() ).
- * 11: `imb`: What spell is cast when you "use" this item in combat.
- * 12: `eff`:
- * 13: `bon`:
- * 14: `price`: Default price of this item.
- * 15: `eq[8]`: Who can equip this item (see ePIDX enum in heroc.h).
- * 16: `stats[13]`: Stat bonuses for equipping this item. See eStat enum.
- * 17: `res[16]`: Elemental effect modifier for each eResistance::R_TOTAL_RES types available.
+/* 0: `item_name`: short string (about 16 characters)
+ * 1: `icon`: eWeapon: [0..eWeapon::NUM_WEAPONS-1]
+ * 2: `kol`: [0..255]
+ * 3: `item_desc`: medium string (about 40 characters)
+ * 4: `tgt`: eTarget: [0..eTarget::NUM_TARGETS-1]
+ * 5: `type`: eEquipment: [0..eEquipment::NUM_EQUIPMENT-1]
+ * 6: `use`: eItemUse: [0..eItemUse::NUM_USES-1]
+ * 7: `ilvl`: [0..50]
+ * 8: `hnds`: eMagic/eWeaponRestrict: For spells: [0..eMagic::M_TOTAL-1]; for weapons: 0 or 1
+ * 9: `seed_stat`: eStat: [0..eStat::NUM_STATS-1] (only used for seeds)
+ * 10: `item_elemental_effect`: eResistance: [0..eResistance::R_TOTAL_RES]
+ * 11: `imb`: eMagic [0..eMagic::M_TOTAL-1]
+ * 12: `eff`: [0..NUM_EFFECTS-1]
+ * 13: `bon`: [0..]
+ * 14: `price`: [0..]
+ * 15: `eq[8]`: Each: 0 or 1
+ * 16: `stats[13]`: Each: [-999..999]
+ * 17: `item_resistance[16]`: Each: [-10..20]
  */
 s_item items[NUM_ITEMS] = {
     { "", 0, 0, "",
@@ -1104,18 +1095,21 @@ s_item items[NUM_ITEMS] = {
  * }
  *
  * 0: `name[14]`: Spell name, either in a list of spells or when a spell is being cast.
- * 1: `icon`: Icon ID (matches icon found in misc.png) for the 8x8 picture that is on the side of the list of spells.
+ * 1: `icon`: eWeapon: [0..eWeapon::NUM_WEAPONS-1]
  * 2: `desc[26]`: Short explanation of what a spell does.
- * 3: `stat`: KFighter::stats index offset (usually added to eStat::STAT_AURA [6] or eStat::STAT_INTELLECT [3]). Either '0' or '1'.
+ * 3: `stat`: '0' or '1': KFighter::stats index offset (usually added to eStat::STAT_AURA [6] or 
+ *    eStat::STAT_INTELLECT [3]).
  * 4: `mpc`: MP required to cast the spell; multiplied by a KFighter::mrp (magic usage rate [0..100]).
- * 5: `use`: eItemUse enum (usually eItemUse::USE_ANY_INF [2], eItemUse::USE_CAMP_INF [4], or eItemUse::USE_COMBAT_INF [6]).
+ * 5: `use`: eItemUse enum (usually eItemUse::USE_ANY_INF [2], eItemUse::USE_CAMP_INF [4], or
+ *    eItemUse::USE_COMBAT_INF [6]).
  * 6: `tgt`: eTarget enum, indicating who the spell may effect: a single ally/enemy, or all allies/enemies.
- * 7: `dmg`: Minimum amount that a spell will harm (or heal) for.
- * 8: `bon`: A KFighter::stats bonus multiplier.
- * 9: `hit`: Chance [0%..100%] that the spell will hit the target.
- * 10: `elem`: Elemental effect this spell uses, 1-based (0: "none", 1: eResistance::R_EARTH, 2: eResistance::R_BLACK, etc.).
+ * 7: `dmg`: [0..999]: Minimum amount that a spell will harm (or heal) for.
+ * 8: `bon`: [0..]: A KFighter::stats bonus multiplier.
+ * 9: `hit`: [0..100]: Chance [0%..100%] that the spell will hit the target.
+ * 10: `spell_elemental_effect`: [0..eResistance::R_TOTAL_RES-1]: Elemental effect this spell uses,
+ *     0-based (0: R_EARTH, 1: R_BLACK, ..., 16: R_NONE).
  * 11: `dlvl`: Unused
- * 12: `eff`: Special effect animation displayed during battles: Index within s_effect eff[] array (should be in range [0..NUM_EFFECTS-1]).
+ * 12: `eff`: [0..NUM_EFFECTS-1]
  * 13: `clvl[8]`: is the minimum level at which this party member may learn a particular spell (or 0 for never).
  */
 s_spell magic[NUM_SPELLS] = {

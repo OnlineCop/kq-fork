@@ -24,6 +24,7 @@
 #include "enums.h"
 #include "structs.h"
 
+#include <iostream>
 #include <memory>
 #include <string>
 
@@ -37,15 +38,17 @@ class Raster;
 class KFighter
 {
     friend class KDisk;
+    friend std::istream& operator>>(std::istream& is, KFighter& fighter);
+    friend std::ostream& operator<<(std::ostream& os, const KFighter& fighter);
 
   public:
-    KFighter();
-    KFighter(const KFighter& rhs) = default; // Copy constructor
-    KFighter(KFighter&& rhs) = default;      // C++11 move constructor
-
-    KFighter& operator=(const KFighter& rhs) = default; // Assignment operator
-    KFighter& operator=(KFighter&& rhs) = default;      // C++11 move assignment
     ~KFighter() = default;
+
+    KFighter();
+    KFighter(const KFighter& rhs) = default;            // Copy constructor
+    KFighter(KFighter&& rhs) = default;                 // Move constructor
+    KFighter& operator=(const KFighter& rhs) = default; // Copy assignment
+    KFighter& operator=(KFighter&& rhs) = default;      // Move assignment
 
     // S_POISON
     bool IsPoisoned() const;
@@ -329,14 +332,14 @@ class KFighter
      *
      * See eResistance enum.
      */
-    int welem;
+    uint8_t weapon_elemental_effect;
 
     /*! \brief UNLiving (undead), like zombies, skeletons, etc. */
     int unl;
 
     int aux;
     int bonus;
-    int bstat;
+    int bstat; // eStat::Strength or eStat::Agility
 
     /*! \brief Magic use rate (0-100). */
     int mrp;
@@ -383,5 +386,8 @@ class KFighter
     /*! eSpellType, how long a specific status effect remains on this fighter (such as "remaining poison", etc.). */
     uint8_t sts[NUM_SPELL_TYPES];
 };
+
+std::istream& operator>>(std::istream& is, KFighter& fighter);
+std::ostream& operator<<(std::ostream& os, const KFighter& fighter);
 
 extern KFighter Fighter;

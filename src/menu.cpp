@@ -675,7 +675,7 @@ void KMenu::status_screen(size_t fighter_index)
             Draw.draw_icon(double_buffer, items[party[pidx_index].eqp[equipment_index]].icon, 168,
                            equipment_index * 8 + 168);
             Draw.print_font(double_buffer, 176, equipment_index * 8 + 168,
-                            items[party[pidx_index].eqp[equipment_index]].name, FNORMAL);
+                            items[party[pidx_index].eqp[equipment_index]].item_name, FNORMAL);
         }
         Draw.blit2screen();
 
@@ -758,7 +758,7 @@ KFighter player2fighter(int who)
 
     /* set weapon elemental power and imbuements for easy use in combat */
     int weapon_index = plr.eqp[EQP_WEAPON];
-    current_fighter.welem = items[weapon_index].elem;
+    current_fighter.weapon_elemental_effect = items[weapon_index].item_elemental_effect;
     if (items[weapon_index].use == USE_ATTACK)
     {
         current_fighter.imb_s = items[weapon_index].imb;
@@ -806,24 +806,14 @@ KFighter player2fighter(int who)
         ++current_fighter.opal_power;
     }
 
-    // for (int a = 0; a < 4; a++)
-    //{
-    //     static const int z[5] = { EQP_SPECIAL, EQP_ARMOR, EQP_HELMET, EQP_SHIELD };
-    //     int current_equipment_slot = plr.eqp[z[a]];
-    //     if (items[current_equipment_slot].use == USE_IMBUED)
-    //     {
-    //         ++current_fighter.opal_power;
-    //     }
-    // }
-
     /*
-     * Any weapon used by Ajathar gains the power of White if
-     * it has no other power to begin with (the "welem" property
-     * is 1-based: value of 0 means "no imbue".
+     * Any weapon used by Ajathar gains the elemental effect of White if it has no other power to
+     * begin with; the "weapon_elemental_effect" property is 0-based: value of 0 means "R_EARTH"
+     * and 16 (or R_NONE) means "no elemental effect".
      */
-    if (who == AJATHAR && current_fighter.welem == 0)
+    if (who == AJATHAR && current_fighter.weapon_elemental_effect == eResistance::R_NONE)
     {
-        current_fighter.welem = R_WHITE + 1;
+        current_fighter.weapon_elemental_effect = eResistance::R_WHITE;
     }
     for (int j = 0; j < NUM_EQUIPMENT; j++)
     {
@@ -838,13 +828,14 @@ KFighter player2fighter(int who)
             {
                 current_fighter.bonus = items[a].bon;
             }
-            if (items[a].icon == 1 || items[a].icon == 3 || items[a].icon == 21)
+            if (items[a].icon == eWeapon::W_MACE || items[a].icon == eWeapon::W_SWORD ||
+                items[a].icon == eWeapon::W_RING)
             {
-                current_fighter.bstat = 1;
+                current_fighter.bstat = eStat::Agility;
             }
             else
             {
-                current_fighter.bstat = 0;
+                current_fighter.bstat = eStat::Strength;
             }
             /* Set current weapon type. When the hero wields a weapon
              * in combat, it will look like this.

@@ -222,7 +222,7 @@ int available_spells(int who)
     int a, b, e, l, numsp = 0;
 
     l = pidx[who];
-    for (a = 0; a < 60; a++)
+    for (size_t a = 0; a < eMagic::M_TOTAL; ++a)
     {
         b = party[l].spells[a];
         if (b > 0)
@@ -232,7 +232,7 @@ int available_spells(int who)
                 if (l == CORIN && fighter[who].aux == 2)
                 {
                     e = Magic.mp_needed(who, b);
-                    if (fighter[who].mp >= e && magic[b].elem < 9)
+                    if (fighter[who].mp >= e && magic[b].spell_elemental_effect < eResistance::R_BLIND)
                     {
                         numsp++;
                     }
@@ -290,7 +290,7 @@ static int combat_castable(int spell_caster, int spell_number)
         if (pidx[spell_caster] == CORIN && fighter[c].aux == 2)
         {
             c = Magic.mp_needed(spell_caster, b);
-            if (fighter[spell_caster].mp >= c && magic[b].elem < R_BLIND)
+            if (fighter[spell_caster].mp >= c && magic[b].spell_elemental_effect < eResistance::R_BLIND)
             {
                 return 1;
             }
@@ -328,7 +328,7 @@ static void combat_draw_items(int pg)
         {
             k = FDARK;
         }
-        Draw.print_font(double_buffer, 96, a * 8 + 16, items[b].name, k);
+        Draw.print_font(double_buffer, 96, a * 8 + 16, items[b].item_name, k);
         if (c > 1)
         {
             sprintf(strbuf, "^%d", c);
@@ -382,7 +382,7 @@ static int combat_item(int ss, int t1, int tg)
     {
         return 0;
     }
-    strcpy(attack_string, items[t1].name);
+    strcpy(attack_string, items[t1].item_name.c_str());
     display_attack_string = 1;
     r = item_effects(ss, tg, t1);
     display_attack_string = 0;
@@ -443,7 +443,7 @@ static int combat_item_menu(int whom)
         draw_sprite(double_buffer, menuptr, 72, ptr * 8 + 16);
         /* put description of selected item */
         Draw.menubox(double_buffer, 72, 152, 20, 1, eBoxFill::TRANSPARENT);
-        Draw.print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16].item].desc, FNORMAL);
+        Draw.print_font(double_buffer, 80, 160, items[g_inv[ptr + pptr * 16].item].item_desc, FNORMAL);
         Draw.blit2screen();
 
         if (PlayerInput.up())
@@ -673,7 +673,7 @@ static void draw_invokable(int dud)
         tt = party[dud].eqp[a];
         grd = can_invoke_item(tt) ? FNORMAL : FDARK;
         Draw.draw_icon(double_buffer, items[tt].icon, 88, a * 8 + 88);
-        Draw.print_font(double_buffer, 96, a * 8 + 88, items[tt].name, grd);
+        Draw.print_font(double_buffer, 96, a * 8 + 88, items[tt].item_name, grd);
     }
 }
 
