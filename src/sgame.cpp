@@ -274,6 +274,10 @@ int KSaveGame::saveload(int am_saving)
                 am_saving = am_saving - 2;
             }
         }
+        if (PlayerInput.bctrl())
+        {
+            stop = 1;
+        }
         if (PlayerInput.balt())
         {
             switch (am_saving)
@@ -315,10 +319,6 @@ int KSaveGame::saveload(int am_saving)
                 }
                 break;
             }
-        }
-        if (PlayerInput.bctrl())
-        {
-            stop = 1;
         }
     }
     return stop - 1;
