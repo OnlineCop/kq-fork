@@ -189,13 +189,13 @@ int KDisk::load_resistances_xml(KPlayer* s, XMLElement* node)
         if (!values.empty())
         {
             // Gave some, has to be the right number of elements
-            if (values.size() == NUM_RES)
+            if (values.size() == eResistance::R_TOTAL_RES)
             {
                 copy(values.begin(), values.end(), s->res);
             }
             else
             {
-                TRACE("Wrong number of resistances, expected %d and got %zu", NUM_RES, values.size());
+                TRACE("Wrong number of resistances, expected %d and got %zu", eResistance::R_TOTAL_RES, values.size());
                 Game.program_death("Error loading XML");
             }
         }

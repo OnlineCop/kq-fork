@@ -71,7 +71,6 @@ enum eShadow
 #define MAX_TILESETS 8
 #define NUM_FIGHTERS 7
 #define MAX_ANIM 5
-#define NUM_RES 16
 #define MISS 9999
 #define NODISPLAY 9998
 #define SCANALL 9995

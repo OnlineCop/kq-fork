@@ -201,7 +201,7 @@ class KFighter
      *
      * Values around 0 mean the elemental effects do not sway the attack amount either way.
      */
-    int8_t res[NUM_RES];
+    int8_t res[eResistance::R_TOTAL_RES];
 
     /*! \brief Direction character's sprite faces; see eDirection enum. */
     uint8_t facing;

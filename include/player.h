@@ -126,7 +126,7 @@ class KPlayer
     /*! eAttribute: (A_* enumerations) in enums.h */
     int stats[eStat::NUM_STATS];
     /*! eResistance: See R_* constants */
-    char res[NUM_RES];
+    char res[eResistance::R_TOTAL_RES];
     /*! eEquipment: Weapons, armor, etc. equipped */
     uint8_t eqp[NUM_EQUIPMENT];
     /*! Known spells (are these only ever used as 'bool'?) */
