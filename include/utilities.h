@@ -25,8 +25,10 @@
  * \brief Various templates and other general-purpose utilities for KQ.
  */
 
+#include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <iterator>
 #include <memory>
 #include <stdexcept>
 #include <string>
