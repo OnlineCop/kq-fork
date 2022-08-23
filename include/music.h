@@ -102,9 +102,6 @@ class KMusic
      */
     void* get_sample(const std::string& s);
 
-    /*! \brief Unused. */
-    void play_effect(int /*unused*/, int /*unused*/);
-
     /*! \brief Play the provided Mix_Chunk sample.
      *
      * \param   chunk Mix_Chunk sample data to play.

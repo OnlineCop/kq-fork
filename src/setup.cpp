@@ -138,7 +138,7 @@ static void citem(int y, const char* caption, const char* value, eFontColor colo
 static void sound_feedback(int val)
 {
     Music.set_volume(val * 10);
-    Music.play_effect(1, 127);
+    play_effect(1, 127);
 }
 
 static void music_feedback(int val)
