@@ -26,15 +26,50 @@ class KAudio
   public:
     enum eSound
     {
-        SND_MENU = 0,
-        SND_CLICK = 1,
-        SND_BAD = 2,
-        SND_ITEM = 3,
-        SND_EQUIP = 4,
-        SND_UNEQUIP = 5,
-        SND_MONEY = 6,
-        SND_TWINKLE = 7,
-        SND_EXPLODE = 42,
+        SND_MENU = 0,      /* whoosh.wav */
+        SND_CLICK = 1,     /* menumove.wav */
+        SND_BAD = 2,       /* bad.wav */
+        SND_ITEM = 3,      /* item.wav */
+        SND_EQUIP = 4,     /* equip.wav */
+        SND_UNEQUIP = 5,   /* deequip.wav */
+        SND_MONEY = 6,     /* buysell.wav */
+        SND_TWINKLE = 7,   /* twinkle.wav */
+        SND_SCORCH = 8,    /* scorch.wav */
+        SND_POISON = 9,    /* poison.wav */
+        SND_CHOP = 10,     /* chop.wav */
+        SND_SLASH = 11,    /* slash.wav */
+        SND_STAB = 12,     /* stab.wav */
+        SND_HIT = 13,      /* hit.wav */
+        SND_ICE = 14,      /* ice.wav */
+        SND_WIND = 15,     /* wind.wav */
+        SND_QUAKE = 16,    /* quake.wav */
+        SND_BLACK = 17,    /* black.wav */
+        SND_WHITE = 18,    /* white.wav */
+        SND_BOLT1 = 19,    /* bolt1.wav */
+        SND_FLOOD = 20,    /* flood.wav */
+        SND_HURT = 21,     /* hurt.wav */
+        SND_BMAGIC = 22,   /* bmagic.wav */
+        SND_SHIELD = 23,   /* shield.wav */
+        SND_KILL = 24,     /* kill.wav */
+        SND_DOOROPEN = 25, /* dooropen.wav */
+        SND_DOOR2 = 26,    /* door2.wav */
+        SND_STAIRS = 27,   /* stairs.wav */
+        SND_TELEPORT = 28, /* teleport.wav */
+        SND_CURE = 29,     /* cure.wav */
+        SND_RECOVER = 30,  /* recover.wav */
+        SND_ARROW = 31,    /* arrow.wav */
+        SND_BOLT2 = 32,    /* bolt2.wav */
+        SND_BOLT3 = 33,    /* bolt3.wav */
+        SND_FLAME = 34,    /* flame.wav */
+        SND_BLIND = 35,    /* blind.wav */
+        SND_INN = 36,      /* inn.wav */
+        SND_CONFUSE = 37,  /* confuse.wav */
+        SND_DISPEL = 38,   /* dispel.wav */
+        SND_DOOM = 39,     /* doom.wav */
+        SND_DRAIN = 40,    /* drain.wav */
+        SND_GAS = 41,      /* gas.wav */
+        SND_EXPLODE = 42,  /* explode.wav */
+
         MAX_SAMPLES // always last
     };
 
