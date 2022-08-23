@@ -203,6 +203,7 @@ struct s_effect
     uint8_t kolor;
     /*! Sound that is played when effect is used */
     uint8_t snd;
+    /*! Sprite filename. */
     char ename[16];
 };
 
