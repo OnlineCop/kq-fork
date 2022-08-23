@@ -70,7 +70,7 @@ class KAudio
         SND_GAS = 41,      /* gas.wav */
         SND_EXPLODE = 42,  /* explode.wav */
 
-        MAX_SAMPLES // always last
+        SND_TOTAL
     };
 
     enum eSoundSystem

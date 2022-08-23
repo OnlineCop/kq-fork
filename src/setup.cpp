@@ -73,7 +73,7 @@ enum class eDisplayMode
 };
 
 /*  Internal variables  */
-static void* sfx[KAudio::eSound::MAX_SAMPLES];
+static void* sfx[KAudio::eSound::SND_TOTAL];
 
 /*  Internal functions  */
 
@@ -585,7 +585,7 @@ const char* kq_keyname(int scancode)
 
 static int load_samples()
 {
-    static const char* sndfiles[KAudio::eSound::MAX_SAMPLES] = {
+    static const char* sndfiles[KAudio::eSound::SND_TOTAL] = {
         "whoosh.wav",   "menumove.wav", "bad.wav",     "item.wav",   "equip.wav",    "deequip.wav", "buysell.wav",
         "twinkle.wav",  "scorch.wav",   "poison.wav",  "chop.wav",   "slash.wav",    "stab.wav",    "hit.wav",
         "ice.wav",      "wind.wav",     "quake.wav",   "black.wav",  "white.wav",    "bolt1.wav",   "flood.wav",
@@ -598,10 +598,10 @@ static int load_samples()
     {
         return 1;
     }
-    for (int index = 0; index < KAudio::eSound::MAX_SAMPLES; index++)
+    for (size_t index = 0; index < KAudio::eSound::SND_TOTAL; ++index)
     {
         sfx[index] = Music.get_sample(sndfiles[index]);
-        if (!sfx[index])
+        if (sfx[index] == nullptr)
         {
             sprintf(strbuf, _("Error loading .WAV file: %s.\n"), sndfiles[index]);
             Game.klog(strbuf);
