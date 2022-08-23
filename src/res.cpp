@@ -117,7 +117,7 @@ PALETTE pal = {
  * 7: `ilvl`: [0..50]
  * 8: `hnds`: eMagic/eWeaponRestrict: For spells: [0..eMagic::M_TOTAL-1]; for weapons: 0 or 1
  * 9: `seed_stat`: eStat: [0..eStat::NUM_STATS-1] (only used for seeds)
- * 10: `item_elemental_effect`: eResistance: [0..eResistance::R_TOTAL_RES]
+ * 10: `item_elemental_effect`: eResistance: [0..eResistance::R_TOTAL_RES-1]
  * 11: `imb`: eMagic [0..eMagic::M_TOTAL-1]
  * 12: `eff`: [0..NUM_EFFECTS-1]
  * 13: `bon`: [0..]

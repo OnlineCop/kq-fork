@@ -332,7 +332,8 @@ enum eEquipment
     EQP_HAND = 4,
     EQP_SPECIAL = 5,
 
-    NUM_EQUIPMENT // always last
+    NUM_EQUIPMENT,
+    EQP_NONE = NUM_EQUIPMENT
 };
 
 // Used for s_item::hnds, values can be either eWeaponRestrict or eMagic:
