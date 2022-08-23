@@ -852,6 +852,7 @@ int KDisk::load_general_props_xml(XMLElement* node)
                         pidx[i] = static_cast<ePIDX>(*it++);
                         g_ent[i].eid = pidx[i];
                         g_ent[i].active = true;
+                        g_ent[i].chrx = 0;
                         ++numchrs;
                     }
                     else
