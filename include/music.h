@@ -102,9 +102,6 @@ class KMusic
      */
     void* get_sample(const std::string& s);
 
-    /*! \brief Unused. */
-    void play_effect(int /*unused*/, int /*unused*/);
-
     /*! \brief Play the provided Mix_Chunk sample.
      *
      * \param   chunk Mix_Chunk sample data to play.
@@ -117,6 +114,13 @@ class KMusic
   private:
     float mvol = 1.0f;
     float dvol = 1.0f;
+    struct sMusicPos
+    {
+        void* chunk = nullptr;
+        double position = 0.0;
+    };
+    sMusicPos pausedMusic {};
+    void* current;
 };
 
 extern KMusic Music;

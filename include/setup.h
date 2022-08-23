@@ -48,7 +48,10 @@ class KAudio
   public:
     ~KAudio() = default;
     KAudio();
-
+    bool isReady() const
+    {
+        return sound_initialized_and_ready == eSoundSystem::Ready;
+    }
     eSoundSystem sound_initialized_and_ready;
     bool sound_system_avail;
 };
