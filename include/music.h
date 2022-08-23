@@ -117,6 +117,13 @@ class KMusic
   private:
     float mvol = 1.0f;
     float dvol = 1.0f;
+    struct sMusicPos
+    {
+        void* chunk = nullptr;
+        double position = 0.0;
+    };
+    sMusicPos pausedMusic {};
+    void* current;
 };
 
 extern KMusic Music;
