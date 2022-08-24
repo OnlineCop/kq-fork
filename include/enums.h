@@ -113,25 +113,93 @@ enum eStat
 /*! \name Spells */
 enum eSpellType
 {
+    // When outside of battle, HP is reduced by 1 for every step taken.
+    // When inside battle, up to 2% of the fighter's Max HP is reduced each round.
+    // Set by: [MR]_POISON, M_VENOM
+    // Unset by: M_RESTORE, M_RECOVERY
     S_POISON = 0,
+
+    // Reduces fighter stats[eStat::Hit] and stats[eStat::Evade] to 1/4 their original values.
+    // Set by: [MR]_BLIND
+    // Unset by: M_RESTORE, M_RECOVERY
     S_BLIND = 1,
+
+    // Cause fighter to be confused and attack allies as well as opponents.
+    // When fighter is the player, the player cannot choose the action or the attack target.
+    // Set by: M_CONFUSE, R_CHARM
+    // Unset by: M_RECOVERY
     S_CHARM = 2,
+
+    // Sets fighter's stats[eStat::Evade] to 0.
+    // Set by: M_HOLD, R_PARALYZE
+    // Unset by: M_RECOVERY
     S_STOP = 3,
+
+    // Set's fighter's stats[eStat::Evade] to 0, but doubles the stats[eStat::Defense].
+    // Set by: M_STONE, R_PETRIFY
+    // Unset by: M_RECOVERY
     S_STONE = 4,
+
+    // Set by: [MR]_SILENCE
+    // Unset by: M_RECOVERY
     S_MUTE = 5,
+
+    // Sets fighter's stats[eStat::Evade] to 0.
+    // Set by: [MR]_SLEEP, M_SLEEPALL
+    // Unset by: M_RECOVERY
     S_SLEEP = 6,
+
+    // Set whenever HP drops below 1.
+    // Unset by: M_LIFE [only if dead], M_FULLLIFE [only if dead]
     S_DEAD = 7,
+
+    // Chance, calculated each turn till it wears off, that fighter's Ether effect will be set inactive.
+    // Reduces fighter's stats[eStat::Hit] and stats[eStat::Evade] by 50% to 25%.
+    // Set by: M_NAUSEA, M_MALISON
     S_MALISON = 8,
+
+    // Set by: M_SHELL, M_WALL
+    // Unset by: M_DIFFUSE
     S_RESIST = 9,
+
+    // Give the fighter a brief increase for stats[eStat::Speed], stats[eStat::Hit], and stats[eStat::Evade],
+    // but after a couple rounds, those stats are reduced below their starting points (they got an adrenaline
+    // kick, but felt more wiped out when it was over). Negative effects only lasts for one round.
+    // Set by: M_HASTEN, M_SLOW
+    // Unset by: M_DIFFUSE
     S_TIME = 10,
+
+    // Set by: M_SHIELD, M_SHIELDALL
+    // Unset by: M_DIFFUSE
     S_SHIELD = 11,
+
+    // Increase fighter's stats[eStat::Hit] by 25*[remaining Bless], and stats[eStat::Evade] by 10*[remaining Bless].
+    // Set by: M_BLESS
+    // Unset by: M_DIFFUSE
     S_BLESS = 12,
+
+    // Increases fighter's stats[eStat::Attack] by a percentage of stats[eStat::Strength].
+    // Set by: M_HOLYMIGHT
+    // Unset by: M_DIFFUSE
     S_STRENGTH = 13,
+
+    // Set by: M_THROUGH
+    // Unset by: [SM]_MALISON [random each round]
     S_ETHER = 14,
+
+    // Set by: M_TRUEAIM
+    // Unset by:
     S_TRUESHOT = 15,
+
+    // Set by: M_REGENERATE
+    // Unset by:
     S_REGEN = 16,
+
+    // Set by:
+    // Unset by: M_STONE, M_LIFE, M_FULLLIFE
     S_INFUSE = 17,
 
+    // (negate ALL above: M_LIFE/M_FULLLIFE [only if dead], M_STONE [except S_STONE])
     NUM_SPELL_TYPES // always last
 };
 
