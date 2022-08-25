@@ -233,13 +233,13 @@ int KDisk::load_spells_xml(KPlayer* s, XMLElement* node)
     if (spells && !spells->NoChildren())
     {
         auto values = parse_list(spells->FirstChild()->Value());
-        if (values.size() == NUM_SPELLS)
+        if (values.size() == M_TOTAL)
         {
             copy(values.begin(), values.end(), s->spells);
         }
         else
         {
-            TRACE("Wrong number of spells, expected %d and got %zu", NUM_SPELLS, values.size());
+            TRACE("Wrong number of spells, expected %d and got %zu", M_TOTAL, values.size());
             Game.program_death("Error loading XML");
         }
     }

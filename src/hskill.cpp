@@ -52,7 +52,7 @@
  * Infuses the attacker with whatever was stored in KFighter::csmem.
  *
  * \param   c Caster index in fighter[] array.
- * \param   sn Spell in range [0..NUM_SPELLS-1].
+ * \param   sn Spell in range [0..M_TOTAL-1].
  */
 static void infusion(int c, int sn);
 

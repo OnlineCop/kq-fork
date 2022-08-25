@@ -130,7 +130,7 @@ class KPlayer
     /*! eEquipment: Weapons, armor, etc. equipped */
     uint8_t eqp[NUM_EQUIPMENT];
     /*! Known spells (are these only ever used as 'bool'?) */
-    uint8_t spells[NUM_SPELLS];
+    uint8_t spells[eMagic::M_TOTAL];
 
     /*! \brief Level up information.
      *

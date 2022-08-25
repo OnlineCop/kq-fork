@@ -301,7 +301,7 @@ class KFighter
     /*! \brief Spell number, associated with M_* spells, used within s_spell magic[] array.
      *
      * This is used as an array index within the following arrays:
-     *  - magic[] in range [0..NUM_SPELLS-1]
+     *  - magic[] in range [0..M_TOTAL-1]
      *  - items[] in range [0..NUM_ITEMS-1]
      *  - KFighter::ai[] in range [0..7]
      *  - KFighter::atrack[] in range [0..7]
