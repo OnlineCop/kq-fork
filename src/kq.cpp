@@ -44,7 +44,6 @@
 #include "imgcache.h"
 #include "input.h"
 #include "intrface.h"
-#include "itemdefs.h"
 #include "itemmenu.h"
 #include "magic.h"
 #include "masmenu.h"

@@ -29,7 +29,6 @@
 #include "heroc.h"
 #include "input.h"
 #include "intrface.h"
-#include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
 #include "masmenu.h"

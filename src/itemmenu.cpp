@@ -30,7 +30,6 @@
 #include "effects.h"
 #include "gfx.h"
 #include "input.h"
-#include "itemdefs.h"
 #include "kq.h"
 #include "magic.h"
 #include "menu.h"

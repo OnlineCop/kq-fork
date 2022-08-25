@@ -28,7 +28,6 @@
 #include "combat.h"
 #include "input.h"
 #include "intrface.h"
-#include "itemdefs.h"
 #include "kq.h"
 #include "menu.h"
 #include "random.h"

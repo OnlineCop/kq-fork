@@ -32,7 +32,6 @@
 #include "fade.h"
 #include "gfx.h"
 #include "heroc.h"
-#include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
 #include "magic.h"
