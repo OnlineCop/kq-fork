@@ -650,7 +650,7 @@ void KGame::allocate_stuff()
         bord[p] = alloc_bmp(8, 12, "bord[x]");
     }
 
-    for (int p = 0; p < 8; p++)
+    for (int p = 0; p < MAXCHRS; p++)
     {
         players[p].portrait = alloc_bmp(40, 40, "portrait[x]");
     }

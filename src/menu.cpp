@@ -41,6 +41,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <numeric>
 
 KMenu kmenu;
 
@@ -747,13 +748,13 @@ KFighter player2fighter(int who)
     current_fighter.SetRegen(0);
     current_fighter.SetInfuse(0);
 
-    for (int j = 0; j < eStat::NUM_STATS; j++)
+    for (uint8_t stats_index = 0; stats_index < eStat::NUM_STATS; ++stats_index)
     {
-        current_fighter.stats[j] = ((plr.lvl - 1) * plr.lup[j + 4] + plr.stats[j]) / 100;
+        current_fighter.stats[stats_index] = ((plr.lvl - 1) * plr.lup[stats_index + 4] + plr.stats[stats_index]) / 100;
     }
-    for (int j = 0; j < R_TOTAL_RES; j++)
+    for (uint8_t res_index = eResistance::R_EARTH; res_index <= eResistance::R_TIME; ++res_index)
     {
-        current_fighter.res[j] = plr.res[j];
+        current_fighter.res[res_index] = plr.res[res_index];
     }
 
     /* set weapon elemental power and imbuements for easy use in combat */
@@ -861,40 +862,42 @@ KFighter player2fighter(int who)
                 current_fighter.stats[b] += items[a].stats[b];
             }
         }
-        for (int b = 0; b < R_TOTAL_RES; b++)
+
+        // Augment the fighter's elemental resistances based on the item's buffs for those elemental effects.
+        // Note: This MAY exceed the [0..10] or [-10..20] range temporarily; that will be fixed near the end.
+        for (uint8_t res_index = eResistance::R_EARTH; res_index <= eResistance::R_TIME; ++res_index)
         {
-            current_fighter.res[b] += items[a].item_resistance[b];
+            current_fighter.res[res_index] += items[a].item_resistance[res_index];
         }
     }
+
+    // Corin's resistance to some elemental effects is increased the more levels he has.
+    // This MAY exceed the [-10..20] range temporarily; that will be fixed later.
     if (who == CORIN)
     {
-        current_fighter.res[R_EARTH] += current_fighter.lvl / 4;
-        current_fighter.res[R_FIRE] += current_fighter.lvl / 4;
-        current_fighter.res[R_AIR] += current_fighter.lvl / 4;
-        current_fighter.res[R_WATER] += current_fighter.lvl / 4;
+        current_fighter.res[eResistance::R_EARTH] += current_fighter.lvl / 4;
+        current_fighter.res[eResistance::R_FIRE] += current_fighter.lvl / 4;
+        current_fighter.res[eResistance::R_AIR] += current_fighter.lvl / 4;
+        current_fighter.res[eResistance::R_WATER] += current_fighter.lvl / 4;
     }
-    if (plr.eqp[5] == I_AGRAN)
+    if (plr.eqp[eEquipment::EQP_SPECIAL] == I_AGRAN)
     {
-        int a = 0;
-        for (int j = 0; j < R_TOTAL_RES; j++)
+        int total_res = std::accumulate(std::begin(current_fighter.res), std::end(current_fighter.res), 0);
+        int adjusted_res = (total_res * 10 / eResistance::R_TOTAL_RES + 5) / 10;
+        for (uint8_t res_index = eResistance::R_EARTH; res_index <= eResistance::R_TIME; ++res_index)
         {
-            a += current_fighter.res[j];
-        }
-        int b = ((a * 10) / 16 + 5) / 10;
-        for (int j = 0; j < R_TOTAL_RES; j++)
-        {
-            current_fighter.res[j] = b;
+            current_fighter.res[res_index] = adjusted_res;
         }
     }
-    for (int j = 0; j < 8; j++)
+    for (uint8_t res_index = eResistance::R_EARTH; res_index <= eResistance::R_ICE; ++res_index)
     {
-        current_fighter.res[j] = std::clamp<int8_t>(current_fighter.res[j], -10, 20);
+        current_fighter.res[res_index] = std::clamp<int8_t>(current_fighter.res[res_index], -10, 20);
     }
-    for (int j = 8; j < R_TOTAL_RES; j++)
+    for (uint8_t res_index = eResistance::R_POISON; res_index <= eResistance::R_TIME; ++res_index)
     {
-        current_fighter.res[j] = std::clamp<int8_t>(current_fighter.res[j], 0, 10);
+        current_fighter.res[res_index] = std::clamp<int8_t>(current_fighter.res[res_index], 0, 10);
     }
-    if (plr.eqp[5] == I_MANALOCKET)
+    if (plr.eqp[eEquipment::EQP_SPECIAL] == I_MANALOCKET)
     {
         current_fighter.mrp = plr.mrp / 2;
     }
