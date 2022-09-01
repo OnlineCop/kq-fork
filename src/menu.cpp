@@ -316,10 +316,12 @@ void KMenu::display_quest_window()
         Draw.drawmap();
 
         int base = currentQuestSelected - currentQuestSelected % VisibleQuestEntries;
-        Draw.menubox(double_buffer, MenuboxLeftOffset, TitleTopOffset, MenuboxWidth + ItemTextWidth + 2, 1, eBoxFill::TRANSPARENT);
+        Draw.menubox(double_buffer, MenuboxLeftOffset, TitleTopOffset, MenuboxWidth + ItemTextWidth + 2, 1,
+                     eBoxFill::TRANSPARENT);
         Draw.print_font(double_buffer, MenuboxLeftOffset + 2 * FontWidthFNORMAL, TitleTopOffset + FontHeightFNORMAL,
                         _("Quest Diary"), FGOLD);
-        Draw.menubox(double_buffer, MenuboxLeftOffset, MenuboxTopOffset, MenuboxWidth, VisibleQuestEntries, eBoxFill::TRANSPARENT);
+        Draw.menubox(double_buffer, MenuboxLeftOffset, MenuboxTopOffset, MenuboxWidth, VisibleQuestEntries,
+                     eBoxFill::TRANSPARENT);
         Draw.menubox(double_buffer, MenuboxLeftOffset + (2 + MenuboxWidth) * FontWidthFNORMAL, MenuboxTopOffset,
                      ItemTextWidth, VisibleQuestEntries, eBoxFill::TRANSPARENT);
         for (auto index = 0; index < VisibleQuestEntries; ++index)
@@ -412,8 +414,7 @@ void KMenu::display_quest_window()
             // Draw up & down indicators if there is more text that way
             if (textTopIndex > 0)
             {
-                draw_sprite(double_buffer, upptr, TextUpDownOffset,
-                            MenuboxTopOffset);
+                draw_sprite(double_buffer, upptr, TextUpDownOffset, MenuboxTopOffset);
             }
             if (textTopIndex + VisibleQuestEntries < current.size())
             {

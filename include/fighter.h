@@ -191,9 +191,12 @@ class KFighter
     /*! \brief See eStat enum. */
     int stats[eStat::NUM_STATS];
 
-    /*! \brief Resistance to various elemental effects.
+    /*! \brief How various elemental effects positively or negatively affect the fighter.
      *
      * Array contains an entry for each R_* type listed in the eResistance enum.
+     *
+     * res[R_EARTH..R_POISON] can have values in range [-10..20].
+     * res[R_POISON..R_TIME] can have values in range [0..10].
      *
      * Negative resistance means the fighter is affected more by the element (up to -10),
      * while positive resistance means it is affected less (around +10) to almost not at all
