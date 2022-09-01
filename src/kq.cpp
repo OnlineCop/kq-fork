@@ -403,7 +403,7 @@ KMap::KMap()
 size_t KMap::Clamp(signed int tile_x, signed int tile_y) const
 {
     assert(g_map.xsize > 0 && g_map.ysize > 0);
-    size_t index = std::clamp(tile_x + g_map.xsize * tile_y, 0U, g_map.xsize * g_map.ysize - 1);
+    size_t index = std::clamp<size_t>(tile_x + g_map.xsize * tile_y, 0, g_map.xsize * g_map.ysize - 1);
     return index;
 }
 

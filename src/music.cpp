@@ -88,7 +88,7 @@ void KMusic::set_music_volume(int volume)
     {
         return;
     }
-    mvol = float(std::clamp(volume, 0, 250)) / 250.0f;
+    mvol = std::clamp<float>(volume, 0.0, 250.0) / 250.0f;
     Mix_VolumeMusic(static_cast<int>(dvol * mvol * float(MIX_MAX_VOLUME)));
 }
 
@@ -162,7 +162,7 @@ void KMusic::set_volume(int sound_volume)
     {
         return;
     }
-    dvol = float(std::clamp(sound_volume, 0, 250)) / 250.0f;
+    dvol = std::clamp<float>(sound_volume, 0.0, 250.0) / 250.0f;
     Mix_Volume(-1, static_cast<int>(128.0f * dvol));
     Mix_VolumeMusic(static_cast<int>(dvol * mvol * float(MIX_MAX_VOLUME)));
 }

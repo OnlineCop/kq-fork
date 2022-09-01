@@ -388,7 +388,7 @@ void KMenu::display_quest_window()
             }
 
             // If player pressed any of the inputs, newSelectedQuest will have changed.
-            newSelectedQuest = std::clamp(newSelectedQuest, 0, (int)quest_list.size() - 1);
+            newSelectedQuest = std::clamp<int>(newSelectedQuest, 0, quest_list.size() - 1);
 
             if (newSelectedQuest != currentQuestSelected)
             {
@@ -431,7 +431,7 @@ void KMenu::display_quest_window()
             }
 
             // If player pressed up or down, newTextTopIndex will have changed.
-            textTopIndex = std::clamp(newTextTopIndex, 0, (int)current.size() - 1);
+            textTopIndex = std::clamp<int>(newTextTopIndex, 0, current.size() - 1);
 
             if (PlayerInput.balt())
             {
@@ -887,25 +887,11 @@ KFighter player2fighter(int who)
     }
     for (int j = 0; j < 8; j++)
     {
-        if (current_fighter.res[j] < -10)
-        {
-            current_fighter.res[j] = -10;
-        }
-        else if (current_fighter.res[j] > 20)
-        {
-            current_fighter.res[j] = 20;
-        }
+        current_fighter.res[j] = std::clamp<int8_t>(current_fighter.res[j], -10, 20);
     }
     for (int j = 8; j < R_TOTAL_RES; j++)
     {
-        if (current_fighter.res[j] < 0)
-        {
-            current_fighter.res[j] = 0;
-        }
-        else if (current_fighter.res[j] > 10)
-        {
-            current_fighter.res[j] = 10;
-        }
+        current_fighter.res[j] = std::clamp<int8_t>(current_fighter.res[j], 0, 10);
     }
     if (plr.eqp[5] == I_MANALOCKET)
     {

@@ -723,6 +723,7 @@ void do_luakill()
         theL = nullptr;
     }
 }
+
 void do_postexec()
 {
     if (call_global("postexec"))
@@ -3052,7 +3053,7 @@ static int KQ_set_holdfade(lua_State* L)
 static int KQ_set_map_mode(lua_State* L)
 {
     Game.Map.g_map.map_mode =
-        std::clamp((eMapMode)lua_tonumber(L, 1), eMapMode::MAPMODE_12E3S, eMapMode::MAPMODE_12EP3S);
+        std::clamp<uint8_t>(lua_tonumber(L, 1), eMapMode::MAPMODE_12E3S, eMapMode::MAPMODE_12EP3S);
     return 0;
 }
 

@@ -416,7 +416,7 @@ static void infusion(int c, int sn)
     for (int j = 0; j < 9; j++)
     {
         // Clamp to lie between -10..20
-        ftr.res[j] = std::max((int8_t)-10, std::min(ftr.res[j], (int8_t)20));
+        ftr.res[j] = std::clamp<int8_t>(ftr.res[j], -10, 20);
     }
 }
 
