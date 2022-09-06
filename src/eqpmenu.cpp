@@ -35,122 +35,26 @@
 #include "menu.h"
 #include "setup.h"
 
-/* Globals  */
-static int tstats[13], tres[R_TOTAL_RES];
-static std::vector<uint16_t> t_inv;
-static char eqp_act;
+KEquipMenu EquipMenu;
 
-/* Internal functions */
+KEquipMenu::KEquipMenu()
+    : tstats {}
+    , tres {}
+    , t_inv {}
+    , eqp_act {}
+{
+}
 
-/*! \brief Draw the equipment menu.
- *
- * This is simply a function to display the equip menu screen.
- *
- * It's kept separate from the equip_menu routine for the sake of code cleanliness... better late than never :P
- *
- * \param   c Index of character to equip.
- * \param   sel If sel==1, show the full range of options (Equip, Optimize, Remove, Empty).
- *          Otherwise just show Equip if eqp_act is 0 or Remove if it is 2
- *          (this is when you're selecting the item to Equip/Remove).
- */
-static void draw_equipmenu(int c, bool sel);
-
-/*! \brief Draw list of items that can be used to equip this slot.
- *
- * This displays the list of items that the character posesses.
- *
- * However, items that the character can't equip in the slot specified, are greyed out.
- *
- * \param   c Character to equip.
- * \param   slot Which 'part of the body' to equip.
- * \param   pptr The index of the top line of the displayed items.
- */
-static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr);
-
-/*! \brief List equipment that can go in a slot.
- *
- * Create a list of equipment that can be equipped in a particular slot for a particular hero.
- *
- * Write list into t_inv[], length tot.
- *
- * \param   c Character to equip.
- * \param   slot Which body part to equip.
- */
-static void calc_possible_equip(int c, int slot);
-
-/*! \brief Calculate optimum equipment.
- *
- * This calculates what equipment is optimum for a particular hero.
- *
- * The weapon that does the most damage is chosen and the armor with the best combination of defense+magic_defense is
- * chosen.
- *
- * As for a relic, the one that offers the greatest overall bonus to stats is selected.
- *
- * \param   c Which character to operate on.
- */
-static void optimize_equip(int c);
-
-/*! \brief Handle selecting an equipment item.
- *
- * After choosing an equipment slot, select an item to equip.
- *
- * \param   c Character to equip.
- * \param   slot Which part of the body to process in range [0..NUM_EQUIPMENT-1].
- */
-static void choose_equipment(int c, int slot);
-
-/*! \brief Show the effect on stats if this piece were selected.
- *
- * This is used to calculate the difference in stats due to (de)equipping a piece of equipment.
- *
- * \param   c Character to process.
- * \param   slot Slot to consider changing.
- * \param   item New piece of equipment to compare/use.
- */
-static void calc_equippreview(uint32_t c, uint32_t slot, int item);
-
-/*! \brief Display changed stats.
- *
- * This displays the results of the above function so that players can tell how a piece of equipment will affect their
- * stats.
- *
- * \param   ch Character to process.
- * \param   ptr Slot to change, or <0 to switch to new stats.
- * \param   pp New item to use.
- */
-static void draw_equippreview(int ch, int ptr, int pp);
-
-/*! \brief Change a character's equipment.
- *
- * Do the actual equip.  Of course, it will de-equip anything that is currently in the specified slot.
- *
- * \param   c Character to process.
- * \param   selected_item Item to add.
- * \returns True if equip was successful, false otherwise.
- */
-static bool equip(uint32_t c, uint32_t selected_item);
-
-/*! \brief Check whether item can be de-equipped, then do it.
- *
- * This makes sure you have room to de-equip before it actually does anything.
- *
- * \param   c Character to process.
- * \param   ptr Slot to de-equip.
- * \returns 0 if unsuccessful, 1 if successful.
- */
-static bool deequip(uint32_t c, uint32_t ptr);
-
-static void calc_equippreview(uint32_t c, uint32_t slot, int item)
+void KEquipMenu::calc_equippreview(uint32_t c, uint32_t slot, int item)
 {
     int tmp = party[pidx[c]].eqp[slot];
     party[pidx[c]].eqp[slot] = item;
     kmenu.update_equipstats();
-    for (int z = 0; z < 13; z++)
+    for (uint8_t z = 0; z < eStat::NUM_STATS; ++z)
     {
         tstats[z] = fighter[c].stats[z];
     }
-    for (int z = 0; z < R_TOTAL_RES; z++)
+    for (uint8_t z = 0; z < eResistance::R_TOTAL_RES; ++z)
     {
         tres[z] = fighter[c].res[z];
     }
@@ -158,10 +62,10 @@ static void calc_equippreview(uint32_t c, uint32_t slot, int item)
     kmenu.update_equipstats();
 }
 
-static void calc_possible_equip(int c, int slot)
+void KEquipMenu::calc_possible_equip(int c, int slot)
 {
     t_inv.clear();
-    for (int k = 0; k < g_inv.size(); k++)
+    for (size_t k = 0, g_inv_size = g_inv.size(); k < g_inv_size; ++k)
     {
         auto [item, quantity] = g_inv[k];
         // Check if we have any items at all
@@ -175,7 +79,7 @@ static void calc_possible_equip(int c, int slot)
     }
 }
 
-static void choose_equipment(int c, int slot)
+void KEquipMenu::choose_equipment(int c, int slot)
 {
     if (t_inv.empty())
     {
@@ -245,7 +149,7 @@ static void choose_equipment(int c, int slot)
     return;
 }
 
-static bool deequip(uint32_t c, uint32_t ptr)
+bool KEquipMenu::deequip(uint32_t c, uint32_t ptr)
 {
     if (ptr >= NUM_EQUIPMENT)
     {
@@ -264,7 +168,7 @@ static bool deequip(uint32_t c, uint32_t ptr)
     }
 }
 
-static void draw_equipmenu(int c, bool sel)
+void KEquipMenu::draw_equipmenu(int c, bool sel)
 {
     int l = pidx[c];
     Draw.menubox(double_buffer, 12, 4, 35, 1, eBoxFill::TRANSPARENT);
@@ -297,7 +201,7 @@ static void draw_equipmenu(int c, bool sel)
     Draw.print_font(double_buffer, 28, 60, _("Body:"), FGOLD);
     Draw.print_font(double_buffer, 28, 68, _("Arms:"), FGOLD);
     Draw.print_font(double_buffer, 28, 76, _("Other:"), FGOLD);
-    for (int k = 0; k < NUM_EQUIPMENT; k++)
+    for (uint8_t k = 0; k < eEquipment::NUM_EQUIPMENT; ++k)
     {
         int j = party[l].eqp[k];
         Draw.draw_icon(double_buffer, items[j].icon, 84, k * 8 + 36);
@@ -305,7 +209,7 @@ static void draw_equipmenu(int c, bool sel)
     }
 }
 
-static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
+void KEquipMenu::draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
 {
     if (slot < NUM_EQUIPMENT)
     {
@@ -316,7 +220,7 @@ static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
         t_inv.clear();
     }
     Draw.menubox(double_buffer, 12, 92, 20, NUM_ITEMS_PER_PAGE, eBoxFill::TRANSPARENT);
-    auto eptr = std::min(uint32_t(t_inv.size()), pptr + NUM_ITEMS_PER_PAGE);
+    auto eptr = std::min<uint32_t>(t_inv.size(), pptr + NUM_ITEMS_PER_PAGE);
     for (int k = 0, p = pptr; p < eptr; ++k, ++p)
     {
         auto [id, quantity] = g_inv[t_inv[p]];
@@ -339,7 +243,7 @@ static void draw_equippable(uint32_t c, uint32_t slot, uint32_t pptr)
     }
 }
 
-static void draw_equippreview(int ch, int ptr, int pp)
+void KEquipMenu::draw_equippreview(int ch, int ptr, int pp)
 {
     if (ptr >= 0)
     {
@@ -363,7 +267,7 @@ static void draw_equippreview(int ch, int ptr, int pp)
     Draw.print_font(double_buffer, 196, 180, _("Def:"), FNORMAL);
     Draw.print_font(double_buffer, 196, 188, _("Evd:"), FNORMAL);
     Draw.print_font(double_buffer, 196, 196, _("Mdf:"), FNORMAL);
-    for (int z = 0; z < 13; z++)
+    for (uint8_t z = 0; z < eStat::NUM_STATS; ++z)
     {
         int c1 = fighter[ch].stats[z];
         int c2 = tstats[z];
@@ -374,11 +278,17 @@ static void draw_equippreview(int ch, int ptr, int pp)
         {
             sprintf(strbuf, "%d", c2);
             if (c1 < c2)
+            {
                 Draw.print_font(double_buffer, 300 - (strbuf.size() * 8), z * 8 + 100, strbuf, FGREEN);
+            }
             if (c2 < c1)
+            {
                 Draw.print_font(double_buffer, 300 - (strbuf.size() * 8), z * 8 + 100, strbuf, FRED);
+            }
             if (c1 == c2)
+            {
                 Draw.print_font(double_buffer, 300 - (strbuf.size() * 8), z * 8 + 100, strbuf, FNORMAL);
+            }
         }
     }
     Draw.menubox(double_buffer, 188, 212, 13, 1, eBoxFill::TRANSPARENT);
@@ -386,19 +296,23 @@ static void draw_equippreview(int ch, int ptr, int pp)
     {
         int c1 = 0;
         int c2 = 0;
-        for (int z = 0; z < R_TOTAL_RES; z++)
+        for (uint8_t z = 0; z < eResistance::R_TOTAL_RES; ++z)
         {
             c1 += fighter[ch].res[z];
             c2 += tres[z];
         }
         if (c1 < c2)
+        {
             Draw.print_font(double_buffer, 212, 220, _("Resist up"), FNORMAL);
+        }
         if (c1 > c2)
+        {
             Draw.print_font(double_buffer, 204, 220, _("Resist down"), FNORMAL);
+        }
     }
 }
 
-static bool equip(uint32_t c, uint32_t selected_item)
+bool KEquipMenu::equip(uint32_t c, uint32_t selected_item)
 {
     if (selected_item >= g_inv.size())
     {
@@ -447,7 +361,7 @@ static bool equip(uint32_t c, uint32_t selected_item)
     return true;
 }
 
-void equip_menu(uint32_t c)
+void KEquipMenu::equip_menu(uint32_t c)
 {
     int yptr = 0;
     // If sl is true, focus is on the "Action bar"
@@ -541,7 +455,7 @@ void equip_menu(uint32_t c)
 
                 {
                     bool all_ok = true;
-                    for (int slot = 0; slot < NUM_EQUIPMENT; slot++)
+                    for (uint8_t slot = 0; slot < eEquipment::NUM_EQUIPMENT; ++slot)
                     {
                         if (party[pidx[c]].eqp[slot] > 0)
                         {
@@ -594,11 +508,11 @@ void equip_menu(uint32_t c)
     }
 }
 
-static void optimize_equip(int c)
+void KEquipMenu::optimize_equip(int c)
 {
     int maxx, maxi;
     // First, de-equip all slots
-    for (int slot = 0; slot < NUM_EQUIPMENT; ++slot)
+    for (uint8_t slot = 0; slot < eEquipment::NUM_EQUIPMENT; ++slot)
     {
         if (party[pidx[c]].eqp[slot] > 0)
         {
@@ -611,8 +525,8 @@ static void optimize_equip(int c)
     // Equip Hand1
     maxx = 0;
     maxi = -1;
-    calc_possible_equip(c, 0);
-    for (int a = 0; a < t_inv.size(); a++)
+    calc_possible_equip(c, eEquipment::EQP_WEAPON);
+    for (size_t a = 0, t_inv_size = t_inv.size(); a < t_inv_size; ++a)
     {
         int b = g_inv[t_inv[a]].item;
         int v = items[b].stats[eStat::Attack];
@@ -627,12 +541,12 @@ static void optimize_equip(int c)
         equip(pidx[c], t_inv[maxi]);
     }
     // Equip Hand2, Head, Body, Arms
-    for (int z = EQP_SHIELD; z < EQP_SPECIAL; z++)
+    for (uint8_t z = eEquipment::EQP_SHIELD; z < eEquipment::EQP_SPECIAL; ++z)
     {
         maxx = 0;
         maxi = -1;
         calc_possible_equip(c, z);
-        for (int a = 0; a < t_inv.size(); a++)
+        for (size_t a = 0, t_inv_size = t_inv.size(); a < t_inv_size; ++a)
         {
             int b = g_inv[t_inv[a]].item;
             int v = items[b].stats[eStat::Defense] + items[b].stats[eStat::MagicDefense];
@@ -651,15 +565,15 @@ static void optimize_equip(int c)
     maxx = 0;
     maxi = -1;
     calc_possible_equip(c, EQP_SPECIAL);
-    for (int a = 0; a < t_inv.size(); a++)
+    for (size_t a = 0, t_inv_size = t_inv.size(); a < t_inv_size; ++a)
     {
         int b = g_inv[t_inv[a]].item;
         int v = 0;
-        for (int z = 0; z < eStat::NUM_STATS; z++)
+        for (uint8_t z = 0; z < eStat::NUM_STATS; ++z)
         {
             v += items[b].stats[z];
         }
-        for (int z = 0; z < R_TOTAL_RES; z++)
+        for (uint8_t z = 0; z < eResistance::R_TOTAL_RES; ++z)
         {
             v += items[b].item_resistance[z];
         }

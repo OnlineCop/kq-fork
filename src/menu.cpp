@@ -252,7 +252,7 @@ void KMenu::menu()
                         camp_spell_menu(z);
                         break;
                     case 2:
-                        equip_menu(z);
+                        EquipMenu.equip_menu(z);
                         break;
                     case 4:
                         status_screen(z);
