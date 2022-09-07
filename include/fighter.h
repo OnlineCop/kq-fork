@@ -191,9 +191,12 @@ class KFighter
     /*! \brief See eStat enum. */
     int stats[eStat::NUM_STATS];
 
-    /*! \brief Resistance to various elemental effects.
+    /*! \brief How various elemental effects positively or negatively affect the fighter.
      *
      * Array contains an entry for each R_* type listed in the eResistance enum.
+     *
+     * res[R_EARTH..R_POISON] can have values in range [-10..20].
+     * res[R_POISON..R_TIME] can have values in range [0..10].
      *
      * Negative resistance means the fighter is affected more by the element (up to -10),
      * while positive resistance means it is affected less (around +10) to almost not at all
@@ -201,7 +204,7 @@ class KFighter
      *
      * Values around 0 mean the elemental effects do not sway the attack amount either way.
      */
-    int8_t res[NUM_RES];
+    int8_t res[eResistance::R_TOTAL_RES];
 
     /*! \brief Direction character's sprite faces; see eDirection enum. */
     uint8_t facing;
@@ -301,7 +304,7 @@ class KFighter
     /*! \brief Spell number, associated with M_* spells, used within s_spell magic[] array.
      *
      * This is used as an array index within the following arrays:
-     *  - magic[] in range [0..NUM_SPELLS-1]
+     *  - magic[] in range [0..M_TOTAL-1]
      *  - items[] in range [0..NUM_ITEMS-1]
      *  - KFighter::ai[] in range [0..7]
      *  - KFighter::atrack[] in range [0..7]

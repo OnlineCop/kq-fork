@@ -28,7 +28,6 @@
 #include "combat.h"
 #include "input.h"
 #include "intrface.h"
-#include "itemdefs.h"
 #include "kq.h"
 #include "menu.h"
 #include "random.h"
@@ -426,8 +425,8 @@ int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
     }
 
     const int lastIndex = Game.Map.MapSize() - 1;
-    int tile_x = std::clamp(ent.x / TILE_W, 0, lastIndex);
-    int tile_y = std::clamp(ent.y / TILE_H, 0, lastIndex);
+    int tile_x = std::clamp<int>(ent.x / TILE_W, 0, lastIndex);
+    int tile_y = std::clamp<int>(ent.y / TILE_H, 0, lastIndex);
     if (tile_x + dx < 0 || tile_x + dx >= (int)Game.Map.g_map.xsize ||
         tile_y + dy < 0 || tile_y + dy >= (int)Game.Map.g_map.ysize)
     {

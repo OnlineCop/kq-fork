@@ -44,7 +44,6 @@
 #include "imgcache.h"
 #include "input.h"
 #include "intrface.h"
-#include "itemdefs.h"
 #include "itemmenu.h"
 #include "magic.h"
 #include "masmenu.h"
@@ -404,7 +403,7 @@ KMap::KMap()
 size_t KMap::Clamp(signed int tile_x, signed int tile_y) const
 {
     assert(g_map.xsize > 0 && g_map.ysize > 0);
-    size_t index = std::clamp(tile_x + g_map.xsize * tile_y, 0U, g_map.xsize * g_map.ysize - 1);
+    size_t index = std::clamp<size_t>(tile_x + g_map.xsize * tile_y, 0, g_map.xsize * g_map.ysize - 1);
     return index;
 }
 
@@ -651,7 +650,7 @@ void KGame::allocate_stuff()
         bord[p] = alloc_bmp(8, 12, "bord[x]");
     }
 
-    for (int p = 0; p < 8; p++)
+    for (int p = 0; p < MAXCHRS; p++)
     {
         players[p].portrait = alloc_bmp(40, 40, "portrait[x]");
     }

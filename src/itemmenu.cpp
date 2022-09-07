@@ -30,7 +30,6 @@
 #include "effects.h"
 #include "gfx.h"
 #include "input.h"
-#include "itemdefs.h"
 #include "kq.h"
 #include "magic.h"
 #include "menu.h"
@@ -672,7 +671,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
     if ((items[ti].icon == W_SBOOK || items[ti].icon == W_ABOOK))
     {
         tmp = 0;
-        for (spell_index = 0; spell_index < NUM_SPELLS - 1; spell_index++)
+        for (spell_index = 0; spell_index < M_TOTAL - 1; spell_index++)
         {
             if (party[pidx[fighter_index]].spells[spell_index] > 0)
             {
@@ -684,7 +683,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
             return ITEM_EFFECT_INEFFECTIVE;
         }
         tmp = 0;
-        for (spell_index = 0; spell_index < NUM_SPELLS - 1; spell_index++)
+        for (spell_index = 0; spell_index < M_TOTAL - 1; spell_index++)
         {
             if (party[pidx[fighter_index]].spells[spell_index] == items[ti].hnds ||
                 party[pidx[fighter_index]].lvl < items[ti].ilvl)
@@ -697,12 +696,12 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
             return ITEM_EFFECT_INEFFECTIVE;
         }
         tmp = items[ti].hnds;
-        for (spell_index = 0; spell_index < NUM_SPELLS - 1; spell_index++)
+        for (spell_index = 0; spell_index < M_TOTAL - 1; spell_index++)
         {
             if (party[pidx[fighter_index]].spells[spell_index] == 0)
             {
                 party[pidx[fighter_index]].spells[spell_index] = tmp;
-                spell_index = NUM_SPELLS - 1;
+                spell_index = M_TOTAL - 1;
             }
         }
         sprintf(strbuf, _("%s learned!"), magic[tmp].name);

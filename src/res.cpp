@@ -116,10 +116,10 @@ PALETTE pal = {
  * 5: `type`: eEquipment: [0..eEquipment::NUM_EQUIPMENT-1]
  * 6: `use`: eItemUse: [0..eItemUse::NUM_USES-1]
  * 7: `ilvl`: [0..50]
- * 8: `hnds`: eMagic/eWeaponRestrict: For spells: [0..eMagic::M_TOTAL-1]; for weapons: 0 or 1
+ * 8: `hnds`: eMagic/eWeaponRestrict: For spells: [0..M_TOTAL-1]; for weapons: 0 or 1
  * 9: `seed_stat`: eStat: [0..eStat::NUM_STATS-1] (only used for seeds)
  * 10: `item_elemental_effect`: eResistance: [0..eResistance::R_TOTAL_RES-1]
- * 11: `imb`: eMagic [0..eMagic::M_TOTAL-1]
+ * 11: `imb`: eMagic [0..M_TOTAL-1]
  * 12: `eff`: [0..NUM_EFFECTS-1]
  * 13: `bon`: [0..]
  * 14: `price`: [0..]
@@ -346,7 +346,7 @@ s_item items[NUM_ITEMS] = {
  * 12: `eff`: [0..NUM_EFFECTS-1]
  * 13: `clvl[8]`: is the minimum level at which this party member may learn a particular spell (or 0 for never).
  */
-s_spell magic[NUM_SPELLS] = {
+s_spell magic[eMagic::M_TOTAL] = {
     { "",              eWeapon::W_NO_WEAPON,     "",                       0, 0,  eItemUse::USE_NOT,        eTarget::TGT_NONE,         0,   0,   0,  eResistance::R_EARTH,    0,  0,  { 0, 0,  0,  0,  0,  0,  0,  0  } },
     { "Cure1",         eWeapon::W_CURATIVE,      "Light cure",             1, 4,  eItemUse::USE_ANY_INF,    eTarget::TGT_ALLY_ONEALL,  30,  100, 0,  eResistance::R_NONE,     1,  15, { 0, 0,  0,  1,  0,  3,  0,  1  } },
     { "Hold",          eWeapon::W_PREVENTATIVE,  "Paralyze an opponent",   1, 5,  eItemUse::USE_COMBAT_INF, eTarget::TGT_ENEMY_ONE,    0,   0,   85, eResistance::R_PARALYZE, 1,  24, { 0, 0,  0,  1,  0,  0,  0,  0  } },

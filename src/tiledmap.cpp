@@ -128,7 +128,7 @@ tmx_map KTiledMap::load_tmx_map(XMLElement const* root)
 
         if (xprop->Attribute("name", "map_mode"))
         {
-            smap.map_mode = std::clamp(value->IntValue(), (int)eMapMode::MAPMODE_12E3S, (int)eMapMode::MAPMODE_12EP3S);
+            smap.map_mode = std::clamp<int>(value->IntValue(), eMapMode::MAPMODE_12E3S, eMapMode::MAPMODE_12EP3S);
         }
         if (xprop->Attribute("name", "map_no"))
         {

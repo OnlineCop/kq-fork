@@ -32,7 +32,6 @@
 #include "fade.h"
 #include "gfx.h"
 #include "heroc.h"
-#include "itemdefs.h"
 #include "itemmenu.h"
 #include "kq.h"
 #include "magic.h"
@@ -53,7 +52,7 @@
  * Infuses the attacker with whatever was stored in KFighter::csmem.
  *
  * \param   c Caster index in fighter[] array.
- * \param   sn Spell in range [0..NUM_SPELLS-1].
+ * \param   sn Spell in range [0..M_TOTAL-1].
  */
 static void infusion(int c, int sn);
 
@@ -414,16 +413,16 @@ static void infusion(int c, int sn)
         break;
     }
 
-    for (int j = 0; j < 9; j++)
+    for (uint8_t res_index = eResistance::R_EARTH; res_index <= eResistance::R_POISON; ++res_index)
     {
         // Clamp to lie between -10..20
-        ftr.res[j] = std::max((int8_t)-10, std::min(ftr.res[j], (int8_t)20));
+        ftr.res[res_index] = std::clamp<int8_t>(ftr.res[res_index], -10, 20);
     }
 }
 
 void reveal(int tgt)
 {
-    uint32_t c, g = 0, b;
+    uint32_t g = 0, b;
     uint32_t d = 0;
     int draw_x, draw_y;
     char resistance;
@@ -446,13 +445,14 @@ void reveal(int tgt)
     Draw.print_font(double_buffer, 92, 136, _("White"), FNORMAL);
     Draw.print_font(double_buffer, 92, 144, _("Water"), FNORMAL);
     Draw.print_font(double_buffer, 92, 152, _("Ice"), FNORMAL);
-    for (c = 0; c < 8; c++)
+
+    for (uint8_t res_index = eResistance::R_EARTH; res_index <= eResistance::R_ICE; ++res_index)
     {
         draw_x = 156;
-        draw_y = c * 8 + 97;
+        draw_y = res_index * 8 + 97;
         rectfill(double_buffer, draw_x, draw_y, draw_x + 70, draw_y + 6, 3);
 
-        resistance = fighter[tgt].res[c];
+        resistance = fighter[tgt].res[res_index];
         if (resistance < 0)
         {
             // 18: bright red, meaning WEAK defense
@@ -476,7 +476,7 @@ void reveal(int tgt)
         {
             for (b = 0; b < d; b++)
             {
-                rectfill(double_buffer, b * 7 + 157, c * 8 + 98, b * 7 + 162, c * 8 + 102, g + b);
+                rectfill(double_buffer, b * 7 + 157, res_index * 8 + 98, b * 7 + 162, res_index * 8 + 102, g + b);
             }
         }
     }

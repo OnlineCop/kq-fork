@@ -35,7 +35,6 @@
 /*!\name Size of resource tables */
 /*\{*/
 #define NUM_ITEMS 192
-#define NUM_SPELLS 61
 #define NUM_EFFECTS 52
 #define NUM_ETROWS 166
 #define NUM_BATTLES 81
@@ -241,7 +240,7 @@ struct s_encounter
 
 extern PALETTE pal;
 extern s_item items[NUM_ITEMS];
-extern s_spell magic[NUM_SPELLS];
+extern s_spell magic[eMagic::M_TOTAL];
 extern s_effect eff[NUM_EFFECTS];
 extern s_erow erows[NUM_ETROWS];
 extern s_encounter battles[NUM_BATTLES];

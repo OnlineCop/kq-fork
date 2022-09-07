@@ -73,7 +73,7 @@ static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
  * Select any necessary targets and prepare the spell.
  *
  * \param   caster_fighter_index Index of spell caster.
- * \param   spell_number Spell number in range [0..NUM_SPELLS-1].
+ * \param   spell_number Spell number in range [0..M_TOTAL-1].
  */
 static void camp_spell_targeting(size_t caster_fighter_index, size_t spell_number);
 
@@ -340,10 +340,10 @@ int learn_new_spells(int who)
     int a, p, i, nog, g = 0;
 
     fullblit(double_buffer, back);
-    for (a = 1; a < NUM_SPELLS; a++)
+    for (a = 1; a < eMagic::M_TOTAL; a++)
     {
         nog = 1;
-        for (i = 0; i < 60; i++)
+        for (i = 0; i < eMagic::M_TOTAL - 1; i++)
         {
             if (party[who].spells[i] == a)
             {
@@ -356,15 +356,15 @@ int learn_new_spells(int who)
         }
         if (nog == 1)
         {
-            p = 60;
-            for (i = 60; i > 0; i--)
+            p = eMagic::M_TOTAL - 1;
+            for (i = eMagic::M_TOTAL - 1; i > 0; i--)
             {
                 if (party[who].spells[i - 1] == 0)
                 {
                     p = i - 1;
                 }
             }
-            if (p < 60)
+            if (p < eMagic::M_TOTAL - 1)
             {
                 if (in_combat == 1)
                 {
