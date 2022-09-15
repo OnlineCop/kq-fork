@@ -135,7 +135,7 @@ class KInventory
      */
     void add(int type, int quantity = 1);
 
-    /*! \brief Remove from to the inventory.
+    /*! \brief Remove from the inventory.
      *
      * \param   item The I_XXX id to remove.
      * \param   quantity The quantity to remove.
@@ -143,7 +143,7 @@ class KInventory
      */
     bool remove(int type, int quantity = 1);
 
-    /*! \brief Remove from to the inventory.
+    /*! \brief Remove from the inventory.
      *
      * Note that if the inventory slot contains less than 'quantity', the slot is emptied, but it doesn't remove items
      * from any other slots of the same type.
