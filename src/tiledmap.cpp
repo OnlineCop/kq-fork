@@ -55,15 +55,6 @@ template<typename T> T* make_checked_array_iterator(T* ptr, size_t size, size_t 
 }
 #endif
 
-struct s_zone
-{
-    int x;
-    int y;
-    int w;
-    int h;
-    int n;
-};
-
 struct tmx_tileset
 {
     uint32_t firstgid;
