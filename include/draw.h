@@ -87,7 +87,11 @@ enum class eBoxFill
     LIGHT
 };
 
-/*  draw global functions  */
+struct Rect
+{
+    int x, y;
+    int w, h;
+};
 
 class KDraw
 {
@@ -222,6 +226,13 @@ class KDraw
 
     /*! \brief Draw menu box.
      *
+     * \param   where Bitmap to draw to.
+     * \param   rect Rect with the x, y, width and height values.
+     * \param   color Fill color
+     */
+    Rect menubox(Raster* where, Rect rect, eBoxFill color);
+
+    /*! \brief Draw menu box.
      *
      * \param   where Bitmap to draw to.
      * \param   x X coord.
@@ -230,7 +241,7 @@ class KDraw
      * \param   height Height.
      * \param   color Fill color
      */
-    void menubox(Raster* where, int x, int y, int width, int height, eBoxFill color);
+    Rect menubox(Raster* where, int x, int y, int width, int height, eBoxFill color);
 
     /*! \brief Display string.
      *
@@ -449,6 +460,17 @@ class KDraw
      * Parallax is on for modes 4 & 5.
      */
     void draw_forelayer();
+
+    /*! \brief Draw box, with different backgrounds and borders.
+     *
+     * Draw the box as described.
+     *
+     * \param   where Bitmap to draw to.
+     * \param   rect Struct with x, y, w, h members (all integer).
+     * \param   bg background fill.
+     * \param   bstyle Style of border.
+     */
+    void draw_kq_box(Raster* where, Rect rect, eBoxFill bg, eBubbleStyle bstyle);
 
     /*! \brief Draw box, with different backgrounds and borders.
      *
