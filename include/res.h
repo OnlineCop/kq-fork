@@ -75,7 +75,9 @@ struct s_item
     /*! Targeting type for combat items; see eTarget enum. */
     uint8_t tgt;
 
-    /*! Relates to which slot (hand, head, etc.) this item goes into; see eEquipment enum. */
+    /*! Index in KPlayer::eqp[] array, related to which slot (EQP_WEAPON, EQP_SHIELD, etc.) this
+     * item goes into; see eEquipment enum.
+     */
     uint8_t type;
 
     /*! When the item may be used, whether it's consumed on use, etc.; see eItemUse enum. */
@@ -133,8 +135,14 @@ struct s_item
     /*! GP required to purchase this from a store. */
     int price;
 
-    /*! Whether party members can equip this item (0: they cannot, 1: they can); see ePIDX enum. */
-    uint8_t eq[MAXCHRS];
+    /** Whether party members can equip this item (0: they cannot, 1: they can); see ePIDX enum.
+     *
+     * Example: {1,1,0,1,0,1,0,0} means the following CAN equip this item:
+     * - SENSAR, SARINA, AJATHAR, TEMMIN
+     * And the following CANNOT equip it:
+     * - CORIN, CASANDRA, AYLA, NOSLOM
+     */
+    uint8_t eq[ePIDX::MAXCHRS];
 
     /*! How equipping/using a particular item will increase/decrease various stat types; see eStat enum.
      *
@@ -149,7 +157,7 @@ struct s_item
     int stats[NUM_STATS];
 
     /*! Elemental Resistances. See eResistance enum. */
-    char item_resistance[R_TOTAL_RES];
+    int8_t item_resistance[R_TOTAL_RES];
 };
 
 /*! \brief A spell. */
