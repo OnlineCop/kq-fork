@@ -182,6 +182,7 @@ struct s_inventory
     }
 
     s_inventory() = default;
+    /*! Index within items[] array. */
     unsigned short item;
     unsigned short quantity;
 };
