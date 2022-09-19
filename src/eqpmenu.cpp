@@ -37,7 +37,8 @@
 
 KEquipMenu EquipMenu;
 
-namespace {
+namespace
+{
 
 // There is an 8-pixel "frame" around each edge of the menus.
 constexpr int FrameBorder = 8;
@@ -49,6 +50,20 @@ constexpr int FontH = 8;
 // Half of the font sizes (usually for centering text).
 constexpr int FontW2 = FontW / 2;
 constexpr int FontH2 = FontH / 2;
+
+/*! \brief Calculate number of pixels needed to center text within a specified character width.
+ *
+ * Assumes fonts used are FontW pixels wide.
+ *
+ * \param   text String to be centered.
+ * \param   maxNumChars Maximum length of string that text must fit within (NOT pixel size!).
+ * \returns Left offset in pixels, not to fall below 0.
+ */
+int getCenteredTextXoffset(const std::string& text, unsigned int maxNumChars)
+{
+    const int textLeftEdge = FontW2 * (maxNumChars - text.size());
+    return std::max<int>(0, textLeftEdge);
+}
 
 size_t longestString(const std::vector<std::string>& inputs)
 {
@@ -112,7 +127,7 @@ std::vector<std::string> truncate_strings(std::vector<std::string> inputs, int m
 {
     for (auto& input : inputs)
     {
-        truncate_string(input, maxLength, addEllipsis, appendString);
+        input = truncate_string(input, maxLength, addEllipsis, appendString);
     }
 
     return inputs;
@@ -154,7 +169,8 @@ std::vector<std::string> truncate_strings(std::vector<std::string> inputs, int m
 //      Exit equip_menu()
 struct EquipInputState
 {
-    enum eInputState {
+    enum eInputState
+    {
         ActionBar,
         ChooseSlot,
         SelectEquipment,
@@ -177,14 +193,14 @@ KEquipMenu::KEquipMenu()
     : tstats {}
     , tres {}
     , t_inv {}
-    , eqp_act { eActionBar::AB_NONE }
+    , activeActionBar { eActionBar::AB_NONE }
 {
     // The top menu is 35 chars long (4x 8-char columns, with 1-char padding between each) to hold
     // the "Equip", "Optimize", "Remove", "Empty" options the player may choose from.
     constexpr int MaxMenuWidth = 4 * 8 + 3;
 
-    // {12, 4, 35, 1}
-    topMenu = Rect{ 12, 4, MaxMenuWidth, 1 };
+    // {20, 12, 35, 1}
+    topMenu = Rect { 20, 12, MaxMenuWidth, 1 };
     const int row2Yoffset = topMenu.y + FontH * topMenu.h + FrameBorder * 2;
 
     // There are two menus below the top one.
@@ -196,15 +212,15 @@ KEquipMenu::KEquipMenu()
     // The Equipped menu is 25 chars long: MaxMenuWidth [35] minus the width [8] of the Portrait
     // menu, minus the 2 "frame borders" drawn between these menus.
 
-    // {12, 28, 25, 6}
-    equippedMenu = Rect{ topMenu.x, row2Yoffset, 25, eEquipment::NUM_EQUIPMENT };
+    // {20, 36, 25, 6}
+    equippedMenu = Rect { topMenu.x, row2Yoffset, 25, eEquipment::NUM_EQUIPMENT };
 
     // The Portrait menu is 8 chars long.
     // Its left edge starts to the right of the Equipped menu, plus 2x frame borders between them.
     const int portraitXoffset = FontW * equippedMenu.w + FrameBorder * 2;
 
-    // {228, 28, 8, 6}
-    portraitMenu = Rect{ topMenu.x + portraitXoffset, row2Yoffset, 8, eEquipment::NUM_EQUIPMENT };
+    // {228, 36, 8, 6}
+    portraitMenu = Rect { topMenu.x + portraitXoffset, row2Yoffset, 8, eEquipment::NUM_EQUIPMENT };
 
     // There are three menus on the bottom.
     // 1. On the left, the Available menu shows which equipment the hero has available for the
@@ -217,21 +233,21 @@ KEquipMenu::KEquipMenu()
 
     // The Equippable menu is 20 chars long and NUM_ITEMS_PER_PAGE [16] tall.
 
-    // {12, 92, 20, 16}
-    equippableMenu = Rect{ topMenu.x, row3Yoffset, 20, NUM_ITEMS_PER_PAGE };
+    // {20, 100, 20, 16}
+    equippableMenu = Rect { topMenu.x, row3Yoffset, 20, NUM_ITEMS_PER_PAGE };
 
     // The Prevew menu is 13 chars long.
     // Its left edge starts to the right of the Equippable menu, plus 2x frame borders.
     const int previewXOffset = FontW * equippableMenu.w + FrameBorder * 2;
 
-    // {188, 92, 13, 13}
-    previewMenu = Rect{ equippableMenu.x + previewXOffset, row3Yoffset, 13, eStat::NUM_STATS };
+    // {196, 100, 13, 13}
+    previewMenu = Rect { equippableMenu.x + previewXOffset, row3Yoffset, 13, eStat::NUM_STATS };
 
     // equippedMenu{12, 28, 25, 6}
     const int row4Yoffset = previewMenu.y + FontH * previewMenu.h + FrameBorder * 2;
 
     // The Resist menu is 13 chars long.
-    // {188, 212, 13, 1}
+    // {196, 220, 13, 1}
     resistMenu = Rect { equippableMenu.x + previewXOffset, row4Yoffset, 13, 1 };
 }
 
@@ -265,8 +281,12 @@ void KEquipMenu::calc_possible_equip(const ePIDX pidxC, eEquipment slot)
         {
             continue;
         }
-        if (static_cast<eEquipment>(items[item].type) == slot && items[item].eq[pidxC] != 0)
+
+        const auto& equipment = items[item];
+        if (equipment.type == slot && equipment.eq[pidxC] != 0)
         {
+            // Note that this will add shields when the hero is equipped with a two-handed weapon,
+            // but logic elsewhere will prevent the player from selecting it.
             t_inv.push_back(g_inv_index);
         }
     }
@@ -292,10 +312,10 @@ bool KEquipMenu::deequip(const ePIDX pidxC, eEquipment slot)
     return false;
 }
 
-Rect KEquipMenu::draw_equipmenu_top()
+void KEquipMenu::draw_equipmenu_top()
 {
     // Semi-transparent box surrounding the options at the top of the screen.
-    const Rect topFrame = Draw.menubox(double_buffer, topMenu, eBoxFill::TRANSPARENT);
+    Draw.menubox_inner(double_buffer, topMenu, eBoxFill::TRANSPARENT);
 
     constexpr int MaxLength = 8;
 
@@ -316,25 +336,25 @@ Rect KEquipMenu::draw_equipmenu_top()
         // First, draw the text for the non-highlighted options.
         //
         // The text length is clamped here to not exceed MaxLength (8) characters.
-        for (size_t i = 0; i < eActionBar::AB_TOTAL; ++i)
+        for (size_t actionbar_index = 0; actionbar_index < eActionBar::AB_TOTAL; ++actionbar_index)
         {
             // Skip the text for the highlighted option.
-            if (i == eqp_act)
+            if (actionbar_index == activeActionBar)
             {
                 continue;
             }
 
-            const int menuLeftEdge = FontW * (i * (MaxLength + 1) + 1);
+            const int menuLeftEdge = (MaxLength + 1) * FontW * actionbar_index;
             // Center text within the menu.
-            const int textLeftEdge = FontW2 * (MaxLength - TruncatedTopOptions[i].size());
+            const int textLeftEdge = getCenteredTextXoffset(TruncatedTopOptions[actionbar_index], MaxLength);
 
-            Draw.print_font(double_buffer, topMenu.x + menuLeftEdge + textLeftEdge, topMenu.y + FontH * topMenu.h,
-                            TruncatedTopOptions[i], FGOLD);
+            Draw.print_font(double_buffer, topMenu.x + menuLeftEdge + textLeftEdge, topMenu.y,
+                            TruncatedTopOptions[actionbar_index], FGOLD);
         }
 
-        const auto& activeOption = TopOptions[eqp_act];
+        const std::string& activeOption = TopOptions[activeActionBar];
 
-        // Second, draw a non-transparent box surrounding the highlighted option's text.
+        // Second, draw an opaque box surrounding the highlighted option's text.
         //
         // Its width is clamped between [8..35] characters to avoid exceeding equippedFrame's bounds.
 
@@ -342,102 +362,106 @@ Rect KEquipMenu::draw_equipmenu_top()
         const int activeMenuWidth = std::max<int>(MaxLength, activeOption.size());
 
         // Shift the menu to the left if it would spill over equippedFrame's right edge.
-        const int menuLeftEdge = std::min<int>(eqp_act * (MaxLength + 1), topMenu.w - activeMenuWidth);
+        const int menuLeftEdge = FontW * std::min<int>((MaxLength + 1) * activeActionBar, topMenu.w - activeMenuWidth);
 
-        // Third, draw the frame around the highlighted option.
-        const Rect highlightFrame { topMenu.x + FontW * menuLeftEdge, topMenu.y, activeMenuWidth, 1 };
-        Draw.menubox(double_buffer, highlightFrame, eBoxFill::DARK);
+        // Third, draw the frame around the highlighted option, followed by its text.
+
+        const Rect highlightFrame { topMenu.x + menuLeftEdge, topMenu.y, activeMenuWidth, topMenu.h };
+        Draw.menubox_inner(double_buffer, highlightFrame, eBoxFill::DARK);
 
         // Fourth, draw the text for the highlighted option.
-        const int textLeftEdge = FontW2 * (activeMenuWidth - activeOption.size());
-        Draw.print_font(double_buffer, topMenu.x + textLeftEdge + FontW * (menuLeftEdge + 1), topMenu.y + FontH, activeOption, FGOLD);
+
+        const int textLeftEdge = getCenteredTextXoffset(activeOption, activeMenuWidth);
+        Draw.print_font(double_buffer, topMenu.x + textLeftEdge + menuLeftEdge, topMenu.y, activeOption, FGOLD);
     }
     else
     {
         // After player selects one of "Equip" or "Remove", print only that title text in the top menubox.
 
         // Copy the highlighted option's text, truncating to fit within the menu if necessary.
-        const int maxTextLength = std::min<int>(topMenu.w, TopOptions[eqp_act].size());
-        sprintf(strbuf, "%.*s", maxTextLength, TopOptions[eqp_act].c_str());
+        const int maxTextLength = std::min<int>(topMenu.w, TopOptions[activeActionBar].size());
+        sprintf(strbuf, "%.*s", maxTextLength, TopOptions[activeActionBar].c_str());
 
-        const int textLeftEdge = FontW2 * (topMenu.w - strbuf.size());
-        Draw.print_font(double_buffer, topMenu.x + textLeftEdge + FontW, topMenu.y + FontH, strbuf, FGOLD);
+        const int textLeftEdge = getCenteredTextXoffset(strbuf, topMenu.w);
+        Draw.print_font(double_buffer, topMenu.x + textLeftEdge, topMenu.y, strbuf, FGOLD);
     }
-
-    return topFrame;
 }
 
-Rect KEquipMenu::draw_equipmenu_equipped(const ePIDX pidxC)
+void KEquipMenu::draw_equipmenu_equipped(const KPlayer& hero)
 {
     // Semi-transparent box surrounding the Equipped options on the top-left of the screen.
-    const Rect equippedFrame = Draw.menubox(double_buffer, equippedMenu, eBoxFill::TRANSPARENT);
+    Draw.menubox_inner(double_buffer, equippedMenu, eBoxFill::TRANSPARENT);
 
-    constexpr int MaxLength = 8;
+    constexpr int MaxTextLength = 8;
 
     // This frame contains 5 distinct columns:
     //  1. 1 "empty" char where the player's cursor is drawn.
-    //  2. Up to MaxLength chars for the equipment slot names.
+    //  2. Up to MaxTextLength chars for the equipment slot names.
     //  3. 2 chars padding for ':' followed by a blank space.
     //  4. 1 char where the equipment icon is drawn.
     //  5. The remaining chars are for the equipment name.
     //
     // All combined, the char count should not exceed equippedMenu.w characters.
 
-    constexpr int cursorOffset = 2; // frame's left border + blank space for cursor
-    constexpr int iconOffset = 1;   // blank space before icon
+    constexpr int cursorXoffset = 1;    // blank space for cursor
+    constexpr int iconBlankXoffset = 1; // blank space before icon
 
-    // The 6 equipment slot names will be capped at MaxLength [8] chars long, then ':' appended.
-    static const std::vector<std::string> EquipOptions =
-        truncate_strings({ _("Hand1"), _("Hand2"), _("Head"), _("Body"), _("Arms"), _("Other") }, MaxLength, true, ":");
+    // The 6 equipment slot names will be capped at MaxTextLength [8] chars long, then ':' appended.
+    static const std::vector<std::string> EquipOptions = truncate_strings(
+        {
+            _("Hand1"),
+            _("Hand2"),
+            _("Head"),
+            _("Body"),
+            _("Arms"),
+            _("Other"),
+        },
+        MaxTextLength, true, ":");
 
-    static const int longestOption = std::min<int>(MaxLength, longestString(EquipOptions));
-    static const int iconLeftEdge = cursorOffset + iconOffset + longestOption;
-    static const int textLeftEdge = FontW * (iconLeftEdge + 1);
+    static const int longestOption = std::min<int>(MaxTextLength, longestString(EquipOptions));
+    static const int iconXoffset = cursorXoffset + longestOption + iconBlankXoffset;
+    static const int iconLeftEdge = FontW * iconXoffset;
+    static const int textLeftEdge = FontW * (iconXoffset + 1);
 
-    const int maxEquipmentTextLength = equippedMenu.w - (cursorOffset + iconOffset + longestOption);
+    const int maxEquipmentTextLength = equippedMenu.w - iconXoffset - 1;
 
     for (size_t eqp_index = 0; eqp_index < eEquipment::NUM_EQUIPMENT; ++eqp_index)
     {
-        const int rowYoffset = equippedMenu.y + FontH * (eqp_index + 1);
+        const int rowYoffset = FontH * eqp_index;
 
-        // Draw the yellow text plus a ':' in column 1.
-        sprintf(strbuf, "%.*s", (int)longestOption, EquipOptions[eqp_index].c_str());
-        Draw.print_font(double_buffer, equippedMenu.x + FontW * cursorOffset, rowYoffset, strbuf, FGOLD);
+        // Draw the yellow text in column 1.
+        Draw.print_font(double_buffer, equippedMenu.x + FontW * cursorXoffset, equippedMenu.y + rowYoffset,
+                        EquipOptions[eqp_index], FGOLD);
 
-        const uint8_t items_index = party[pidxC].eqp[eqp_index];
+        const uint8_t items_index = hero.eqp[eqp_index];
         const auto& equipment = items[items_index];
 
         // Draw the equipment's icon just before column 2.
-        Draw.draw_icon(double_buffer, equipment.icon, equippedMenu.x + FontW * iconLeftEdge, rowYoffset);
+        Draw.draw_icon(double_buffer, equipment.icon, equippedMenu.x + iconLeftEdge, equippedMenu.y + rowYoffset);
 
         // Draw the equipment's name in column 2.
         strbuf = truncate_string(equipment.item_name, maxEquipmentTextLength, true, "");
-        Draw.print_font(double_buffer, equippedMenu.x + textLeftEdge, rowYoffset, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, equippedMenu.x + textLeftEdge, equippedMenu.y + rowYoffset, strbuf, FNORMAL);
     }
-
-    return equippedFrame;
 }
 
-Rect KEquipMenu::draw_equipmenu_portrait(const ePIDX pidxC)
+void KEquipMenu::draw_equipmenu_portrait(const KPlayer& hero, Raster* portrait)
 {
+    constexpr int NameMaxLength = 8;
+
     // Semi-transparent box surrounding the Portrait on the top-left of the screen.
-    Rect portraitFrame = Draw.menubox(double_buffer, portraitMenu, eBoxFill::TRANSPARENT);
+    Draw.menubox_inner(double_buffer, portraitMenu, eBoxFill::TRANSPARENT);
 
     // Display the party member's face and name on the right, centered.
-    const int portraitLeftEdge = (portraitFrame.w - players[pidxC].portrait->width) / 2;
-    const int nameLeftEdge = (portraitFrame.w - FontW * party[pidxC].name.size()) / 2;
+    const int portraitLeftEdge = (FontW * portraitMenu.w - portrait->width) / 2;
+    const std::string heroName = truncate_string(hero.name, NameMaxLength, true, "");
+    const int nameXoffset = getCenteredTextXoffset(heroName, portraitMenu.w);
+    const int nameYoffset = FontH * (portraitMenu.h - 1);
 
     // Each s_heroinfo::portrait is 40x40 pixels.
-    draw_sprite(double_buffer, players[pidxC].portrait,
-                portraitMenu.x + portraitLeftEdge,
-                portraitMenu.y + FontH);
+    draw_sprite(double_buffer, portrait, portraitMenu.x + portraitLeftEdge, portraitMenu.y);
 
-    Draw.print_font(double_buffer,
-                    portraitMenu.x + nameLeftEdge,
-                    portraitMenu.y + portraitMenu.h * FontH,
-                    party[pidxC].name, FNORMAL);
-
-    return portraitFrame;
+    Draw.print_font(double_buffer, portraitMenu.x + nameXoffset, portraitMenu.y + nameYoffset, heroName, FNORMAL);
 }
 
 void KEquipMenu::draw_equipmenu(ePIDX pidxC)
@@ -446,15 +470,17 @@ void KEquipMenu::draw_equipmenu(ePIDX pidxC)
     // render, as well as which sections need to display frames around active/highlighted text.
     // This has been broken into submenu tasks, to better handle localized text.
 
-    Rect topFrame = draw_equipmenu_top();
-    Rect equippedFrame = draw_equipmenu_equipped(pidxC);
-    Rect portraitFrame = draw_equipmenu_portrait(pidxC);
+    draw_equipmenu_top();
+    draw_equipmenu_equipped(party[pidxC]);
+    draw_equipmenu_portrait(party[pidxC], players[pidxC].portrait);
 }
 
-Rect KEquipMenu::draw_equippable(uint8_t player_index, eEquipment slot, uint16_t pptr)
+void KEquipMenu::draw_equippable(uint8_t player_index, eEquipment slot, uint16_t pptr)
 {
     // Semi-transparent box surrounding the available equipment on the bottom-left of the screen.
-    Rect equippableFrame = Draw.menubox(double_buffer, equippableMenu, eBoxFill::TRANSPARENT);
+    Draw.menubox_inner(double_buffer, equippableMenu, eBoxFill::TRANSPARENT);
+    const ePIDX pidxC = pidx[player_index];
+    const auto& partyMember = party[pidxC];
 
     if (slot == eEquipment::EQP_NONE)
     {
@@ -462,15 +488,24 @@ Rect KEquipMenu::draw_equippable(uint8_t player_index, eEquipment slot, uint16_t
     }
     else
     {
-        const ePIDX pidxC = pidx[player_index];
         calc_possible_equip(pidxC, slot);
     }
 
-    const int iconLeftEdge = equippableMenu.x + FrameBorder + FontW * 1;
-    const int textLeftEdge = iconLeftEdge + FontW;
+    constexpr int cursorXoffset = 1; // blank space for cursor
+    constexpr int iconXoffset = 1;
+    const int iconLeftEdge = FontW * cursorXoffset;
+    const int textLeftEdge = FontW * (cursorXoffset + iconXoffset);
 
     // -5 to account for "cursor" and icon on left, plus "x#" and up/down "more" arrows on right.
     const int maxEquipmentLength = equippableMenu.w - 5;
+    const int quantityLeftEdge = FontW * (equippableMenu.w - 3);
+
+    // This is used to determine whether to draw equipment text below in FNORMAL or FDARK color.
+    const uint8_t equippedWeapon = partyMember.eqp[EQP_WEAPON];
+    const uint8_t equippedShield = partyMember.eqp[EQP_SHIELD];
+    bool heroHasTwoHandedWeaponEquipped =
+        (equippedWeapon != I_NOITEM && items[equippedWeapon].hnds == eWeaponRestrict::HAND_DOUBLE);
+    bool heroHasShieldEquipped = (equippedShield != I_NOITEM);
 
     auto eptr = std::min<uint16_t>(t_inv.size(), pptr + NUM_ITEMS_PER_PAGE);
     for (uint16_t t_inv_index = pptr; t_inv_index < eptr; ++t_inv_index)
@@ -482,40 +517,59 @@ Rect KEquipMenu::draw_equippable(uint8_t player_index, eEquipment slot, uint16_t
         }
         auto [items_index, quantity] = g_inv[g_inv_index];
         const int itemname_y = t_inv_index - pptr;
-        int rowYoffset = equippableMenu.y + FontH * (itemname_y + 1);
+        const int rowYoffset = FontH * itemname_y;
+        const auto& selected_item = items[items_index];
 
-        Draw.draw_icon(double_buffer, items[items_index].icon, iconLeftEdge, rowYoffset);
+        Draw.draw_icon(double_buffer, selected_item.icon, equippableMenu.x + iconLeftEdge,
+                       equippableMenu.y + rowYoffset);
 
-        sprintf(strbuf, "%.*s", maxEquipmentLength, items[items_index].item_name.c_str());
-        Draw.print_font(double_buffer, textLeftEdge, rowYoffset, strbuf, FNORMAL);
+        // Sometimes, the hero may be equipped with a two-handed weapon, and will be unable to
+        // equip an item in this list (like a shield). Still show this item but greyed out (other
+        // logic will prevent the player from selecting the item and play the SND_BAD effect if
+        // they try anyway).
+        const auto eqp_type = selected_item.type;
+        bool showItemDisabled = false;
+        if (selected_item.type == eEquipment::EQP_SHIELD && heroHasTwoHandedWeaponEquipped)
+        {
+            showItemDisabled = true;
+        }
+        else if (selected_item.type == eEquipment::EQP_WEAPON && selected_item.hnds == eWeaponRestrict::HAND_DOUBLE &&
+                 heroHasShieldEquipped)
+        {
+            showItemDisabled = true;
+        }
+        eFontColor canBeEquippedColor = showItemDisabled ? FDARK : FNORMAL;
+
+        strbuf = truncate_string(selected_item.item_name, maxEquipmentLength, true, "");
+        Draw.print_font(double_buffer, equippableMenu.x + textLeftEdge, equippableMenu.y + rowYoffset, strbuf,
+                        canBeEquippedColor);
         if (quantity > 1)
         {
             sprintf(strbuf, "^%d", quantity);
-            Draw.print_font(double_buffer, textLeftEdge + FontW * maxEquipmentLength, rowYoffset, strbuf, FNORMAL);
+            Draw.print_font(double_buffer, equippableMenu.x + quantityLeftEdge, equippableMenu.y + rowYoffset, strbuf,
+                            canBeEquippedColor);
         }
     }
 
     // Draw up & down arrows if needed.
     if (pptr > 0)
     {
-        static const int upArrowXoffset = equippableMenu.x + FontW * equippableMenu.w;
-        static const int upArrowYoffset = equippableMenu.y + FontH * 1;
-        draw_sprite(double_buffer, upptr, upArrowXoffset, upArrowYoffset);
+        static const int upArrowXoffset = FontW * (equippableMenu.w - 1);
+        static const int upArrowYoffset = 0;
+        draw_sprite(double_buffer, upptr, equippableMenu.x + upArrowXoffset, equippableMenu.y + upArrowYoffset);
     }
     if (pptr + NUM_ITEMS_PER_PAGE < t_inv.size())
     {
-        static const int downArrowXoffset = equippableMenu.x + FontW * equippableMenu.w;
-        static const int downArrowYoffset = equippableMenu.y + FontH * equippableMenu.h;
-        draw_sprite(double_buffer, dnptr, downArrowXoffset, downArrowYoffset);
+        static const int downArrowXoffset = FontW * (equippableMenu.w - 1);
+        static const int downArrowYoffset = FontH * (equippableMenu.h - 1);
+        draw_sprite(double_buffer, dnptr, equippableMenu.x + downArrowXoffset, equippableMenu.y + downArrowYoffset);
     }
-
-    return equippableFrame;
 }
 
-Rect KEquipMenu::draw_equippreview(uint8_t player_index, eEquipment slot, uint8_t eqp_item)
+void KEquipMenu::draw_equippreview(uint8_t player_index, eEquipment slot, uint8_t eqp_item)
 {
     // Semi-transparent box surrounding the stats previews on the lower-right of the screen.
-    Rect previewFrame = Draw.menubox(double_buffer, previewMenu, eBoxFill::TRANSPARENT);
+    Draw.menubox_inner(double_buffer, previewMenu, eBoxFill::TRANSPARENT);
 
     constexpr int MaxAcronymLength = 3;
     // Localized text will be capped at MaxAcronymLength [3] letters long, and a ':' will be appended.
@@ -541,20 +595,19 @@ Rect KEquipMenu::draw_equippreview(uint8_t player_index, eEquipment slot, uint8_
     //
     // All combined, the char count should not exceed previewMenu.w [13] characters.
 
-    static const int column1Xoffset = previewMenu.x + FontW * 1;
-    static const int column2Xoffset = previewMenu.x + FontW * (previewMenu.w - 2);
+    static const int previewLeftEdge = FontW * (previewMenu.w - 3);
 
     for (uint8_t stats_index = 0; stats_index < eStat::NUM_STATS; ++stats_index)
     {
         const int currentToolStat = fighter[player_index].stats[stats_index];
         const int highlightedToolStat = (slot != eEquipment::EQP_NONE) ? tstats[stats_index] : currentToolStat;
 
-        const int rowYoffset = previewMenu.y + FontH * (stats_index + 1);
+        const int rowYoffset = FontH * stats_index;
 
         // On the left, print the stat acronym and ':', the current stat, and " > " all in white.
         sprintf(strbuf, "%4s%3d > ", EquipAttributes[stats_index].c_str(), currentToolStat);
 
-        Draw.print_font(double_buffer, column1Xoffset, rowYoffset, strbuf, FNORMAL);
+        Draw.print_font(double_buffer, previewMenu.x, previewMenu.y + rowYoffset, strbuf, FNORMAL);
 
         // On the right, display the currently-selected tool's stats in one of 3 colors, to show
         // the player that the stats may be the same (white), higher (green) or lower (red).
@@ -570,15 +623,15 @@ Rect KEquipMenu::draw_equippreview(uint8_t player_index, eEquipment slot, uint8_
             statFontColor = FRED;
         }
 
-        Draw.print_font(double_buffer, column2Xoffset, rowYoffset, strbuf, statFontColor);
+        Draw.print_font(double_buffer, previewMenu.x + previewLeftEdge, previewMenu.y + rowYoffset, strbuf,
+                        statFontColor);
     }
 
     // Semi-transparent box surrounding the "Resist up/down" message on the bottom-right.
-    Rect resistFrame = Draw.menubox(double_buffer, resistMenu, eBoxFill::TRANSPARENT);
+    Draw.menubox_inner(double_buffer, resistMenu, eBoxFill::TRANSPARENT);
 
     if (slot < eEquipment::EQP_NONE)
     {
-        static const int rowYoffset = resistMenu.y + FontH;
         int sum_current_res = 0;
         int sum_preview_res = 0;
 
@@ -587,22 +640,20 @@ Rect KEquipMenu::draw_equippreview(uint8_t player_index, eEquipment slot, uint8_
             sum_current_res += fighter[player_index].res[res_index];
             sum_preview_res += tres[res_index];
         }
-        if (sum_current_res == sum_preview_res)
+
+        if (sum_current_res != sum_preview_res)
         {
-            strbuf.clear();
-        }
-        else
-        {
-            sprintf(strbuf, "%.*s", resistMenu.w,
-                    sum_preview_res > sum_current_res ?
-                    _("Resist up") :
-                    _("Resist down"));
-            const int resistXoffset = resistMenu.w - strbuf.size() + 2;
-            Draw.print_font(double_buffer, resistMenu.x + FontW2 * resistXoffset /*204*/, rowYoffset, strbuf, FNORMAL);
+            static const std::vector<std::string> resists {
+                _("Resist up"),
+                _("Resist down"),
+            };
+            const size_t resists_index = sum_preview_res > sum_current_res ? 0 : 1;
+            strbuf = truncate_string(resists[resists_index], resistMenu.w, true, "");
+
+            const int resistXoffset = getCenteredTextXoffset(strbuf, resistMenu.w);
+            Draw.print_font(double_buffer, resistMenu.x + resistXoffset, resistMenu.y, strbuf, FNORMAL);
         }
     }
-
-    return previewFrame;
 }
 
 bool KEquipMenu::equip(ePIDX pidxC, uint32_t selected_item_index)
@@ -657,227 +708,340 @@ bool KEquipMenu::equip(ePIDX pidxC, uint32_t selected_item_index)
 
 void KEquipMenu::processInputs()
 {
+    switch (equipInputState.currentState)
+    {
+    case EquipInputState::eInputState::ActionBar: {
+        if (PlayerInput.left())
+        {
+            processInputsCb_ActionBarLeft();
+        }
+        if (PlayerInput.right())
+        {
+            processInputsCb_ActionBarRight();
+        }
+        if (PlayerInput.balt())
+        {
+            processInputsCb_ActionBarAlt();
+        }
+        if (PlayerInput.bctrl())
+        {
+            processInputsCb_ActionBarCtrl();
+        }
+        break;
+    }
+    case EquipInputState::eInputState::ChooseSlot: {
+        if (PlayerInput.up())
+        {
+            processInputsCb_ChooseSlotUp();
+        }
+        if (PlayerInput.down())
+        {
+            processInputsCb_ChooseSlotDown();
+        }
+        if (PlayerInput.balt())
+        {
+            processInputsCb_ChooseSlotAlt();
+        }
+        if (PlayerInput.bctrl())
+        {
+            processInputsCb_ChooseSlotCtrl();
+        }
+        break;
+    }
+    case EquipInputState::eInputState::SelectEquipment: {
+        if (PlayerInput.up() || PlayerInput.up.isRepeating())
+        {
+            processInputsCb_SelectEquipmentUp();
+        }
+        if (PlayerInput.down() || PlayerInput.down.isRepeating())
+        {
+            processInputsCb_SelectEquipmentDown();
+        }
+        if (PlayerInput.balt())
+        {
+            processInputsCb_SelectEquipmentAlt();
+        }
+        if (PlayerInput.bctrl())
+        {
+            processInputsCb_SelectEquipmentCtrl();
+        }
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+void KEquipMenu::processInputsCb_ChooseSlotUp()
+{
+    // Move between "Hand1", "Hand2", "Head", "Body", "Arms", "Other" slots.
+    eEquipment slot = eEquipment::EQP_NONE;
+    switch (equipInputState.slot)
+    {
+    case eEquipment::EQP_WEAPON:
+        slot = eEquipment::EQP_SPECIAL;
+        break;
+    case eEquipment::EQP_SHIELD:
+        slot = eEquipment::EQP_WEAPON;
+        break;
+    case eEquipment::EQP_HELMET:
+        slot = eEquipment::EQP_SHIELD;
+        break;
+    case eEquipment::EQP_ARMOR:
+        slot = eEquipment::EQP_HELMET;
+        break;
+    case eEquipment::EQP_HAND:
+        slot = eEquipment::EQP_ARMOR;
+        break;
+    case eEquipment::EQP_SPECIAL:
+        slot = eEquipment::EQP_HAND;
+        break;
+    default:
+        slot = eEquipment::EQP_SPECIAL;
+        break;
+    }
+    equipInputState.slot = slot;
+    play_effect(KAudio::eSound::SND_CLICK, 128);
+}
+
+void KEquipMenu::processInputsCb_SelectEquipmentUp()
+{
+    // Move around available inventory list.
+    if (equipInputState.cursorYoffset > 0)
+    {
+        // Move up active page.
+        --equipInputState.cursorYoffset;
+    }
+    else
+    {
+        // Move into previous page.
+        if (equipInputState.scrollYoffset > 0)
+        {
+            --equipInputState.scrollYoffset;
+        }
+    }
+    play_effect(KAudio::eSound::SND_CLICK, 128);
+}
+
+void KEquipMenu::processInputsCb_ChooseSlotDown()
+{
+    // Move between "Hand1", "Hand2", "Head", "Body", "Arms", "Other" slots.
+    eEquipment slot = eEquipment::EQP_NONE;
+    switch (equipInputState.slot)
+    {
+    case eEquipment::EQP_WEAPON:
+        slot = eEquipment::EQP_SHIELD;
+        break;
+    case eEquipment::EQP_SHIELD:
+        slot = eEquipment::EQP_HELMET;
+        break;
+    case eEquipment::EQP_HELMET:
+        slot = eEquipment::EQP_ARMOR;
+        break;
+    case eEquipment::EQP_ARMOR:
+        slot = eEquipment::EQP_HAND;
+        break;
+    case eEquipment::EQP_HAND:
+        slot = eEquipment::EQP_SPECIAL;
+        break;
+    case eEquipment::EQP_SPECIAL:
+        slot = eEquipment::EQP_WEAPON;
+        break;
+    default:
+        slot = eEquipment::EQP_WEAPON;
+        break;
+    }
+    equipInputState.slot = slot;
+    play_effect(KAudio::eSound::SND_CLICK, 128);
+}
+
+void KEquipMenu::processInputsCb_SelectEquipmentDown()
+{
+    // Move around available inventory list.
+    if (equipInputState.cursorYoffset < NUM_ITEMS_PER_PAGE - 1)
+    {
+        // Move down active page.
+        ++equipInputState.cursorYoffset;
+    }
+    else
+    {
+        // Move into next page.
+        const unsigned int page_ptr = equipInputState.scrollYoffset + equipInputState.cursorYoffset;
+        if (page_ptr < t_inv.size() - 1)
+        {
+            ++equipInputState.scrollYoffset;
+        }
+    }
+    play_effect(KAudio::eSound::SND_CLICK, 128);
+}
+
+void KEquipMenu::processInputsCb_ActionBarLeft()
+{
+    // Move between "Equip", "Optimize", "Remove", "Empty" options.
+    eActionBar newAction = eActionBar::AB_NONE;
+    switch (activeActionBar)
+    {
+    case eActionBar::AB_EQUIP:
+        newAction = eActionBar::AB_CLEAR;
+        break;
+    case eActionBar::AB_OPTIMIZE:
+        newAction = eActionBar::AB_EQUIP;
+        break;
+    case eActionBar::AB_REMOVE:
+        newAction = eActionBar::AB_OPTIMIZE;
+        break;
+    case eActionBar::AB_CLEAR:
+        newAction = eActionBar::AB_REMOVE;
+        break;
+    default:
+        newAction = eActionBar::AB_CLEAR;
+        break;
+    }
+    activeActionBar = newAction;
+    play_effect(KAudio::eSound::SND_CLICK, 128);
+}
+
+void KEquipMenu::processInputsCb_ActionBarRight()
+{
+    // Move between "Equip", "Optimize", "Remove", "Empty" options.
+    eActionBar newAction = eActionBar::AB_NONE;
+    switch (activeActionBar)
+    {
+    case eActionBar::AB_EQUIP:
+        newAction = eActionBar::AB_OPTIMIZE;
+        break;
+    case eActionBar::AB_OPTIMIZE:
+        newAction = eActionBar::AB_REMOVE;
+        break;
+    case eActionBar::AB_REMOVE:
+        newAction = eActionBar::AB_CLEAR;
+        break;
+    case eActionBar::AB_CLEAR:
+        newAction = eActionBar::AB_EQUIP;
+        break;
+    default:
+        newAction = eActionBar::AB_EQUIP;
+        break;
+    }
+    activeActionBar = newAction;
+    play_effect(KAudio::eSound::SND_CLICK, 128);
+}
+
+void KEquipMenu::processInputsCb_ActionBarAlt()
+{
     const ePIDX pidxC = pidx[equipInputState.player_index];
-    if (PlayerInput.up())
+    // Activate highlighted "Equip", "Optimize", "Remove", "Empty" option.
+    switch (activeActionBar)
     {
-        if (equipInputState.currentState == EquipInputState::eInputState::ChooseSlot)
+    case eActionBar::AB_EQUIP: {
+        equipInputState.currentState = EquipInputState::eInputState::ChooseSlot;
+        break;
+    }
+    case eActionBar::AB_OPTIMIZE: {
+        const bool didOptimize = optimize_equip(equipInputState.player_index);
+        play_effect(didOptimize ? KAudio::eSound::SND_EQUIP : KAudio::eSound::SND_BAD, 128);
+        break;
+    }
+    case eActionBar::AB_REMOVE: {
+        equipInputState.currentState = EquipInputState::eInputState::ChooseSlot;
+        break;
+    }
+    case eActionBar::AB_CLEAR: {
+        bool all_ok = true;
+
+        for (uint8_t eqp_index = 0; eqp_index < eEquipment::NUM_EQUIPMENT; ++eqp_index)
         {
-            eEquipment slot = eEquipment::EQP_SPECIAL;
-            switch (equipInputState.slot)
+            if (party[pidxC].eqp[eqp_index] == I_NOITEM)
             {
-            case eEquipment::EQP_WEAPON:    slot = eEquipment::EQP_SPECIAL; break;
-            case eEquipment::EQP_SHIELD:    slot = eEquipment::EQP_WEAPON;  break;
-            case eEquipment::EQP_HELMET:    slot = eEquipment::EQP_SHIELD;  break;
-            case eEquipment::EQP_ARMOR:     slot = eEquipment::EQP_HELMET;  break;
-            case eEquipment::EQP_HAND:      slot = eEquipment::EQP_ARMOR;   break;
-            case eEquipment::EQP_SPECIAL:   slot = eEquipment::EQP_HAND;    break;
-            default:                        slot = eEquipment::EQP_SPECIAL; break;
+                continue;
             }
-            equipInputState.slot = slot;
-            play_effect(KAudio::eSound::SND_CLICK, 128);
+            all_ok &= deequip(pidxC, (eEquipment)eqp_index);
         }
-        else if (equipInputState.currentState == EquipInputState::eInputState::SelectEquipment)
+
+        play_effect(all_ok ? KAudio::eSound::SND_UNEQUIP : KAudio::eSound::SND_BAD, 128);
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+void KEquipMenu::processInputsCb_ChooseSlotAlt()
+{
+    const ePIDX pidxC = pidx[equipInputState.player_index];
+    // Cursor is over one of "Hand1", "Hand2", "Head", "Body", "Arms", "Other" slots.
+    if (activeActionBar == eActionBar::AB_EQUIP)
+    {
+        if (t_inv.empty())
         {
-            if (equipInputState.cursorYoffset > 0)
-            {
-                // Move up active page.
-                --equipInputState.cursorYoffset;
-            }
-            else
-            {
-                // Move into previous page.
-                if (equipInputState.scrollYoffset > 0)
-                {
-                    --equipInputState.scrollYoffset;
-                }
-            }
-            play_effect(KAudio::eSound::SND_CLICK, 128);
+            play_effect(KAudio::eSound::SND_BAD, 128);
+        }
+        else
+        {
+            // Scrollbar offset from the top of the equipment list. When > 0, it means the player scrolled
+            // down enough that there are one or more items above the top of the visible list (should show
+            // an "^" chevron to indicate more items above).
+            equipInputState.cursorYoffset = 0;
+            equipInputState.scrollYoffset = 0;
+
+            equipInputState.currentState = EquipInputState::eInputState::SelectEquipment;
         }
     }
-
-    if (PlayerInput.down())
+    else if (activeActionBar == eActionBar::AB_REMOVE)
     {
-        if (equipInputState.currentState == EquipInputState::eInputState::ChooseSlot)
+        if (deequip(pidxC, equipInputState.slot))
         {
-            eEquipment slot = eEquipment::EQP_WEAPON;
-            switch (equipInputState.slot)
-            {
-            case eEquipment::EQP_WEAPON:    slot = eEquipment::EQP_SHIELD;  break;
-            case eEquipment::EQP_SHIELD:    slot = eEquipment::EQP_HELMET;  break;
-            case eEquipment::EQP_HELMET:    slot = eEquipment::EQP_ARMOR;   break;
-            case eEquipment::EQP_ARMOR:     slot = eEquipment::EQP_HAND;    break;
-            case eEquipment::EQP_HAND:      slot = eEquipment::EQP_SPECIAL; break;
-            case eEquipment::EQP_SPECIAL:   slot = eEquipment::EQP_WEAPON;  break;
-            default:                        slot = eEquipment::EQP_WEAPON;  break;
-            }
-            equipInputState.slot = slot;
-            play_effect(KAudio::eSound::SND_CLICK, 128);
-        }
-        else if (equipInputState.currentState == EquipInputState::eInputState::SelectEquipment)
-        {
-            if (equipInputState.cursorYoffset < NUM_ITEMS_PER_PAGE - 1)
-            {
-                // Move down active page.
-                ++equipInputState.cursorYoffset;
-            }
-            else
-            {
-                // Move into next page.
-                const unsigned int page_ptr = equipInputState.scrollYoffset + equipInputState.cursorYoffset;
-                if (page_ptr < t_inv.size() - 1)
-                {
-                    ++equipInputState.scrollYoffset;
-                }
-            }
-            play_effect(KAudio::eSound::SND_CLICK, 128);
-        }
-    }
-
-    if (PlayerInput.left())
-    {
-        if (equipInputState.currentState == EquipInputState::eInputState::ActionBar)
-        {
-            eActionBar newAction = eActionBar::AB_CLEAR;
-            switch (eqp_act)
-            {
-            case eActionBar::AB_EQUIP:      newAction = eActionBar::AB_CLEAR; break;
-            case eActionBar::AB_OPTIMIZE:   newAction = eActionBar::AB_EQUIP; break;
-            case eActionBar::AB_REMOVE:     newAction = eActionBar::AB_OPTIMIZE;  break;
-            case eActionBar::AB_CLEAR:      newAction = eActionBar::AB_REMOVE;    break;
-            default:                        newAction = eActionBar::AB_CLEAR; break;
-            }
-            eqp_act = newAction;
-            play_effect(KAudio::eSound::SND_CLICK, 128);
-        }
-    }
-
-    if (PlayerInput.right())
-    {
-        if (equipInputState.currentState == EquipInputState::eInputState::ActionBar)
-        {
-            eActionBar newAction = eActionBar::AB_EQUIP;
-            switch (eqp_act)
-            {
-            case eActionBar::AB_EQUIP:      newAction = eActionBar::AB_OPTIMIZE;  break;
-            case eActionBar::AB_OPTIMIZE:   newAction = eActionBar::AB_REMOVE;    break;
-            case eActionBar::AB_REMOVE:     newAction = eActionBar::AB_CLEAR; break;
-            case eActionBar::AB_CLEAR:      newAction = eActionBar::AB_EQUIP; break;
-            default:                        newAction = eActionBar::AB_EQUIP; break;
-            }
-            eqp_act = newAction;
-            play_effect(KAudio::eSound::SND_CLICK, 128);
-        }
-    }
-
-    if (PlayerInput.balt())
-    {
-        if (equipInputState.currentState == EquipInputState::eInputState::ActionBar)
-        {
-            switch (eqp_act)
-            {
-            case eActionBar::AB_EQUIP: {
-                equipInputState.currentState = EquipInputState::eInputState::ChooseSlot;
-                break;
-            }
-            case eActionBar::AB_OPTIMIZE: {
-                const bool didOptimize = optimize_equip(equipInputState.player_index);
-                play_effect(didOptimize ? KAudio::eSound::SND_EQUIP : KAudio::eSound::SND_BAD, 128);
-                break;
-            }
-            case eActionBar::AB_REMOVE: {
-                equipInputState.currentState = EquipInputState::eInputState::ChooseSlot;
-                break;
-            }
-            case eActionBar::AB_CLEAR: {
-                bool all_ok = true;
-
-                for (uint8_t eqp_index = 0; eqp_index < eEquipment::NUM_EQUIPMENT; ++eqp_index)
-                {
-                    if (party[pidxC].eqp[eqp_index] == I_NOITEM)
-                    {
-                        continue;
-                    }
-                    all_ok &= deequip(pidxC, (eEquipment)eqp_index);
-                }
-
-                play_effect(all_ok ? KAudio::eSound::SND_UNEQUIP : KAudio::eSound::SND_BAD, 128);
-                break;
-            }
-            default:
-                break;
-            }
-        }
-        else if (equipInputState.currentState == EquipInputState::eInputState::ChooseSlot)
-        {
-            if (eqp_act == eActionBar::AB_EQUIP)
-            {
-                if (t_inv.empty())
-                {
-                    play_effect(KAudio::eSound::SND_BAD, 128);
-                }
-                else
-                {
-                    // Scrollbar offset from the top of the equipment list. When > 0, it means the player scrolled
-                    // down enough that there are one or more items above the top of the visible list (should show
-                    // an "^" chevron to indicate more items above).
-                    equipInputState.cursorYoffset = 0;
-                    equipInputState.scrollYoffset = 0;
-
-                    equipInputState.currentState = EquipInputState::eInputState::SelectEquipment;
-                }
-            }
-            else if (eqp_act == eActionBar::AB_REMOVE)
-            {
-                if (deequip(pidxC, equipInputState.slot))
-                {
-                    play_effect(KAudio::eSound::SND_UNEQUIP, 128);
-                    equipInputState.currentState = EquipInputState::eInputState::ActionBar;
-                }
-                else
-                {
-                    play_effect(KAudio::eSound::SND_BAD, 128);
-                }
-            }
-        }
-        else if (equipInputState.currentState == EquipInputState::eInputState::SelectEquipment)
-        {
-            const auto page_ptr = equipInputState.scrollYoffset + equipInputState.cursorYoffset;
-            bool didEquip = false;
-            if (page_ptr < t_inv.size())
-            {
-                if (equip(pidxC, t_inv[page_ptr]))
-                {
-                    didEquip = true;
-                }
-            }
-
-            if (didEquip)
-            {
-                equipInputState.currentState = EquipInputState::eInputState::ChooseSlot;
-                play_effect(KAudio::eSound::SND_EQUIP, 128);
-            }
-            else
-            {
-                play_effect(KAudio::eSound::SND_BAD, 128);
-            }
-        }
-    }
-
-    if (PlayerInput.bctrl())
-    {
-        if (equipInputState.currentState == EquipInputState::eInputState::ActionBar)
-        {
-            equipInputState.currentState = EquipInputState::eInputState::Exit;
-        }
-        else if (equipInputState.currentState == EquipInputState::eInputState::ChooseSlot)
-        {
+            play_effect(KAudio::eSound::SND_UNEQUIP, 128);
             equipInputState.currentState = EquipInputState::eInputState::ActionBar;
         }
-        else if (equipInputState.currentState == EquipInputState::eInputState::SelectEquipment)
+        else
         {
-            equipInputState.currentState = EquipInputState::eInputState::ChooseSlot;
+            play_effect(KAudio::eSound::SND_BAD, 128);
         }
     }
+}
+
+void KEquipMenu::processInputsCb_SelectEquipmentAlt()
+{
+    const ePIDX pidxC = pidx[equipInputState.player_index];
+    // Attempt to equip selected equipment in inventory list.
+    const auto page_ptr = equipInputState.scrollYoffset + equipInputState.cursorYoffset;
+    bool didEquip = false;
+    if (page_ptr < t_inv.size())
+    {
+        if (equip(pidxC, t_inv[page_ptr]))
+        {
+            didEquip = true;
+        }
+    }
+
+    if (didEquip)
+    {
+        equipInputState.currentState = EquipInputState::eInputState::ChooseSlot;
+        play_effect(KAudio::eSound::SND_EQUIP, 128);
+    }
+    else
+    {
+        play_effect(KAudio::eSound::SND_BAD, 128);
+    }
+}
+
+void KEquipMenu::processInputsCb_ActionBarCtrl()
+{
+    // From "Equip, Optimize, etc." top bar to exiting Equip menu entirely.
+    equipInputState.currentState = EquipInputState::eInputState::Exit;
+}
+
+void KEquipMenu::processInputsCb_ChooseSlotCtrl()
+{
+    // From "Hand1, Hand2, etc." slot selection to "Equip, Optimize, etc." top bar.
+    equipInputState.currentState = EquipInputState::eInputState::ActionBar;
+}
+
+void KEquipMenu::processInputsCb_SelectEquipmentCtrl()
+{
+    // From selecting from available inventory to "Hand1, Hand2, etc." slot selection.
+    equipInputState.currentState = EquipInputState::eInputState::ChooseSlot;
 }
 
 void KEquipMenu::equip_menu(uint8_t player_index)
@@ -889,7 +1053,7 @@ void KEquipMenu::equip_menu(uint8_t player_index)
     // otherwise, navigation is down either selecting which gear/slot to modify or the items
     // to consider equipping for that gear/slot.
 
-    eqp_act = eActionBar::AB_EQUIP;
+    activeActionBar = eActionBar::AB_EQUIP;
     play_effect(KAudio::eSound::SND_MENU, 128);
 
     equipInputState.currentState = EquipInputState::eInputState::ActionBar;
@@ -914,12 +1078,13 @@ void KEquipMenu::equip_menu(uint8_t player_index)
         }
         else if (equipInputState.currentState == EquipInputState::eInputState::ChooseSlot)
         {
-            const eEquipment slot = (eqp_act == eActionBar::AB_REMOVE) ? equipInputState.slot : eEquipment::EQP_NONE;
+            const eEquipment slot =
+                (activeActionBar == eActionBar::AB_REMOVE) ? equipInputState.slot : eEquipment::EQP_NONE;
             draw_equippable(equipInputState.player_index, equipInputState.slot, 0);
             draw_equippreview(equipInputState.player_index, slot, I_NOITEM);
 
             // Draw the "sword" cursor.
-            draw_sprite(double_buffer, menuptr, equippedMenu.x, equippedMenu.y + FontH * (equipInputState.slot + 1));
+            draw_sprite(double_buffer, menuptr, equippedMenu.x - FontW, equippedMenu.y + FontH * equipInputState.slot);
         }
         else if (equipInputState.currentState == EquipInputState::eInputState::SelectEquipment)
         {
@@ -933,7 +1098,8 @@ void KEquipMenu::equip_menu(uint8_t player_index)
             }
 
             // Draw the "sword" cursor.
-            draw_sprite(double_buffer, menuptr, equippableMenu.x, equippableMenu.y + FontH * (equipInputState.cursorYoffset + 1));
+            draw_sprite(double_buffer, menuptr, equippableMenu.x - FontW,
+                        equippableMenu.y + FontH * equipInputState.cursorYoffset);
         }
         Draw.blit2screen();
 
@@ -957,7 +1123,7 @@ bool KEquipMenu::optimize_equip(uint8_t player_index)
     }
 
     // Equip Hand1
-    int maxx = 0; // Highest attack/defense currently calculated for each equipment type.
+    int maxx = 0;  // Highest attack/defense currently calculated for each equipment type.
     int maxi = -1; // Index within g_inv[] array for "best" equipment.
     calc_possible_equip(pidxC, eEquipment::EQP_WEAPON);
 
@@ -998,7 +1164,8 @@ bool KEquipMenu::optimize_equip(uint8_t player_index)
                 continue;
             }
             int items_index = g_inv[g_inv_index].item;
-            int total_defense_stats = items[items_index].stats[eStat::Defense] + items[items_index].stats[eStat::MagicDefense];
+            int total_defense_stats =
+                items[items_index].stats[eStat::Defense] + items[items_index].stats[eStat::MagicDefense];
             if (total_defense_stats > maxx)
             {
                 maxx = total_defense_stats;

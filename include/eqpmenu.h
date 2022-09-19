@@ -21,9 +21,9 @@
 
 #pragma once
 
-#include "enums.h"
 #include "draw.h"
-#include "heroc.h"
+#include "enums.h"
+#include "player.h"
 
 #include <cstdint>
 #include <vector>
@@ -60,23 +60,32 @@ class KEquipMenu
   protected:
     void processInputs();
 
-    Rect draw_equipmenu_top();
-    Rect draw_equipmenu_equipped(ePIDX pidxC);
-    Rect draw_equipmenu_portrait(ePIDX pidxC);
+    // Callbacks for processInputs() events:
 
-    /*! \brief Draw the equipment menu.
+    void processInputsCb_ChooseSlotUp();
+    void processInputsCb_SelectEquipmentUp();
+    void processInputsCb_ChooseSlotDown();
+    void processInputsCb_SelectEquipmentDown();
+    void processInputsCb_ActionBarLeft();
+    void processInputsCb_ActionBarRight();
+    void processInputsCb_ActionBarAlt();
+    void processInputsCb_ChooseSlotAlt();
+    void processInputsCb_SelectEquipmentAlt();
+    void processInputsCb_ActionBarCtrl();
+    void processInputsCb_ChooseSlotCtrl();
+    void processInputsCb_SelectEquipmentCtrl();
+
+    void draw_equipmenu_top();
+    void draw_equipmenu_equipped(const KPlayer& hero);
+    void draw_equipmenu_portrait(const KPlayer& hero, Raster* portrait);
+
+    /*! \brief Draw the top 2 rows of Equip menus.
      *
      * Renders the options across the top ("Equip", "Optimize", "Remove", "Empty"), each of the
      * locations where items can be equipped ("Hand1", "Hand2", "Head", "Body", "Arms", "Other"),
-     * 
-     * This is simply a function to display the equip menu screen.
-     *
-     * It's kept separate from the equip_menu routine for the sake of code cleanliness... better late than never :P
+     * and the selected hero's portrait.
      *
      * \param   pidxC Index of character in pidx[] array to equip.
-     * \param   isFocusOnActionBar If true, show the full range of options (Equip, Optimize, Remove, Empty).
-     *          Otherwise just show Equip if eqp_act is 0 or Remove if it is 2
-     *          (this is when you're selecting the item to Equip/Remove).
      */
     void draw_equipmenu(ePIDX pidxC);
 
@@ -89,9 +98,8 @@ class KEquipMenu
      * \param   player_index Character in pidx[] array to equip.
      * \param   slot Which body part (EQP_WEAPON, EQP_SHIELD, etc.) to equip.
      * \param   pptr The index of the top line of the displayed items.
-     * \returns Position and dimensions of frame drawn on screen.
      */
-    Rect draw_equippable(uint8_t player_index, eEquipment slot, uint16_t pptr);
+    void draw_equippable(uint8_t player_index, eEquipment slot, uint16_t pptr);
 
     /*! \brief List equipment that can go in a slot.
      *
@@ -107,8 +115,8 @@ class KEquipMenu
      *
      * This calculates what equipment is optimum for a particular hero.
      *
-     * The weapon that does the most damage is chosen and the armor with the best combination of defense+magic_defense is
-     * chosen.
+     * The weapon that does the most damage is chosen and the armor with the best combination of
+     * defense+magic_defense is chosen.
      *
      * As for a relic, the one that offers the greatest overall bonus to stats is selected.
      *
@@ -138,22 +146,21 @@ class KEquipMenu
 
     /*! \brief Display changed stats.
      *
-     * This displays the results of the above function so that players can tell how a piece of equipment will affect their
-     * stats.
+     * This displays the results of calc_equippreview() so that players can tell how a piece of
+     * equipment will affect their stats.
      *
      * \param   player_index Character index in pidx[], fighter[], to process.
      * \param   slot Slot to change, or EQP_NONE to switch to new stats.
      * \param   pp New item to use.
-     * \returns Position and dimensions of frame drawn on screen.
      */
-    Rect draw_equippreview(uint8_t player_index, eEquipment slot, uint8_t pp);
+    void draw_equippreview(uint8_t player_index, eEquipment slot, uint8_t pp);
 
     /*! \brief Change a character's equipment.
      *
-     * Do the actual equip.  Of course, it will de-equip anything that is currently in the specified slot.
+     * If another item is equipped to this slot, it will de-equip that first.
      *
      * \param   pidxC Character in party[] and s_item::eq[] arrays to process.
-     * \param   selected_item Item index in g_inv[] array to add.
+     * \param   selected_item Item index in g_inv[] array to equip onto the hero.
      * \returns True if equip was successful, false otherwise.
      */
     bool equip(ePIDX pidxC, uint32_t selected_item);
@@ -172,22 +179,26 @@ class KEquipMenu
     int tstats[13];
     int8_t tres[R_TOTAL_RES];
 
-    /*! \brief Array of indices within the g_inv[] array of equippable items.
+    /*! \brief Indices within the g_inv[] array, for equipment that the selected hero may equip.
      *
-     * Stores indices within g_inv[] where items[index] is an item type that can be equipped in a
-     * specific equipment slot (hand, head, etc.).
+     * This array is recalculated whenever the selected equipment slot (weapon, shield, etc.) is
+     * changed (for example, when the player switches from previewing weapons to equip, to
+     * previewing shields to equip).
+     *
+     * It will only contain equipment which this hero may equip (see s_item::eq[] array).
      */
-    std::vector<uint16_t> t_inv;//equippable_inventory;
-    size_t eqp_act;
+    std::vector<uint16_t> t_inv;
+
+    eActionBar activeActionBar;
 
     // There are 6 sections that are drawn (not all are interactable):
-    // 1. The top menu with "Equip", "Optimize", "Remove", "Empty" options to choose from.
-    // 2. The 6 equipment slots of what hero is equipped with currently to choose from.
-    // 3. The name and portrait for the selected hero (drawn only; no interaction).
-    // 4. Scrollable list (16 items tall) of available equipment to choose from.
-    // 5. All 13 stats (strength, agility, etc.) current values, next to what the stats would
-    //    become if the highlighted equipment were equipped instead (drawn only; no interaction).
-    // 6. "Resist up" or "Resist down" if the calculated Resistance would change (no interaction).
+    // 1. [Interactive] The top menu with "Equip", "Optimize", "Remove", "Empty".
+    // 2. [Interactive] 6 equipment slots (weapon, shield, etc.) of what is currently equipped.
+    // 3. [Non-interactive] Hero's name and portrait.
+    // 4. [Interactive] Scrollable list (16 items tall) of available equipment to choose from.
+    // 5. [Non-interactive] Hero's 13 current stats (strength, agility, etc.), as well as what they
+    //    would become if the highlighted equipment were equipped instead.
+    // 6. [Non-interactive] "Resist up" or "Resist down", if the total Resistance would change.
 
     Rect topMenu;
     Rect equippedMenu;
