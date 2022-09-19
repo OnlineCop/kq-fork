@@ -224,13 +224,27 @@ class KDraw
      */
     void drawmap();
 
+    /*! \brief Draw menu box surrounding the specified coordinates.
+     *
+     * Given Rect{20, 24, 5, 6}:
+     *  - the left border would be drawn at x=[20-8=12]
+     *  - the top border would be drawn at y=[24-8=16]
+     *  - the right border would be drawn at x=[20+(5+1)*8=68]
+     *  - the bottom border would be drawn at y=[24+(6+1)*8=80]
+     *
+     * \param   where Bitmap to draw to.
+     * \param   rect Rect with the x, y, width and height values.
+     * \param   color Fill color
+     */
+    void menubox_inner(Raster* where, Rect rect, eBoxFill color);
+
     /*! \brief Draw menu box.
      *
      * \param   where Bitmap to draw to.
      * \param   rect Rect with the x, y, width and height values.
      * \param   color Fill color
      */
-    Rect menubox(Raster* where, Rect rect, eBoxFill color);
+    void menubox(Raster* where, Rect rect, eBoxFill color);
 
     /*! \brief Draw menu box.
      *
@@ -241,7 +255,7 @@ class KDraw
      * \param   height Height.
      * \param   color Fill color
      */
-    Rect menubox(Raster* where, int x, int y, int width, int height, eBoxFill color);
+    void menubox(Raster* where, int x, int y, int width, int height, eBoxFill color);
 
     /*! \brief Display string.
      *

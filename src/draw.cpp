@@ -901,18 +901,30 @@ int KDraw::is_forestsquare(int fx, int fy)
     }
 }
 
-Rect KDraw::menubox(Raster* where, Rect rect, eBoxFill color)
+void KDraw::menubox_inner(Raster* where, Rect rect, eBoxFill color)
 {
-    return menubox(where, rect.x, rect.y, rect.w, rect.h, color);
+    constexpr int BorderWidth = 8;
+    constexpr int BorderHeight = 8;
+    const Rect borderRect {
+        rect.x - BorderWidth,
+        rect.y - BorderHeight,
+        rect.x + BorderWidth * (rect.w + 1),
+        rect.y + BorderHeight * (rect.h + 1),
+    };
+    draw_kq_box(where, borderRect, color, B_TEXT);
 }
 
-Rect KDraw::menubox(Raster* where, int x, int y, int width, int height, eBoxFill color)
+void KDraw::menubox(Raster* where, Rect rect, eBoxFill color)
 {
-    constexpr int FontWidth = 8;  // MagicNumber: Font width is 8
-    constexpr int FontHeight = 8; // MagicNumber: Font height is 8
-    const Rect rect { x, y, x + (width + 2) * FontWidth, y + (height + 2) * FontHeight };
+    menubox(where, rect.x, rect.y, rect.w, rect.h, color);
+}
+
+void KDraw::menubox(Raster* where, int x, int y, int width, int height, eBoxFill color)
+{
+    constexpr int BorderWidth = 8;
+    constexpr int BorderHeight = 8;
+    const Rect rect { x, y, x + BorderWidth * (width + 2), y + BorderHeight * (height + 2) };
     draw_kq_box(where, rect, color, B_TEXT);
-    return Rect { rect.x, rect.y, rect.w - rect.x, rect.h - rect.y };
 }
 
 void KDraw::message(const char* inMessage, int icn, int delay)
