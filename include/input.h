@@ -21,63 +21,106 @@
 
 #pragma once
 
+#include <utility>
+
 struct SDL_KeyboardEvent;
 
+class KPlayerInputButton
+{
+  public:
+    KPlayerInputButton(int sc = 0);
+
+    /*! \brief Scancode returned by SDL.
+     *
+     * Until there is a 'friend' class which we can use to limit access to this, it doesn't
+     * make much sense in setting a getter/setter that does not validation checks.
+     */
+    int scancode;
+
+    /*! \brief Returns true ONLY when the key state transitions from RELEASED to PRESSED.
+     *
+     * Will only return true on the first frame where it is queried; subsequent calls (until
+     * the player releases the key and presses it again) will all return false.
+     *
+     * This will not return true for key repeats due to holding the key down for long enough.
+     * For that, see isRepeating().
+     */
+    bool operator()();
+
+    /*! \brief Returns true whenever the key is held down.
+     *
+     * May be called multiple times in the same frame.
+     */
+    bool isDown() const;
+
+    /*! \brief Returns true whenever the key is down long enough to cause a key repeat event.
+     *
+     * May be called multiple times in the same frame.
+     */
+    bool isRepeating() const;
+
+  protected:
+    // Only true the first time operator() is called, and remains false until the key has been
+    // released and pressed again.
+    bool pressed_;
+
+    // True whenever the key is held down.
+    bool down_;
+
+    // True when the button is pressed and SDL_KeyboardEvent::repeat is non-zero.
+    bool repeat_;
+
+    friend class KPlayerInput;
+};
+
+inline bool KPlayerInputButton::operator()()
+{
+    return std::exchange(pressed_, false);
+}
+
+inline bool KPlayerInputButton::isDown() const
+{
+    return down_;
+}
+
+inline bool KPlayerInputButton::isRepeating() const
+{
+    return repeat_;
+}
+
+/**
+ * Map player input (from keyboard, joystick, mouse, etc.) to a single input manager for KQ.
+ */
 class KPlayerInput
 {
   public:
     KPlayerInput();
+
     void ProcessKeyboardEvent(SDL_KeyboardEvent* evt);
-
-    struct button
-    {
-        button(int sc = 0)
-            : scancode(sc)
-        {
-        }
-
-        int scancode;
-        bool down = false;
-        bool pressed = false;
-
-        bool isDown() const
-        {
-            return down;
-        }
-
-        bool operator()()
-        {
-            bool rc = pressed;
-            pressed = false;
-            return rc;
-        }
-    };
+    void SetButtonStates(KPlayerInputButton& button, SDL_KeyboardEvent* evt);
 
     // Flags for determining keypresses and player movement.
 
     // Moves the cursor or player horizontally (right).
-    button right;
+    KPlayerInputButton right;
     // Moves the cursor or player horizontally (left).
-    button left;
+    KPlayerInputButton left;
     // Moves the cursor or player vertically (up).
-    button up;
+    KPlayerInputButton up;
     // Moves the cursor or player vertically (down).
-    button down;
+    KPlayerInputButton down;
     // Exits menus, or opens the game menu.
-    button besc;
+    KPlayerInputButton besc;
     // Usually the action or "accept" button.
-    button balt;
+    KPlayerInputButton balt;
     // Usually the run or "cancel" button.
-    button bctrl;
+    KPlayerInputButton bctrl;
     // Usually the menu button.
-    button benter;
+    KPlayerInputButton benter;
     // Displays the (not-yet implemented) help menu (always F1).
-    button bhelp;
-    // Activates cheats (calls cheat.lua) and runs whatever commands are found there. (always F10)
-    button bcheat;
-
-    // Joystick buttons
-    int jbalt, jbctrl, jbenter, jbesc;
+    KPlayerInputButton bhelp;
+    // Activates cheats (calls cheat.lua) and runs whatever commands are found there (always F10).
+    KPlayerInputButton bcheat;
 };
 
 extern KPlayerInput PlayerInput;

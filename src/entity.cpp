@@ -726,7 +726,7 @@ void KEntityManager::player_move()
         do_luacheat();
     }
 #endif
-    int dx, dy;
+    int dx = 0;
     if (PlayerInput.right.isDown())
     {
         dx = 1;
@@ -735,10 +735,8 @@ void KEntityManager::player_move()
     {
         dx = -1;
     }
-    else
-    {
-        dx = 0;
-    }
+
+    int dy = 0;
     if (PlayerInput.down.isDown())
     {
         dy = 1;
@@ -747,10 +745,7 @@ void KEntityManager::player_move()
     {
         dy = -1;
     }
-    else
-    {
-        dy = 0;
-    }
+
     move(0, dx, dy);
     if (plr.moving)
     {
