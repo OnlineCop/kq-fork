@@ -39,6 +39,7 @@
 
 #include <SDL.h>
 #include <cassert>
+#include <map>
 
 KDraw Draw;
 
@@ -66,30 +67,54 @@ uint8_t BLUE = 2, DARKBLUE = 0, DARKRED = 4;
 
 /*! \brief Glyph look-up table.
  *
- * Maps unicode char to glyph index for characters > 128.
- *  { unicode, glyph }
- * n.b. Must be sorted in order of unicode char and terminated by {0, 0}.
+ * Maps characters outside [0x20, 0x7f] range to the fonts.png glyph index.
+ * Lookup: Actual Unicode codepoint.
+ * Result: Glyph offset within fonts.png, if found, else glyph_lookup::end().
  */
-static uint32_t glyph_lookup[][2] = {
-    { 0x00c9, 'E' - 32 }, /* E-acute */
-    { 0x00d3, 'O' - 32 }, /* O-acute */
-    { 0x00df, 107 },      /* sharp s */
-    { 0x00e1, 92 },       /* a-grave */
-    { 0x00e4, 94 },       /* a-umlaut */
-    { 0x00e9, 95 },       /* e-acute */
-    { 0x00ed, 'i' - 32 }, /* i-acute */
-    { 0x00f1, 108 },      /* n-tilde */
-    { 0x00f3, 99 },       /* o-acute */
-    { 0x00f6, 102 },      /* o-umlaut */
-    { 0x00fa, 103 },      /* u-acute */
-    { 0x00fc, 106 },      /* u-umlaut */
-    { 0, 0 },
+static std::map<int, int> glyph_lookup {
+    // There are no glyphs for these, so display a 7-bit ASCII character in their place:
+    { 134, 'a' - 32 }, /* 'å' */
+    { 139, 'i' - 32 }, /* 'ï' (i-diaeresis) */
+    { 140, 'i' - 32 }, /* 'î' (i-circumflex) */
+    { 141, 'i' - 32 }, /* 'ì' (i-grave) */
+    { 161, 'i' - 32 }, /* 'í' (i-acute) */
+    { 143, 'A' - 32 }, /* 'Å' */
+    { 152, 'Y' - 32 }, /* 'ÿ' */
+
+    { 160, 91 },   /* 'á' (a-acute) */
+    { 133, 92 },   /* 'à' (a-grave) */
+    { 131, 93 },   /* 'â' (a-circumflex) */
+    { 132, 94 },   /* 'ä' (a-diaeresis) */
+    { 142, 94 },   /* 'Ä' (A-diaeresis) */
+    { 130, 95 },   /* 'é' (e-acute) */
+    { 144, 95 },   /* 'É' (E-acute) */
+    { 138, 96 },   /* 'è' (e-grave) */
+    { 136, 97 },   /* 'ê' (e-circumflex) */
+    { 137, 98 },   /* 'ë' (e-diaeresis) */
+    { 162, 99 },   /* 'ó' (o-acute) */
+    { 149, 100 },  /* 'ò' (o-grave) */
+    { 147, 101 },  /* 'ô' (o-circumflex) */
+    { 148, 102 },  /* 'ö' (o-diaeresis) */
+    { 153, 102 },  /* 'Ö' (O-diaeresis) */
+    { 163, 103 },  /* 'ú' (u-acute) */
+    { 151, 104 },  /* 'ù' (u-grave) */
+    { 150, 105 },  /* 'û' (u-circumflex) */
+    { 129, 106 },  /* 'ü' (u-diaeresis) */
+    { 154, 106 },  /* 'Ü' (U-diaeresis) */
+    { 225, 107 },  /* 'ß' (sharp s) */
+    { 164, 108 },  /* 'ñ' (n-tilde) */
+    { 165, 108 },  /* 'Ñ' (N-tilde) */
+    { 128, 109 },  /* 'Ç' (C-cedilla) */
+    { 135, 109 },  /* 'ç' (c-cedilla) */
+    { 0x09, 110 }, /* '…' (ellipsis) */
 };
 
 KDraw::KDraw()
     : window(nullptr)
     , renderer(nullptr)
     , texture(nullptr)
+    , format(nullptr)
+    , btile(0)
 {
 }
 
@@ -570,6 +595,11 @@ void KDraw::draw_icon(Raster* where, int ino, int icx, int icy)
     masked_blit(sicons, where, 0, ino * 8, icx, icy, 8, 8);
 }
 
+void KDraw::draw_kq_box(Raster* where, Rect rect, eBoxFill bg, eBubbleStyle bstyle)
+{
+    draw_kq_box(where, rect.x, rect.y, rect.w, rect.h, bg, bstyle);
+}
+
 void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, eBoxFill bg, eBubbleStyle bstyle)
 {
     /* Draw a maybe-translucent background */
@@ -871,11 +901,30 @@ int KDraw::is_forestsquare(int fx, int fy)
     }
 }
 
+void KDraw::menubox_inner(Raster* where, Rect rect, eBoxFill color)
+{
+    constexpr int BorderWidth = 8;
+    constexpr int BorderHeight = 8;
+    const Rect borderRect {
+        rect.x - BorderWidth,
+        rect.y - BorderHeight,
+        rect.x + BorderWidth * (rect.w + 1),
+        rect.y + BorderHeight * (rect.h + 1),
+    };
+    draw_kq_box(where, borderRect, color, B_TEXT);
+}
+
+void KDraw::menubox(Raster* where, Rect rect, eBoxFill color)
+{
+    menubox(where, rect.x, rect.y, rect.w, rect.h, color);
+}
+
 void KDraw::menubox(Raster* where, int x, int y, int width, int height, eBoxFill color)
 {
-    const int FontWidth = 8;  // MagicNumber: Font width it 8
-    const int FontHeight = 8; // MagicNumber: Font height it 8
-    draw_kq_box(where, x, y, x + width * FontWidth + TILE_W, y + height * FontHeight + TILE_H, color, B_TEXT);
+    constexpr int BorderWidth = 8;
+    constexpr int BorderHeight = 8;
+    const Rect rect { x, y, x + BorderWidth * (width + 2), y + BorderHeight * (height + 2) };
+    draw_kq_box(where, rect, color, B_TEXT);
 }
 
 void KDraw::message(const char* inMessage, int icn, int delay)
@@ -1071,56 +1120,57 @@ std::string::const_iterator KDraw::decode_utf8(std::string::const_iterator it, u
 
     if (!ok)
     {
-        Game.program_death(_("UTF-8 decode error"));
+        //Game.program_death(_("UTF-8 decode error"));
+        sprintf(strbuf, _("UTF-8 decode error: %d"), cp);
+        Game.klog(strbuf);
     }
     return it;
 }
 
 int KDraw::get_glyph_index(uint32_t cp)
 {
-    int i;
-
-    if (cp < 128)
+    if (cp >= 32 && cp < 128)
     {
         return cp - 32;
     }
 
     /* otherwise look up */
-    i = 0;
-    while (glyph_lookup[i][0] != 0)
+    auto it = glyph_lookup.find(cp);
+    if (it != glyph_lookup.end())
     {
-        if (glyph_lookup[i][0] == cp)
-        {
-            return glyph_lookup[i][1];
-        }
-        ++i;
+        return it->second;
     }
 
     /* didn't find it */
-    sprintf(strbuf, _("Invalid glyph index: %d"), cp);
+    sprintf(strbuf, _("Invalid glyph index: %u"), cp);
     Game.klog(strbuf);
-    return 0;
+    return 0x20; // Return a space (blank) character
 }
 
 void KDraw::print_font(Raster* where, int sx, int sy, const std::string& msg, eFontColor font_index)
 {
-    int z = 0;
-
     if (font_index < 0 || font_index >= NUM_FONT_COLORS)
     {
         sprintf(strbuf, _("print_font: Bad font index, %d"), (int)font_index);
         Game.program_death(strbuf);
     }
-    // MagicNumber: font heights for BIG/NORMAL text
-    int hgt = font_height(font_index);
+    static const int FontW = 8;
+    static const int FontH = 8;
+    static const int dest_w = 8;
+    const int dest_h = font_height(font_index);
     auto msg_iter = msg.cbegin();
+
+    int z = 0;
     while (msg_iter != msg.cend())
     {
-        uint32_t cc;
-        msg_iter = decode_utf8(msg_iter, &cc);
-        cc = get_glyph_index(cc);
-        masked_blit(kfonts, where, cc * 8, font_index * 8, z + sx, sy, 8, hgt);
-        z += 8;
+        uint32_t cc = get_glyph_index((uint32_t)*msg_iter);
+
+        // FIXME: When font_index is FBIG, font_index*FontH here assumes all fonts above it in the
+        // image are always FontH pixels tall. If more tall fonts were to be added, this
+        // calculation will require us to know each preceding font's height.
+        masked_blit(kfonts, where, cc * FontW, font_index * FontH, z + sx, sy, dest_w, dest_h);
+        z += FontW;
+        ++msg_iter;
     }
 }
 

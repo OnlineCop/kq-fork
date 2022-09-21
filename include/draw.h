@@ -87,7 +87,11 @@ enum class eBoxFill
     LIGHT
 };
 
-/*  draw global functions  */
+struct Rect
+{
+    int x, y;
+    int w, h;
+};
 
 class KDraw
 {
@@ -220,8 +224,29 @@ class KDraw
      */
     void drawmap();
 
+    /*! \brief Draw menu box surrounding the specified coordinates.
+     *
+     * Given Rect{20, 24, 5, 6}:
+     *  - the left border would be drawn at x=[20-8=12]
+     *  - the top border would be drawn at y=[24-8=16]
+     *  - the right border would be drawn at x=[20+(5+1)*8=68]
+     *  - the bottom border would be drawn at y=[24+(6+1)*8=80]
+     *
+     * \param   where Bitmap to draw to.
+     * \param   rect Rect with the x, y, width and height values.
+     * \param   color Fill color
+     */
+    void menubox_inner(Raster* where, Rect rect, eBoxFill color);
+
     /*! \brief Draw menu box.
      *
+     * \param   where Bitmap to draw to.
+     * \param   rect Rect with the x, y, width and height values.
+     * \param   color Fill color
+     */
+    void menubox(Raster* where, Rect rect, eBoxFill color);
+
+    /*! \brief Draw menu box.
      *
      * \param   where Bitmap to draw to.
      * \param   x X coord.
@@ -449,6 +474,17 @@ class KDraw
      * Parallax is on for modes 4 & 5.
      */
     void draw_forelayer();
+
+    /*! \brief Draw box, with different backgrounds and borders.
+     *
+     * Draw the box as described.
+     *
+     * \param   where Bitmap to draw to.
+     * \param   rect Struct with x, y, w, h members (all integer).
+     * \param   bg background fill.
+     * \param   bstyle Style of border.
+     */
+    void draw_kq_box(Raster* where, Rect rect, eBoxFill bg, eBubbleStyle bstyle);
 
     /*! \brief Draw box, with different backgrounds and borders.
      *

@@ -111,7 +111,7 @@ static int getavalue(const char* capt, int minu, int maxu, int cv, bool sp, void
  * \param   cfg The configuration key name.
  * \returns True if a new code was received and stored, false otherwise.
  */
-static bool getakey(KPlayerInput::button& b, const char* cfg);
+static bool getakey(KPlayerInputButton& b, const char* cfg);
 
 /*! \brief Ask for window mode.
  *
@@ -473,7 +473,7 @@ void config_menu()
     Config.pop_config_state();
 }
 
-static bool getakey(KPlayerInput::button& b, const char* cfg)
+static bool getakey(KPlayerInputButton& b, const char* cfg)
 {
     Draw.menubox(double_buffer, 108, 108, 11, 1, eBoxFill::DARK);
     Draw.print_font(double_buffer, 116, 116, _("Press a key"), FNORMAL);

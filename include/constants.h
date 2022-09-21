@@ -23,30 +23,32 @@
 
 namespace eSize
 {
-const int TILE_W = 16U;
-const int TILE_H = 16U;
 
-const int ONSCREEN_TILES_W = 20U;
-const int ONSCREEN_TILES_H = 15U;
+constexpr int TILE_W = 16U;
+constexpr int TILE_H = 16U;
+
+constexpr int ONSCREEN_TILES_W = 20U;
+constexpr int ONSCREEN_TILES_H = 15U;
 
 // 320
-const int SCREEN_W = TILE_W * ONSCREEN_TILES_W;
+constexpr int SCREEN_W = TILE_W * ONSCREEN_TILES_W;
 
 // 240
-const int SCREEN_H = TILE_H * ONSCREEN_TILES_H;
+constexpr int SCREEN_H = TILE_H * ONSCREEN_TILES_H;
 
 // 1280  640
-const int SCALED_SCREEN_W = SCREEN_W << 2;
+constexpr int SCALED_SCREEN_W = SCREEN_W << 2;
 
 // 960   480
-const int SCALED_SCREEN_H = SCREEN_H << 2;
+constexpr int SCALED_SCREEN_H = SCREEN_H << 2;
 
 // 3
-const int SCALE_FACTOR = 4;
+constexpr int SCALE_FACTOR = 4;
 
-// 352, or (320 + 16 + 16) == screen dimensions plus 1 tile on left and 1 tile on right
-const int SCREEN_W2 = (SCREEN_W + 2 * TILE_W);
+// 352, or (320 + 16 + 16) == screen dimensions plus 1 tile on both left and right.
+constexpr int SCREEN_W2 = SCREEN_W + 2 * TILE_W;
 
-// 272, or (240 + 16 + 16) == screen dimensions plus 1 tile on top and 1 tile on bottom.
-const int SCREEN_H2 = (SCREEN_H + 2 * TILE_H);
-}; // namespace eSize
+// 272, or (240 + 16 + 16) == screen dimensions plus 1 tile on both top and bottom.
+constexpr int SCREEN_H2 = SCREEN_H + 2 * TILE_H;
+
+} // namespace eSize

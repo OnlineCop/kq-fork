@@ -33,39 +33,46 @@ KPlayerInput::KPlayerInput()
     bcheat.scancode = SDL_SCANCODE_F10;
 }
 
-// Helper functions
-
-static void kp(KPlayerInput::button& b, SDL_KeyboardEvent* evt)
+void KPlayerInput::ProcessKeyboardEvent(SDL_KeyboardEvent* evt)
 {
-    if (b.scancode == evt->keysym.scancode)
+    SetButtonStates(balt, evt);
+    SetButtonStates(besc, evt);
+    SetButtonStates(bctrl, evt);
+    SetButtonStates(benter, evt);
+    SetButtonStates(bhelp, evt);
+    SetButtonStates(bcheat, evt);
+
+    SetButtonStates(up, evt);
+    SetButtonStates(down, evt);
+    SetButtonStates(left, evt);
+    SetButtonStates(right, evt);
+}
+
+void KPlayerInput::SetButtonStates(KPlayerInputButton& button, SDL_KeyboardEvent* evt)
+{
+    if (button.scancode == evt->keysym.scancode)
     {
         if (evt->state == SDL_PRESSED)
         {
+            button.repeat_ = evt->repeat;
             if (evt->repeat == 0)
             {
-                b.down = b.pressed = true;
+                button.down_ = button.pressed_ = true;
             }
         }
         else
         {
-            b.down = b.pressed = false;
+            button.down_ = button.pressed_ = button.repeat_ = false;
         }
     }
 }
 
-void KPlayerInput::ProcessKeyboardEvent(SDL_KeyboardEvent* evt)
+KPlayerInputButton::KPlayerInputButton(int sc)
+    : scancode(sc)
+    , down_(false)
+    , pressed_(false)
+    , repeat_(false)
 {
-    kp(balt, evt);
-    kp(besc, evt);
-    kp(bctrl, evt);
-    kp(benter, evt);
-    kp(bhelp, evt);
-    kp(bcheat, evt);
-
-    kp(up, evt);
-    kp(down, evt);
-    kp(left, evt);
-    kp(right, evt);
 }
 
 KPlayerInput PlayerInput;
