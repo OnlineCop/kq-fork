@@ -5,11 +5,11 @@ project(kq-fork)
 set (CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}"
   "${CMAKE_CURRENT_SOURCE_DIR}")
 
-find_package(SDL2 REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
+find_package(SDL2_mixer CONFIG REQUIRED)
 find_package(Lua REQUIRED)
 find_package(PNG REQUIRED)
 find_package(tinyxml2)
-find_package(sdl2-mixer)
 
 # homebrew doesn't seem to have a FindXXX module for tinyxml2 and SDL_mixer, but vcpkg does,
 # therefore if find_package doesn't work, fall back to pkg-config. There is (usually) no
@@ -21,8 +21,8 @@ else()
   pkg_check_modules(TINYXML2 REQUIRED tinyxml2)
 endif()
 
-if(sdl2-mixer_FOUND)
-  set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main SDL2::SDL2_mixer)
+if(SDL2_mixer_FOUND)
+  set(SDL2_LIBRARIES SDL2::SDL2 SDL2::SDL2main SDL2_mixer::SDL2_mixer)
 else()
   find_package(PkgConfig REQUIRED)
   pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer)
