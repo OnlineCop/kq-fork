@@ -40,23 +40,23 @@ KBound* KBounds::GetBound(size_t index)
     return nullptr;
 }
 
-bool KBounds::IsBound(size_t& outIndex, int left, int top, int right, int bottom) const
+bool KBounds::IsBound(size_t& outIndex, int tile_left, int tile_top, int tile_right, int tile_bottom) const
 {
-    if (left > right)
+    if (tile_left > tile_right)
     {
-        std::swap(left, right);
+        std::swap(tile_left, tile_right);
     }
 
-    if (top > bottom)
+    if (tile_top > tile_bottom)
     {
-        std::swap(top, bottom);
+        std::swap(tile_top, tile_bottom);
     }
 
     for (size_t i = 0; i < m_bounds.size(); ++i)
     {
         auto& current_bound = m_bounds[i];
-        if (left > current_bound.right || right < current_bound.left || top > current_bound.bottom ||
-            bottom < current_bound.top)
+        if (tile_left > current_bound.tile_right || tile_right < current_bound.tile_left ||
+            tile_top > current_bound.tile_bottom || tile_bottom < current_bound.tile_top)
         {
             continue;
         }
@@ -70,10 +70,10 @@ bool KBounds::IsBound(size_t& outIndex, int left, int top, int right, int bottom
     return false; // not found
 }
 
-const KBound* KBounds::IsBound(int left, int top, int right, int bottom) const
+const KBound* KBounds::IsBound(int tile_left, int tile_top, int tile_right, int tile_bottom) const
 {
     size_t index;
-    if (IsBound(index, left, top, right, bottom))
+    if (IsBound(index, tile_left, tile_top, tile_right, tile_bottom))
     {
         return &m_bounds.at(index);
     }

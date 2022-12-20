@@ -314,32 +314,32 @@ void KDraw::draw_backlayer()
     int tile_y1 = box.y_offset / TILE_H;
     int tile_y2 = (box.y_offset + SCREEN_H - 1) / TILE_H;
     auto tx = map_icons[tilex[btile]];
-    for (int y = tile_y1; y < box.top; ++y)
+    for (int y = tile_y1; y < box.tile_top; ++y)
     {
         for (int x = tile_x1; x <= tile_x2; x++)
         {
             blit(tx, double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
         }
     }
-    for (int y = box.top; y <= box.bottom; y++)
+    for (int y = box.tile_top; y <= box.tile_bottom; y++)
     {
-        for (int x = tile_x1; x < box.left; x++)
+        for (int x = tile_x1; x < box.tile_left; x++)
         {
             blit(tx, double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
         }
 
-        for (int x = box.left; x <= box.right; x++)
+        for (int x = box.tile_left; x <= box.tile_right; x++)
         {
             size_t pix = map_seg[Game.Map.Clamp(x, y)];
             blit(map_icons[tilex[pix]], double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset,
                  TILE_W, TILE_H);
         }
-        for (int x = box.right + 1; x <= tile_x2; x++)
+        for (int x = box.tile_right + 1; x <= tile_x2; x++)
         {
             blit(tx, double_buffer, 0, 0, x * TILE_W - box.x_offset, y * TILE_H - box.y_offset, TILE_W, TILE_H);
         }
     }
-    for (int y = box.bottom + 1; y <= tile_y2; ++y)
+    for (int y = box.tile_bottom + 1; y <= tile_y2; ++y)
     {
         for (int x = tile_x1; x <= tile_x2; x++)
         {
@@ -550,9 +550,9 @@ void KDraw::draw_forelayer()
 {
     KDraw::PBound box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S ||
                                       Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
-    for (int y = box.top; y <= box.bottom; y++)
+    for (int y = box.tile_top; y <= box.tile_bottom; y++)
     {
-        for (int x = box.left; x <= box.right; x++)
+        for (int x = box.tile_left; x <= box.tile_right; x++)
         {
             // Used in several places in this loop, so shortened the name
             const size_t here = Game.Map.Clamp(x, y);
@@ -653,9 +653,9 @@ void KDraw::draw_midlayer()
 {
     auto box = calculate_box(Game.Map.g_map.map_mode == eMapMode::MAPMODE_1E2p3S ||
                              Game.Map.g_map.map_mode == eMapMode::MAPMODE_1P2E3S);
-    for (int y = box.top; y <= box.bottom; y++)
+    for (int y = box.tile_top; y <= box.tile_bottom; y++)
     {
-        for (int x = box.left; x <= box.right; x++)
+        for (int x = box.tile_left; x <= box.tile_right; x++)
         {
             size_t here = Game.Map.Clamp(x, y);
             size_t pix = b_seg[here];
@@ -671,9 +671,9 @@ void KDraw::draw_shadows()
         return;
     }
     auto box = calculate_box(false);
-    for (int y = box.top; y <= box.bottom; y++)
+    for (int y = box.tile_top; y <= box.tile_bottom; y++)
     {
-        for (int x = box.left; x <= box.right; x++)
+        for (int x = box.tile_left; x <= box.tile_right; x++)
         {
             const size_t here = Game.Map.Clamp(x, y);
             eShadow pix = Game.Map.shadow_array[here];
@@ -769,14 +769,14 @@ void KDraw::drawmap()
     auto ent_y = g_ent[0].tiley;
 
     /* Is the player standing inside a bounding area? */
-    const KBound* found;
-    if ((found = Game.Map.g_map.bounds.IsBound(ent_x, ent_y, ent_x, ent_y)) != nullptr)
+    const KBound* found = Game.Map.g_map.bounds.IsBound(ent_x, ent_y, ent_x, ent_y);
+    if (found != nullptr)
     {
         view_on = 1;
-        view_y1 = found->top;
-        view_y2 = found->bottom;
-        view_x1 = found->left;
-        view_x2 = found->right;
+        view_y1 = found->tile_top;
+        view_y2 = found->tile_bottom;
+        view_x1 = found->tile_left;
+        view_x2 = found->tile_right;
         btile = found->btile;
     }
     else

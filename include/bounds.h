@@ -43,16 +43,16 @@ struct KBound
 {
   public:
     /*! Left edge of the bounding box, in full tiles (such as entity.tilex) */
-    int left;
+    int tile_left;
 
     /*! Top edge of the bounding box, in full tiles (such as entity.tiley) */
-    int top;
+    int tile_top;
 
     /*! Right edge of the bounding box, in full tiles (such as entity.tilex) */
-    int right;
+    int tile_right;
 
     /*! Bottom edge of the bounding box, in full tiles (such as entity.tiley) */
-    int bottom;
+    int tile_bottom;
 
     /*! Index of the tile to draw everywhere BUT here */
     short btile;
@@ -96,23 +96,23 @@ class KBounds
     /*! \brief Determine whether given coordinates are within any bounding boxes.
      *
      * \param   outIndex Index of found bounding area.
-     * \param   left Left edge of current bounding area.
-     * \param   top Top edge of current bounding area.
-     * \param   right Right edge of current bounding area.
-     * \param   bottom Bottom edge of current bounding area.
+     * \param   tile_left Left edge of current bounding area tile.
+     * \param   tile_top Top edge of current bounding area tile.
+     * \param   tile_right Right edge of current bounding area tile.
+     * \param   tile_bottom Bottom edge of current bounding area tile.
      * \returns True if the specified coordinate was found within a bounding area, else false.
      */
-    bool IsBound(size_t& outIndex, int left, int top, int right, int bottom) const;
+    bool IsBound(size_t& outIndex, int tile_left, int tile_top, int tile_right, int tile_bottom) const;
 
     /*! \brief Determine whether given coordinates are within any bounding boxes.
      *
-     * \param   left Left edge of current bounding area.
+     * \param   tile_left Left edge of current bounding area.
      * \param   top Top edge of current bounding area.
-     * \param   right Right edge of current bounding area.
-     * \param   bottom Bottom edge of current bounding area.
+     * \param   tile_right Right edge of current bounding area.
+     * \param   tile_bottom Bottom edge of current bounding area.
      * \returns Pointer to bounds or NULL if not within any bounding box.
      */
-    const KBound* IsBound(int left, int top, int right, int bottom) const;
+    const KBound* IsBound(int tile_left, int tile_top, int tile_right, int tile_bottom) const;
 
   protected:
     std::vector<KBound> m_bounds;
