@@ -1,0 +1,45 @@
+# General configuration file types
+.clang-format       text
+.gitattributes      text
+.gitignore          text
+*.csv               text
+*.el                text
+*.pro               text
+*.sh                text eol=lf
+
+CMakeLists.txt      text diff=cmake
+
+AUTHORS             text diff=astextplain
+COPYING             text diff=astextplain
+
+*.cpp               text diff=cpp
+*.h                 text diff=cpp
+*.json              text diff=json
+*.lua               text diff=lua
+*.md                text diff=markdown
+*.pl                text diff=perl
+*.py                text diff=python
+
+# Tiled map (tmx) and tileset (tsx) files.
+# It appears to read both CRLF and LF fine, but saves out with CRLF.
+*.tmx               text eol=crlf diff=xml
+*.tsx               text eol=crlf diff=xml
+
+*.xml               text diff=xml
+*.mon               text
+
+# Music files
+*.mod               binary
+*.s3m               binary
+*.wav               binary
+*.xm                binary
+
+# Image files
+*.ico               binary
+*.png               binary
+*.xcf               binary
+
+# Allegro data files
+*.dat               binary
+*.kq                binary
+
