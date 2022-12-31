@@ -755,6 +755,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
 void remove_item(size_t inventory_index, int qi)
 {
     g_inv.removeIndex(inventory_index, qi);
+    sort_items();
 }
 
 // Sort helper: return true if a should come before b.
