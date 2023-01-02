@@ -280,11 +280,6 @@ function LOC_ayla_join(en)
         level_partner(AYLA)
         id = select_team{AYLA}
         --  Add the characters that were deselected to the manor
-        while (LOC_get_ayla() ~= HERO1) do
-          bubble(HERO1, _"Stop wasting my time. I'm going to be the leader here.")
-          id = select_team{AYLA}
-        end
-    
         add_to_manor(id)
         if (id[1]) then
           set_ent_id(en, id[1])

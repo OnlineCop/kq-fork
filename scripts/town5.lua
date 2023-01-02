@@ -79,14 +79,16 @@ function entity_handler(en)
               _"My husband is starting to look handsome.")
 
   elseif (en == 4) then
-    if (party[0] == Ayla) then
+    if (party[0] == Ayla or party[1] == Ayla) then
+      LOC_swap_ayla_first()
       LOC_ayla_bar(en)
     else
       bubble(en, _"These two are weird... but at least I don't have to sit alone.")
     end
 
   elseif (en == 5) then
-    if (party[0] == Ayla) then
+    if (party[0] == Ayla or party[1] == Ayla) then
+      LOC_swap_ayla_first()
       LOC_ayla_girl(en)
     else
       -- if (progress.sidequest6 > 2) then
@@ -254,7 +256,8 @@ function zone_handler(zn)
     refresh()
     
   elseif (zn == 17) then -- Palace gates
-    if (party[0] == Ayla) then
+    if (party[0] == Ayla or party[1] == Ayla) then
+      LOC_swap_ayla_first()
       -- msg(progress.ayla_quest)
       if (progress.sidequest6 > 7) then
         bubble(HERO1, _"The gates are closed and locked.")
@@ -352,7 +355,7 @@ function zone_handler(zn)
     bubble(HERO1, _"Nothing of interest here.")
 
   elseif (zn == 33) then
-    if (progress.sidequest6 == 1 and party[0] == Ayla) then
+    if (progress.sidequest6 == 1 and (party[0] == Ayla or party[1] == Ayla)) then
       bubble(HERO1, _"Finally here it is, the Embers Mark coin.")
       bubble(HERO1, _"But why did they use the signature of a bird? It better not be just so they could use that bad bird pun.")
       add_special_item(SI_EMBERCOIN)
@@ -520,9 +523,20 @@ function LOC_get_ayla()
 end
 
 
+function LOC_swap_ayla_first()
+  local temp
+  if (party[1] == Ayla) then
+    temp = party[0]
+    party[0] = Ayla
+    party[1] = temp
+  end
+end
+
+
 function LOC_maid_clothes()
   -- Clothes chest in cottage, Ayla must be in lead to find them
-  if (party[0] == Ayla) then
+  if (party[0] == Ayla or party[1] == Ayla) then
+    LOC_swap_ayla_first()
     if (progress.ayla_quest > 0 and progress.ayla_quest < 5) then
       sfx(5)
       msg(_"Maid's outfit procured", 12, 0)
