@@ -105,7 +105,7 @@ static std::string strconv(const char* ptr)
     return std::string(ptr ? ptr : "");
 }
 
-tmx_map KTiledMap::load_tmx_map(XMLElement const* root)
+tmx_map KTiledMap::load_tmx_map(const XMLElement* root)
 {
     tmx_map smap;
     auto properties = root->FirstChildElement("properties");
@@ -206,7 +206,7 @@ tmx_map KTiledMap::load_tmx_map(XMLElement const* root)
     return smap;
 }
 
-KBounds KTiledMap::load_tmx_bounds(XMLElement const* el)
+KBounds KTiledMap::load_tmx_bounds(const XMLElement* el)
 {
     KBounds bounds;
     if (el)
@@ -239,7 +239,7 @@ KBounds KTiledMap::load_tmx_bounds(XMLElement const* el)
     return bounds;
 }
 
-XMLElement const* KTiledMap::find_tmx_element(XMLElement const* root, const char* type, const char* name)
+const XMLElement* KTiledMap::find_tmx_element(const XMLElement* root, const char* type, const char* name)
 {
     for (auto i = root->FirstChildElement(type); i; i = i->NextSiblingElement(type))
     {
@@ -251,7 +251,7 @@ XMLElement const* KTiledMap::find_tmx_element(XMLElement const* root, const char
     return nullptr;
 }
 
-KMarkers KTiledMap::load_tmx_markers(XMLElement const* el)
+KMarkers KTiledMap::load_tmx_markers(const XMLElement* el)
 {
     KMarkers markers;
     if (el)
@@ -268,7 +268,7 @@ KMarkers KTiledMap::load_tmx_markers(XMLElement const* el)
     return markers;
 }
 
-tmx_layer KTiledMap::load_tmx_layer(XMLElement const* el)
+tmx_layer KTiledMap::load_tmx_layer(const XMLElement* el)
 {
     auto h = el->IntAttribute("height");
     auto w = el->IntAttribute("width");
@@ -324,7 +324,7 @@ tmx_layer KTiledMap::load_tmx_layer(XMLElement const* el)
     return layer;
 }
 
-std::vector<KZone> KTiledMap::load_tmx_zones(XMLElement const* el)
+std::vector<KZone> KTiledMap::load_tmx_zones(const XMLElement* el)
 {
     std::vector<KZone> zones;
     if (el)
@@ -347,7 +347,7 @@ std::vector<KZone> KTiledMap::load_tmx_zones(XMLElement const* el)
     return zones;
 }
 
-std::vector<KQEntity> KTiledMap::load_tmx_entities(XMLElement const* el)
+std::vector<KQEntity> KTiledMap::load_tmx_entities(const XMLElement* el)
 {
     std::vector<KQEntity> entities;
     for (auto i = el->FirstChildElement("object"); i; i = i->NextSiblingElement("object"))
@@ -456,11 +456,11 @@ std::vector<KQEntity> KTiledMap::load_tmx_entities(XMLElement const* el)
     return entities;
 }
 
-KTmxTileset KTiledMap::load_tmx_tileset(XMLElement const* el)
+KTmxTileset KTiledMap::load_tmx_tileset(const XMLElement* el)
 {
     KTmxTileset tileset;
     tileset.firstgid = el->IntAttribute("firstgid");
-    XMLElement const* tsx;
+    const XMLElement* tsx;
     XMLDocument sourcedoc;
     auto source = el->Attribute("source");
     if (source)
@@ -486,7 +486,7 @@ KTmxTileset KTiledMap::load_tmx_tileset(XMLElement const* el)
         tileset.name = name;
     }
     // Get the image
-    XMLElement const* image = tsx->FirstChildElement("image");
+    const XMLElement* image = tsx->FirstChildElement("image");
     tileset.sourceimage = image->Attribute("source");
     tileset.width = image->IntAttribute("width");
     tileset.height = image->IntAttribute("height");
@@ -513,7 +513,7 @@ KTmxTileset KTiledMap::load_tmx_tileset(XMLElement const* el)
     return tileset;
 }
 
-XMLElement const* KTiledMap::find_objectgroup(XMLElement const* root, const char* name)
+const XMLElement* KTiledMap::find_objectgroup(const XMLElement* root, const char* name)
 {
     return find_tmx_element(root, "objectgroup", name);
 }
