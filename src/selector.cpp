@@ -77,7 +77,7 @@ static eMiniMenu mini_menu(int omask);
  * \param   id Index of character.
  * \param   lead Whether they will lead the party or follow.
  */
-static void party_add(ePIDX id, int lead);
+static void party_add(ePIDX id, bool lead);
 
 /*! \brief Player chose the person to remove from the party.
  *
@@ -378,7 +378,7 @@ static eMiniMenu mini_menu(int omask)
     }
 }
 
-static void party_add(ePIDX id, int lead)
+static void party_add(ePIDX id, bool lead)
 {
     KQEntity* t;
 
@@ -409,12 +409,14 @@ static void party_add(ePIDX id, int lead)
 
 void party_newlead()
 {
+    using std::swap;
+
     // Shift all IDs to the right; shift last ID to the front.
     for (size_t i = 1; i < numchrs; ++i)
     {
         // Change only the entity's type and look; retain the other
         // attributes such as direction facing, speed, etc.
-        std::swap(pidx[0], pidx[i]);
+        swap(pidx[0], pidx[i]);
         std::swap(g_ent[0].eid, g_ent[i].eid);
         std::swap(g_ent[0].chrx, g_ent[i].chrx);
     }
@@ -862,12 +864,12 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
                     mini_menu_mask = mini_menu(mask);
                     if (mini_menu_mask == MM_JOIN)
                     {
-                        party_add(hero, 0);
+                        party_add(hero, false);
                         avail[cur] = PIDX_UNDEFINED;
                     }
                     else if (mini_menu_mask == MM_LEAD)
                     {
-                        party_add(hero, 1);
+                        party_add(hero, true);
                         avail[cur] = PIDX_UNDEFINED;
                     }
                 }
