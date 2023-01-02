@@ -103,10 +103,11 @@ static void init_markers(lua_State* L);
 
 /*! \brief Initialize the object interface for heroes and entities.
  *
- * This registers a new tag type for the heroes and adds the __index method to it.
- * It then creates global variables for all heroes with their names as defined (Sensar etc.).
- * Then it sets the 'player[]' global (all heroes) and the 'party[]' global (all heroes currently in play).
- * Finally it sets the 'entity[]' array.
+ * 1. Registers a new tag type for the heroes and adds the __index method to it.
+ * 2. Creates global variables for all heroes with their names as defined (Sensar etc.).
+ * 3. Sets the 'player[]' global (all heroes).
+ * 4. Sets the 'party[]' global (all heroes currently in play).
+ * 5. Sets the 'entity[]' array (all heroes and NPCs on the current map).
  *
  * \param   L The Lua state object.
  */

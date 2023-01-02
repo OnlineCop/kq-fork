@@ -435,12 +435,12 @@ class KDraw
     /*! Boundary adjusted for parallax. */
     struct PBound
     {
-        int left;
-        int top;
-        int right;
-        int bottom;
-        int x_offset;
-        int y_offset;
+        int tile_left;      // In full tiles
+        int tile_top;       // In full tiles
+        int tile_right;     // In full tiles
+        int tile_bottom;    // In full tiles
+        int x_offset;       // In pixels
+        int y_offset;       // In pixels
     };
 
     /*! \brief Calculate bounds.

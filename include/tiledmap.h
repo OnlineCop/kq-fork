@@ -170,7 +170,7 @@ class KTiledMap
      * \param   root XML Node to draw data from.
      * \returns The map loaded from the file.
      */
-    tmx_map load_tmx_map(tinyxml2::XMLElement const* root);
+    tmx_map load_tmx_map(const tinyxml2::XMLElement* root);
 
     /*! \brief Scan tree for a named TMX <layer>.
      *
@@ -179,7 +179,7 @@ class KTiledMap
      * \param   name The value of the 'name' attribute.
      * \returns The found element or NULL.
      */
-    tinyxml2::XMLElement const* find_tmx_element(tinyxml2::XMLElement const* root, const char* type, const char* name);
+    const tinyxml2::XMLElement* find_tmx_element(const tinyxml2::XMLElement* root, const char* type, const char* name);
 
     /*! \brief Load an array of bounding boxes from a TMX <objectgroup>.
      *
@@ -188,7 +188,7 @@ class KTiledMap
      * \param   el The object group.
      * \returns A collection of objects.
      */
-    KBounds load_tmx_bounds(tinyxml2::XMLElement const* el);
+    KBounds load_tmx_bounds(const tinyxml2::XMLElement* el);
 
     /*! \brief Load an array of markers from a TMX <objectgroup>.
      *
@@ -197,14 +197,14 @@ class KTiledMap
      * \param   el The object group.
      * \returns A collection of objects.
      */
-    KMarkers load_tmx_markers(tinyxml2::XMLElement const* el);
+    KMarkers load_tmx_markers(const tinyxml2::XMLElement* el);
 
     /*! \brief Load up the zones.
      *
      * \param   el The <objectgroup> element containing the zones.
      * \returns A vector of zones.
      */
-    std::vector<KZone> load_tmx_zones(tinyxml2::XMLElement const* el);
+    std::vector<KZone> load_tmx_zones(const tinyxml2::XMLElement* el);
 
     /*! \brief Fetch tile indices from a layer.
      *
@@ -213,14 +213,14 @@ class KTiledMap
      * \param   el The layer element.
      * \returns The raw data.
      */
-    tmx_layer load_tmx_layer(tinyxml2::XMLElement const* el);
+    tmx_layer load_tmx_layer(const tinyxml2::XMLElement* el);
 
     /*! \brief Load up the entities.
      *
      * \param   el The objectgroup element containing the entities.
      * \returns A vector of entities.
      */
-    std::vector<KQEntity> load_tmx_entities(tinyxml2::XMLElement const* el);
+    std::vector<KQEntity> load_tmx_entities(const tinyxml2::XMLElement* el);
 
     /*! \brief Load a tileset.
      *
@@ -229,9 +229,9 @@ class KTiledMap
      * \param   el The <tileset> element.
      * \returns The tileset.
      */
-    KTmxTileset load_tmx_tileset(tinyxml2::XMLElement const* el);
+    KTmxTileset load_tmx_tileset(const tinyxml2::XMLElement* el);
 
-    tinyxml2::XMLElement const* find_objectgroup(tinyxml2::XMLElement const* root, const char* name);
+    const tinyxml2::XMLElement* find_objectgroup(const tinyxml2::XMLElement* root, const char* name);
 
     /*! \brief Decode BASE64.
      *
