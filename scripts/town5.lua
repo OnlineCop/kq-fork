@@ -80,7 +80,7 @@ function entity_handler(en)
 
   elseif (en == 4) then
     if (party[0] == Ayla or party[1] == Ayla) then
-      LOC_swap_ayla_first()
+      swap_character_first(Ayla)
       LOC_ayla_bar(en)
     else
       bubble(en, _"These two are weird... but at least I don't have to sit alone.")
@@ -88,7 +88,7 @@ function entity_handler(en)
 
   elseif (en == 5) then
     if (party[0] == Ayla or party[1] == Ayla) then
-      LOC_swap_ayla_first()
+      swap_character_first(Ayla)
       LOC_ayla_girl(en)
     else
       -- if (progress.sidequest6 > 2) then
@@ -257,7 +257,7 @@ function zone_handler(zn)
     
   elseif (zn == 17) then -- Palace gates
     if (party[0] == Ayla or party[1] == Ayla) then
-      LOC_swap_ayla_first()
+      swap_character_first(Ayla)
       -- msg(progress.ayla_quest)
       if (progress.sidequest6 > 7) then
         bubble(HERO1, _"The gates are closed and locked.")
@@ -523,20 +523,10 @@ function LOC_get_ayla()
 end
 
 
-function LOC_swap_ayla_first()
-  local temp
-  if (party[1] == Ayla) then
-    temp = party[0]
-    party[0] = Ayla
-    party[1] = temp
-  end
-end
-
-
 function LOC_maid_clothes()
   -- Clothes chest in cottage, Ayla must be in lead to find them
   if (party[0] == Ayla or party[1] == Ayla) then
-    LOC_swap_ayla_first()
+    swap_character_first(Ayla)
     if (progress.ayla_quest > 0 and progress.ayla_quest < 5) then
       sfx(5)
       msg(_"Maid's outfit procured", 12, 0)
