@@ -412,7 +412,7 @@ function zone_handler(zn)
     --    means you must have slept here. */
     local old_gp = get_gp()
     inn("Wayside Inn", 30, 1)
-    -- This means you MUST stay at the inn before the bridge gets repaired.
+    -- This means you MUST stay at an inn before the bridge gets repaired.
     if (get_gp() < old_gp) then
       if progress.fightonbridge == 4 then
         progress.fightonbridge = 5
