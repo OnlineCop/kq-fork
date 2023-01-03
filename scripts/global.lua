@@ -639,6 +639,14 @@ function select_manor()
 end
 
 
+-- Swaps the desired character to first in line if they are not already
+function swap_character_first(character)
+  if (party[1] == character) then
+    party[0], party[1] = party[1], party[0]
+  end
+end
+
+
 --  Response for reading a book.
 function book_talk(ent)
   if (party[0] == Sensar) then
