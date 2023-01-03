@@ -50,7 +50,7 @@ end
 
 function entity_handler(en)
   if (en == 0 or en == 1 or en == 3 or en == 4) then
-    bubble(en, _"It sure it clammy in here...")
+    bubble(en, _"It sure is clammy in here...")
 
   elseif (en == 2) then
     -- This should never happen, but just incase...
@@ -404,7 +404,7 @@ function LOC_rescue_mayor(en)
   refresh()
   set_autoparty(1)
 
-  move_entity(HERO1, x + 1, y)
+  set_ent_script(HERO1, "D2R1")
   if (get_numchrs() == 2) then
     move_entity(HERO2, x + 1, y + 1)
   end

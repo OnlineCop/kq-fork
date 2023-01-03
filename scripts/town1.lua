@@ -170,7 +170,14 @@ function zone_handler(zn)
     change_map("main", "town1")
 
   elseif (zn == 2) then
+    local old_gp = get_gp()
     inn("The Blue Boar Inn", 25, 1)
+    -- This means you MUST stay at an inn before the bridge gets repaired.
+    if (get_gp() < old_gp) then
+      if progress.fightonbridge == 4 then
+        progress.fightonbridge = 5
+        progress.showbridge = 1
+      end
 
   elseif (zn == 3) then
     shop(0)
