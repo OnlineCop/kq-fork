@@ -716,7 +716,7 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
     uint32_t running = 1;
 
     cur = 0;
-    if (avail == NULL)
+    if (avail == nullptr)
     {
         /* check input parameters */
         return 0;

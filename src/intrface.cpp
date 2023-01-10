@@ -507,7 +507,7 @@ static const struct luaL_Reg lrs[] = {
     { "wait", KQ_wait },
     { "warp", KQ_warp },
     /*   { "get_tile_all", KQ_get_tile_all }, */
-    { NULL, NULL } /* Must always be the LAST entry */
+    { nullptr, nullptr } /* Must always be the LAST entry */
 };
 
 /*! \brief Maps a text field name to an identifier. */
@@ -674,14 +674,14 @@ void do_luainit(const char* fname, int global)
 {
     int oldtop;
     const struct luaL_Reg* rg = lrs;
-    if (theL != NULL)
+    if (theL != nullptr)
     {
         do_luakill();
     }
     /* In Lua 5.1, this is a compatibility #define to luaL_newstate */
     /* In Lua 5.2, this #define doesn't exist anymode. Switching to luaL_newstate */
     theL = luaL_newstate();
-    if (theL == NULL)
+    if (theL == nullptr)
     {
         Game.program_death(_("Could not initialize scripting engine"));
     }
@@ -796,14 +796,14 @@ static const char* stringreader(lua_State* /*L*/, void* data, size_t* size)
     char** f = reinterpret_cast<char**>(data);
     char* ans = *f;
 
-    if (ans == NULL)
+    if (ans == nullptr)
     {
         *size = 0;
     }
     else
     {
         *size = strlen(ans);
-        *f = NULL;
+        *f = nullptr;
     }
     return ans;
 }
@@ -3821,12 +3821,12 @@ int lua_dofile(lua_State* L, const char* filename)
     r->in = fopen(filename, "rb");
     int ret = 0;
 
-    if (r->in == NULL)
+    if (r->in == nullptr)
     {
         TRACE("Could not open script %s!\n", filename);
         Game.program_death("Error opening script file");
     }
-    ret = lua_load(L, filereader, r.get(), filename, NULL);
+    ret = lua_load(L, filereader, r.get(), filename, nullptr);
     fclose(r->in);
     if (ret != 0)
     {
@@ -3856,7 +3856,7 @@ static int kq_dostring(lua_State* L, const char* cmd)
 {
     int top = lua_gettop(L);
     /* Parse the command into an anonymous function on the stack */
-    int retval = lua_load(L, (lua_Reader)stringreader, &cmd, "<console>", NULL);
+    int retval = lua_load(L, (lua_Reader)stringreader, &cmd, "<console>", nullptr);
     if (retval != 0)
     {
         Console.scroll("Parse error");

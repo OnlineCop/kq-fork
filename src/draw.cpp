@@ -948,7 +948,7 @@ void KDraw::message(const char* inMessage, int icn, int delay)
     fullblit(double_buffer, back);
 
     /* Loop for each box full of text... */
-    while (s != NULL)
+    while (s != nullptr)
     {
         s = relay(s);
         /* Calculate the box size */
@@ -1503,7 +1503,7 @@ const char* KDraw::relay(const char* buf)
             break;
 
         case M_END:
-            return NULL;
+            return nullptr;
             break;
 
         default:

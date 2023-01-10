@@ -86,7 +86,7 @@ Raster* sfonts[5];
 Raster* obj_mesh;
 #endif
 
-uint16_t *map_seg = NULL, *b_seg = NULL, *f_seg = NULL;
+uint16_t *map_seg = nullptr, *b_seg = nullptr, *f_seg = nullptr;
 uint8_t progress[SIZE_PROGRESS];
 uint8_t treasure[SIZE_TREASURE];
 uint8_t save_spells[SIZE_SAVE_SPELL];
@@ -1285,7 +1285,7 @@ void KGame::startup()
     SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 #endif
 
-    map_seg = b_seg = f_seg = NULL;
+    map_seg = b_seg = f_seg = nullptr;
     Map.zone_array.clear();
     Map.shadow_array.clear();
     Map.obstacle_array.clear();
