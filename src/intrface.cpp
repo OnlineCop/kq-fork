@@ -3924,7 +3924,7 @@ void do_console_command(const std::string& cmd)
  * \param   L The Lua state.
  * \returns 0 (nothing pushed onto Lua state).
  */
-int KQ_print(lua_State* L)
+static int KQ_print(lua_State* L)
 {
     Console.scroll(lua_tostring(L, 1));
     return 0;
