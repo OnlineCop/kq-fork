@@ -22,6 +22,7 @@
 #include "tmx_tileset.h"
 
 #include <memory>
+#include <utility>
 
 KTmxTileset::KTmxTileset()
     : firstgid {}
