@@ -65,9 +65,9 @@ void do_luacheat();
  * A new VM is created each time.
  *
  * \param   fname Base name of script; xxxxx loads script scripts/xxxxx.lua.
- * \param   global Non-zero to load global.lua; 0 to not load global.lob.
+ * \param   global True to load global.lua; false to not load global.lua.
  */
-void do_luainit(const char* fname, int global);
+void do_luainit(const char* fname, bool global);
 
 /*! \brief Kill the lua VM.
  *

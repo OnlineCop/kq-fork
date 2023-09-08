@@ -1180,7 +1180,8 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     }
 
     do_luakill();
-    do_luainit(GetCurmap().c_str(), 1);
+    constexpr bool load_global = true;
+    do_luainit(GetCurmap().c_str(), load_global);
     do_autoexec();
 
     if (hold_fade == 0 && numchrs > 0)

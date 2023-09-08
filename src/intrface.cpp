@@ -670,7 +670,7 @@ void do_luacheat()
 }
 #endif
 
-void do_luainit(const char* fname, int global)
+void do_luainit(const char* fname, bool global)
 {
     int oldtop;
     const struct luaL_Reg* rg = lrs;
@@ -756,8 +756,9 @@ void do_zone(int zn_num)
 
 void lua_user_init()
 {
+    constexpr bool load_global = true;
     do_luakill();
-    do_luainit("init", 1);
+    do_luainit("init", load_global);
     call_global("lua_user_init");
 }
 
