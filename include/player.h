@@ -146,4 +146,9 @@ class KPlayer
     uint8_t sts[NUM_SPELL_TYPES];
 };
 
+/*! Characters in play. The pidx[] array references this for the heroes actually
+ * on screen, e.g. party[pidx[0]] is the 'lead' character,
+ * party[pidx[1]] is the follower, if there are 2 in the party.
+ * We need to store all of them, because heroes join and leave during the game.
+ */
 extern KPlayer party[MAXCHRS];
