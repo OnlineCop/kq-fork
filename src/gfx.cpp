@@ -304,7 +304,7 @@ void Raster::to_rgba32(SDL_Rect* src, SDL_PixelFormat* format, void* pixels, int
         for (int x = 0; x < src->w; ++x)
         {
             int sx = x + src->x;
-            line[x] = rgbas[data[sx + sy * stride]];
+            line[x] = rgbas[data[sx + sy * this->stride]];
         }
     }
 }
