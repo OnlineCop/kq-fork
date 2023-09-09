@@ -281,14 +281,14 @@ void draw_trans_sprite(Raster* dest, Raster* src, int x, int y)
 
 void Raster::to_rgba32(SDL_Rect* src, SDL_PixelFormat* format, void* pixels, int stride)
 {
-    Uint32 rgbas[256];
+    Uint32 rgbas[PAL_SIZE];
     static SDL_Rect defl;
     if (!src)
     {
         defl = { 0, 0, width, height };
         src = &defl;
     }
-    for (int i = 0; i < 256; ++i)
+    for (int i = 0; i < PAL_SIZE; ++i)
     {
         Uint8 r = 4 * current_palette[i].r;
         Uint8 g = 4 * current_palette[i].g;
@@ -304,7 +304,7 @@ void Raster::to_rgba32(SDL_Rect* src, SDL_PixelFormat* format, void* pixels, int
         for (int x = 0; x < src->w; ++x)
         {
             int sx = x + src->x;
-            line[x] = rgbas[data[sx + sy * this->stride]];
+            line[x] = rgbas[data[sx + sy * stride]];
         }
     }
 }
