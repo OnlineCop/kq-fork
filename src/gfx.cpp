@@ -65,7 +65,7 @@ void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w
     auto y0 = std::max(0, static_cast<int>(dest_y));
     auto y1 = std::min(static_cast<int>(target->height), dest_y + dest_h);
     bool stretch = (dest_w != src_w) || (dest_h != src_h);
-    // Four cases - stretch + masked, stretch + not masked, not stretch + masked, not stretch + not masked.
+    // Four cases: stretch + masked, stretch + not masked, not stretch + masked, not stretch + not masked.
     if (stretch)
     {
         for (auto i = x0; i < x1; ++i)
@@ -156,17 +156,17 @@ void Raster::maskedBlitTo(Raster* target, int16_t dest_x, int16_t dest_y)
     blitTo(target, 0, 0, width, height, dest_x, dest_y, width, height, true);
 }
 
-void Raster::setpixel(int16_t x, int16_t y, uint8_t color)
+void Raster::setpixel(int16_t x, int16_t y, uint8_t kolor)
 {
-    if (x < width && y < height && x >= 0 && y >= 0)
+    if ((uint16_t)x < width && (uint16_t)y < height)
     {
-        ptr(x, y) = color;
+        ptr(x, y) = kolor;
     }
 }
 
 uint8_t Raster::getpixel(int16_t x, int16_t y)
 {
-    if (x < width && y < height && x >= 0 && y >= 0)
+    if ((uint16_t)x < width && (uint16_t)y < height)
     {
         return ptr(x, y);
     }
@@ -176,35 +176,35 @@ uint8_t Raster::getpixel(int16_t x, int16_t y)
     }
 }
 
-void Raster::hline(int16_t x0, int16_t x1, int16_t y, uint8_t color)
+void Raster::hline(int16_t x0, int16_t x1, int16_t y, uint8_t kolor)
 {
     if (x0 > x1)
     {
         std::swap(x0, x1);
     }
-    fill(x0, y, x1 - x0, 1, color);
+    fill(x0, y, x1 - x0, 1, kolor);
 }
 
-void Raster::vline(int16_t x, int16_t y0, int16_t y1, uint8_t color)
+void Raster::vline(int16_t x, int16_t y0, int16_t y1, uint8_t kolor)
 {
     if (y0 > y1)
     {
         std::swap(y0, y1);
     }
-    fill(x, y0, 1, y1 - y0, color);
+    fill(x, y0, 1, y1 - y0, kolor);
 }
 
-void Raster::fill(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t color)
+void Raster::fill(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t kolor)
 {
     for (auto i = 0; i < w; ++i)
     {
         for (auto j = 0; j < h; ++j)
         {
-            setpixel(x + i, y + j, color);
+            setpixel(x + i, y + j, kolor);
         }
     }
 }
-void Raster::fill_trans(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t color)
+void Raster::fill_trans(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t kolor)
 {
     for (auto i = 0; i < w; ++i)
     {
@@ -212,17 +212,17 @@ void Raster::fill_trans(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t co
         {
             auto pre = getpixel(x + i, y + j);
 
-            setpixel(x + i, y + j, color_map->data[pre][color]);
+            setpixel(x + i, y + j, color_map->data[pre][kolor]);
         }
     }
 }
 
-void Raster::fill(uint8_t color)
+void Raster::fill(uint8_t kolor)
 {
-    fill(0, 0, width, height, color);
+    fill(0, 0, width, height, kolor);
 }
 
-void ellipsefill_slow(Raster* r, int x, int y, int rx, int ry, int color)
+void ellipsefill_slow(Raster* r, int x, int y, int rx, int ry, int kolor)
 {
     for (int i = 0; i < rx; ++i)
     {
@@ -230,17 +230,17 @@ void ellipsefill_slow(Raster* r, int x, int y, int rx, int ry, int color)
         {
             if (j * j * rx * rx + i * i * ry * ry <= rx * ry * rx * ry)
             {
-                r->setpixel(x + i, y + j, color);
-                r->setpixel(x + i, y - j, color);
-                r->setpixel(x - i, y + j, color);
-                r->setpixel(x - i, y - j, color);
+                r->setpixel(x + i, y + j, kolor);
+                r->setpixel(x + i, y - j, kolor);
+                r->setpixel(x - i, y + j, kolor);
+                r->setpixel(x - i, y - j, kolor);
             }
         }
     }
 }
 
 // See https://stackoverflow.com/questions/10322341/simple-algorithm-for-drawing-filled-ellipse-in-c-c
-void ellipsefill_fast(Raster* r, int center_x, int center_y, int radius_x, int radius_y, int color)
+void ellipsefill_fast(Raster* r, int center_x, int center_y, int radius_x, int radius_y, int kolor)
 {
     int hh = radius_y * radius_y;
     int ww = radius_x * radius_x;
@@ -251,7 +251,7 @@ void ellipsefill_fast(Raster* r, int center_x, int center_y, int radius_x, int r
     // Do the horizontal diameter across the middle.
     for (int x = -radius_x; x <= radius_x; x++)
     {
-        r->setpixel(center_x + x, center_y, color);
+        r->setpixel(center_x + x, center_y, kolor);
     }
 
     // Now do both halves at the same time, away from the diameter
@@ -270,8 +270,8 @@ void ellipsefill_fast(Raster* r, int center_x, int center_y, int radius_x, int r
 
         for (int x = -x0; x <= x0; x++)
         {
-            r->setpixel(center_x + x, center_y + y, color);
-            r->setpixel(center_x + x, center_y - y, color);
+            r->setpixel(center_x + x, center_y + y, kolor);
+            r->setpixel(center_x + x, center_y - y, kolor);
         }
     }
 }
