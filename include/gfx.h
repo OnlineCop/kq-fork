@@ -56,9 +56,6 @@ class Raster
     void blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w, uint16_t src_h, int16_t dest_x,
                 int16_t dest_y, uint16_t dest_w, uint16_t dest_h, bool masked);
 
-    void blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t dest_x, uint16_t dest_y, uint16_t src_w,
-                uint16_t src_h, bool masked);
-
     /*! \brief Blit from source bitmap to target bitmap of "same" dimensions.
      *
      * Sets \p target bitmap's width and height to the same as this source
@@ -74,8 +71,6 @@ class Raster
      */
     void blitTo(Raster* target, int16_t src_x, int16_t src_y, int16_t dest_x, int16_t dest_y, uint16_t src_w,
                 uint16_t src_h);
-
-    void blitTo(Raster* target, int16_t dest_x, int16_t dest_y);
 
     /*! \brief Blit this entire source bitmap to target bitmap.
      *
@@ -164,10 +159,7 @@ class Raster
      * \param   y Pixel y coordinate.
      * \returns Address to data[x + y*stride].
      */
-    uint8_t& ptr(int16_t x, int16_t y)
-    {
-        return data[x + y * static_cast<size_t>(stride)];
-    }
+    uint8_t& ptr(int16_t x, int16_t y);
 
     const uint16_t width;   ///< Read-only width of image
     const uint16_t height;  ///< Read-only height of image
@@ -184,16 +176,21 @@ class Raster
     std::unique_ptr<int[]> xt;
 };
 
+inline uint8_t& Raster::ptr(int16_t x, int16_t y)
+{
+    return data[x + y * static_cast<size_t>(stride)];
+}
+
 // Compatibility stuff
 
 inline void blit(Raster* src, Raster* dest, int sx, int sy, int dx, int dy, int w, int h)
 {
-    src->blitTo(dest, sx, sy, dx, dy, w, h, false);
+    src->blitTo(dest, sx, sy, w, h, dx, dy, w, h, false);
 }
 
 inline void masked_blit(Raster* src, Raster* dest, int sx, int sy, int dx, int dy, int w, int h)
 {
-    src->blitTo(dest, sx, sy, dx, dy, w, h, true);
+    src->blitTo(dest, sx, sy, w, h, dx, dy, w, h, true);
 }
 
 inline void stretch_blit(Raster* src, Raster* dest, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh)

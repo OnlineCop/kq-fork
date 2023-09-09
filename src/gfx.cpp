@@ -129,21 +129,10 @@ void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w
     }
 }
 
-void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t dest_x, uint16_t dest_y, uint16_t src_w,
-                    uint16_t src_h, bool masked)
-{
-    blitTo(target, src_x, src_y, src_w, src_h, dest_x, dest_y, src_w, src_h, masked);
-}
-
 void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, int16_t dest_x, int16_t dest_y, uint16_t src_w,
                     uint16_t src_h)
 {
     blitTo(target, src_x, src_y, src_w, src_h, dest_x, dest_y, src_w, src_h, false);
-}
-
-void Raster::blitTo(Raster* target, int16_t dest_x, int16_t dest_y)
-{
-    blitTo(target, 0, 0, width, height, dest_x, dest_y, width, height, false);
 }
 
 void Raster::blitTo(Raster* target)
