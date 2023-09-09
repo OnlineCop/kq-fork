@@ -464,6 +464,7 @@ function add_to_manor(hero)
 end
 
 
+-- Return a table containing 'n' (count of arguments) followed by original '...' varargs.
 function table.pack(...)
   return { n = select("#", ...), ... }
 end

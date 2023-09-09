@@ -519,24 +519,24 @@ static struct s_field
 
 // *INDENT-OFF*
 fields[] = {
-    { "name", 0 },    // Name of entity
-    { "xp", 1 },      // Entity experience
-    { "next", 2 },    // Experience left for next level-up
-    { "lvl", 3 },     // Current level of entity
-    { "mrp", 4 },     // Magic actually required for a spell (can be reduced with I_MANALOCKET)
-    { "hp", 5 },      // Entity's current hit points
-    { "mhp", 6 },     // Maximum hit points
-    { "mp", 7 },      // Current magic points
-    { "mmp", 8 },     // Maximum magic points
-    { "id", 9 },      // Index # of entity, which determines look and skills
-    { "tilex", 10 },  // Position of entity, full x tile
-    { "tiley", 11 },  // Position of entity, full y tile
-    { "eid", 12 },    // Entity ID
-    { "chrx", 13 },   // Appearance of entity
-    { "facing", 14 }, // Direction facing
-    { "active", 15 }, // Active or not
-    { "say", 16 },    // Text bubble
-    { "think", 17 },  // Thought bubble
+    { "name", 0 },    // KPlayer::name: Name of entity
+    { "xp", 1 },      // KPlayer::xp: Entity experience
+    { "next", 2 },    // KPlayer::next: Experience left for next level-up
+    { "lvl", 3 },     // KPlayer::lvl: Current level of entity
+    { "mrp", 4 },     // KPlayer::mrp: Magic actually required for a spell (can be reduced with I_MANALOCKET)
+    { "hp", 5 },      // KPlayer::hp: Entity's current hit points
+    { "mhp", 6 },     // KPlayer::mhp: Maximum hit points
+    { "mp", 7 },      // KPlayer::mp: Current magic points
+    { "mmp", 8 },     // KPlayer::mmp: Maximum magic points
+    { "id", 9 },      // KQEntity::eid: Index # of entity, which determines look and skills
+    { "tilex", 10 },  // KQEntity::tilex: Position of entity, full x tile
+    { "tiley", 11 },  // KQEntity::tiley: Position of entity, full y tile
+    { "eid", 12 },    // KQEntity::eid: Entity ID
+    { "chrx", 13 },   // KQEntity::chrx: Appearance of entity
+    { "facing", 14 }, // KQEntity::facing: Direction facing
+    { "active", 15 }, // KQEntity::active: Active or not
+    { "say", 16 },    // Text bubble (may be deprecated: see function bubble() in global.lua)
+    { "think", 17 },  // Thought bubble (may be deprecated: see function thought() in global.lua)
 };
 
 // *INDENT-ON*
@@ -953,6 +953,11 @@ static void init_obj(lua_State* L)
     lua_setglobal(L, "entity");
 }
 
+/*! \brief Increase \p numchrs (party size) and make one of the map's entities active.
+ *
+ * \param   L::1 Index of character (ePIDX::SENSAR..ePIDX::NOSLOM).
+ * \returns 0 since nothing pushed onto L stack.
+ */
 static int KQ_add_chr(lua_State* L)
 {
     ePIDX a = (ePIDX) static_cast<int>(lua_tointeger(L, 1));
@@ -968,7 +973,12 @@ static int KQ_add_chr(lua_State* L)
     return 0;
 }
 
-/* Callback from get_quest_info */
+/*! \brief Callback from get_quest_info().
+ *
+ * \param   L::1 Quest key name.
+ * \param   L::2 Quest value.
+ * \returns 0 since nothing pushed onto L stack.
+ */
 static int KQ_add_quest_item(lua_State* L)
 {
     std::string key = lua_tostring(L, 1);
@@ -1150,7 +1160,7 @@ static int KQ_char_getter(lua_State* L)
     int top = lua_gettop(L);
     if (pl)
     {
-        /* These properties relate to s_player structures */
+        /* These properties relate to the KPlayer structure */
         switch (prop)
         {
         case 0:
@@ -1199,7 +1209,7 @@ static int KQ_char_getter(lua_State* L)
     }
     if (ent != nullptr)
     {
-        /* These properties relate to s_entity structures */
+        /* These properties relate to the KQEntity structure */
         switch (prop)
         {
         case 10:
@@ -1252,7 +1262,8 @@ static int KQ_char_getter(lua_State* L)
  * This implements the __newindex meta method for either a party member, a player or an entity.
  * See lua docs for the __newindex protocol.
  *
- * \param   L The lua state.
+ * \param   L::1 When L::2 is not a key within fields[], this is a user-defined property.
+ * \param   L::2 A fields[] key, if
  */
 static int KQ_char_setter(lua_State* L)
 {
@@ -1273,7 +1284,7 @@ static int KQ_char_setter(lua_State* L)
     lua_pop(L, 1);
     if (pl)
     {
-        /* These properties relate to 's_player' structures */
+        /* These properties relate to the KPlayer structure */
         switch (prop)
         {
         case 0:
@@ -1322,7 +1333,7 @@ static int KQ_char_setter(lua_State* L)
     }
     if (ent)
     {
-        /* these properties relate to 's_entity' structures */
+        /* these properties relate to the KQEntity structure */
         switch (prop)
         {
         case 10:
