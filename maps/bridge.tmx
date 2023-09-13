@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="44" height="38" tilewidth="16" tileheight="16" backgroundcolor="#0e0e0e" nextobjectid="17">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="44" height="38" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="17">
  <properties>
-  <property name="description" value="Randen Bridge"/>
-  <property name="song_file" value="town.mod"/>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="0"/>
+  <property name="description" value="Randen Bridge"/>
   <property name="map_mode" value="0"/>
   <property name="map_no" value="5"/>
   <property name="pdiv" value="1"/>
   <property name="pmult" value="1"/>
+  <property name="song_file" value="town.mod"/>
   <property name="stx" value="11"/>
   <property name="sty" value="18"/>
   <property name="tileset" value="1"/>
@@ -21,17 +21,17 @@
  <tileset firstgid="801" source="entities.tsx"/>
  <tileset firstgid="1773" source="misc.tsx"/>
  <tileset firstgid="2073" source="obstacles.tsx"/>
- <layer name="map" width="44" height="38">
+ <layer id="1" name="map" width="44" height="38">
   <data encoding="base64" compression="zlib">
    eJzNl7sNwzAMRA3XyRjxDKlSBMk4WSU7ZNPYhQBCkMijRNIsrlLhp9Px43VZltVJPwd5sUbzbgquSxBrzXsF+W4n+IrmAb1DBCvl1bx/Bl7UU8nvM3hHVDKdhbdVYy2vo3jLt6XalzKSxd8sNTfi4f0kVo5X23cPfXc9DPSsRM8sOIs+67hm/ZXmRysTVkya/jAjSx9n6436Wd+t9MAemyUzxzjiubfHtX8II9fPeszR/XfG34j+i3qJZsGSl2ZAswfXd4nsZx5ZaPUHL95W3Um7m9dM6/HO/FeUbHjOYus8WO07nJA6Qs4P/1+73s7iuLTzbVO8q0W9cXzc/KN+R/Ki4vpEFl7E+whmtMa0ivTXYnf3YtbWvzYvGepNegN6rwhe+r3ZbHjxjnJJ+2eWPKBZseb9A9PnCZg=
   </data>
  </layer>
- <layer name="bmap" width="44" height="38">
+ <layer id="2" name="bmap" width="44" height="38">
   <data encoding="base64" compression="zlib">
    eJztl80KwjAQhEsfWFH0UPDgQfxBkIp9BxE9+IjuHrzULcbiNjN0P8hlCslHmCZtUfhxd5zbAybfh4xnbolEwtUPps4q4esLm+9NxjW3xI8w7THbeTYW6jK3wSdLIKddossCxHljeEwlq4x8ItkZwNtytjgCuL45dLhod9VTn19AfLcdHk2Z3u+h+NaFGZhvCig9UKwuzCVbtXLd5xPA+bDusX6T2Xnfc32UOyT4P0zf6gqbL+P/WzgPA6Mz2/sXvr6M3fcFkGIl9w==
   </data>
  </layer>
- <objectgroup color="#ff00ff" name="entities">
+ <objectgroup color="#ff00ff" id="3" name="entities">
   <object id="1" name="Entity 0" type="entity" gid="993" x="256" y="256" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
@@ -215,22 +215,22 @@
    </properties>
   </object>
  </objectgroup>
- <layer name="fmap" width="44" height="38">
+ <layer id="4" name="fmap" width="44" height="38">
   <data encoding="base64" compression="zlib">
    eJztlzkKACAQxCz9/4utBLEQwSvjTj6wmWBjSvHIwe7u5IcNNEZN3fseL1uv3PYbWYfekO5XUfFU4+eu1G1UrxYFR3MWv4H7KDT3v4ILoT/BYcSMH32DKu66jwgt6RupfvbiEXl7TwGAdADx
   </data>
  </layer>
- <layer name="shadows" width="44" height="38" opacity="0.5">
+ <layer id="5" name="shadows" width="44" height="38" opacity="0.5">
   <data encoding="base64" compression="zlib">
    eJztwQEBAAAAgiD/r25IQAEAAAAAAPBkGiAAAQ==
   </data>
  </layer>
- <layer name="obstacles" width="44" height="38" opacity="0.5">
+ <layer id="6" name="obstacles" width="44" height="38" opacity="0.5">
   <data encoding="base64" compression="zlib">
    eJztmEEOgDAIBHv0C/7/o568GExAYLvEncSLNjChtVLXEkKIHOfhuxiIeDA4vzlY95l9recTfLPjq4m8S7tdIw7ePaR7X0HUrDJHVayJ9UV8V57xK/J1OjPPV2d8VI+RzYHuhdjXa1culPPXPNY6QPTLk/aeO+Yk5+5+pxpPTKYzXLS+u4mcd9h8K8d2EZ1nJucp/0yEEP/jApd7D3k=
   </data>
  </layer>
- <objectgroup color="#008000" name="zones">
+ <objectgroup color="#008000" id="7" name="zones">
   <object id="8" name="1" type="zone" x="160" y="112" width="160" height="16"/>
   <object id="9" name="1" type="zone" x="160" y="128" width="16" height="48"/>
   <object id="10" name="1" type="zone" x="160" y="192" width="16" height="192"/>
@@ -238,10 +238,10 @@
   <object id="12" name="1" type="zone" x="176" y="480" width="160" height="16"/>
   <object id="13" name="2" type="zone" x="304" y="432" width="16" height="16"/>
  </objectgroup>
- <objectgroup color="#ffff00" name="markers">
+ <objectgroup color="#ffff00" id="8" name="markers">
   <object id="14" name="treasure1" type="marker" x="304" y="432" width="16" height="16"/>
   <object id="15" name="entrance" type="marker" x="176" y="288" width="16" height="16"/>
   <object id="16" name="monster" type="marker" x="464" y="272" width="16" height="16"/>
  </objectgroup>
- <objectgroup color="#0000ff" name="bounds" visible="0"/>
+ <objectgroup color="#0000ff" id="9" name="bounds" visible="0"/>
 </map>

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="76" height="38" tilewidth="16" tileheight="16" backgroundcolor="#0e0e0e" nextobjectid="25">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="76" height="38" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="25">
  <properties>
-  <property name="description" value="Randen Bridge"/>
-  <property name="song_file" value="town.mod"/>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="0"/>
+  <property name="description" value="Randen Bridge"/>
   <property name="map_mode" value="0"/>
   <property name="map_no" value="5"/>
   <property name="pdiv" value="0"/>
   <property name="pmult" value="0"/>
+  <property name="song_file" value="town.mod"/>
   <property name="stx" value="11"/>
   <property name="sty" value="18"/>
   <property name="tileset" value="1"/>
@@ -21,17 +21,17 @@
  <tileset firstgid="801" source="entities.tsx"/>
  <tileset firstgid="1773" source="misc.tsx"/>
  <tileset firstgid="2073" source="obstacles.tsx"/>
- <layer name="map" width="76" height="38">
+ <layer id="1" name="map" width="76" height="38">
   <data encoding="base64" compression="zlib">
    eJzVmktuAjEQREezTThGAkcgGxYRHCdXyR24KSDNSFbLn/5Uu5tFSYgZf+q5PPYY1mVZVifdHeXV50hF8PopPn9s4vT1aPT6Lbj3czIryqvWvre/lw7M8l+D696stHMS5Q/RxmxWqGeYxF95rySfWXjtzMq+t/yj/EmZj8Yjgpd0Xln8obT3bTYv1Lzk+rPcXxuLCF6U2RnEg5NDzdpQ1hvFa5QzlD8PZWU2UyXjXt4jWVm4cf0hM/j/1AWgX2WZUhcHf+h6/ladaDa09VB5cqIa7e9qmbX6m8HL4g/NHeXTg9esfWiNN217X6O984LMF8ffifgbSTom0XmiY4T2V+PLqaM1t5F+a7LkC+EPrehsWeYjShLWmfOF8FfLqOSciLYVnacWL5Q/tFpZieYlkfZcsfZcHK2rUj/nrX8RvDT+OHVwrq1bdqPn34iX1Z+EJUeo922U0P60LFvXr0/dEgnpj7Nvk+5/X8+i6HMvyRmY9Z2yV763Py7HI5pRjxfCn0a9dSSakSRfp8b3lt+3JWOTiZmnP0TmMuWM6xkl1NlaFlZe/kbqvSu0+pCRF9IfIoNlu+/ES8uH838XrjLy0vo7KMtxMxzBq8XMyx86y1l4ofQAO0afGg==
   </data>
  </layer>
- <layer name="bmap" width="76" height="38">
+ <layer id="2" name="bmap" width="76" height="38">
   <data encoding="base64" compression="zlib">
    eJztmjkOwjAQRY2vx11YJERBAR0UNFwCsS9HZFy4iQLEODPD2P9J01iRY718O5YT5/i4MPV7ZupXG/jqzpXqydR3ab44XQUeVHfG/iXhdhUpJWNca1aTUjIm5StQQsYkfZWQMUlfAevOTlQH4XtadyadsYBVZ1L7iTaCs5uz6e0fGGoPgImdd25DtaVaee3RyLEY5LXNyNXaf7/u1zZQFiPKyrii+WWRMKeXFT2juX9fAOSCfIGuTCgTU+SiN2p7lzXpez+O/T0AeWicFbZh5VsIfKWhcX7fZE91VB5DCprOrLmKaDiz6ioi7czKmvUJ/B+QBnylAV9p4P+TNKT3r9wZewH4xUIz
   </data>
  </layer>
- <objectgroup color="#ff00ff" name="entities">
+ <objectgroup color="#ff00ff" id="3" name="entities">
   <object id="1" name="Entity 0" type="entity" gid="993" x="256" y="256" width="16" height="16">
    <properties>
     <property name="active" value="1"/>
@@ -293,22 +293,22 @@
    </properties>
   </object>
  </objectgroup>
- <layer name="fmap" width="76" height="38">
+ <layer id="4" name="fmap" width="76" height="38">
   <data encoding="base64" compression="zlib">
    eJztmkEOwzAIBJ2emv6u/2r/3OYc2iADBlY7Ui4oJuzaVpCTMXDZv9c9uwiB7Joewfl/6cvWHc0KffRw7t4uRO9NiX8+IniMrg8F9LmIWocdfEPX1x10j636Zsa/NuNDHbmqxWv+LXneQo1S3VpftWOl2FHL83aOV9onkl/a2BC0WfKJz3Ckku8RZOqjt77juuChjx4Rkgv6Gq2qr1N/783MnFj6e+/YVb8a/W7U5Pfux71jPFclVdGsP/Q1uuLMq7OH6Po6g+47ur5KoHtdQV+FGiLJ+H7UCZ6xysz+z0Rf8qhcG1nLB7pzFSg=
   </data>
  </layer>
- <layer name="shadows" width="76" height="38" opacity="0.5">
+ <layer id="5" name="shadows" width="76" height="38" opacity="0.5">
   <data encoding="base64" compression="zlib">
    eJztwQENAAAAwqD3T20PBxQAAAAAAAAAAAAAwIcBLSAAAQ==
   </data>
  </layer>
- <layer name="obstacles" width="76" height="38" opacity="0.5">
+ <layer id="6" name="obstacles" width="76" height="38" opacity="0.5">
   <data encoding="base64" compression="zlib">
    eJztWMsOwzAI63G/sP7/h+5Q9YKSloDNY4qlSFNKAVsJ0B3HxsaF7+da1ZCdEzv+zH82bzYi+G0NbbZdkMFpFPOunW8rI1fvkv4QOTFsEYjm5/E3O4fR8Ma09D/rM/k8qyau5Ih8N8MeBWtcxn3U+szuuZa+g+hVljuG6FXoheT35gfhTxszaiaJ4Kf1dw7sVvakXl5/Wlj08vSPDojkx5iBKwHF736vkz6WXt6t3stYzG/TSvW+KzrrxT5fs5hI++7nK5ofuh5WA/o/IRbniHn+Kfbot9WH3Nf4RM/j6D0vPy26fm+j+aH9Zd4vCbReKzb/qpd3vn+639o8KuuF4GeNjbBlIrt+ddLMMq+zNEP2JSYi863CmYUK/CrkwISX39YH+14XWPvY1iUPlXPz4gckkyY5
   </data>
  </layer>
- <objectgroup color="#008000" name="zones">
+ <objectgroup color="#008000" id="7" name="zones">
   <object id="11" name="1" type="zone" x="160" y="112" width="160" height="16"/>
   <object id="12" name="1" type="zone" x="160" y="128" width="16" height="48"/>
   <object id="13" name="1" type="zone" x="160" y="192" width="16" height="192"/>
@@ -320,11 +320,11 @@
   <object id="19" name="3" type="zone" x="880" y="192" width="16" height="16"/>
   <object id="20" name="4" type="zone" x="1024" y="128" width="16" height="352"/>
  </objectgroup>
- <objectgroup color="#ffff00" name="markers">
+ <objectgroup color="#ffff00" id="8" name="markers">
   <object id="21" name="treasure1" type="marker" x="304" y="432" width="16" height="16"/>
   <object id="22" name="treasure2" type="marker" x="880" y="192" width="16" height="16"/>
   <object id="23" name="exit" type="marker" x="1008" y="288" width="16" height="16"/>
   <object id="24" name="entrance" type="marker" x="176" y="288" width="16" height="16"/>
  </objectgroup>
- <objectgroup color="#0000ff" name="bounds" visible="0"/>
+ <objectgroup color="#0000ff" id="9" name="bounds" visible="0"/>
 </map>
