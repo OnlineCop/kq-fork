@@ -510,6 +510,28 @@ static const struct luaL_Reg lrs[] = {
     { nullptr, nullptr } /* Must always be the LAST entry */
 };
 
+enum eProperty
+{
+    PROP_NAME = 0,
+    PROP_XP = 1,
+    PROP_NEXT = 2,
+    PROP_LVL = 3,
+    PROP_MRP = 4,
+    PROP_HP = 5,
+    PROP_MHP = 6,
+    PROP_MP = 7,
+    PROP_MMP = 8,
+    PROP_ID = 9,
+    PROP_TILEX = 10,
+    PROP_TILEY = 11,
+    PROP_EID = 12,
+    PROP_CHRX = 13,
+    PROP_FACING = 14,
+    PROP_ACTIVE = 15,
+    PROP_SAY = 16,
+    PROP_THINK = 17
+};
+
 /*! \brief Maps a text field name to an identifier. */
 static struct s_field
 {
@@ -519,24 +541,24 @@ static struct s_field
 
 // *INDENT-OFF*
 fields[] = {
-    { "name", 0 },    // KPlayer::name: Name of entity
-    { "xp", 1 },      // KPlayer::xp: Entity experience
-    { "next", 2 },    // KPlayer::next: Experience left for next level-up
-    { "lvl", 3 },     // KPlayer::lvl: Current level of entity
-    { "mrp", 4 },     // KPlayer::mrp: Magic actually required for a spell (can be reduced with I_MANALOCKET)
-    { "hp", 5 },      // KPlayer::hp: Entity's current hit points
-    { "mhp", 6 },     // KPlayer::mhp: Maximum hit points
-    { "mp", 7 },      // KPlayer::mp: Current magic points
-    { "mmp", 8 },     // KPlayer::mmp: Maximum magic points
-    { "id", 9 },      // KQEntity::eid: Index # of entity, which determines look and skills
-    { "tilex", 10 },  // KQEntity::tilex: Position of entity, full x tile
-    { "tiley", 11 },  // KQEntity::tiley: Position of entity, full y tile
-    { "eid", 12 },    // KQEntity::eid: Entity ID
-    { "chrx", 13 },   // KQEntity::chrx: Appearance of entity
-    { "facing", 14 }, // KQEntity::facing: Direction facing
-    { "active", 15 }, // KQEntity::active: Active or not
-    { "say", 16 },    // Text bubble (may be deprecated: see function bubble() in global.lua)
-    { "think", 17 },  // Thought bubble (may be deprecated: see function thought() in global.lua)
+    { "name",   PROP_NAME   }, // KPlayer::name: Name of entity
+    { "xp",     PROP_XP     }, // KPlayer::xp: Entity experience
+    { "next",   PROP_NEXT   }, // KPlayer::next: Experience left for next level-up
+    { "lvl",    PROP_LVL    }, // KPlayer::lvl: Current level of entity
+    { "mrp",    PROP_MRP    }, // KPlayer::mrp: Magic actually required for a spell (can be reduced with I_MANALOCKET)
+    { "hp",     PROP_HP     }, // KPlayer::hp: Entity's current hit points
+    { "mhp",    PROP_MHP    }, // KPlayer::mhp: Maximum hit points
+    { "mp",     PROP_MP     }, // KPlayer::mp: Current magic points
+    { "mmp",    PROP_MMP    }, // KPlayer::mmp: Maximum magic points
+    { "id",     PROP_ID     }, // KQEntity::eid: Index # of entity, which determines look and skills
+    { "tilex",  PROP_TILEX  }, // KQEntity::tilex: Position of entity, full x tile
+    { "tiley",  PROP_TILEY  }, // KQEntity::tiley: Position of entity, full y tile
+    { "eid",    PROP_EID    }, // KQEntity::eid: Entity ID
+    { "chrx",   PROP_CHRX   }, // KQEntity::chrx: Appearance of entity
+    { "facing", PROP_FACING }, // KQEntity::facing: Direction facing
+    { "active", PROP_ACTIVE }, // KQEntity::active: Active or not
+    { "say",    PROP_SAY    }, // Text bubble (may be deprecated: see function bubble() in global.lua)
+    { "think",  PROP_THINK  }, // Thought bubble (may be deprecated: see function thought() in global.lua)
 };
 
 // *INDENT-ON*
@@ -1163,43 +1185,43 @@ static int KQ_char_getter(lua_State* L)
         /* These properties relate to the KPlayer structure */
         switch (prop)
         {
-        case 0:
+        case PROP_NAME:
             lua_pushstring(L, pl->name.c_str());
             break;
 
-        case 1:
+        case PROP_XP:
             lua_pushnumber(L, pl->xp);
             break;
 
-        case 2:
+        case PROP_NEXT:
             lua_pushnumber(L, pl->next);
             break;
 
-        case 3:
+        case PROP_LVL:
             lua_pushnumber(L, pl->lvl);
             break;
 
-        case 4:
+        case PROP_MRP:
             lua_pushnumber(L, pl->mrp);
             break;
 
-        case 5:
+        case PROP_HP:
             lua_pushnumber(L, pl->hp);
             break;
 
-        case 6:
+        case PROP_MHP:
             lua_pushnumber(L, pl->mhp);
             break;
 
-        case 7:
+        case PROP_MP:
             lua_pushnumber(L, pl->mp);
             break;
 
-        case 8:
+        case PROP_MMP:
             lua_pushnumber(L, pl->mmp);
             break;
 
-        case 9:
+        case PROP_ID:
             lua_pushnumber(L, pl - party);
             break;
 
@@ -1212,35 +1234,35 @@ static int KQ_char_getter(lua_State* L)
         /* These properties relate to the KQEntity structure */
         switch (prop)
         {
-        case 10:
+        case PROP_TILEX:
             lua_pushnumber(L, ent->tilex);
             break;
 
-        case 11:
+        case PROP_TILEY:
             lua_pushnumber(L, ent->tiley);
             break;
 
-        case 12:
+        case PROP_EID:
             lua_pushnumber(L, ent->eid);
             break;
 
-        case 13:
+        case PROP_CHRX:
             lua_pushnumber(L, ent->chrx);
             break;
 
-        case 14:
+        case PROP_FACING:
             lua_pushnumber(L, ent->facing);
             break;
 
-        case 15:
+        case PROP_ACTIVE:
             lua_pushboolean(L, ent->active);
             break;
 
-        case 16:
+        case PROP_SAY:
             lua_pushcfunction(L, KQ_bubble_ex);
             break;
 
-        case 17:
+        case PROP_THINK:
             lua_pushcfunction(L, KQ_thought_ex);
             break;
         default:
@@ -1287,43 +1309,43 @@ static int KQ_char_setter(lua_State* L)
         /* These properties relate to the KPlayer structure */
         switch (prop)
         {
-        case 0:
+        case PROP_NAME:
             pl->name = lua_tostring(L, 3);
             break;
 
-        case 1:
+        case PROP_XP:
             pl->xp = (int)lua_tonumber(L, 3);
             break;
 
-        case 2:
+        case PROP_NEXT:
             pl->next = (int)lua_tonumber(L, 3);
             break;
 
-        case 3:
+        case PROP_LVL:
             pl->lvl = (int)lua_tonumber(L, 3);
             break;
 
-        case 4:
+        case PROP_MRP:
             pl->mrp = (int)lua_tonumber(L, 3);
             break;
 
-        case 5:
+        case PROP_HP:
             pl->hp = (int)lua_tonumber(L, 3);
             break;
 
-        case 6:
+        case PROP_MHP:
             pl->mhp = (int)lua_tonumber(L, 3);
             break;
 
-        case 7:
+        case PROP_MP:
             pl->mp = (int)lua_tonumber(L, 3);
             break;
 
-        case 8:
+        case PROP_MMP:
             pl->mmp = (int)lua_tonumber(L, 3);
             break;
 
-        case 9:
+        case PROP_ID:
             /* id is readonly */
             break;
 
@@ -1336,30 +1358,34 @@ static int KQ_char_setter(lua_State* L)
         /* these properties relate to the KQEntity structure */
         switch (prop)
         {
-        case 10:
+        case PROP_TILEX:
             ent->tilex = (int)lua_tonumber(L, 3);
             break;
 
-        case 11:
+        case PROP_TILEY:
             ent->tiley = (int)lua_tonumber(L, 3);
             break;
 
-        case 12:
+        case PROP_EID:
             ent->eid = (int)lua_tonumber(L, 3);
             break;
 
-        case 13:
+        case PROP_CHRX:
             ent->chrx = (int)lua_tonumber(L, 3);
             break;
 
-        case 14:
+        case PROP_FACING:
             ent->facing = (int)lua_tonumber(L, 3);
             break;
 
-        case 15:
+        case PROP_ACTIVE:
             ent->active = lua_toboolean(L, 3);
             break;
 
+        case PROP_SAY:
+            break;
+        case PROP_THINK:
+            break;
         default:
             break;
         }
