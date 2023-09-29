@@ -1177,6 +1177,9 @@ static int KQ_change_map(lua_State* L)
 /*! \brief Object interface for party.
  *
  * This implements the __index meta-method.
+ *
+ * \param   L::1 KPlayer* or KQEntity* pointer when L::2 is a fields[] key, else a custom property.
+ * \param   L::2 Either a fields[] key, or a user-defined property.
  */
 static int KQ_char_getter(lua_State* L)
 {
@@ -1300,8 +1303,9 @@ static int KQ_char_getter(lua_State* L)
  * This implements the __newindex meta method for either a party member, a player or an entity.
  * See lua docs for the __newindex protocol.
  *
- * \param   L::1 When L::2 is not a key within fields[], this is a user-defined property.
- * \param   L::2 A fields[] key, if
+ * \param   L::1 KPlayer* or KQEntity* pointer when L::2 is a fields[] key, else a custom property.
+ * \param   L::2 Either a fields[] key, or a user-defined property.
+ * \param   L::3 eProperty enum value.
  */
 static int KQ_char_setter(lua_State* L)
 {
