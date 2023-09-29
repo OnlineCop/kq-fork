@@ -578,6 +578,71 @@ Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap
 #endif /* DEBUGMODE */
 }
 
+std::vector<Raster*> KGame::alloc_bmps(const std::string& bitmap_name, const std::vector<int>& bitmap_widths,
+                                       const std::vector<int>& bitmap_heights)
+{
+    assert(bitmap_widths.size() == bitmap_heights.size() && "Widths and heights must have the same sizes");
+    const size_t total = bitmap_widths.size();
+    std::vector<Raster*> bitmaps(total, nullptr);
+
+    SDL_Log(_("Allocating %zux Raster bitmaps --> %s\n"), total, bitmap_name.c_str());
+    for (size_t i = 0; i < total; ++i)
+    {
+        bitmaps[i] = new Raster(bitmap_widths[i], bitmap_heights[i]);
+        if (bitmaps[i] == nullptr)
+        {
+            sprintf(strbuf, _("ERROR: Could not allocate %s[%zu]!"), bitmap_name, i);
+            program_death(strbuf);
+        }
+    }
+
+    return bitmaps;
+}
+
+std::vector<Raster*> KGame::alloc_bmps(const size_t total, const std::string& bitmap_name, int bitmap_width,
+                                       int bitmap_height)
+{
+    std::vector<Raster*> bitmaps(total, nullptr);
+
+    SDL_Log(_("Creating %d x %d Raster bitmaps --> %s (x%zu)\n"), bitmap_width, bitmap_height, bitmap_name.c_str(),
+            total);
+    for (size_t i = 0; i < total; ++i)
+    {
+        bitmaps[i] = new Raster(bitmap_width, bitmap_height);
+        if (bitmaps[i] == nullptr)
+        {
+            sprintf(strbuf, _("ERROR: Could not allocate %s[%zu]!"), bitmap_name, i);
+            program_death(strbuf);
+        }
+    }
+
+    return bitmaps;
+}
+
+std::vector<std::vector<Raster*>> KGame::alloc_bmps_2d(const size_t rows, const size_t cols,
+                                                       const std::string& bitmap_name, int bitmap_width,
+                                                       int bitmap_height)
+{
+    std::vector<std::vector<Raster*>> bitmaps(rows, std::vector<Raster*>(cols, nullptr));
+
+    SDL_Log(_("Creating %d x %d Raster bitmaps --> %s[%zu][%zu]\n"), bitmap_width, bitmap_height, bitmap_name.c_str(),
+            rows, cols);
+    for (size_t row = 0; row < rows; ++row)
+    {
+        for (size_t col = 0; col < cols; ++col)
+        {
+            bitmaps[row][col] = new Raster(bitmap_width, bitmap_height);
+            if (bitmaps[row][col] == nullptr)
+            {
+                sprintf(strbuf, _("ERROR: Could not allocate %s[%zu][%zu]!"), bitmap_name, row, col);
+                program_death(strbuf);
+            }
+        }
+    }
+
+    return bitmaps;
+}
+
 void KGame::allocate_stuff()
 {
     kfonts = alloc_bmp(1024, 60, "kfonts");

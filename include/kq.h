@@ -362,6 +362,51 @@ class KGame
      */
     Raster* alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name);
 
+    /*! \brief Creates an array of bitmaps with varying dimensions.
+     *
+     * This function terminates the program with an error message if it fails to
+     * allocate any of the specified bitmaps. The name supplied is shown if this
+     * happens to help you trace which bitmap caused the issue.
+     * \sa dealloc_bmps
+     *
+     * \param   bitmap_name Name of bitmap.
+     * \param   bitmap_widths Array of widths for the bitmaps.
+     * \param   bitmap_heights Array of heights for the bitmaps.
+     * \returns Array of Raster bitmap pointers.
+     */
+    std::vector<Raster*> alloc_bmps(const std::string& bitmap_name, const std::vector<int>& bitmap_widths,
+                                    const std::vector<int>& bitmap_heights);
+
+    /*! \brief Creates an array of 'total' bitmaps with the specified dimensions.
+     *
+     * This function terminates the program with an error message if it fails to
+     * allocate any of the specified bitmaps. The name supplied is shown if this
+     * happens to help you trace which bitmap caused the issue.
+     *
+     * \param   total Number of bitmaps to create.
+     * \param   bitmap_name Name of bitmap.
+     * \param   bitmap_width Width of the bitmap.
+     * \param   bitmap_height Height of the bitmap.
+     * \returns Array of Raster bitmap pointers.
+     */
+    std::vector<Raster*> alloc_bmps(size_t total, const std::string& bitmap_name, int bitmap_width, int bitmap_height);
+
+    /*! \brief Creates a 2D array of 'rows x cols' bitmaps with the specified dimensions.
+     *
+     * This function terminates the program with an error message if it fails to
+     * allocate any of the specified bitmaps. The name supplied is shown if this
+     * happens to help you trace which bitmap caused the issue.
+     *
+     * \param   rows Number of bitmaps in each row.
+     * \param   cols Number of bitmaps in each column.
+     * \param   bitmap_name Name of bitmap.
+     * \param   bitmap_width Width of the bitmap.
+     * \param   bitmap_height Height of the bitmap.
+     * \returns 2D array of Raster bitmap pointers.
+     */
+    std::vector<std::vector<Raster*>> alloc_bmps_2d(size_t rows, size_t cols, const std::string& bitmap_name,
+                                                    int bitmap_width, int bitmap_height);
+
     /*! \brief Application start-up code.
      *
      * Set up SDL, set up variables, load stuff, blah...
