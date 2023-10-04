@@ -90,6 +90,7 @@ po/quot.sed
 po/remove-potcdate.sin
 po/Rules-quot
 po/stamp-po
+scripts/cheat.lua
 scripts/Makefile
 scripts/Makefile.in
 stamp-h1
