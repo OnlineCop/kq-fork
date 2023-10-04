@@ -161,9 +161,9 @@ void config_menu()
 
 #ifdef DEBUGMODE
 #define MENU_SIZE 17
-#else
+#else /* !DEBUGMODE */
 #define MENU_SIZE 16
-#endif
+#endif /* DEBUGMODE */
     static const char* dc[MENU_SIZE];
 
     /* Define rows with appropriate spacings for breaks between groups. */
@@ -205,7 +205,7 @@ void config_menu()
     dc[15] = _("Toggle how to allocate CPU usage.");
 #ifdef DEBUGMODE
     dc[16] = _("Things you can do only in DebugMode.");
-#endif
+#endif /* DEBUGMODE */
 
     Config.push_config_state();
     Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str());
@@ -269,7 +269,7 @@ void config_menu()
             strbuf = _("OFF");
         }
         citem(row[16], _("DebugMode Stuff:"), strbuf.c_str(), FNORMAL);
-#endif
+#endif /* DEBUGMODE */
 
         draw_sprite(double_buffer, menuptr, 32, row[ptr]);
 
@@ -462,7 +462,7 @@ void config_menu()
                     debugging = 0;
                 }
                 break;
-#endif
+#endif /* DEBUGMODE */
             }
         }
         if (PlayerInput.bctrl())
@@ -636,10 +636,10 @@ void parse_setup()
     no_random_encounters = Config.get_config_int(nullptr, "no_random_encounters", 0);
     no_monsters = Config.get_config_int(nullptr, "no_monsters", 0);
     every_hit_999 = Config.get_config_int(nullptr, "every_hit_999", 0);
-#endif
+#endif /* KQ_CHEATS */
 #ifdef DEBUGMODE
     debugging = Config.get_config_int(nullptr, "debugging", 0);
-#endif
+#endif /* DEBUGMODE */
 
     PlayerInput.up.scancode = Config.get_config_int(nullptr, "kup", SDL_SCANCODE_UP);
     PlayerInput.down.scancode = Config.get_config_int(nullptr, "kdown", SDL_SCANCODE_DOWN);

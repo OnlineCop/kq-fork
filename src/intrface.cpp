@@ -319,7 +319,7 @@ static int KQ_party_getter(lua_State* L);
 static int KQ_party_setter(lua_State* L);
 #ifdef DEBUGMODE
 static int KQ_traceback(lua_State* L);
-#endif
+#endif /* DEBUGMODE */
 
 static void set_btile(int x, int y, int value);
 static void set_mtile(int x, int y, int value);
@@ -608,7 +608,7 @@ template<typename... Args> static bool call_global(const char* funcname, Args...
     bool status;
 #ifdef DEBUGMODE
     lua_pushcfunction(theL, KQ_traceback);
-#endif
+#endif /* DEBUGMODE */
     lua_getglobal(theL, funcname);
     if (lua_isnil(theL, -1))
     {
@@ -624,10 +624,10 @@ template<typename... Args> static bool call_global(const char* funcname, Args...
 #ifdef DEBUGMODE
         // protected call - KQ_traceback shows error message if there is one.
         lua_pcall(theL, sizeof...(args), 0, oldtop + 1);
-#else
+#else /* !DEBUGMODE */
         // Unprotected call - lua will abort with an error message
         lua_call(theL, sizeof...(args), 0);
-#endif
+#endif /* DEBUGMODE */
         status = true;
     }
     lua_settop(theL, oldtop);
@@ -650,10 +650,10 @@ void do_entity(int en_num)
     }
 }
 
-#ifdef KQ_CHEATS
 
 void do_luacheat()
 {
+#ifdef KQ_CHEATS
     /* kqres might return null if the cheat file doesn't exist.
      * in that case, just do a no-op.
      */
@@ -667,8 +667,8 @@ void do_luacheat()
             Draw.message(_("Cheating complete."), 255, 50);
         }
     }
+#endif /* KQ_CHEATS */
 }
-#endif
 
 void do_luainit(const char* fname, bool global)
 {
@@ -3727,9 +3727,9 @@ static int KQ_traceback(lua_State* theL)
     }
 #ifndef DEBUGMODE
     Draw.message(_("Script error."), 255, 0);
-#else
+#else /* !DEBUGMODE */
     Draw.message(_("Script error. Check system logs for more info"), 255, 0);
-#endif
+#endif /* DEBUGMODE */
     return 1;
 }
 

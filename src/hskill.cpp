@@ -807,7 +807,7 @@ int skill_use(size_t attack_fighter_index)
                 }
             }
         }
-#else
+#else /* !DEBUGMODE */
         cts = party[pidx[attack_fighter_index]].lvl * 2 + 35;
         if (cts > 95)
         {
@@ -859,7 +859,7 @@ int skill_use(size_t attack_fighter_index)
         {
             Draw.message(_("Couldn't steal!"), 255, 0);
         }
-#endif
+#endif /* DEBUGMODE */
         fighter[attack_fighter_index].cx = tx;
         fighter[attack_fighter_index].cy = ty;
         display_attack_string = 0;

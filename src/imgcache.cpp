@@ -169,7 +169,7 @@ static Raster* bmp_from_png(const std::string& path)
     fclose(fp);
     return bitmap;
 }
-#endif
+#endif /* PNG_SIMPLIFIED_READ_SUPPORTED */
 
 /*! \brief Get or load an image.
  *

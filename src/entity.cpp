@@ -391,7 +391,7 @@ void KEntityManager::getcommand(t_entity target_entity)
             sprintf(strbuf, _("Invalid entity command (%c) at position %d for entity %d"), s, ent.sidx, target_entity);
             Game.program_death(strbuf);
         }
-#endif
+#endif /* DEBUGMODE */
         break;
     }
 }
@@ -720,12 +720,10 @@ void KEntityManager::player_move()
     {
         kmenu.menu();
     }
-#ifdef KQ_CHEATS
     if (PlayerInput.bcheat())
     {
         do_luacheat();
     }
-#endif
     int dx = 0;
     if (PlayerInput.right.isDown())
     {

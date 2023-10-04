@@ -476,7 +476,7 @@ int KSaveGame::start_menu(bool skip_splash)
 #ifdef DEBUGMODE
     if (debugging == 0)
     {
-#endif
+#endif /* DEBUGMODE */
         Music.play_music(music_title, 0);
         /* Play splash (with the staff and the heroes in circle */
         if (!skip_splash)
@@ -507,7 +507,7 @@ int KSaveGame::start_menu(bool skip_splash)
     {
         set_palette(pal);
     }
-#endif
+#endif /* DEBUGMODE */
     Game.reset_world();
     /* Draw menu and handle menu selection */
     while (!stop)
@@ -622,13 +622,14 @@ int KSaveGame::system_menu()
 
     if (cansave == 0)
     {
-        text_color = FDARK;
 #ifdef KQ_CHEATS
         if (cheat)
         {
             strcpy(save_str, _("[Save]"));
             text_color = FNORMAL;
         }
+#else /* !KQ_CHEATS */
+        text_color = FDARK;
 #endif /* KQ_CHEATS */
     }
 
@@ -673,7 +674,7 @@ int KSaveGame::system_menu()
                 // Pointer is over the SAVE option
 #ifdef KQ_CHEATS
                 if (cansave == 1 || cheat)
-#else
+#else /* !KQ_CHEATS */
                 if (cansave == 1)
 #endif /* KQ_CHEATS */
                 {

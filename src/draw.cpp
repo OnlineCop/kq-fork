@@ -167,7 +167,7 @@ void KDraw::blit2screen()
     ++animation_count;
 #ifdef DEBUGMODE
     Console.display();
-#endif
+#endif /* DEBUGMODE */
     int pitch {};
     void* pixels {};
     int rc = SDL_LockTexture(texture, nullptr, &pixels, &pitch);

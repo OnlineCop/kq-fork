@@ -151,11 +151,11 @@ void KCredits::display_credits(Raster* double_buffer, int ease_speed)
      */
     extern int cheat;
     Draw.print_font(double_buffer, 80, 40, cheat ? _("*CHEAT MODE ON*") : _("*CHEAT MODE OFF*"), FGOLD);
-#endif
+#endif /* KQ_CHEATS */
 #ifdef DEBUGMODE
     /* TT: Similarly, if we are in debug mode, we should be warned. */
     Draw.print_font(double_buffer, 80, 48, _("*DEBUG MODE ON*"), FGOLD);
-#endif
+#endif /* DEBUGMODE */
 }
 
 int KCredits::ease(int x)

@@ -271,7 +271,7 @@ eAttackResult KCombat::attack_result(int ar, int dr)
         }
         return eAttackResult::ATTACK_SUCCESS;
     }
-#endif
+#endif /* KQ_CHEATS */
 
     dmg = mult * base;
 
@@ -472,7 +472,7 @@ int KCombat::combat(int bno)
     {
         return 0;
     }
-#endif
+#endif /* KQ_CHEATS */
 
     /* PH: some checking! */
     if (bno < 0 || bno >= NUM_BATTLES)
@@ -500,7 +500,7 @@ int KCombat::combat(int bno)
         {
             return 0;
         }
-#endif
+#endif /* KQ_CHEATS */
 
         /* skip battle if haven't moved enough steps since last battle,
          * or if it's just not time for one yet */
@@ -1092,7 +1092,7 @@ void KCombat::fkill(size_t fighter_index)
         fighter[fighter_index].mp = fighter[fighter_index].mmp;
         return;
     }
-#endif
+#endif /* KQ_CHEATS */
 
     fighter[fighter_index].SetPoisoned(0);
     fighter[fighter_index].SetBlind(0);

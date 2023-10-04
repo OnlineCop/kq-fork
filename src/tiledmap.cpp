@@ -47,13 +47,13 @@ KTiledMap TiledMap;
 // Compatibility as VC insists we use these for safety
 #ifdef _MSC_VER
 using stdext::make_checked_array_iterator;
-#else
+#else /* !_MSC_VER */
 template<typename T> T* make_checked_array_iterator(T* ptr, size_t size, size_t offset = 0)
 {
     (void)size;
     return ptr + offset;
 }
-#endif
+#endif /* _MSC_VER */
 
 struct tmx_tileset
 {

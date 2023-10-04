@@ -147,7 +147,7 @@ const std::string kqres(enum eDirectories dir, const std::string& file)
         std::string save_folder = "kq";
 #ifdef KQ_SAVEDIR
         save_folder = std::string { KQ_SAVEDIR };
-#endif
+#endif /* KQ_SAVEDIR */
         user_dir = std::string(SDL_GetPrefPath("kq-fork", save_folder.c_str()));
         /* Always try to make the directory, just to be sure. */
         if (::mkdir(user_dir.c_str(), 0755) == -1)
@@ -161,10 +161,10 @@ const std::string kqres(enum eDirectories dir, const std::string& file)
 #ifdef KQ_DATADIR
         /* We specified where... */
         data_dir = lib_dir = std::string { KQ_DATADIR };
-#else
+#else /* !KQ_DATADIR */
         /* ...or, use SDL's idea */
         data_dir = lib_dir = std::string { SDL_GetBasePath() };
-#endif
+#endif /* KQ_DATADIR */
         init_path = true;
     }
     switch (dir)

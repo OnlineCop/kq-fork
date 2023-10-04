@@ -84,7 +84,7 @@ Raster* sfonts[5];
 
 #ifdef DEBUGMODE
 Raster* obj_mesh;
-#endif
+#endif /* DEBUGMODE */
 
 uint16_t *map_seg = nullptr, *b_seg = nullptr, *f_seg = nullptr;
 uint8_t progress[SIZE_PROGRESS];
@@ -283,7 +283,7 @@ s_progress progresses[SIZE_PROGRESS] = {
     { 112, "P_TRAVELPOINT" },  { 113, "P_SIDEQUEST1" },     { 114, "P_SIDEQUEST2" },    { 115, "P_SIDEQUEST3" },
     { 116, "P_SIDEQUEST4" },   { 117, "P_SIDEQUEST5" },     { 118, "P_SIDEQUEST6" },    { 119, "P_SIDEQUEST7" },
 };
-#endif
+#endif /* DEBUGMODE */
 
 /*! \mainpage KQ - The Classic Computer Role-Playing Game
  *
@@ -520,10 +520,9 @@ int KGame::add_timer_event(const char* n, int delta)
     return -1;
 }
 
-#ifdef DEBUGMODE
-
 Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap_name)
 {
+#ifdef DEBUGMODE
     Raster* tmp = bitmap_name ? new Raster(bitmap_width, bitmap_height) : nullptr;
     static int count = 0;
     static const char* last = nullptr;
@@ -553,13 +552,11 @@ Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char* bitmap
         }
     }
     return tmp;
-}
-#else
-Raster* KGame::alloc_bmp(int bitmap_width, int bitmap_height, const char*)
-{
+#else /* !DEBUGMODE */
+    (void)bitmap_name;
     return new Raster(bitmap_width, bitmap_height);
+#endif /* DEBUGMODE */
 }
-#endif
 
 void KGame::allocate_stuff()
 {
@@ -661,7 +658,7 @@ void KGame::allocate_stuff()
     }
 #ifdef DEBUGMODE
     alloc_bmp(0, 0, nullptr);
-#endif
+#endif /* DEBUGMODE */
     Credits.allocate_credits();
 }
 
@@ -768,10 +765,9 @@ void KGame::do_check_animation()
     Animation.check_animation(millis, tilex);
 }
 
-#ifdef DEBUGMODE
-
 void KGame::data_dump()
 {
+#ifdef DEBUGMODE
     if (debugging <= 0)
     {
         return;
@@ -813,8 +809,8 @@ void KGame::data_dump()
         ff << progresses[a].num_progress << ": " << progresses[a].name << " = " << value << "\n";
     }
     ff.close();
+#endif /* DEBUGMODE */
 }
-#endif
 
 void KGame::deallocate_stuff()
 {
@@ -930,7 +926,7 @@ void KGame::deallocate_stuff()
 
 #ifdef DEBUGMODE
     delete (obj_mesh);
-#endif
+#endif /* DEBUGMODE */
 }
 
 const char* KGame::get_timer_event()
@@ -1285,7 +1281,7 @@ void KGame::startup()
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER | SDL_INIT_AUDIO);
 #ifdef DEBUGMODE
     SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
-#endif
+#endif /* DEBUGMODE */
 
     map_seg = b_seg = f_seg = nullptr;
     Map.zone_array.clear();
@@ -1461,7 +1457,7 @@ void KGame::startup()
             putpixel(obj_mesh, col, row + 1, PAL_SIZE - 1);
         }
     }
-#endif
+#endif /* DEBUGMODE */
 
     constexpr size_t MaxConsoleColumns = 80;
     constexpr size_t NumConsoleLines = 25;
@@ -1494,7 +1490,7 @@ void KGame::extra_controls()
     {
         want_console = true;
     }
-#endif
+#endif /* DEBUGMODE */
 }
 
 void KGame::wait_released()

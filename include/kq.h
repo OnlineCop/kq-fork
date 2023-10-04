@@ -27,10 +27,10 @@
 
 #ifdef __GNUC__
 #define NORETURN __attribute__((noreturn))
-#else
+#else /* !__GNUC__ */
 #ifdef _MSC_VER
 #define NORETURN __declspec(noreturn)
-#else
+#else /* !_MSC_VER */
 #define NORETURN
 #endif /* MSVC */
 #endif /* GNUC */
@@ -604,10 +604,10 @@ extern int no_monsters;
 
 #ifdef DEBUGMODE
 extern Raster* obj_mesh;
-#endif
+#endif /* DEBUGMODE */
 
 extern KGame Game;
 
 #ifndef TRACE
 extern void TRACE(const char* message, ...);
-#endif
+#endif /* TRACE */

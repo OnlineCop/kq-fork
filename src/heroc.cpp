@@ -276,12 +276,12 @@ static int combat_castable(int spell_caster, int spell_number)
         {
             return 0;
         }
-#else
+#else  /* !DEBUGMODE */
         if (can_run == 0)
         {
             return 0;
         }
-#endif
+#endif /* DEBUGMODE */
     }
 
     if (magic[b].use == USE_ANY_INF || magic[b].use == USE_COMBAT_INF)
@@ -854,7 +854,7 @@ void hero_choose_action(size_t fighter_index)
                  // but the following line needs to be accessed regardless
                  // of whether DEBUGMODE is declared or not.
                  // It also needs to run in case "debugging" is NOT >= 3.
-#endif
+#endif /* DEBUGMODE */
                 if (sptr - 1 > can_run)
             {
                 sptr = 1 + can_run;
