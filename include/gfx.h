@@ -26,7 +26,6 @@
 
 struct SDL_PixelFormat;
 struct SDL_Rect;
-struct SDL_Window;
 
 class Raster
 {
