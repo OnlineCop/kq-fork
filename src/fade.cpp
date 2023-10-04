@@ -31,6 +31,7 @@
 #include "res.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cstring>
 
 /*! \brief Fade between sub-ranges of two palettes.
@@ -43,16 +44,17 @@
  * \param   source Palette to fade from.
  * \param   dest Palette to fade to.
  * \param   speed How fast to fade, in range [1..64].
- * \param   from Starting palette index in range [0..255].
- * \param   to Ending palette index in range [0..255].
+ * \param   from Starting palette index in range [0..PAL_SIZE-1].
+ * \param   to Ending palette index in range [0..PAL_SIZE-1].
  */
-static void _fade_from_range(PALETTE source, PALETTE dest, uint32_t speed, int from = 0, int to = PAL_SIZE - 1)
+static void _fade_from_range(const PALETTE& source, const PALETTE& dest, uint32_t speed, int from = 0,
+                             int to = PAL_SIZE - 1)
 {
-    PALETTE temp;
-    /* make sure fade speed is in range */
-    speed = 3 * std::max(1U, std::min(speed, 64U));
-    std::copy(source, source + PAL_SIZE, temp);
-    for (int c = 0; c < 256; c += speed)
+    using std::clamp;
+    PALETTE temp = source;
+    // Ensure fade speed is in range.
+    speed = 3 * clamp(speed, 1U, 64U);
+    for (int c = 0; c < PAL_SIZE; c += speed)
     {
         Game.ProcessEvents();
         Music.poll_music();
@@ -60,35 +62,41 @@ static void _fade_from_range(PALETTE source, PALETTE dest, uint32_t speed, int f
         set_palette_range(temp, from, to);
         Draw.blit2screen();
     }
+    // Restore the original palette.
     set_palette_range(dest, from, to);
 }
 
 void do_transition(eTransitionFade type, int param)
 {
     PALETTE temp, whp;
+    static PALETTE black_palette;
     switch (type)
     {
     case eTransitionFade::IN:
         _fade_from_range(black_palette, pal, param);
         break;
     case eTransitionFade::OUT:
-        get_palette(temp);
+        temp = get_palette();
         _fade_from_range(temp, black_palette, param);
         break;
     case eTransitionFade::TO_WHITE:
-        get_palette(temp);
-        std::fill(whp, whp + PAL_SIZE, RGB { 63, 63, 63, 63 });
+        temp = get_palette();
+        whp.fill({ 63, 63, 63, 63 });
         _fade_from_range(temp, whp, param);
         break;
     }
 }
 
-void fade_interpolate(PALETTE a, PALETTE b, PALETTE dest, int pos, int from, int to)
+void fade_interpolate(const PALETTE& a, const PALETTE& b, PALETTE& dest, int pos, int from, int to)
 {
+    using std::clamp;
+    assert(from < PAL_SIZE && "from: Out of range");
+    assert(to <= PAL_SIZE && "to: Out of range");
+    pos = clamp<int>(pos, 0, PAL_SIZE);
     for (int i = from; i < to; ++i)
     {
-        dest[i].r = a[i].r + (b[i].r - a[i].r) * pos / 256;
-        dest[i].g = a[i].g + (b[i].g - a[i].g) * pos / 256;
-        dest[i].b = a[i].b + (b[i].b - a[i].b) * pos / 256;
+        dest[i].r = a[i].r + (b[i].r - a[i].r) * pos / PAL_SIZE;
+        dest[i].g = a[i].g + (b[i].g - a[i].g) * pos / PAL_SIZE;
+        dest[i].b = a[i].b + (b[i].b - a[i].b) * pos / PAL_SIZE;
     }
 }

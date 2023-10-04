@@ -1250,14 +1250,15 @@ void KGame::reset_world()
     lua_user_init();
 }
 
-static int rgb_index(RGB& c)
+static int rgb_index(RGBA& c)
 {
-    int bestindex = 255, bestdist = INT_MAX;
+    int bestindex = PAL_SIZE - 1;
+    int bestdist = INT_MAX;
     // Start at 1 because 0 is the transparent colour and we don't want to match
     // it
-    for (int i = 1; i < 256; ++i)
+    for (int i = 1; i < PAL_SIZE; ++i)
     {
-        RGB& rgb = pal[i];
+        const RGBA& rgb = pal[i];
         int dist = (c.r - rgb.r) * (c.r - rgb.r) + (c.g - rgb.g) * (c.g - rgb.g) + (c.b - rgb.b) * (c.b - rgb.b);
         if (dist == 0)
         {
@@ -1304,19 +1305,19 @@ void KGame::startup()
     sound_init();
     set_graphics_mode();
     // Set up transparency table - note special cases for a or b == 0
-    for (int colour_b = 0; colour_b < 256; ++colour_b)
+    for (int colour_b = 0; colour_b < PAL_SIZE; ++colour_b)
     {
         cmap.data[0][colour_b] = colour_b;
     }
-    for (int colour_a = 1; colour_a < 256; ++colour_a)
+    for (int colour_a = 1; colour_a < PAL_SIZE; ++colour_a)
     {
         cmap.data[colour_a][0] = colour_a;
-        for (int colour_b = 1; colour_b < 256; ++colour_b)
+        for (int colour_b = 1; colour_b < PAL_SIZE; ++colour_b)
         {
-            RGB& a = pal[colour_a];
-            RGB& b = pal[colour_b];
-            RGB blend { static_cast<unsigned char>((a.r + b.r) / 2), static_cast<unsigned char>((a.g + b.g) / 2),
-                        static_cast<unsigned char>((a.b + b.b) / 2), 0xFF };
+            RGBA& a = pal[colour_a];
+            RGBA& b = pal[colour_b];
+            RGBA blend { static_cast<unsigned char>((a.r + b.r) / 2), static_cast<unsigned char>((a.g + b.g) / 2),
+                         static_cast<unsigned char>((a.b + b.b) / 2), 0xFF };
             cmap.data[colour_a][colour_b] = rgb_index(blend);
         }
     }
@@ -1376,11 +1377,11 @@ void KGame::startup()
         for (int16_t sfont_x = 0; sfont_x < 60; sfont_x++)
         {
             // Recolor each 'white' pixel found within sfonts[0] for each of the other fonts.
-            // pal[15]  == RGB{ 63, 63, 63, 0 }, white
-            // pal[22]  == RGB{ 55, 0, 0, 0 }, red (#CD0000)
-            // pal[105] == RGB{ 54, 54, 0, 0 }, yellow (#D8D800)
-            // pal[39]  == RGB{ 0, 39, 0, 0 }, green (#009C00)
-            // pal[8]   == RGB{ 33, 33, 33, 0 }, grey (#848484)
+            // pal[15]  == RGBA{ 63, 63, 63, 0 }, white
+            // pal[22]  == RGBA{ 55, 0, 0, 0 }, red (#CD0000)
+            // pal[105] == RGBA{ 54, 54, 0, 0 }, yellow (#D8D800)
+            // pal[39]  == RGBA{ 0, 39, 0, 0 }, green (#009C00)
+            // pal[8]   == RGBA{ 33, 33, 33, 0 }, grey (#848484)
             if (sfonts[0]->getpixel(sfont_x, sfont_y) == 15)
             {
                 sfonts[1]->setpixel(sfont_x, sfont_y, 22);
@@ -1447,17 +1448,17 @@ void KGame::startup()
 
 #ifdef DEBUGMODE
     /* TT: Create the mesh object to see 4-way obstacles (others ignored) */
-    obj_mesh = new Raster(16, 16);
+    obj_mesh = new Raster(TILE_W, TILE_H);
     clear_bitmap(obj_mesh);
-    for (q = 0; q < 16; q += 2)
+    for (int row = 0; row < TILE_H; row += 2)
     {
-        for (p = 0; p < TILE_W; p += 2)
+        for (int col = 0; col < TILE_W; col += 2)
         {
-            putpixel(obj_mesh, p, q, 255);
+            putpixel(obj_mesh, col, row, PAL_SIZE - 1);
         }
-        for (p = 1; p < TILE_W; p += 2)
+        for (int col = 1; col < TILE_W; col += 2)
         {
-            putpixel(obj_mesh, p, q + 1, 255);
+            putpixel(obj_mesh, col, row + 1, PAL_SIZE - 1);
         }
     }
 #endif
@@ -1790,5 +1791,3 @@ void TRACE(const char* message, ...)
     SDL_LogMessageV(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG, message, args);
     va_end(args);
 }
-
-PALETTE black_palette;

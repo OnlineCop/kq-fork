@@ -974,8 +974,8 @@ void hero_init()
             {
                 for (int current_pixel = 0; current_pixel < cframes[fighter_index][0]->width; current_pixel++)
                 {
-                    // pal[168] == RGB{ 27, 54, 27, 0 }, lime (#6CD86C)
-                    // pal[175] == RGB{ 53, 63, 53, 0 }, light lime (#D4FCD4)
+                    // pal[168] == RGBA{ 27, 54, 27, 0 }, lime (#6CD86C)
+                    // pal[175] == RGBA{ 53, 63, 53, 0 }, light lime (#D4FCD4)
                     if (cframes[fighter_index][6]->getpixel(current_pixel, current_line) == 168)
                     {
                         cframes[fighter_index][6]->setpixel(current_pixel, current_line,

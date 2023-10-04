@@ -702,10 +702,10 @@ void play_effect(int efc, int panning)
     case KAudio::eSound::SND_EXPLODE:
         fullblit(double_buffer, fx_buffer);
         clear_bitmap(double_buffer);
-        get_palette(old);
-        for (int a = 0; a < 256; ++a)
+        old = get_palette();
+        for (int a = 0; a < PAL_SIZE; ++a)
         {
-            int s = (old[a].r + old[a].g + old[a].b) > 40 ? 0 : 63;
+            unsigned char s = (old[a].r + old[a].g + old[a].b) > 40 ? 0 : 63;
             whiteout[a].r = whiteout[a].g = whiteout[a].b = s;
         }
         fullblit(fx_buffer, double_buffer);

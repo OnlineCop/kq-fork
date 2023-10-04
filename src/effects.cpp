@@ -304,8 +304,8 @@ void KEffects::draw_castersprite(size_t caster_fighter_index, int new_pal_color)
     {
         for (pixel_col = 0; pixel_col < (unsigned int)cs->width; pixel_col++)
         {
-            // pal[5] == RGB{ 20, 20, 20, 0 }, light grey (#404040)
-            // pal[7] == RGB{ 28, 28, 28, 0 }, mid grey (#707070)
+            // pal[5] == RGBA{ 20, 20, 20, 0 }, light grey (#404040)
+            // pal[7] == RGBA{ 28, 28, 28, 0 }, mid grey (#707070)
             if (cs->getpixel(pixel_col, pixel_row) == 5)
             {
                 cs->setpixel(pixel_col, pixel_row, new_pal_color);

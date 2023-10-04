@@ -57,25 +57,23 @@ static int palindex(uint8_t* ptr)
     {
         return 0;
     }
-    int bestindex = 255, bestdist = 0x1000;
-    // Start at 1 because 0 is the transparent colour and we don't want to match
-    // it
-    for (int i = 1; i < 256; ++i)
+    int bestindex = PAL_SIZE - 1;
+    int bestdist = 0x1000;
+    // Start at 1 because 0 is the transparent colour and we don't want to match it.
+    for (int i = 1; i < PAL_SIZE; ++i)
     {
-        RGB& rgb = pal[i];
+        RGBA& rgb = pal[i];
         int dist = abs(r - rgb.r) + abs(g - rgb.g) + abs(b - rgb.b);
         if (dist == 0)
         {
             // Exact match, early return
-            return i;
+            bestindex = i;
+            break;
         }
-        else
+        else if (dist < bestdist)
         {
-            if (dist < bestdist)
-            {
-                bestdist = dist;
-                bestindex = i;
-            }
+            bestdist = dist;
+            bestindex = i;
         }
     }
     return bestindex;
@@ -88,6 +86,7 @@ static int palindex(uint8_t* ptr)
  * Allocate space for and load a bitmap in PNG format.
  * Assumed that we're running in 8bpp mode using KQ's palette.
  * Returns null if not found or error while loading.
+ * Caller is responsible to free the memory.
  *
  * \param   path The filename.
  * \returns The bitmap.
@@ -104,17 +103,20 @@ static Raster* bmp_from_png(const std::string& path)
         // Force load in true colour with alpha format
         image.format = PNG_FORMAT_RGBA;
         std::unique_ptr<uint8_t[]> imagedata(new uint8_t[PNG_IMAGE_SIZE(image)]);
-        png_image_finish_read(&image, nullptr, imagedata.get(), PNG_IMAGE_ROW_STRIDE(image), nullptr);
+        auto stride = PNG_IMAGE_ROW_STRIDE(image);
+        png_image_finish_read(&image, nullptr, imagedata.get(), stride, nullptr);
         bitmap = new Raster(image.width, image.height);
+
+        auto ptr_advance = PNG_IMAGE_PIXEL_SIZE(PNG_FORMAT_RGBA);
         // Then convert to paletted.
         // This can be optimised or go away later
         for (auto y = 0u; y < image.height; ++y)
         {
-            auto pptr = &imagedata[y * PNG_IMAGE_ROW_STRIDE(image)];
+            auto pptr = &imagedata[y * stride];
             for (auto x = 0u; x < image.width; ++x)
             {
                 bitmap->setpixel(x, y, palindex(pptr));
-                pptr += PNG_IMAGE_PIXEL_SIZE(PNG_FORMAT_RGBA);
+                pptr += ptr_advance;
             }
         }
     }

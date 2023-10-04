@@ -26,24 +26,26 @@
 
 #include <SDL.h>
 #include <algorithm>
+#include <cassert>
 
 COLOR_MAP* color_map = &cmap;
 extern PALETTE pal;
-static RGB current_palette[PAL_SIZE];
+static PALETTE current_palette;
 
-void set_palette(RGB* clrs)
+void set_palette(const PALETTE& src)
 {
-    std::copy(clrs, clrs + PAL_SIZE, current_palette);
+    current_palette = src;
 }
 
-void set_palette_range(PALETTE src, int from, int to)
+void set_palette_range(const PALETTE& src, int from, int to)
 {
-    std::copy(src + from, src + to, current_palette + from);
+    assert(from < PAL_SIZE && to < PAL_SIZE && "Out of range");
+    std::copy(&src[from], &src[to], &current_palette[from]);
 }
 
-void get_palette(RGB* clrs)
+PALETTE get_palette()
 {
-    std::copy(current_palette, current_palette + PAL_SIZE, clrs);
+    return current_palette;
 }
 
 #define ALIGNED(x) ((x) + alignof(char*) - 1) & ~(alignof(char*) - 1)
