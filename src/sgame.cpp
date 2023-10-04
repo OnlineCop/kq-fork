@@ -623,7 +623,7 @@ int KSaveGame::system_menu()
     if (cansave == 0)
     {
 #ifdef KQ_CHEATS
-        if (cheat)
+        if (Game.cheat())
         {
             strcpy(save_str, _("[Save]"));
             text_color = FNORMAL;
@@ -673,7 +673,7 @@ int KSaveGame::system_menu()
             {
                 // Pointer is over the SAVE option
 #ifdef KQ_CHEATS
-                if (cansave == 1 || cheat)
+                if (cansave == 1 || Game.cheat())
 #else /* !KQ_CHEATS */
                 if (cansave == 1)
 #endif /* KQ_CHEATS */

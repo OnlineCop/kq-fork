@@ -160,9 +160,9 @@ void config_menu()
     eFontColor fontColor;
 
 #ifdef DEBUGMODE
-#define MENU_SIZE 17
+    constexpr int MENU_SIZE = 17;
 #else /* !DEBUGMODE */
-#define MENU_SIZE 16
+    constexpr int MENU_SIZE = 16;
 #endif /* DEBUGMODE */
     static const char* dc[MENU_SIZE];
 
@@ -632,10 +632,10 @@ void parse_setup()
     slow_computer = Config.get_config_int(nullptr, "slow_computer", 0);
     cpu_usage = Config.get_config_int(nullptr, "cpu_usage", 2);
 #ifdef KQ_CHEATS
-    cheat = Config.get_config_int(nullptr, "cheat", 0);
-    no_random_encounters = Config.get_config_int(nullptr, "no_random_encounters", 0);
-    no_monsters = Config.get_config_int(nullptr, "no_monsters", 0);
-    every_hit_999 = Config.get_config_int(nullptr, "every_hit_999", 0);
+    Game.set_cheat(Config.get_config_int(nullptr, "cheat", 0));
+    Game.set_no_random_encounters(Config.get_config_int(nullptr, "no_random_encounters", 0));
+    Game.set_no_monsters(Config.get_config_int(nullptr, "no_monsters", 0));
+    Game.set_every_hit_999(Config.get_config_int(nullptr, "every_hit_999", 0));
 #endif /* KQ_CHEATS */
 #ifdef DEBUGMODE
     debugging = Config.get_config_int(nullptr, "debugging", 0);

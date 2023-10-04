@@ -498,6 +498,16 @@ class KGame
      */
     void wait_released();
 
+    int cheat() const                 { return _cheat; }
+    int no_random_encounters() const  { return _no_random_encounters; }
+    int no_monsters() const           { return _no_monsters; }
+    int every_hit_999() const         { return _every_hit_999; }
+
+    void set_cheat(int cheat);
+    void set_no_random_encounters(int no_random_encounters);
+    void set_no_monsters(int no_monsters);
+    void set_every_hit_999(int every_hit_999);
+
   public:
     const std::string WORLD_MAP;
 
@@ -514,13 +524,22 @@ class KGame
     /*! Name of the current map */
     std::string m_curmap;
 
-    /** Gold pieces held by the player */
+    /*! Gold pieces held by the player */
     int gp;
 
-    /** Last key */
+    /*! Last key */
     int keyp;
-    int window_width = -1;
-    int window_height = -1;
+    int window_width;
+    int window_height;
+
+    // Things related to cheating:
+    // Not behind '#ifdef KQ_CHEATS...#endif' guards for ABI compatibility.
+
+    /*! Is cheat mode activated? */
+    int _cheat = 0;
+    int _no_random_encounters = 0;
+    int _no_monsters = 0;
+    int _every_hit_999 = 0;
 };
 
 /*! View positions in pixels, (such as entity.x, not entity.tilex) */
@@ -595,12 +614,6 @@ extern int view_x1, view_y1, view_x2, view_y2, in_combat;
 extern bool view_on;
 extern int use_joy;
 extern bool show_frate;
-
-/*! Variables used with KQ_CHEATS */
-extern int cheat;
-extern int no_random_encounters;
-extern int every_hit_999;
-extern int no_monsters;
 
 #ifdef DEBUGMODE
 extern Raster* obj_mesh;

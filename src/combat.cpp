@@ -262,7 +262,7 @@ eAttackResult KCombat::attack_result(int ar, int dr)
     }
 
 #ifdef KQ_CHEATS
-    if (cheat && every_hit_999)
+    if (Game.cheat() && Game.every_hit_999())
     {
         health_adjust[dr] = -999;
         if (do_staff_effect)
@@ -468,7 +468,7 @@ int KCombat::combat(int bno)
     int lc;
 
 #ifdef KQ_CHEATS
-    if (cheat && no_monsters)
+    if (Game.cheat() && Game.no_monsters())
     {
         return 0;
     }
@@ -496,7 +496,7 @@ int KCombat::combat(int bno)
     {
 #ifdef KQ_CHEATS
         /* skip battle if no_random_encouters cheat is set */
-        if (cheat && no_random_encounters)
+        if (Game.cheat() && Game.no_random_encounters())
         {
             return 0;
         }
@@ -1086,7 +1086,7 @@ void KCombat::fkill(size_t fighter_index)
     /* PH Combat cheat - when a hero dies s/he is mysteriously boosted back
      * to full HP.
      */
-    if (cheat && fighter_index < PSIZE)
+    if (Game.cheat() && fighter_index < PSIZE)
     {
         fighter[fighter_index].hp = fighter[fighter_index].mhp;
         fighter[fighter_index].mp = fighter[fighter_index].mmp;

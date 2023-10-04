@@ -213,15 +213,6 @@ bool show_frate = false;
 /*! Should we use the joystick */
 int use_joy = 1;
 
-#ifdef KQ_CHEATS
-
-/*! Is cheat mode activated? */
-int cheat = 0;
-int no_random_encounters = 0;
-int no_monsters = 0;
-int every_hit_999 = 0;
-#endif
-
 /*! \brief Timer Event structure.
  *
  * Holds the information relating to a forthcoming event
@@ -421,6 +412,12 @@ KGame::KGame()
     , m_curmap("")
     , gp(0)
     , keyp(0)
+    , window_width(-1)
+    , window_height(-1)
+    , _cheat(0)
+    , _no_random_encounters(0)
+    , _no_monsters(0)
+    , _every_hit_999(0)
 {
 }
 
@@ -1737,6 +1734,43 @@ int KGame::get_key()
     keyp = 0;
     return k;
 }
+
+void KGame::set_cheat(int cheat)
+{
+#ifdef KQ_CHEATS
+    _cheat = cheat;
+#else /* !KQ_CHEATS */
+    (void)cheat;
+#endif /* KQ_CHEATS */
+}
+
+void KGame::set_no_random_encounters(int no_random_encounters)
+{
+#ifdef KQ_CHEATS
+    _no_random_encounters = no_random_encounters;
+#else /* !KQ_CHEATS */
+    (void)no_random_encounters;
+#endif /* KQ_CHEATS */
+}
+
+void KGame::set_no_monsters(int no_monsters)
+{
+#ifdef KQ_CHEATS
+    _no_monsters = no_monsters;
+#else /* !KQ_CHEATS */
+    (void)no_monsters;
+#endif /* KQ_CHEATS */
+}
+
+void KGame::set_every_hit_999(int every_hit_999)
+{
+#ifdef KQ_CHEATS
+    _every_hit_999 = every_hit_999;
+#else /* !KQ_CHEATS */
+    (void)every_hit_999;
+#endif /* KQ_CHEATS */
+}
+
 
 /*! \page treasure A Note on Treasure
  *
