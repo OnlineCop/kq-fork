@@ -621,16 +621,16 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
         {
             if (Combat.GetHealthAdjust(tgt) <= 0)
             {
-                Effects.display_amount(tgt, FONT_RED, 0);
+                Effects.display_amount(tgt, eFont::FONT_RED, 0);
                 adjust_mp(tgt, Combat.GetHealthAdjust(tgt));
-                Effects.display_amount(caster_fighter_index, FONT_GREEN, 0);
+                Effects.display_amount(caster_fighter_index, eFont::FONT_GREEN, 0);
                 adjust_mp(caster_fighter_index, Combat.GetHealthAdjust(caster_fighter_index));
             }
             else
             {
-                Effects.display_amount(caster_fighter_index, FONT_RED, 0);
+                Effects.display_amount(caster_fighter_index, eFont::FONT_RED, 0);
                 adjust_mp(caster_fighter_index, Combat.GetHealthAdjust(caster_fighter_index));
-                Effects.display_amount(tgt, FONT_GREEN, 0);
+                Effects.display_amount(tgt, eFont::FONT_GREEN, 0);
                 adjust_mp(tgt, Combat.GetHealthAdjust(tgt));
             }
         }
@@ -638,23 +638,23 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
         {
             if (Combat.GetHealthAdjust(tgt) <= 0)
             {
-                Effects.display_amount(tgt, FONT_WHITE, 0);
+                Effects.display_amount(tgt, eFont::FONT_WHITE, 0);
                 adjust_hp(tgt, Combat.GetHealthAdjust(tgt));
-                Effects.display_amount(caster_fighter_index, FONT_YELLOW, 0);
+                Effects.display_amount(caster_fighter_index, eFont::FONT_YELLOW, 0);
                 adjust_hp(caster_fighter_index, Combat.GetHealthAdjust(caster_fighter_index));
             }
             else
             {
-                Effects.display_amount(caster_fighter_index, FONT_WHITE, 0);
+                Effects.display_amount(caster_fighter_index, eFont::FONT_WHITE, 0);
                 adjust_hp(caster_fighter_index, Combat.GetHealthAdjust(caster_fighter_index));
-                Effects.display_amount(tgt, FONT_YELLOW, 0);
+                Effects.display_amount(tgt, eFont::FONT_YELLOW, 0);
                 adjust_hp(tgt, Combat.GetHealthAdjust(tgt));
             }
         }
     }
     else if (spell_number == M_DOOM || spell_number == M_DEATH)
     {
-        Effects.display_amount(start_fighter_index, FONT_DECIDE, tall);
+        Effects.display_amount(start_fighter_index, eFont::FONT_DECIDE, tall);
         for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index;
              fighter_index++)
         {
@@ -676,12 +676,12 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
             }
             if (b > 0)
             {
-                Effects.display_amount(start_fighter_index, FONT_WHITE, tall);
+                Effects.display_amount(start_fighter_index, eFont::FONT_WHITE, tall);
             }
         }
         else
         {
-            Effects.display_amount(start_fighter_index, FONT_DECIDE, tall);
+            Effects.display_amount(start_fighter_index, eFont::FONT_DECIDE, tall);
             for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index;
                  fighter_index++)
             {
@@ -1343,7 +1343,7 @@ void KMagic::special_damage_oneall_enemies(size_t caster_index, int spell_dmg, i
             Combat.AdjustHealth(fighter_index, 0);
         }
     }
-    Effects.display_amount(first_target, FONT_DECIDE, multiple_targets);
+    Effects.display_amount(first_target, eFont::FONT_DECIDE, multiple_targets);
     for (fighter_index = first_target; fighter_index < first_target + last_target; fighter_index++)
     {
         if (Combat.GetHealthAdjust(fighter_index) != MISS)

@@ -383,7 +383,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         {
             Combat.AdjustHealth(fighter_index, tmp);
             Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
-            Effects.display_amount(fighter_index, FONT_YELLOW, 0);
+            Effects.display_amount(fighter_index, eFont::FONT_YELLOW, 0);
             Magic.adjust_hp(fighter_index, Combat.GetHealthAdjust(fighter_index));
         }
         break;
@@ -406,7 +406,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         {
             Combat.AdjustHealth(fighter_index, tmp);
             Effects.draw_spellsprite(fighter_index, 0, items[ti].eff, 0);
-            Effects.display_amount(fighter_index, FONT_GREEN, 0);
+            Effects.display_amount(fighter_index, eFont::FONT_GREEN, 0);
             Magic.adjust_mp(fighter_index, Combat.GetHealthAdjust(fighter_index));
         }
         break;
@@ -586,7 +586,7 @@ eItemEffectResult item_effects(size_t attack_fighter_index, size_t fighter_index
         if (in_combat == 1)
         {
             Effects.draw_spellsprite(attack_fighter_index, 1, items[ti].eff, 1);
-            Effects.display_amount(attack_fighter_index, FONT_YELLOW, 1);
+            Effects.display_amount(attack_fighter_index, eFont::FONT_YELLOW, 1);
             for (fighter_index = attack_fighter_index; fighter_index < attack_fighter_index + san; fighter_index++)
             {
                 Magic.adjust_hp(fighter_index, Combat.GetHealthAdjust(fighter_index));

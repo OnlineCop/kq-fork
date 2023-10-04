@@ -403,7 +403,7 @@ static int combat_item(int ss, int t1, int tg)
             tt = Combat.GetNumEnemies();
         }
     }
-    Effects.display_amount(st, FONT_DECIDE, tl);
+    Effects.display_amount(st, eFont::FONT_DECIDE, tl);
     for (a = st; a < st + tt; a++)
     {
         Magic.adjust_hp(a, Combat.GetHealthAdjust(a));

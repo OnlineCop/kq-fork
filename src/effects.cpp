@@ -173,9 +173,10 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
                     }
                     string_length = strbuf.size() * 3;
                     eFont new_font_color = font_color;
-                    if (font_color == FONT_DECIDE)
+                    if (font_color == eFont::FONT_DECIDE)
                     {
-                        new_font_color = (Combat.GetHealthAdjust(fighter_index) > 0 ? FONT_YELLOW : FONT_WHITE);
+                        new_font_color =
+                            (Combat.GetHealthAdjust(fighter_index) > 0 ? eFont::FONT_YELLOW : eFont::FONT_WHITE);
                     }
                     Combat.draw_fighter(fighter_index, 0);
 

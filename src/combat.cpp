@@ -723,7 +723,7 @@ void KCombat::do_round()
                         }
 
                         health_adjust[fighter_index] = a;
-                        Effects.display_amount(fighter_index, FONT_WHITE, 0);
+                        Effects.display_amount(fighter_index, eFont::FONT_WHITE, 0);
                         fighter[fighter_index].hp -= a;
                     }
 
@@ -740,7 +740,7 @@ void KCombat::do_round()
                         }
 
                         health_adjust[fighter_index] = a;
-                        Effects.display_amount(fighter_index, FONT_YELLOW, 0);
+                        Effects.display_amount(fighter_index, eFont::FONT_YELLOW, 0);
                         Magic.adjust_hp(fighter_index, a);
                     }
 
@@ -1043,7 +1043,7 @@ int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int
             Magic.do_shield_check(defend_fighter_index, health_adjust[defend_fighter_index]);
     }
 
-    Effects.display_amount(defend_fighter_index, FONT_DECIDE, 0);
+    Effects.display_amount(defend_fighter_index, eFont::FONT_DECIDE, 0);
     if (health_adjust[defend_fighter_index] != MISS)
     {
         defender.hp += health_adjust[defend_fighter_index];
@@ -1541,7 +1541,7 @@ void KCombat::multi_fight(size_t attack_fighter_index)
         fighter[attack_fighter_index].cy -= 10;
     }
 
-    Effects.display_amount(start_fighter_index, FONT_DECIDE, 1);
+    Effects.display_amount(start_fighter_index, eFont::FONT_DECIDE, 1);
     for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + end_fighter_index; fighter_index++)
     {
         if (killed_warrior[fighter_index] != 0)

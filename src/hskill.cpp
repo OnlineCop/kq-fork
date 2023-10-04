@@ -539,7 +539,7 @@ int skill_use(size_t attack_fighter_index)
             Combat.AdjustHealth(attack_fighter_index, b * 2);
             display_attack_string = 0;
             temp.blitTo(Combat.backart);
-            Effects.display_amount(attack_fighter_index, FONT_DECIDE, 0);
+            Effects.display_amount(attack_fighter_index, eFont::FONT_DECIDE, 0);
             if (fighter[attack_fighter_index].IsAlive() && fighter[attack_fighter_index].hp <= 0)
             {
                 Combat.fkill(attack_fighter_index);
@@ -708,7 +708,7 @@ int skill_use(size_t attack_fighter_index)
                     Combat.AdjustHealth(fighter_index, amount);
                 }
             }
-            Effects.display_amount(0, FONT_YELLOW, 1);
+            Effects.display_amount(0, eFont::FONT_YELLOW, 1);
             for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
             {
                 if (!fighter[fighter_index].IsStone() && fighter[fighter_index].IsAlive())
