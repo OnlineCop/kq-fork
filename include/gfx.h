@@ -39,7 +39,7 @@ class Raster
 
     Raster(Raster&&) = default;
 
-    /*! \brief Blit from source bitmap to target bitmap: all options.
+    /*! \brief Blit from this bitmap onto target bitmap: all options.
      *
      * \param   target Destination bitmap.
      * \param   src_x  Left-most pixel within source bitmap.
@@ -55,7 +55,7 @@ class Raster
     void blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w, uint16_t src_h, int16_t dest_x,
                 int16_t dest_y, uint16_t dest_w, uint16_t dest_h, bool masked);
 
-    /*! \brief Blit from source bitmap to target bitmap of "same" dimensions.
+    /*! \brief Blit from this bitmap onto target bitmap of "same" dimensions.
      *
      * Sets \p target bitmap's width and height to the same as this source
      * bitmap, with 'masked' set to false.
@@ -71,7 +71,7 @@ class Raster
     void blitTo(Raster* target, int16_t src_x, int16_t src_y, int16_t dest_x, int16_t dest_y, uint16_t src_w,
                 uint16_t src_h);
 
-    /*! \brief Blit this entire source bitmap to target bitmap.
+    /*! \brief Blit this entire source bitmap onto target bitmap.
      *
      * Copies all pixels, with 'masked' set to false.
      *
@@ -79,9 +79,10 @@ class Raster
      */
     void blitTo(Raster* target);
 
-    /*! \brief Blit this entire source bitmap onto an area of \p target bitmap.
+    /*! \brief Blit this entire (masked) source bitmap onto an area of \p target bitmap.
      *
      * Calls blitTo() with 'masked' set to true.
+     * Masking only draws onto \p target when a pixel's 'kolor' is non-zero.
      *
      * \param   target Destination bitmap.
      * \param   dest_x Left-most pixel within target bitmap to draw to.
@@ -89,7 +90,7 @@ class Raster
      */
     void maskedBlitTo(Raster* target, int16_t dest_x, int16_t dest_y);
 
-    /*! \brief Change a single pixel's kolor (nth color entry within PALETTE pal).
+    /*! \brief Change a single pixel's 'kolor' (nth color entry within PALETTE pal).
      *
      * \param   x Pixel's X offset.
      * \param   y Pixel's Y offset.
@@ -97,7 +98,7 @@ class Raster
      */
     void setpixel(int16_t x, int16_t y, uint8_t kolor);
 
-    /*! \brief Get a single pixel's kolor (nth color entry within PALETTE pal).
+    /*! \brief Get a single pixel's 'kolor' (nth color entry within PALETTE pal).
      *
      * \param   x Pixel's X offset.
      * \param   y Pixel's Y offset.
@@ -123,7 +124,7 @@ class Raster
      */
     void vline(int16_t x, int16_t y0, int16_t y1, uint8_t kolor);
 
-    /*! \brief Fill a section of the bitmap with the desired color.
+    /*! \brief Fill a section of the bitmap with the desired 'kolor'; not transparent.
      *
      * \param   x Left edge.
      * \param   y Top edge.
@@ -133,7 +134,7 @@ class Raster
      */
     void fill(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t kolor);
 
-    /*! \brief Fill a section of the bitmap with the desired color in transparent mode.
+    /*! \brief Fill a section of the bitmap with the desired 'kolor' in transparent mode.
      *
      * \param   x Left edge.
      * \param   y Top edge.
@@ -143,7 +144,7 @@ class Raster
      */
     void fill_trans(int16_t x, int16_t y, uint16_t w, uint16_t h, uint8_t kolor);
 
-    /*! \brief Fill the entire bitmap with the desired color.
+    /*! \brief Fill the entire bitmap with the desired 'kolor' (not transparent).
      *
      * \param   kolor Color index within pal[] array, in range [0..PAL_SIZE-1].
      */
@@ -152,7 +153,7 @@ class Raster
     /*! \brief Get a writable address within data[].
      *
      * This returns the address of the data[y][x] pixel, but without bounds check.
-     * The safer (but slower) counterpart would \a setpixel().
+     * The safer (but slower) counterpart is \a setpixel().
      *
      * \param   x Pixel x coordinate.
      * \param   y Pixel y coordinate.
@@ -163,6 +164,14 @@ class Raster
     const uint16_t width;   ///< Read-only width of image
     const uint16_t height;  ///< Read-only height of image
     const uint16_t stride;  ///< Read-only data-aligned width of image
+
+    /*! \brief Convert the current Raster into a 32-bit RBG format for use with SDL.
+     *
+     * \param rc SDL rectangle to use for dimensions.
+     * \param format SDL_PixelFormat structure corresponding to a pixel format.
+     * \param[out] pixels This is filled in with a pointer to the locked pixels, appropriately offset by the locked area.
+     * \param stride This is filled in with the pitch of the locked pixels; the pitch is the length of one row in bytes.
+     */
     void to_rgba32(SDL_Rect* rc, SDL_PixelFormat* format, void* pixels, int stride);
 
   private:
