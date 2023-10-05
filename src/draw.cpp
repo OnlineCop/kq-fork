@@ -120,29 +120,45 @@ KDraw::KDraw()
 
 void KDraw::set_window(SDL_Window* _window)
 {
-    if (renderer)
+    if (renderer != nullptr)
     {
         SDL_DestroyRenderer(renderer);
     }
-    if (texture)
+    if (texture != nullptr)
     {
         SDL_DestroyTexture(texture);
     }
-    if (format)
+    if (format != nullptr)
     {
         SDL_FreeFormat(format);
     }
-    if (window)
+    if (window != nullptr)
     {
         SDL_DestroyWindow(window);
     }
     window = _window;
-    Uint32 pix = SDL_GetWindowPixelFormat(window);
+    Uint32 pixel_format = SDL_GetWindowPixelFormat(window);
     // Take the first renderer we can get
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-    SDL_RenderSetLogicalSize(renderer, SCREEN_W, SCREEN_H);
-    texture = SDL_CreateTexture(renderer, pix, SDL_TEXTUREACCESS_STREAMING, SCREEN_W, SCREEN_H);
-    format = SDL_AllocFormat(pix);
+    constexpr int rendering_driver = -1;
+    renderer = SDL_CreateRenderer(window, rendering_driver, SDL_RENDERER_PRESENTVSYNC);
+    if (renderer == nullptr)
+    {
+        Game.program_death("Could not create renderer", SDL_GetError());
+    }
+    if (SDL_RenderSetLogicalSize(renderer, SCREEN_W, SCREEN_H))
+    {
+        Game.program_death("Could not set rendering resolution", SDL_GetError());
+    }
+    texture = SDL_CreateTexture(renderer, pixel_format, SDL_TEXTUREACCESS_STREAMING, SCREEN_W, SCREEN_H);
+    if (texture == nullptr)
+    {
+        Game.program_death("Could not create texture", SDL_GetError());
+    }
+    format = SDL_AllocFormat(pixel_format);
+    if (format == nullptr)
+    {
+        Game.program_death("Could not create pixel format", SDL_GetError());
+    }
 }
 
 void KDraw::blit2screen()
@@ -170,20 +186,24 @@ void KDraw::blit2screen()
 #endif /* DEBUGMODE */
     int pitch {};
     void* pixels {};
-    int rc = SDL_LockTexture(texture, nullptr, &pixels, &pitch);
-    if (rc < 0)
+    if (SDL_LockTexture(texture, nullptr, &pixels, &pitch) < 0)
     {
         Game.program_death("Could not lock screen texture", SDL_GetError());
     }
     SDL_Rect src { 0, 0, SCREEN_W, SCREEN_H };
     double_buffer->to_rgba32(&src, format, pixels, pitch);
     SDL_UnlockTexture(texture);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(renderer);
-    rc = SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-    if (rc < 0)
+    if (SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE) < 0)
     {
-        Game.program_death("Could not render");
+        Game.program_death("Could not set renderer draw color", SDL_GetError());
+    }
+    if (SDL_RenderClear(renderer) < 0)
+    {
+        Game.program_death("Could not clear render", SDL_GetError());
+    }
+    if (SDL_RenderCopy(renderer, texture, nullptr, nullptr) < 0)
+    {
+        Game.program_death("Could not render", SDL_GetError());
     }
     SDL_RenderPresent(renderer);
 }
