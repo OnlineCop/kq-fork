@@ -550,18 +550,40 @@ extern int mx, my;
 /*! What was the last direction each player moved in */
 extern int steps;
 
-extern Raster *double_buffer, *fx_buffer;
-extern Raster* map_icons[MAX_TILES];
+constexpr int NUM_EDGES = 8;
 
-extern Raster *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse, *b_mp;
-extern Raster *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES];
+extern Raster* bord[NUM_EDGES];
+extern Raster* bub[NUM_EDGES];
+extern Raster* cframes[NUM_FIGHTERS][MAXCFRAMES];
+extern Raster* frames[MAXCHRS][MAXFRAMES];
+extern Raster* map_icons[MAX_TILES];
+extern Raster* pgb[9];
+extern Raster* sfonts[5];
+extern Raster* shadow[MAX_SHADOWS];
+extern Raster* tcframes[NUM_FIGHTERS][MAXCFRAMES];
+
+extern Raster* b_mp;
+extern Raster* b_repulse;
+extern Raster* b_shell;
+extern Raster* b_shield;
+extern Raster* back;
+extern Raster* bptr;
+extern Raster* dnptr;
+extern Raster* double_buffer;
+extern Raster* fx_buffer;
+extern Raster* menuptr;
+extern Raster* missbmp;
+extern Raster* mptr;
+extern Raster* noway;
+extern Raster* sicons;
+extern Raster* sptr;
+extern Raster* stspics;
+extern Raster* tc;
+extern Raster* tc2;
+extern Raster* upptr;
 
 /*! Enemy animation frames */
 extern Raster* eframes[MAXE][MAXEFRAMES];
-
-extern Raster *pgb[9], *sfonts[5], *bord[8];
-extern Raster *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr;
-extern Raster* shadow[MAX_SHADOWS];
 
 /*! Layers in the map */
 extern uint16_t *map_seg, *b_seg, *f_seg;

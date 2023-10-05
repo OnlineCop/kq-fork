@@ -70,20 +70,45 @@ int viewport_x_coord, viewport_y_coord, mx, my;
 int steps = 0;
 
 /*! 23: various global bitmaps */
-Raster *double_buffer, *fx_buffer, *map_icons[MAX_TILES], *back, *tc, *tc2, *bub[8], *b_shield, *b_shell, *b_repulse,
-    *b_mp, *cframes[NUM_FIGHTERS][MAXCFRAMES], *tcframes[NUM_FIGHTERS][MAXCFRAMES], *frames[MAXCHRS][MAXFRAMES],
-    *pgb[MAXPGB], *bord[8], *menuptr, *mptr, *sptr, *stspics, *sicons, *bptr, *missbmp, *noway, *upptr, *dnptr,
-    *shadow[MAX_SHADOWS], *kfonts;
+Raster* bord[NUM_EDGES] {};
+Raster* bub[NUM_EDGES] {};
+Raster* cframes[NUM_FIGHTERS][MAXCFRAMES] {};
+Raster* frames[MAXCHRS][MAXFRAMES] {};
+Raster* map_icons[MAX_TILES] {};
+Raster* pgb[MAXPGB] {};
+Raster* shadow[MAX_SHADOWS] {};
+Raster* tcframes[NUM_FIGHTERS][MAXCFRAMES] {};
+
+Raster* b_mp {};
+Raster* b_repulse {};
+Raster* b_shell {};
+Raster* b_shield {};
+Raster* back {};
+Raster* bptr {};
+Raster* dnptr {};
+Raster* double_buffer {};
+Raster* fx_buffer {};
+Raster* kfonts {};
+Raster* menuptr {};
+Raster* missbmp {};
+Raster* mptr {};
+Raster* noway {};
+Raster* sicons {};
+Raster* sptr {};
+Raster* stspics {};
+Raster* tc {};
+Raster* tc2 {};
+Raster* upptr {};
 
 /*! Enemy animation frames */
-Raster* eframes[MAXE][MAXEFRAMES];
+Raster* eframes[MAXE][MAXEFRAMES] {};
 
 // 5 different colors of fonts, each 8 tall by 6 wide, found within misc.png between (0,100) and (60, 108).
 // sfonts[0] is scanned in, and sfonts[1] through sfonts[4] are simply recolored.
-Raster* sfonts[5];
+Raster* sfonts[5] {};
 
 #ifdef DEBUGMODE
-Raster* obj_mesh;
+Raster* obj_mesh {};
 #endif /* DEBUGMODE */
 
 uint16_t *map_seg = nullptr, *b_seg = nullptr, *f_seg = nullptr;
@@ -123,15 +148,13 @@ uint8_t use_sstone = 0;
 /*! Version number (used for version control in sgame.c) */
 const uint8_t kq_version = 92;
 
-/*! If non-zero, don't do fade effects. The only place this is
- * set is in scripts. */
+/*! If non-zero, don't do fade effects. The only place this is set is in scripts. */
 uint8_t hold_fade = 0;
 
 /*! True if player can save at this point */
 uint8_t cansave = 0;
 
-/*! True if the intro is to be skipped (the bit where the heroes learn of the
- * quest) */
+/*! True if the intro is to be skipped (the bit where the heroes learn of the quest) */
 uint8_t skip_intro = 0;
 
 /*! Graphics mode settings */
@@ -142,8 +165,7 @@ int window_width = -1, window_height = -1;
 /*! Current sequence position of animated tiles */
 uint16_t tilex[MAX_TILES];
 
-/*! Current 'time' for animated tiles. When this increments to adata[].delay,
- * the next tile is shown */
+/*! Current 'time' for animated tiles. When this increments to adata[].delay, the next tile is shown */
 uint16_t adelay[MAX_ANIM];
 
 /*! Temporary buffer for string operations (used everywhere!) */
@@ -628,20 +650,16 @@ void KGame::allocate_stuff()
         shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
     }
 
-    for (int p = 0; p < 8; p++)
+    for (int p = 0; p < NUM_EDGES; p++)
     {
         bub[p] = alloc_bmp(16, 16, "bub[x]");
     }
 
-    for (int p = 0; p < 3; p++)
+    constexpr int bord_widths[NUM_EDGES] = { 8, 8, 8, 8, 8, 8, 8, 8 };
+    constexpr int bord_heights[NUM_EDGES] = { 8, 8, 8, 12, 12, 8, 8, 8 };
+    for (int p = 0; p < NUM_EDGES; p++)
     {
-        bord[p] = alloc_bmp(8, 8, "bord[x]");
-        bord[p + 5] = alloc_bmp(8, 8, "bord[x]");
-    }
-
-    for (int p = 3; p < 5; p++)
-    {
-        bord[p] = alloc_bmp(8, 12, "bord[x]");
+        bord[p] = alloc_bmp(bord_widths[p], bord_heights[p], "bord[x]");
     }
 
     for (int p = 0; p < MAXCHRS; p++)
@@ -877,12 +895,12 @@ void KGame::deallocate_stuff()
         delete (shadow[p]);
     }
 
-    for (p = 0; p < 8; p++)
+    for (p = 0; p < NUM_EDGES; p++)
     {
         delete (bub[p]);
     }
 
-    for (p = 0; p < 8; p++)
+    for (p = 0; p < NUM_EDGES; p++)
     {
         delete (bord[p]);
     }
@@ -1405,19 +1423,17 @@ void KGame::startup()
         misc->blitTo(shadow[p], p * 16, 160, 0, 0, 16, 16);
     }
 
-    for (p = 0; p < 8; p++)
+    for (p = 0; p < NUM_EDGES; p++)
     {
         misc->blitTo(bub[p], p * 16, 144, 0, 0, 16, 16);
     }
 
-    for (p = 0; p < 3; p++)
+    constexpr int bord_xoffset[NUM_EDGES] = { 0, 1, 2, 0, 2, 0, 1, 2 };
+    constexpr int bord_yoffset[NUM_EDGES] = { 0, 0, 0, 8, 8, 20, 20, 20 };
+    for (p = 0; p < NUM_EDGES; p++)
     {
-        misc->blitTo(bord[p], p * 8 + 96, 64, 0, 0, 8, 8);
-        misc->blitTo(bord[5 + p], p * 8 + 96, 84, 0, 0, 8, 8);
+        misc->blitTo(bord[p], bord_xoffset[p] * 8 + 96, 64 + bord_yoffset[p], 0, 0, bord[p]->width, bord[p]->height);
     }
-
-    misc->blitTo(bord[3], 96, 72, 0, 0, 8, 12);
-    misc->blitTo(bord[4], 112, 72, 0, 0, 8, 12);
 
     for (i = 0; i < 9; i++)
     {

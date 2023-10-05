@@ -743,7 +743,7 @@ void KDraw::draw_textbox(eBubbleStyle bstyle)
     if (bubble_stem_style != STEM_UNDEFINED)
     {
         /* select the correct stem-thingy that comes out of the speech bubble */
-        auto stem = bub[bubble_stem_style + (bstyle == B_THOUGHT ? NUM_BUBBLE_STEMS : 0)];
+        auto stem = bub[bubble_stem_style + (bstyle == B_THOUGHT ? NUM_BUBBLE_STEMS : STEM_BOTTOM_RIGHT)];
         /* and draw it */
         draw_sprite(double_buffer, stem, gbx, gby);
     }
