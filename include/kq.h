@@ -552,7 +552,7 @@ extern int steps;
 
 constexpr int NUM_EDGES = 8;
 
-extern Raster* bord[NUM_EDGES];
+extern Raster* thought_bubble_borders[NUM_EDGES];
 extern Raster* bub[NUM_EDGES];
 extern Raster* cframes[NUM_FIGHTERS][MAXCFRAMES];
 extern Raster* frames[MAXCHRS][MAXFRAMES];

@@ -70,7 +70,7 @@ int viewport_x_coord, viewport_y_coord, mx, my;
 int steps = 0;
 
 /*! 23: various global bitmaps */
-Raster* bord[NUM_EDGES] {};
+Raster* thought_bubble_borders[NUM_EDGES] {};
 Raster* bub[NUM_EDGES] {};
 Raster* cframes[NUM_FIGHTERS][MAXCFRAMES] {};
 Raster* frames[MAXCHRS][MAXFRAMES] {};
@@ -659,7 +659,7 @@ void KGame::allocate_stuff()
     constexpr int bord_heights[NUM_EDGES] = { 8, 8, 8, 12, 12, 8, 8, 8 };
     for (int p = 0; p < NUM_EDGES; p++)
     {
-        bord[p] = alloc_bmp(bord_widths[p], bord_heights[p], "bord[x]");
+        thought_bubble_borders[p] = alloc_bmp(bord_widths[p], bord_heights[p], "thought_bubble_borders[x]");
     }
 
     for (int p = 0; p < MAXCHRS; p++)
@@ -902,7 +902,7 @@ void KGame::deallocate_stuff()
 
     for (p = 0; p < NUM_EDGES; p++)
     {
-        delete (bord[p]);
+        delete (thought_bubble_borders[p]);
     }
 
     for (p = 0; p < MAXCHRS; p++)
@@ -1432,7 +1432,7 @@ void KGame::startup()
     constexpr int bord_yoffset[NUM_EDGES] = { 0, 0, 0, 8, 8, 20, 20, 20 };
     for (p = 0; p < NUM_EDGES; p++)
     {
-        misc->blitTo(bord[p], bord_xoffset[p] * 8 + 96, 64 + bord_yoffset[p], 0, 0, bord[p]->width, bord[p]->height);
+        misc->blitTo(thought_bubble_borders[p], bord_xoffset[p] * 8 + 96, 64 + bord_yoffset[p], 0, 0, thought_bubble_borders[p]->width, thought_bubble_borders[p]->height);
     }
 
     for (i = 0; i < 9; i++)

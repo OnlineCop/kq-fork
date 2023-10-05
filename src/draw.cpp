@@ -650,20 +650,20 @@ void KDraw::draw_kq_box(Raster* where, int x1, int y1, int x2, int y2, eBoxFill 
         /* top and bottom */
         for (int a = x1 + 8; a < x2 - 8; a += 8)
         {
-            draw_sprite(where, bord[1], a, y1);
-            draw_sprite(where, bord[6], a, y2 - 8);
+            draw_sprite(where, thought_bubble_borders[1], a, y1);
+            draw_sprite(where, thought_bubble_borders[6], a, y2 - 8);
         }
         /* sides */
         for (int a = y1 + 8; a < y2 - 8; a += 12)
         {
-            draw_sprite(where, bord[3], x1, a);
-            draw_sprite(where, bord[4], x2 - 8, a);
+            draw_sprite(where, thought_bubble_borders[3], x1, a);
+            draw_sprite(where, thought_bubble_borders[4], x2 - 8, a);
         }
         /* corners */
-        draw_sprite(where, bord[0], x1, y1);
-        draw_sprite(where, bord[2], x2 - 8, y1);
-        draw_sprite(where, bord[5], x1, y2 - 8);
-        draw_sprite(where, bord[7], x2 - 8, y2 - 8);
+        draw_sprite(where, thought_bubble_borders[0], x1, y1);
+        draw_sprite(where, thought_bubble_borders[2], x2 - 8, y1);
+        draw_sprite(where, thought_bubble_borders[5], x1, y2 - 8);
+        draw_sprite(where, thought_bubble_borders[7], x2 - 8, y2 - 8);
         break;
 
     default: /* no border */
