@@ -46,7 +46,20 @@ using namespace eSize;
 KCombat Combat;
 
 KCombat::KCombat()
-    : combatend(eCombatResult::StillFighting)
+    : backart {}
+    , combatend { eCombatResult::StillFighting }
+    , bHasEtherEffectActive {}
+    , x_coord_image_in_datafile {}
+    , y_coord_image_in_datafile {}
+    , num_enemies {}
+    , health_adjust {}
+    , bShowDeathEffectAnimation {}
+    , RemainingBattleCounter {}
+    , bIsVisionActive {}
+    , nspeed {}
+    , bspeed {}
+    , monsters_surprise_heroes {}
+    , heroes_surprise_monsters {}
 {
 }
 
