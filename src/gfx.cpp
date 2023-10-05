@@ -281,15 +281,9 @@ void draw_trans_sprite(Raster* dest, Raster* src, int x, int y)
     // todo
 }
 
-void Raster::to_rgba32(SDL_Rect* src, SDL_PixelFormat* format, void* pixels, int stride)
+void Raster::to_rgba32(const SDL_Rect& rc, SDL_PixelFormat* format, void* pixels, int stride) const
 {
-    Uint32 rgbas[PAL_SIZE];
-    static SDL_Rect defl;
-    if (!src)
-    {
-        defl = { 0, 0, width, height };
-        src = &defl;
-    }
+    uint32_t rgbas[PAL_SIZE] {};
     for (int i = 0; i < PAL_SIZE; ++i)
     {
         Uint8 r = 4 * current_palette[i].r;
@@ -299,14 +293,14 @@ void Raster::to_rgba32(SDL_Rect* src, SDL_PixelFormat* format, void* pixels, int
         rgbas[i] = SDL_MapRGB(format, r, g, b);
     }
 
-    for (int y = 0; y < src->h; ++y)
+    for (int y = 0; y < rc.h; ++y)
     {
-        Uint32* line = reinterpret_cast<Uint32*>(reinterpret_cast<Uint8*>(pixels) + stride * y);
-        int sy = y + src->y;
-        for (int x = 0; x < src->w; ++x)
+        uint32_t* line = reinterpret_cast<uint32_t*>(reinterpret_cast<Uint8*>(pixels) + stride * y);
+        int row = y + rc.y;
+        for (int x = 0; x < rc.w; ++x)
         {
-            int sx = x + src->x;
-            line[x] = rgbas[data[sx + sy * this->stride]];
+            int col = x + rc.x;
+            line[x] = rgbas[data[col + this->stride * row]];
         }
     }
 }

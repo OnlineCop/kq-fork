@@ -190,8 +190,7 @@ void KDraw::blit2screen()
     {
         Game.program_death("Could not lock screen texture", SDL_GetError());
     }
-    SDL_Rect src { 0, 0, SCREEN_W, SCREEN_H };
-    double_buffer->to_rgba32(&src, format, pixels, pitch);
+    double_buffer->to_rgba32(SDL_Rect { 0, 0, SCREEN_W, SCREEN_H }, format, pixels, pitch);
     SDL_UnlockTexture(texture);
     if (SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE) < 0)
     {

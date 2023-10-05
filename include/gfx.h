@@ -172,7 +172,7 @@ class Raster
      * \param[out] pixels This is filled in with a pointer to the locked pixels, appropriately offset by the locked area.
      * \param stride This is filled in with the pitch of the locked pixels; the pitch is the length of one row in bytes.
      */
-    void to_rgba32(SDL_Rect* rc, SDL_PixelFormat* format, void* pixels, int stride);
+    void to_rgba32(const SDL_Rect& rc, SDL_PixelFormat* format, void* pixels, int stride) const;
 
   private:
     std::unique_ptr<uint8_t[]> data;
