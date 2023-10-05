@@ -295,7 +295,7 @@ void do_inn_effects(int do_delay)
         party[party_index].SetDead(0);
     }
     Music.pause_music();
-    play_effect(36, 128);
+    play_effect(KAudio::eSound::SND_INN, 128);
     if (do_delay != 0)
     {
         do_transition(eTransitionFade::OUT, 2);

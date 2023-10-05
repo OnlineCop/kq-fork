@@ -807,7 +807,7 @@ void KEntityManager::process_entity(t_entity target_entity)
                     {
                         player.hp--;
                     }
-                    play_effect(21, 128);
+                    play_effect(KAudio::eSound::SND_HURT, 128);
                 }
                 if (player.eqp[EQP_SPECIAL] == I_REGENERATOR)
                 {

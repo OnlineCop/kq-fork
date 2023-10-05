@@ -208,7 +208,7 @@ struct s_effect
     uint16_t delay;
     /*! Relates to the nth color entry within the PALETTE pal */
     uint8_t kolor;
-    /*! Sound that is played when effect is used */
+    /*! Index of sound that is played when effect is used (see KAudio::eSound) */
     uint8_t snd;
     /*! Sprite filename. */
     char ename[16];

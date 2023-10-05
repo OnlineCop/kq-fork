@@ -570,7 +570,7 @@ int skill_use(size_t attack_fighter_index)
         {
             Effects.draw_castersprite(attack_fighter_index, eff[magic[fighter[attack_fighter_index].csmem].eff].kolor);
             Combat.UnsetDatafileImageCoords();
-            play_effect(22, 128);
+            play_effect(KAudio::eSound::SND_BMAGIC, 128);
             Draw.convert_cframes(attack_fighter_index, eff[magic[fighter[attack_fighter_index].csmem].eff].kolor - 3,
                                  eff[magic[fighter[attack_fighter_index].csmem].eff].kolor + 3, 0);
             Combat.battle_render(0, 0, 0);

@@ -138,7 +138,7 @@ static void citem(int y, const char* caption, const char* value, eFontColor colo
 static void sound_feedback(int val)
 {
     Music.set_volume(val * 10);
-    Music.play_effect(1, 127);
+    play_effect(KAudio::eSound::SND_CLICK, 127);
 }
 
 static void music_feedback(int val)
@@ -659,6 +659,11 @@ void parse_setup()
 
 void play_effect(int efc, int panning)
 {
+    if (efc < 0 || efc >= KAudio::eSound::SND_TOTAL)
+    {
+        return;
+    }
+
     // Used to shake the screen: x and y offsets.
     static const int bx[8] = { -1, 0, 1, 0, -1, 0, 1, 0 };
     static const int by[8] = { -1, 0, 1, 0, 1, 0, -1, 0 };

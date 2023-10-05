@@ -60,7 +60,7 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
         num_targets = 1;
     }
     Combat.UnsetDatafileImageCoords();
-    play_effect(24, 128);
+    play_effect(KAudio::eSound::SND_KILL, 128);
     Combat.battle_render(0, 0, 0);
     fullblit(double_buffer, back);
 
@@ -323,7 +323,7 @@ void KEffects::draw_castersprite(size_t caster_fighter_index, int new_pal_color)
     Combat.battle_render(0, 0, 0);
     display_attack_string = 0;
     fullblit(double_buffer, back);
-    play_effect(22, 128);
+    play_effect(KAudio::eSound::SND_BMAGIC, 128);
 
     // This animation has 10 frames, each 32 pixels tall/wide.
     for (frame_index = 0; frame_index < 10; frame_index++)

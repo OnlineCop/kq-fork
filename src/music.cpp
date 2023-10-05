@@ -143,10 +143,6 @@ void KMusic::resume_music()
     Mix_ResumeMusic();
 }
 
-void KMusic::play_effect(int /*unused*/, int /*unused*/)
-{
-}
-
 void KMusic::play_sample(void* chunk, int /*unused*/, int /*unused*/, int /*unused*/, int /*unused*/)
 {
     if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)

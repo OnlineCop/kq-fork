@@ -1584,7 +1584,7 @@ static int KQ_door_in(lua_State* L)
     {
         set_btile(hx, hy, db + 3);
     }
-    play_effect(25, 128);
+    play_effect(KAudio::eSound::SND_DOOROPEN, 128);
     Draw.drawmap();
     Draw.blit2screen();
     kq_wait(50);
