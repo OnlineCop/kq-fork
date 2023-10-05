@@ -50,6 +50,9 @@ class KFighter
     KFighter& operator=(const KFighter& rhs) = default; // Copy assignment
     KFighter& operator=(KFighter&& rhs) = default;      // Move assignment
 
+    // Copy sts[S_POISON..S_INFUSE] from 'rhs' to this fighter.
+    void CopyStats(const KFighter& rhs);
+
     // S_POISON
     bool IsPoisoned() const;
     void SetPoisoned(int HowLongEffectShouldLast);

@@ -912,6 +912,7 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
         draw_sprite(double_buffer, bptr, xx + (fr.cw / 2) - 8, yy - 8);
     }
 
+    // Display enemy's stats if Vision is active.
     if (IsVisionSpellActive() && (fighter_index >= PSIZE))
     {
         ff = fr.hp * 30 / fr.mhp;
@@ -1476,27 +1477,10 @@ void KCombat::multi_fight(size_t attack_fighter_index)
         tempd = Magic.status_adjust(fighter_index);
         if ((fighter[fighter_index].IsAlive()) && (fighter[fighter_index].mhp > 0))
         {
+            // This actually does the damage so it cannot be removed.
             // ares[fighter_index] = attack_result(attack_fighter_index, fighter_index);
-            attack_result(attack_fighter_index,
-                          fighter_index); // This actually does the damage so it cannot be removed.
-            fighter[fighter_index].SetPoisoned(tempd.IsPoisoned());
-            fighter[fighter_index].SetBlind(tempd.IsBlind());
-            fighter[fighter_index].SetCharmed(tempd.IsCharmed());
-            fighter[fighter_index].SetStopped(tempd.IsStopped());
-            fighter[fighter_index].SetStone(tempd.IsStone());
-            fighter[fighter_index].SetMute(tempd.IsMute());
-            fighter[fighter_index].SetSleep(tempd.IsAsleep());
-            fighter[fighter_index].SetDead(tempd.IsDead());
-            fighter[fighter_index].SetMalison(tempd.IsMalison());
-            fighter[fighter_index].SetResist(tempd.IsResist());
-            fighter[fighter_index].SetTime(tempd.IsTime());
-            fighter[fighter_index].SetShield(tempd.IsShield());
-            fighter[fighter_index].SetBless(tempd.IsBless());
-            fighter[fighter_index].SetStrength(tempd.IsStrength());
-            fighter[fighter_index].SetEther(tempd.IsEther());
-            fighter[fighter_index].SetTrueshot(tempd.IsTrueshot());
-            fighter[fighter_index].SetRegen(tempd.IsRegen());
-            fighter[fighter_index].SetInfuse(tempd.IsInfuse());
+            attack_result(attack_fighter_index, fighter_index);
+            fighter[fighter_index].CopyStats(tempd);
         }
 
         if (health_adjust[fighter_index] != MISS)

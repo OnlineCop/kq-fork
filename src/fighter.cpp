@@ -70,6 +70,14 @@ KFighter::KFighter()
 {
 }
 
+void KFighter::CopyStats(const KFighter& rhs)
+{
+    for (size_t i = 0; i < NUM_SPELL_TYPES; ++i)
+    {
+        sts[i] = rhs.sts[i];
+    }
+}
+
 bool KFighter::IsPoisoned() const
 {
     return (sts[S_POISON] > 0);
