@@ -187,6 +187,23 @@ class Raster
      */
     void to_rgba32(const SDL_Rect& rc, SDL_PixelFormat* format, void* pixels, int stride) const;
 
+    /*! \brief Scales the current bitmap to fit in the color range specified.
+     *
+     * This is used to make a bitmap monochrome, for example to display a green, poisoned character,
+     * or the red 'rage' effect for Sensar.
+     *
+     * This relies on the palette having continuous lightness ranges of one colour (as the KQ palette does!).
+     *
+     * An alternative would be to use makecol(), though this would incur a speed penalty.
+     *
+     * Another alternative would be to precalculate some maps for each case.
+     *
+     * \param   src Source bitmap.
+     * \param   kolor_range_start Start of output color range.
+     * \param   kolor_range_end End of output color range.
+     */
+    void color_scale(Raster* src, int kolor_range_start, int kolor_range_end);
+
   private:
     std::unique_ptr<uint8_t[]> data;
 

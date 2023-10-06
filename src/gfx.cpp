@@ -288,3 +288,33 @@ void Raster::to_rgba32(const SDL_Rect& rc, SDL_PixelFormat* format, void* pixels
         }
     }
 }
+
+void Raster::color_scale(Raster* src, int kolor_range_start, int kolor_range_end)
+{
+    // 192 is '64*3' (max value for each of R, G and B).
+    constexpr int max_kolor = 192;
+
+    if (src == nullptr)
+    {
+        return;
+    }
+    assert(kolor_range_start <= kolor_range_end && "Output ranges: start > end");
+    assert(width <= src->width && "Source width > current bitmap width");
+    assert(height <= src->height && "Source height > current bitmap height");
+
+    clear_bitmap(this);
+    for (int row = 0; row < height; ++row)
+    {
+        for (int col = 0; col < width; ++col)
+        {
+            int kolor = src->ptr(col, row);
+
+            if (kolor > 0)
+            {
+                int z = pal[kolor].r + pal[kolor].g + pal[kolor].b;
+                z = z * (kolor_range_end - kolor_range_start) / max_kolor;
+                ptr(col, row) = kolor_range_start + z;
+            }
+        }
+    }
+}
