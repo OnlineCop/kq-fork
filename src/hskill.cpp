@@ -497,16 +497,20 @@ int skill_use(size_t attack_fighter_index)
     {
     case SENSAR:
         tgt = select_enemy(attack_fighter_index, TGT_ENEMY_ONE);
-        if (tgt == -1)
+        if (tgt == ePIDX::PIDX_UNDEFINED)
         {
             return 0;
         }
         else
         {
+            constexpr int kolor_range_start = 16;
+            constexpr int kolor_range_end = 31;
+
             enemy_index = (unsigned int)tgt;
             Raster temp(Combat.backart->width, Combat.backart->height);
             Combat.backart->blitTo(&temp);
-            Draw.color_scale(&temp, Combat.backart, 16, 31);
+            Combat.backart->color_scale(&temp, kolor_range_start, kolor_range_end);
+
             b = fighter[attack_fighter_index].mhp / 20;
             strcpy(attack_string, _("Rage"));
             display_attack_string = 1;

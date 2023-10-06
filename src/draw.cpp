@@ -239,35 +239,6 @@ void KDraw::border(Raster* where, int left, int top, int right, int bottom)
     putpixel(where, right - 4, bottom - 4, WHITE);
 }
 
-void KDraw::color_scale(Raster* src, Raster* dest, int output_range_start, int output_range_end)
-{
-    int ix, iy, z;
-    int current_pixel_color;
-
-    if (src == 0 || dest == 0)
-    {
-        return;
-    }
-
-    clear_bitmap(dest);
-    for (iy = 0; iy < dest->height; iy++)
-    {
-        for (ix = 0; ix < dest->width; ix++)
-        {
-            current_pixel_color = src->getpixel(ix, iy);
-            if (current_pixel_color > 0)
-            {
-                z = pal[current_pixel_color].r;
-                z += pal[current_pixel_color].g;
-                z += pal[current_pixel_color].b;
-                // 192 is '64*3' (max value for each of R, G and B).
-                z = z * (output_range_end - output_range_start) / 192;
-                dest->setpixel(ix, iy, output_range_start + z);
-            }
-        }
-    }
-}
-
 void KDraw::convert_cframes(size_t fighter_index, int output_range_start, int output_range_end, int convert_heroes)
 {
     size_t start_fighter_index, end_fighter_index, cframe_index;
@@ -296,7 +267,7 @@ void KDraw::convert_cframes(size_t fighter_index, int output_range_start, int ou
     {
         for (cframe_index = 0; cframe_index < MAXCFRAMES; cframe_index++)
         {
-            color_scale(tcframes[start_fighter_index][cframe_index], cframes[start_fighter_index][cframe_index],
+            cframes[start_fighter_index][cframe_index]->color_scale(tcframes[start_fighter_index][cframe_index],
                         output_range_start, output_range_end);
         }
         ++start_fighter_index;
@@ -428,7 +399,9 @@ void KDraw::draw_char()
             if (party[fighter_type_id].IsPoisoned())
             {
                 /* PH: we are calling this every frame? */
-                color_scale(sprite_base[fighter_frame], tc2, 32, 47);
+                constexpr int kolor_range_start = 32;
+                constexpr int kolor_range_end = 47;
+                tc2->color_scale(sprite_base[fighter_frame], kolor_range_start, kolor_range_end);
                 spr = tc2;
             }
             else

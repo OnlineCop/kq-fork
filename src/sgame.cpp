@@ -457,7 +457,9 @@ static void show_splash_screen()
 
     for (int a = 0; a < 5; ++a)
     {
-        Draw.color_scale(&dudes, &tdudes, 53 - a, 53 + a);
+        const int kolor_range_start = 53 - a;
+        const int kolor_range_end = 53 + a;
+        tdudes.color_scale(&dudes, kolor_range_start, kolor_range_end);
         draw_sprite(double_buffer, &tdudes, 106, 64);
         Draw.blit2screen();
         kq_wait(300);

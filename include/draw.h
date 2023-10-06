@@ -125,24 +125,6 @@ class KDraw
      */
     void blit2screen();
 
-    /*! \brief Takes a bitmap and scales it to fit in the color range specified. Output goes to a new bitmap.
-     *
-     * This is used to make a monochrome version of a bitmap, for example to display a green, poisoned character,
-     * or the red 'rage' effect for Sensar.
-     *
-     * This relies on the palette having continuous lightness ranges of one colour (as the KQ palette does!).
-     *
-     * An alternative would be to use makecol(), though this would incur a speed penalty.
-     *
-     * Another alternative would be to precalculate some maps for each case.
-     *
-     * \param   src Source bitmap.
-     * \param   dest Destination bitmap.
-     * \param   output_range_start Start of output color range.
-     * \param   output_range_end End of output color range.
-     */
-    void color_scale(Raster* src, Raster* dest, int output_range_start, int output_range_end);
-
     /*! \brief Convert multiple frames.
      *
      * This is used to color_scale one or more fighter frames.
