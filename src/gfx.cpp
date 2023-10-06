@@ -131,22 +131,6 @@ void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, uint16_t src_w
     }
 }
 
-void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, int16_t dest_x, int16_t dest_y, uint16_t src_w,
-                    uint16_t src_h)
-{
-    blitTo(target, src_x, src_y, src_w, src_h, dest_x, dest_y, src_w, src_h, false);
-}
-
-void Raster::blitTo(Raster* target)
-{
-    blitTo(target, 0, 0, width, height, 0, 0, width, height, false);
-}
-
-void Raster::maskedBlitTo(Raster* target, int16_t dest_x, int16_t dest_y)
-{
-    blitTo(target, 0, 0, width, height, dest_x, dest_y, width, height, true);
-}
-
 void Raster::setpixel(int16_t x, int16_t y, uint8_t kolor)
 {
     if ((uint16_t)x < width && (uint16_t)y < height)

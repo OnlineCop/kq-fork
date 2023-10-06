@@ -85,6 +85,17 @@ class Raster
      */
     void blitTo(Raster* target);
 
+    /*! \brief Blit from this bitmap onto target bitmap of same dimensions.
+     *
+     * Sets \p target bitmap's width and height to the same as this source bitmap.
+     *
+     * \param   target Destination bitmap.
+     * \param   x      Left-most pixel within source and target bitmaps.
+     * \param   y      Top-most pixel within source and target bitmaps.
+     * \param   masked If true, only draw onto \p target when a pixel's 'kolor' is non-zero (default: false).
+     */
+    void blitTo(Raster* target, int w, int h, bool masked = false);
+
     /*! \brief Blit this entire (masked) source bitmap onto an area of \p target bitmap.
      *
      * Calls blitTo() with 'masked' set to true.
@@ -185,6 +196,27 @@ class Raster
      */
     std::unique_ptr<int[]> xt;
 };
+
+inline void Raster::blitTo(Raster* target, int16_t src_x, int16_t src_y, int16_t dest_x, int16_t dest_y, uint16_t src_w,
+                    uint16_t src_h)
+{
+    blitTo(target, src_x, src_y, src_w, src_h, dest_x, dest_y, src_w, src_h, false);
+}
+
+inline void Raster::blitTo(Raster* target)
+{
+    blitTo(target, 0, 0, width, height, 0, 0, width, height, false);
+}
+
+inline void Raster::blitTo(Raster* target, int w, int h, bool masked)
+{
+    blitTo(target, 0, 0, w, h, 0, 0, w, h, masked);
+}
+
+inline void Raster::maskedBlitTo(Raster* target, int16_t dest_x, int16_t dest_y)
+{
+    blitTo(target, 0, 0, width, height, dest_x, dest_y, width, height, true);
+}
 
 inline uint8_t& Raster::ptr(int16_t x, int16_t y)
 {
