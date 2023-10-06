@@ -557,7 +557,7 @@ constexpr int NUM_EDGES = 8;
 constexpr int NUM_STEMS = 4 * 2;
 
 extern Raster* thought_bubble_borders[NUM_EDGES];
-extern Raster* bub[NUM_STEMS];
+extern std::vector<Raster*> message_bubble_stems; //[NUM_STEMS]
 extern Raster* cframes[NUM_FIGHTERS][MAXCFRAMES];
 extern Raster* frames[MAXCHRS][MAXFRAMES];
 extern Raster* map_icons[MAX_TILES];

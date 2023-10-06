@@ -61,6 +61,7 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <fstream>
+#include <vector>
 
 using namespace eSize;
 
@@ -71,7 +72,7 @@ int steps = 0;
 
 /*! 23: various global bitmaps */
 Raster* thought_bubble_borders[NUM_EDGES] {};
-Raster* bub[NUM_STEMS] {};
+std::vector<Raster*> message_bubble_stems; //[NUM_STEMS]
 Raster* cframes[NUM_FIGHTERS][MAXCFRAMES] {};
 Raster* frames[MAXCHRS][MAXFRAMES] {};
 Raster* map_icons[MAX_TILES] {};
@@ -650,9 +651,10 @@ void KGame::allocate_stuff()
         shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
     }
 
-    for (int p = 0; p < NUM_STEMS; p++)
+    message_bubble_stems.assign(NUM_STEMS, nullptr);
+    for (size_t stem = 0; stem < NUM_STEMS; ++stem)
     {
-        bub[p] = alloc_bmp(16, 16, "bub[x]");
+        message_bubble_stems[stem] = alloc_bmp(16, 16, "message_bubble_stems[x]");
     }
 
     constexpr int bord_widths[NUM_EDGES] = { 8, 8, 8, 8, 8, 8, 8, 8 };
@@ -895,10 +897,11 @@ void KGame::deallocate_stuff()
         delete (shadow[p]);
     }
 
-    for (p = 0; p < NUM_STEMS; p++)
+    for (size_t stem = 0; stem < message_bubble_stems.size(); ++stem)
     {
-        delete (bub[p]);
+        delete message_bubble_stems[stem];
     }
+    message_bubble_stems.clear();
 
     for (p = 0; p < NUM_EDGES; p++)
     {
@@ -1425,7 +1428,7 @@ void KGame::startup()
 
     for (p = 0; p < NUM_STEMS; p++)
     {
-        misc->blitTo(bub[p], p * 16, 144, 0, 0, 16, 16);
+        misc->blitTo(message_bubble_stems[p], p * 16, 144, 0, 0, 16, 16);
     }
 
     constexpr int bord_xoffset[NUM_EDGES] = { 0, 1, 2, 0, 2, 0, 1, 2 };
