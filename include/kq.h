@@ -382,6 +382,7 @@ class KGame
      * This function terminates the program with an error message if it fails to
      * allocate any of the specified bitmaps. The name supplied is shown if this
      * happens to help you trace which bitmap caused the issue.
+     * \sa dealloc_bmps
      *
      * \param   total Number of bitmaps to create.
      * \param   bitmap_name Name of bitmap.
@@ -391,11 +392,22 @@ class KGame
      */
     std::vector<Raster*> alloc_bmps(size_t total, const std::string& bitmap_name, int bitmap_width, int bitmap_height);
 
+    /*! \brief Deallocate memory for an array of bitmaps.
+     *
+     * NOTE: Each bitmap in the vector should be pointing to memory allocated via 'new'!
+     * \sa alloc_bmps
+     *
+     * \param[in,out]   bitmaps Vector containing Raster* pointers to free.
+     * \param           bitmap_name Used mainly for visual log inspection.
+     */
+    void dealloc_bmps(std::vector<Raster*>& bitmaps, const std::string& bitmap_name = "");
+
     /*! \brief Creates a 2D array of 'rows x cols' bitmaps with the specified dimensions.
      *
      * This function terminates the program with an error message if it fails to
      * allocate any of the specified bitmaps. The name supplied is shown if this
      * happens to help you trace which bitmap caused the issue.
+     * \sa dealloc_bmps_2d
      *
      * \param   rows Number of bitmaps in each row.
      * \param   cols Number of bitmaps in each column.
@@ -406,6 +418,16 @@ class KGame
      */
     std::vector<std::vector<Raster*>> alloc_bmps_2d(size_t rows, size_t cols, const std::string& bitmap_name,
                                                     int bitmap_width, int bitmap_height);
+
+    /*! \brief Deallocate memory for an array of bitmaps.
+     *
+     * NOTE: Each bitmap in the vector should be pointing to memory allocated via 'new'!
+     * \sa alloc_bmps_2d
+     *
+     * \param[in,out]   bitmaps 2D vector containing Raster* pointers to free.
+     * \param           bitmap_name Used mainly for visual log inspection.
+     */
+    void dealloc_bmps_2d(std::vector<std::vector<Raster*>>& bitmaps, const std::string& bitmap_name = "");
 
     /*! \brief Application start-up code.
      *

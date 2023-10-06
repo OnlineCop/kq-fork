@@ -619,6 +619,17 @@ std::vector<Raster*> KGame::alloc_bmps(const size_t total, const std::string& bi
     return bitmaps;
 }
 
+void KGame::dealloc_bmps(std::vector<Raster*>& bitmaps, const std::string& bitmap_name)
+{
+    SDL_Log(_("Deallocating %s[%zu]\n"), bitmap_name.c_str(), bitmaps.size());
+    for (auto it = bitmaps.begin(), itEnd = bitmaps.end(); it != itEnd; ++it)
+    {
+        delete *it;
+        *it = nullptr;
+    }
+    bitmaps.clear();
+}
+
 std::vector<std::vector<Raster*>> KGame::alloc_bmps_2d(const size_t rows, const size_t cols,
                                                        const std::string& bitmap_name, int bitmap_width,
                                                        int bitmap_height)
@@ -641,6 +652,23 @@ std::vector<std::vector<Raster*>> KGame::alloc_bmps_2d(const size_t rows, const 
     }
 
     return bitmaps;
+}
+
+void KGame::dealloc_bmps_2d(std::vector<std::vector<Raster*>>& bitmaps, const std::string& bitmap_name)
+{
+    size_t rows = bitmaps.size();
+    size_t cols = rows > 0 ? bitmaps[0].size() : 0;
+
+    SDL_Log(_("Clearing %zu x %zu Raster bitmaps --> %s\n"), rows, cols, bitmap_name.c_str());
+    for (size_t row = 0; row < rows; ++row)
+    {
+        for (size_t col = 0; col < cols; ++col)
+        {
+            delete bitmaps[row][col];
+            bitmaps[row][col] = nullptr;
+        }
+    }
+    bitmaps.clear();
 }
 
 void KGame::allocate_stuff()
@@ -716,11 +744,7 @@ void KGame::allocate_stuff()
         shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
     }
 
-    message_bubble_stems.assign(NUM_STEMS, nullptr);
-    for (size_t stem = 0; stem < NUM_STEMS; ++stem)
-    {
-        message_bubble_stems[stem] = alloc_bmp(16, 16, "message_bubble_stems[x]");
-    }
+    message_bubble_stems = alloc_bmps(NUM_STEMS, "message_bubble_stems", 16, 16);
 
     constexpr int bord_widths[NUM_EDGES] = { 8, 8, 8, 8, 8, 8, 8, 8 };
     constexpr int bord_heights[NUM_EDGES] = { 8, 8, 8, 12, 12, 8, 8, 8 };
@@ -962,11 +986,7 @@ void KGame::deallocate_stuff()
         delete (shadow[p]);
     }
 
-    for (size_t stem = 0; stem < message_bubble_stems.size(); ++stem)
-    {
-        delete message_bubble_stems[stem];
-    }
-    message_bubble_stems.clear();
+    dealloc_bmps(message_bubble_stems, "message_bubble_stems");
 
     for (p = 0; p < NUM_EDGES; p++)
     {
