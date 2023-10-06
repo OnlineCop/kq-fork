@@ -71,7 +71,7 @@ int steps = 0;
 
 /*! 23: various global bitmaps */
 Raster* thought_bubble_borders[NUM_EDGES] {};
-Raster* bub[NUM_EDGES] {};
+Raster* bub[NUM_STEMS] {};
 Raster* cframes[NUM_FIGHTERS][MAXCFRAMES] {};
 Raster* frames[MAXCHRS][MAXFRAMES] {};
 Raster* map_icons[MAX_TILES] {};
@@ -650,7 +650,7 @@ void KGame::allocate_stuff()
         shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
     }
 
-    for (int p = 0; p < NUM_EDGES; p++)
+    for (int p = 0; p < NUM_STEMS; p++)
     {
         bub[p] = alloc_bmp(16, 16, "bub[x]");
     }
@@ -895,7 +895,7 @@ void KGame::deallocate_stuff()
         delete (shadow[p]);
     }
 
-    for (p = 0; p < NUM_EDGES; p++)
+    for (p = 0; p < NUM_STEMS; p++)
     {
         delete (bub[p]);
     }
@@ -1423,7 +1423,7 @@ void KGame::startup()
         misc->blitTo(shadow[p], p * 16, 160, 0, 0, 16, 16);
     }
 
-    for (p = 0; p < NUM_EDGES; p++)
+    for (p = 0; p < NUM_STEMS; p++)
     {
         misc->blitTo(bub[p], p * 16, 144, 0, 0, 16, 16);
     }

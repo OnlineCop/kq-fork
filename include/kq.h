@@ -552,8 +552,12 @@ extern int steps;
 
 constexpr int NUM_EDGES = 8;
 
+// Stems 0..3 are for "speaking" bubbles and 4..7 are for "thinking" bubbles.
+// \sa eBubbleStemStyle
+constexpr int NUM_STEMS = 4 * 2;
+
 extern Raster* thought_bubble_borders[NUM_EDGES];
-extern Raster* bub[NUM_EDGES];
+extern Raster* bub[NUM_STEMS];
 extern Raster* cframes[NUM_FIGHTERS][MAXCFRAMES];
 extern Raster* frames[MAXCHRS][MAXFRAMES];
 extern Raster* map_icons[MAX_TILES];
