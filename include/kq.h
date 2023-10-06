@@ -559,7 +559,7 @@ extern Raster* frames[MAXCHRS][MAXFRAMES];
 extern Raster* map_icons[MAX_TILES];
 extern Raster* pgb[9];
 extern Raster* sfonts[5];
-extern Raster* shadow[MAX_SHADOWS];
+extern Raster* shadow[NUM_SHADOWS];
 extern Raster* tcframes[NUM_FIGHTERS][MAXCFRAMES];
 
 extern Raster* b_mp;

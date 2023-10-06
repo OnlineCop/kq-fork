@@ -76,7 +76,7 @@ Raster* cframes[NUM_FIGHTERS][MAXCFRAMES] {};
 Raster* frames[MAXCHRS][MAXFRAMES] {};
 Raster* map_icons[MAX_TILES] {};
 Raster* pgb[MAXPGB] {};
-Raster* shadow[MAX_SHADOWS] {};
+Raster* shadow[NUM_SHADOWS] {};
 Raster* tcframes[NUM_FIGHTERS][MAXCFRAMES] {};
 
 Raster* b_mp {};
@@ -645,7 +645,7 @@ void KGame::allocate_stuff()
     back = alloc_bmp(SCREEN_W2, SCREEN_H2, "back");
     fx_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "fx_buffer");
 
-    for (int p = 0; p < MAX_SHADOWS; p++)
+    for (int p = 0; p < NUM_SHADOWS; p++)
     {
         shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
     }
@@ -890,7 +890,7 @@ void KGame::deallocate_stuff()
     delete (back);
     delete (fx_buffer);
 
-    for (p = 0; p < MAX_SHADOWS; p++)
+    for (p = 0; p < NUM_SHADOWS; p++)
     {
         delete (shadow[p]);
     }
@@ -1418,7 +1418,7 @@ void KGame::startup()
         misc->blitTo(sicons, p * 8, 40, 0, p * 8 + 320, 8, 8);
     }
 
-    for (p = 0; p < MAX_SHADOWS; p++)
+    for (p = 0; p < NUM_SHADOWS; p++)
     {
         misc->blitTo(shadow[p], p * 16, 160, 0, 0, 16, 16);
     }

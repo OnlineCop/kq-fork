@@ -76,7 +76,6 @@ enum eShadow
 #define SCANALL 9995
 #define NO_STS_CHECK 9994
 #define CURE_CHECK 9993
-#define MAX_SHADOWS 12
 
 /* Maximum number of special items allowed in the world */
 #define MAX_SPECIAL_ITEMS 50
