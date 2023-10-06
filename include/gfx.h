@@ -30,6 +30,11 @@ struct SDL_Rect;
 class Raster
 {
   public:
+    const uint16_t width;  ///< Read-only width of image
+    const uint16_t height; ///< Read-only height of image
+    const uint16_t stride; ///< Read-only data-aligned width of image
+
+  public:
     /*! \brief Create a new Raster bitmap.
      *
      * \param   w Width of bitmap.
@@ -38,6 +43,7 @@ class Raster
     Raster(uint16_t w, uint16_t h);
 
     Raster(Raster&&) = default;
+    Raster& operator=(Raster&&) = default;
 
     /*! \brief Blit from this bitmap onto target bitmap: all options.
      *
@@ -161,16 +167,12 @@ class Raster
      */
     uint8_t& ptr(int16_t x, int16_t y);
 
-    const uint16_t width;   ///< Read-only width of image
-    const uint16_t height;  ///< Read-only height of image
-    const uint16_t stride;  ///< Read-only data-aligned width of image
-
     /*! \brief Convert the current Raster into a 32-bit RBG format for use with SDL.
      *
-     * \param rc SDL rectangle to use for dimensions.
-     * \param format SDL_PixelFormat structure corresponding to a pixel format.
-     * \param[out] pixels This is filled in with a pointer to the locked pixels, appropriately offset by the locked area.
-     * \param stride This is filled in with the pitch of the locked pixels; the pitch is the length of one row in bytes.
+     * \param       rc SDL rectangle to use for dimensions.
+     * \param       format SDL_PixelFormat structure corresponding to a pixel format.
+     * \param[out]  pixels Pointer to the locked pixels, appropriately offset by the locked area. 
+     * \param       stride The pitch (length of one row in bytes) of the locked pixels.
      */
     void to_rgba32(const SDL_Rect& rc, SDL_PixelFormat* format, void* pixels, int stride) const;
 
