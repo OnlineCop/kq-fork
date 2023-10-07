@@ -623,15 +623,17 @@ constexpr int NUM_EDGES = 8;
 // \sa eBubbleStemStyle
 constexpr int NUM_STEMS = 4 * 2;
 
-extern Raster* thought_bubble_borders[NUM_EDGES];
-extern std::vector<Raster*> message_bubble_stems; //[NUM_STEMS]
-extern Raster* cframes[NUM_FIGHTERS][MAXCFRAMES];
-extern Raster* frames[MAXCHRS][MAXFRAMES];
-extern Raster* map_icons[MAX_TILES];
-extern Raster* pgb[9];
-extern Raster* sfonts[5];
-extern Raster* shadow[NUM_SHADOWS];
-extern Raster* tcframes[NUM_FIGHTERS][MAXCFRAMES];
+extern std::vector<Raster*> thought_bubble_borders; //[NUM_EDGES]
+extern std::vector<Raster*> message_bubble_stems;   //[NUM_STEMS]
+extern std::vector<Raster*> map_icons;              //[MAX_TILES]
+extern std::vector<Raster*> pgb;                    //[9]
+extern std::vector<Raster*> sfonts;                 //[5]
+extern std::vector<Raster*> shadow;                 //[NUM_SHADOWS]
+
+extern std::vector<std::vector<Raster*>> frames;    //[MAXCHRS][MAXFRAMES]
+extern std::vector<std::vector<Raster*>> cframes;   //[NUM_FIGHTERS][MAXCFRAMES]
+extern std::vector<std::vector<Raster*>> tcframes;  //[NUM_FIGHTERS][MAXCFRAMES]
+extern std::vector<std::vector<Raster*>> eframes;   //[MAXE][MAXEFRAMES]
 
 extern Raster* b_mp;
 extern Raster* b_repulse;
@@ -652,9 +654,6 @@ extern Raster* stspics;
 extern Raster* tc;
 extern Raster* tc2;
 extern Raster* upptr;
-
-/*! Enemy animation frames */
-extern Raster* eframes[MAXE][MAXEFRAMES];
 
 /*! Layers in the map */
 extern uint16_t *map_seg, *b_seg, *f_seg;

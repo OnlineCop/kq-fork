@@ -70,15 +70,22 @@ KGame Game;
 int viewport_x_coord, viewport_y_coord, mx, my;
 int steps = 0;
 
-/*! 23: various global bitmaps */
-Raster* thought_bubble_borders[NUM_EDGES] {};
-std::vector<Raster*> message_bubble_stems; //[NUM_STEMS]
-Raster* cframes[NUM_FIGHTERS][MAXCFRAMES] {};
-Raster* frames[MAXCHRS][MAXFRAMES] {};
-Raster* map_icons[MAX_TILES] {};
-Raster* pgb[MAXPGB] {};
-Raster* shadow[NUM_SHADOWS] {};
-Raster* tcframes[NUM_FIGHTERS][MAXCFRAMES] {};
+std::vector<Raster*> thought_bubble_borders; //[NUM_EDGES]
+std::vector<Raster*> message_bubble_stems;   //[NUM_STEMS]
+std::vector<Raster*> map_icons;              //[MAX_TILES]
+std::vector<Raster*> pgb;                    //[MAXPGB]
+std::vector<Raster*> shadow;                 //[NUM_SHADOWS]
+
+/*! Overworld movement (standing, walking, running) */
+std::vector<std::vector<Raster*>> frames;    //[MAXCHRS][MAXFRAMES] (for movement)
+
+// Combat frames: tcframes[] are the "unmodified" sprites wile cframes[] may be recolored to indicate poison or
+// some other effect.
+std::vector<std::vector<Raster*>> cframes;   //[NUM_FIGHTERS][MAXCFRAMES]
+std::vector<std::vector<Raster*>> tcframes;  //[NUM_FIGHTERS][MAXCFRAMES]
+
+/*! Enemy animations */
+std::vector<std::vector<Raster*>> eframes;   //[MAXE][MAXEFRAMES]
 
 Raster* b_mp {};
 Raster* b_repulse {};
@@ -101,12 +108,9 @@ Raster* tc {};
 Raster* tc2 {};
 Raster* upptr {};
 
-/*! Enemy animation frames */
-Raster* eframes[MAXE][MAXEFRAMES] {};
-
 // 5 different colors of fonts, each 8 tall by 6 wide, found within misc.png between (0,100) and (60, 108).
 // sfonts[0] is scanned in, and sfonts[1] through sfonts[4] are simply recolored.
-Raster* sfonts[5] {};
+std::vector<Raster*> sfonts; //[5]
 
 #ifdef DEBUGMODE
 Raster* obj_mesh {};
@@ -675,10 +679,7 @@ void KGame::allocate_stuff()
 {
     kfonts = alloc_bmp(1024, 60, "kfonts");
 
-    for (int i = 0; i < 5; i++)
-    {
-        sfonts[i] = alloc_bmp(60, 8, "sfonts[i]");
-    }
+    sfonts = alloc_bmps("sfonts", { 60, 60, 60, 60, 60 }, { 8, 8, 8, 8, 8 });
 
     menuptr = alloc_bmp(16, 8, "menuptr");
     sptr = alloc_bmp(8, 8, "sptr");
@@ -691,10 +692,7 @@ void KGame::allocate_stuff()
     noway = alloc_bmp(16, 16, "noway");
     missbmp = alloc_bmp(20, 6, "missbmp");
 
-    for (int i = 0; i < MAXPGB; i++)
-    {
-        pgb[i] = alloc_bmp(9, 9, "pgb[x]");
-    }
+    pgb = alloc_bmps(9, "pgb", 9, 9);
 
     tc = alloc_bmp(16, 16, "tc");
     tc2 = alloc_bmp(16, 16, "tc2");
@@ -703,68 +701,28 @@ void KGame::allocate_stuff()
     b_repulse = alloc_bmp(16, 166, "b_repulse");
     b_mp = alloc_bmp(10, 8, "b_mp");
 
-    for (int p = 0; p < MAXE; p++)
-    {
-        for (int i = 0; i < MAXEFRAMES; i++)
-        {
-            eframes[p][i] = alloc_bmp(16, 16, "eframes[x][x]");
-        }
-    }
-
-    for (int i = 0; i < MAXCHRS; i++)
-    {
-        for (int p = 0; p < MAXFRAMES; p++)
-        {
-            frames[i][p] = alloc_bmp(16, 16, "frames[x][x]");
-        }
-    }
-
-    for (int p = 0; p < MAXCFRAMES; p++)
-    {
-        for (int i = 0; i < NUM_FIGHTERS; i++)
-        {
-            cframes[i][p] = alloc_bmp(32, 32, "cframes[x][x]");
-        }
-    }
-
-    for (int p = 0; p < MAXCFRAMES; p++)
-    {
-        for (int i = 0; i < NUM_FIGHTERS; i++)
-        {
-            tcframes[i][p] = alloc_bmp(32, 32, "tcframes[x][x]");
-        }
-    }
+    eframes = alloc_bmps_2d(MAXE, MAXEFRAMES, "eframes", 16, 16);
+    frames = alloc_bmps_2d(MAXCHRS, MAXFRAMES, "frames", 16, 16);
+    cframes = alloc_bmps_2d(NUM_FIGHTERS, MAXCFRAMES, "cframes", 32, 32);
+    tcframes = alloc_bmps_2d(NUM_FIGHTERS, MAXCFRAMES, "tcframes", 32, 32);
 
     double_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "double_buffer");
     back = alloc_bmp(SCREEN_W2, SCREEN_H2, "back");
     fx_buffer = alloc_bmp(SCREEN_W2, SCREEN_H2, "fx_buffer");
 
-    for (int p = 0; p < NUM_SHADOWS; p++)
-    {
-        shadow[p] = alloc_bmp(TILE_W, TILE_H, "shadow[x]");
-    }
-
+    shadow = alloc_bmps(NUM_SHADOWS, "shadow", TILE_W, TILE_H);
     message_bubble_stems = alloc_bmps(NUM_STEMS, "message_bubble_stems", 16, 16);
 
-    constexpr int bord_widths[NUM_EDGES] = { 8, 8, 8, 8, 8, 8, 8, 8 };
-    constexpr int bord_heights[NUM_EDGES] = { 8, 8, 8, 12, 12, 8, 8, 8 };
-    for (int p = 0; p < NUM_EDGES; p++)
-    {
-        thought_bubble_borders[p] = alloc_bmp(bord_widths[p], bord_heights[p], "thought_bubble_borders[x]");
-    }
+    std::vector<int> thought_widths{ 8, 8, 8, 8, 8, 8, 8, 8 };
+    std::vector<int> thought_heights { 8, 8, 8, 12, 12, 8, 8, 8 };
+    thought_bubble_borders = alloc_bmps("thought_bubble_borders", thought_widths, thought_heights);
 
     for (int p = 0; p < MAXCHRS; p++)
     {
         players[p].portrait = alloc_bmp(40, 40, "portrait[x]");
     }
 
-    for (int p = 0; p < MAX_TILES; p++)
-    {
-        map_icons[p] = alloc_bmp(TILE_W, TILE_H, "map_icons[x]");
-    }
-#ifdef DEBUGMODE
-    alloc_bmp(0, 0, nullptr);
-#endif /* DEBUGMODE */
+    map_icons = alloc_bmps(MAX_TILES, "map_icons", TILE_W, TILE_H);
     Credits.allocate_credits();
 }
 
@@ -924,10 +882,7 @@ void KGame::deallocate_stuff()
 
     delete kfonts;
 
-    for (i = 0; i < 5; i++)
-    {
-        delete (sfonts[i]);
-    }
+    dealloc_bmps(sfonts, "sfonts");
 
     delete (menuptr);
     delete (sptr);
@@ -940,10 +895,7 @@ void KGame::deallocate_stuff()
     delete (noway);
     delete (missbmp);
 
-    for (i = 0; i < 9; i++)
-    {
-        delete (pgb[i]);
-    }
+    dealloc_bmps(pgb, "pgb");
 
     delete (tc);
     delete (tc2);
@@ -952,56 +904,27 @@ void KGame::deallocate_stuff()
     delete (b_repulse);
     delete (b_mp);
 
-    for (p = 0; p < MAXE; p++)
-    {
-        for (i = 0; i < MAXEFRAMES; i++)
-        {
-            delete (eframes[p][i]);
-        }
-    }
-
-    for (i = 0; i < MAXFRAMES; i++)
-    {
-        for (p = 0; p < MAXCHRS; p++)
-        {
-            delete (frames[p][i]);
-        }
-    }
-
-    for (i = 0; i < MAXCFRAMES; i++)
-    {
-        for (p = 0; p < NUM_FIGHTERS; p++)
-        {
-            delete (cframes[p][i]);
-            delete (tcframes[p][i]);
-        }
-    }
+    dealloc_bmps_2d(eframes, "eframes");
+    dealloc_bmps_2d(frames, "frames");
+    dealloc_bmps_2d(cframes, "cframes");
+    dealloc_bmps_2d(tcframes, "tcframes");
 
     delete (double_buffer);
     delete (back);
     delete (fx_buffer);
 
-    for (p = 0; p < NUM_SHADOWS; p++)
-    {
-        delete (shadow[p]);
-    }
+    dealloc_bmps(shadow, "shadow");
 
     dealloc_bmps(message_bubble_stems, "message_bubble_stems");
 
-    for (p = 0; p < NUM_EDGES; p++)
-    {
-        delete (thought_bubble_borders[p]);
-    }
+    dealloc_bmps(thought_bubble_borders, "thought_bubble_borders");
 
     for (p = 0; p < MAXCHRS; p++)
     {
         delete (players[p].portrait);
     }
 
-    for (p = 0; p < MAX_TILES; p++)
-    {
-        delete (map_icons[p]);
-    }
+    dealloc_bmps(map_icons, "map_icons");
 
     if (map_seg)
     {

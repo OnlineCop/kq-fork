@@ -389,7 +389,7 @@ void KDraw::draw_char()
             /* Masquerade: if chrx!=0 then this hero is disguised as someone else...
              */
             const size_t fighter_type_id = follower_entity.eid;
-            Raster** sprite_base = follower_entity.chrx ? eframes[follower_entity.chrx] : frames[fighter_type_id];
+            auto sprite_base = follower_entity.chrx ? eframes[follower_entity.chrx] : frames[fighter_type_id];
             Raster* spr = nullptr;
 
             if (party[fighter_type_id].IsDead())
@@ -525,7 +525,7 @@ void KDraw::draw_char()
                 {
                     const uint8_t eid = follower_entity.eid;
                     const uint8_t chrx = follower_entity.chrx;
-                    Raster* spr = (eid >= ID_ENEMY) ? eframes[chrx][fighter_frame] : frames[eid][fighter_frame];
+                    auto spr = (eid >= ID_ENEMY) ? eframes[chrx][fighter_frame] : frames[eid][fighter_frame];
 
                     if (follower_entity.transl == 0)
                     {

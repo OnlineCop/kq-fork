@@ -152,10 +152,6 @@ struct s_heroinfo
 {
     /*! The hero's portrait for the stats screen. */
     Raster* portrait;
-    /*! Frames for movement. */
-    Raster* frames[MAXFRAMES];
-    /*! Frames for combat. */
-    Raster* cframes[MAXCFRAMES];
 };
 
 /*! \brief Special Items.
