@@ -336,7 +336,7 @@ static void combat_draw_items(int pg)
     }
     if (pg < MAXPGB)
     {
-        draw_sprite(double_buffer, pgb[pg], 238, 142);
+        draw_sprite(double_buffer, page_indicator[pg], 238, 142);
     }
 }
 
@@ -368,7 +368,7 @@ static void combat_draw_spell_menu(int c, int ptr, int pg)
     draw_sprite(double_buffer, menuptr, 80, ptr * 8 + 32);
     if (pg < MAXPGB)
     {
-        draw_sprite(double_buffer, pgb[pg], 230, 126);
+        draw_sprite(double_buffer, page_indicator[pg], 230, 126);
     }
 }
 

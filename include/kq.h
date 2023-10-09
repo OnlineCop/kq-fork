@@ -626,7 +626,7 @@ constexpr int NUM_STEMS = 4 * 2;
 extern std::vector<Raster*> thought_bubble_borders; //[NUM_EDGES]
 extern std::vector<Raster*> message_bubble_stems;   //[NUM_STEMS]
 extern std::vector<Raster*> map_icons;              //[MAX_TILES]
-extern std::vector<Raster*> pgb;                    //[9]
+extern std::vector<Raster*> page_indicator;         //[MAXPGB]
 extern std::vector<Raster*> sfonts;                 //[5]
 extern std::vector<Raster*> shadow;                 //[NUM_SHADOWS]
 

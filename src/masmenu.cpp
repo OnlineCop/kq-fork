@@ -136,7 +136,7 @@ static void camp_draw_spell_menu(size_t caster_fighter_index, size_t spell_page,
                     magic[first_spell_index].desc, FNORMAL);
     if (spell_page < MAXPGB)
     {
-        draw_sprite(double_buffer, pgb[spell_page], 230, 194);
+        draw_sprite(double_buffer, page_indicator[spell_page], 230, 194);
     }
 }
 

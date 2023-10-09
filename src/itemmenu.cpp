@@ -339,7 +339,7 @@ static void draw_itemmenu(int ptr, int pg, int sl)
     }
     if (pg < MAXPGB)
     {
-        draw_sprite(double_buffer, pgb[pg], 238, 194);
+        draw_sprite(double_buffer, page_indicator[pg], 238, 194);
     }
 }
 

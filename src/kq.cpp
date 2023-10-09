@@ -73,7 +73,7 @@ int steps = 0;
 std::vector<Raster*> thought_bubble_borders; //[NUM_EDGES]
 std::vector<Raster*> message_bubble_stems;   //[NUM_STEMS]
 std::vector<Raster*> map_icons;              //[MAX_TILES]
-std::vector<Raster*> pgb;                    //[MAXPGB]
+std::vector<Raster*> page_indicator;         //[MAXPGB]
 std::vector<Raster*> shadow;                 //[NUM_SHADOWS]
 
 /*! Overworld movement (standing, walking, running) */
@@ -692,7 +692,7 @@ void KGame::allocate_stuff()
     noway = alloc_bmp(16, 16, "noway");
     missbmp = alloc_bmp(20, 6, "missbmp");
 
-    pgb = alloc_bmps(9, "pgb", 9, 9);
+    page_indicator = alloc_bmps(MAXPGB, "page_indicator", 9, 9);
 
     tc = alloc_bmp(16, 16, "tc");
     tc2 = alloc_bmp(16, 16, "tc2");
@@ -895,7 +895,7 @@ void KGame::deallocate_stuff()
     delete (noway);
     delete (missbmp);
 
-    dealloc_bmps(pgb, "pgb");
+    dealloc_bmps(page_indicator, "page_indicator");
 
     delete (tc);
     delete (tc2);
@@ -1446,9 +1446,9 @@ void KGame::startup()
         misc->blitTo(thought_bubble_borders[p], bord_xoffset[p] * 8 + 96, 64 + bord_yoffset[p], 0, 0, thought_bubble_borders[p]->width, thought_bubble_borders[p]->height);
     }
 
-    for (i = 0; i < 9; i++)
+    for (i = 0; i < MAXPGB; i++)
     {
-        misc->blitTo(pgb[i], i * 16, 48, 0, 0, 9, 9);
+        misc->blitTo(page_indicator[i], i * 16, 48, 0, 0, 9, 9);
     }
 
     load_heroes();

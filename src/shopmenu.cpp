@@ -734,7 +734,7 @@ static void sell_menu()
         draw_sprite(double_buffer, menuptr, 32, yptr * 8 + 32);
         if (inv_page < MAXPGB)
         {
-            draw_sprite(double_buffer, pgb[inv_page], 278, 158);
+            draw_sprite(double_buffer, page_indicator[inv_page], 278, 158);
         }
         Draw.blit2screen();
 
