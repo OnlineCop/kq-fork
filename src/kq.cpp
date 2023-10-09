@@ -61,7 +61,6 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <fstream>
-#include <vector>
 
 using namespace eSize;
 
@@ -77,7 +76,7 @@ std::vector<Raster*> page_indicator;         //[MAXPGB]
 std::vector<Raster*> shadow;                 //[NUM_SHADOWS]
 
 /*! Overworld movement (standing, walking, running) */
-std::vector<std::vector<Raster*>> frames;    //[MAXCHRS][MAXFRAMES] (for movement)
+std::vector<std::vector<Raster*>> frames;    //[MAXCHRS][MAXFRAMES]
 
 // Combat frames: tcframes[] are the "unmodified" sprites wile cframes[] may be recolored to indicate poison or
 // some other effect.
