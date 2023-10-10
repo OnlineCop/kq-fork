@@ -21,6 +21,8 @@
 
 #include "random.h"
 
+#include <sstream>
+
 KQRandom::KQRandom()
 {
     time_t t0 = time(nullptr);
@@ -52,4 +54,4 @@ void KQRandom::kq_set_random_state(const std::string& new_state)
     stm >> engine;
 }
 
-KQRandom* kqrandom;
+KQRandom* kqrandom {};

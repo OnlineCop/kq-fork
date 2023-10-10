@@ -22,9 +22,7 @@
 #pragma once
 
 #include <random>
-#include <sstream>
 #include <string>
-#include <time.h>
 
 class KQRandom
 {

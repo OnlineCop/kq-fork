@@ -36,6 +36,7 @@
 #include "selector.h"
 
 #include <fstream>
+#include <sstream>
 
 KEnemy Enemy;
 
