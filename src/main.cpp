@@ -62,7 +62,7 @@
  */
 int main(int argc, char* argv[])
 {
-    int stop, game_on, skip_splash;
+    int game_on, skip_splash;
 
     setlocale(LC_ALL, "");
 
@@ -108,8 +108,8 @@ int main(int argc, char* argv[])
         skip_splash = 1;
         if (game_on)
         {
-            stop = 0;
-            alldead = 0;
+            bool stop = false;
+            Game.alldead(false);
 
             /* While the actual game is playing */
             while (!stop)
@@ -134,10 +134,10 @@ int main(int argc, char* argv[])
                 {
                     /* TODO: In-game help system. */
                 }
-                if (alldead)
+                if (Game.alldead())
                 {
                     do_transition(eTransitionFade::IN, 16);
-                    stop = 1;
+                    stop = true;
                 }
             }
         }

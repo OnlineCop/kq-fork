@@ -686,7 +686,7 @@ int KCombat::do_combat(const std::string& bg, const std::string& mus, int is_rnd
     do_round();
     Music.set_music_volume(gmvol);
     Music.resume_music();
-    if (alldead)
+    if (Game.alldead())
     {
         Music.stop_music();
     }
@@ -953,7 +953,7 @@ void KCombat::enemies_win()
     Draw.blit2screen();
     Game.wait_enter();
     do_transition(eTransitionFade::OUT, 4);
-    alldead = 1;
+    Game.alldead(true);
 }
 
 int KCombat::fight(size_t attack_fighter_index, size_t defend_fighter_index, int sk)

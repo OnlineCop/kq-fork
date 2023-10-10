@@ -119,16 +119,14 @@ int KSaveGame::confirm_action()
  *
  * \returns 1 if Yes (quit) selected, 0 if No (continue playing) selected.
  */
-static int confirm_quit()
+static bool confirm_quit()
 {
     const char* opts[2];
-    int ans;
 
     opts[0] = _("Yes");
     opts[1] = _("No");
-    /*strcpy(opts[1], "No"); */
-    ans = Draw.prompt_ex(0, _("Are you sure you want to quit this game?"), opts, 2);
-    return ans == 0 ? 1 : 0;
+    int ans = Draw.prompt_ex(0, _("Are you sure you want to quit this game?"), opts, 2);
+    return ans == 0;
 }
 
 void KSaveGame::delete_game()
@@ -615,7 +613,7 @@ int KSaveGame::start_menu(bool skip_splash)
     return stop - 1;
 }
 
-int KSaveGame::system_menu()
+bool KSaveGame::system_menu()
 {
     int stop = 0, ptr = 0;
     char save_str[10];

@@ -1721,13 +1721,13 @@ static int KQ_face_each_other(lua_State* L)
 
 static int KQ_gameover_ex(lua_State* L)
 {
-    alldead = ((int)lua_tonumber(L, 1) == 0 ? 0 : 1);
-    return 1;
+    Game.alldead(lua_toboolean(L, 1));
+    return 0;
 }
 
 static int KQ_get_alldead(lua_State* L)
 {
-    lua_pushnumber(L, alldead);
+    lua_pushboolean(L, Game.alldead());
     return 1;
 }
 
@@ -2770,12 +2770,7 @@ static int KQ_set_all_equip(lua_State* L)
 
 static int KQ_set_alldead(lua_State* L)
 {
-    auto a = lua_tointeger(L, 1);
-
-    if (a == 0 || a == 1)
-    {
-        alldead = a;
-    }
+    Game.alldead(lua_toboolean(L, 1));
     return 0;
 }
 

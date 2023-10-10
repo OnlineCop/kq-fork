@@ -137,9 +137,6 @@ int gsvol = 250, gmvol = 250;
 /*! Is the party under 'automatic' (i.e. scripted) control */
 uint8_t autoparty = 0;
 
-/*! Are all heroes dead? */
-uint8_t alldead = 0;
-
 /*! Makes is_active() return TRUE even if the character is dead */
 uint8_t deadeffect = 0;
 
@@ -341,6 +338,7 @@ KGame::KGame()
     , _no_random_encounters(0)
     , _no_monsters(0)
     , _every_hit_999(0)
+    , _alldead(false)
 {
 }
 
@@ -1403,7 +1401,7 @@ void KGame::extra_controls()
         /* Back to menu - by pretending all the heroes died.. hehe */
         if (key[SDL_SCANCODE_LALT] && key[SDL_SCANCODE_M])
         {
-            alldead = 1;
+            _alldead = true;
         }
     }
     if (key[SDL_SCANCODE_BACKSLASH])
@@ -1693,6 +1691,17 @@ void KGame::set_every_hit_999(int every_hit_999)
     (void)every_hit_999;
 #endif /* KQ_CHEATS */
 }
+
+bool KGame::alldead() const
+{
+    return _alldead;
+}
+
+void KGame::alldead(bool value)
+{
+    _alldead = value;
+}
+
 
 
 /*! \page treasure A Note on Treasure

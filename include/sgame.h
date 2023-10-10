@@ -73,9 +73,9 @@ class KSaveGame
      * This is the system menu that is invoked from within the game.
      * From here you can save, load, configure a couple of options or exit the game altogether.
      *
-     * \returns 0 if cancelled or nothing happened, 1 otherwise.
+     * \returns false if cancelled or nothing happened, true otherwise.
      */
-    int system_menu();
+    bool system_menu();
 
   protected:
     /*! \brief Display saved game statistics.

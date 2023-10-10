@@ -575,6 +575,12 @@ class KGame
     void set_no_monsters(int no_monsters);
     void set_every_hit_999(int every_hit_999);
 
+    /*! Are all heroes dead? */
+    bool alldead() const;
+
+    /*! Set whether all heroes are dead. */
+    void alldead(bool value);
+
   public:
     const std::string WORLD_MAP;
 
@@ -607,6 +613,8 @@ class KGame
     int _no_random_encounters = 0;
     int _no_monsters = 0;
     int _every_hit_999 = 0;
+
+    bool _alldead;
 };
 
 /*! View positions in pixels, (such as entity.x, not entity.tilex) */
@@ -677,7 +685,7 @@ extern s_anim adata[MAX_ANIM];
 extern uint32_t numchrs;
 extern int gsvol, gmvol;
 extern ePIDX pidx[MAXCHRS];
-extern uint8_t autoparty, alldead, deadeffect, use_sstone;
+extern uint8_t autoparty, deadeffect, use_sstone;
 extern bool bDoesViewportFollowPlayer;
 extern const uint8_t kq_version;
 extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, cpu_usage;
