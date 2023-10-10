@@ -68,7 +68,7 @@ struct KQEntity
     uint8_t movcnt;
     /*! Counter for determining animation frame. */
     uint8_t framectr;
-    /*! Stand, wander, script or chasing. */
+    /*! Stand, wander, script or chasing. See eMoveMode enum. */
     uint8_t movemode;
     /*! Determine if affected by obstacles or not. */
     uint8_t obsmode;

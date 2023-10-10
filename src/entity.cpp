@@ -127,7 +127,7 @@ void KEntityManager::set_script(t_entity target_entity, const char* movestring)
     ent.cmd = eCommands::COMMAND_NONE; // Entity should not be trying to move
     ent.sidx = 0;                      // Reset script command index
     ent.cmdnum = 0;                    // There are no scripted commands
-    ent.movemode = MM_SCRIPT;          // Force the entity to follow the script
+    ent.movemode = eMoveMode::MM_SCRIPT; // Force the entity to follow the script
     strncpy(ent.script, movestring, sizeof(ent.script));
 }
 
@@ -355,7 +355,7 @@ void KEntityManager::getcommand(t_entity target_entity)
         break;
     case '\0':
         ent.cmd = eCommands::COMMAND_FINISH_COMMANDS;
-        ent.movemode = MM_STAND;
+        ent.movemode = eMoveMode::MM_STAND;
         ent.cmdnum = 0;
         ent.sidx = 0;
         break;
@@ -409,19 +409,19 @@ int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
     int oldfacing = ent.facing;
     if (dx < 0)
     {
-        ent.facing = FACE_LEFT;
+        ent.facing = eDirection::FACE_LEFT;
     }
     else if (dx > 0)
     {
-        ent.facing = FACE_RIGHT;
+        ent.facing = eDirection::FACE_RIGHT;
     }
     else if (dy > 0)
     {
-        ent.facing = FACE_DOWN;
+        ent.facing = eDirection::FACE_DOWN;
     }
     else if (dy < 0)
     {
-        ent.facing = FACE_UP;
+        ent.facing = eDirection::FACE_UP;
     }
 
     const int lastIndex = Game.Map.MapSize() - 1;
@@ -554,7 +554,7 @@ int KEntityManager::move(t_entity target_entity, signed int dx, signed int dy)
             // If the entity is facing an obstruction or another entity, then forbid movement
             // in that direction, and instead, force the entity up or down (if the obstacle is
             // left or right) OR left or right (if the obstacle is up or down).
-            if (ent.facing == FACE_LEFT || ent.facing == FACE_RIGHT)
+            if (ent.facing == eDirection::FACE_LEFT || ent.facing == eDirection::FACE_RIGHT)
             {
                 // If:  facing left and the obstruction is to the left, OR
                 //      facing right and the obstruction is to the right,
@@ -843,18 +843,18 @@ void KEntityManager::process_entity(t_entity target_entity)
         }
         switch (ent.movemode)
         {
-        case MM_STAND:
+        case eMoveMode::MM_STAND:
             return;
-        case MM_WANDER:
+        case eMoveMode::MM_WANDER:
             wander(target_entity);
             break;
-        case MM_SCRIPT:
+        case eMoveMode::MM_SCRIPT:
             entscript(target_entity);
             break;
-        case MM_CHASE:
+        case eMoveMode::MM_CHASE:
             chase(target_entity);
             break;
-        case MM_TARGET:
+        case eMoveMode::MM_TARGET:
             target(target_entity);
             break;
         }
@@ -980,7 +980,7 @@ void KEntityManager::target(t_entity target_entity)
     if (dx == 0 && dy == 0)
     {
         /* Got there */
-        ent.movemode = MM_STAND;
+        ent.movemode = eMoveMode::MM_STAND;
     }
 }
 

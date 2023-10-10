@@ -496,7 +496,7 @@ int KCombat::combat(int bno)
     }
 
     /* TT: no battles during scripted/target movements */
-    if (g_ent[0].movemode != MM_STAND)
+    if (g_ent[0].movemode != eMoveMode::MM_STAND)
     {
         return 0;
     }

@@ -391,7 +391,8 @@ std::vector<KQEntity> KTiledMap::load_tmx_entities(const XMLElement* el)
                 }
                 if (xprop->Attribute("name", "movemode"))
                 {
-                    entity.movemode = value->IntValue();
+                    using std::clamp;
+                    entity.movemode = clamp<uint8_t>(value->IntValue(), eMoveMode::MM_STAND, eMoveMode::MM_TARGET);
                 }
                 if (xprop->Attribute("name", "obsmode"))
                 {

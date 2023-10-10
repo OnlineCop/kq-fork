@@ -356,24 +356,24 @@ void KGame::activate()
 
     switch (g_ent[0].facing)
     {
-    case FACE_DOWN:
+    case eDirection::FACE_DOWN:
         looking_at_y = 1;
-        target_char_facing = FACE_UP;
+        target_char_facing = eDirection::FACE_UP;
         break;
 
-    case FACE_UP:
+    case eDirection::FACE_UP:
         looking_at_y = -1;
-        target_char_facing = FACE_DOWN;
+        target_char_facing = eDirection::FACE_DOWN;
         break;
 
-    case FACE_LEFT:
+    case eDirection::FACE_LEFT:
         looking_at_x = -1;
-        target_char_facing = FACE_RIGHT;
+        target_char_facing = eDirection::FACE_RIGHT;
         break;
 
-    case FACE_RIGHT:
+    case eDirection::FACE_RIGHT:
         looking_at_x = 1;
-        target_char_facing = FACE_LEFT;
+        target_char_facing = eDirection::FACE_LEFT;
         break;
     }
 
@@ -411,7 +411,7 @@ void KGame::activate()
         {
             do_entity(p - 1);
         }
-        if (g_ent[p - 1].movemode == MM_STAND)
+        if (g_ent[p - 1].movemode == eMoveMode::MM_STAND)
         {
             g_ent[p - 1].facing = tf;
         }
@@ -1025,7 +1025,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
             g_ent[i].speed = kqrandom->random_range_exclusive(1, 5);
             g_ent[i].obsmode = 1;
             g_ent[i].moving = 0;
-            g_ent[i].movemode = MM_CHASE;
+            g_ent[i].movemode = eMoveMode::MM_CHASE;
             g_ent[i].chasing = 0;
             g_ent[i].extra = kqrandom->random_range_exclusive(50, 100);
             g_ent[i].delay = kqrandom->random_range_exclusive(25, 50);
@@ -1464,10 +1464,10 @@ void KGame::wait_for_entity(size_t first_entity_index, size_t last_entity_index)
         for (entity_index = first_entity_index; entity_index <= last_entity_index; ++entity_index)
         {
             move_mode = g_ent[entity_index].movemode;
-            if (g_ent[entity_index].active && (move_mode == MM_SCRIPT || move_mode == MM_TARGET))
+            if (g_ent[entity_index].active && (move_mode == eMoveMode::MM_SCRIPT || move_mode == eMoveMode::MM_TARGET))
             {
                 any_following_entities = true;
-                break; // for()
+                break; // for() loop
             }
         }
     } while (any_following_entities);

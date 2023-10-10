@@ -1371,7 +1371,7 @@ static int KQ_check_key(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < 8)
     {
         lua_pushnumber(L, g_keys[a]);
     }
@@ -1689,31 +1689,17 @@ static int KQ_face_each_other(lua_State* L)
 
     if (numchrs == 2)
     {
-        if (g_ent[a].tilex == g_ent[b].tilex)
+        auto& entityA = g_ent[a];
+        auto& entityB = g_ent[b];
+        if (entityA.tilex == entityB.tilex)
         {
-            if (g_ent[a].tiley > g_ent[b].tiley)
-            {
-                g_ent[a].facing = FACE_UP;
-                g_ent[b].facing = FACE_DOWN;
-            }
-            else
-            {
-                g_ent[a].facing = FACE_DOWN;
-                g_ent[b].facing = FACE_UP;
-            }
+            entityA.facing = (entityA.tiley > entityB.tiley) ? eDirection::FACE_UP : eDirection::FACE_DOWN;
+            entityB.facing = (entityA.tiley > entityB.tiley) ? eDirection::FACE_DOWN : eDirection::FACE_UP;
         }
         else
         {
-            if (g_ent[a].tilex > g_ent[b].tilex)
-            {
-                g_ent[a].facing = FACE_LEFT;
-                g_ent[b].facing = FACE_RIGHT;
-            }
-            else
-            {
-                g_ent[a].facing = FACE_RIGHT;
-                g_ent[b].facing = FACE_LEFT;
-            }
+            entityA.facing = (entityA.tilex > entityB.tilex) ? eDirection::FACE_LEFT : eDirection::FACE_RIGHT;
+            entityB.facing = (entityA.tilex > entityB.tilex) ? eDirection::FACE_RIGHT : eDirection::FACE_LEFT;
         }
     }
     return 0;
@@ -1979,7 +1965,7 @@ static int KQ_get_party_hp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         lua_pushnumber(L, party[a].hp);
     }
@@ -1995,7 +1981,7 @@ static int KQ_get_party_lvl(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         lua_pushnumber(L, party[a].lvl);
     }
@@ -2011,7 +1997,7 @@ static int KQ_get_party_mhp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         lua_pushnumber(L, party[a].mhp);
     }
@@ -2027,7 +2013,7 @@ static int KQ_get_party_mmp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         lua_pushnumber(L, party[a].mmp);
     }
@@ -2043,7 +2029,7 @@ static int KQ_get_party_mp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         lua_pushnumber(L, party[a].mp);
     }
@@ -2059,7 +2045,7 @@ static int KQ_get_party_mrp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         lua_pushnumber(L, party[a].mrp);
     }
@@ -2075,7 +2061,7 @@ static int KQ_get_party_name(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         lua_pushstring(L, party[a].name.c_str());
     }
@@ -2093,7 +2079,7 @@ static int KQ_get_party_next(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         lua_pushnumber(L, party[a].next);
     }
@@ -2111,7 +2097,7 @@ static int KQ_get_party_res(lua_State* L)
     auto a = lua_tointeger(L, 1);
     auto b = lua_tointeger(L, 2);
 
-    if (a >= 0 && a <= 7 && b >= 0 && b <= 15)
+    if (a >= 0 && a < ePIDX::MAXCHRS && b >= 0 && b < eResistance::R_TOTAL_RES)
     {
         lua_pushnumber(L, party[a].res[b]);
     }
@@ -2129,7 +2115,7 @@ static int KQ_get_party_stats(lua_State* L)
     auto a = lua_tointeger(L, 1);
     auto b = lua_tointeger(L, 2);
 
-    if (a >= 0 && a <= 7 && b >= 0 && b <= 12)
+    if (a >= 0 && a < ePIDX::MAXCHRS && b >= 0 && b < eStat::NUM_STATS)
     {
         lua_pushnumber(L, party[a].stats[b]);
     }
@@ -2145,7 +2131,7 @@ static int KQ_get_party_xp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         lua_pushnumber(L, party[a].xp);
     }
@@ -2880,7 +2866,7 @@ static int KQ_set_ent_facing(lua_State* L)
     int a = real_entity_num(L, 1);
     auto b = lua_tointeger(L, 2);
 
-    if (b >= FACE_DOWN && b <= FACE_RIGHT)
+    if (b >= eDirection::FACE_DOWN && b <= eDirection::FACE_RIGHT)
     {
         g_ent[a].facing = b;
     }
@@ -2900,7 +2886,8 @@ static int KQ_set_ent_movemode(lua_State* L)
     int a = real_entity_num(L, 1);
     auto b = lua_tointeger(L, 2);
 
-    if (b >= 0 && b <= 3)
+    // Does not include eMoveMode::MM_TARGET: for that, use set_ent_target().
+    if (b >= eMoveMode::MM_STAND && b <= eMoveMode::MM_CHASE)
     {
         g_ent[a].movemode = b;
     }
@@ -2944,7 +2931,7 @@ static int KQ_set_ent_speed(lua_State* L)
     int a = real_entity_num(L, 1);
     auto b = lua_tointeger(L, 2);
 
-    if (b >= 1 && b <= 7)
+    if (b >= 1 && b < ePIDX::MAXCHRS)
     {
         g_ent[a].speed = b;
     }
@@ -2954,7 +2941,7 @@ static int KQ_set_ent_speed(lua_State* L)
 /*! \brief Make entity go to a certain point.
  *
  * Enter target move mode (MM_TARGET).
- * Entity will try and go to the specified point.
+ * Entity will try to pathfind to the specified tile.
  * You still need to call wait_entity() after this.
  *
  * \param   L::1 Entity to set.
@@ -2967,7 +2954,7 @@ static int KQ_set_ent_target(lua_State* L)
 
     g_ent[a].target_x = (int)lua_tonumber(L, 2);
     g_ent[a].target_y = (int)lua_tonumber(L, 3);
-    g_ent[a].movemode = MM_TARGET;
+    g_ent[a].movemode = eMoveMode::MM_TARGET;
     return 0;
 }
 
@@ -3197,7 +3184,7 @@ static int KQ_set_party_hp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         party[a].hp = (int)lua_tonumber(L, 2);
     }
@@ -3214,7 +3201,7 @@ static int KQ_set_party_lvl(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         party[a].lvl = (int)lua_tonumber(L, 2);
     }
@@ -3231,7 +3218,7 @@ static int KQ_set_party_mhp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         party[a].mhp = (int)lua_tonumber(L, 2);
     }
@@ -3248,7 +3235,7 @@ static int KQ_set_party_mmp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         party[a].mmp = (int)lua_tonumber(L, 2);
     }
@@ -3265,7 +3252,7 @@ static int KQ_set_party_mp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         party[a].mp = (int)lua_tonumber(L, 2);
     }
@@ -3282,7 +3269,7 @@ static int KQ_set_party_mrp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         party[a].mrp = (int)lua_tonumber(L, 2);
     }
@@ -3301,7 +3288,7 @@ static int KQ_set_party_next(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         party[a].next = (int)lua_tonumber(L, 2);
     }
@@ -3319,7 +3306,7 @@ static int KQ_set_party_res(lua_State* L)
     auto a = lua_tointeger(L, 1);
     auto b = lua_tointeger(L, 2);
 
-    if (a >= 0 && a <= 7 && b >= 0 && b <= 12)
+    if (a >= 0 && a < ePIDX::MAXCHRS && b >= 0 && b < eResistance::R_TOTAL_RES)
     {
         party[a].res[b] = (int)lua_tonumber(L, 3);
     }
@@ -3338,7 +3325,7 @@ static int KQ_set_party_stats(lua_State* L)
     auto a = lua_tointeger(L, 1);
     auto b = lua_tointeger(L, 2);
 
-    if (a >= 0 && a <= 7 && b >= 0 && b <= 12)
+    if (a >= 0 && a < ePIDX::MAXCHRS && b >= 0 && b < eStat::NUM_STATS)
     {
         party[a].stats[b] = (int)lua_tonumber(L, 3);
     }
@@ -3355,7 +3342,7 @@ static int KQ_set_party_xp(lua_State* L)
 {
     auto a = lua_tointeger(L, 1);
 
-    if (a >= 0 && a <= 7)
+    if (a >= 0 && a < ePIDX::MAXCHRS)
     {
         party[a].xp = (int)lua_tonumber(L, 2);
     }
