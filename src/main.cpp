@@ -54,29 +54,75 @@
 #include "gettext.h"
 
 #include <clocale>
+#include <iomanip>
+#include <sstream>
+#include <string>
 
+
+struct ProgramArguments
+{
+    bool show_usage;
+    bool skip_splash;
+    bool exit_with_error;
+};
+
+std::string usage(const std::string& name)
+{
+    std::stringstream ss;
+    ss << "Usage: " << name << " [--help] [--[no-]splash]\n\n";
+    ss << "  --help  \tShow this message and exit.\n";
+    ss << "  --splash\tDisplay a long splash screen before showing the menu (--no-splash to disable)\n";
+    return ss.str();
+}
+
+ProgramArguments parse_args(int argc, const char* argv[])
+{
+    // Default-initialize args (bools: false, ints: 0, etc.).
+    ProgramArguments prog_args {};
+
+    for (int i = 1; i < argc; ++i)
+    {
+        const std::string arg(argv[i]);
+        if (arg == "--no-splash")
+        {
+            prog_args.skip_splash = true;
+        }
+        else if (arg == "--splash")
+        {
+            prog_args.skip_splash = false;
+        }
+        else if (arg == "--help" || arg == "-h")
+        {
+            prog_args.show_usage = true;
+            break;
+        }
+        else
+        {
+            std::cout << "Unknown option: " << std::quoted(arg) << std::endl;
+            prog_args.show_usage = true;
+            prog_args.exit_with_error = true;
+            break;
+        }
+    }
+
+    return prog_args;
+}
 
 /*! \brief Main function.
  *
  * Well, this one is pretty obvious.
  */
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
     setlocale(LC_ALL, "");
 
-    bool skip_splash = false;
-    for (int i = 1; i < argc; i++)
+    // Default-initialize args (bools: false, ints: 0, etc.).
+    ProgramArguments prog_args = parse_args(argc, argv);
+    if (prog_args.show_usage)
     {
-        if (!strcmp(argv[i], "-nosplash") || !strcmp(argv[i], "--nosplash"))
-        {
-            skip_splash = true;
-        }
-
-        if (!strcmp(argv[i], "--help"))
-        {
-            printf(_("Sorry, no help screen at this time.\n"));
-            return EXIT_SUCCESS;
-        }
+        // Always exit after showing the usage.
+        std::cout << usage(argv[0]) << std::endl;
+        return prog_args.exit_with_error ? EXIT_FAILURE : EXIT_SUCCESS;
     }
 
     kqrandom = new KQRandom();
@@ -85,7 +131,7 @@ int main(int argc, char* argv[])
     /* While KQ is running (playing or at startup menu) */
     while (game_on)
     {
-        switch (SaveGame.start_menu(skip_splash))
+        switch (SaveGame.start_menu(prog_args.skip_splash))
         {
         case 0: /* Continue */
             break;
@@ -104,7 +150,7 @@ int main(int argc, char* argv[])
         }
 
         /* Only show it once at the start */
-        skip_splash = true;
+        prog_args.skip_splash = true;
         if (game_on)
         {
             bool stop = false;
