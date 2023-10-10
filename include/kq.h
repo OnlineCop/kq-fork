@@ -609,10 +609,10 @@ class KGame
     // Not behind '#ifdef KQ_CHEATS...#endif' guards for ABI compatibility.
 
     /*! Is cheat mode activated? */
-    int _cheat = 0;
-    int _no_random_encounters = 0;
-    int _no_monsters = 0;
-    int _every_hit_999 = 0;
+    int _cheat;
+    int _no_random_encounters;
+    int _no_monsters;
+    int _every_hit_999;
 
     bool _alldead;
 };
