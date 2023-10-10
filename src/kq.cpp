@@ -19,17 +19,17 @@
        675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/*! \file
- * \brief Main file for KQ.
- *
- * This file includes the main() function, most of the global variables, and some other stuff, for example, controls,
- * some initialization and timing.
+/*! \file Defines the KGame object.
+ * \brief Globals. Lots and lots of globals.
  *
  * \note 23: I don't know if we're going to do anything to lessen the number of globals, but I tried to lay them out as
  * attractively as possible until we figure out what all of them are for. Plus I tried to keep everything below 80
  * characters a line, and labels what few variables struck me as obvious.
  *
  * Thanks due to Edge <hardedged@excite.com> and Caz Jones for BeOS joystick fixes.
+ *
+ * The KGame object is quickly becoming an unruly behemoth, but we hope to move as many variables
+ * out of the global scope and into one class or another, and KGame is going to be it (for now).
  */
 
 #include "kq.h"
@@ -301,109 +301,6 @@ s_progress progresses[SIZE_PROGRESS] = {
     { 116, "P_SIDEQUEST4" },   { 117, "P_SIDEQUEST5" },     { 118, "P_SIDEQUEST6" },    { 119, "P_SIDEQUEST7" },
 };
 #endif /* DEBUGMODE */
-
-/*! \mainpage KQ - The Classic Computer Role-Playing Game
- *
- * Take the part of one of eight mighty heroes as you search for the Staff of Xenarum.
- *
- * Visit over twenty different locations, fight a multitude of evil monsters, wield deadly weapons and cast powerful
- * spells.
- *
- * On your quest, you will find out how the Oracle knows everything, who killed the former master of the Embers guild,
- * why no-one trusts the old man in the manor, and what exactly is terrorizing the poor Denorians.
- *
- * KQ is licensed under the GPL.
- */
-
-/*! \brief Main function.
- *
- * Well, this one is pretty obvious.
- */
-int main(int argc, char* argv[])
-{
-    int stop, game_on, skip_splash;
-
-    setlocale(LC_ALL, "");
-
-    skip_splash = 0;
-    for (int i = 1; i < argc; i++)
-    {
-        if (!strcmp(argv[i], "-nosplash") || !strcmp(argv[i], "--nosplash"))
-        {
-            skip_splash = 1;
-        }
-
-        if (!strcmp(argv[i], "--help"))
-        {
-            printf(_("Sorry, no help screen at this time.\n"));
-            return EXIT_SUCCESS;
-        }
-    }
-
-    kqrandom = new KQRandom();
-    Game.startup();
-    game_on = 1;
-    /* While KQ is running (playing or at startup menu) */
-    while (game_on)
-    {
-        switch (SaveGame.start_menu(skip_splash))
-        {
-        case 0: /* Continue */
-            break;
-        case 1: /* New game */
-            Game.SetGameTime(0);
-            Game.change_map("starting", 0, 0, 0, 0);
-            if (kqrandom)
-            {
-                delete kqrandom;
-            }
-            kqrandom = new KQRandom();
-            break;
-        default: /* Exit */
-            game_on = 0;
-            break;
-        }
-        /* Only show it once at the start */
-        skip_splash = 1;
-        if (game_on)
-        {
-            stop = 0;
-            alldead = 0;
-
-            /* While the actual game is playing */
-            while (!stop)
-            {
-                Game.ProcessEvents();
-                EntityManager.process_entities();
-                Game.do_check_animation();
-                Draw.drawmap();
-                Draw.blit2screen();
-                Music.poll_music();
-                if (Game.want_console)
-                {
-                    Game.want_console = false;
-                    Game.wait_released();
-                    Console.run();
-                }
-                if (PlayerInput.besc())
-                {
-                    stop = SaveGame.system_menu();
-                }
-                if (PlayerInput.bhelp())
-                {
-                    /* TODO: In-game help system. */
-                }
-                if (alldead)
-                {
-                    do_transition(eTransitionFade::IN, 16);
-                    stop = 1;
-                }
-            }
-        }
-    }
-    Game.deallocate_stuff();
-    return EXIT_SUCCESS;
-}
 
 KMap::KMap()
     : g_map {}

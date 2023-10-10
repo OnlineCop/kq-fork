@@ -39,6 +39,7 @@ set(KQ_SAVEDIR "kq" CACHE STRING "Name of the save folder")
 configure_file(config.cmake.h makeconfig.h)
 
 set(kq-fork_SRCS
+	src/main.cpp
 	src/anim_sequence.cpp
 	src/animation.cpp
 	src/bounds.cpp
