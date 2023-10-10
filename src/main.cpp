@@ -62,16 +62,14 @@
  */
 int main(int argc, char* argv[])
 {
-    int game_on, skip_splash;
-
     setlocale(LC_ALL, "");
 
-    skip_splash = 0;
+    bool skip_splash = false;
     for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-nosplash") || !strcmp(argv[i], "--nosplash"))
         {
-            skip_splash = 1;
+            skip_splash = true;
         }
 
         if (!strcmp(argv[i], "--help"))
@@ -83,7 +81,7 @@ int main(int argc, char* argv[])
 
     kqrandom = new KQRandom();
     Game.startup();
-    game_on = 1;
+    bool game_on = true;
     /* While KQ is running (playing or at startup menu) */
     while (game_on)
     {
@@ -101,11 +99,12 @@ int main(int argc, char* argv[])
             kqrandom = new KQRandom();
             break;
         default: /* Exit */
-            game_on = 0;
+            game_on = false;
             break;
         }
+
         /* Only show it once at the start */
-        skip_splash = 1;
+        skip_splash = true;
         if (game_on)
         {
             bool stop = false;
