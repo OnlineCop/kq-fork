@@ -241,36 +241,37 @@ void KDraw::border(Raster* where, int left, int top, int right, int bottom)
 
 void KDraw::convert_cframes(size_t fighter_index, int output_range_start, int output_range_end, int convert_heroes)
 {
-    size_t start_fighter_index, end_fighter_index, cframe_index;
+    size_t start {};
+    size_t end {};
 
     /* Determine the range of frames to convert */
     if (convert_heroes == 1)
     {
         if (fighter_index < PSIZE)
         {
-            start_fighter_index = 0;
-            end_fighter_index = numchrs;
+            start = 0;
+            end = numchrs;
         }
         else
         {
-            start_fighter_index = PSIZE;
-            end_fighter_index = PSIZE + Combat.GetNumEnemies();
+            using std::min;
+            start = PSIZE;
+            end = min<size_t>(NUM_FIGHTERS, PSIZE + Combat.GetNumEnemies());
         }
     }
     else
     {
-        start_fighter_index = fighter_index;
-        end_fighter_index = fighter_index + 1;
+        start = fighter_index;
+        end = fighter_index + 1;
     }
 
-    while (start_fighter_index < end_fighter_index)
+    while (start < end)
     {
-        for (cframe_index = 0; cframe_index < MAXCFRAMES; cframe_index++)
+        for (size_t i = 0, iEnd = cframes[start].size(); i < iEnd; ++i)
         {
-            cframes[start_fighter_index][cframe_index]->color_scale(tcframes[start_fighter_index][cframe_index],
-                        output_range_start, output_range_end);
+            cframes[start][i]->color_scale(tcframes[start][i], output_range_start, output_range_end);
         }
-        ++start_fighter_index;
+        ++start;
     }
 }
 
