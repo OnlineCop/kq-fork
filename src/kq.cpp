@@ -573,7 +573,7 @@ void KGame::allocate_stuff()
 {
     kfonts = alloc_bmp(1024, 60, "kfonts");
 
-    sfonts = alloc_bmps("sfonts", { 60, 60, 60, 60, 60 }, { 8, 8, 8, 8, 8 });
+    sfonts = alloc_bmps(5, "sfonts", 60, 8);
 
     menuptr = alloc_bmp(16, 8, "menuptr");
     sptr = alloc_bmp(8, 8, "sptr");
