@@ -1537,7 +1537,11 @@ void KDraw::revert_cframes(size_t fighter_index, int revert_heroes)
     {
         for (size_t i = 0, iEnd = tcframes[start].size(); i < iEnd; ++i)
         {
-            blit(tcframes[start][i], cframes[start][i], 0, 0, 0, 0, fighter[start].cw, fighter[start].cl);
+            const int w = fighter[start].cw;
+            const int h = fighter[start].cl;
+            Raster* src = tcframes[start][i];
+            Raster* dest = cframes[start][i];
+            src->blitTo(dest, w, h);
         }
         ++start;
     }
