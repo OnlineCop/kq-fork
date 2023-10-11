@@ -27,6 +27,8 @@ class KAudio
     enum eSound
     {
         SND_MENU = 0,      /* whoosh.wav */
+        SND_MISS = SND_MENU,
+        SND_STEAL = SND_MENU,
         SND_CLICK = 1,     /* menumove.wav */
         SND_BAD = 2,       /* bad.wav */
         SND_ITEM = 3,      /* item.wav */
