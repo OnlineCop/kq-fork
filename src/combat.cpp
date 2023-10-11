@@ -887,8 +887,10 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
 
     if (fr.IsStone())
     {
-        // Green, for sickness
-        Draw.convert_cframes(fighter_index, 2, 12, 0);
+        // Grey, for stone
+        const int kolor_range_start = 2;
+        const int kolor_range_end = 12;
+        Draw.convert_cframes(fighter_index, kolor_range_start, kolor_range_end, 0);
     }
 
     if (fr.IsEther())
@@ -897,13 +899,20 @@ void KCombat::draw_fighter(size_t fighter_index, size_t dcur)
     }
     else
     {
+        // Create the fighter's shadow.
+        static int white_no_transparency = makecol(128, 128, 128); // 0x00808080
+
         Raster shad(cf->width * 2 / 3, cf->height / 4);
+        int w2 = shad.width / 2;
+        int h2 = shad.height / 2;
+
+        // Put a shadow below the fighter.
+        int shadow_offsetx = xx + (cf->width - shad.width) / 2;
+        int shadow_offsety = yy + cf->height - h2;
 
         clear_bitmap(&shad);
-        ellipsefill_fast(&shad, shad.width / 2, shad.height / 2, shad.width / 2, shad.height / 2,
-                         makecol(128, 128, 128));
-        draw_trans_sprite(double_buffer, &shad, xx + cf->width / 2 - (shad.width / 3),
-                          yy + cf->height - shad.height / 2);
+        ellipsefill_fast(&shad, w2, h2, w2, h2, white_no_transparency);
+        draw_trans_sprite(double_buffer, &shad, shadow_offsetx, shadow_offsety);
         draw_sprite(double_buffer, cf, xx, yy);
     }
 

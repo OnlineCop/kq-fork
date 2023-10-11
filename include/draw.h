@@ -130,12 +130,12 @@ class KDraw
      * This is used to color_scale one or more fighter frames.
      *
      * \param   fighter_index Character to convert.
-     * \param   output_range_start Start of output range.
-     * \param   output_range_end End of output range (exclusive).
+     * \param   kolor_range_start Start of output range.
+     * \param   kolor_range_end End of output range (exclusive).
      * \param   convert_heroes If ==1 then fighter_index<PSIZE means convert all heroes,
      *          otherwise all enemies.
      */
-    void convert_cframes(size_t fighter_index, int output_range_start, int output_range_end, int convert_heroes);
+    void convert_cframes(size_t fighter_index, int kolor_range_start, int kolor_range_end, int convert_heroes);
 
     /*! \brief Restore specified fighter frames to normal color.
      *

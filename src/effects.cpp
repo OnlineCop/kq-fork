@@ -37,56 +37,46 @@ KEffects Effects;
 
 void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
 {
-    int dx, dy, p;
-    int color_range;
-    size_t fighter_index;
-    size_t start_fighter_index, num_targets;
-
-    // TT: used for the slow_computer routine
-    int count;
-
     if (target_fighter_index < PSIZE)
     {
+        // Shouldn't have a death animation for party members.
         return;
     }
-    if (target_all_flag == 1)
-    {
-        start_fighter_index = PSIZE;
-        num_targets = Combat.GetNumEnemies();
-    }
-    else
-    {
-        start_fighter_index = target_fighter_index;
-        num_targets = 1;
-    }
+
+    const size_t start_fighter_index = target_all_flag ? PSIZE : target_fighter_index;
+    const size_t num_targets = target_all_flag ? Combat.GetNumEnemies() : 1;
+
     Combat.UnsetDatafileImageCoords();
     play_effect(KAudio::eSound::SND_KILL, 128);
     Combat.battle_render(0, 0, 0);
     fullblit(double_buffer, back);
 
+    const int max_circle_radius = 15;
+
     // TT: slow_computer addition for speed-ups
-    count = (slow_computer ? 4 : 1);
-    for (p = 0; p < 2; p++)
+    int count = (slow_computer ? 4 : 1);
+
+    // p==0 while circle expands behind dying enemy; p==1 while circle contracts.
+    for (int p = 0; p < 2; ++p)
     {
         // TT: slow_computer additions for speed-ups
-        for (color_range = 0; color_range < 16; color_range += count)
+        for (int circle_radius = 0; circle_radius <= max_circle_radius; circle_radius += count)
         {
-            Draw.convert_cframes(target_fighter_index, 1, 15 - (color_range / 2), target_all_flag);
-            for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_targets;
-                 fighter_index++)
+            const int radius = p ? max_circle_radius - circle_radius : circle_radius;
+            const int kolor_start = 1;
+            const int kolor_end = max_circle_radius - (circle_radius / 2);
+            Draw.convert_cframes(target_fighter_index, kolor_start, kolor_end, target_all_flag);
+            for (size_t i = start_fighter_index; i < start_fighter_index + num_targets; ++i)
             {
-                if (Combat.ShowDeathEffectAnimation(fighter_index))
+                if (Combat.ShowDeathEffectAnimation(i))
                 {
-                    dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2);
-                    dy = fighter[fighter_index].cy + (fighter[fighter_index].cl / 2);
+                    int dx = fighter[i].cx + (fighter[i].cw / 2);
+                    int dy = fighter[i].cy + (fighter[i].cl / 2);
+                    circlefill(double_buffer, dx, dy, radius, 0);
                     if (p == 0)
                     {
-                        circlefill(double_buffer, dx, dy, color_range, 0);
-                        Combat.draw_fighter(fighter_index, 0);
-                    }
-                    else
-                    {
-                        circlefill(double_buffer, dx, dy, 15 - color_range, 0);
+                        // Only draw the fighter for the first half of the death animation.
+                        Combat.draw_fighter(i, 0);
                     }
                 }
             }
@@ -95,11 +85,11 @@ void KEffects::death_animation(size_t target_fighter_index, int target_all_flag)
             fullblit(back, double_buffer);
         }
     }
-    for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_targets; fighter_index++)
+    for (size_t i = start_fighter_index; i < start_fighter_index + num_targets; ++i)
     {
-        if (Combat.ShowDeathEffectAnimation(fighter_index))
+        if (Combat.ShowDeathEffectAnimation(i))
         {
-            Combat.SetShowDeathEffectAnimation(fighter_index, false);
+            Combat.SetShowDeathEffectAnimation(i, false);
         }
     }
     Draw.revert_cframes(target_fighter_index, target_all_flag);

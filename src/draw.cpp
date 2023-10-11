@@ -239,7 +239,7 @@ void KDraw::border(Raster* where, int left, int top, int right, int bottom)
     putpixel(where, right - 4, bottom - 4, WHITE);
 }
 
-void KDraw::convert_cframes(size_t fighter_index, int output_range_start, int output_range_end, int convert_heroes)
+void KDraw::convert_cframes(size_t fighter_index, int kolor_range_start, int kolor_range_end, int convert_heroes)
 {
     size_t start {};
     size_t end {};
@@ -269,7 +269,7 @@ void KDraw::convert_cframes(size_t fighter_index, int output_range_start, int ou
     {
         for (size_t i = 0, iEnd = cframes[start].size(); i < iEnd; ++i)
         {
-            cframes[start][i]->color_scale(tcframes[start][i], output_range_start, output_range_end);
+            cframes[start][i]->color_scale(tcframes[start][i], kolor_range_start, kolor_range_end);
         }
         ++start;
     }
@@ -684,9 +684,10 @@ void KDraw::draw_shadows()
 
 void KDraw::draw_stsicon(Raster* where, int cc, int who, eSpellType spellType, int icx, int icy)
 {
-    int j, st = 0, s;
+    int st {};
+    uint8_t s {};
 
-    for (j = 0; j < spellType; j++)
+    for (auto j = 0; j < spellType; ++j)
     {
         if (cc == 0)
         {
@@ -699,7 +700,7 @@ void KDraw::draw_stsicon(Raster* where, int cc, int who, eSpellType spellType, i
         if (s != 0)
         {
             masked_blit(stspics, where, 0, j * 8 + 8, st * 8 + icx, icy, 8, 8);
-            st++;
+            ++st;
         }
     }
     if (st == 0)
@@ -714,15 +715,17 @@ void KDraw::draw_textbox(eBubbleStyle bstyle)
     int hgt = gbbh * 12 + 16;
 
     draw_kq_box(double_buffer, gbbx, gbby, gbbx + wid, gbby + hgt, eBoxFill::TRANSPARENT, bstyle);
-    if (bubble_stem_style != STEM_UNDEFINED)
+    if (bubble_stem_style != eBubbleStemStyle::STEM_UNDEFINED)
     {
         /* select the correct stem-thingy that comes out of the speech bubble */
-        auto stem = message_bubble_stems[bubble_stem_style + (bstyle == B_THOUGHT ? NUM_BUBBLE_STEMS : STEM_BOTTOM_RIGHT)];
+        int stem_index = bubble_stem_style + (bstyle == eBubbleStyle::B_THOUGHT ? eBubbleStemStyle::NUM_BUBBLE_STEMS
+                                                                                : eBubbleStemStyle::STEM_BOTTOM_RIGHT);
+        auto stem = message_bubble_stems[stem_index];
         /* and draw it */
         draw_sprite(double_buffer, stem, gbx, gby);
     }
 
-    for (int a = 0; a < gbbh; a++)
+    for (int a = 0; a < gbbh; ++a)
     {
         print_font(double_buffer, gbbx + 8, a * 12 + gbby + 8, msgbuf[a], FBIG);
     }
@@ -1507,37 +1510,36 @@ const char* KDraw::relay(const char* buf)
 
 void KDraw::revert_cframes(size_t fighter_index, int revert_heroes)
 {
-    size_t start_fighter_index, end_fighter_index;
-    size_t cframe_index;
+    size_t start {};
+    size_t end {};
 
     /* Determine the range of frames to revert */
     if (revert_heroes == 1)
     {
         if (fighter_index < PSIZE)
         {
-            start_fighter_index = 0;
-            end_fighter_index = numchrs;
+            start = 0;
+            end = numchrs;
         }
         else
         {
-            start_fighter_index = PSIZE;
-            end_fighter_index = PSIZE + Combat.GetNumEnemies();
+            start = PSIZE;
+            end = PSIZE + Combat.GetNumEnemies();
         }
     }
     else
     {
-        start_fighter_index = fighter_index;
-        end_fighter_index = fighter_index + 1;
+        start = fighter_index;
+        end = fighter_index + 1;
     }
 
-    while (start_fighter_index < end_fighter_index)
+    while (start < end)
     {
-        for (cframe_index = 0; cframe_index < MAXCFRAMES; cframe_index++)
+        for (size_t i = 0, iEnd = tcframes[start].size(); i < iEnd; ++i)
         {
-            blit(tcframes[start_fighter_index][cframe_index], cframes[start_fighter_index][cframe_index], 0, 0, 0, 0,
-                 fighter[start_fighter_index].cw, fighter[start_fighter_index].cl);
+            blit(tcframes[start][i], cframes[start][i], 0, 0, 0, 0, fighter[start].cw, fighter[start].cl);
         }
-        ++start_fighter_index;
+        ++start;
     }
 }
 
