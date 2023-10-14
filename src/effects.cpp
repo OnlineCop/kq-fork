@@ -199,10 +199,9 @@ void KEffects::display_amount(size_t target_fighter_index, eFont font_color, int
 
 void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_target, size_t magic_effect_index, int shows)
 {
-    int a, dx, dy;
-    size_t fighter_index;
-    size_t num_fighters, start_fighter_index;
-    Raster* eb = get_cached_image(eff[magic_effect_index].ename);
+    size_t num_fighters {};
+    size_t start_fighter_index {};
+    const s_effect& effect = eff[magic_effect_index];
 
     if (multiple_target == 1)
     {
@@ -225,9 +224,9 @@ void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_targe
 
     if (target_fighter_index < PSIZE)
     {
-        for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighters; fighter_index++)
+        for (size_t i = start_fighter_index; i < start_fighter_index + num_fighters; ++i)
         {
-            fighter[fighter_index].aframe = 5;
+            fighter[i].aframe = 5;
         }
     }
     Combat.UnsetDatafileImageCoords();
@@ -241,21 +240,23 @@ void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_targe
         }
         else
         {
-            play_effect(eff[magic_effect_index].snd, 128);
+            play_effect(effect.snd, 128);
         }
     }
     else
     {
-        play_effect(eff[magic_effect_index].snd, 128);
+        play_effect(effect.snd, 128);
     }
-    for (a = 0; a < eff[magic_effect_index].numf; a++)
+
+    Raster* eb = get_cached_image(effect.ename);
+    for (int frame_index = 0; frame_index < effect.numf; ++frame_index)
     {
-        for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighters; fighter_index++)
+        for (size_t fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighters; ++fighter_index)
         {
             if (is_active(fighter_index))
             {
-                dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) - (eff[magic_effect_index].xsize / 2);
-                dy = fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - (eff[magic_effect_index].ysize / 2);
+                int dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) - (effect.xsize / 2);
+                int dy = fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - (effect.ysize / 2);
                 Combat.draw_fighter(fighter_index, 0);
                 if (shows == 1 && fighter[fighter_index].IsShield())
                 {
@@ -265,19 +266,18 @@ void KEffects::draw_attacksprite(size_t target_fighter_index, int multiple_targe
                                       fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) - 24,
                                       fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - 24);
                 }
-                masked_blit(eb, double_buffer, 0, eff[magic_effect_index].ysize * a, dx, dy,
-                            eff[magic_effect_index].xsize, eff[magic_effect_index].ysize);
+                masked_blit(eb, double_buffer, 0, effect.ysize * frame_index, dx, dy, effect.xsize, effect.ysize);
             }
         }
         Draw.blit2screen();
-        kq_wait(eff[magic_effect_index].delay);
+        kq_wait(effect.delay);
         fullblit(back, double_buffer);
     }
     if (target_fighter_index < PSIZE)
     {
-        for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighters; fighter_index++)
+        for (size_t i = start_fighter_index; i < start_fighter_index + num_fighters; ++i)
         {
-            fighter[fighter_index].aframe = 0;
+            fighter[i].aframe = 0;
         }
     }
 }
@@ -334,12 +334,15 @@ void KEffects::draw_castersprite(size_t caster_fighter_index, int new_pal_color)
 
 void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size_t effect_index, int shows)
 {
-    size_t frame_index;
-    size_t fighter_index;
-    size_t start_fighter_index, num_fighters;
-    Raster* eb = get_cached_image(eff[effect_index].ename);
+    size_t start_fighter_index {};
+    size_t num_fighters {};
 
-    Draw.convert_cframes(target_fighter_index, eff[effect_index].kolor - 3, eff[effect_index].kolor + 3, 1);
+    s_effect& effect = eff[effect_index];
+    Raster* eb = get_cached_image(effect.ename);
+    const int output_range_start = effect.kolor - 3;
+    const int output_range_end = effect.kolor + 3;
+
+    Draw.convert_cframes(target_fighter_index, output_range_start, output_range_end, 1);
     if (target_fighter_index < PSIZE)
     {
         start_fighter_index = 0;
@@ -355,15 +358,14 @@ void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size
     Combat.battle_render(0, 0, 0);
     display_attack_string = 0;
     fullblit(double_buffer, back);
-    play_effect(eff[effect_index].snd, 128);
-    for (frame_index = 0; frame_index < eff[effect_index].numf; frame_index++)
+    play_effect(effect.snd, 128);
+    for (size_t frame_index = 0; frame_index < effect.numf; ++frame_index)
     {
-        if (eff[effect_index].orient == 0)
+        if (effect.orient == 0)
         {
-            masked_blit(eb, double_buffer, 0, eff[effect_index].ysize * frame_index, hx, hy, eff[effect_index].xsize,
-                        eff[effect_index].ysize);
+            masked_blit(eb, double_buffer, 0, effect.ysize * frame_index, hx, hy, effect.xsize, effect.ysize);
         }
-        for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighters; fighter_index++)
+        for (size_t fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighters; ++fighter_index)
         {
             if (is_active(fighter_index))
             {
@@ -376,13 +378,12 @@ void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size
                 Combat.draw_fighter(fighter_index, 0);
             }
         }
-        if (eff[effect_index].orient == 1)
+        if (effect.orient == 1)
         {
-            masked_blit(eb, double_buffer, 0, eff[effect_index].ysize * frame_index, hx, hy, eff[effect_index].xsize,
-                        eff[effect_index].ysize);
+            masked_blit(eb, double_buffer, 0, effect.ysize * frame_index, hx, hy, effect.xsize, effect.ysize);
         }
         Draw.blit2screen();
-        kq_wait(eff[effect_index].delay);
+        kq_wait(effect.delay);
         fullblit(back, double_buffer);
     }
     Draw.revert_cframes(target_fighter_index, 1);
@@ -390,54 +391,57 @@ void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size
 
 void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target, size_t effect_index, int shows)
 {
-    int dx, dy = 0;
-    size_t num_frames;
-    size_t start_fighter_index, num_fighers, fighter_index;
-    Raster* eb = get_cached_image(eff[effect_index].ename);
+    size_t start_fighter_index {};
+    size_t num_fighters {};
 
-    Draw.convert_cframes(target_fighter_index, eff[effect_index].kolor - 3, eff[effect_index].kolor + 3,
-                         multiple_target);
+    s_effect& effect = eff[effect_index];
+    Raster* eb = get_cached_image(effect.ename);
+    const int output_range_start = effect.kolor - 3;
+    const int output_range_end = effect.kolor + 3;
+
+    Draw.convert_cframes(target_fighter_index, output_range_start, output_range_end, multiple_target);
     if (multiple_target == 1)
     {
         if (target_fighter_index < PSIZE)
         {
             start_fighter_index = 0;
-            num_fighers = numchrs;
+            num_fighters = numchrs;
         }
         else
         {
             start_fighter_index = PSIZE;
-            num_fighers = Combat.GetNumEnemies();
+            num_fighters = Combat.GetNumEnemies();
         }
     }
     else
     {
         start_fighter_index = target_fighter_index;
-        num_fighers = 1;
+        num_fighters = 1;
     }
     Combat.UnsetDatafileImageCoords();
     display_attack_string = 1;
     Combat.battle_render(0, 0, 0);
     display_attack_string = 0;
     fullblit(double_buffer, back);
-    play_effect(eff[effect_index].snd, 128);
-    for (num_frames = 0; num_frames < eff[effect_index].numf; num_frames++)
+    play_effect(effect.snd, 128);
+    for (int num_frames = 0; num_frames < effect.numf; ++num_frames)
     {
-        for (fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighers; fighter_index++)
+        for (size_t fighter_index = start_fighter_index; fighter_index < start_fighter_index + num_fighters; ++fighter_index)
         {
             if (is_active(fighter_index))
             {
-                dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) - (eff[effect_index].xsize / 2);
-                switch (eff[effect_index].orient)
+                int dx = fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) - (effect.xsize / 2);
+                int dy {};
+                switch (effect.orient)
                 {
                 case 0:
-                    dy = fighter[fighter_index].cy + fighter[fighter_index].cl - eff[effect_index].ysize;
+                    dy = fighter[fighter_index].cy + fighter[fighter_index].cl - effect.ysize;
                     break;
                 case 1:
-                    dy = fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - (eff[effect_index].ysize / 2);
+                    dy = fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - (effect.ysize / 2);
                     break;
                 case 2:
-                    dy = fighter[fighter_index].cy + eff[effect_index].ysize;
+                    dy = fighter[fighter_index].cy + effect.ysize;
                     break;
                 }
                 Combat.draw_fighter(fighter_index, 0);
@@ -447,12 +451,11 @@ void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target
                                       fighter[fighter_index].cx + (fighter[fighter_index].cw / 2) - 24,
                                       fighter[fighter_index].cy + (fighter[fighter_index].cl / 2) - 24);
                 }
-                masked_blit(eb, double_buffer, 0, eff[effect_index].ysize * num_frames, dx, dy, eff[effect_index].xsize,
-                            eff[effect_index].ysize);
+                masked_blit(eb, double_buffer, 0, effect.ysize * num_frames, dx, dy, effect.xsize, effect.ysize);
             }
         }
         Draw.blit2screen();
-        kq_wait(eff[effect_index].delay);
+        kq_wait(effect.delay);
         fullblit(back, double_buffer);
     }
     Draw.revert_cframes(target_fighter_index, multiple_target);
