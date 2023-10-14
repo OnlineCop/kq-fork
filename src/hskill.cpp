@@ -493,6 +493,7 @@ int skill_use(size_t attack_fighter_index)
     int rare_chance = 5;
 
     tempa = Magic.status_adjust(attack_fighter_index);
+    const s_spell& spell = magic[fighter[attack_fighter_index].csmem];
     switch (pidx[attack_fighter_index])
     {
     case SENSAR:
@@ -572,11 +573,14 @@ int skill_use(size_t attack_fighter_index)
         fighter[attack_fighter_index].aux = 2;
         if (combat_spell_menu(attack_fighter_index) == 1)
         {
-            Effects.draw_castersprite(attack_fighter_index, eff[magic[fighter[attack_fighter_index].csmem].eff].kolor);
+            const s_effect& effect = eff[spell.eff];
+            const int kolor_range_start = effect.kolor - 3;
+            const int kolor_range_end = effect.kolor + 3;
+
+            Effects.draw_castersprite(attack_fighter_index, effect.kolor);
             Combat.UnsetDatafileImageCoords();
             play_effect(KAudio::eSound::SND_BMAGIC, 128);
-            Draw.convert_cframes(attack_fighter_index, eff[magic[fighter[attack_fighter_index].csmem].eff].kolor - 3,
-                                 eff[magic[fighter[attack_fighter_index].csmem].eff].kolor + 3, 0);
+            Draw.convert_cframes(attack_fighter_index, kolor_range_start, kolor_range_end, 0);
             Combat.battle_render(0, 0, 0);
             fullblit(double_buffer, back);
             for (p = 0; p < 2; p++)
@@ -587,12 +591,11 @@ int skill_use(size_t attack_fighter_index)
                     ty = fighter[attack_fighter_index].cy + (fighter[attack_fighter_index].cl / 2);
                     if (p == 0)
                     {
-                        circlefill(double_buffer, tx, ty, a, eff[magic[fighter[attack_fighter_index].csmem].eff].kolor);
+                        circlefill(double_buffer, tx, ty, a, effect.kolor);
                     }
                     else
                     {
-                        circlefill(double_buffer, tx, ty, 15 - a,
-                                   eff[magic[fighter[attack_fighter_index].csmem].eff].kolor);
+                        circlefill(double_buffer, tx, ty, 15 - a, effect.kolor);
                         Combat.draw_fighter(attack_fighter_index, 0);
                     }
                     Draw.blit2screen();
@@ -620,7 +623,7 @@ int skill_use(size_t attack_fighter_index)
             return 0;
         }
         display_attack_string = 0;
-        fighter[attack_fighter_index].SetInfuse(magic[fighter[attack_fighter_index].csmem].spell_elemental_effect);
+        fighter[attack_fighter_index].SetInfuse(spell.spell_elemental_effect);
         break;
 
     case AJATHAR:
@@ -631,7 +634,9 @@ int skill_use(size_t attack_fighter_index)
             fullblit(double_buffer, back);
             for (a = 0; a < 14 /*MagicNumber*/; a++)
             {
-                Draw.convert_cframes(PSIZE, 1 + a, 15, 1);
+                const int kolor_range_start = 1 + a;
+                const int kolor_range_end = 15;
+                Draw.convert_cframes(PSIZE, kolor_range_start, kolor_range_end, 1);
                 for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
                 {
                     if (Effects.is_active(fighter_index))
