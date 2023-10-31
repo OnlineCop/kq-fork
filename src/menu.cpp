@@ -129,7 +129,7 @@ void KMenu::draw_playerstat(Raster* where, int player_index_in_party, int dx, in
 {
     int j;
     players[player_index_in_party].portrait->maskedBlitTo(where, dx, dy);
-    Draw.print_font(where, dx + 48, dy, party[player_index_in_party].name, FNORMAL);
+    Draw.print_font(where, dx + 48, dy, party[player_index_in_party].player_name, FNORMAL);
     Draw.draw_stsicon(where, 0, player_index_in_party, eSpellType::S_MALISON, dx + 48, dy + 8);
     Draw.print_font(where, dx + 48, dy + 16, _("LV"), FGOLD);
     sprintf(strbuf, "%d", party[player_index_in_party].lvl);
@@ -720,7 +720,7 @@ KFighter player2fighter(int who)
     current_fighter.imb[0] = 0;
     current_fighter.imb[1] = 0;
 
-    current_fighter.name = plr.name;
+    current_fighter.name = plr.player_name;
     current_fighter.xp = plr.xp;
     current_fighter.lvl = plr.lvl;
     current_fighter.hp = plr.hp;

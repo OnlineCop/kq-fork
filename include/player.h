@@ -106,7 +106,7 @@ class KPlayer
     void AddShield(signed int AmountOfEffectToAdd);
 
     /*! Entity name */
-    std::string name;
+    std::string player_name;
     /*! Entity experience */
     int xp;
     /*! Experience needed for level-up */

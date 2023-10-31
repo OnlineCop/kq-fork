@@ -294,7 +294,7 @@ int KDisk::load_core_properties_xml(KPlayer* s, XMLElement* node)
         {
             if (property->Attribute("name", "name"))
             {
-                s->name = property->Attribute("value");
+                s->player_name = property->Attribute("value");
             }
             else if (property->Attribute("name", "xp"))
             {
@@ -477,7 +477,7 @@ int KDisk::save_player_xml(const KPlayer* s, XMLElement* node)
     XMLElement* properties = doc->NewElement(TAG_PROPERTIES);
     hero->InsertFirstChild(properties);
     // Core properties
-    addprop(properties, "name", s->name);
+    addprop(properties, "name", s->player_name);
     addprop(properties, "hp", s->hp);
     addprop(properties, "xp", s->xp);
     addprop(properties, "next", s->next);

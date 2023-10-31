@@ -368,7 +368,7 @@ int learn_new_spells(int who)
             {
                 if (in_combat == 1)
                 {
-                    sprintf(strbuf, _("%s learned %s"), party[who].name.c_str(), magic[a].name);
+                    sprintf(strbuf, _("%s learned %s"), party[who].player_name.c_str(), magic[a].name);
                     size_t strbuf_len = strbuf.size();
                     fullblit(back, double_buffer);
                     Draw.menubox(double_buffer, 148 - (strbuf_len * 4), 152, strbuf_len + 1, 1, eBoxFill::TRANSPARENT);

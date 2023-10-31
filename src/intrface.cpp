@@ -923,12 +923,12 @@ static void init_obj(lua_State* L)
         lua_pushstring(L, LUA_PLR_KEY);
         lua_pushlightuserdata(L, &party[i]);
         lua_rawset(L, -3);
-        lua_setglobal(L, party[i].name.c_str());
+        lua_setglobal(L, party[i].player_name.c_str());
     }
     /* party */
     for (i = 0; i < numchrs; ++i)
     {
-        lua_getglobal(L, party[pidx[i]].name.c_str());
+        lua_getglobal(L, party[pidx[i]].player_name.c_str());
         /* also fill in the entity reference */
         lua_pushstring(L, LUA_ENT_KEY);
         lua_pushlightuserdata(L, &g_ent[i]);
@@ -949,7 +949,7 @@ static void init_obj(lua_State* L)
     lua_newtable(L);
     for (i = 0; i < MAXCHRS; ++i)
     {
-        lua_getglobal(L, party[i].name.c_str());
+        lua_getglobal(L, party[i].player_name.c_str());
         lua_rawseti(L, -2, i);
     }
     lua_setglobal(L, "player");
@@ -969,7 +969,7 @@ static void init_obj(lua_State* L)
     /* heroes */
     for (i = 0; i < numchrs; ++i)
     {
-        lua_getglobal(L, party[pidx[i]].name.c_str());
+        lua_getglobal(L, party[pidx[i]].player_name.c_str());
         lua_rawseti(L, -2, i + EntityManager.number_of_entities);
     }
     lua_setglobal(L, "entity");
@@ -1186,7 +1186,7 @@ static int KQ_char_getter(lua_State* L)
         switch (prop)
         {
         case PROP_NAME:
-            lua_pushstring(L, pl->name.c_str());
+            lua_pushstring(L, pl->player_name.c_str());
             break;
 
         case PROP_XP:
@@ -1310,7 +1310,7 @@ static int KQ_char_setter(lua_State* L)
         switch (prop)
         {
         case PROP_NAME:
-            pl->name = lua_tostring(L, 3);
+            pl->player_name = lua_tostring(L, 3);
             break;
 
         case PROP_XP:
@@ -2089,7 +2089,7 @@ static int KQ_get_party_name(lua_State* L)
 
     if (a >= 0 && a < ePIDX::MAXCHRS)
     {
-        lua_pushstring(L, party[a].name.c_str());
+        lua_pushstring(L, party[a].player_name.c_str());
     }
     return 1;
 }

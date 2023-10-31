@@ -454,7 +454,7 @@ void KEquipMenu::draw_equipmenu_portrait(const KPlayer& hero, Raster* portrait)
 
     // Display the party member's face and name on the right, centered.
     const int portraitLeftEdge = (FontW * portraitMenu.w - portrait->width) / 2;
-    const std::string heroName = truncate_string(hero.name, NameMaxLength, true, "");
+    const std::string heroName = truncate_string(hero.player_name, NameMaxLength, true, "");
     const int nameXoffset = getCenteredTextXoffset(heroName, portraitMenu.w);
     const int nameYoffset = FontH * (portraitMenu.h - 1);
 
