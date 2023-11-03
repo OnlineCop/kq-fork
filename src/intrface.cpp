@@ -33,6 +33,7 @@
 #include "draw.h"
 #include "effects.h"
 #include "enemyc.h"
+#include "entity.h"
 #include "enums.h"
 #include "fade.h"
 #include "gfx.h"
@@ -904,8 +905,6 @@ static void init_markers(lua_State* L)
 
 static void init_obj(lua_State* L)
 {
-    size_t i = 0;
-
     /* do all the players */
     lua_newtable(L);
     lua_pushstring(L, "__index");
@@ -915,7 +914,17 @@ static void init_obj(lua_State* L)
     lua_pushcfunction(L, KQ_char_setter);
     lua_settable(L, -3);
 
-    for (i = 0; i < MAXCHRS; ++i)
+    /* Add each party member's name, with only the first letter capitalized, as a
+     *  global (_G{...}) table:
+     *  "Sensar", "Sarina", "Corin", "Ajathar", "Casandra", "Temmin", "Ayla", "Noslom"
+     * This allows someone to use 'Ayla' as a lookup table, which calls
+     *  KQ_char_[gs]etter() as appropriate.
+     * This specifically uses LUA_PLR_KEY ("_obj") as the table key.
+     *
+     * NOTE: global.lua defines ALL-CAPS names ("SENSAR", "SARINA", etc.) to be [0..7]
+     *  (to match values in heroc.h) and are therefore not tables.
+     */
+    for (size_t i = 0; i < MAXCHRS; ++i)
     {
         lua_newtable(L);
         lua_pushvalue(L, -2);
@@ -925,17 +934,22 @@ static void init_obj(lua_State* L)
         lua_rawset(L, -3);
         lua_setglobal(L, party[i].player_name.c_str());
     }
-    /* party */
-    for (i = 0; i < numchrs; ++i)
+
+    /* For only the 1-2 active party members themselves, an additional lookup is added
+     *  to the same _G['...name...'] table so 'party[0]' and 'party[1]' can be used.
+     * This specifically uses LUA_ENT_KEY ("_ent") as the table key.
+     */
+    for (size_t i = 0; i < numchrs; ++i)
     {
         lua_getglobal(L, party[pidx[i]].player_name.c_str());
-        /* also fill in the entity reference */
         lua_pushstring(L, LUA_ENT_KEY);
         lua_pushlightuserdata(L, &g_ent[i]);
         lua_rawset(L, -3);
     }
+
     /* party pseudo-array */
     lua_newtable(L);
+
     lua_newtable(L);
     lua_pushstring(L, "__index");
     lua_pushcfunction(L, KQ_party_getter);
@@ -943,11 +957,13 @@ static void init_obj(lua_State* L)
     lua_pushstring(L, "__newindex");
     lua_pushcfunction(L, KQ_party_setter);
     lua_settable(L, -3);
+
     lua_setmetatable(L, -2);
     lua_setglobal(L, "party");
+
     /* player[] array */
     lua_newtable(L);
-    for (i = 0; i < MAXCHRS; ++i)
+    for (size_t i = 0; i < MAXCHRS; ++i)
     {
         lua_getglobal(L, party[i].player_name.c_str());
         lua_rawseti(L, -2, i);
@@ -956,7 +972,7 @@ static void init_obj(lua_State* L)
     /* entity[] array */
     lua_newtable(L);
     /* entities */
-    for (i = 0; i < EntityManager.number_of_entities; ++i)
+    for (size_t i = 0; i < EntityManager.number_of_entities; ++i)
     {
         lua_newtable(L);
         lua_pushvalue(L, -2);
@@ -967,7 +983,7 @@ static void init_obj(lua_State* L)
         lua_rawseti(L, -2, i);
     }
     /* heroes */
-    for (i = 0; i < numchrs; ++i)
+    for (size_t i = 0; i < numchrs; ++i)
     {
         lua_getglobal(L, party[pidx[i]].player_name.c_str());
         lua_rawseti(L, -2, i + EntityManager.number_of_entities);
@@ -2557,12 +2573,15 @@ static int KQ_pnum(lua_State* L)
  * The prompt would consist of (L-n) text lines and n options, where L is the number of _non-blank_ lines, up to 4.
  *
  * \bug Long strings will overflow the buffer.
+ * \param   L::1 Entity speaking (0-based entity index, HERO1, HERO2, or '255' to indicate "no one").
+ * \param   L::2 Number of prompt options.
+ * \param   L::3..L::7 Lines of text
  */
 static int KQ_prompt(lua_State* L)
 {
     const char* txt[4] = { 0 };
     char pbuf[256] = { 0 };
-    int a, b, nopts, nonblank;
+    int b, nopts, nonblank;
 
     /* The B_TEXT or B_THOUGHT is ignored */
     b = real_entity_num(L, 1);
@@ -2576,7 +2595,7 @@ static int KQ_prompt(lua_State* L)
     pbuf[0] = '\0';
     nonblank = 0;
 
-    for (a = 0; a < 4; a++)
+    for (size_t a = 0; a < 4; a++)
     {
         txt[a] = lua_tostring(L, a + 4);
         if (txt[a] && (strlen(txt[a]) > 0))
@@ -2588,7 +2607,7 @@ static int KQ_prompt(lua_State* L)
     if (nonblank > nopts)
     {
         /* bug: long strings will crash it! */
-        for (a = 0; a < nonblank - nopts; ++a)
+        for (size_t a = 0; a < nonblank - nopts; ++a)
         {
             if (a != 0)
             {
