@@ -341,12 +341,12 @@ void KEnemy::Init()
         KFighter& enumeeFyturr = fighter[fighter_index + PSIZE];
         for (size_t frame_index = 0; frame_index < MAXCFRAMES; ++frame_index)
         {
-            /* If, in a previous combat, we made a bitmap, destroy it now */
+            /* If, in a previous combat, we made a bitmap, destroy it now... */
             if (cframes[fighter_index + PSIZE][frame_index])
             {
                 delete (cframes[fighter_index + PSIZE][frame_index]);
             }
-            /* and create a new one */
+            /* ...and create a new one. */
             cframes[fighter_index + PSIZE][frame_index] = new Raster(enumeeFyturr.img->width, enumeeFyturr.img->height);
             blit(enumeeFyturr.img.get(), cframes[fighter_index + PSIZE][frame_index], 0, 0, 0, 0,
                  enumeeFyturr.img->width, enumeeFyturr.img->height);

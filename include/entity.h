@@ -123,9 +123,12 @@ class KEntityManager
      */
     bool entity_near(t_entity eno, t_entity tgt, int rad);
 
-    /*! \brief Run script.
+    /*! \brief Process a single command in an entity's script.
      *
      * This executes script commands.  This is from Verge1.
+     *
+     * At the top of the function, if g_ent[#].cmd==eCommands::COMMAND_NONE (meaning there is not
+     *  already some scripted command being processed), then getcommand() parses the next command.
      *
      * \param   target_entity Entity to process.
      */
@@ -162,6 +165,7 @@ class KEntityManager
      * \param   target_entity Index of entity to move.
      * \param   dx Tiles to move in x direction.
      * \param   dy Tiles to move in y direction.
+     * \returns whether the entity could move (1) or not (0).
      */
     int move(t_entity target_entity, signed int dx, signed int dy);
 
@@ -182,6 +186,13 @@ class KEntityManager
      *
      * This parses the movement script for a value that relates to a command.
      * This is from Verge1.
+     *
+     * g_ent[target_entity].sidx will have been set to an offset somewhere within the
+     *  g_ent[target_entity].scripts[] array.
+     * Some commands expect a number: 'U4' or 'F2' or 'W30'. This parses that number.
+     *
+     * This stores the parsed number into g_ent[target_entity].cmdnum, and increments
+     *  g_ent[target_entity].sidx for each digit found in the string.
      *
      * \param   target_entity Entity to process.
      */

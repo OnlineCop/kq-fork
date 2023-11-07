@@ -46,50 +46,125 @@ class Raster;
  */
 struct KQEntity
 {
-    /*! Entity's identity (what s/he looks like). */
+    /*! \brief Entity's identity (what s/he looks like).
+     *
+     * This variable is often used in conjunction with eid to determine which sprite to draw an entity from.
+     * 1. If the entity is in the player's party (g_ent[0] or g_ent[1]):
+     *    If chrx==0, then eid is used as an index within the frames[] array (avatar/enemy sprites).
+     *    If chrx!=0, then chrx is used as an index within the eframes[] array (map entity sprites).
+     *    - This means they (typically Ayla) are masquerading as someone else.
+     * 2. If the entity is an NPC (g_ent[2..MAX_ENTITIES-1]):
+     *    If eid<ID_ENEMY (0..253), then eid is used as an index within the frames[] array.
+     *    If eid>=ID_ENEMY (254), then chrx is used as an index within the eframes[] array.
+     */
     uint8_t chrx;
-    /*! x-coord on map. */
+
+    /*! Number of pixels from the map's left edge. */
     uint16_t x;
-    /*! y-coord on map. */
+
+    /*! Number of pixels from the map's top edge. */
     uint16_t y;
-    /*! x-coord tile that entity is standing on. */
+
+    /*! Number of full tiles (typically x/TILE_W) from the map's left edge. */
     uint16_t tilex;
-    /*! y-coord tile that entity is standing on. */
+
+    /*! Number of full tiles (typically y/TILE_H) from the map's top edge. */
     uint16_t tiley;
-    /*! Entity type (fighter, enemy, normal). */
+
+    /*! \brief Entity type (fighter, enemy, normal).
+     *
+     * This is usually set to an ePIDX value:
+     *  Unset is -1 (0xFF).
+     *  Party members are [0..7].
+     *  An enemy is ID_ENEMY (254: 0xFE) (explicitly set in KGame::prepare_map() when g_ent[#].chrx==38)
+     */
     uint8_t eid;
-    /*! "Alive" or not. */
+
+    /*! Whether the entity is visible (true) or not (false) on the map. */
     uint8_t active;
-    /*! Direction. */
+
+    /*! See eDirection: value from [0..3] (often multiplied by ENT_FRAMES_PER_DIR to determine animation frame to render). */
     uint8_t facing;
-    /*! In the middle of a move. */
+
+    /*! \brief In the middle of a move.
+     *
+     * Typically only set to TRUE within KEntityManager::move(), when the
+     *  entity is walking/transitioning between tiles.
+     */
     uint8_t moving;
+
     /*! How far along the move entity is, in pixels; 0 (not moving, or finished moving) up to 15 (TILE_W - 1). */
     uint8_t movcnt;
-    /*! Counter for determining animation frame. */
+
+    /*! \brief Counter for determining animation frame.
+     *
+     * Values are [0..20].
+     * Sprites found within entities.png (NPCs) and uschrs.png (avatars) have
+     *  4 sets of 3 poses per direction: down, up, left, right.
+     *  Poses 1 and 2 are used for walking (arms swinging).
+     *  Pose 3 is used for standing still.
+     * KEntityManager::process_entity() gets called 1-6 times from KEntityManager::speed_adjust()
+     *  depending on the entity's speed, which in turn increments this counter.
+     * KDraw::draw_char() then displays Pose 1 (framectr<=10) or Pose 2 (framectr>10) when the
+     *  entity is moving (or Pose 3 when stationary).
+     */
     uint8_t framectr;
-    /*! Stand, wander, script or chasing. See eMoveMode enum. */
+
+    /*! See eMoveMode: Stand, wander aimlessly/randomly, script or chasing. */
     uint8_t movemode;
-    /*! Determine if affected by obstacles or not. */
+
+    /*! Whether entity is obstructed by obstacles (true) or not (false). */
     uint8_t obsmode;
-    /*! Movement delay (between steps). */
+
+    /*! \brief Movement delay (between steps).
+     *
+     * Usually a random value between [25..50]. Used in conjunction with \sa delayctr.
+     */
     uint8_t delay;
-    /*! Counter for movement delay. */
+
+    /*! Counter for movement \sa delay when movemode is set to eMoveMode::MM_WANDER. */
     uint8_t delayctr;
-    /*! How hyperactive the entity is. */
+
+    /*! \brief Used within KEntityManager::speed_adjust() to determine how quickly an entity walks.
+     *
+     * Value is between [0..7], and entities in player's party default to 4.
+     * Used in conjunction with \sa chasing==true.
+     */
     uint8_t speed;
+
     /*! Unused. */
     uint8_t scount;
+
     /*! Scripted commands (eCommands in entity.h). */
     uint8_t cmd;
-    /*! Index within script parser. */
+
+    /*! Index within script[] array that parser is to evaluate next. */
     uint8_t sidx;
-    /*! Used with random numbers to detect when an entity should chase the player. */
+
+    /*! \brief Used with random numbers to detect when an entity should chase the player.
+     *
+     * Used within KEntityManager::chase() when entity is not yet chasing someone,
+     *  to randomly determine if they should start to.
+     */
     uint8_t extra;
-    /*! Entity is following another. */
+
+    /*! \brief Whether entity should try to walk toward the player's avatar.
+     *
+     * Used within KEntityManager::chase() to determine whether an entity is
+     *  close enough to start chasing, or far enough away to stop chasing.
+     */
     uint8_t chasing;
-    /*! Number of times we need to repeat 'cmd'. */
+
+    /*! \brief Used in conjunction with 'cmd' as a command modifier.
+     *
+     * A number should occur after a directional movement command ('U', 'D', 'L', 'R') and means
+     *  the number of tiles to walk in that direction (minimum: 1).
+     * A number after 'F' means the direction the entity should face (must be value [0..3]).
+     * A number after 'W' means the number of ticks to "wait" (stand still).
+     * A number after 'X' or 'Y' means the absolute tile coordinate (starting from the top-left).
+     */
     signed int cmdnum;
+
     /*! Unused. */
     uint8_t atype;
     /*! Snaps back to direction previously facing. */

@@ -60,7 +60,7 @@ enum eShadow
 #define MAXEFRAMES 12 //!< Max number of animation frames per enemy
 #define MAX_ENTITIES_PER_MAP 50
 #define MAX_ENTITIES (MAX_ENTITIES_PER_MAP + PSIZE)
-#define MAXPGB 9
+#define MAXPGB 9 //!< Number of "spell" pages (used to show yellow counter in bottom-right corner)
 #define ID_ENEMY 254
 #define ENT_FRAMES_PER_DIR 3
 

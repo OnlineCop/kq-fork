@@ -257,6 +257,13 @@ inline void stretch_blit(Raster* src, Raster* dest, int sx, int sy, int sw, int 
     src->blitTo(dest, sx, sy, sw, sh, dx, dy, dw, dh, false);
 }
 
+/*! \brief Do a masked blit of this entire \p src bitmap onto an area of \p dest bitmap.
+ *
+ * \param   dest Target bitmap to draw onto.
+ * \param   src Bitmap to draw from.
+ * \param   x Left-most pixel within target bitmap to draw to.
+ * \param   y Top-most pixel within target bitmap to draw to.
+ */
 inline void draw_sprite(Raster* dest, Raster* src, int x, int y)
 {
     src->maskedBlitTo(dest, x, y);
