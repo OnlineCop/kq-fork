@@ -693,7 +693,7 @@ void do_luacheat()
 #endif /* KQ_CHEATS */
 }
 
-void do_luainit(const char* fname, bool global)
+void do_luainit(const std::string& fname, bool global)
 {
     int oldtop;
     const struct luaL_Reg* rg = lrs;

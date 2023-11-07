@@ -67,7 +67,7 @@ void do_luacheat();
  * \param   fname Base name of script; xxxxx loads script scripts/xxxxx.lua.
  * \param   global True to load global.lua; false to not load global.lua.
  */
-void do_luainit(const char* fname, bool global);
+void do_luainit(const std::string& fname, bool global);
 
 /*! \brief Kill the lua VM.
  *
