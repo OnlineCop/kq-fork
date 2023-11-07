@@ -135,11 +135,12 @@ void KEntityManager::chase(t_entity target_entity)
 {
     int emoved = 0;
     KQEntity& ent = g_ent[target_entity];
-    KQEntity& plr = g_ent[0];
+    const t_entity plr_index = 0;
+    KQEntity& plr = g_ent[plr_index];
 
     if (ent.chasing == 0)
     {
-        if (entity_near(target_entity, 0, 3) && kqrandom->random_range_exclusive(0, 100) <= ent.extra)
+        if (entity_near(target_entity, plr_index, 3) && kqrandom->random_range_exclusive(0, 100) <= ent.extra)
         {
             ent.chasing = 1;
             if (ent.speed < 7)
@@ -155,7 +156,7 @@ void KEntityManager::chase(t_entity target_entity)
     }
     if (ent.chasing == 1)
     {
-        if (entity_near(target_entity, 0, 4))
+        if (entity_near(target_entity, plr_index, 4))
         {
             if (plr.tilex > ent.tilex)
             {
@@ -285,7 +286,7 @@ void KEntityManager::entscript(t_entity target_entity)
         ent.cmdnum = 0;
         break;
     }
-    if (ent.cmdnum == 0)
+    if (ent.cmdnum <= 0)
     {
         ent.cmd = 0;
     }
