@@ -331,27 +331,28 @@ void KEnemy::Init()
     size_t numEnemies = Combat.GetNumEnemies();
     for (size_t fighter_index = 0; fighter_index < numEnemies; ++fighter_index)
     {
+        const size_t row = fighter_index + PSIZE;
         size_t safeFighterIndex = static_cast<size_t>(cf[fighter_index]);
-        const bool bSuccessful = MakeEnemyFighter(safeFighterIndex, fighter[fighter_index + PSIZE]);
+        const bool bSuccessful = MakeEnemyFighter(safeFighterIndex, fighter[row]);
         if (!bSuccessful)
         {
             continue;
         }
 
-        KFighter& enumeeFyturr = fighter[fighter_index + PSIZE];
+        KFighter& enumeeFyturr = fighter[row];
         for (size_t frame_index = 0; frame_index < MAXCFRAMES; ++frame_index)
         {
             /* If, in a previous combat, we made a bitmap, destroy it now... */
-            if (cframes[fighter_index + PSIZE][frame_index])
+            if (cframes[row][frame_index] != nullptr)
             {
-                delete (cframes[fighter_index + PSIZE][frame_index]);
+                delete cframes[row][frame_index];
+                cframes[row][frame_index] = nullptr;
             }
             /* ...and create a new one. */
-            cframes[fighter_index + PSIZE][frame_index] = new Raster(enumeeFyturr.img->width, enumeeFyturr.img->height);
-            blit(enumeeFyturr.img.get(), cframes[fighter_index + PSIZE][frame_index], 0, 0, 0, 0,
-                 enumeeFyturr.img->width, enumeeFyturr.img->height);
-            tcframes[fighter_index + PSIZE][frame_index] =
-                Draw.copy_bitmap(tcframes[fighter_index + PSIZE][frame_index], enumeeFyturr.img.get());
+            cframes[row][frame_index] = new Raster(enumeeFyturr.img->width, enumeeFyturr.img->height);
+            blit(enumeeFyturr.img.get(), cframes[row][frame_index], 0, 0, 0, 0, enumeeFyturr.img->width,
+                 enumeeFyturr.img->height);
+            tcframes[row][frame_index] = Draw.copy_bitmap(tcframes[row][frame_index], enumeeFyturr.img.get());
         }
     }
 }
