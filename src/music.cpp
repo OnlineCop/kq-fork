@@ -39,33 +39,46 @@
 #include <string>
 
 /* SDL version of music */
-struct Mix_MusicLoader
-{
-    Mix_Music* operator()(const std::string&);
-};
-
-struct Mix_MusicDeleter
-{
-    void operator()(Mix_Music* m)
-    {
-        Mix_FreeMusic(m);
-    }
-};
-
-struct Mix_ChunkLoader
-{
-    Mix_Chunk* operator()(const std::string&);
-};
-
-struct Mix_ChunkDeleter
-{
-    void operator()(Mix_Chunk*);
-};
-
+struct Mix_MusicLoader { Mix_Music* operator()(const std::string&); };
+struct Mix_MusicDeleter { void operator()(Mix_Music* m) { Mix_FreeMusic(m); } };
+struct Mix_ChunkLoader { Mix_Chunk* operator()(const std::string&); };
+struct Mix_ChunkDeleter { void operator()(Mix_Chunk*); };
 static Cache<Mix_Chunk, Mix_ChunkLoader, Mix_ChunkDeleter> sample_cache;
-
 static Cache<Mix_Music, Mix_MusicLoader, Mix_MusicDeleter> music_cache;
-static Mix_Music* music = nullptr;
+
+MusicPos::MusicPos()
+    : name { "" }
+    , chunk {nullptr}
+    , position { 0.0 }
+{
+}
+
+MusicPos::MusicPos(const std::string& name_, Mix_Music* chunk_, double position_)
+    : name { name_ }
+    , chunk { chunk_ }
+    , position { position_ }
+{
+}
+
+void MusicPos::take(MusicPos&& other, double pos)
+{
+    name = std::exchange(other.name, "");
+    chunk = std::exchange(other.chunk, nullptr);
+    position = (pos < 0.0 ? Mix_GetMusicPosition(chunk) : pos);
+
+    if (position == -1.0)
+    {
+        Game.klog("The music \"" + name + "\" does not appear to support resuming");
+    }
+}
+
+KMusic::KMusic()
+    : mvol { 1.0f }
+    , dvol { 1.0f }
+    , pausedMusic {}
+    , current {}
+{
+}
 
 void KMusic::init_music()
 {
@@ -84,12 +97,11 @@ void KMusic::shutdown_music()
 
 void KMusic::set_music_volume(int volume)
 {
-    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    if (Audio.isReady())
     {
-        return;
+        mvol = std::clamp<float>(volume, 0.0, 250.0) / 250.0f;
+        Mix_VolumeMusic(static_cast<int>(dvol * mvol * float(MIX_MAX_VOLUME)));
     }
-    mvol = std::clamp<float>(volume, 0.0, 250.0) / 250.0f;
-    Mix_VolumeMusic(static_cast<int>(dvol * mvol * float(MIX_MAX_VOLUME)));
 }
 
 void KMusic::poll_music()
@@ -97,68 +109,73 @@ void KMusic::poll_music()
     // No-op for SDL_mixer
 }
 
-void KMusic::play_music(const std::string& music_name, long)
+void KMusic::play_music(const std::string& music_name, double position)
 {
-    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    if (!Audio.isReady())
     {
         return;
     }
-    if (music)
+    if (current.chunk != nullptr)
     {
         Mix_FadeOutMusic(1000);
         while (!Mix_PlayingMusic())
         {
             Game.ProcessEvents();
         }
-        music = nullptr;
     }
-    Mix_PlayMusic(music_cache.get(music_name), -1);
+    current = MusicPos(music_name, music_cache.get(music_name), position);
+    Mix_PlayMusic(current.chunk, -1);
 }
 
 void KMusic::stop_music()
 {
-    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    if (!Audio.isReady())
     {
         return;
     }
     Mix_HaltMusic();
-    music = nullptr;
 }
 
 void KMusic::pause_music()
 {
-    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    if (!Audio.isReady())
     {
         return;
     }
+    pausedMusic.take(std::move(current));
     Mix_PauseMusic();
 }
 
 void KMusic::resume_music()
 {
-    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    if (!Audio.isReady())
     {
         return;
+    }
+    current.take(std::move(pausedMusic), pausedMusic.position);
+    current.name = std::exchange(pausedMusic.name, "");
+    current.chunk = std::exchange(pausedMusic.chunk, nullptr);
+    Mix_PlayMusic(current.chunk, -1);
+    if (Mix_SetMusicPosition(pausedMusic.position))
+    {
+        sprintf(strbuf, "Unable to set music position to %d.", pausedMusic.position);
+        Game.klog(strbuf);
     }
     Mix_ResumeMusic();
 }
 
-void KMusic::play_effect(int /*unused*/, int /*unused*/)
+void KMusic::play_sample(Mix_Chunk* chunk, int /*unused*/, int /*unused*/, int /*unused*/, int /*unused*/)
 {
-}
-
-void KMusic::play_sample(void* chunk, int /*unused*/, int /*unused*/, int /*unused*/, int /*unused*/)
-{
-    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    if (!Audio.isReady())
     {
         return;
     }
-    Mix_PlayChannel(-1, reinterpret_cast<Mix_Chunk*>(chunk), 0);
+    Mix_PlayChannel(-1, chunk, 0);
 }
 
 void KMusic::set_volume(int sound_volume)
 {
-    if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::NotInitialized)
+    if (!Audio.isReady())
     {
         return;
     }
@@ -186,7 +203,7 @@ void Mix_ChunkDeleter::operator()(Mix_Chunk* chunk)
     Mix_FreeChunk(chunk);
 }
 
-void* KMusic::get_sample(const std::string& s)
+Mix_Chunk* KMusic::get_sample(const std::string& s)
 {
     return sample_cache.get(s);
 }

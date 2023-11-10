@@ -73,7 +73,7 @@ enum class eDisplayMode
 };
 
 /*  Internal variables  */
-static void* sfx[KAudio::eSound::SND_TOTAL];
+static Mix_Chunk* sfx[KAudio::eSound::SND_TOTAL];
 
 /*  Internal functions  */
 
@@ -138,7 +138,7 @@ static void citem(int y, const char* caption, const char* value, eFontColor colo
 static void sound_feedback(int val)
 {
     Music.set_volume(val * 10);
-    Music.play_effect(1, 127);
+    play_effect(1, 127);
 }
 
 static void music_feedback(int val)
@@ -666,7 +666,7 @@ void play_effect(int efc, int panning)
     // Intensity that the screen shakes during SND_EXPLODE.
     static const int sc[] = { 1, 2, 3, 5, 3, 3, 3, 2, 1 };
 
-    void* samp = nullptr;
+    Mix_Chunk* samp = nullptr;
     PALETTE whiteout, old;
 
     /* Patch provided by mattrope: */

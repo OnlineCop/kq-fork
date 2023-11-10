@@ -84,9 +84,16 @@ class KAudio
     ~KAudio() = default;
     KAudio();
 
+    bool isReady() const;
+
     eSoundSystem sound_initialized_and_ready;
     bool sound_system_avail;
 };
+
+inline bool KAudio::isReady() const
+{
+    return sound_initialized_and_ready == eSoundSystem::Ready;
+}
 
 extern KAudio Audio;
 

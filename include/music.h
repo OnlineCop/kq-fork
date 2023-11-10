@@ -21,11 +21,32 @@
 
 #pragma once
 
+#include <SDL_mixer.h> // for Mix_Music struct
 #include <string>
+
+class MusicPos
+{
+    friend class KMusic;
+
+  public:
+    ~MusicPos() = default;
+    MusicPos();
+    MusicPos(const std::string& name, Mix_Music* chunk, double position);
+
+  private:
+    void take(MusicPos&& other, double pos = -1.0);
+
+    std::string name;
+    Mix_Music* chunk;
+    double position;
+};
 
 class KMusic
 {
   public:
+    ~KMusic() = default;
+    KMusic();
+
     /*! \brief Initiate music player (SDL2_Mixer).
      *
      * Initializes the music players.
@@ -70,7 +91,7 @@ class KMusic
      * \param   music_name The relative filename of the song to be played.
      * \param   position The position of the file to begin at.
      */
-    void play_music(const std::string& music_name, long position);
+    void play_music(const std::string& music_name, double position = 0.0);
 
     /*! \brief Pauses the current music file (SDL2_Mixer).
      *
@@ -100,23 +121,22 @@ class KMusic
      * \param   s Name of the sample.
      * \returns Specified sample data.
      */
-    void* get_sample(const std::string& s);
-
-    /*! \brief Unused. */
-    void play_effect(int /*unused*/, int /*unused*/);
+    Mix_Chunk* get_sample(const std::string& s);
 
     /*! \brief Play the provided Mix_Chunk sample.
      *
      * \param   chunk Mix_Chunk sample data to play.
      */
-    void play_sample(void* chunk, int /*unused*/, int /*unused*/, int /*unused*/, int /*unused*/);
+    void play_sample(Mix_Chunk* chunk, int /*unused*/, int /*unused*/, int /*unused*/, int /*unused*/);
 
     /*! \brief Clear the sample cache. */
     void free_samples();
 
   private:
-    float mvol = 1.0f;
-    float dvol = 1.0f;
+    float mvol;
+    float dvol;
+    MusicPos pausedMusic;
+    MusicPos current;
 };
 
 extern KMusic Music;
