@@ -167,9 +167,6 @@ int window_width = -1, window_height = -1;
 /*! Current sequence position of animated tiles */
 uint16_t tilex[MAX_TILES];
 
-/*! Current 'time' for animated tiles. When this increments to adata[].delay, the next tile is shown */
-uint16_t adelay[MAX_ANIM];
-
 /*! Temporary buffer for string operations (used everywhere!) */
 std::string strbuf;
 
@@ -774,8 +771,6 @@ void KGame::data_dump()
 
 void KGame::deallocate_stuff()
 {
-    int i, p;
-
     delete kfonts;
 
     dealloc_bmps(sfonts, "sfonts");
@@ -815,7 +810,7 @@ void KGame::deallocate_stuff()
 
     dealloc_bmps(thought_bubble_borders, "thought_bubble_borders");
 
-    for (p = 0; p < MAXCHRS; p++)
+    for (int p = 0; p < MAXCHRS; ++p)
     {
         delete (players[p].portrait);
     }
@@ -1045,11 +1040,6 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
         }
     }
 
-    for (size_t i = 0; i < MAX_ANIM; i++)
-    {
-        adelay[i] = 0;
-    }
-
     Music.play_music(Map.g_map.song_file, 0);
     mx = (Map.g_map.xsize - 19) * TILE_W; // FIXME: What is this magic '19'?
     /*PH fixme: was 224, drawmap() draws 16 rows, so should be 16*16=256 */
@@ -1238,10 +1228,6 @@ void KGame::startup()
                          static_cast<unsigned char>((a.b + b.b) / 2), 0xFF };
             cmap.data[colour_a][colour_b] = rgb_index(blend);
         }
-    }
-
-    if (use_joy == 1)
-    {
     }
 
     if (SDL_NumJoysticks() == 0)

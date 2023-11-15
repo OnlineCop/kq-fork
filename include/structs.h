@@ -196,16 +196,6 @@ struct s_anim
     uint16_t delay;
 };
 
-/*! \brief Tileset definition.
- *
- * This encapulates a tile set: graphics and animation.
- */
-struct s_tileset
-{
-    char icon_set[16];
-    s_anim tanim[MAX_ANIM];
-};
-
 /*! \brief Progress Dump.
  *
  * Contains the names of all the P_* progress constants.

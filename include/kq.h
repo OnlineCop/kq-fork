@@ -680,8 +680,6 @@ extern Raster* kfonts;
 /* Total entities within the current map: players + NPCs */
 extern KQEntity g_ent[MAX_ENTITIES];
 
-extern s_anim tanim[MAX_TILESETS][MAX_ANIM];
-extern s_anim adata[MAX_ANIM];
 extern uint32_t numchrs;
 extern int gsvol, gmvol;
 extern ePIDX pidx[MAXCHRS];
@@ -691,12 +689,12 @@ extern const uint8_t kq_version;
 extern uint8_t hold_fade, cansave, skip_intro, wait_retrace, windowed, cpu_usage;
 extern bool should_stretch_view;
 extern int window_width, window_height;
-extern uint16_t tilex[MAX_TILES], adelay[MAX_ANIM];
+extern uint16_t tilex[MAX_TILES];
 extern std::string strbuf;
 extern s_heroinfo players[MAXCHRS];
 extern KFighter fighter[NUM_FIGHTERS];
 extern KFighter tempa, tempd;
-extern int shin[12], display_attack_string;
+extern int display_attack_string;
 extern std::string shop_name;
 extern char attack_string[39];
 extern volatile int animation_count;
@@ -712,7 +710,6 @@ extern short player_special_items[MAX_SPECIAL_ITEMS];
 extern int view_x1, view_y1, view_x2, view_y2, in_combat;
 
 extern bool view_on;
-extern int use_joy;
 extern bool show_frate;
 
 #ifdef DEBUGMODE
