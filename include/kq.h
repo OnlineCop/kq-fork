@@ -581,6 +581,10 @@ class KGame
     /*! Set whether all heroes are dead. */
     void alldead(bool value);
 
+  private:
+    void dump_treasure(const std::string& filename);
+    void dump_progress(const std::string& filename);
+
   public:
     const std::string WORLD_MAP;
 
@@ -667,13 +671,13 @@ extern Raster* upptr;
 extern uint16_t *map_seg, *b_seg, *f_seg;
 
 /*! Tasks completed */
-extern uint8_t progress[SIZE_PROGRESS];
+extern std::array<uint8_t, SIZE_PROGRESS> progress;
 
 /*! Treasure chests opened */
-extern uint8_t treasure[SIZE_TREASURE];
+extern std::array<uint8_t, SIZE_TREASURE> treasure;
 
 /*! Keeps track of non-combat spell statuses (currently only repulse) */
-extern uint8_t save_spells[SIZE_SAVE_SPELL];
+extern std::array<uint8_t, SIZE_SAVE_SPELL> save_spells;
 
 extern Raster* kfonts;
 

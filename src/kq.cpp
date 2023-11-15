@@ -116,10 +116,12 @@ std::vector<Raster*> sfonts; //[5]
 Raster* obj_mesh {};
 #endif /* DEBUGMODE */
 
-uint16_t *map_seg = nullptr, *b_seg = nullptr, *f_seg = nullptr;
-uint8_t progress[SIZE_PROGRESS];
-uint8_t treasure[SIZE_TREASURE];
-uint8_t save_spells[SIZE_SAVE_SPELL];
+uint16_t* map_seg = nullptr;
+uint16_t* b_seg = nullptr;
+uint16_t* f_seg = nullptr;
+std::array<uint8_t, SIZE_PROGRESS> progress;
+std::array<uint8_t, SIZE_TREASURE> treasure;
+std::array<uint8_t, SIZE_SAVE_SPELL> save_spells;
 
 /*! Current entities (players+NPCs) */
 KQEntity g_ent[MAX_ENTITIES];
@@ -718,6 +720,56 @@ void KGame::do_check_animation()
     Animation.check_animation(millis, tilex);
 }
 
+void KGame::dump_treasure(const std::string& filename)
+{
+#ifdef DEBUGMODE
+    std::ofstream ff;
+    ff.open(filename, std::ios::out);
+    if (!ff)
+    {
+        sprintf(strbuf, _("Could not open %s!"), filename.c_str());
+        program_death(strbuf);
+    }
+
+    ff << "List of treasures obtained in KQ:\n\n" << std::flush;
+    for (size_t i = 0; i < treasure.size(); ++i)
+    {
+        if (treasure[i] == 0)
+        {
+            continue;
+        }
+        const int value = treasure[i];
+        ff << i << " = " << value << "\n";
+    }
+    ff.close();
+#endif /* DEBUGMODE */
+}
+
+void KGame::dump_progress(const std::string& filename)
+{
+#ifdef DEBUGMODE
+    std::ofstream ff;
+    ff.open(filename, std::ios::out);
+    if (!ff)
+    {
+        sprintf(strbuf, _("Could not open %s!"), filename.c_str());
+        program_death(strbuf);
+    }
+
+    ff << "List of progress in KQ:\n\n" << std::flush;
+    for (size_t i = 0; i < progress.size(); ++i)
+    {
+        if (progress[i] == 0)
+        {
+            continue;
+        }
+        const int value = progress[i];
+        ff << progresses[i].num_progress << ": " << progresses[i].name << " = " << value << "\n";
+    }
+    ff.close();
+#endif /* DEBUGMODE */
+}
+
 void KGame::data_dump()
 {
 #ifdef DEBUGMODE
@@ -726,42 +778,8 @@ void KGame::data_dump()
         return;
     }
 
-    std::ofstream ff;
-    ff.open("treasure.log", std::ios::out);
-    if (!ff)
-    {
-        program_death(_("Could not open treasure.log!"));
-    }
-
-    ff << "List of treasures obtained in KQ:\n\n" << std::flush;
-    for (size_t a = 0; a < SIZE_TREASURE; a++)
-    {
-        if (treasure[a] == 0)
-        {
-            continue;
-        }
-        const int value = treasure[a];
-        ff << a << " = " << value << "\n";
-    }
-    ff.close();
-
-    ff.open("progress.log", std::ios::out);
-    if (!ff)
-    {
-        program_death(_("Could not open progress.log!"));
-    }
-
-    ff << "List of progress in KQ:\n\n" << std::flush;
-    for (size_t a = 0; a < SIZE_PROGRESS; a++)
-    {
-        if (progress[a] == 0)
-        {
-            continue;
-        }
-        const int value = progress[a];
-        ff << progresses[a].num_progress << ": " << progresses[a].name << " = " << value << "\n";
-    }
-    ff.close();
+    dump_treasure("treasure.log");
+    dump_progress("progress.log");
 #endif /* DEBUGMODE */
 }
 
@@ -1507,6 +1525,7 @@ void KGame::zone_check()
         }
         else
         {
+            // Repulse spell decreases at 2x rate anywhere except overworld map.
             if (save_spells[P_REPULSE] > 1)
             {
                 save_spells[P_REPULSE] -= 2;

@@ -2242,6 +2242,11 @@ static int KQ_get_treasure(lua_State* L)
     {
         lua_pushnumber(L, treasure[a]);
     }
+    else
+    {
+        lua_pushnil(L);
+    }
+
     return 1;
 }
 

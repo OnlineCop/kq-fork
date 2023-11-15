@@ -535,8 +535,8 @@ int KDisk::save_players_xml(XMLElement* node)
 
 int KDisk::save_treasures_xml(XMLElement* node)
 {
-    auto startp = std::begin(treasure);
-    auto endp = std::end(treasure);
+    auto startp = treasure.begin();
+    auto endp = treasure.end();
     if (!range_is_default(startp, endp))
     {
         XMLElement* elem = node->GetDocument()->NewElement(TAG_TREASURES);
@@ -548,8 +548,8 @@ int KDisk::save_treasures_xml(XMLElement* node)
 
 int KDisk::load_treasures_xml(XMLElement* node)
 {
-    auto startp = std::begin(treasure);
-    auto endp = std::end(treasure);
+    auto startp = treasure.begin();
+    auto endp = treasure.end();
     std::fill(startp, endp, 0);
     XMLElement* elem = node->FirstChildElement(TAG_TREASURES);
     if (elem && !elem->NoChildren())
@@ -572,8 +572,8 @@ int KDisk::load_treasures_xml(XMLElement* node)
 
 int KDisk::save_progress_xml(XMLElement* node)
 {
-    auto startp = std::begin(progress);
-    auto endp = std::end(progress);
+    auto startp = progress.begin();
+    auto endp = progress.end();
     if (!range_is_default(startp, endp))
     {
         XMLElement* elem = node->GetDocument()->NewElement(TAG_PROGRESS);
@@ -585,8 +585,8 @@ int KDisk::save_progress_xml(XMLElement* node)
 
 int KDisk::load_progress_xml(XMLElement* node)
 {
-    auto startp = std::begin(progress);
-    auto endp = std::end(progress);
+    auto startp = progress.begin();
+    auto endp = progress.end();
     std::fill(startp, endp, 0);
     XMLElement* elem = node->FirstChildElement(TAG_PROGRESS);
     if (elem && !elem->NoChildren())
@@ -608,8 +608,8 @@ int KDisk::load_progress_xml(XMLElement* node)
 
 int KDisk::save_save_spells_xml(XMLElement* node)
 {
-    auto startp = std::begin(save_spells);
-    auto endp = std::end(save_spells);
+    auto startp = save_spells.begin();
+    auto endp = save_spells.end();
     if (!range_is_default(startp, endp))
     {
         XMLElement* elem = node->GetDocument()->NewElement(TAG_SAVE_SPELLS);
@@ -621,8 +621,8 @@ int KDisk::save_save_spells_xml(XMLElement* node)
 
 int KDisk::load_save_spells_xml(XMLElement* node)
 {
-    auto startp = std::begin(save_spells);
-    auto endp = std::end(save_spells);
+    auto startp = save_spells.begin();
+    auto endp = save_spells.end();
     std::fill(startp, endp, 0);
     XMLElement* elem = node->FirstChildElement(TAG_SAVE_SPELLS);
     if (elem && !elem->NoChildren())
