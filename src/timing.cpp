@@ -27,6 +27,14 @@
 
 #include "timing.h"
 
+#ifdef WIN32
+// Exclude rarely-used stuff from Windows headers (Windows.h must be included before any other windows headers)
+#define WIN32_LEAN_AND_MEAN
+
+#include <windows.h>
+#include <debugapi.h>
+#endif
+
 #include "kq.h"
 #include "music.h"
 
@@ -44,6 +52,13 @@ void reset_watchdog()
 static Uint32 timer_cb(Uint32 interval, void* /*unused*/)
 {
     SDL_Event event = { 0 };
+#ifdef WIN32
+    if (IsDebuggerPresent())
+    {
+        // Prevent assertion when paused due to debugging in VS.
+        ++watchdog;
+    }
+#endif
     assert(--watchdog > 0);
     event.type = SDL_USEREVENT;
     SDL_PushEvent(&event);
