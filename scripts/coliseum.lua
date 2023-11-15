@@ -128,14 +128,14 @@ function entity_handler(en)
           if (progress.oldpartner > 0) then
             progress.finalpartner = progress.oldpartner
           else
-            if (party[0] == Casandra) then
+            if (party[0] == CASANDRA) then
               if (krnd(10) < 5) then
-                progress.finalpartner = temmin + 1
+                progress.finalpartner = TEMMIN + 1
               end
             end
-            if (party[0] == Temmin) then
+            if (party[0] == TEMMIN) then
               if (krnd(10) < 5) then
-                progress.finalpartner = casandra + 1
+                progress.finalpartner = CASANDRA + 1
               end
             end
             while (progress.finalpartner == 0) do
