@@ -132,8 +132,10 @@ ePIDX pidx[MAXCHRS] = { ePIDX::PIDX_UNDEFINED };
 /*! Number of characters in the party */
 uint32_t numchrs = 0;
 
-/*! Sound and music volume, 250 = as loud as possible */
-int gsvol = 250, gmvol = 250;
+/*! Sound volume, 250 = as loud as possible */
+int global_sound_vol = 250;
+/*! Music volume, 250 = as loud as possible */
+int global_music_vol = 250;
 
 /*! Is the party under 'automatic' (i.e. scripted) control */
 uint8_t autoparty = 0;

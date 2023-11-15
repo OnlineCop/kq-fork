@@ -240,10 +240,10 @@ void config_menu()
             fontColor = FDARK;
         }
 
-        sprintf(strbuf, "%3d%%", gsvol * 100 / 250);
+        sprintf(strbuf, "%3d%%", global_sound_vol * 100 / 250);
         citem(row[12], _("Sound Volume:"), strbuf.c_str(), fontColor);
 
-        sprintf(strbuf, "%3d%%", gmvol * 100 / 250);
+        sprintf(strbuf, "%3d%%", global_music_vol * 100 / 250);
         citem(row[13], _("Music Volume:"), strbuf.c_str(), fontColor);
 
         strbuf = slow_computer ? _("YES") : _("NO");
@@ -403,15 +403,15 @@ void config_menu()
             case 12:
                 if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
-                    p = getavalue(_("Sound Volume"), 0, 25, gsvol / 10, true, sound_feedback);
+                    int p = getavalue(_("Sound Volume"), 0, 25, global_sound_vol / 10, true, sound_feedback);
                     if (p != -1)
                     {
-                        gsvol = p * 10;
+                        global_sound_vol = p * 10;
                     }
 
                     /* Make sure to set it, no matter what. */
-                    Music.set_volume(gsvol);
-                    Config.set_config_int(nullptr, "gsvol", gsvol);
+                    Music.set_volume(global_sound_vol);
+                    Config.set_config_int(nullptr, "gsvol", global_sound_vol);
                 }
                 else
                 /* Not as daft as it seems, SND_BAD also wobbles the screen. */
@@ -422,15 +422,15 @@ void config_menu()
             case 13:
                 if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
-                    p = getavalue(_("Music Volume"), 0, 25, gmvol / 10, true, music_feedback);
+                    int p = getavalue(_("Music Volume"), 0, 25, global_music_vol / 10, true, music_feedback);
                     if (p != -1)
                     {
-                        gmvol = p * 10;
+                        global_music_vol = p * 10;
                     }
 
                     /* Make sure to set it, no matter what. */
-                    Music.set_music_volume(gmvol);
-                    Config.set_config_int(nullptr, "gmvol", gmvol);
+                    Music.set_music_volume(global_music_vol);
+                    Config.set_config_int(nullptr, "gmvol", global_music_vol);
                 }
                 else
                 {
@@ -626,8 +626,9 @@ void parse_setup()
     show_frate = Config.get_config_int(nullptr, "show_frate", 0) != 0;
     Audio.sound_initialized_and_ready =
         (KAudio::eSoundSystem)Config.get_config_int(nullptr, "is_sound", KAudio::eSoundSystem::Initialize);
-    gmvol = Config.get_config_int(nullptr, "gmvol", 250);
-    gsvol = Config.get_config_int(nullptr, "gsvol", 250);
+    global_music_vol = Config.get_config_int(nullptr, "gmvol", 250);
+    global_sound_vol = Config.get_config_int(nullptr, "gsvol", 250);
+    extern int use_joy;
     use_joy = Config.get_config_int(nullptr, "use_joy", 0);
     slow_computer = Config.get_config_int(nullptr, "slow_computer", 0);
     cpu_usage = Config.get_config_int(nullptr, "cpu_usage", 2);
@@ -686,7 +687,7 @@ void play_effect(int efc, int panning)
     default:
         if (samp)
         {
-            Music.play_sample(samp, gsvol, panning, 1000, 0);
+            Music.play_sample(samp, global_sound_vol, panning, 1000, 0);
         }
         break;
     case KAudio::eSound::SND_BAD:
@@ -694,7 +695,7 @@ void play_effect(int efc, int panning)
 
         if (samp)
         {
-            Music.play_sample(samp, gsvol, panning, 1000, 0);
+            Music.play_sample(samp, global_sound_vol, panning, 1000, 0);
         }
         for (int a = 0; a < 8; a++)
         {
@@ -716,7 +717,7 @@ void play_effect(int efc, int panning)
         fullblit(fx_buffer, double_buffer);
         if (samp)
         {
-            Music.play_sample(samp, gsvol, panning, 1000, 0);
+            Music.play_sample(samp, global_sound_vol, panning, 1000, 0);
         }
         for (int s = 0; s < (int)(sizeof(sc) / sizeof(*sc)); ++s)
         {
@@ -790,8 +791,8 @@ void sound_init()
         Music.init_music();
         Audio.sound_initialized_and_ready = load_samples() ? KAudio::eSoundSystem::NotInitialized
                                                            : KAudio::eSoundSystem::Ready; /* load the wav files */
-        Music.set_volume(gsvol);
-        Music.set_music_volume(gmvol);
+        Music.set_volume(global_sound_vol);
+        Music.set_music_volume(global_music_vol);
         break;
     case KAudio::eSoundSystem::Ready:
         Music.stop_music();

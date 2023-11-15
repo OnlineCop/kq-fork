@@ -681,7 +681,7 @@ extern Raster* kfonts;
 extern KQEntity g_ent[MAX_ENTITIES];
 
 extern uint32_t numchrs;
-extern int gsvol, gmvol;
+extern int global_sound_vol, global_music_vol;
 extern ePIDX pidx[MAXCHRS];
 extern uint8_t autoparty, deadeffect, use_sstone;
 extern bool bDoesViewportFollowPlayer;
