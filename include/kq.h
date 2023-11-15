@@ -335,7 +335,7 @@ class KGame
      *          For example, 5 means five seconds in the future.
      * \returns Event's new index in timer_events[] array, or -1 on error (too many pending events).
      */
-    int add_timer_event(const char* n, int delta);
+    int add_timer_event(const std::string& n, int delta);
 
     /*! \brief Delete any pending events.
      *

@@ -60,6 +60,7 @@
 
 #include <SDL.h>
 #include <SDL_mixer.h>
+#include <array>
 #include <fstream>
 
 using namespace eSize;
@@ -238,13 +239,14 @@ int use_joy = 1;
 
 /*! \brief Timer Event structure.
  *
- * Holds the information relating to a forthcoming event
+ * Holds the information relating to a forthcoming event.
  */
-static struct timer_event
+struct timer_event
 {
     std::string name; /*!< Name of the event */
-    int when;         /*!< Absolute time when it will trigger */
-} timer_events[5];
+    int when = 0;     /*!< Absolute time when it will trigger */
+};
+std::array<timer_event, 5> timer_events;
 
 static int next_event_time; /*!< The time the next event will trigger */
 
@@ -418,12 +420,12 @@ void KGame::activate()
     }
 }
 
-int KGame::add_timer_event(const char* n, int delta)
+int KGame::add_timer_event(const std::string& n, int delta)
 {
     int w = delta + game_time;
     int i;
 
-    for (i = 0; i < 5; ++i)
+    for (i = 0; i < timer_events.size(); ++i)
     {
         if (timer_events[i].name.empty())
         {
