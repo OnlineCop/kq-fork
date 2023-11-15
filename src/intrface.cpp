@@ -551,7 +551,7 @@ fields[] = {
     { "mhp",    PROP_MHP    }, // KPlayer::mhp: Maximum hit points
     { "mp",     PROP_MP     }, // KPlayer::mp: Current magic points
     { "mmp",    PROP_MMP    }, // KPlayer::mmp: Maximum magic points
-    { "id",     PROP_ID     }, // KQEntity::eid: Index # of entity, which determines look and skills
+    { "id",     PROP_ID     }, // Offset between &party[0] and &party[N] (position within the party)
     { "tilex",  PROP_TILEX  }, // KQEntity::tilex: Position of entity, full x tile
     { "tiley",  PROP_TILEY  }, // KQEntity::tiley: Position of entity, full y tile
     { "eid",    PROP_EID    }, // KQEntity::eid: Entity ID
@@ -914,7 +914,7 @@ static void init_obj(lua_State* L)
     lua_pushcfunction(L, KQ_char_setter);
     lua_settable(L, -3);
 
-    /* Add each party member's name, with only the first letter capitalized, as a
+    /* Add each party member's name, with only the first letter capitalized, into the
      *  global (_G{...}) table:
      *  "Sensar", "Sarina", "Corin", "Ajathar", "Casandra", "Temmin", "Ayla", "Noslom"
      * This allows someone to use 'Ayla' as a lookup table, which calls
@@ -1174,9 +1174,12 @@ static int KQ_change_map(lua_State* L)
     return 0;
 }
 
-/*! \brief Object interface for party.
+/*! \brief Object interface for character.
  *
- * This implements the __index meta-method.
+ * This implements the __index meta-method when calling something like:
+ *  'party[N].<field>'
+ * Example:
+ *  if (foo == party[0].id) then ... end
  *
  * \param   L::1 KPlayer* or KQEntity* pointer when L::2 is a fields[] key, else a custom property.
  * \param   L::2 Either a fields[] key, or a user-defined property.
@@ -1199,7 +1202,7 @@ static int KQ_char_getter(lua_State* L)
     KQEntity* ent = (KQEntity*)lua_touserdata(L, -1);
     lua_pop(L, 1);
     int top = lua_gettop(L);
-    if (pl)
+    if (pl != nullptr)
     {
         /* These properties relate to the KPlayer structure */
         switch (prop)
@@ -1284,6 +1287,7 @@ static int KQ_char_getter(lua_State* L)
         case PROP_THINK:
             lua_pushcfunction(L, KQ_thought_ex);
             break;
+
         default:
             break;
         }
@@ -1324,7 +1328,7 @@ static int KQ_char_setter(lua_State* L)
     lua_rawget(L, 1);
     KQEntity* ent = (KQEntity*)lua_touserdata(L, -1);
     lua_pop(L, 1);
-    if (pl)
+    if (pl != nullptr)
     {
         /* These properties relate to the KPlayer structure */
         switch (prop)
@@ -1373,9 +1377,9 @@ static int KQ_char_setter(lua_State* L)
             break;
         }
     }
-    if (ent)
+    if (ent != nullptr)
     {
-        /* these properties relate to the KQEntity structure */
+        /* These properties relate to the KQEntity structure */
         switch (prop)
         {
         case PROP_TILEX:
@@ -1403,9 +1407,13 @@ static int KQ_char_setter(lua_State* L)
             break;
 
         case PROP_SAY:
+            // KQ_bubble_ex() had been pushed here.
             break;
+
         case PROP_THINK:
+            // KQ_thought_ex() had been pushed here.
             break;
+
         default:
             break;
         }
