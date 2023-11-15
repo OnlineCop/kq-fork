@@ -152,63 +152,81 @@ static void citem(int y, const char* caption, const char* value, eFontColor colo
     Draw.print_font(double_buffer, SCREEN_H - 8 * strlen(value), y, value, color);
 }
 
+enum eConfigMenu
+{
+    CMENU_DISPLAY_MODE = 0,
+    CMENU_DISPLAY_FRATE,
+    CMENU_WAIT_RETRACE,
+    CMENU_REMAP_UP,
+    CMENU_REMAP_DOWN,
+    CMENU_REMAP_LEFT,
+    CMENU_REMAP_RIGHT,
+    CMENU_REMAP_CONFIRM,
+    CMENU_REMAP_CANCEL,
+    CMENU_OPEN_MENU_CHAR,
+    CMENU_OPEN_MENU_SYSTEM,
+    CMENU_TOGGLE_SOUND_AND_MUSIC,
+    CMENU_VOLUME_SOUND,
+    CMENU_VOLUME_MUSIC,
+    CMENU_ANIMATION_SPEEDUP,
+    CMENU_CPU_USAGE,
+#ifdef DEBUGMODE
+    CMENU_DEBUG_LEVEL,
+#endif /* DEBUGMODE */
+
+    MENU_SIZE // always last
+};
+
 void config_menu()
 {
     size_t ptr = 0;
-    int p;
     bool stop = false;
     eFontColor fontColor;
 
+    static std::map<int, std::string> dc = {
+        { CMENU_DISPLAY_MODE, _("Set KQ's Display Mode.") },
+        { CMENU_DISPLAY_FRATE, _("Display the frame rate during play.") },
+        { CMENU_WAIT_RETRACE, _("Wait for vertical retrace.") },
+        { CMENU_REMAP_UP, _("Key used to move up.") },
+        { CMENU_REMAP_DOWN, _("Key used to move down.") },
+        { CMENU_REMAP_LEFT, _("Key used to move left.") },
+        { CMENU_REMAP_RIGHT, _("Key used to move right.") },
+        { CMENU_REMAP_CONFIRM, _("Key used to confirm action.") },
+        { CMENU_REMAP_CANCEL, _("Key used to cancel action.") },
+        { CMENU_OPEN_MENU_CHAR, _("Key used to call character menu.") },
+        { CMENU_OPEN_MENU_SYSTEM, _("Key used to call system menu.") },
+        { CMENU_TOGGLE_SOUND_AND_MUSIC, _("Toggle sound and music on/off.") },
+        { CMENU_VOLUME_SOUND, _("Overall sound volume (affects music).") },
+        { CMENU_VOLUME_MUSIC, _("Music volume.") },
+        { CMENU_ANIMATION_SPEEDUP, _("Animation speed-ups for slow machines.") },
+        { CMENU_CPU_USAGE, _("Toggle how to allocate CPU usage.") },
 #ifdef DEBUGMODE
-    constexpr int MENU_SIZE = 17;
-#else /* !DEBUGMODE */
-    constexpr int MENU_SIZE = 16;
+        { CMENU_DEBUG_LEVEL, _("Things you can do only in DebugMode.") },
 #endif /* DEBUGMODE */
-    static const char* dc[MENU_SIZE];
+    };
 
     /* Define rows with appropriate spacings for breaks between groups. */
-    int row[MENU_SIZE];
+    int row[MENU_SIZE] {};
 
-    for (int p = 0; p < 3; p++)
+    for (int p = CMENU_DISPLAY_MODE; p <= CMENU_WAIT_RETRACE; ++p)
     {
         row[p] = (p + 4) * 8; // (p * 8) + 32
     }
-    for (int p = 3; p < 11; p++)
+    for (int p = CMENU_REMAP_UP; p <= CMENU_OPEN_MENU_SYSTEM; ++p)
     {
         row[p] = (p + 5) * 8; // (p * 8) + 40
     }
-    for (int p = 11; p < 14; p++)
+    for (int p = CMENU_TOGGLE_SOUND_AND_MUSIC; p <= CMENU_VOLUME_MUSIC; ++p)
     {
         row[p] = (p + 6) * 8; // (p * 8) + 48
     }
-    for (int p = 14; p < MENU_SIZE; p++)
+    for (int p = CMENU_ANIMATION_SPEEDUP; p < MENU_SIZE; ++p)
     {
         row[p] = (p + 7) * 8; // (p * 8) + 56
     }
 
-    /* Helper strings */
-    dc[0] = _("Set KQ's Display Mode.");
-    dc[1] = _("Display the frame rate during play.");
-    dc[2] = _("Wait for vertical retrace.");
-    dc[3] = _("Key used to move up.");
-    dc[4] = _("Key used to move down.");
-    dc[5] = _("Key used to move left.");
-    dc[6] = _("Key used to move right.");
-    dc[7] = _("Key used to confirm action.");
-    dc[8] = _("Key used to cancel action.");
-    dc[9] = _("Key used to call character menu.");
-    dc[10] = _("Key used to call system menu.");
-    dc[11] = _("Toggle sound and music on/off.");
-    dc[12] = _("Overall sound volume (affects music).");
-    dc[13] = _("Music volume.");
-    dc[14] = _("Animation speed-ups for slow machines.");
-    dc[15] = _("Toggle how to allocate CPU usage.");
-#ifdef DEBUGMODE
-    dc[16] = _("Things you can do only in DebugMode.");
-#endif /* DEBUGMODE */
-
     Config.push_config_state();
-    Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str());
+    Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg"));
     while (!stop)
     {
         Game.ProcessEvents();
@@ -218,20 +236,20 @@ void config_menu()
         Draw.print_font(double_buffer, 96, 8, _("KQ Configuration"), FGOLD);
         Draw.menubox(double_buffer, 32, 24, 30, MENU_SIZE + 3, eBoxFill::TRANSPARENT);
         const char* dmode;
-        citem(row[0], _("Display mode"), "", FNORMAL);
-        citem(row[1], _("Show Frame Rate:"), show_frate ? _("YES") : _("NO"), FNORMAL);
-        citem(row[2], _("Wait for Retrace:"), wait_retrace == 1 ? _("YES") : _("NO"), FNORMAL);
-        citem(row[3], _("Up Key:"), kq_keyname(PlayerInput.up.scancode), FNORMAL);
-        citem(row[4], _("Down Key:"), kq_keyname(PlayerInput.down.scancode), FNORMAL);
-        citem(row[5], _("Left Key:"), kq_keyname(PlayerInput.left.scancode), FNORMAL);
-        citem(row[6], _("Right Key:"), kq_keyname(PlayerInput.right.scancode), FNORMAL);
-        citem(row[7], _("Confirm Key:"), kq_keyname(PlayerInput.balt.scancode), FNORMAL);
-        citem(row[8], _("Cancel Key:"), kq_keyname(PlayerInput.bctrl.scancode), FNORMAL);
-        citem(row[9], _("Menu Key:"), kq_keyname(PlayerInput.benter.scancode), FNORMAL);
-        citem(row[10], _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
+        citem(row[CMENU_DISPLAY_MODE], _("Display mode"), "", FNORMAL);
+        citem(row[CMENU_DISPLAY_FRATE], _("Show Frame Rate:"), show_frate ? _("YES") : _("NO"), FNORMAL);
+        citem(row[CMENU_WAIT_RETRACE], _("Wait for Retrace:"), wait_retrace == 1 ? _("YES") : _("NO"), FNORMAL);
+        citem(row[CMENU_REMAP_UP], _("Up Key:"), kq_keyname(PlayerInput.up.scancode), FNORMAL);
+        citem(row[CMENU_REMAP_DOWN], _("Down Key:"), kq_keyname(PlayerInput.down.scancode), FNORMAL);
+        citem(row[CMENU_REMAP_LEFT], _("Left Key:"), kq_keyname(PlayerInput.left.scancode), FNORMAL);
+        citem(row[CMENU_REMAP_RIGHT], _("Right Key:"), kq_keyname(PlayerInput.right.scancode), FNORMAL);
+        citem(row[CMENU_REMAP_CONFIRM], _("Confirm Key:"), kq_keyname(PlayerInput.balt.scancode), FNORMAL);
+        citem(row[CMENU_REMAP_CANCEL], _("Cancel Key:"), kq_keyname(PlayerInput.bctrl.scancode), FNORMAL);
+        citem(row[CMENU_OPEN_MENU_CHAR], _("Menu Key:"), kq_keyname(PlayerInput.benter.scancode), FNORMAL);
+        citem(row[CMENU_OPEN_MENU_SYSTEM], _("System Menu Key:"), kq_keyname(PlayerInput.besc.scancode), FNORMAL);
 
         // Show "ON" when either initializing or ready; its color will differ below.
-        citem(row[11], _("Sound System:"),
+        citem(row[CMENU_TOGGLE_SOUND_AND_MUSIC], _("Sound System:"),
               Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized ? _("ON") : _("OFF"), FNORMAL);
 
         fontColor = FNORMAL;
@@ -241,13 +259,13 @@ void config_menu()
         }
 
         sprintf(strbuf, "%3d%%", global_sound_vol * 100 / 250);
-        citem(row[12], _("Sound Volume:"), strbuf.c_str(), fontColor);
+        citem(row[CMENU_VOLUME_SOUND], _("Sound Volume:"), strbuf.c_str(), fontColor);
 
         sprintf(strbuf, "%3d%%", global_music_vol * 100 / 250);
-        citem(row[13], _("Music Volume:"), strbuf.c_str(), fontColor);
+        citem(row[CMENU_VOLUME_MUSIC], _("Music Volume:"), strbuf.c_str(), fontColor);
 
         strbuf = slow_computer ? _("YES") : _("NO");
-        citem(row[14], _("Slow Computer:"), strbuf.c_str(), FNORMAL);
+        citem(row[CMENU_ANIMATION_SPEEDUP], _("Slow Computer:"), strbuf.c_str(), FNORMAL);
 
         if (cpu_usage)
         {
@@ -257,7 +275,7 @@ void config_menu()
         {
             strbuf = "yield_timeslice()";
         }
-        citem(row[15], _("CPU Usage:"), strbuf.c_str(), FNORMAL);
+        citem(row[CMENU_CPU_USAGE], _("CPU Usage:"), strbuf.c_str(), FNORMAL);
 
 #ifdef DEBUGMODE
         if (debugging)
@@ -268,7 +286,7 @@ void config_menu()
         {
             strbuf = _("OFF");
         }
-        citem(row[16], _("DebugMode Stuff:"), strbuf.c_str(), FNORMAL);
+        citem(row[CMENU_DEBUG_LEVEL], _("DebugMode Stuff:"), strbuf.c_str(), FNORMAL);
 #endif /* DEBUGMODE */
 
         draw_sprite(double_buffer, menuptr, 32, row[ptr]);
@@ -316,7 +334,7 @@ void config_menu()
         {
             switch (ptr)
             {
-            case 0:
+            case eConfigMenu::CMENU_DISPLAY_MODE:
                 switch (prompt_display_mode())
                 {
                 case eDisplayMode::fullscreen:
@@ -348,40 +366,40 @@ void config_menu()
                 Config.set_config_int(nullptr, "window_width", window_width);
                 Config.set_config_int(nullptr, "window_height", window_height);
                 break;
-            case 1:
+            case eConfigMenu::CMENU_DISPLAY_FRATE:
                 show_frate = !show_frate;
                 Config.set_config_int(nullptr, "show_frate", show_frate);
                 break;
-            case 2:
+            case eConfigMenu::CMENU_WAIT_RETRACE:
                 wait_retrace = !wait_retrace;
                 Config.set_config_int(nullptr, "wait_retrace", wait_retrace);
                 break;
-            case 3:
+            case eConfigMenu::CMENU_REMAP_UP:
                 getakey(PlayerInput.up, "kup");
                 break;
-            case 4:
+            case eConfigMenu::CMENU_REMAP_DOWN:
                 getakey(PlayerInput.down, "kdown");
                 break;
-            case 5:
+            case eConfigMenu::CMENU_REMAP_LEFT:
                 getakey(PlayerInput.left, "kleft");
                 break;
-            case 6:
+            case eConfigMenu::CMENU_REMAP_RIGHT:
                 getakey(PlayerInput.right, "kright");
                 break;
-            case 7:
+            case eConfigMenu::CMENU_REMAP_CONFIRM:
                 getakey(PlayerInput.balt, "kalt");
                 break;
-            case 8:
+            case eConfigMenu::CMENU_REMAP_CANCEL:
                 getakey(PlayerInput.bctrl, "kctrl");
                 break;
-            case 9:
+            case eConfigMenu::CMENU_OPEN_MENU_CHAR:
                 getakey(PlayerInput.benter, "kenter");
                 break;
-            case 10:
+            case eConfigMenu::CMENU_OPEN_MENU_SYSTEM:
                 getakey(PlayerInput.besc, "kesc");
                 break;
 
-            case 11:
+            case eConfigMenu::CMENU_TOGGLE_SOUND_AND_MUSIC:
                 if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     sound_init();
@@ -400,7 +418,7 @@ void config_menu()
                 Config.set_config_int(nullptr, "is_sound",
                                       Audio.sound_initialized_and_ready != KAudio::eSoundSystem::NotInitialized);
                 break;
-            case 12:
+            case eConfigMenu::CMENU_VOLUME_SOUND:
                 if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     int p = getavalue(_("Sound Volume"), 0, 25, global_sound_vol / 10, true, sound_feedback);
@@ -419,7 +437,7 @@ void config_menu()
                     play_effect(KAudio::eSound::SND_BAD, 128);
                 }
                 break;
-            case 13:
+            case eConfigMenu::CMENU_VOLUME_MUSIC:
                 if (Audio.sound_initialized_and_ready == KAudio::eSoundSystem::Ready)
                 {
                     int p = getavalue(_("Music Volume"), 0, 25, global_music_vol / 10, true, music_feedback);
@@ -437,12 +455,12 @@ void config_menu()
                     play_effect(KAudio::eSound::SND_BAD, 128);
                 }
                 break;
-            case 14:
+            case eConfigMenu::CMENU_ANIMATION_SPEEDUP:
                 /* This reduces the number of frames in some battle animations. */
                 slow_computer = !slow_computer;
                 Config.set_config_int(nullptr, "slow_computer", slow_computer);
                 break;
-            case 15:
+            case eConfigMenu::CMENU_CPU_USAGE:
                 /* TT: Adjust the CPU usage:yield_timeslice() or rest(). */
                 cpu_usage++;
                 if (cpu_usage > 2)
@@ -451,7 +469,7 @@ void config_menu()
                 }
                 break;
 #ifdef DEBUGMODE
-            case 16:
+            case eConfigMenu::CMENU_DEBUG_LEVEL:
                 /* TT: Things we only have access to when we're in debug mode. */
                 if (debugging < 4)
                 {
@@ -613,10 +631,8 @@ static int load_samples()
 
 void parse_setup()
 {
-    const std::string cfg = kqres(eDirectories::SETTINGS_DIR, "kq.cfg");
-
     Config.push_config_state();
-    Config.set_config_file(cfg.c_str());
+    Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg"));
 
     /* NB. JB's config file uses intro=yes --> skip_intro=0 */
     skip_intro = Config.get_config_int(nullptr, "skip_intro", 0);
@@ -812,7 +828,7 @@ void store_window_size()
     {
         // Need to store it
         Config.push_config_state();
-        Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg").c_str());
+        Config.set_config_file(kqres(eDirectories::SETTINGS_DIR, "kq.cfg"));
         Config.set_config_int(nullptr, "window_width", new_width);
         Config.set_config_int(nullptr, "window_height", new_height);
         Config.pop_config_state();

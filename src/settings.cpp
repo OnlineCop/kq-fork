@@ -27,16 +27,19 @@
 KConfig Config;
 
 KConfig::KConfig()
+    : current("")
 {
 }
 
-KConfig::~KConfig()
+KConfig::ConfigLevel::ConfigLevel(const std::string& _filename)
+    : filename { _filename }
+    , dirty { false }
 {
 }
 
-int KConfig::get_config_int(const char* section, const char* key, int defl)
+int KConfig::get_config_int(const char* section, const std::string& key, int defl)
 {
-    auto& data = section ? current.sections[section] : current.unnamed;
+    KConfig::ConfigLevel::section_t& data = section ? current.sections[section] : current.unnamed;
     auto it = data.find(key);
     if (it != data.end())
     {
@@ -48,9 +51,9 @@ int KConfig::get_config_int(const char* section, const char* key, int defl)
     }
 }
 
-void KConfig::set_config_int(const char* section, const char* key, int value)
+void KConfig::set_config_int(const char* section, const std::string& key, int value)
 {
-    auto& data = section ? current.sections[section] : current.unnamed;
+    KConfig::ConfigLevel::section_t& data = section ? current.sections[section] : current.unnamed;
     data[key] = value;
     current.dirty = true;
 }
@@ -58,7 +61,7 @@ void KConfig::set_config_int(const char* section, const char* key, int value)
 void KConfig::push_config_state()
 {
     levels.push(std::move(current));
-    current = ConfigLevel {};
+    current = ConfigLevel("");
 }
 
 void KConfig::pop_config_state()
@@ -66,14 +69,14 @@ void KConfig::pop_config_state()
     if (current.dirty && !current.filename.empty())
     {
         std::ofstream os(current.filename);
-        for (auto& i : current.unnamed)
+        for (const auto& i : current.unnamed)
         {
             os << i.first << "=" << i.second << std::endl;
         }
         for (auto& j : current.sections)
         {
             os << '[' << j.first << ']' << std::endl;
-            for (auto& i : j.second)
+            for (const auto& i : j.second)
             {
                 os << i.first << "=" << i.second << std::endl;
             }
@@ -94,15 +97,13 @@ static std::string strip(std::string s)
     return s.substr(l, 1 + r - l);
 }
 
-void KConfig::set_config_file(const char* filename)
+void KConfig::set_config_file(const std::string& filename)
 {
     std::ifstream is(filename);
     std::string line;
     std::string section;
     bool unnamed_section = true;
-    current = ConfigLevel {};
-    current.filename = filename;
-    current.dirty = false;
+    current = ConfigLevel(filename);
     while (is)
     {
         std::getline(is, line);

@@ -29,20 +29,39 @@ class KConfig
 {
   public:
     KConfig();
-    ~KConfig();
-    void set_config_file(const char* filename);
-    void set_config_int(const char* section, const char* key, int value);
-    int get_config_int(const char* section, const char* key, int defl);
+    ~KConfig() = default;
+
+    /*! \brief Set the file where the current config state should be stored.
+     *
+     * You should usually call 'push_config_state()' before calling this.
+     *
+     * \param   filename Full path to the file where this config state should be saved.
+     */
+    void set_config_file(const std::string& filename);
+
+    void set_config_int(const char* section, const std::string& key, int value);
+    int get_config_int(const char* section, const std::string& key, int defl);
     void push_config_state();
     void pop_config_state();
 
   private:
     struct ConfigLevel
     {
-        std::map<std::string, std::map<std::string, int>> sections;
-        std::map<std::string, int> unnamed;
+        ConfigLevel(const std::string& filename = "");
+
+        using section_t = std::map<std::string, int>;
+
+        // Named sections, where "[name]" starts a section block.
+        std::map<std::string, section_t> sections;
+
+        // Default section which is not found under a "[name]" block.
+        section_t unnamed;
+
+        // Full path to file where these sections are stored.
         std::string filename;
-        bool dirty = false;
+
+        // Whether or not any changes have been made to this configuration.
+        bool dirty;
     };
 
     std::stack<ConfigLevel> levels;
