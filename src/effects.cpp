@@ -309,9 +309,9 @@ void KEffects::draw_castersprite(size_t caster_fighter_index, int new_pal_color)
     }
     Combat.UnsetDatafileImageCoords();
     fighter[caster_fighter_index].aframe = 2;
-    display_attack_string = 1;
+    Combat.set_display_attack_string(true);
     Combat.battle_render(0, 0, 0);
-    display_attack_string = 0;
+    Combat.set_display_attack_string(false);
     fullblit(double_buffer, back);
     play_effect(KAudio::eSound::SND_BMAGIC, 128);
 
@@ -354,9 +354,9 @@ void KEffects::draw_hugesprite(size_t target_fighter_index, int hx, int hy, size
         num_fighters = Combat.GetNumEnemies();
     }
     Combat.UnsetDatafileImageCoords();
-    display_attack_string = 1;
+    Combat.set_display_attack_string(true);
     Combat.battle_render(0, 0, 0);
-    display_attack_string = 0;
+    Combat.set_display_attack_string(false);
     fullblit(double_buffer, back);
     play_effect(effect.snd, 128);
     for (size_t frame_index = 0; frame_index < effect.numf; ++frame_index)
@@ -419,9 +419,9 @@ void KEffects::draw_spellsprite(size_t target_fighter_index, int multiple_target
         num_fighters = 1;
     }
     Combat.UnsetDatafileImageCoords();
-    display_attack_string = 1;
+    Combat.set_display_attack_string(true);
     Combat.battle_render(0, 0, 0);
-    display_attack_string = 0;
+    Combat.set_display_attack_string(false);
     fullblit(double_buffer, back);
     play_effect(effect.snd, 128);
     for (int num_frames = 0; num_frames < effect.numf; ++num_frames)

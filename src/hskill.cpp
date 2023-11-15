@@ -513,8 +513,8 @@ int skill_use(size_t attack_fighter_index)
             Combat.backart->color_scale(&temp, kolor_range_start, kolor_range_end);
 
             b = fighter[attack_fighter_index].mhp / 20;
-            strcpy(attack_string, _("Rage"));
-            display_attack_string = 1;
+            Combat.set_attack_string(_("Rage"));
+            Combat.set_display_attack_string(true);
             tempa.stats[eStat::Attack] = fighter[attack_fighter_index].stats[eStat::Attack];
             tempa.stats[eStat::Hit] = fighter[attack_fighter_index].stats[eStat::Hit];
             if (fighter[enemy_index].crit == 1)
@@ -542,7 +542,7 @@ int skill_use(size_t attack_fighter_index)
 
             fighter[attack_fighter_index].hp -= (b * 2);
             Combat.AdjustHealth(attack_fighter_index, b * 2);
-            display_attack_string = 0;
+            Combat.set_display_attack_string(false);
             temp.blitTo(Combat.backart);
             Effects.display_amount(attack_fighter_index, eFont::FONT_DECIDE, 0);
             if (fighter[attack_fighter_index].IsAlive() && fighter[attack_fighter_index].hp <= 0)
@@ -555,8 +555,8 @@ int skill_use(size_t attack_fighter_index)
 
     case SARINA:
         fighter[attack_fighter_index].ctmem = 1000;
-        strcpy(attack_string, _("Sweep"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("Sweep"));
+        Combat.set_display_attack_string(true);
         tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack] * 75 / 100;
         fighter[attack_fighter_index].aframe = 6;
         Combat.UnsetDatafileImageCoords();
@@ -564,12 +564,12 @@ int skill_use(size_t attack_fighter_index)
         Draw.blit2screen();
         kq_wait(150);
         Combat.multi_fight(attack_fighter_index);
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         break;
 
     case CORIN:
-        strcpy(attack_string, _("Elemental Infusion"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("Elemental Infusion"));
+        Combat.set_display_attack_string(true);
         fighter[attack_fighter_index].aux = 2;
         if (combat_spell_menu(attack_fighter_index) == 1)
         {
@@ -619,18 +619,18 @@ int skill_use(size_t attack_fighter_index)
         else
         {
             fighter[attack_fighter_index].aux = 0;
-            display_attack_string = 0;
+            Combat.set_display_attack_string(false);
             return 0;
         }
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         fighter[attack_fighter_index].SetInfuse(spell.spell_elemental_effect);
         break;
 
     case AJATHAR:
         if (fighter[attack_fighter_index].unl > 0)
         {
-            strcpy(attack_string, _("Dispel Undead"));
-            display_attack_string = 1;
+            Combat.set_attack_string(_("Dispel Undead"));
+            Combat.set_display_attack_string(true);
             fullblit(double_buffer, back);
             for (a = 0; a < 14 /*MagicNumber*/; a++)
             {
@@ -649,7 +649,7 @@ int skill_use(size_t attack_fighter_index)
                 fullblit(back, double_buffer);
             }
             Draw.revert_cframes(PSIZE, 1);
-            display_attack_string = 0;
+            Combat.set_display_attack_string(false);
             b = fighter[attack_fighter_index].lvl * 15;
             for (fighter_index = PSIZE; fighter_index < PSIZE + Combat.GetNumEnemies(); fighter_index++)
             {
@@ -705,10 +705,10 @@ int skill_use(size_t attack_fighter_index)
                     b = kqrandom->random_range_exclusive(0, 25 * c) + (50 * c);
                 }
             }
-            strcpy(attack_string, _("Divine Cure"));
-            display_attack_string = 1;
+            Combat.set_attack_string(_("Divine Cure"));
+            Combat.set_display_attack_string(true);
             Effects.draw_spellsprite(0, 1, 15, 1);
-            display_attack_string = 0;
+            Combat.set_display_attack_string(false);
             for (fighter_index = 0; fighter_index < numchrs; fighter_index++)
             {
                 if (!fighter[fighter_index].IsStone() && fighter[fighter_index].IsAlive())
@@ -770,14 +770,14 @@ int skill_use(size_t attack_fighter_index)
         fighter[attack_fighter_index].cx = fighter[enemy_index].cx - 16;
         fighter[attack_fighter_index].cy = fighter[enemy_index].cy + fighter[enemy_index].cl - 40;
         fighter[attack_fighter_index].facing = 1;
-        strcpy(attack_string, _("Steal"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("Steal"));
+        Combat.set_display_attack_string(true);
         Combat.battle_render(0, attack_fighter_index + 1, 0);
         Draw.blit2screen();
         kq_wait(100);
         play_effect(KAudio::eSound::SND_STEAL, 128);
         kq_wait(500);
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         Combat.battle_render(attack_fighter_index, attack_fighter_index, 0);
         found_item = 0;
 #ifdef DEBUGMODE
@@ -871,7 +871,7 @@ int skill_use(size_t attack_fighter_index)
 #endif /* DEBUGMODE */
         fighter[attack_fighter_index].cx = tx;
         fighter[attack_fighter_index].cy = ty;
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         fighter[attack_fighter_index].facing = 0;
         Combat.battle_render(attack_fighter_index, attack_fighter_index, 0);
         Draw.blit2screen();

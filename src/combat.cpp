@@ -425,11 +425,11 @@ void KCombat::battle_render(int32_t plyr, size_t hl, int SelectAll)
         }
     }
 
-    if (display_attack_string == 1)
+    if (_display_attack_string)
     {
-        size_t ctext_length = strlen(attack_string) * 4;
-        Draw.menubox(double_buffer, 152 - ctext_length, 8, strlen(attack_string), 1, eBoxFill::TRANSPARENT);
-        Draw.print_font(double_buffer, 160 - ctext_length, 16, attack_string, FNORMAL);
+        size_t ctext_length = _attack_string.size() * 4;
+        Draw.menubox(double_buffer, 152 - ctext_length, 8, _attack_string.size(), 1, eBoxFill::TRANSPARENT);
+        Draw.print_font(double_buffer, 160 - ctext_length, 16, _attack_string, FNORMAL);
     }
 }
 
@@ -657,7 +657,7 @@ int KCombat::do_combat(const std::string& bg, const std::string& mus, int is_rnd
 
     /*  RB: do the zoom at the beginning of the combat.  */
     Music.pause_music();
-    Music.set_music_volume(gmvol * 3 / 4);
+    Music.set_music_volume(global_music_vol * 3 / 4);
     Music.play_music(mus, 0);
 
     /* TT TODO:
@@ -684,7 +684,7 @@ int KCombat::do_combat(const std::string& bg, const std::string& mus, int is_rnd
 
     /*  RB: execute combat  */
     do_round();
-    Music.set_music_volume(gmvol);
+    Music.set_music_volume(global_music_vol);
     Music.resume_music();
     if (Game.alldead())
     {
@@ -1254,6 +1254,16 @@ void KCombat::SetShowDeathEffectAnimation(size_t fighterIndex, bool bShowDeathEf
 uint8_t KCombat::GetMonsterSurprisesPartyValue() const
 {
     return monsters_surprise_heroes;
+}
+
+void KCombat::set_attack_string(const std::string& attack_string_)
+{
+    _attack_string = attack_string_;
+}
+
+void KCombat::set_display_attack_string(bool display_attack_string_)
+{
+    _display_attack_string = display_attack_string_;
 }
 
 void KCombat::heroes_win()

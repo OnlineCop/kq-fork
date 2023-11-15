@@ -562,7 +562,7 @@ int KMagic::combat_spell(size_t caster_fighter_index, int is_item)
             }
         }
     }
-    strcpy(attack_string, magic[spell_number].name);
+    Combat.set_attack_string(magic[spell_number].name);
     if (is_item == 0)
     {
         Effects.draw_castersprite(caster_fighter_index, eff[magic[spell_number].eff].kolor);

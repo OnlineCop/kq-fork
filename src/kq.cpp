@@ -187,12 +187,6 @@ KFighter tempa, tempd;
 /*! Name of current shop */
 std::string shop_name;
 
-/*! Should we display a box with attack_string in it (used in combat) */
-int display_attack_string = 0;
-
-/*! Name of current spell or special ability */
-char attack_string[39];
-
 volatile int animation_count = 0;
 
 /*! Current colour map */

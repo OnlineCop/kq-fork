@@ -56,36 +56,36 @@ void combat_skill(size_t fighter_index)
     switch (sk)
     {
     case 1:
-        strcpy(attack_string, _("Venomous Bite"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("Venomous Bite"));
+        Combat.set_display_attack_string(true);
         tempa.weapon_elemental_effect = eResistance::R_POISON;
         Combat.fight(fighter_index, tgt, 1);
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
         break;
     case 2:
-        strcpy(attack_string, _("Double Slash"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("Double Slash"));
+        Combat.set_display_attack_string(true);
         tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack] * 15 / 10;
         Combat.fight(fighter_index, tgt, 1);
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
         break;
     case 3:
-        strcpy(attack_string, _("Chill Touch"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("Chill Touch"));
+        Combat.set_display_attack_string(true);
         Effects.draw_spellsprite(tgt, 0, 10, 1);
         Magic.special_damage_oneall_enemies(fighter_index, 60, R_ICE, tgt, false);
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
         break;
     case 4:
-        strcpy(attack_string, _("Flash Flood"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("Flash Flood"));
+        Combat.set_display_attack_string(true);
         Effects.draw_hugesprite(0, 80, 108, 21, 1);
         /*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
         Magic.special_damage_oneall_enemies(fighter_index, 40, R_ICE, SEL_ALL_ENEMIES, true);
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 5:
@@ -101,34 +101,34 @@ void combat_skill(size_t fighter_index)
         {
             fighter[fighter_index].ctmem = 1000;
         }
-        strcpy(attack_string, _("Sweep"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("Sweep"));
+        Combat.set_display_attack_string(true);
         tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack] * 75 / 100;
         Combat.multi_fight(fighter_index);
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
         break;
     case 6:
-        strcpy(attack_string, _("ParaClaw"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("ParaClaw"));
+        Combat.set_display_attack_string(true);
         tempa.weapon_elemental_effect = eResistance::R_PARALYZE;
         Combat.fight(fighter_index, tgt, 1);
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 7:
-        strcpy(attack_string, _("Dragon Bite"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("Dragon Bite"));
+        Combat.set_display_attack_string(true);
         tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack] * 15 / 10;
         tempa.stats[eStat::Hit] = tempa.stats[eStat::Hit] * 9 / 10;
         tempa.weapon_elemental_effect = eResistance::R_NONE; // no elemental effect
         Combat.fight(fighter_index, tgt, 1);
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
         break;
     case 8:
         affected_targets = 0;
-        strcpy(attack_string, _("Stone Gas"));
+        Combat.set_attack_string(_("Stone Gas"));
         Effects.draw_spellsprite(0, 1, 46, 1);
         for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
@@ -155,7 +155,7 @@ void combat_skill(size_t fighter_index)
         break;
     case 9:
         affected_targets = 0;
-        strcpy(attack_string, _("Zemmel Rod"));
+        Combat.set_attack_string(_("Zemmel Rod"));
         if (kqrandom->random_range_exclusive(0, 4) < 2)
         {
             Effects.draw_spellsprite(0, 1, 11, 1);
@@ -208,7 +208,7 @@ void combat_skill(size_t fighter_index)
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
         break;
     case 10:
-        strcpy(attack_string, _("Poison Gas"));
+        Combat.set_attack_string(_("Poison Gas"));
         Effects.draw_spellsprite(0, 1, 47, 1);
         /*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
         Magic.special_damage_oneall_enemies(fighter_index, 40, R_POISON, SEL_ALL_ENEMIES, true);
@@ -216,7 +216,7 @@ void combat_skill(size_t fighter_index)
         break;
     case 11:
         affected_targets = 0;
-        strcpy(attack_string, _("Tangle Root"));
+        Combat.set_attack_string(_("Tangle Root"));
         Effects.draw_spellsprite(0, 1, 24, 0);
         for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
@@ -239,28 +239,28 @@ void combat_skill(size_t fighter_index)
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 12:
-        strcpy(attack_string, _("Petrifying Bite"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("Petrifying Bite"));
+        Combat.set_display_attack_string(true);
         tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack];
         tempa.stats[eStat::Hit] = tempa.stats[eStat::Hit] * 8 / 10;
         tempa.weapon_elemental_effect = eResistance::R_PETRIFY;
         Combat.fight(fighter_index, tgt, 1);
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 13:
-        strcpy(attack_string, _("Maul of the Titans"));
+        Combat.set_attack_string(_("Maul of the Titans"));
         Effects.draw_hugesprite(0, 80, 110, 29, 1);
         /*  dudaskank suggest replacing 999 with SEL_ALL_ENEMIES  */
         Magic.special_damage_oneall_enemies(fighter_index, 60, R_EARTH, SEL_ALL_ENEMIES, true);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 14:
-        strcpy(attack_string, _("Stunning Strike"));
-        display_attack_string = 1;
+        Combat.set_attack_string(_("Stunning Strike"));
+        Combat.set_display_attack_string(true);
         tempa.stats[eStat::Attack] = tempa.stats[eStat::Attack] * 8 / 10;
         Combat.fight(fighter_index, tgt, 1);
-        display_attack_string = 0;
+        Combat.set_display_attack_string(false);
         if (Magic.non_dmg_save(tgt, 80) == 0 && Combat.GetHealthAdjust(tgt) != MISS)
         {
             fighter[tgt].SetStopped(2);
@@ -268,7 +268,7 @@ void combat_skill(size_t fighter_index)
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 4;
         break;
     case 15:
-        strcpy(attack_string, _("Howl"));
+        Combat.set_attack_string(_("Howl"));
         Effects.draw_spellsprite(0, 1, 14, 0);
         affected_targets = 0;
         for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
@@ -300,7 +300,7 @@ void combat_skill(size_t fighter_index)
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 16:
-        strcpy(attack_string, _("Rasp"));
+        Combat.set_attack_string(_("Rasp"));
         Effects.draw_spellsprite(0, 1, 48, 0);
         for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
@@ -325,25 +325,25 @@ void combat_skill(size_t fighter_index)
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 17:
-        strcpy(attack_string, _("Shadow Blast"));
+        Combat.set_attack_string(_("Shadow Blast"));
         Effects.draw_spellsprite(0, 1, 49, 1);
         Magic.special_damage_oneall_enemies(fighter_index, 75, R_BLACK, SEL_ALL_ENEMIES, true);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
     case 18:
-        strcpy(attack_string, _("Poison Spores"));
+        Combat.set_attack_string(_("Poison Spores"));
         Effects.draw_spellsprite(0, 1, 47, 1);
         Magic.special_damage_oneall_enemies(fighter_index, 40, R_POISON, SEL_ALL_ENEMIES, true);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 19:
-        strcpy(attack_string, _("Soporific Spores"));
+        Combat.set_attack_string(_("Soporific Spores"));
         Effects.draw_spellsprite(0, 1, 39, 1);
         Magic.special_damage_oneall_enemies(fighter_index, 35, R_SLEEP, SEL_ALL_ENEMIES, true);
         fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 3;
         break;
     case 20:
         affected_targets = 0;
-        strcpy(attack_string, _("Entangle"));
+        Combat.set_attack_string(_("Entangle"));
         Effects.draw_spellsprite(0, 1, 24, 0);
         for (target_fighter_index = 0; target_fighter_index < numchrs; target_fighter_index++)
         {
@@ -367,11 +367,11 @@ void combat_skill(size_t fighter_index)
         break;
     // case 21:
     //  // This move causes corruption for some reason
-    //     strcpy(attack_string, _("Fire Bite"));
-    //     display_attack_string = 1;
+    //     Combat.set_attack_string(_("Fire Bite"));
+    //     Combat.set_display_attack_string(true);
     //     tempa.weapon_elemental_effect = eResistance::R_FIRE;
     //     Combat.fight(fighter_index, tgt, 1);
-    //     display_attack_string = 0;
+    //     Combat.set_display_attack_string(false);
     //     fighter[fighter_index].atrack[fighter[fighter_index].csmem] = 2;
     //     break;
     default:

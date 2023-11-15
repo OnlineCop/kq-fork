@@ -235,6 +235,22 @@ class KCombat
      */
     uint8_t GetMonsterSurprisesPartyValue() const;
 
+    /*! \brief Set whether or not to show an attack string during battle.
+     *
+     * The attack string could be the spell or infused effect that is being used.
+     *
+     * \param   display_attack_string Whether or not the attack string is displayed.
+     */
+    void set_display_attack_string(bool display_attack_string_);
+
+    /*! \brief Set the attack string to display during battle.
+     *
+     * If 'display_attack_string' is false, this has no effect.
+     *
+     * \param   attack_string Text to display. Should be kept relatively short (35-ish characters).
+     */
+    void set_attack_string(const std::string& attack_string_);
+
   public:
     Raster* backart;
 
@@ -322,6 +338,8 @@ class KCombat
     bool bShowDeathEffectAnimation[NUM_FIGHTERS];
     int RemainingBattleCounter;
     bool bIsVisionActive;
+    std::string _attack_string;
+    int _display_attack_string;
 
     int nspeed[NUM_FIGHTERS];
     int bspeed[NUM_FIGHTERS];
