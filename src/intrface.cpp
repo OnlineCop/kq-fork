@@ -234,7 +234,7 @@ static int KQ_play_song(lua_State*);
 static int KQ_pnum(lua_State*);
 static int KQ_portbubble_ex(lua_State*);
 static int KQ_portthought_ex(lua_State*);
-static int KQ_print(lua_State*);
+static int KQ_print_console(lua_State*);
 static int KQ_prompt(lua_State*);
 static int KQ_ptext(lua_State*);
 static int KQ_read_controls(lua_State*);
@@ -429,7 +429,7 @@ static const struct luaL_Reg lrs[] = {
     { "pnum", KQ_pnum },
     { "portbubble_ex", KQ_portbubble_ex },
     { "portthought_ex", KQ_portthought_ex },
-    { "print", KQ_print },
+    { "print_console", KQ_print_console },
     { "prompt", KQ_prompt },
     { "ptext", KQ_ptext },
     { "read_controls", KQ_read_controls },
@@ -3975,7 +3975,7 @@ void do_console_command(const std::string& cmd)
  * \param   L The Lua state.
  * \returns 0 (nothing pushed onto Lua state).
  */
-static int KQ_print(lua_State* L)
+static int KQ_print_console(lua_State* L)
 {
     Console.scroll(lua_tostring(L, 1));
     return 0;
