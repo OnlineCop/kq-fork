@@ -59,10 +59,11 @@ static int palindex(uint8_t* ptr)
     }
     int bestindex = PAL_SIZE - 1;
     int bestdist = 0x1000;
+    const PALETTE& pal = default_pal();
     // Start at 1 because 0 is the transparent colour and we don't want to match it.
     for (int i = 1; i < PAL_SIZE; ++i)
     {
-        RGBA& rgb = pal[i];
+        const RGBA& rgb = pal[i];
         int dist = abs(r - rgb.r) + abs(g - rgb.g) + abs(b - rgb.b);
         if (dist == 0)
         {

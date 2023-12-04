@@ -61,6 +61,7 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <array>
+#include <cassert>
 #include <fstream>
 
 using namespace eSize;
@@ -938,7 +939,7 @@ void KGame::load_heroes()
         program_death(_("Could not load character graphics!"));
     }
 
-    set_palette(pal);
+    set_palette(default_pal());
 
     for (int party_index = 0; party_index < MAXCHRS; party_index++)
     {
@@ -1176,8 +1177,8 @@ static int rgb_index(RGBA& c)
 {
     int bestindex = PAL_SIZE - 1;
     int bestdist = INT_MAX;
-    // Start at 1 because 0 is the transparent colour and we don't want to match
-    // it
+    // Start at 1 because 0 is the transparent colour and we don't want to match it.
+    const PALETTE& pal = default_pal();
     for (int i = 1; i < PAL_SIZE; ++i)
     {
         const RGBA& rgb = pal[i];
@@ -1231,13 +1232,14 @@ void KGame::startup()
     {
         cmap.data[0][colour_b] = colour_b;
     }
+    const PALETTE& pal = default_pal();
     for (int colour_a = 1; colour_a < PAL_SIZE; ++colour_a)
     {
         cmap.data[colour_a][0] = colour_a;
         for (int colour_b = 1; colour_b < PAL_SIZE; ++colour_b)
         {
-            RGBA& a = pal[colour_a];
-            RGBA& b = pal[colour_b];
+            const RGBA& a = pal[colour_a];
+            const RGBA& b = pal[colour_b];
             RGBA blend { static_cast<unsigned char>((a.r + b.r) / 2), static_cast<unsigned char>((a.g + b.g) / 2),
                          static_cast<unsigned char>((a.b + b.b) / 2), 0xFF };
             cmap.data[colour_a][colour_b] = rgb_index(blend);

@@ -26,7 +26,7 @@
 
 // clang-format off
 
-PALETTE pal = {{
+PALETTE _default_pal = {{
     { 0, 0, 0, 0 },     { 0, 0, 0, 0 },      { 8, 8, 8, 0 },    { 12, 12, 12, 0 },
     { 16, 16, 16, 0 },  { 20, 20, 20, 0 },   { 24, 24, 24, 0 }, { 28, 28, 28, 0 },
     { 33, 33, 33, 0 },  { 38, 38, 38, 0 },   { 43, 43, 43, 0 }, { 47, 47, 47, 0 },
@@ -107,6 +107,12 @@ PALETTE pal = {{
     { 27, 54, 54, 0 },  { 30, 60, 60, 0 },   { 34, 63, 63, 0 }, { 38, 63, 63, 0 },
     { 42, 63, 63, 0 },  { 46, 63, 63, 0 },   { 50, 63, 63, 0 }, { 63, 63, 63, 0 }
 }};
+
+PALETTE default_pal()
+{
+    static PALETTE _pal = _default_pal;
+    return _pal;
+}
 
 /* 0: `item_name`: short string (about 16 characters)
  * 1: `icon`: eWeapon: [0..eWeapon::NUM_WEAPONS-1]

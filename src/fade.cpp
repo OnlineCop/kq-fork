@@ -73,7 +73,7 @@ void do_transition(eTransitionFade type, int param)
     switch (type)
     {
     case eTransitionFade::IN:
-        _fade_from_range(black_palette, pal, param);
+        _fade_from_range(black_palette, default_pal(), param);
         break;
     case eTransitionFade::OUT:
         temp = get_palette();

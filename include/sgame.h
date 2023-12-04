@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "kq.h"
+#include "enums.h"
 
 /*! \brief Save Game Stats.
  *

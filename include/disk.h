@@ -21,22 +21,14 @@
 
 #pragma once
 
-#include "entity.h"
-#include "fighter.h"
-#include "maps.h"
-#include "player.h"
 #include "sgame.h"
-#include "structs.h"
 
-#include <algorithm>
-#include <cassert>
-#include <cstdint>
-#include <cstdio>
-#include <iterator>
-#include <map>
 #include <string>
 #include <tinyxml2.h>
 #include <vector>
+
+class KFighter;
+class KPlayer;
 
 class KDisk
 {

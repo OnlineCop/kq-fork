@@ -37,9 +37,9 @@ using PALETTE = std::array<RGBA, PAL_SIZE>;
  */
 PALETTE get_palette();
 
-/*! \brief Duplicate the given palette into the current palette.
+/*! \brief Duplicate the given palette into 'current_palette'.
  *
- * \param[in] src Where to copy current palette from.
+ * \param[in] src Palette source to copy from.
  */
 void set_palette(const PALETTE& src);
 

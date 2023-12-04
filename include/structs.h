@@ -167,16 +167,22 @@ struct KQEntity
 
     /*! Unused. */
     uint8_t atype;
+
     /*! Snaps back to direction previously facing. */
     uint8_t snapback;
+
     /*! Look at player when talked to. */
     uint8_t facehero;
+
     /*! Entity is see-through or not. */
     uint8_t transl;
+
     /*! Movement/action script (pacing, etc.). */
     char script[60];
+
     /*! Scripted x-coord the ent is moving to. */
     uint16_t target_x;
+
     /*! Scripted y-coord the ent is moving to. */
     uint16_t target_y;
 };

@@ -485,7 +485,7 @@ int KSaveGame::start_menu(bool skip_splash)
         }
         clear_to_color(double_buffer, 15);
         Draw.blit2screen();
-        set_palette(pal);
+        set_palette(default_pal());
         int fade_color = 0;
         int count = 0;
         while (fade_color < 16)
@@ -505,7 +505,7 @@ int KSaveGame::start_menu(bool skip_splash)
     }
     else
     {
-        set_palette(pal);
+        set_palette(default_pal());
     }
 #endif /* DEBUGMODE */
     Game.reset_world();

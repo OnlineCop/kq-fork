@@ -29,7 +29,6 @@
 #include <cassert>
 
 COLOR_MAP* color_map = &cmap;
-extern PALETTE pal;
 static PALETTE current_palette;
 
 void set_palette(const PALETTE& src)
@@ -303,6 +302,7 @@ void Raster::color_scale(Raster* src, int kolor_range_start, int kolor_range_end
     assert(height <= src->height && "Source height > current bitmap height");
 
     clear_bitmap(this);
+    PALETTE pal = default_pal();
     for (int row = 0; row < height; ++row)
     {
         for (int col = 0; col < width; ++col)

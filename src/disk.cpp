@@ -27,8 +27,12 @@
 
 #include "disk.h"
 
+#include "kq.h"
+#include "player.h"
 #include "random.h"
 #include "shopmenu.h"
+
+#include <map>
 #include <sys/stat.h>
 
 KDisk Disk;
