@@ -88,6 +88,11 @@ class KTime
 
 class KMap
 {
+    bool _draw_background;
+    bool _draw_middle;
+    bool _draw_foreground;
+    bool _draw_shadow;
+
   public:
     ~KMap() = default;
     KMap();
@@ -103,10 +108,15 @@ class KMap
     size_t MapSize() const;
 
     /*! \brief Which map layers should be drawn. These are set when the map is loaded; see change_map(). */
-    bool draw_background;
-    bool draw_middle;
-    bool draw_foreground;
-    bool draw_shadow;
+    bool draw_background() const;
+    bool draw_middle() const;
+    bool draw_foreground() const;
+    bool draw_shadow() const;
+
+    void set_draw_background(bool value);
+    void set_draw_middle(bool value);
+    void set_draw_foreground(bool value);
+    void set_draw_shadow(bool value);
 
     /*! Current map */
     s_map g_map;

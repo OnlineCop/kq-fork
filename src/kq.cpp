@@ -299,10 +299,10 @@ s_progress progresses[SIZE_PROGRESS] = {
 
 KMap::KMap()
     : g_map {}
-    , draw_background { true }
-    , draw_middle { true }
-    , draw_foreground { true }
-    , draw_shadow { true }
+    , _draw_background { true }
+    , _draw_middle { true }
+    , _draw_foreground { true }
+    , _draw_shadow { true }
     , obstacle_array {}
     , shadow_array {}
     , zone_array {}
@@ -319,6 +319,46 @@ size_t KMap::Clamp(signed int tile_x, signed int tile_y) const
 size_t KMap::MapSize() const
 {
     return g_map.xsize * g_map.ysize;
+}
+
+bool KMap::draw_background() const
+{
+    return _draw_background;
+}
+
+void KMap::set_draw_background(const bool value)
+{
+    _draw_background = value;
+}
+
+bool KMap::draw_middle() const
+{
+    return _draw_middle;
+}
+
+void KMap::set_draw_middle(const bool value)
+{
+    _draw_middle = value;
+}
+
+bool KMap::draw_foreground() const
+{
+    return _draw_foreground;
+}
+
+void KMap::set_draw_foreground(const bool value)
+{
+    _draw_foreground = value;
+}
+
+bool KMap::draw_shadow() const
+{
+    return _draw_shadow;
+}
+
+void KMap::set_draw_shadow(const bool value)
+{
+    _draw_shadow = value;
 }
 
 KGame::KGame()
@@ -964,16 +1004,16 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
 
     const size_t mapsize = Map.MapSize();
 
-    Map.draw_background = false;
-    Map.draw_middle = false;
-    Map.draw_foreground = false;
-    Map.draw_shadow = false;
+    bool draw_background = false;
+    bool draw_middle = false;
+    bool draw_foreground = false;
+    bool draw_shadow = false;
 
     for (size_t i = 0; i < mapsize; ++i)
     {
         if (map_seg[i] > 0)
         {
-            Map.draw_background = true;
+            draw_background = true;
             break;
         }
     }
@@ -982,7 +1022,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     {
         if (b_seg[i] > 0)
         {
-            Map.draw_middle = true;
+            draw_middle = true;
             break;
         }
     }
@@ -991,7 +1031,7 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     {
         if (f_seg[i] > 0)
         {
-            Map.draw_foreground = true;
+            draw_foreground = true;
             break;
         }
     }
@@ -1000,10 +1040,14 @@ void KGame::prepare_map(int msx, int msy, int mvx, int mvy)
     {
         if (Map.shadow_array[i] > eShadow::SHADOW_NONE)
         {
-            Map.draw_shadow = true;
+            draw_shadow = true;
             break;
         }
     }
+    Map.set_draw_background(draw_background);
+    Map.set_draw_middle(draw_middle);
+    Map.set_draw_foreground(draw_foreground);
+    Map.set_draw_shadow(draw_shadow);
 
     for (size_t i = 0; i < numchrs; ++i)
     {

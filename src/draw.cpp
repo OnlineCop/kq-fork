@@ -662,7 +662,7 @@ void KDraw::draw_midlayer()
 
 void KDraw::draw_shadows()
 {
-    if (!Game.Map.draw_shadow)
+    if (!Game.Map.draw_shadow())
     {
         return;
     }
@@ -788,7 +788,7 @@ void KDraw::drawmap()
     }
 
     clear_bitmap(double_buffer);
-    if (Game.Map.draw_background)
+    if (Game.Map.draw_background())
     {
         draw_backlayer();
     }
@@ -797,7 +797,7 @@ void KDraw::drawmap()
     {
         draw_char();
     }
-    if (Game.Map.draw_middle)
+    if (Game.Map.draw_middle())
     {
         draw_midlayer();
     }
@@ -806,7 +806,7 @@ void KDraw::drawmap()
     {
         draw_char();
     }
-    if (Game.Map.draw_foreground)
+    if (Game.Map.draw_foreground())
     {
         draw_forelayer();
     }
