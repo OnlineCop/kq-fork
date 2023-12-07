@@ -86,7 +86,7 @@ set(kq-fork_SRCS
 )
 set(PNG_LIBRARIES PNG::PNG)
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/include/external")
 add_compile_definitions("$<$<CONFIG:DEBUG>:DEBUGMODE;KQ_CHEATS>")
 
 add_executable(kq-fork ${kq-fork_SRCS})
