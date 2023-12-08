@@ -3175,7 +3175,7 @@ static int KQ_set_noe(lua_State* L)
 {
     uint32_t a = (uint32_t)lua_tonumber(L, 1);
 
-    if (a <= MAX_ENTITIES_PER_MAP + PSIZE)
+    if (a <= MAX_ENTITIES)
     {
         EntityManager.number_of_entities = a;
     }
