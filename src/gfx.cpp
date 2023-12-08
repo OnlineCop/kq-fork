@@ -23,6 +23,7 @@
 
 #include "compat.h"
 #include "kq.h"
+#include "res.h"
 
 #include <SDL.h>
 #include <algorithm>

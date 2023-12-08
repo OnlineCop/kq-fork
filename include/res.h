@@ -246,7 +246,7 @@ struct s_encounter
     char backimg[20];
 };
 
-extern PALETTE pal;
+PALETTE default_pal();
 extern s_item items[NUM_ITEMS];
 extern s_spell magic[eMagic::M_TOTAL];
 extern s_effect eff[NUM_EFFECTS];
