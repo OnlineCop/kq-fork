@@ -1250,11 +1250,11 @@ static void hero_run()
             Draw.print_font(double_buffer, 160 - text_center, 40, strbuf, FNORMAL);
             for (size_t fighter_index = 0; fighter_index < numchrs; fighter_index++)
             {
-                size_t animation_frame = (running_animation_count > time_to_show_running_animation / 2) ? 1 : 0;
+                size_t animation_frame_num = (running_animation_count > time_to_show_running_animation / 2) ? 1 : 0;
 
                 if (fighter[fighter_index].IsAlive())
                 {
-                    draw_sprite(double_buffer, frames[pidx[fighter_index]][animation_frame], fighter[fighter_index].cx,
+                    draw_sprite(double_buffer, frames[pidx[fighter_index]][animation_frame_num], fighter[fighter_index].cx,
                                 fighter[fighter_index].cy);
                 }
             }
