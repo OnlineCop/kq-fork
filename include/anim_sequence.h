@@ -30,16 +30,18 @@ class KAnimSequence
 {
   public:
     KAnimSequence(const KTmxAnimation&);
-    KAnimSequence(KAnimSequence&&);
+    KAnimSequence(KAnimSequence&&) = default;
 
-    const KTmxAnimation::animation_frame& current();
+    // Return the current animation frame.
+    const KTmxAnimation::animation_frame& current() const;
 
+    // Go to the next animation frame.
     void advance();
 
   public:
-    int nexttime;
-    size_t index;
     const KTmxAnimation animation;
+    size_t index;
+    int nexttime;
 };
 
 extern KAnimSequence AnimSequence;

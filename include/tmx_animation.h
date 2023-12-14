@@ -38,6 +38,9 @@ class KTmxAnimation
 
     struct animation_frame
     {
+        ~animation_frame() = default;
+        animation_frame(int tile, int delay);
+
         /*! New tile value */
         int tile;
         /*! Delay in milliseconds before showing this tile */

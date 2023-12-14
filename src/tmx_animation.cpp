@@ -26,3 +26,9 @@ KTmxAnimation::KTmxAnimation()
     , frames {}
 {
 }
+
+KTmxAnimation::animation_frame::animation_frame(int tile_, int delay_)
+    : tile { tile_ }
+    , delay { delay_ }
+{
+}

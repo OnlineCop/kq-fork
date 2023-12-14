@@ -27,20 +27,12 @@
 // comes from a tmx_map which may be destroyed.
 KAnimSequence::KAnimSequence(const KTmxAnimation& base)
     : animation(base)
+    , index(0)
+    , nexttime(animation.frames[index].delay)
 {
-    index = 0;
-    nexttime = current().delay;
 }
 
-// Move constructor to aid efficiency
-KAnimSequence::KAnimSequence(KAnimSequence&& other)
-    : animation(other.animation)
-{
-    nexttime = other.nexttime;
-    index = other.index;
-}
-
-const KTmxAnimation::animation_frame& KAnimSequence::current()
+const KTmxAnimation::animation_frame& KAnimSequence::current() const
 {
     return animation.frames[index];
 }

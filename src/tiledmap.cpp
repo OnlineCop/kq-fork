@@ -502,10 +502,7 @@ KTmxTileset KTiledMap::load_tmx_tileset(const XMLElement* el)
         {
             for (auto xframe = xanim->FirstChildElement("frame"); xframe; xframe = xframe->NextSiblingElement("frame"))
             {
-                KTmxAnimation::animation_frame frame;
-                frame.delay = xframe->IntAttribute("duration");
-                frame.tile = xframe->IntAttribute("tileid");
-                anim.frames.push_back(frame);
+                anim.frames.emplace_back(xframe->IntAttribute("tileid"), xframe->IntAttribute("duration"));
             }
         }
         tileset.animations.push_back(anim);
