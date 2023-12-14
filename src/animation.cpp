@@ -30,8 +30,8 @@ void KAnimation::check_animation(int millis, uint16_t* tilex)
         a.nexttime -= millis;
         while (a.nexttime < 0)
         {
-            a.nexttime += a.current().delay;
             a.advance();
+            a.nexttime += a.current().delay;
         }
         tilex[a.animation.tilenumber] = a.current().tile;
     }
