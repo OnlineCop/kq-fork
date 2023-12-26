@@ -66,7 +66,6 @@ int gbbw, gbbh;
 // leading space in chars
 int gbbs;
 eBubbleStemStyle bubble_stem_style;
-uint8_t BLUE = 2, DARKBLUE = 0, DARKRED = 4;
 
 /*! \brief Glyph look-up table.
  *

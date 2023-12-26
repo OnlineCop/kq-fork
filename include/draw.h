@@ -595,8 +595,4 @@ class KDraw
 };
 
 /*  global variables  */
-extern uint8_t BLUE;
-extern uint8_t DARKBLUE;
-extern uint8_t DARKRED;
-
 extern KDraw Draw;
