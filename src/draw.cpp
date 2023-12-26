@@ -38,22 +38,25 @@
 #include "zone.h"
 
 #include <SDL.h>
+#include <array>
 #include <cassert>
 #include <map>
+#include <string>
 
 KDraw Draw;
 
 using namespace eSize;
 
 /* Globals */
-#define MSG_ROWS 4
-#define MSG_COLS 36
+constexpr auto MSG_ROWS = 4;
+constexpr auto MSG_COLS = 36;
 
 /*! \brief A 4-row buffer to contain text to display to the player.
  *
  * Messages to the player can be up to 4 rows of text (at a time).
  */
-char msgbuf[MSG_ROWS][MSG_COLS];
+std::array<std::string, MSG_ROWS> msgbuf; //char msgbuf[MSG_ROWS][MSG_COLS];
+
 // Position of speaking entity for speech bubbles in pixels
 int gbx, gby;
 // text box position in pixels
@@ -829,15 +832,12 @@ void KDraw::drawmap()
 
 void KDraw::generic_text(int who, eBubbleStyle box_style, int isPort)
 {
-    int a, stop = 0;
-    int len;
-
     gbbw = 1;
     gbbh = 0;
     gbbs = 0;
-    for (a = 0; a < 4; a++)
+    for (int a = 0; a < msgbuf.size(); ++a)
     {
-        len = strlen(msgbuf[a]);
+        int len = msgbuf[a].length();
         /* FIXME: PH changed >1 to >0 */
         if (len > 0)
         {
@@ -853,6 +853,8 @@ void KDraw::generic_text(int who, eBubbleStyle box_style, int isPort)
     {
         return;
     }
+
+    int stop = 0;
     while (!stop)
     {
         Game.ProcessEvents();
@@ -949,9 +951,9 @@ void KDraw::message(const char* inMessage, int icn, int delay)
         s = relay(s);
         /* Calculate the box size */
         num_lines = max_len = 0;
-        for (idx = 0; idx < MSG_ROWS; ++idx)
+        for (idx = 0; idx < msgbuf.size(); ++idx)
         {
-            len = strlen(msgbuf[idx]);
+            len = msgbuf[idx].length();
             if (len > 0)
             {
                 if (max_len < len)
@@ -1206,13 +1208,13 @@ int KDraw::prompt(int who, int numopt, eBubbleStyle bstyle, const char* sp1, con
     std::string parsed2 = parse_string(sp2);
     std::string parsed3 = parse_string(sp3);
     std::string parsed4 = parse_string(sp4);
-    strcpy(msgbuf[0], parsed1.c_str());
-    strcpy(msgbuf[1], parsed2.c_str());
-    strcpy(msgbuf[2], parsed3.c_str());
-    strcpy(msgbuf[3], parsed4.c_str());
-    for (a = 0; a < 4; a++)
+    msgbuf[0] = parsed1;
+    msgbuf[1] = parsed2;
+    msgbuf[2] = parsed3;
+    msgbuf[3] = parsed4;
+    for (a = 0; a < msgbuf.size(); a++)
     {
-        str_len = strlen(msgbuf[a]);
+        str_len = msgbuf[a].length();
         if (str_len > 1)
         {
             gbbh = a + 1;
@@ -1288,9 +1290,9 @@ int KDraw::prompt_ex(int who, const char* ptext, const char* opt[], int n_opt)
             /* do prompt and options */
 
             /* calc the size of the prompt box */
-            for (int a = 0; a < 4; a++)
+            for (int a = 0; a < msgbuf.size(); a++)
             {
-                int len = strlen(msgbuf[a]);
+                int len = msgbuf[a].length();
 
                 /* FIXME: PH changed >1 to >0 */
                 if (len > 0)
@@ -1403,9 +1405,9 @@ const char* KDraw::relay(const char* buf)
     char tc;
     m_mode state;
 
-    for (i = 0; i < 4; ++i)
+    for (i = 0; i < msgbuf.size(); ++i)
     {
-        memset(msgbuf[i], 0, MSG_COLS);
+        msgbuf[i].assign(MSG_COLS, '\0');
     }
     i = 0;
     cc = 0;
@@ -1436,7 +1438,7 @@ const char* KDraw::relay(const char* buf)
                 msgbuf[cr][cc] = '\0';
                 cc = 0;
                 ++i;
-                if (++cr >= 4)
+                if (++cr >= msgbuf.size())
                 {
                     return &buf[i];
                 }
@@ -1454,7 +1456,8 @@ const char* KDraw::relay(const char* buf)
             case ' ':
                 if (cc < MSG_COLS - 1)
                 {
-                    msgbuf[cr][cc++] = tc;
+                    msgbuf[cr][cc] = tc;
+                    ++cc;
                 }
                 else
                 {
@@ -1481,14 +1484,16 @@ const char* KDraw::relay(const char* buf)
             default:
                 if (cc < MSG_COLS - 1)
                 {
-                    msgbuf[cr][cc++] = tc;
+                    msgbuf[cr][cc] = tc;
+                    ++cc;
                 }
                 else
                 {
-                    msgbuf[cr++][lastc] = '\0';
+                    msgbuf[cr][lastc] = '\0';
+                    ++cr;
                     cc = 0;
                     i = lasts;
-                    if (cr >= MSG_ROWS)
+                    if (cr >= msgbuf.size())
                     {
                         return &buf[1 + lasts];
                     }
