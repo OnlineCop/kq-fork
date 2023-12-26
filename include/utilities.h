@@ -43,8 +43,8 @@
  * \param[out] dest String to write final output to.
  * \param[in] format Text containing "%..." style notation to expand.
  * \param[in] args... Zero or more arguments to pass into snprintf().
- * \returns On success: number of bytes written, not including terminating null character;
- * on failure: snprintf()'s error code.
+ * \returns >= 0 on success for number of bytes written, excluding '\0',
+ *  else < 0 on error (see snprintf() error codes).
  */
 template<typename... Args> constexpr int sprintf(std::string& dest, const std::string& format, Args... args)
 {
