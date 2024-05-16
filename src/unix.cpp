@@ -26,6 +26,7 @@
  */
 
 #include "disk.h"
+#include "kq.h"
 #include "makeconfig.h"
 #include "platform.h"
 
