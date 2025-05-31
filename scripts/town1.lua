@@ -178,6 +178,7 @@ function zone_handler(zn)
         progress.fightonbridge = 5
         progress.showbridge = 1
       end
+    end
 
   elseif (zn == 3) then
     shop(0)
