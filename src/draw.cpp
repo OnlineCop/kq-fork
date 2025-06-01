@@ -1406,7 +1406,7 @@ const char* KDraw::relay(const char* buf)
 
     for (i = 0; i < msgbuf.size(); ++i)
     {
-        msgbuf[i].assign(MSG_COLS, '\0');
+        msgbuf[i].clear();
     }
     i = 0;
     cc = 0;
@@ -1429,12 +1429,10 @@ const char* KDraw::relay(const char* buf)
                 break;
 
             case '\0':
-                msgbuf[cr][cc] = '\0';
                 state = M_END;
                 break;
 
             case '\n':
-                msgbuf[cr][cc] = '\0';
                 cc = 0;
                 ++i;
                 if (++cr >= msgbuf.size())
@@ -1455,12 +1453,8 @@ const char* KDraw::relay(const char* buf)
             case ' ':
                 if (cc < MSG_COLS - 1)
                 {
-                    msgbuf[cr][cc] = tc;
+                    msgbuf[cr] += tc;
                     ++cc;
-                }
-                else
-                {
-                    msgbuf[cr][MSG_COLS - 1] = '\0';
                 }
                 ++i;
                 break;
@@ -1483,12 +1477,12 @@ const char* KDraw::relay(const char* buf)
             default:
                 if (cc < MSG_COLS - 1)
                 {
-                    msgbuf[cr][cc] = tc;
+                    msgbuf[cr] += tc;
                     ++cc;
                 }
                 else
                 {
-                    msgbuf[cr][lastc] = '\0';
+                    msgbuf[cr].resize(lastc);
                     ++cr;
                     cc = 0;
                     i = lasts;
