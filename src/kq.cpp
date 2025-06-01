@@ -527,7 +527,7 @@ std::vector<Raster*> KGame::alloc_bmps(const std::string& bitmap_name, const std
         bitmaps[i] = new Raster(bitmap_widths[i], bitmap_heights[i]);
         if (bitmaps[i] == nullptr)
         {
-            sprintf(strbuf, _("ERROR: Could not allocate %s[%zu]!"), bitmap_name, i);
+	    sprintf(strbuf, _("ERROR: Could not allocate %s[%zu]!"), bitmap_name.c_str(), i);
             program_death(strbuf);
         }
     }
@@ -547,7 +547,7 @@ std::vector<Raster*> KGame::alloc_bmps(const size_t total, const std::string& bi
         bitmaps[i] = new Raster(bitmap_width, bitmap_height);
         if (bitmaps[i] == nullptr)
         {
-            sprintf(strbuf, _("ERROR: Could not allocate %s[%zu]!"), bitmap_name, i);
+	    sprintf(strbuf, _("ERROR: Could not allocate %s[%zu]!"), bitmap_name.c_str(), i);
             program_death(strbuf);
         }
     }
@@ -581,7 +581,7 @@ std::vector<std::vector<Raster*>> KGame::alloc_bmps_2d(const size_t rows, const 
             bitmaps[row][col] = new Raster(bitmap_width, bitmap_height);
             if (bitmaps[row][col] == nullptr)
             {
-                sprintf(strbuf, _("ERROR: Could not allocate %s[%zu][%zu]!"), bitmap_name, row, col);
+	        sprintf(strbuf, _("ERROR: Could not allocate %s[%zu][%zu]!"), bitmap_name.c_str(), row, col);
                 program_death(strbuf);
             }
         }
