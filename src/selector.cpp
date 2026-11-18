@@ -733,13 +733,14 @@ int select_party(ePIDX* avail, size_t n_avail, size_t numchrs_max)
         }
     }
 
-    Draw.menubox(double_buffer, 16, 24, 34, 12, eBoxFill::TRANSPARENT);
-    Draw.print_font(double_buffer, 24, 32, _("Available:"), FGOLD);
-    Draw.print_font(double_buffer, 24, 80, _("In party:"), FGOLD);
     while (running)
     {
         Game.ProcessEvents();
         Game.do_check_animation();
+        Draw.drawmap();
+        Draw.menubox(double_buffer, 16, 24, 34, 12, eBoxFill::TRANSPARENT);
+        Draw.print_font(double_buffer, 24, 32, _("Available:"), FGOLD);
+        Draw.print_font(double_buffer, 24, 80, _("In party:"), FGOLD);
         /* Draw everything */
         /* draw the row of available heroes */
         y = 40;

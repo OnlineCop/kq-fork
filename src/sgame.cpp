@@ -135,7 +135,7 @@ void KSaveGame::delete_game()
     int remove_result;
     int pointer_offset = (save_ptr - top_pointer) * 48;
 
-    sprintf(strbuf, "sg%d.sav", save_ptr);
+    sprintf(strbuf, "sg%d.xml", save_ptr);
     remove_result = remove(kqres(eDirectories::SAVE_DIR, strbuf).c_str());
     if (remove_result == 0)
     {
@@ -153,15 +153,8 @@ void KSaveGame::delete_game()
         Draw.print_font(double_buffer, 136, pointer_offset + 20, _("File Not Deleted"), FNORMAL);
     }
     Draw.blit2screen();
+    kq_wait(250);
     fullblit(back, double_buffer);
-
-    while (!stop)
-    {
-        if (PlayerInput.balt() || PlayerInput.bctrl())
-        {
-            stop = 1;
-        }
-    }
 }
 
 int KSaveGame::load_game()

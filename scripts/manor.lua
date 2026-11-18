@@ -271,7 +271,7 @@ function LOC_explain_mission(en)
     if (a == 0) then
       -- long
       bubble(en, _"The world is in an upheaval right now. Malkaron is a military general who, quite suddenly, became unstoppable. His forces were practically invincible. The world was plagued with his destruction. Then just a few months ago, Malkaron withdrew and all this frenzy stopped. He and his armies seemed to have just vanished.")
-      bubble(en, _"Peace only lasted only until now, when monsters have begun to appear everywhere. They kill livestock, attack towns and ransack villages. They are looking for something.")
+      bubble(en, _"Peace only lasted until now, when monsters have begun to appear everywhere. They kill livestock, attack towns and ransack villages. They are looking for something.")
       wait(75)
       bubble(en, _"The fact is, I had, until recently, been an advisor to him in his army. He is furious with me, however, and he's sent out scouts to find me.")
       bubble(en, _"Malkaron had a magical staff which gave him and his armies total invincibility. It turned the weapons and armour of his armies practically indestructible, merely by being in close proximity to the staff. That is why his army was unstoppable.")

@@ -245,7 +245,7 @@ end
 function LOC_doors_in(which_marker)
   sfx(26)
 
-  set_foreground(0)
+  set_foreground(false)
   set_btile(which_marker, 240)
   set_mtile(which_marker, 251)
 end
@@ -256,7 +256,7 @@ function LOC_doors_out(which_marker)
 
   set_btile(which_marker, 250)
   set_mtile(which_marker, 0)
-  set_foreground(1)
+  set_foreground(true)
 end
 
 

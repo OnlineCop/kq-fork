@@ -93,17 +93,13 @@ size_t longestString(const std::vector<std::string>& inputs)
  */
 std::string truncate_string(std::string input, int maxLength, bool addEllipsis, const std::string& appendString)
 {
-    if (maxLength > 0 && input.size() > maxLength)
+    if (addEllipsis && maxLength > 0 && input.size() > maxLength)
     {
         // Tab (0x09) is rendered as an ellipsis '…'. See 'glyph_lookup' map in draw.cpp.
         input[maxLength - 1] = '\t';
     }
 
-    // The '.*' in this printf notation truncates the (possibly Unicode) text if necessary.
-    // The precision is the parameter right before the text to be formatted (here: maxLength).
-    sprintf(input, "%.*s%s", maxLength, input.c_str(), appendString.c_str());
-
-    return input;
+    return input.substr(0, maxLength) + appendString;
 }
 
 /*! \brief Limit each string in the vector to a maximum length; then append text to end of each.
@@ -319,16 +315,15 @@ void KEquipMenu::draw_equipmenu_top()
 
     constexpr int MaxLength = 8;
 
+    static const std::vector<std::string> TopOptions = {
+        _("Equip"),
+        _("Optimize"),
+        _("Remove"),
+        _("Empty"),
+    };
+
     // Truncate strings only to the width of the menu box; the logic below will display the full
     // text when the player highlights that particular option.
-    static const std::vector<std::string> TopOptions = truncate_strings(
-        {
-            _("Equip"),
-            _("Optimize"),
-            _("Remove"),
-            _("Empty"),
-        },
-        topMenu.w, true, "");
     static const std::vector<std::string> TruncatedTopOptions = truncate_strings(TopOptions, MaxLength, true, "");
 
     if (equipInputState.currentState == EquipInputState::eInputState::ActionBar)

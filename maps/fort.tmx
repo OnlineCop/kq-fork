@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="51" height="51" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="18">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="51" height="51" tilewidth="16" tileheight="16" infinite="0" backgroundcolor="#0e0e0e" nextlayerid="10" nextobjectid="18">
  <properties>
   <property name="can_save" value="0"/>
   <property name="can_warp" value="0"/>
@@ -191,7 +191,7 @@
  </objectgroup>
  <layer id="4" name="fmap" width="51" height="51">
   <data encoding="base64" compression="zlib">
-   eJzt2UsKwjAQBuB0l/ZOKgjSvW58bATv4eOYrgRP4hQbKqGmQZ1mJv4f/ESKtBOTCEmNgXds6gIilC+f/XpLA1JpHJuhmjWsl1zk9luH+lO1rbY1Uw1/RT1tY+Lktn5iSR2vCWUayCxdaV9bjPy8G+O9XV+O3vVmPXHMrTvDPZ2acqKcKRfG50jw6f/dtXhmTdlQtkV3TbOd8voBAAAOqQv4oT1lSVklrgNAonkgmo29R+aUU1/qtnX7e6nnR7nr27/3nS9zncNwsOY/z2Glvhdo6op5x6dlfsWyXiuJ1LkCAADA7QGCoRDJ
+   eJzt2UsKwjAQBuBk1/ZOKgjSvW58bATv4eOYrgRP4hQbKqGmQZ1mJv4f/ESKtBOTCEmNgXeK1AVEKF8++/WWBqTSODZDNWtYL7nI7bcO9adqW21rphr+inraxsTJbf3EkjpeE8o0kFm60r62GPl5N8Z7u74cvevNeuKYW3eGezo15UQ5Uy6Mz5Hg0/+7q31mTdlQtra7ptXOdgEAANDqkLqAH9pTlpRV4joAJJoHotnYe2ROOfWlblu3v5d6fpS7vv173/ky1zkMh8L85zms1PcCTV0x7/i0zK9YhddKInWuAAAAcHsA900RgQ==
   </data>
  </layer>
  <layer id="5" name="shadows" width="51" height="51" opacity="0.5">

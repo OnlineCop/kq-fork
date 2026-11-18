@@ -145,6 +145,7 @@ function showch(which_marker, which_chest)
   -- Set tiles if -1 passed in as 'which_chest' or if chest already opened
   if (get_treasure(which_chest) == 1) then
     set_ftile(which_marker, 0)
+    set_obs(which_marker, 0)
     set_zone(which_marker, 0)
   end
 end
